@@ -13391,6 +13391,10 @@ def _execute(operation, iterations, tolerance):
             if surface is not None: surface.Dispose()
             source.Dispose()
 
+    if kind == 'tapered_extrusion':
+        from tapered_extrusion_probe import run
+        return run(operation, globals(), iterations, tolerance)
+
     if kind == 'silhouette_parallel':
         from silhouette_probe import run
         return run(operation, globals(), iterations, tolerance)

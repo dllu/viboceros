@@ -1,0 +1,11 @@
+--- a/source/SMLib/src/SmPrimitiveCreation.cpp
++++ b/source/SMLib/src/SmPrimitiveCreation.cpp
+@@ -3479,6 +3479,6 @@
+   // test for sliver surface (based on Face->IsDegenerate)
+   if ( // both sides of a ruled surface are very small, delete it.
+-    (sTheseCurves[0]->ApproximateLength(crCurves[0]->GetNaturalInterval() , 3) < 2.*dBrepTol)
+-     && (sTheseCurves[1]->ApproximateLength(crCurves[1]->GetNaturalInterval() , 3) < 2.*dBrepTol) )
++    (sTheseCurves[0]->ApproximateLength(sTheseCurves[0]->GetNaturalInterval() , 3) < 2.*dBrepTol)
++     && (sTheseCurves[1]->ApproximateLength(sTheseCurves[1]->GetNaturalInterval() , 3) < 2.*dBrepTol) )
+     {
+       // skip sliver faces - leaving gaps in the final Brep but avoiding sliver faces

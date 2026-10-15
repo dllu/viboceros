@@ -70,6 +70,7 @@ pub use knot_refinement::{
 };
 mod shape;
 mod silhouette;
+mod tapered;
 pub use shape::StitchResult;
 
 /// A native manifold sheet or solid, owned independently of a document.

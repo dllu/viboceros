@@ -39,8 +39,6 @@
   ],
   "baseline_isolation": "The baseline executable supplies the original SmSurfaceDropCurve.cpp object before the repaired static archive; all other kernel and API sources are equal.",
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "6c2c4f340a34fa0c26e3c7c12f85fd2d60edb908795df1144c2b5cee0e483791",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "189167987cb5299bac0bd4cd7b4c8d938e73ca2cdbeb6c1b1919307c20420e49",
     "crates/viboceros-smlib/src/native/surface_pull.rs": "89ca411ff11b6e3f94aa0d39261b8cae514ba3ebaf06ffa61b37666fb316275c",
     "crates/viboceros-smlib/src/native/surface_pull/tests.rs": "e875cf36ed04c7143c9bc788841ced0616f76c050e5d0fc53a3ef5bce18b6def",
     "crates/viboceros-smlib/src/native/surface_intersections.rs": "00b029d3a57ff98e8e41db27dca4f1e9d5000fc649dd1c899dec9413431bdd4b",
@@ -66,7 +64,9 @@
     "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-smlib/src/native.rs": "7ffce331b641baea299f1ee35c3a2d13d04f8d1a62f2c3c52c04c0ab47ba05f6",
     "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-smlib/src/lib.rs": "3fdbb313d12c48817c84e2271accc28f4418f0efe0b6fc2a93363b5f2d163e4a",
     "d59d97e5c73561647e5f82ade753c719733318b4:crates/viboceros-smlib/native/bridge.cpp": "36383d5f510931ee70d114a5cf2a409b320ac0f3150a8f3373fba331f272361c",
-    "d59d97e5c73561647e5f82ade753c719733318b4:crates/viboceros-smlib/native/bridge.h": "c937106c073c1e9343c5376e3a03ca70b1a6c089056a63ff1ac6701040e7ac9e"
+    "d59d97e5c73561647e5f82ade753c719733318b4:crates/viboceros-smlib/native/bridge.h": "c937106c073c1e9343c5376e3a03ca70b1a6c089056a63ff1ac6701040e7ac9e",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:crates/viboceros-smlib/build.rs": "6c2c4f340a34fa0c26e3c7c12f85fd2d60edb908795df1144c2b5cee0e483791",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:crates/viboceros-smlib/native/CMakeLists.txt": "189167987cb5299bac0bd4cd7b4c8d938e73ca2cdbeb6c1b1919307c20420e49"
   },
   "current_patch_sha256": {
     "third_party/patches/usd-brep-surface-drop-start-normal.patch": "e428d3aeaa053816bcddc1af4681899db840f5300da006c26e515ba0d12f73ea"

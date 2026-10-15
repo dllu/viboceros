@@ -1,0 +1,183 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "tapered_circle_inward",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0000000000000018,
+                -3.000000000000001,
+                -2.7504634826762045e-16
+              ],
+              [
+                3.0,
+                3.000000000000001,
+                2.0000000000000004
+              ]
+            ],
+            "face_count": 3,
+            "is_solid": true,
+            "volume": 50.161766260531074
+          }
+        ]
+      },
+      "elapsed_ns": 30470388
+    },
+    {
+      "id": "tapered_circle_outward",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.3526539614168627,
+                -3.3526539614168627,
+                -2.439560487568078e-16
+              ],
+              [
+                3.35265396141693,
+                3.3526539614168627,
+                2.0000000000000004
+              ]
+            ],
+            "face_count": 3,
+            "is_solid": true,
+            "volume": 63.45650739388952
+          }
+        ]
+      },
+      "elapsed_ns": 29065712
+    },
+    {
+      "id": "tapered_circle_down",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0000000000000018,
+                -3.0,
+                -2.0000000000000004
+              ],
+              [
+                3.000000000000001,
+                3.000000000000001,
+                2.7504634826762045e-16
+              ]
+            ],
+            "face_count": 3,
+            "is_solid": true,
+            "volume": 50.16176626053108
+          }
+        ]
+      },
+      "elapsed_ns": 28894688
+    },
+    {
+      "id": "tapered_circle_rotated",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                5.0,
+                -3.000000000000001,
+                -3.0
+              ],
+              [
+                7.0,
+                3.000000000000001,
+                3.0000000000000018
+              ]
+            ],
+            "face_count": 3,
+            "is_solid": true,
+            "volume": 50.16176626053108
+          }
+        ]
+      },
+      "elapsed_ns": 43489743
+    },
+    {
+      "id": "tapered_rectangle_sharp",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 63.867944436668495
+          }
+        ]
+      },
+      "elapsed_ns": 31772297
+    },
+    {
+      "id": "tapered_rectangle_round",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.35265396141693,
+                -3.352653961416932,
+                0.0
+              ],
+              [
+                3.3526539614169453,
+                3.35265396141693,
+                2.0000000000000724
+              ]
+            ],
+            "face_count": 10,
+            "is_solid": true,
+            "volume": 80.72416413659934
+          }
+        ]
+      },
+      "elapsed_ns": 63134544
+    },
+    {
+      "id": "tapered_open_line",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.35265396141692995,
+                2.0
+              ]
+            ],
+            "face_count": 1,
+            "is_solid": false,
+            "volume": null
+          }
+        ]
+      },
+      "elapsed_ns": 5163825
+    }
+  ]
+}

@@ -1516,6 +1516,56 @@ extern "C" int vb_shape_apex_solid(const VbCurve *curve, const double apex[3], d
     });
 }
 
+extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3],
+    double height, double angle_degrees, int round_corners, int cap_ends, double tolerance,
+    VbSolid **out, char *error, size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(curve && curve->value && out && finite3(direction)
+            && std::isfinite(height) && height!=0
+            && std::isfinite(angle_degrees) && std::abs(angle_degrees)<90 && angle_degrees!=0
+            && (round_corners==0 || round_corners==1) && (cap_ends==0 || cap_ends==1)
+            && std::isfinite(tolerance) && tolerance*0.001>0,"Invalid tapered extrusion input");
+        const double offset=height*std::tan(angle_degrees*SM_PI/180.0);
+        require(std::isfinite(offset) && offset!=0,"Unrepresentable tapered extrusion offset");
+        SmVector3d normal(direction[0],direction[1],direction[2]);
+        check(normal.Unitize(),"normalize tapered extrusion direction");
+        SmPoint3d origin;SmVector3d plane_normal;
+        require(curve->value->IsPlanar(tolerance,&origin,&plane_normal),
+                "Tapered extrusion requires a planar profile");
+        require(!cap_ends || curve->value->IsClosed(curve->value->GetNaturalInterval()),
+                "Capped tapered extrusion requires a closed profile");
+        require(!curve->value->IsDegenerate(tolerance),"Degenerate tapered extrusion profile");
+        auto copy=copy_curve(*curve);
+        auto *context=SmApiGetOrCreateContext();
+        SmTArray<SmBSplineCurve*> segments;
+        SmObjsDelete<SmBSplineCurve*> segment_cleanup(&segments);
+        check(copy->SubdivideAtDiscontinuity(*context,SM_CT_G1,segments),"split taper profile");
+        require(segments.GetSize()>0 && segments.GetSize()<=100000,"Taper profile segment limit");
+        SmTArray<SmCurve*> profiles;
+        for(ULONG i=0;i<segments.GetSize();++i)profiles.Add(segments[i]);
+        segment_cleanup.Clear();
+        SmObjsDelete<SmCurve*> input_cleanup(&profiles);
+        SmTArray<ULONG> chains;
+        require(SmCurve::FixChainCurvesList(profiles,chains,2*tolerance,TRUE)==1,
+                "Taper profile must form one connected chain");
+        auto owner=std::make_unique<VbSolid>();
+        owner->value.reset(new (*context) SmBrep());
+        owner->value->SetTolerance(tolerance,FALSE);
+        SmPrimitiveCreation producer(owner->value->GetInfiniteRegion(),0,TRUE);
+        // On failure before caps the upstream producer retains these profiles.
+        // Success consumes them; clear the guard before further validation.
+        check(producer.CreateTaperExtrude(profiles,height,angle_degrees,cap_ends?3:0,normal,
+            round_corners?SM_OC_FILLET_CORNER:SM_OC_LINEAR_EXTENSION),"create tapered extrusion");
+        input_cleanup.Clear();
+        SmTArray<SmFace*> faces;owner->value->GetFaces(faces);
+        require(faces.GetSize()>0,"Empty tapered extrusion");
+        require(!cap_ends || owner->value->IsManifoldSolid(),"Tapered extrusion did not close");
+        check(SmApiTurnToNurbs(owner->value.get()),"convert tapered extrusion to NURBS");
+        *out=owner.release();
+    });
+}
+
 extern "C" int vb_shape_linear_sweep(const VbCurve *const *curves, size_t count,
                                       const double displacement[3], int cap_ends, double tolerance,
                                       VbSolid **out, char *error, size_t capacity) {

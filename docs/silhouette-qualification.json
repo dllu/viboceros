@@ -49,23 +49,14 @@
     }
   },
   "source_sha256": {
-    "crates/viboceros-smlib/native/bridge.cpp": "5d4d584e71fe6937aa20b2b8c45f79dc365eb280d002272314c588f1c78cf4e7",
-    "crates/viboceros-smlib/native/bridge.h": "2ab8c4ed28b80acd806ffd9096c2f94dd7022a7f5f338ceb8a420378990b7f0b",
-    "crates/viboceros-smlib/src/native.rs": "f3e3ab6e79101569680e27f1146e120d58032e1dd1a4b8afb97bb3326fc05ee7",
     "crates/viboceros-smlib/src/native/silhouette.rs": "1059d80024534c2286b0b98a2a8f06c752c318383158fe779e0366eaf0afe18a",
     "crates/viboceros-smlib/tests/silhouette.rs": "e8c2bf65d38e9130fcffc3fb1e8be12d2b1546c2fc3407318d89052920fcb4af",
-    "crates/viboceros-command/src/lib.rs": "0af766fbc9ac72f6ca6d49a74d680339bfa2227bb8c9781d2446bff771d09568",
     "crates/viboceros-command/src/silhouette.rs": "94f5604f5c94291e63b6baadf19c37d50b9b666f4038183c8ad93e5c47da106c",
     "crates/viboceros-command/src/silhouette/tests.rs": "752cfcb807a99240a471df8455a3c0363be85811f6c91883cf0650ec3c23eb8d",
-    "crates/viboceros-oracle/src/lib.rs": "ef8d12af1956cd76f86b2d73c09777148770898b56cc08c41d176666993c7e7a",
     "crates/viboceros-oracle/src/silhouette.rs": "2b830dfd4ddfdcf80b31c7c17ede7ec86d4982438925fba49eaac8a1d75acc83",
-    "src/app.rs": "5a69bdf9ec614f2dc9cdd0772c5d065812d051df7d55555c22d76527543a30f1",
-    "src/app/object_selection.rs": "a4169756d81ee77374be0baba63452a02da7b3fb00466a545eef193e111f1e0f",
     "src/app/silhouette.rs": "838377b4eff408192f91d960d6c7adbfcd9fe999fa3aaed82fa7e3c7c87d5c53",
     "src/app/tests/silhouette.rs": "07c17bb8cd61fc2d9748bc233d66728e6113b09512682c28131e2e3f30f18947",
     "src/viewport.rs": "bd4fec0b823892b09aca9d21cab3987a39a4227ebd135b0fc846e0409d7efd7e",
-    "tools/rhino_oracle/client.py": "fd31f78f8242c1cbddf53aa5a85d29ac0b8e663a4aea3bbc502e342b64307b1c",
-    "tools/rhino_oracle/rhino_worker.py": "02ca9c04ea03f629e8be2b9fd1f360ced7d9d446ba7bb8920eb700dacb62d63a",
     "tools/rhino_oracle/silhouette_probe.py": "3cf2b05d84ad836fe492e2d03a9185746d8b6677ed45423f6bb3afc86bc729e4",
     "tools/rhino_oracle/test_silhouette.py": "33d0cb5b16b3e61c6b073feed788bd6e4c62a33d219482892c70e8da6019ae26",
     "tools/rhino_oracle/fixtures/silhouette_parallel.json": "e930ef4403dd70079abbca25daec57dfec6f54aba8b148dc93f4bb9f742efe91",
@@ -102,5 +93,16 @@
       "curve_count": 2,
       "total_length": 37.69911176776978
     }
+  },
+  "source_git_sha256": {
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:crates/viboceros-smlib/native/bridge.cpp": "5d4d584e71fe6937aa20b2b8c45f79dc365eb280d002272314c588f1c78cf4e7",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:crates/viboceros-smlib/native/bridge.h": "2ab8c4ed28b80acd806ffd9096c2f94dd7022a7f5f338ceb8a420378990b7f0b",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:crates/viboceros-smlib/src/native.rs": "f3e3ab6e79101569680e27f1146e120d58032e1dd1a4b8afb97bb3326fc05ee7",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:crates/viboceros-command/src/lib.rs": "0af766fbc9ac72f6ca6d49a74d680339bfa2227bb8c9781d2446bff771d09568",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:crates/viboceros-oracle/src/lib.rs": "ef8d12af1956cd76f86b2d73c09777148770898b56cc08c41d176666993c7e7a",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:src/app.rs": "5a69bdf9ec614f2dc9cdd0772c5d065812d051df7d55555c22d76527543a30f1",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:src/app/object_selection.rs": "a4169756d81ee77374be0baba63452a02da7b3fb00466a545eef193e111f1e0f",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:tools/rhino_oracle/client.py": "fd31f78f8242c1cbddf53aa5a85d29ac0b8e663a4aea3bbc502e342b64307b1c",
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:tools/rhino_oracle/rhino_worker.py": "02ca9c04ea03f629e8be2b9fd1f360ced7d9d446ba7bb8920eb700dacb62d63a"
   }
 }

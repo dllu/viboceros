@@ -26,6 +26,7 @@ fn build_native() {
         "cargo:rerun-if-changed=../../third_party/patches/usd-brep-surface-drop-start-normal.patch"
     );
     for patch in [
+        "usd-brep-tapered-sliver-domains.patch",
         "usd-brep-curve-fillet-sides.patch",
         "usd-brep-curve-fillet-seed.patch",
         "usd-brep-curve-fillet-seed-header.patch",

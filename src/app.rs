@@ -158,6 +158,7 @@ mod edge_commands;
 mod edge_fillet;
 mod evaluate_point;
 mod evaluate_uv;
+mod extrude_tapered;
 mod grid_settings;
 mod group_prompt;
 mod interface;
@@ -720,6 +721,10 @@ enum InteractiveCommand {
         both_sides: bool,
         delete_input: bool,
     },
+    ExtrudeCurveTapered {
+        base: Option<Point3>,
+        options: viboceros_command::extrude_tapered::TaperedExtrusionOptions,
+    },
     ExtrudeCurveToPoint {
         delete_input: bool,
         solid: bool,
@@ -846,6 +851,7 @@ impl InteractiveCommand {
             Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
+            Self::ExtrudeCurveTapered { .. } => "ExtrudeCrvTapered",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
             Self::Revolve { .. } => "Revolve",
         }
@@ -1612,6 +1618,12 @@ impl InteractiveCommand {
             Self::ExtrudeCurve { base: Some(_), .. } => {
                 "ExtrudeCrv: pick the direction target point in the viewport (Esc to cancel)"
             }
+            Self::ExtrudeCurveTapered { base: None, .. } => {
+                "ExtrudeCrvTapered: enter a distance or pick two direction points (DraftAngle, Solid, Corners, DeleteInput, FlipAngle)"
+            }
+            Self::ExtrudeCurveTapered { base: Some(_), .. } => {
+                "ExtrudeCrvTapered: pick the direction target (Esc to cancel)"
+            }
             Self::ExtrudeCurveToPoint { .. } => {
                 "ExtrudeCrvToPoint: pick the apex in the viewport (Esc to cancel)"
             }
@@ -1775,6 +1787,7 @@ impl InteractiveCommand {
             | Self::MirrorObject
             | Self::Shear { origin: None, .. }
             | Self::ExtrudeCurve { base: None, .. }
+            | Self::ExtrudeCurveTapered { base: None, .. }
             | Self::ExtrudeCurveToPoint { .. }
             | Self::Revolve {
                 axis_start: None, ..
@@ -1804,6 +1817,7 @@ impl InteractiveCommand {
             | Self::Array { start, .. }
             | Self::Mirror { start }
             | Self::ExtrudeCurve { base: start, .. }
+            | Self::ExtrudeCurveTapered { base: start, .. }
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
@@ -2431,7 +2445,10 @@ impl VibocerosApp {
         if self.try_continue_point_grid_height(&input) {
             return;
         }
-        if self.try_continue_set_point_option(&input) || self.try_finish_set_point(&input) {
+        if self.try_continue_tapered_extrusion(&input)
+            || self.try_continue_set_point_option(&input)
+            || self.try_finish_set_point(&input)
+        {
             return;
         }
         if input
@@ -3857,6 +3874,16 @@ impl VibocerosApp {
                 both_sides,
                 delete_input,
             }
+        } else if normalized == "extrudecrvtapered" {
+            let Ok(options) =
+                viboceros_command::extrude_tapered::TaperedExtrusionOptions::parse(&arguments)
+            else {
+                return false;
+            };
+            InteractiveCommand::ExtrudeCurveTapered {
+                base: None,
+                options,
+            }
         } else if normalized == "extrudecrvtopoint" {
             let mut delete_input = false;
             let mut solid = false;
@@ -5180,6 +5207,7 @@ impl VibocerosApp {
                 | InteractiveCommand::MirrorObject
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
+                | InteractiveCommand::ExtrudeCurveTapered { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::Curvature { .. }
@@ -7885,6 +7913,26 @@ impl VibocerosApp {
                     if delete_input { "Yes" } else { "No" }
                 ));
             }
+            InteractiveCommand::ExtrudeCurveTapered {
+                base: None,
+                options,
+            } => {
+                self.active_command = Some(InteractiveCommand::ExtrudeCurveTapered {
+                    base: Some(point),
+                    options,
+                });
+                self.push_log("ExtrudeCrvTapered: pick the direction target".into());
+            }
+            InteractiveCommand::ExtrudeCurveTapered {
+                base: Some(base),
+                mut options,
+            } => {
+                options.direction = None;
+                return self.finish_tapered_extrusion(
+                    &format!("{} {}", format_model_point(base), format_model_point(point)),
+                    options,
+                );
+            }
             InteractiveCommand::ExtrudeCurveToPoint {
                 delete_input,
                 solid,
@@ -9825,6 +9873,7 @@ mod tests {
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_surface;
+    mod extrude_tapered;
     mod grip_transform;
     mod group_prompt;
     mod interface;

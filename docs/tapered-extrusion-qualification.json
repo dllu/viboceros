@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "tapered_extrusion_implemented": true,
+  "full_rhino_parity": false,
+  "continuous_error_certificate": false,
+  "performance_qualified": false,
+  "native_getter_parity": false,
+  "fresh_rhino_captures": 0,
+  "recipes": 7,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope_notes": [
+    "ExtrudeCrvTapered delegates profile preparation, offset construction, sharp/round corners, ruled surfaces, caps and stitching to usd-brep. Zero draft shares the existing native linear sweep. No portable imitation is introduced.",
+    "The producer receives independent copies and an explicitly toleranced B-rep. Degenerate or disconnected profiles, unrepresentable offset distances, underflowing fit tolerances and empty results or failed closed-solid postconditions decline. Native snapshots and source-reuse tests protect original geometry.",
+    "Nonzero draft is currently restricted to connected planar profiles with extrusion normal to their plane. Oblique/nonplanar draft, Smooth corners, ToBoundary, live preview, tangent-splitting controls and persisted Rhino option defaults remain unimplemented. Separate closed source objects extrude independently.",
+    "Distance input uses a positively oriented native profile normal or active CPlane fallback for lines. Explicit vectors and two direction points are supported. FlipAngle and atomic DraftAngle/Solid/Corners/DeleteInput/Direction edits work at the getter. Model units are accepted for getter distance input.",
+    "All source geometry stages before admission; output selection, optional source deletion and history form one transaction. Failure retains geometry, both history stacks, getter/base/CPlane and source picks for retry. Successful output uses the current layer.",
+    "The unpatched native sliver helper measured ruling rails over domains from unrelated source curves, dropping two rectangle side faces. The generated-source patch uses each actual rail domain and removes a potential second-source index on one-segment profiles. The pinned upstream source is unchanged.",
+    "Local analytical tests cover circular frusta in/out/up/down, zero draft, sharp square frusta, rounded rectangle parallel-area integrals, open sheets and shifted parameter domains. These sampled and integrated checks are not a general geometric error certificate. Broad self-intersection and collapsing-offset behavior needs further qualification.",
+    "Seven independent fixtures exercise the Rust command and a pending public RhinoCommon Brep.CreateFromTaperedExtrude/CapPlanarHoles comparison. SDK results retain solid flags, face counts, bounds and volumes. SDK topology and command/getter behavior are not asserted equivalent.",
+    "No fresh Rhino launch was attempted because of the previously diagnosed Wine SSPI startup failure. No new native Rhino capture or performance qualification is claimed. No new AddressSanitizer build was run for this patch."
+  ],
+  "unpatched_local_diagnostic": {
+    "profile": "degree-one square [-3,3]^2, domain [0,4], height 2, draft 10 degrees, sharp corners, both caps",
+    "producer_reported_success": true,
+    "faces": 4,
+    "edges": 13,
+    "solid": false,
+    "note": "The closed-solid admission gate was temporarily bypassed only to export the failing kernel topology for inspection. The committed bridge enforces it.",
+    "raw_log": "docs/tapered-extrusion-baseline.log"
+  },
+  "validation": {
+    "cargo test -p viboceros-smlib --features native --test tapered --quiet": {
+      "passed": 5
+    },
+    "cargo test -p viboceros-smlib --features native --test extrusion --quiet": {
+      "passed": 3
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib extrude_tapered --quiet": {
+      "passed": 7
+    },
+    "cargo test -p viboceros-command -p viboceros extrude_tapered --quiet": {
+      "passed": 4
+    },
+    "cargo test -p viboceros-oracle --features native-smlib pending_tapered -- --nocapture": {
+      "passed": 1
+    },
+    "cargo test -p viboceros-command reports_sorted_help --quiet": {
+      "passed": 1
+    },
+    "python3 -m unittest tools.rhino_oracle.test_tapered_extrusion tools.rhino_oracle.test_silhouette tools.rhino_oracle.test_client tools.rhino_oracle.test_wine_sspi -q": {
+      "passed": 33
+    },
+    "cargo clippy -p viboceros-smlib --features native --all-targets -- -D warnings": "passed before final additional domain/underflow tests",
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets --features native-smlib -- -D warnings": "passed",
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings": "passed",
+    "cargo test -p viboceros --features native-smlib app::tests::object_selection --quiet": {
+      "passed": 40
+    },
+    "cargo clippy -p viboceros-smlib --features native --test tapered -- -D warnings": "passed including final domain and underflow cases",
+    "cargo fmt --all -- --check": "passed",
+    "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/tapered_extrusion.json tools/rhino_oracle/observations/tapered_extrusion_viboceros_native.json": {
+      "completed_operations": 7,
+      "profile": "debug",
+      "performance_qualified": false
+    },
+    "final patch applies with zero fuzz and matches tested generated source": {
+      "matched_build_directories": 2,
+      "generated_source_digest": "f14e456044c76c91ad4647281759f5dd986d75334ab6f4e23447a93c8da04381"
+    }
+  },
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "df63b04388ec0031dae6d658642bfb5356fcba532065cd01a040832adf07cbbf",
+    "crates/viboceros-command/src/extrude_tapered.rs": "89a766904a3ccdec18296402aedebe7ae52ea17ba4f3359c133b790aa79cc86d",
+    "crates/viboceros-command/src/extrude_tapered/tests.rs": "0ba72c2e5089f6e9809d973dbd5918723f62c01aa7524a07b7178a60ec8bca6c",
+    "crates/viboceros-oracle/src/lib.rs": "c87f5e02c4637702fb3e5735bf96af6caeeca81bd9ac827e639873f9fd5fac35",
+    "crates/viboceros-oracle/src/tapered_extrusion.rs": "ab86a4b4848a1838b7cafd3bd2d1837cbc0f265d1b01fe24837662e2f45736cf",
+    "crates/viboceros-smlib/build.rs": "839a2e9373ed523f3ba24d2dc3c2ad8def529af884457a6f5f6496b187586477",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "d9678228b65fd83dbe6720246c85058ec3103b7528a72271b527c3f27795c969",
+    "crates/viboceros-smlib/native/bridge.cpp": "f57e9d304b4e63265d84f53c974c065ea05b9344bfa5226b480af280c4ef324d",
+    "crates/viboceros-smlib/native/bridge.h": "fb0dd81b605b0abe8a6a44bbca87a69c4083ce577e2427712272a6242ff2d379",
+    "crates/viboceros-smlib/src/native.rs": "69a9fd40c42199aac9f2f4eb3510a4efa12f3be8cb629104bf7791df4629895b",
+    "crates/viboceros-smlib/src/native/tapered.rs": "169d83f3d221ab149fd03c012c86c3ac460c119ed56510af57d36bf281e82064",
+    "crates/viboceros-smlib/tests/tapered.rs": "bf5229eab3063227151708f5310c06ad8bff9f598ab1107a41b5748ceae9d7cf",
+    "crates/viboceros-smlib/tests/extrusion.rs": "a0ad4b24ad017f3534c1a5a036dfae3abbdd547dc95ae6f374053298f6fd474d",
+    "src/app.rs": "2c457d039ab66c2333733415ffb0ad892e0aa34f21c5d52dd458dbd1c390793a",
+    "src/app/object_selection.rs": "5b6e3db6a326b87869096bbfbe36881ca0f5bc437735abcf2623da048d8e119a",
+    "src/app/extrude_tapered.rs": "738876b39726b0ab20b644bce0b5f55c1807cc6c224c7e94ca6c19d18e9d844b",
+    "src/app/tests/extrude_tapered.rs": "2fd70bacebf53c8d72160c35d254103004b0db9b146ed044eee2c6bc8ea18954",
+    "third_party/usd-brep/source/SMLib/src/SmPrimitiveCreation.cpp": "38a15b60587059687c13923ba0b22a6a139b0b931997d0650898d866be8b692c",
+    "third_party/patches/usd-brep-tapered-sliver-domains.patch": "41ad362923b9ed868f56e49d3052eb89992304c989a3f81af3511170910e674a",
+    "tools/rhino_oracle/client.py": "243b580b0cf04b0dbec99e33de7b562455680777ba9a6476745a82b6df58ff82",
+    "tools/rhino_oracle/rhino_worker.py": "b42c9e30f1ee41b7f91757974da95a9034c9ce27d9cf8dc96ccd3a8bc22b8c4d",
+    "tools/rhino_oracle/tapered_extrusion_probe.py": "6978fc4bda2ab1b1d8e89d49250be4368c80bf4ed0c91838f9e541d598c43704",
+    "tools/rhino_oracle/test_tapered_extrusion.py": "b449bcd36c4c0749321a920e14452870268eb7e9a8b205ec1640f1243bb86785",
+    "tools/rhino_oracle/fixtures/tapered_extrusion.json": "0a36d509e2c6460bb55bdee1c72c903dd5195c74e50911fe8963cb120b10e661",
+    "docs/tapered-extrusion-baseline.log": "d92ababf16568b3d68ace4418f71cf6bd531ef813059c21ea39bf4be9f6948ee",
+    "docs/commands/extrude-crv-tapered.md": "08ab2001d59ba7635e9e60107b708dfd43f6c32b2a281ddcf4f5737e1daa8b05",
+    "docs/usd-brep-limitations.md": "b101477b4dcb06cdd541b21333f11ca9db8bcf9ebe926703b1c36dc0ddb738a9"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/tapered_extrusion_viboceros_native.json": "7ad006a2e37b8a239095adaa823963c389ab5544b28effa4cd164abee725892f"
+  }
+}

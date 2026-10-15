@@ -11,6 +11,9 @@ typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
 typedef struct VbCurveList VbCurveList;
+int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3], double height,
+    double angle_degrees, int round_corners, int cap_ends, double tolerance,
+    VbSolid **out, char *error, size_t capacity);
 int vb_shape_silhouettes(const VbSolid *shape, const double toward_eye[3], double approximation,
                          double angle, int internal_edges, VbCurveList **out, char *error, size_t capacity);
 size_t vb_curve_list_count(const VbCurveList *curves);

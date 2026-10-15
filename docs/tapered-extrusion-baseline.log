@@ -1,0 +1,33 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.94s
+     Running tests/tapered.rs (target/debug/deps/tapered-f212d4a530ea66df)
+
+running 1 test
+faces 4, edges 13, vertices [BrepVertex { point: Point3([3.0, -3.0, 0.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([2.64734603858307, -2.64734603858307, 2.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([-3.0, -2.64734603858307, 2.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([2.64734603858307, 3.0, 2.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([-3.0, -3.0, 0.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([3.0, 3.0, 0.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([-3.0, 3.0, 0.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([-2.64734603858307, 2.6473460385830707, 2.0]), tolerance: 1e-5 }, BrepVertex { point: Point3([-2.64734603858307, -2.6473460385830707, 2.0]), tolerance: 1.000000000088818e-5 }, BrepVertex { point: Point3([2.64734603858307, 2.6473460385830707, 2.0]), tolerance: 1e-5 }]
+edge 0: BrepEdge { vertices: [0, 1], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([3.0, -3.0, 2.0820990833554915e-15]), weight: 1.0 }, WeightedPoint3 { point: Point3([2.6473460385830703, -2.6473460385830703, 2.0]), weight: 1.0 }], knots: [0.0, 0.0, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+edge 1: BrepEdge { vertices: [2, 8], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([-3.0, -2.64734603858307, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([-2.64734603858307, -2.64734603858307, 2.0]), weight: 1.0 }], knots: [0.0, 0.0, 0.058775660236155026, 0.058775660236155026], rational: false }, tolerance: 1e-5 }
+edge 2: BrepEdge { vertices: [2, 4], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([-3.0, -2.64734603858307, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([-3.0, -3.0, 0.0]), weight: 1.0 }], knots: [0.0, 0.0, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+edge 3: BrepEdge { vertices: [4, 0], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([-3.0, -3.0, 0.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([3.0, -3.0, 0.0]), weight: 1.0 }], knots: [0.0, 0.0, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+edge 4: BrepEdge { vertices: [0, 5], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([3.0, -3.0, 0.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([3.0, 3.0, 0.0]), weight: 1.0 }], knots: [0.0, 0.0, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+edge 5: BrepEdge { vertices: [3, 5], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([2.64734603858307, 3.0, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([3.0, 3.0, 0.0]), weight: 1.0 }], knots: [0.0, 0.0, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+edge 6: BrepEdge { vertices: [5, 6], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([3.0, 3.0, 0.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([-3.0, 3.0, 0.0]), weight: 1.0 }], knots: [2.0, 2.0, 3.0, 3.0], rational: false }, tolerance: 1e-5 }
+edge 7: BrepEdge { vertices: [6, 4], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([-3.0, 3.0, 0.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([-3.0, -3.0, 0.0]), weight: 1.0 }], knots: [3.0, 3.0, 4.0, 4.0], rational: false }, tolerance: 1e-5 }
+edge 8: BrepEdge { vertices: [7, 8], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([-2.64734603858307, 2.6473460385830707, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([-2.64734603858307, -2.6473460385830707, 2.0]), weight: 1.0 }], knots: [3.058775660236155, 3.058775660236155, 3.941224339763845, 3.941224339763845], rational: false }, tolerance: 1e-5 }
+edge 9: BrepEdge { vertices: [8, 1], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([-2.64734603858307, -2.64734603858307, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([2.64734603858307, -2.64734603858307, 2.0]), weight: 1.0 }], knots: [0.0, 0.0, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+edge 10: BrepEdge { vertices: [1, 9], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([2.64734603858307, -2.64734603858307, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([2.64734603858307, 2.6473460385830707, 2.0]), weight: 1.0 }], knots: [0.0, 0.0, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+edge 11: BrepEdge { vertices: [9, 7], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([2.6473460385830707, 2.64734603858307, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([-2.6473460385830707, 2.64734603858307, 2.0]), weight: 1.0 }], knots: [2.058775660236155, 2.058775660236155, 2.941224339763845, 2.941224339763845], rational: false }, tolerance: 1e-5 }
+edge 12: BrepEdge { vertices: [9, 3], curve: NurbsCurve { degree: 1, control_points: [WeightedPoint3 { point: Point3([2.64734603858307, 2.6473460385830707, 2.0]), weight: 1.0 }, WeightedPoint3 { point: Point3([2.64734603858307, 3.0, 2.0]), weight: 1.0 }], knots: [0.9412243397638451, 0.9412243397638451, 1.0, 1.0], rational: false }, tolerance: 1e-5 }
+
+thread 'native_tapered_polygon_sharp_sides_and_open_profile' (1915166) panicked at crates/viboceros-smlib/tests/tapered.rs:31:222:
+assertion failed: brep.is_solid()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test native_tapered_polygon_sharp_sides_and_open_profile ... FAILED
+
+failures:
+
+failures:
+    native_tapered_polygon_sharp_sides_and_open_profile
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test tapered`

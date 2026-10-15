@@ -8,6 +8,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Tapered extrusion tests slivers on unrelated parameter intervals.**
+  The ruling helper measured its two rails over intervals from the first two
+  source segments. A rectangle parameterized over `[0,4]` consequently lost two
+  side faces while the producer returned success. The
+  [generated-source patch](../third_party/patches/usd-brep-tapered-sliver-domains.patch)
+  measures each actual rail over its own natural interval and avoids indexing a
+  second source segment when there is only one. Circular frusta, sharp and round
+  rectangle extrusions, open sheets and shifted-domain rectangles pass afterward.
+  See [command scope and evidence](commands/extrude-crv-tapered.md).
+
 - **Off-surface normal drops can lose boundary-crossing intervals.**
   `SmSurfaceDropCurve::FindBoundaryStartPoints` used intersection seeds at two
   interval-start queries even when the input was marked off the surface. A line

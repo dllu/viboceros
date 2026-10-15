@@ -51,6 +51,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Development and testing](docs/development.md)
 - [USD BRep kernel integration](docs/usd-brep.md)
 - [Native parallel-view silhouettes](docs/commands/silhouette.md)
+- [Native tapered curve extrusion](docs/commands/extrude-crv-tapered.md)
 - [Native surface-normal pulling foundation](docs/smlib-surface-pull.md)
 - [USD BRep limitations and bugs](docs/usd-brep-limitations.md)
 - [Native NURBS offsets and qualification](docs/smlib-curve-offset.md)
