@@ -23,6 +23,7 @@
 #include <SmStitch.h>
 #include <SmVertex.h>
 #include <SmFilletExecutive.h>
+#include <SmFilletCorner.h>
 #include <SmCurveFilletExecutive.h>
 #include <SmOffsetCurve.h>
 #include <SmHCR.h>
@@ -810,37 +811,59 @@ extern "C" int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance,
     });
 }
 
+namespace {
+void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
+                          double radius, double accuracy, bool chamfer, bool between_rails) {
+    require(solid && solid->value && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
+            "Invalid edge blend parameters");
+    require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
+            "Fillet accuracy is below the native numerical floor");
+    require(!solid->source_edges.empty(), "Fillet requires fresh source edge identities");
+    std::vector<bool> seen(solid->source_edges.size(), false);
+    SmTArray<SmEdge *> edges;
+    for (size_t i = 0; i < count; ++i) {
+        require(indices[i] < seen.size(), "Fillet source edge index is out of range");
+        if (!seen[indices[i]]) {
+            seen[indices[i]] = true;
+            edges.Add(solid->source_edges[indices[i]]);
+        }
+    }
+    vb_validate_boundary_intersections(*solid->value,10*accuracy);
+    solid->source_edges.clear();
+    solid->source_faces.clear();
+    SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
+    check(executive.SetFilletParameters(solid->value.get(), edges, chamfer ? SM_FSG_LINEAR : SM_FSG_CIRCULAR,
+          between_rails ? SM_FS_CONST_DIST : SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), 1, 1.0),
+          "configure precise edge fillet");
+    executive.SetDoGlobalMerge(TRUE);
+    if (chamfer) {
+        check(executive.CreateFilletCorners(), "create chamfer corners");
+        auto &corners = executive.GetFilletCorners();
+        for (ULONG i = 0; i < corners.GetSize(); ++i)
+            corners[i]->SetBevel(TRUE);
+        check(executive.DoFilleting(), "chamfer source edges");
+    } else {
+        check(executive.DoFillet(), "fillet source edges");
+    }
+    require(executive.GetFilletErrorInfo()->GetErrorCode() == SM_FILERR_OK,
+            "Fillet executive reported an incomplete or failed operation");
+    check(solid->value->StitchAndOrient(), "orient fillet output");
+    require(solid->value->IsManifoldSolid(), "Fillet output is not a manifold solid");
+    vb_validate_boundary_intersections(*solid->value,10*accuracy);
+}
+} // namespace
 extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                               double radius, double accuracy, char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
-        require(solid && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
-                "Invalid fillet parameters");
-        require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
-                "Fillet accuracy is below the native numerical floor");
-        require(!solid->source_edges.empty(), "Fillet requires fresh source edge identities");
-        std::vector<bool> seen(solid->source_edges.size(), false);
-        SmTArray<SmEdge *> edges;
-        for (size_t i = 0; i < count; ++i) {
-            require(indices[i] < seen.size(), "Fillet source edge index is out of range");
-            if (!seen[indices[i]]) {
-                seen[indices[i]] = true;
-                edges.Add(solid->source_edges[indices[i]]);
-            }
-        }
-        vb_validate_boundary_intersections(*solid->value,10*accuracy);
-        solid->source_edges.clear();
-        solid->source_faces.clear();
-        SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
-        check(executive.SetFilletParameters(solid->value.get(), edges, SM_FSG_CIRCULAR,
-              SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), 1, 1.0),
-              "configure precise edge fillet");
-        executive.SetDoGlobalMerge(TRUE);
-        check(executive.DoFillet(), "fillet source edges");
-        require(executive.GetFilletErrorInfo()->GetErrorCode() == SM_FILERR_OK,
-                "Fillet executive reported an incomplete or failed operation");
-        check(solid->value->StitchAndOrient(), "orient fillet output");
-        require(solid->value->IsManifoldSolid(), "Fillet output is not a manifold solid");
-        vb_validate_boundary_intersections(*solid->value,10*accuracy);
+        blend_imported_edges(solid, indices, count, radius, accuracy, false, false);
+    });
+}
+extern "C" int vb_imported_solid_chamfer_edges(VbSolid *solid, const size_t *indices, size_t count,
+                                               double distance, double accuracy, int rail_type,
+                                               char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(rail_type == 0 || rail_type == 1, "Invalid chamfer rail type");
+        blend_imported_edges(solid, indices, count, distance, accuracy, true, rail_type == 0);
     });
 }
 

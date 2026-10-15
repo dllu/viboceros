@@ -7,25 +7,63 @@ const USAGE: &str =
     "FilletEdge radius object-id edge-index[,edge-index...] ... | FilletEdge Radius=radius All=Yes";
 
 #[derive(Clone, Debug)]
-pub struct FilletEdgeSelection {
+pub struct EdgeBlendSelection {
+    kind: EdgeBlendKind,
     sources: Vec<(ObjectId, GeometrySnapshot)>,
     replacements: Vec<(ObjectId, Geometry)>,
     tolerance: Tolerance,
 }
 
-impl FilletEdgeSelection {
+/// Backward-compatible selected-edge fillet entry point.
+pub type FilletEdgeSelection = EdgeBlendSelection;
+#[derive(Clone, Copy, Debug)]
+enum EdgeBlendKind {
+    Fillet,
+    Chamfer(crate::chamfer_edge::ChamferRailType),
+}
+impl EdgeBlendKind {
+    fn usage(self) -> &'static str {
+        match self {
+            Self::Fillet => USAGE,
+            Self::Chamfer(_) => crate::chamfer_edge::USAGE,
+        }
+    }
+    fn command(self) -> &'static str {
+        match self {
+            Self::Fillet => "FilletEdge",
+            Self::Chamfer(_) => "ChamferEdge",
+        }
+    }
+}
+impl EdgeBlendSelection {
     pub fn prepare(
         document: &Document,
         picks: impl IntoIterator<Item = (ObjectId, usize)>,
         radius: Real,
     ) -> Result<Self, CommandError> {
+        Self::prepare_blend(document, picks, radius, EdgeBlendKind::Fillet)
+    }
+    pub fn prepare_chamfer(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize)>,
+        distance: Real,
+        rail: crate::chamfer_edge::ChamferRailType,
+    ) -> Result<Self, CommandError> {
+        Self::prepare_blend(document, picks, distance, EdgeBlendKind::Chamfer(rail))
+    }
+    fn prepare_blend(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize)>,
+        radius: Real,
+        kind: EdgeBlendKind,
+    ) -> Result<Self, CommandError> {
         if !radius.is_finite() || radius <= 0. {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(kind.usage()));
         }
         let mut by_object = BTreeMap::<ObjectId, BTreeSet<usize>>::new();
         for (count, (id, edge)) in picks.into_iter().enumerate() {
             if count >= 100000 || !document.is_object_selectable(id) {
-                return Err(CommandError::Usage(USAGE));
+                return Err(CommandError::Usage(kind.usage()));
             }
             by_object.entry(id).or_default().insert(edge);
         }
@@ -35,12 +73,14 @@ impl FilletEdgeSelection {
         let mut sources = Vec::new();
         let mut jobs = Vec::new();
         for (id, edges) in by_object {
-            let object = document.object(id).ok_or(CommandError::Usage(USAGE))?;
+            let object = document
+                .object(id)
+                .ok_or(CommandError::Usage(kind.usage()))?;
             let Geometry::Brep(brep) = object.geometry() else {
-                return Err(CommandError::Usage(USAGE));
+                return Err(CommandError::Usage(kind.usage()));
             };
             if !brep.is_solid() || edges.iter().any(|&edge| edge >= brep.edges().len()) {
-                return Err(CommandError::Usage(USAGE));
+                return Err(CommandError::Usage(kind.usage()));
             }
             sources.push((id, object.geometry_snapshot().clone()));
             jobs.push((id, brep, edges.into_iter().collect::<Vec<_>>()));
@@ -49,19 +89,20 @@ impl FilletEdgeSelection {
         for (id, brep, edges) in jobs {
             replacements.push((
                 id,
-                Geometry::Brep(fillet(brep, &edges, radius, document.tolerance())?),
+                Geometry::Brep(blend(brep, &edges, radius, kind, document.tolerance())?),
             ));
         }
         Ok(Self {
+            kind,
             sources,
             replacements,
             tolerance: document.tolerance(),
         })
     }
     pub fn commit(&self, document: &mut Document) -> Result<usize, CommandError> {
-        run_command_transaction(document, "FilletEdge", |doc| self.apply(doc))
+        run_command_transaction(document, self.kind.command(), |doc| self.apply(doc))
     }
-    fn apply(&self, document: &mut Document) -> Result<usize, CommandError> {
+    pub(crate) fn apply(&self, document: &mut Document) -> Result<usize, CommandError> {
         if document.tolerance() != self.tolerance
             || self.sources.iter().any(|(id, snapshot)| {
                 !document.is_object_selectable(*id)
@@ -71,7 +112,7 @@ impl FilletEdgeSelection {
             })
         {
             return Err(CommandError::Usage(
-                "FilletEdge source or tolerance changed; select edges again",
+                "Edge blend source or tolerance changed; select edges again",
             ));
         }
         document.replace_object_geometries(self.replacements.clone())?;
@@ -83,23 +124,59 @@ impl FilletEdgeSelection {
     }
 }
 
-fn fillet(
+fn blend(
     brep: &Brep,
     edges: &[usize],
     radius: Real,
+    kind: EdgeBlendKind,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
     #[cfg(feature = "native-smlib")]
     {
-        Ok(
-            viboceros_smlib::Solid::fillet_brep_edges(brep, edges, radius, tolerance)?
-                .to_brep(tolerance)?,
-        )
+        let origin = brep
+            .vertices()
+            .first()
+            .map(|v| v.point())
+            .unwrap_or_else(|| brep.bounds().min());
+        let zero = Point3::try_new(0., 0., 0.)?;
+        let local = brep.transformed(
+            AffineTransform3::from_translation(origin.vector_to(zero)?),
+            tolerance,
+        )?;
+        let solid = match kind {
+            EdgeBlendKind::Fillet => {
+                viboceros_smlib::Solid::fillet_brep_edges(&local, edges, radius, tolerance)?
+            }
+            EdgeBlendKind::Chamfer(rail) => viboceros_smlib::Solid::chamfer_brep_edges(
+                &local,
+                edges,
+                radius,
+                match rail {
+                    crate::chamfer_edge::ChamferRailType::DistanceBetweenRails => {
+                        viboceros_smlib::ChamferRailType::DistanceBetweenRails
+                    }
+                    crate::chamfer_edge::ChamferRailType::RollingBall => {
+                        viboceros_smlib::ChamferRailType::RollingBall
+                    }
+                },
+                tolerance,
+            )?,
+        };
+        Ok(solid.to_brep(tolerance)?.transformed(
+            AffineTransform3::from_translation(zero.vector_to(origin)?),
+            tolerance,
+        )?)
     }
     #[cfg(not(feature = "native-smlib"))]
     {
         let _ = (brep, edges, radius, tolerance);
-        Err(CommandError::FilletEdgeRequiresNativeKernel)
+        Err(match kind {
+            EdgeBlendKind::Fillet => CommandError::FilletEdgeRequiresNativeKernel,
+            EdgeBlendKind::Chamfer(rail) => {
+                let _ = rail;
+                CommandError::ChamferEdgeRequiresNativeKernel
+            }
+        })
     }
 }
 

@@ -1,0 +1,158 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "chamfer_width",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -6.661347345139621e-11,
+                0.0,
+                -7.850462293418878e-12
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 7,
+            "is_solid": true,
+            "volume": 478.4999999995715
+          }
+        ]
+      },
+      "elapsed_ns": 113512022
+    },
+    {
+      "id": "chamfer_rolling",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 7,
+            "is_solid": true,
+            "volume": 477.0
+          }
+        ]
+      },
+      "elapsed_ns": 116227447
+    },
+    {
+      "id": "chamfer_parallel",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -6.661347345139621e-11,
+                0.0,
+                -7.850462293418878e-12
+              ],
+              [
+                10.0,
+                8.0,
+                6.000000000125611
+              ]
+            ],
+            "face_count": 8,
+            "is_solid": true,
+            "volume": 476.9999999933273
+          }
+        ]
+      },
+      "elapsed_ns": 119774697
+    },
+    {
+      "id": "chamfer_shifted",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                9999.999999999933,
+                -30000.0,
+                49999.99999999999
+              ],
+              [
+                10010.0,
+                -29992.0,
+                50006.0
+              ]
+            ],
+            "face_count": 7,
+            "is_solid": true,
+            "volume": 478.4999999995582
+          }
+        ]
+      },
+      "elapsed_ns": 116712088
+    },
+    {
+      "id": "chamfer_cylinder_width",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -5.000000000000001,
+                -5.000000000000002,
+                0.0
+              ],
+              [
+                5.0,
+                5.000000000000002,
+                8.000000000000005
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 620.8347893006186
+          }
+        ]
+      },
+      "elapsed_ns": 18085529751
+    },
+    {
+      "id": "chamfer_cylinder_rolling",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -5.0,
+                -5.0,
+                0.0
+              ],
+              [
+                5.0,
+                5.000000000000001,
+                8.000000000000004
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 613.6577649518127
+          }
+        ]
+      },
+      "elapsed_ns": 14496059718
+    }
+  ]
+}

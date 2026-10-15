@@ -5392,6 +5392,10 @@ def _object_source(definition, tolerance):
         return _nurbs_surface_from_definition(definition)
     if kind == "brep":
         return _trimmed_brep_from_definition(definition, tolerance)
+    if kind == "cylinder_brep":
+        origin=_point(definition['origin']);radius=_finite(definition['radius'], 'cylinder radius');height=_finite(definition['height'], 'cylinder height')
+        if radius<=0 or height<=0:raise ValueError('positive cylinder dimensions required')
+        return Rhino.Geometry.Cylinder(Rhino.Geometry.Circle(Rhino.Geometry.Plane(origin, Rhino.Geometry.Vector3d.ZAxis),radius),height).ToBrep(True,True)
     if kind == "box_brep":
         minimum=_point(definition['min']);maximum=_point(definition['max'])
         if minimum.X>=maximum.X or minimum.Y>=maximum.Y or minimum.Z>=maximum.Z:raise ValueError('increasing box intervals required')
@@ -13397,6 +13401,10 @@ def _execute(operation, iterations, tolerance):
 
     if kind == 'surface_apex_extrusion':
         from surface_apex_extrusion_probe import run
+        return run(operation, globals(), iterations, tolerance)
+
+    if kind == 'chamfer_edge':
+        from chamfer_edge_probe import run
         return run(operation, globals(), iterations, tolerance)
 
     if kind == 'shell':

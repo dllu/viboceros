@@ -203,8 +203,8 @@ impl VibocerosApp {
                         prompt.name()
                     } else if let Some(prompt) = &self.hole_prompt {
                         prompt.name()
-                    } else if self.edge_fillet_prompt.is_some() {
-                        "FilletEdge"
+                    } else if let Some(prompt) = self.edge_fillet_prompt {
+                        prompt.name()
                     } else if self.unjoin_prompt.is_some() {
                         "UnjoinEdge"
                     } else if self.component_selection.has_choices() {
@@ -301,8 +301,8 @@ impl VibocerosApp {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.hole_prompt {
                                 prompt.hint()
-                            } else if self.edge_fillet_prompt.is_some() {
-                                "Select edges; Radius=value changes the radius; Enter applies, Esc cancels"
+                            } else if let Some(prompt)=self.edge_fillet_prompt {
+                                prompt.hint()
                             } else if self.unjoin_prompt.is_some() {
                                 "Select joined edges; Enter applies, Esc cancels"
                             } else if self.component_selection.has_choices() {

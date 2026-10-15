@@ -1,0 +1,166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "chamfer_edge",
+      "id": "chamfer_width",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "edge_points": [
+        [
+          0,
+          0,
+          3
+        ]
+      ],
+      "distance": 1.0,
+      "rail_type": "DistBetweenRails"
+    },
+    {
+      "op": "chamfer_edge",
+      "id": "chamfer_rolling",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "edge_points": [
+        [
+          0,
+          0,
+          3
+        ]
+      ],
+      "distance": 1.0,
+      "rail_type": "RollingBall"
+    },
+    {
+      "op": "chamfer_edge",
+      "id": "chamfer_parallel",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "edge_points": [
+        [
+          0,
+          0,
+          3
+        ],
+        [
+          10,
+          8,
+          3
+        ]
+      ],
+      "distance": 1.0,
+      "rail_type": "DistBetweenRails"
+    },
+    {
+      "op": "chamfer_edge",
+      "id": "chamfer_shifted",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          10000,
+          -30000,
+          50000
+        ],
+        "max": [
+          10010,
+          -29992,
+          50006
+        ]
+      },
+      "edge_points": [
+        [
+          10000,
+          -30000,
+          50003
+        ]
+      ],
+      "distance": 1.0,
+      "rail_type": "DistBetweenRails"
+    },
+    {
+      "op": "chamfer_edge",
+      "id": "chamfer_cylinder_width",
+      "source": {
+        "type": "cylinder_brep",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5.0,
+        "height": 8.0
+      },
+      "edge_points": [
+        [
+          0,
+          5,
+          8
+        ]
+      ],
+      "distance": 1.0,
+      "rail_type": "DistBetweenRails"
+    },
+    {
+      "op": "chamfer_edge",
+      "id": "chamfer_cylinder_rolling",
+      "source": {
+        "type": "cylinder_brep",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5.0,
+        "height": 8.0
+      },
+      "edge_points": [
+        [
+          0,
+          5,
+          8
+        ]
+      ],
+      "distance": 1.0,
+      "rail_type": "RollingBall"
+    }
+  ]
+}

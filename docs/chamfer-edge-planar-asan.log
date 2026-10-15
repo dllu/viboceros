@@ -1,0 +1,8 @@
+running 4 tests
+test chamfer_acute_and_obtuse_prism_edges_match_independent_cross_sections has been running for over 60 seconds
+test chamfer_all_edges_and_invalid_sizes_preserve_source has been running for over 60 seconds
+test chamfer_concave_notch_adds_the_expected_wedge_without_changing_source has been running for over 60 seconds
+test chamfer_every_original_box_edge_matches_width_and_rolling_ball_volumes has been running for over 60 seconds
+test chamfer_all_edges_and_invalid_sizes_preserve_source ... ok
+test chamfer_concave_notch_adds_the_expected_wedge_without_changing_source ... ok
+test chamfer_acute_and_obtuse_prism_edges_match_independent_cross_sections ... ok

@@ -1,0 +1,16 @@
+Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 27.68s
+     Running tests/chamfer_edges.rs (target/debug/deps/chamfer_edges-b546fb835d60fdb9)
+
+running 1 test
+edge blend source=0.048700 model=0.155376 result=2.432521
+abs=0.000000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+edge blend source=0.048152 model=0.151574 result=2.416057
+abs=0.000000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+edge blend source=0.047356 model=0.150592 result=2.418155
+abs=0.000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+edge blend source=0.047308 model=0.153415 result=2.366400
+abs=0.000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+test chamfer_cylinder_tolerance_and_seam_frames ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 40.65s

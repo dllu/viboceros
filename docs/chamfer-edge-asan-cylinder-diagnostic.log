@@ -1,0 +1,8 @@
+running 1 test
+abs=0.000000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+test chamfer_cylinder_tolerance_and_seam_frames ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 37.25s

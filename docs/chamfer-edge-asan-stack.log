@@ -1,0 +1,38 @@
+Thread 2 (Thread 0xfffff49fe420 (LWP 2682292) "chamfer_cylinde"):
+#0  __asan::FakeStack::Allocate (this=0xfffff3ce7000, stack_size_log=20, class_id=1, real_stack=281474785800464) at ../../../../src/libsanitizer/asan/asan_fake_stack.cpp:96
+#1  __asan::OnMalloc (class_id=1, size=<optimized out>) at ../../../../src/libsanitizer/asan/asan_fake_stack.cpp:229
+#2  __asan_stack_malloc_1 (size=<optimized out>) at ../../../../src/libsanitizer/asan/asan_fake_stack.cpp:274
+#3  0x0000aaaaaad4c228 [PAC] in N_IsCrvRat ()
+#4  0x0000aaaaab39ee7c in sm_CrvDerivs(curve*, double, short, long, nl_point*) ()
+#5  0x0000aaaaaae5f04c in SmBSplineCurve::Evaluate(double, unsigned long, int, SmVector3d*, int) const ()
+#6  0x0000aaaaab8c5a14 in SmFindCurveDistanceExtremaEFO::Evaluate(double, double&, double&, int&, int) ()
+#7  0x0000aaaaabcb53cc in sm_ComputeConstants(SmBSplineCurve&, SmCurve const&, SmExtent1d, SmTArray<SmVector3d>&, double, double, double, double, SmApproxTol3d&, double&, double&, double&, double&, double&, int&) [clone .constprop.0] ()
+#8  0x0000aaaaabcc8244 in SmCurveCache::Tessellate() ()
+#9  0x0000aaaaab8ca5f0 in SmCurve::CacheMakeOrValidate(SmObjectCacheType, SmAObject const*, SmCacheObj*, SmCacheObj*&) const ()
+#10 0x0000aaaaaaf078b8 in SmCacheMgr::GetOrCreateObjectCache(SmObjectCacheType, SmAObject const*) ()
+#11 0x0000aaaaabb99b30 in SmSurface::GlobalCurveIntersect(SmExtent2d const&, SmCurve const&, SmExtent1d const&, double, SmSolutionArray&) const ()
+#12 0x0000aaaaab66818c in SmSurfaceIntersector::FindBoundaryStartPoints(SmExtent3d const&, SmTArray<SmCurve*>&, SmTArray<SmCurve*>&, SmTArray<SmCurve*>&, SmTArray<SmTsectCurveType>&, SmTArray<double>&) ()
+#13 0x0000aaaaab67cae4 in SmSurfaceIntersector::DoIntersection(SmContext const&, SmApproxTol3d const*, double const*, SmTArray<SmCurve*>*, SmTArray<SmCurve*>*, SmTArray<SmCurve*>*, SmTArray<SmTsectCurveType>*, SmTArray<double>*) ()
+#14 0x0000aaaaabaf97a8 in SmSurface::GlobalSurfaceIntersect(SmContext const&, SmExtent2d const&, SmSurface const&, SmExtent2d const&, int const*, SmApproxTol3d const*, double const*, SmTArray<SmCurve*>*, SmTArray<SmCurve*>*, SmTArray<SmCurve*>*, SmTArray<SmTsectCurveType>*, SmTArray<double>*) const ()
+#15 0x0000aaaaaad2fc74 in (anonymous namespace)::interior_intersections(SmBrep&, SmFace&, SmFace&, double, (anonymous namespace)::CurveList&, SmTArray<SmVector3d>&, int) ()
+#16 0x0000aaaaaad34294 in vb_validate_boundary_intersections(SmBrep&, double) ()
+#17 0x0000aaaaaad07d74 in (anonymous namespace)::blend_imported_edges(VbSolid*, unsigned long const*, unsigned long, double, double, bool, bool) ()
+#18 0x0000aaaaaad08f8c in vb_imported_solid_chamfer_edges ()
+#19 0x0000aaaaaacf1bf0 in viboceros_smlib::native::chamfer_edges::<impl viboceros_smlib::native::Solid>::chamfer_brep_edges ()
+#20 0x0000aaaaaabc2118 in core::ops::function::FnOnce::call_once ()
+#21 0x0000aaaaaac1dd54 in test::__rust_begin_short_backtrace::<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>> ()
+#22 0x0000aaaaaac28d40 in test::run_test::{closure#0} ()
+#23 0x0000aaaaaac252ac in std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()> ()
+(More stack frames follow...)
+
+Thread 1 (Thread 0xfffff7fef020 (LWP 2682290) "chamfer_edges-f"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/aarch64/syscall.S:38
+#1  0x0000aaaaaac2a03c in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv::{closure#1} ()
+#2  0x0000aaaaaac3345c in <std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv ()
+#3  0x0000aaaaaac3ce2c in test::console::run_tests_console ()
+#4  0x0000aaaaaac2ee84 in test::test_main ()
+#5  0x0000aaaaaac2ca44 in test::test_main_static ()
+#6  0x0000aaaaaabbeee0 in std::sys::backtrace::__rust_begin_short_backtrace ()
+#7  0x0000aaaaaabbeec8 in std::rt::lang_start::{{closure}} ()
+#8  0x0000aaaaaac0e52c in std::rt::lang_start_internal ()
+#9  0x0000aaaaaabcaa8c in main ()

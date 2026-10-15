@@ -1,0 +1,16 @@
+running 1 test
+abs=0.000000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000001, normal=false, result=Err(Kernel("Fillet output is not a manifold solid"))
+
+thread 'chamfer_cylinder_tolerance_and_seam_frames' (2616846) panicked at crates/viboceros-smlib/tests/chamfer_edges.rs:224:13:
+abs=0.000001, normal=false
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test chamfer_cylinder_tolerance_and_seam_frames ... FAILED
+
+failures:
+
+failures:
+    chamfer_cylinder_tolerance_and_seam_frames
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 4 filtered out; finished in 20.50s

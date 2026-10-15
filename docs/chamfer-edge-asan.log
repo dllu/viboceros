@@ -1,0 +1,14 @@
+Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 01s
+     Running tests/chamfer_edges.rs (target/debug/deps/chamfer_edges-b546fb835d60fdb9)
+
+running 5 tests
+test chamfer_acute_and_obtuse_prism_edges_match_independent_cross_sections has been running for over 60 seconds
+test chamfer_all_edges_and_invalid_sizes_preserve_source has been running for over 60 seconds
+test chamfer_cylinder_rim_matches_conical_revolution_volume has been running for over 60 seconds
+test chamfer_cylinder_tolerance_and_seam_frames has been running for over 60 seconds
+test chamfer_every_original_box_edge_matches_width_and_rolling_ball_volumes has been running for over 60 seconds
+error: test failed, to rerun pass `-p viboceros-smlib --test chamfer_edges`
+
+Caused by:
+  process didn't exit successfully: `env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 'ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12' /home/dllu/proj/viboceros/target/debug/deps/chamfer_edges-b546fb835d60fdb9 --nocapture` (signal: 2, SIGINT: terminal interrupt signal)

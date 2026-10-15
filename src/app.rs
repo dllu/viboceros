@@ -9982,6 +9982,7 @@ mod tests {
     mod boolean_split_topology;
     mod boolean_two;
     mod boolean_union;
+    mod chamfer_edge;
     mod circle_fit_grips;
     mod circle_fit_points;
     mod command_line;

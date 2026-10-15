@@ -91,6 +91,8 @@ int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance, const size
                             size_t parent_capacity, VbSolid **out, char *error, size_t capacity);
 int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out, char *error,
                   size_t capacity);
+int vb_imported_solid_chamfer_edges(VbSolid *solid, const size_t *indices, size_t count,
+    double distance, double accuracy, int rail_type, char *error, size_t capacity);
 int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                    double radius, double accuracy, char *error, size_t capacity);
 int vb_solid_validate_boundary(const VbSolid *solid, double tolerance, char *error, size_t capacity);

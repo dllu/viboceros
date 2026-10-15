@@ -1,0 +1,25 @@
+Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running tests/chamfer_edges.rs (target/debug/deps/chamfer_edges-b546fb835d60fdb9)
+
+running 6 tests
+test chamfer_all_edges_and_invalid_sizes_preserve_source ... ok
+test chamfer_concave_notch_adds_the_expected_wedge_without_changing_source ... ok
+test chamfer_acute_and_obtuse_prism_edges_match_independent_cross_sections ... ok
+test chamfer_every_original_box_edge_matches_width_and_rolling_ball_volumes ... ok
+abs=0.000000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+test chamfer_cylinder_rim_matches_conical_revolution_volume ... ok
+abs=0.000000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+test chamfer_cylinder_tolerance_and_seam_frames ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 41.38s
+
+     Running tests/fillet_edges.rs (target/debug/deps/fillet_edges-9d496db50f67b388)
+
+running 3 tests
+test invalid_or_oversized_fillet_requests_leave_the_source_unchanged ... ok
+test all_edges_transfer_as_a_closed_rounded_box ... ok
+test single_original_edge_rounds_with_analytic_volume_and_source_preservation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 29.99s

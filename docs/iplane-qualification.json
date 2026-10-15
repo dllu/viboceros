@@ -49,7 +49,6 @@
     "crates/viboceros-command/src/infinite_plane.rs": "76fa39f0811eda02fcc8187d5a63f5d3f4c4458290fb3067e626842bce0a1943",
     "crates/viboceros-command/src/section.rs": "e27586227345f289dca55e0a2d8433745bf8d92befa52c96f88e234d0e304468",
     "crates/viboceros-oracle/src/iplane.rs": "f03aa5a2ee2858222ac38a3399250382a56f2b2a3a81c5afeb01fbb292b81f00",
-    "crates/viboceros-oracle/src/object_source.rs": "5f1a86ac6649e678b346f26b8a37d0d2041dc2ddace2ec77a594de95cf5e11f8",
     "src/app/tests/iplane.rs": "a0c78c472630af207bbc665b9ef4e655fd87631b315e2cc3eaddf905761cc8c8",
     "tools/rhino_oracle/iplane_probe.py": "748bc0b56db4dafc2e830c25bf5c30b4e38d7792e61c6da79952e6e66b3d8169",
     "tools/rhino_oracle/test_iplane_probe.py": "280db558db9ec58470da42971a48520325728d155616b95eaf1d9173f212815c",
@@ -70,6 +69,7 @@
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:src/app/project_plane.rs": "34366ea5512ed2dc419ec70cd14657138bbf8aee0aa3e6834ab9357c9eabb645",
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:src/app/intersect_two_sets.rs": "2c3579b7bd2519454e4bee43e47335d0517ec5898ded5839604808621e95ee94",
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:src/app/tests/project.rs": "59efb0f2eafbb546dc3b80e9df51a589d9cb4881a9162003876470b0cd4f848f",
-    "d59d97e5c73561647e5f82ade753c719733318b4:tools/rhino_oracle/client.py": "c629ff9272f91da75108557b56aacd0571e5f87cfd3f9316a442c1f11a7a0f16"
+    "d59d97e5c73561647e5f82ade753c719733318b4:tools/rhino_oracle/client.py": "c629ff9272f91da75108557b56aacd0571e5f87cfd3f9316a442c1f11a7a0f16",
+    "78d92776d42a198ee3a68e238041a8259848ee65:crates/viboceros-oracle/src/object_source.rs": "5f1a86ac6649e678b346f26b8a37d0d2041dc2ddace2ec77a594de95cf5e11f8"
   }
 }

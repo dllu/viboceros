@@ -19,6 +19,7 @@ Rhino's complete command set is still a work in progress.
 - [Planar surface offsets](offset-srf.md)
 - [Two-curve fillets](fillet.md)
 - [Two-curve chamfers](chamfer.md)
+- [Polysurface edge chamfers](chamfer-edge.md)
 - [Connect two curves](connect.md)
 - [Blend two curves](blend.md)
 - [Blend complete surface edges](blend-srf.md)

@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "chamfer_edge_implemented": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "continuous_error_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "recipes": 6,
+  "scope_notes": [
+    "ChamferEdge calls the existing usd-brep selected-edge fillet executive with SM_FSG_LINEAR and SM_FS_CONST_DIST or SM_FS_CONST_RADIUS. Corner construction and bevel flags follow the public SmApiChamferFillet producer; native stitching, surface construction and global merge remain in usd-brep. FilletEdge and ChamferEdge share one C ABI implementation and owned original-index import path, one staged document selection type, and one UI picker. No standalone chamfer geometry engine was implemented.",
+    "DistanceBetweenRails measures chamfer width and is the default. RollingBall uses a rolling-ball radius. The default distance is one model unit. Only finite positive distances and the two explicit rail types are accepted. A distance applies to the entire selected edge set. Scripted id/index pairs and All=Yes are supported; duplicates are removed. Closed manifold B-reps are currently required; the inherited native boundary validator limits each input/output to 362 faces.",
+    "At ambient tolerance 1e-6 a radius-five, height-eight cylinder rim failed native manifold validation, while the same exact geometry passed at 1e-9. Chamfer imports now use min(document absolute tolerance, distance*1e-9) as working absolute tolerance, retaining original declared edge/vertex tolerances in the shared importer. Both cylinder seam frames pass at ambient tolerances 1e-9 and 1e-6. A translated box initially failed strict UV-domain validation; localizing the native operation before import/export resolves the case without snapping trims or weakening domain checks. The shared command stage also localizes FilletEdge.",
+    "All object and edge admission and all geometry stage before document edits. Object identity, attributes and group membership remain intact; selection and one Undo/Redo transaction cover the batch. A later small-body failure preserves prior geometry, document state and Redo. Prepared operations reject stale source snapshots and tolerance changes. The UI shares click/window picking and component ambiguity selection, supports edge-component preselection, unit-aware numeric input and atomic option updates, and retains picks/getters after errors for correction. Starting another command or canceling releases the picker.",
+    "Independent native checks cover all twelve original box edges in both modes, repeated indices, invalid and excessive sizes, all-edge corners, acute/obtuse prism angles, concave notches and conical cylinder rims. A rectangular prism loses L*d*d/4 on one right-angle edge in width mode and L*r*r/2 in rolling mode. For angle theta the equal setback is d/(2*sin(theta/2)) or r*cot(theta/2), so removed prism volume is L*setback^2*sin(theta)/2. On dimensions 10,8,6 with rolling radius one, all twelve chamfer halfspaces give volume 480-2*(10+8+6)+6=438, including corner inclusion/exclusion; a retained (0.5,0.5,0.5) vertex verifies their intersection. A ten-unit-deep concave right-angle notch gains volume 2.5 in width-one mode or 5 in rolling-radius-one mode; both native results match those independent added wedges and preserve the source.",
+    "A radius-five, height-eight cylinder loses pi*(5*s*s-s*s*s/3) from one rim, where s=d/sqrt(2) or s=r. Trimmed surface witnesses check the cylinder, disks and cone equation radial_distance+z=13-s. These are sampled spatial witnesses and analytic mass checks, not continuous geometric error certificates. Existing native fillet tests retain their independent rounded-box volumes, trimmed-boundary witnesses and editable 3DM round trip.",
+    "Six owned-object fixtures use physical edge points and resolve original indices independently in each engine. They cover width/rolling modes, two parallel edges, a translated source and both cylinder-rim modes. The Rust side executes the actual command. The public SDK recipe calls Brep.CreateFilletEdges with BlendType.Chamfer, the selected RailType, constant start/end arrays, document distance/angle tolerances and setbackFillets=False. Python mocks check routing, typed arrays, ambiguity, null/invalid outputs and cleanup; they are not licensed parity evidence.",
+    "The retained timing log used temporary native-only clocks, removed from product code. Four cylinder solves measured about 0.15 seconds for parameter setup, native modeling and stitching, about 0.05 seconds for source validation and 2.4 seconds for result boundary validation. Rust source import/export and mass diagnostics are excluded from those stage timers; full probe/test times include them. These local debug-harness timings do not establish comparative performance.",
+    "The entire native kernel, public API library and C ABI were built with AddressSanitizer. All six chamfer and three existing fillet tests pass in the optimized Rust harness with ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0. Leak detection and optional stack-use-after-return detection are not qualified. The default fake-stack configuration made very slow progress: the debug run was stopped after roughly fourteen minutes, and the optimized full run and two diagnostic subsets were interrupted after the equivalent tests passed with fake-stack detection disabled. These interrupted runs had no reported sanitizer error but are not passes. A debugger-launched sample records FakeStack::Allocate underneath curve tessellation during the unchanged full boundary validator; changing only detect_stack_use_after_return allowed the four-case cylinder matrix to finish in 37.25 seconds. No solver or validation tolerance was relaxed for the sanitizer run.",
+    "No fresh licensed Rhino capture was attempted after the recorded Wine SSPI startup blocker; a process check found no running Rhino executable. Variable per-edge/along-edge distances, DistFromEdge, open polysurfaces, TrimAndJoin=No, previous edge sets, chain/face selection, preview, History editing and native saved defaults remain future work. General collapsing offsets and self-intersections require broader qualification. Historical SHA maps are retained through matching immutable Git blobs; earlier already unverifiable records remain unchanged."
+  ],
+  "validation": {
+    "cargo test -p viboceros-oracle --features native-smlib --lib chamfer_edge:: --quiet": {
+      "passed": 1,
+      "completed_recipes": 6
+    },
+    "cargo test -p viboceros-command -p viboceros chamfer_edge:: --quiet": {
+      "passed": 4,
+      "command": 2,
+      "ui": 2
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings": "passed",
+    "python3 -m unittest tools.rhino_oracle.test_chamfer_edge tools.rhino_oracle.test_shell tools.rhino_oracle.test_fillet_edge_probe tools.rhino_oracle.test_client -q": {
+      "passed": 28
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib chamfer_edge:: --quiet": {
+      "passed": 5,
+      "command": 3,
+      "ui": 2
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib fillet_edge:: --quiet": {
+      "passed": 5
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib edge_fillet:: --quiet": {
+      "passed": 2
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros -p viboceros-smlib --all-targets --features native-smlib -- -D warnings": "passed",
+    "cargo fmt --all -- --check": "passed",
+    "local_cli_capture": {
+      "recipes_completed": 6,
+      "is_solid": true,
+      "observation": "tools/rhino_oracle/observations/chamfer_edge_viboceros_native.json",
+      "maximum_analytic_volume_error": 6.6726784098136704e-09
+    },
+    "sorted_command_help": {
+      "passed": 1
+    },
+    "object_selection_regressions": {
+      "passed": 51
+    },
+    "cargo test -p viboceros-smlib --features native --test chamfer_edges --test fillet_edges -- --nocapture": {
+      "passed": 9,
+      "chamfer": 6,
+      "fillet": 3,
+      "log": "docs/chamfer-edge-native.log"
+    },
+    "native_address_sanitizer": {
+      "build": "VIBOCEROS_SMLIB_ASAN=1 cargo test --release -p viboceros-smlib --features native --test chamfer_edges --test fillet_edges -- --nocapture (both test executables compiled; initial test run interrupted)",
+      "execution": "env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0 target/release/deps/{chamfer_edges-fbd55ae84ca4cad4,fillet_edges-5d0f2b61f4f34d43} --nocapture (sequential executions)",
+      "passed": 9,
+      "chamfer": 6,
+      "fillet": 3,
+      "log": "docs/chamfer-edge-asan-release.log",
+      "leak_detection": false,
+      "stack_use_after_return_detection": false,
+      "default_configuration_runs": "interrupted; logs retained; no pass claimed",
+      "default_configuration_logs": [
+        "docs/chamfer-edge-asan.log",
+        "docs/chamfer-edge-asan-default-release.log",
+        "docs/chamfer-edge-planar-asan.log",
+        "docs/chamfer-edge-fillet-asan.log"
+      ],
+      "debugger_sample": "docs/chamfer-edge-asan-stack.log",
+      "cylinder_diagnostic_pass": "docs/chamfer-edge-asan-cylinder-diagnostic.log"
+    }
+  },
+  "source_sha256": {
+    "README.md": "989a720e98aba4b3b90c5776f4f4299bf434c624ae382ef1daf976820ab10cdc",
+    "crates/viboceros-command/src/chamfer_edge.rs": "50e18469c2d08e61751bf8bb50db7890a15a03d77d3fc6d6ea8b2904aafc2039",
+    "crates/viboceros-command/src/chamfer_edge/tests.rs": "366267505c0e9e59bedbd38f6afdf87ab082a5287ef36775ac02b620fd513075",
+    "crates/viboceros-command/src/fillet_edge.rs": "f4810d55ceb4c8f1b6c1d267382890528e35a8da8bd3a0188dbb59cf2954d9f1",
+    "crates/viboceros-command/src/lib.rs": "ce2afc98855dbddd2abe22a121413102ae1c4722ba7784d90a1e7f6afb6d4819",
+    "crates/viboceros-oracle/src/chamfer_edge.rs": "c52711fe2914e5d4a221268c68b9946bdc26b740c93fbbb330ab1fb1985780e8",
+    "crates/viboceros-oracle/src/lib.rs": "07cdfdf30dcb3e484a70279e8a6c03d7cb0df2f935c51448878eb73cd774a951",
+    "crates/viboceros-oracle/src/object_source.rs": "59c66aa3fecfcf7fc3e51bff97f93cc1d5e4201d60e2231263cd461c79e22776",
+    "crates/viboceros-smlib/build.rs": "80914510c366cc3cc3deffed5ed039eace93d2fadc57e6f359710878bce341da",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "f2b5e03af385814fb7311af49e4d2ee927fd6e2b834f3f0e84260109096b187b",
+    "crates/viboceros-smlib/native/boundary_validation.cpp": "e3a535b60d2315d66996eee3376188380f1534d9e12ca3864962b99ea83730c8",
+    "crates/viboceros-smlib/native/brep_data.h": "6b5bb2a3319a8f0e074dbd850682720243cbf13ba3e8299ae074007d34519f03",
+    "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
+    "crates/viboceros-smlib/native/bridge.cpp": "7da5f4ede5170fc523e1a8df8ae87a6927d325164061e5e95164d348fe478fe9",
+    "crates/viboceros-smlib/native/bridge.h": "15f1a19890bf3cbe9b4ccaf73b064b6b3a7729455f3d8b23d9d9b0c2109f87e0",
+    "crates/viboceros-smlib/src/lib.rs": "36df97965980b733f654622320f271e9d12e685f06061d8bdea0cb59dca1fe56",
+    "crates/viboceros-smlib/src/native.rs": "82ebe332e9a593faec342e803f76ab72c1777d8d43d571f7d62d4faaa93f679a",
+    "crates/viboceros-smlib/src/native/chamfer_edges.rs": "763fa3753cee8b33a0808486c0856405c061f1462601574e29a26e21af3db734",
+    "crates/viboceros-smlib/tests/chamfer_edges.rs": "c70f7141106a11c5184bc2f0ddcfed608838042074694048b8f46ee08b5020ab",
+    "docs/commands/README.md": "576811b7040ff22d0d04c451c85b66f38739766c7e9f6361e9bee35be3684c95",
+    "docs/commands/chamfer-edge.md": "03b8addcfdd31febcbb41399a6f7fa2a69ffc3a3e2f16db2058a98495055eb28",
+    "src/app.rs": "6f2e8515cfe1acb4f98567f17cc382ec69cd1e89e29ecc33b55f553584f7073f",
+    "src/app/command_line.rs": "6319735f4e0ecd987ea201dc31b85632e3f6e34532247cf4ab2960105a79f16a",
+    "src/app/edge_fillet.rs": "3eaeb78de23621de44684d5ab55ae734c9a438e8686f9902394a6b500214039b",
+    "src/app/tests/chamfer_edge.rs": "7f6a7bff7ece5e46660f3cc528eb8c53a798bc33b1c4e4d08c7934e12ad392b3",
+    "third_party/usd-brep/source/SMLib/inc/SmFilletCorner.h": "a17c4f0f0d3d571d1c031bea8544bad4de5b4ec3965a35a80af9624c5b8a8c78",
+    "third_party/usd-brep/source/SMLib/inc/SmFilletExecutive.h": "0f919f96da4d3b400734d3971dddd49535365da7451a61e346772572fb8de632",
+    "third_party/usd-brep/source/SMLib/src/SmCurveCache.cpp": "7203a983fb6482729af95246842b409551ee99198b29c8630cbc1eb1cfe59271",
+    "third_party/usd-brep/source/SMLib/src/SmFilletCorner.cpp": "b7c51b6a57237ed3cd92489c272b3897d074c3615c6d782915e0a84955211acc",
+    "third_party/usd-brep/source/SMLib/src/SmFilletExecutive.cpp": "b747e04cd9f2c760bd9cdd06b7d82222828dba043531bfc489e4711ce68c567c",
+    "third_party/usd-brep/source/SM_API/inc/SmApiFillets.h": "09435d1d8ea802fdbee181d577e515b3ebdc3aae6721844a7aeb7e979667706d",
+    "third_party/usd-brep/source/SM_API/src/SmApiFillets.cpp": "7837fb23864c7a858db2843f0d8a9d96076bb064df599bbc42983aa4087fa52f",
+    "tools/rhino_oracle/chamfer_edge_probe.py": "074d873b920ddd25d4545afa03648d2a2d28729a0cda110c7dff3665fb4d1860",
+    "tools/rhino_oracle/client.py": "fb5ab70c8096cf08b477e5cdd15e28cecbfb7582d75276230935b17215f07db8",
+    "tools/rhino_oracle/fixtures/chamfer_edge.json": "6b9013f571feaa2fe78377451493afa73d34f828568fbc26185476df6b1e8bb6",
+    "tools/rhino_oracle/observations/chamfer_edge_viboceros_native.json": "7a08d7a0afaafe95d0422d39d208947b0fca579b157b1c889f5d24b2f2ec9955",
+    "tools/rhino_oracle/rhino_worker.py": "c9adf63cee2fb73869764365e78fb6e6073c6b866b58d7082e945c9e471fa071",
+    "tools/rhino_oracle/test_chamfer_edge.py": "608d6ee6b5eeb5f34dcd9127c4c9d4dd19bc45182bec1e6b9bd41a4b6c3e4d62"
+  },
+  "evidence_sha256": {
+    "docs/chamfer-edge-accuracy-baseline.log": "bd816c1aedee5b927933e243ccdbf8c8da0c84f40b4e0416b97b0e69bc3192ba",
+    "docs/chamfer-edge-asan-cylinder-diagnostic.log": "bba4af64a094aff7834d316f0b563255696044b2016a060225a9a75bb25afe70",
+    "docs/chamfer-edge-asan-default-release.log": "43ac2f00a88648af54de767a52672f2390e0b80c8437c468bcda8c50f54fb429",
+    "docs/chamfer-edge-asan-release.log": "6b2e8baffbbd057b94b90e383fd9dc79804040f2ecafc6dbe92f691ab5c3d65a",
+    "docs/chamfer-edge-asan-stack.log": "de019ff99ef395bd5be39950ffe27744690961b0590e73c993c4079aefb123c1",
+    "docs/chamfer-edge-asan.log": "f549435db6de3d9500feceeb7acedef06acee46618007aa902283afee098d0c6",
+    "docs/chamfer-edge-fillet-asan.log": "55bf49e8c1be404f128f7e8a48ea401c3b382820c25fd0c0b09274880221473e",
+    "docs/chamfer-edge-native.log": "1804f9c23292519a648be8a54f74513f46acacbb7cd4dd3adc66567ed4b26c89",
+    "docs/chamfer-edge-planar-asan.log": "6b0490f5a01c71bb0a6f8366a14c74ae3d8bb8d94b715a2dd1a0e8135e5d5900",
+    "docs/chamfer-edge-timing.log": "f9b3dca4c5822b68d06187f522132e19a0debfe7b4841edca8410e7996431113"
+  }
+}

@@ -5,7 +5,18 @@ use super::*;
 #[serde(untagged)]
 pub enum ObjectSource {
     Vertices(VertexSource),
+    Cylinder(CylinderSource),
     Curved(Box<plane_arrays::ArraySource>),
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum CylinderSource {
+    CylinderBrep {
+        origin: [f64; 3],
+        radius: f64,
+        height: f64,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -33,6 +44,23 @@ impl ObjectSource {
         };
         Ok(match self {
             Self::Curved(source) => source.geometry(tolerance)?,
+            Self::Cylinder(CylinderSource::CylinderBrep {
+                origin,
+                radius,
+                height,
+            }) => {
+                if !radius.is_finite() || *radius <= 0. || !height.is_finite() || *height <= 0. {
+                    return Err(ProbeError::FixtureInvariant(
+                        "positive cylinder dimensions required",
+                    ));
+                }
+                let frame = Frame3::try_from_normal(
+                    Point3::try_from(*origin)?,
+                    Vector3::try_new(0., 0., 1.)?,
+                    tolerance,
+                )?;
+                Geometry::Brep(Brep::try_cylinder(frame, *radius, 0., *height, tolerance)?)
+            }
             Self::Vertices(VertexSource::Point { point }) => {
                 Geometry::Point(Point3::try_from(*point)?)
             }

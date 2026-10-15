@@ -117,6 +117,8 @@ mod shrink_trimmed;
 mod silhouette;
 mod surface_path_extrusion;
 pub use surface_path_extrusion::Fixture as SurfacePathExtrusionFixture;
+mod chamfer_edge;
+pub use chamfer_edge::Fixture as ChamferEdgeFixture;
 mod shell;
 pub use shell::Fixture as ShellFixture;
 mod surface_tapered_extrusion;
@@ -1622,6 +1624,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SurfaceApexExtrusionFixture,
     },
+    ChamferEdge {
+        id: String,
+        #[serde(flatten)]
+        fixture: ChamferEdgeFixture,
+    },
     Shell {
         id: String,
         #[serde(flatten)]
@@ -2584,6 +2591,7 @@ impl Operation {
             | Self::ProjectCurveSurface { id, .. }
             | Self::SurfacePathExtrusion { id, .. }
             | Self::SurfaceApexExtrusion { id, .. }
+            | Self::ChamferEdge { id, .. }
             | Self::Shell { id, .. }
             | Self::SurfaceTaperedExtrusion { id, .. }
             | Self::SurfaceExtrusion { id, .. }
@@ -5779,6 +5787,9 @@ fn execute(
         }
         Operation::SurfaceApexExtrusion { fixture, .. } => {
             surface_apex_extrusion::run(fixture, iterations, tolerance)?
+        }
+        Operation::ChamferEdge { fixture, .. } => {
+            chamfer_edge::run(fixture, iterations, tolerance)?
         }
         Operation::Shell { fixture, .. } => shell::run(fixture, iterations, tolerance)?,
         Operation::SurfaceTaperedExtrusion { fixture, .. } => {
