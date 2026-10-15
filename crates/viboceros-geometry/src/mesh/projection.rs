@@ -5,6 +5,7 @@ use crate::interval::I;
 use crate::{NurbsCurve, Vector3};
 use num_traits::Zero;
 
+mod pull;
 #[cfg(test)]
 mod tests;
 const MAX_TRIANGLES: usize = 1_000_000;

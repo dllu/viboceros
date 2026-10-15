@@ -28,10 +28,11 @@ its indexed triangle. Quad triangles follow the existing shorter-diagonal split;
 these indices differ from source mesh face IDs. Equal-distance ties retain the
 lowest triangle index. Existing `closest_point` delegates to the same query.
 
-These are foundations for curve pulling to meshes. Connecting closest points
-across folded faces and discontinuous closest branches remains pending; the
-`Pull` command still declines mesh curve sources. No new live Rhino comparison
-or performance qualification is claimed.
+These APIs now feed [mesh curve pulling](commands/pull-mesh.md), including
+folded-face transitions. Discontinuous closest branches can still decline.
+The original qualification below records the foundation before command wiring;
+mesh tracing has a separate qualification. No live Rhino or performance parity
+is claimed by either record.
 
 See the [qualification record](curve-approximation-qualification.json) for
 validation and source provenance.

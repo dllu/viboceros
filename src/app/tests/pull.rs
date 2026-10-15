@@ -1,5 +1,55 @@
 use super::*;
 #[test]
+fn pull_mesh_target_completes_shared_picker_and_undo() {
+    let mut app = test_app();
+    let source = app
+        .document
+        .add_geometry(Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                point(-1., 0., 2.),
+                point(4., 0., 2.),
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let mesh = app
+        .document
+        .add_geometry(Geometry::Mesh(
+            viboceros_geometry::TriangleMesh::try_new(
+                vec![
+                    point(-4., 0., 0.),
+                    point(0., -4., 0.),
+                    point(0., 4., 0.),
+                    point(4., 0., -4.),
+                ],
+                vec![[0, 1, 2], [1, 3, 2]],
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document.clear_history().unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Pull DeleteInput=Yes");
+    enter(&mut app, &mesh.to_string());
+    enter(&mut app, "");
+    assert!(app.intersection_prompt.is_none());
+    assert!(app.document.object(source).is_none());
+    assert_eq!(app.document.selected_object_count(), 1);
+    let Geometry::Polyline(polyline) = app.document.selected_objects().next().unwrap().geometry()
+    else {
+        panic!()
+    };
+    assert!(polyline.vertices().contains(&point(0., 0., 0.)));
+    enter(&mut app, "Undo");
+    assert!(app.document.object(source).is_some());
+    enter(&mut app, "Redo");
+    assert!(app.document.object(source).is_none());
+}
+#[test]
 fn pull_command_first_selects_sources_and_targets_then_replays_one_step() {
     let (mut app, ids) = setup();
     app.document.clear_selection();

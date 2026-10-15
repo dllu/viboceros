@@ -13260,6 +13260,34 @@ def _execute(operation, iterations, tolerance):
             for curve in curves:
                 curve.Dispose()
 
+    if kind == "pull_curve_mesh":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        source = None
+        try:
+            source = _nurbs_curve_from_definition(operation["curve"])
+            def pull_curve_mesh():
+                result = source.PullToMesh(mesh, float(tolerance["absolute"]))
+                try:
+                    if result is None:
+                        return dict(curves=[])
+                    parameters = result.DivideByCount(32, True)
+                    if parameters is None:
+                        raise ValueError("could not sample mesh pull result")
+                    samples = [_xyz(result.PointAt(t)) for t in parameters]
+                    if result.IsClosed and len(samples) == 33:
+                        samples.pop()
+                    if tuple(samples[-1]) < tuple(samples[0]):
+                        samples.reverse()
+                    return dict(curves=[dict(samples=samples, length=float(result.GetLength()), closed=bool(result.IsClosed))])
+                finally:
+                    if result is not None:
+                        result.Dispose()
+            return _measure(iterations, pull_curve_mesh)
+        finally:
+            if source is not None:
+                source.Dispose()
+            mesh.Dispose()
+
     if kind in ("project_curve_mesh", "project_point_mesh"):
         direction = _vector(operation["direction"])
         if not direction.Unitize():

@@ -11,6 +11,23 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_mesh_pull_disposes_source_result_and_target_on_failures(self):
+        for failure in (None, 'source', 'sdk', 'null', 'sampling'):
+            with self.subTest(failure=failure):
+                result=SimpleNamespace(Dispose=Mock(),DivideByCount=Mock(return_value=None if failure=='sampling' else [0.,1.]),PointAt=lambda t:SimpleNamespace(X=t,Y=0.,Z=0.),GetLength=lambda:1.,IsClosed=False)
+                source=SimpleNamespace(Dispose=Mock(),PullToMesh=Mock(side_effect=ValueError('sdk') if failure=='sdk' else None,return_value=None if failure=='null' else result))
+                mesh=SimpleNamespace(Dispose=Mock())
+                with patch.object(self.worker,'_polygon_mesh',return_value=mesh), patch.object(self.worker,'_nurbs_curve_from_definition',return_value=source,side_effect=ValueError('source') if failure=='source' else None):
+                    operation=dict(op='pull_curve_mesh',curve={},vertices=[],faces=[])
+                    if failure in ('source','sdk','sampling'):
+                        with self.assertRaises(ValueError): self.worker._execute(operation,1,dict(absolute=1e-6))
+                    else:
+                        value,_=self.worker._execute(operation,1,dict(absolute=1e-6))
+                        self.assertEqual(len(value['curves']),0 if failure=='null' else 1)
+                mesh.Dispose.assert_called_once()
+                self.assertEqual(source.Dispose.call_count,int(failure!='source'))
+                self.assertEqual(result.Dispose.call_count,2 if failure is None else int(failure=='sampling'))
+
     def test_surface_pull_disposes_source_surface_face_and_results_on_failures(self):
         for kind, failure in ((kind, failure) for kind in ('pull_curve_surface', 'pull_curve_surface_command') for failure in (None, 'surface', 'brep', 'sdk', 'sampling')):
             with self.subTest(kind=kind, failure=failure):

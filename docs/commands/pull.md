@@ -4,6 +4,7 @@
 Curved surface paths use the [usd-brep normal-drop producer](../smlib-surface-pull.md)
 when `native-smlib` is enabled. Planar curves use exact normal projection;
 points use the existing bounded surface/face and indexed mesh closest queries.
+Mesh curves return polylines using [closest-path tracing](pull-mesh.md).
 All results stage before one Undo/Redo edit.
 
 Select curves and points before starting, or start Pull and pick sources, then
@@ -40,7 +41,7 @@ hole boundaries. Mesh nearest queries reuse the projection BVH, existing
 triangle closest-point solver and exact distance ordering, visiting nearer boxes
 first and retaining deterministic ties.
 
-`Loose=No` is accepted. Loose=Yes, curves pulled to meshes, grips, edit points,
+`Loose=No` is accepted. Loose=Yes, grips, edit points,
 edge subobjects and SubD targets remain pending. Curved paths inherit native
 preparation and certificate limits. Global closest-branch choice, native trim
 and seam parity, native getter behavior and comparative speed remain unqualified;
@@ -48,7 +49,7 @@ this is not a claim of complete Rhino compatibility. The [existing Wine issue](.
 still prevents fresh live Rhino captures.
 
 [Bounded curve approximation and closest-triangle locations](../curve-approximation.md)
-are available in the geometry crate as preparation for mesh curve tracing.
+are shared by mesh curve tracing and point queries.
 
 The Python `pull_curve_surface_command` operation accepts full `curve` and
 `surface` definitions, runs the Viboceros command and returns sampled curve

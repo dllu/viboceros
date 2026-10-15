@@ -221,6 +221,92 @@ fn invalid_options_and_later_unsupported_targets_roll_back() {
     assert!(doc.object(a).is_some());
     assert_eq!(doc.objects().len(), 3);
 }
+fn folded_mesh(upward: bool) -> Geometry {
+    Geometry::Mesh(
+        TriangleMesh::try_new(
+            vec![
+                p(-4., 0., 0.),
+                p(0., -4., 0.),
+                p(0., 4., 0.),
+                p(4., 0., if upward { 4. } else { -4. }),
+            ],
+            vec![[0, 1, 2], [1, 3, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    )
+}
+#[test]
+fn mesh_curve_pull_follows_fold_and_replays_delete_input_as_one_edit() {
+    let (mut doc, r, a, b) = setup(line(p(-1., 0., 2.), p(4., 0., 2.)), folded_mesh(false));
+    let layer = doc
+        .add_layer("mesh-target", viboceros_document::ColorRgb::BLACK)
+        .unwrap();
+    doc.set_objects_layer([b], layer).unwrap();
+    doc.clear_history().unwrap();
+    r.execute(
+        &mut doc,
+        &format!("Pull Sources={a} Targets={b} DeleteInput=Yes OutputLayer=TargetObject"),
+    )
+    .unwrap();
+    assert!(doc.object(a).is_none());
+    let output = doc.selected_objects().next().unwrap();
+    assert_eq!(output.attributes().layer_id(), layer);
+    let Geometry::Polyline(polyline) = output.geometry() else {
+        panic!()
+    };
+    assert!(polyline.vertices().contains(&p(0., 0., 0.)));
+    assert!((polyline.length().unwrap() - (1. + 2_f64.sqrt())).abs() < 1e-8);
+    assert_eq!(doc.undo_label(), Some("Pull"));
+    doc.undo().unwrap();
+    assert!(doc.object(a).is_some());
+    assert_eq!(doc.objects().len(), 2);
+    doc.redo().unwrap();
+    assert!(doc.object(a).is_none());
+}
+#[test]
+fn mesh_branch_failure_rolls_back_already_staged_surface_output() {
+    let (mut doc, r, a, b) = setup(line(p(-1., 0., 2.), p(2., 0., 2.)), plane());
+    let mesh = doc.add_geometry(folded_mesh(true)).unwrap();
+    doc.clear_history().unwrap();
+    let original = doc.objects().cloned().collect::<Vec<_>>();
+    assert!(
+        r.execute(
+            &mut doc,
+            &format!("Pull Sources={a} Targets={b},{mesh} DeleteInput=Yes")
+        )
+        .is_err()
+    );
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), original);
+    assert!(doc.undo_label().is_none());
+}
+#[test]
+fn mesh_curve_collapsed_image_preserves_whole_input_and_temporary_range() {
+    let mesh = Geometry::Mesh(
+        TriangleMesh::try_new(
+            vec![p(0., 0., 0.), p(1., 0., 0.), p(0., 1., 0.)],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    );
+    let (mut doc, r, a, b) = setup(line(p(-2., -2., 1.), p(-3., -3., 2.)), mesh);
+    r.execute(
+        &mut doc,
+        &format!("Pull Sources={a} Targets={b} DeleteInput=Yes"),
+    )
+    .unwrap();
+    assert!(doc.object(a).is_some());
+    assert_eq!(doc.objects().len(), 2);
+    assert!(doc.undo_label().is_none());
+    r.execute(
+        &mut doc,
+        &format!("Pull Targets={b} SubCrv={a},0.2,0.8 DeleteInput=Yes"),
+    )
+    .unwrap();
+    assert!(doc.object(a).is_some());
+    assert_eq!(doc.objects().len(), 2);
+}
 #[cfg(feature = "native-smlib")]
 #[test]
 fn native_cylinder_seam_witnesses_admit_one_axial_curve() {

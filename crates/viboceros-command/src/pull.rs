@@ -52,16 +52,22 @@ pub(super) fn geometry(
     let curve = source
         .nurbs_curve_representation()?
         .ok_or(CommandError::Usage(USAGE))?;
+    if let Geometry::Mesh(_) = target {
+        // Preserve supplied polyline corners exactly; other curves use the
+        // geometry crate's bounded approximation before closest-path tracing.
+        let index = index.ok_or(CommandError::Usage(USAGE))?;
+        let output = if let Geometry::Polyline(polyline) = source {
+            index.pull_polyline(polyline, tolerance)?
+        } else {
+            index.pull_curve(&curve, tolerance)?
+        };
+        return Ok(output.into_iter().map(Geometry::Polyline).collect());
+    }
     let faces = match target {
         Geometry::NurbsSurface(s) => vec![Brep::try_surface_face(s.clone(), tolerance)?],
         Geometry::Brep(b) => (0..b.faces().len())
             .map(|i| b.sub_brep(&[i], tolerance))
             .collect::<Result<Vec<_>, _>>()?,
-        Geometry::Mesh(_) => {
-            return Err(CommandError::Usage(
-                "Pull of curves to meshes is not implemented",
-            ));
-        }
         _ => return Err(CommandError::Usage(USAGE)),
     };
     let mut output = Vec::new();

@@ -93,6 +93,7 @@ mod document_units;
 mod edge_analysis;
 mod extract_surface;
 mod iplane;
+mod mesh_pull;
 mod section_command;
 mod surface_pull;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
@@ -1559,6 +1560,12 @@ pub enum Operation {
         faces: Vec<Vec<u32>>,
         direction: [f64; 3],
     },
+    PullCurveMesh {
+        id: String,
+        curve: NurbsCurveDefinition,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
     ProjectPointMesh {
         id: String,
         point: [f64; 3],
@@ -2513,6 +2520,7 @@ impl Operation {
             | Self::CurveIntersectCommand { id, .. }
             | Self::SelfIntersectProbe { id, .. }
             | Self::ProjectCurveMesh { id, .. }
+            | Self::PullCurveMesh { id, .. }
             | Self::ProjectPointMesh { id, .. }
             | Self::PullCurveSurfaceCommand { id, .. }
             | Self::PullCurveSurface { id, .. }
@@ -5669,6 +5677,12 @@ fn execute(
             direction,
             ..
         } => project::mesh_curve(iterations, curve, vertices, faces, *direction, tolerance)?,
+        Operation::PullCurveMesh {
+            curve,
+            vertices,
+            faces,
+            ..
+        } => mesh_pull::run(iterations, curve, vertices, faces, tolerance)?,
         Operation::ProjectPointMesh {
             point,
             vertices,

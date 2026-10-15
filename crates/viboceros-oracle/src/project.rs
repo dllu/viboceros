@@ -146,7 +146,7 @@ fn run_geometry(
     })
 }
 
-fn target_mesh(
+pub(super) fn target_mesh(
     vertices: &[[f64; 3]],
     faces: &[Vec<u32>],
     tolerance: Tolerance,

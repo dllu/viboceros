@@ -970,7 +970,11 @@ tracing and lifting with caller-controlled tolerances and shared whole-curve
 surface image certificates. A generated-source seed repair restores finite
 boundary crossings. The [Pull coordinator](commands/pull.md) shares Project
 selection and atomic admission, clips paired witnesses to original face trims,
-and removes complete spatial seam duplicates. Mesh curves and Loose remain pending.
+and removes complete spatial seam duplicates. Mesh curves reuse bounded source
+approximation, the shared mesh index and exact triangle Voronoi restrictions;
+quadratic distance bounds resolve closest paths across faces, edges and vertices.
+Ambiguous discontinuous paths decline before document mutation. See
+[mesh Pull](commands/pull-mesh.md). Loose remains pending.
 
 Directional `Project` reuses exact affine transforms for planar faces, shared
 curve/face clipping, and the existing usd-brep coupled surface intersector for
@@ -980,7 +984,7 @@ The coordinator stages all results before document admission and requires
 common-sign rational weights for finite sweep bounds. The app supplies source
 and target picking, session options, and finishing-view CPlane/camera directions.
 See [Project](commands/project.md) for supported behavior and qualifications;
-mesh/SubD targets, Loose, grips, and edge subobjects are pending.
+SubD targets, Loose, grips, and edge subobjects are pending.
 
 Mesh Project targets reuse a borrowed bounding-volume index, conservative
 interval slabs and exact point/triangle admission. The existing shorter quad
