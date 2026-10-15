@@ -427,9 +427,7 @@ impl Viewport {
                     continue;
                 };
                 if transform.grips.iter().any(|grip| grip.object == id) {
-                    if let Some(posed) =
-                        self.grip_preview_geometry(object, transform, document.tolerance())
-                    {
+                    if let Some(posed) = self.grip_preview_geometry(object, transform, document) {
                         let posed = posed.bounds();
                         if self.gpu_position(posed.min()).is_some()
                             && self.gpu_position(posed.max()).is_some()

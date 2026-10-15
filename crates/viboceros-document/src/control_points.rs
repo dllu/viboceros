@@ -11,8 +11,16 @@ pub struct ControlPointId {
     pub index: usize,
 }
 
+/// The displayed locations and the meaning of a grip index belong together.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GripMode {
+    Control,
+    Edit,
+}
+
 #[derive(Clone, Debug)]
 pub(super) struct ControlPoints {
+    mode: GripMode,
     geometry: GeometrySnapshot,
     points: Arc<[Point3]>,
     selected: Arc<BTreeSet<usize>>,
@@ -37,7 +45,17 @@ impl Geometry {
         ) && !matches!(self, Self::Brep(brep) if brep.faces().len() != 1)
     }
 
-    fn grip_locations(&self) -> Result<Vec<Point3>, GeometryError> {
+    fn grip_locations(&self, mode: GripMode) -> Result<Vec<Point3>, GeometryError> {
+        if mode == GripMode::Edit {
+            return self
+                .curve_ref()
+                .ok_or(GeometryError::UnsupportedControlPointEdit {
+                    context: "edit points require a curve",
+                })?
+                .to_nurbs()?
+                .edit_points()
+                .map(|points| points.into_iter().map(|p| p.point).collect());
+        }
         match self {
             Self::NurbsCurve(curve) => Ok(curve
                 .control_points()
@@ -118,6 +136,22 @@ impl Document {
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
     ) -> Result<usize, DocumentError> {
+        self.enable_grips(ids, GripMode::Control)
+    }
+
+    /// Display curve Greville edit points without replacing the source geometry.
+    pub fn enable_edit_points(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<usize, DocumentError> {
+        self.enable_grips(ids, GripMode::Edit)
+    }
+
+    fn enable_grips(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        mode: GripMode,
+    ) -> Result<usize, DocumentError> {
         let indices = self.resolve_object_indices(ids)?;
         let mut staged = Vec::new();
         for index in indices {
@@ -125,12 +159,16 @@ impl Document {
             if !self.object_is_selectable(object) {
                 return Err(DocumentError::ObjectNotSelectable(object.id));
             }
-            if object.geometry.supports_control_points() {
+            if match mode {
+                GripMode::Control => object.geometry.supports_control_points(),
+                GripMode::Edit => object.geometry.curve_ref().is_some(),
+            } {
                 staged.push((
                     object.id,
                     ControlPoints {
+                        mode,
                         geometry: object.geometry.clone(),
-                        points: object.geometry.grip_locations()?.into(),
+                        points: object.geometry.grip_locations(mode)?.into(),
                         selected: Arc::default(),
                         display_override: false,
                     },
@@ -142,7 +180,9 @@ impl Document {
             self.control_points
                 .entry(id)
                 .and_modify(|current| {
-                    if !current.geometry.shares_storage_with(&state.geometry) {
+                    if current.mode != mode
+                        || !current.geometry.shares_storage_with(&state.geometry)
+                    {
                         *current = state.clone();
                     }
                 })
@@ -174,8 +214,14 @@ impl Document {
             .then_some(state.points.as_ref())
     }
 
+    /// Mode of a visible, selectable grip display matching its owner snapshot.
+    pub fn grip_mode(&self, id: ObjectId) -> Option<GripMode> {
+        self.control_point_locations(id)?;
+        Some(self.control_points[&id].mode)
+    }
+
     /// Change displayed grip positions without replacing owner geometry or
-    /// recording history. Subsequent geometry edits use the owner's controls;
+    /// recording history. Subsequent geometry edits use the owner's source layout;
     /// history replay restores their display. All picks and maps are staged.
     pub fn transform_control_point_display(
         &mut self,
@@ -335,7 +381,7 @@ impl Document {
             if let Some(state) = self.control_points.get_mut(&object.id)
                 && !state.geometry.shares_storage_with(&object.geometry)
             {
-                if let Ok(points) = object.geometry.grip_locations() {
+                if let Ok(points) = object.geometry.grip_locations(state.mode) {
                     state.points = points.into();
                     state.geometry = object.geometry.clone();
                     state.display_override = false;
@@ -353,7 +399,7 @@ impl Document {
         {
             state.points = state
                 .geometry
-                .grip_locations()
+                .grip_locations(state.mode)
                 .expect("enabled grip geometry is valid")
                 .into();
             state.display_override = false;
@@ -374,5 +420,7 @@ impl Document {
     }
 }
 
+#[cfg(test)]
+mod edit_tests;
 #[cfg(test)]
 mod tests;

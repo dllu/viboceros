@@ -54,9 +54,12 @@ impl Document {
             .map(|index| {
                 let source = &self.objects[index];
                 let geometry = if let Some(selected) = picks.get(&source.id) {
-                    source
-                        .geometry
-                        .with_transformed_grips(selected, transform, self.tolerance)?
+                    source.geometry.with_transformed_grips_in_mode(
+                        selected,
+                        transform,
+                        self.tolerance,
+                        self.control_points[&source.id].mode,
+                    )?
                 } else {
                     source
                         .geometry
@@ -81,7 +84,7 @@ impl Document {
                     )?;
                     for (&source, &copy) in owners.iter().zip(&copies) {
                         if let Some(indices) = picks.get(&source) {
-                            self.enable_control_points([copy])?;
+                            self.enable_grips([copy], self.control_points[&source].mode)?;
                             let count = self.control_points[&copy].points.len();
                             self.select_control_points(
                                 indices.iter().copied().filter(|&index| index < count).map(

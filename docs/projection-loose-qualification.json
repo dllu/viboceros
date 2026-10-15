@@ -59,7 +59,6 @@
     "crates/viboceros-smlib/src/native.rs": "d0fa4f724035d7001ed7fb9938fe0bf7be641c5979d098aa14c47935743e494b",
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "5ab536a60df85ad1e75a4e44ffdeeb351331b628f21ede15d2243820034f1542",
     "crates/viboceros-smlib/src/native/curve_edit_point_tests.rs": "64caae4aaaf08ca8bc92b8b76a4e06670c54a3658f295dfb232b28e89c6418af",
-    "crates/viboceros-command/src/lib.rs": "12005dc2d850ac9aea65a3a169945dcbc2b6bbddbf8059dc8f7b9b13246a6351",
     "crates/viboceros-command/src/project.rs": "6f0bd2510631e6e08ab813098ad794cdb939b539c350f31bb308596f228361b5",
     "crates/viboceros-command/src/pull.rs": "52b4fe46060f36bccfc793b2fd4af8e0ed3b97734395c1808af564129f911005",
     "crates/viboceros-command/src/project_loose.rs": "999c8f84eece244f97a70001609cf8de19de859f3b362a72b68ba1a2128d948a",
@@ -77,12 +76,15 @@
     "tools/rhino_oracle/fixtures/projection_loose.json": "e478f699e3488bf3ca2260dc582dabf9d346212a0e42bf8e2ee13338b0e2efb8",
     "docs/commands/projection-loose.md": "de26bde4211ebe17018a53a227001424cab3f1d00870646f4f565cbfa77ec811",
     "docs/commands/project.md": "0209a0634d629ba3565183cdcc6ca7dd2cffb680be6aabc264983f81532d3c47",
-    "docs/commands/pull.md": "c9d2b14fef862e34b53124742c8a16cf248b688796ada3c8ae21c0e1361770ff",
-    "docs/architecture.md": "87acc717549e76385ab8fa79f9db062ac3ba6a5f418f57738a26dfa27368f410",
-    "README.md": "501fd32303c910d670326c5fb842613195d867fa3ca2acb9d1af6e7fc374b108"
+    "docs/commands/pull.md": "c9d2b14fef862e34b53124742c8a16cf248b688796ada3c8ae21c0e1361770ff"
   },
   "output_sha256": {
     "tools/rhino_oracle/observations/projection_loose_viboceros_portable.json": "a2f43644b89b5088975667f2a7e261109b015e96c3b94ae9946791b231b45348",
     "tools/rhino_oracle/observations/projection_loose_viboceros_native.json": "6dd6f448a7384c43a803bb688a1a5cb069d6b724e4bb870cde6e8d293f8299bf"
+  },
+  "source_git_sha256": {
+    "462b129706e7be81ccde492c16db1ff7c243e4d5:crates/viboceros-command/src/lib.rs": "12005dc2d850ac9aea65a3a169945dcbc2b6bbddbf8059dc8f7b9b13246a6351",
+    "462b129706e7be81ccde492c16db1ff7c243e4d5:docs/architecture.md": "87acc717549e76385ab8fa79f9db062ac3ba6a5f418f57738a26dfa27368f410",
+    "462b129706e7be81ccde492c16db1ff7c243e4d5:README.md": "501fd32303c910d670326c5fb842613195d867fa3ca2acb9d1af6e7fc374b108"
   }
 }

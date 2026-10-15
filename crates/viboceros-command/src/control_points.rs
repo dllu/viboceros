@@ -44,3 +44,32 @@ impl Command for PointsOffCommand {
         Ok(format!("Control points off for {count} object(s)"))
     }
 }
+
+pub(super) struct EditPointsOnCommand;
+impl Command for EditPointsOnCommand {
+    fn name(&self) -> &'static str {
+        "EditPtOn"
+    }
+    fn records_history(&self) -> bool {
+        false
+    }
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(arguments.is_empty().then_some(ObjectSelectionPrompt {
+            command: "EditPtOn",
+            filter: ObjectSelectionFilter::Curves,
+            options: Vec::new(),
+            menus: Vec::new(),
+            choices: Vec::new(),
+            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+        }))
+    }
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "EditPtOn (select curves)")?;
+        let ids = document.selected_object_ids().collect::<Vec<_>>();
+        let count = document.enable_edit_points(ids)?;
+        Ok(format!("Edit points on for {count} object(s)"))
+    }
+}

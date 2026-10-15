@@ -53,6 +53,11 @@ density; camera changes reuse the geometry. Hidden sources are pruned from the
 cache. This avoids repeating control edits and tessellation per viewport;
 native performance equivalence has not been measured.
 
+[`EditPtOn`](commands/edit-points.md) uses this workflow with curve edit stations.
+Its preview cache also includes grip mode. Moving an edit point can change other
+controls while preserving the unselected edit stations; its behavior has separate
+implementation regressions and is outside the native control-grip captures below.
+
 ## Evidence and limits
 
 Thirty-two Rhino 8.32.26160.13001 workflows were captured in an empty owned document

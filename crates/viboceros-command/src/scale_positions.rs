@@ -307,13 +307,18 @@ fn apply(
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let copies = document.copy_object_geometries_in_source_groups(staged)?;
         for (&source, &copy) in ids.iter().zip(&copies) {
-            if document.control_point_locations(source).is_some() {
+            if let Some(mode) = document.grip_mode(source) {
                 let selected = document
                     .selected_control_points()
                     .filter(|(p, _)| p.object == source)
                     .map(|(p, _)| p.index)
                     .collect::<Vec<_>>();
-                document.enable_control_points([copy])?;
+                match mode {
+                    viboceros_document::GripMode::Control => {
+                        document.enable_control_points([copy])?
+                    }
+                    viboceros_document::GripMode::Edit => document.enable_edit_points([copy])?,
+                };
                 document.select_control_points(
                     selected
                         .into_iter()
@@ -370,6 +375,58 @@ impl ScalePositionsPrompt {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn copying_positions_preserves_edit_grip_mode_and_picks() {
+        use viboceros_document::{ControlPointId, GripMode};
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        registry
+            .execute(&mut doc, "ControlPointCurve 2 0,0,0 1,3,0 3,-2,0 4,0,0")
+            .unwrap();
+        let source = doc.objects().next().unwrap().id();
+        let original = doc.object(source).unwrap().geometry().clone();
+        doc.enable_edit_points([source]).unwrap();
+        doc.select_objects_direct([source], SelectionMode::Add)
+            .unwrap();
+        doc.select_control_points(
+            [ControlPointId {
+                object: source,
+                index: 1,
+            }],
+            SelectionMode::Add,
+        )
+        .unwrap();
+        registry
+            .execute(&mut doc, "ScalePositions 0,0,0 2 Copy=Yes")
+            .unwrap();
+        let copy = doc.objects().find(|o| o.id() != source).unwrap().id();
+        assert_eq!(doc.object(source).unwrap().geometry(), &original);
+        assert_eq!(doc.grip_mode(source), Some(GripMode::Edit));
+        assert_eq!(doc.grip_mode(copy), Some(GripMode::Edit));
+        assert!(
+            doc.selected_control_points()
+                .any(|(p, _)| p.object == copy && p.index == 1)
+        );
+        let points = doc
+            .object(copy)
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+            .edit_points()
+            .unwrap()
+            .into_iter()
+            .map(|p| p.point)
+            .collect::<Vec<_>>();
+        assert_eq!(doc.control_point_locations(copy).unwrap(), points);
+        doc.undo().unwrap();
+        assert!(doc.object(copy).is_none());
+        doc.redo().unwrap();
+        assert_eq!(doc.grip_mode(copy), Some(GripMode::Edit));
+    }
 
     #[test]
     fn scale_positions_maps_centers_and_retains_selection_metadata_and_order() {

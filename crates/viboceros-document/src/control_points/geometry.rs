@@ -9,11 +9,51 @@ impl Geometry {
         transform: AffineTransform3,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.with_transformed_grips_in_mode(indices, transform, tolerance, GripMode::Control)
+    }
+
+    /// Reconstruct edit grips in the original curve basis; control grips retain
+    /// their existing direct control-net editing behavior.
+    pub fn with_transformed_grips_in_mode(
+        &self,
+        indices: &BTreeSet<usize>,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+        mode: GripMode,
+    ) -> Result<Self, GeometryError> {
+        if mode == GripMode::Edit {
+            let curve = self
+                .curve_ref()
+                .ok_or(GeometryError::UnsupportedControlPointEdit {
+                    context: "edit points require a curve",
+                })?
+                .to_nurbs()?;
+            let mut points = curve
+                .edit_points()?
+                .into_iter()
+                .map(|p| p.point)
+                .collect::<Vec<_>>();
+            if let Some(&index) = indices.last().filter(|&&index| index >= points.len()) {
+                return Err(GeometryError::InvalidControlPointIndex {
+                    index,
+                    count: points.len(),
+                });
+            }
+            if indices.is_empty() || transform == AffineTransform3::identity() {
+                return Ok(self.clone());
+            }
+            for &index in indices {
+                points[index] = transform.transform_point(points[index])?;
+            }
+            return Ok(Self::NurbsCurve(
+                curve.try_with_edit_points(&points, tolerance)?,
+            ));
+        }
         let count = match self {
             Self::NurbsCurve(curve) => curve.grip_count()?,
             Self::NurbsSurface(surface) => surface.grip_dimensions().into_iter().product(),
             Self::Mesh(mesh) => mesh.vertices().len(),
-            _ => self.grip_locations()?.len(),
+            _ => self.grip_locations(GripMode::Control)?.len(),
         };
         if let Some(&index) = indices.last().filter(|&&index| index >= count) {
             return Err(GeometryError::InvalidControlPointIndex { index, count });

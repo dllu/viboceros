@@ -464,8 +464,7 @@ impl Viewport {
                 let transform = transform.unwrap();
                 let partial = transform.grips.iter().any(|id| id.object == object.id());
                 let posed = if partial {
-                    let Some(geometry) =
-                        self.grip_preview_geometry(object, transform, document.tolerance())
+                    let Some(geometry) = self.grip_preview_geometry(object, transform, document)
                     else {
                         push_display_object(
                             &mut objects,

@@ -20,7 +20,7 @@ pub use blocks::{
 };
 mod control_points;
 mod duplicate;
-pub use control_points::ControlPointId;
+pub use control_points::{ControlPointId, GripMode};
 mod geometry;
 mod geometry_snapshot;
 pub use geometry_snapshot::GeometrySnapshot;

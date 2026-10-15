@@ -34,6 +34,7 @@ Rhino's complete command set is still a work in progress.
 - [Rebuild surface control nets](rebuild-surfaces.md)
 - [Rebuild curve previews](rebuild-curves.md)
 - [Smooth controls and mesh vertices](smooth.md)
+- [EditPtOn and curve edit-point transforms](edit-points.md)
 - [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)
 - [Single-span surface conversion](single-spans.md)

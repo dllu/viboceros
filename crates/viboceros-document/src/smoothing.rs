@@ -77,6 +77,13 @@ impl Document {
             self.resolve_object_indices(objects.iter().copied().chain(picks.keys().copied()))?;
         for &index in &indices {
             self.ensure_object_editable(&self.objects[index])?;
+            let id = self.objects[index].id;
+            if picks.contains_key(&id) && self.grip_mode(id) == Some(GripMode::Edit) {
+                return Err(GeometryError::UnsupportedControlPointEdit {
+                    context: "Smooth on edit-point grips",
+                }
+                .into());
+            }
         }
         let order = indices
             .iter()

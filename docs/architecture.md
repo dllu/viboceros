@@ -405,6 +405,9 @@ and near-collinear convergence remain unresolved. Its
 selection prompt and retains native cancellation/Undo/Redo behavior. Shared
 [control-point state](control-points.md) retains source identities and immutable
 geometry snapshots for viewport picking and Circle grip input.
+[Curve edit-point mode](commands/edit-points.md) shares that state and preview
+cache, reconstructing transformed Greville stations in the original NURBS basis
+with the existing interpolation and exact rational station checks.
 [Partial grip transforms](grip-transforms.md) stage mixed whole-object/control
 edits through a shared geometry operation; history exchanges grip display and
 picks. The viewport shares immutable partial preview geometry across views.

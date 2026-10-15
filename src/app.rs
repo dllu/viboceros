@@ -9802,6 +9802,7 @@ mod tests {
     mod draft_angle;
     mod edge_analysis;
     mod edge_fillet;
+    mod edit_points;
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_surface;

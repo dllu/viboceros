@@ -6,11 +6,12 @@ use std::{
     collections::{BTreeMap, BTreeSet, HashSet},
     rc::Rc,
 };
-use viboceros_document::{GeometrySnapshot, Object};
+use viboceros_document::{GeometrySnapshot, GripMode, Object};
 use viboceros_geometry::AffineTransform3;
 
 struct Entry {
     source: GeometrySnapshot,
+    mode: GripMode,
     picks: BTreeSet<usize>,
     transform: AffineTransform3,
     tolerance: Tolerance,
@@ -34,8 +35,10 @@ impl Viewport {
         &self,
         object: &Object,
         preview: TransformedObjects<'_>,
-        tolerance: Tolerance,
+        document: &Document,
     ) -> Option<Rc<DisplayGeometry>> {
+        let tolerance = document.tolerance();
+        let mode = document.grip_mode(object.id())?;
         let picks = preview
             .grips
             .iter()
@@ -49,6 +52,7 @@ impl Viewport {
         let mut cache = self.grip_preview_cache.borrow_mut();
         let stale = cache.entries.get(&object.id()).is_none_or(|entry| {
             !entry.source.shares_storage_with(object.geometry_snapshot())
+                || entry.mode != mode
                 || entry.picks != picks
                 || entry.transform != preview.transform
                 || entry.tolerance != tolerance
@@ -57,12 +61,13 @@ impl Viewport {
         if stale {
             let geometry = object
                 .geometry()
-                .with_transformed_grips(&picks, preview.transform, tolerance)
+                .with_transformed_grips_in_mode(&picks, preview.transform, tolerance, mode)
                 .ok()?;
             cache.entries.insert(
                 object.id(),
                 Entry {
                     source: object.geometry_snapshot().clone(),
+                    mode,
                     picks,
                     transform: preview.transform,
                     tolerance,
@@ -111,7 +116,7 @@ mod tests {
         let before = format!("{doc:?}");
         let views = Viewport::standard_views();
         let geometry = views[0]
-            .grip_preview_geometry(doc.object(id).unwrap(), preview, doc.tolerance())
+            .grip_preview_geometry(doc.object(id).unwrap(), preview, &doc)
             .unwrap();
         let Geometry::NurbsCurve(curve) = &*geometry.geometry else {
             panic!("expected curve")
@@ -129,11 +134,49 @@ mod tests {
         );
         for view in &views {
             let reused = view
-                .grip_preview_geometry(doc.object(id).unwrap(), preview, doc.tolerance())
+                .grip_preview_geometry(doc.object(id).unwrap(), preview, &doc)
                 .unwrap();
             assert!(Rc::ptr_eq(&geometry, &reused));
         }
         assert_eq!(format!("{doc:?}"), before);
+        // A display-only mode switch leaves the geometry snapshot unchanged,
+        // but changes the meaning of the same selected grip index.
+        doc.enable_edit_points([id]).unwrap();
+        let edit_geometry = views[0]
+            .grip_preview_geometry(doc.object(id).unwrap(), preview, &doc)
+            .unwrap();
+        assert!(!Rc::ptr_eq(&geometry, &edit_geometry));
+        let Geometry::NurbsCurve(edit_curve) = &*edit_geometry.geometry else {
+            panic!("expected curve")
+        };
+        let source = doc
+            .object(id)
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        for (index, edit) in source.edit_points().unwrap().iter().enumerate() {
+            let target = if index == 0 {
+                transform.transform_point(edit.point).unwrap()
+            } else {
+                edit.point
+            };
+            assert!(
+                edit_curve
+                    .evaluate_on_side(edit.parameter, edit.side)
+                    .unwrap()
+                    .distance_to(target)
+                    .unwrap()
+                    < 1e-8
+            );
+        }
+        let reused = views[1]
+            .grip_preview_geometry(doc.object(id).unwrap(), preview, &doc)
+            .unwrap();
+        assert!(Rc::ptr_eq(&edit_geometry, &reused));
+        doc.enable_control_points([id]).unwrap();
         let different = views[0]
             .grip_preview_geometry(
                 doc.object(id).unwrap(),
@@ -141,7 +184,7 @@ mod tests {
                     transform: AffineTransform3::identity(),
                     ..preview
                 },
-                doc.tolerance(),
+                &doc,
             )
             .unwrap();
         assert!(!Rc::ptr_eq(&geometry, &different));
@@ -160,7 +203,7 @@ mod tests {
         )])
         .unwrap();
         let edited = views[1]
-            .grip_preview_geometry(doc.object(id).unwrap(), preview, doc.tolerance())
+            .grip_preview_geometry(doc.object(id).unwrap(), preview, &doc)
             .unwrap();
         assert!(!Rc::ptr_eq(&different, &edited));
         let invalid = [ControlPointId {
@@ -175,7 +218,7 @@ mod tests {
                         grips: &invalid,
                         ..preview
                     },
-                    doc.tolerance()
+                    &doc
                 )
                 .is_none()
         );

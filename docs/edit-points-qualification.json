@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "curve_edit_grips_implemented": true,
+  "full_native_parity": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "scope_notes": [
+    "EditPtOn displays curve Greville points without replacing source geometry or consuming model history. PointsOn switches back to controls; mode switches clear the owner grip picks.",
+    "Move and the existing affine grip transforms reconstruct the original degree, knots, control count, parameter domain and weights through the shared original-basis interpolation and exact rational station checks. Curve primitives promote to NURBS only when edited.",
+    "The document stages mixed object/grip outputs and Copy, preserving source geometry, selection and Redo when a later grip overflows. Display mode and picks share the existing history exchange policy.",
+    "Viewport previews use the same edit operation and cache the grip mode alongside source snapshot, indices, transform, tolerance and density.",
+    "Whole-object ScalePositions Copy preserves the source grip mode and picked indices on the copied owner.",
+    "The shared portable faer interpolation solver is used for document edit grips in both application build configurations. Native-smlib enablement does not imply a new native grip interpolation path.",
+    "Limits: degree at most 17, at most 1000 stored controls, common-sign rational weights, clamped open/closed inputs or periodic inputs with exact repeated tails. Full-order knots retain sided stations.",
+    "Smooth rejects selected edit grips. SetPt does not accept grips. SubD editing, closed seam aliases, native ordering, full Rhino behavior and performance remain unqualified.",
+    "No new live Rhino captures were obtained; live retesting was deferred because of the recorded Wine SSPI startup issue. Retained native control-grip replays exercise shared code and do not qualify edit-grip behavior."
+  ],
+  "source_sha256": {
+    "README.md": "4c4e75b962ffc2319bc6f2307b0ffa71725f28c521b71c477689405e037a89b4",
+    "crates/viboceros-command/src/control_points.rs": "b40f95bcde970eafc49b828375808e907b79d5fbf16a5b8ecea31020aff3e7ac",
+    "crates/viboceros-command/src/lib.rs": "014e6b1dce5f67f2eb5cbb67f81a9bc291e249a91176d90bae3ca252fc1703ad",
+    "crates/viboceros-command/src/scale_positions.rs": "f0efe3833e591a0ab0126cadfae9b278e763e042ca7eb596fd5a190b24811f6c",
+    "crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
+    "crates/viboceros-document/src/control_points/edit_tests.rs": "38937ec5ad57ddd91d3a46cddb5626289d911a19974b8962691b2ece297a9612",
+    "crates/viboceros-document/src/control_points/geometry.rs": "2229e7ffc828d64d606f3576eb16f404b1ce724599385811206dc215ba383097",
+    "crates/viboceros-document/src/control_points/transform.rs": "77d0c8605f33e22ffb2c7b7d508b7aed0e439b9b54602cc0a62ad5e0889b7175",
+    "crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
+    "crates/viboceros-document/src/smoothing.rs": "c65910fae379cea9b221114c4f6c83898da7480dda0a84d9acc456a9bfd05033",
+    "crates/viboceros-geometry/src/curve_edit_points.rs": "8b80112816cca67852196406029b80ece5559160cc08839464ecf79fa8205ad4",
+    "crates/viboceros-geometry/src/curve_edit_points/tests.rs": "abad8958a1f58128d79dc97a80e9710cd68155625f07c0a1e2b8ceefc977809f",
+    "docs/architecture.md": "2b2e1dac83d9e887613f3987318fe87bcdb4a0861f3d9b922aa03a4746fc2341",
+    "docs/commands/README.md": "abfae0c2c2f9ca3f549b9a6663760a16bad66bafc51733530721361f800b4ccd",
+    "docs/commands/edit-points.md": "3cfadfc31a2eec4713f5bb34d9ee81da2a9c72f7e280255f16d75da29ccf41e0",
+    "docs/control-points.md": "647e6cd3e24443cf4adcadc1ea353d10d3bf383b98dd267562b0a2b6d8fc0e25",
+    "docs/grip-transforms.md": "31f5cc6964427af6ff07ad105221f60e009b3ee0eb334388d1246e0965edb892",
+    "src/app.rs": "9b2f3851a4452323f51e8210979811bfcf3981049644860fe03c7c627acc1402",
+    "src/app/tests/edit_points.rs": "9eb9390f5820aa76d223096d8471b87197522f9c8d27fcfc94876fcb1e25cdbd",
+    "src/viewport/affine_preview.rs": "5579cbb6deb1a8edb5ad82db9e58035c7b783fc32e714cdc504a522005dfdeeb",
+    "src/viewport/clipping.rs": "347de01ba764da7c14b14aca05234355de910f9a6899f72717de82940b4f3593",
+    "src/viewport/grip_preview.rs": "4d95074399a397db7eb8c3f390221b4bb018b4ca39b7a5b95651b76b3f00f850",
+    "src/viewport/mirror_preview.rs": "4f0eefe744cdd0554b1841a22d0338f2ac1b1ba810872085fef59c11e6e862d5",
+    "src/viewport/scene.rs": "c506506a9b7e64f73425a336dccb367a04d28c5f94c4bb334edf260ad767ec23",
+    "src/viewport/translation_preview.rs": "75b3dfb65df19ef5744bd75a804140e857ed83969db18403f20514535424e2c4"
+  },
+  "validation": {
+    "cargo test -p viboceros-document --lib --quiet": {
+      "passed": 269,
+      "ignored": 5
+    },
+    "cargo test -p viboceros-document control_points --lib --quiet": {
+      "passed": 10
+    },
+    "cargo test -p viboceros-command reports_sorted_help --lib --quiet": {
+      "passed": 1
+    },
+    "cargo test -p viboceros edit_points --quiet": {
+      "passed": 2
+    },
+    "cargo test -p viboceros grip --quiet": {
+      "passed": 18
+    },
+    "cargo test -p viboceros --features native-smlib edit_points --quiet": {
+      "passed": 2
+    },
+    "cargo test -p viboceros --features native-smlib grip --quiet": {
+      "passed": 18
+    },
+    "cargo clippy -p viboceros -p viboceros-command -p viboceros-document --all-targets -- -D warnings": "passed",
+    "cargo clippy -p viboceros -p viboceros-command -p viboceros-document --all-targets --features native-smlib -- -D warnings": "passed",
+    "cargo fmt --all -- --check": "passed",
+    "cargo test -p viboceros-command scale_positions --lib --quiet": {
+      "passed": 3
+    },
+    "cargo test -p viboceros-command --features native-smlib scale_positions --lib --quiet": {
+      "passed": 3
+    },
+    "cargo test -p viboceros --release smooth --quiet": {
+      "passed": 5
+    }
+  }
+}

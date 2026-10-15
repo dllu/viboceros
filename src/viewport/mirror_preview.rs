@@ -69,7 +69,7 @@ impl Viewport {
                 .collect::<std::collections::BTreeSet<_>>();
             if !owners.iter().all(|id| {
                 document.object(*id).is_some_and(|object| {
-                    self.grip_preview_geometry(object, objects, document.tolerance())
+                    self.grip_preview_geometry(object, objects, document)
                         .is_some()
                 })
             }) {

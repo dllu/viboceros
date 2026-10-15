@@ -5,6 +5,11 @@ purple squares; selected points appear orange. `PointsOff` hides all control
 points and clears grip selection while retaining object selection. These display
 commands preserve model geometry, Undo and Redo.
 
+[`EditPtOn`](commands/edit-points.md) displays curve Greville edit points through
+the same picking and transform workflow. `PointsOn` switches back to control
+points; switching modes clears the owner's selected indices. `PointsOff` hides
+either mode. Grip mode is stored with the display snapshot and history.
+
 Click or drag a selection window to select visible control points. Shift adds
 and Ctrl removes picks. Global `SelAll` includes displayed control points and
 their parent objects; FitPoints ignores parent geometry as a fitting input.
