@@ -13266,7 +13266,8 @@ def _execute(operation, iterations, tolerance):
         try:
             source = _nurbs_curve_from_definition(operation["curve"])
             def pull_curve_mesh():
-                result = source.PullToMesh(mesh, float(tolerance["absolute"]))
+                result = (source.PullToMesh(mesh, float(tolerance["absolute"]), True)
+                          if operation.get("loose", False) else source.PullToMesh(mesh, float(tolerance["absolute"])))
                 try:
                     if result is None:
                         return dict(curves=[])
@@ -13278,7 +13279,10 @@ def _execute(operation, iterations, tolerance):
                         samples.pop()
                     if tuple(samples[-1]) < tuple(samples[0]):
                         samples.reverse()
-                    return dict(curves=[dict(samples=samples, length=float(result.GetLength()), closed=bool(result.IsClosed))])
+                    record = dict(samples=samples, length=float(result.GetLength()), closed=bool(result.IsClosed))
+                    if operation.get("loose", False):
+                        record["definition"] = _nurbs_curve_definition(result)
+                    return dict(curves=[record])
                 finally:
                     if result is not None:
                         result.Dispose()
@@ -13304,8 +13308,8 @@ def _execute(operation, iterations, tolerance):
                 return _measure(iterations, project_point)
             curve = _nurbs_curve_from_definition(operation["curve"])
             def project_curve():
-                results = Rhino.Geometry.Curve.ProjectToMesh(
-                    curve, mesh, direction, float(tolerance["absolute"]))
+                results = (Rhino.Geometry.Curve.ProjectToMesh([curve], [mesh], direction, float(tolerance["absolute"]), True)
+                           if operation.get("loose", False) else Rhino.Geometry.Curve.ProjectToMesh(curve, mesh, direction, float(tolerance["absolute"])))
                 records = []
                 try:
                     for result in results or []:
@@ -13315,6 +13319,8 @@ def _execute(operation, iterations, tolerance):
                         samples = [_xyz(result.PointAt(t)) for t in parameters]
                         if tuple(samples[-1]) < tuple(samples[0]): samples.reverse()
                         records.append(dict(samples=samples,length=float(result.GetLength()),closed=bool(result.IsClosed)))
+                        if operation.get("loose", False):
+                            records[-1]["definition"] = _nurbs_curve_definition(result)
                     records.sort(key=lambda r: tuple(r['samples'][0]))
                     return dict(curves=records)
                 finally:
@@ -13359,7 +13365,9 @@ def _execute(operation, iterations, tolerance):
             if brep is None or brep.Faces.Count != 1:
                 raise ValueError("could not construct pull face")
             def pull_curve_surface():
-                results = Rhino.Geometry.Curve.PullToBrepFace(source, brep.Faces[0], float(tolerance["absolute"]))
+                loose = kind == "pull_curve_surface_command" and operation.get("loose", False)
+                results = (Rhino.Geometry.Curve.PullToBrepFace(source, brep.Faces[0], float(tolerance["absolute"]), True)
+                           if loose else Rhino.Geometry.Curve.PullToBrepFace(source, brep.Faces[0], float(tolerance["absolute"])))
                 records = []
                 try:
                     for result in results or []:
@@ -13371,6 +13379,8 @@ def _execute(operation, iterations, tolerance):
                             samples.pop()
                         if tuple(samples[-1]) < tuple(samples[0]): samples.reverse()
                         records.append(dict(samples=samples, length=float(result.GetLength()), closed=bool(result.IsClosed)))
+                        if loose:
+                            records[-1]["definition"] = _nurbs_curve_definition(result)
                     records.sort(key=lambda r: tuple(r['samples'][0]))
                     return dict(curves=records)
                 finally:
@@ -13388,8 +13398,10 @@ def _execute(operation, iterations, tolerance):
         curve = _nurbs_curve_from_definition(operation["curve"])
         surface = brep = None
         def project_curve():
-            results = Rhino.Geometry.Curve.ProjectToBrep(
-                [curve], [brep], direction, float(tolerance["absolute"]))
+            if operation.get("loose", False):
+                results, _, _ = Rhino.Geometry.Curve.ProjectToBrep([curve], [brep], direction, float(tolerance["absolute"]), True)
+            else:
+                results = Rhino.Geometry.Curve.ProjectToBrep([curve], [brep], direction, float(tolerance["absolute"]))
             records = []
             try:
                 for result in results or []:
@@ -13401,6 +13413,8 @@ def _execute(operation, iterations, tolerance):
                         samples.reverse()
                     records.append(dict(samples=samples, length=float(result.GetLength()),
                                         closed=bool(result.IsClosed)))
+                    if operation.get("loose", False):
+                        records[-1]["definition"] = _nurbs_curve_definition(result)
                 records.sort(key=lambda r: tuple(r['samples'][0]))
                 return dict(curves=records)
             finally:

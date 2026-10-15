@@ -974,7 +974,7 @@ and removes complete spatial seam duplicates. Mesh curves reuse bounded source
 approximation, the shared mesh index and exact triangle Voronoi restrictions;
 quadratic distance bounds resolve closest paths across faces, edges and vertices.
 Ambiguous discontinuous paths decline before document mutation. See
-[mesh Pull](commands/pull-mesh.md). Loose remains pending.
+[mesh Pull](commands/pull-mesh.md).
 
 Directional `Project` reuses exact affine transforms for planar faces, shared
 curve/face clipping, and the existing usd-brep coupled surface intersector for
@@ -984,7 +984,13 @@ The coordinator stages all results before document admission and requires
 common-sign rational weights for finite sweep bounds. The app supplies source
 and target picking, session options, and finishing-view CPlane/camera directions.
 See [Project](commands/project.md) for supported behavior and qualifications;
-SubD targets, Loose, grips, and edge subobjects are pending.
+SubD targets, grips, and edge subobjects are pending.
+
+[Loose Project/Pull](commands/projection-loose.md) shares sided Greville
+locations and original-knot/weight interpolation. Existing faer collocation and
+usd-brep fixed-row/nonuniform periodic solvers produce candidates; exact
+rational station bounds admit their requested edit-point positions. Shared
+command staging retains one history edit and separate app preferences.
 
 Mesh Project targets reuse a borrowed bounding-volume index, conservative
 interval slabs and exact point/triangle admission. The existing shorter quad

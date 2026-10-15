@@ -1,6 +1,6 @@
 //! Closest surface pulling shares projection input, layers and atomic admission.
 use super::*;
-pub(super) const USAGE: &str = "Pull [Sources=id,...] [Targets=id,...] [InfinitePlane=definition] [SubCrv=id,start,end] [SubCrvLength=id,start,length] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject] [Loose=No]";
+pub(super) const USAGE: &str = "Pull [Sources=id,...] [Targets=id,...] [InfinitePlane=definition] [SubCrv=id,start,end] [SubCrvLength=id,start,length] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject] [Loose=Yes|No]";
 pub(super) struct PullCommand;
 impl Command for PullCommand {
     fn name(&self) -> &'static str {

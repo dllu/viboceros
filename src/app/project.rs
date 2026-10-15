@@ -10,6 +10,7 @@ pub(super) struct ProjectOptions {
     direction: String,
     delete_input: bool,
     output_layer: &'static str,
+    loose: bool,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum PlaneOperation {
@@ -72,6 +73,7 @@ impl Default for ProjectOptions {
             direction: "CPlaneZ".into(),
             delete_input: false,
             output_layer: "Current",
+            loose: false,
         }
     }
 }
@@ -112,6 +114,11 @@ impl ProjectOptions {
                 "no" => self.delete_input = false,
                 _ => return false,
             },
+            "loose" => match value.to_ascii_lowercase().as_str() {
+                "yes" => self.loose = true,
+                "no" => self.loose = false,
+                _ => return false,
+            },
             "outputlayer" => {
                 self.output_layer = match value.to_ascii_lowercase().as_str() {
                     "current" => "Current",
@@ -132,18 +139,14 @@ impl ProjectOptions {
         if pull && key.is_some_and(|k| k.eq_ignore_ascii_case("Direction")) {
             return false;
         }
-        if pull && key.is_some_and(|k| k.eq_ignore_ascii_case("Loose")) {
-            return argument
-                .split_once('=')
-                .is_some_and(|(_, v)| v.trim_start_matches('_').eq_ignore_ascii_case("No"));
-        }
         self.argument(argument)
     }
     pub(super) fn pull_command(&self) -> String {
         format!(
-            "Pull DeleteInput={} OutputLayer={}",
+            "Pull DeleteInput={} OutputLayer={} Loose={}",
             if self.delete_input { "Yes" } else { "No" },
-            self.output_layer
+            self.output_layer,
+            if self.loose { "Yes" } else { "No" }
         )
     }
     pub(super) fn command(&self) -> String {
@@ -151,10 +154,11 @@ impl ProjectOptions {
     }
     fn command_with_direction(&self, direction: &str) -> String {
         format!(
-            "Project Direction={} DeleteInput={} OutputLayer={}",
+            "Project Direction={} DeleteInput={} OutputLayer={} Loose={}",
             direction,
             if self.delete_input { "Yes" } else { "No" },
-            self.output_layer
+            self.output_layer,
+            if self.loose { "Yes" } else { "No" }
         )
     }
 }

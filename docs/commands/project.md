@@ -2,7 +2,7 @@
 
 Project curves and points in both directions along the finishing viewport's
 construction-plane Z axis onto finite NURBS surfaces, B-rep faces or meshes. Face
-boundaries and holes clip the results. The default build supports planar curve
+boundaries and holes clip results with `Loose=No`. The default build supports planar curve
 targets and the existing analytic point contact queries; `native-smlib` adds
 curved curve targets and general point contacts.
 
@@ -18,6 +18,7 @@ points before projecting. Esc restores the selection from before the prompt.
 Project [Sources=id[,id...]] [Targets=id[,id...]]
         [Direction=CPlaneZ|View|Custom|x,y,z] [DeleteInput=Yes|No]
         [OutputLayer=Current|Input|TargetObject]
+        [Loose=Yes|No]
         [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length]
 ```
 
@@ -77,7 +78,9 @@ No additional projection solver or vendor-source patch is introduced.
 
 InfinitePlane targets use the [IP picker and plane definitions](project-infinite-plane.md).
 
-SubD targets, grips, edge subobjects and Loose projection are pending. Curved
+[Loose projection](projection-loose.md) moves edit points and reconstructs the
+original NURBS basis. Its point constraints do not clip the curve between them.
+SubD targets, grips and edge subobjects remain pending. Curved
 source kinks and distinct target faces can produce separate objects. Coincident,
 collapsed or singular source relations can be declined by existing
 contact/preparation checks. Continuous

@@ -207,6 +207,7 @@ mod offset_mesh;
 mod offset_surface;
 mod pipe;
 mod project;
+mod project_loose;
 mod pull;
 mod selection_commands;
 mod selection_object;

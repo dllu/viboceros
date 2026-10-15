@@ -46,22 +46,10 @@
     "Fresh Rhino geometry, native command/getter parity, vertex counts and comparative speed remain unqualified. The pre-existing Wine SSPI startup issue prevents fresh capture."
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/error.rs": "9c63b02462f43ce10d6cda4d68b97c7f4eafe8532352584a1d0e6b666825954d",
     "crates/viboceros-geometry/src/mesh/projection.rs": "8f4a27d1f03ba2353d78199928b45a057bcf543f427e0ae627a6142ce23df4e9",
     "crates/viboceros-geometry/src/mesh/projection/pull/feature.rs": "737a3463a86d7616fcc824599f7426e1807f129afd0d3668e2f9ac821a2fada5",
-    "crates/viboceros-command/src/pull.rs": "3cd62964e4989879d5a8aae59ec934315f3a7b37efde3d25c933de961bbd44c2",
-    "crates/viboceros-command/src/pull/tests.rs": "a9c80bc5199b190153c17a2257394fc1205229a7c2553b5caabe7684b5b5f672",
-    "crates/viboceros-oracle/src/lib.rs": "4e7e6c0d58787301c554597e2deb95df069b40ad724cdd236325342af308cbae",
-    "crates/viboceros-oracle/src/project.rs": "205d92e8afd69d3020151c0cced98b0676c3a1398024380b138187968415e2eb",
-    "crates/viboceros-oracle/src/mesh_pull.rs": "61f376ae920717e861a27d81813aa67c4731f3e724922d7079059052db80f1c2",
-    "src/app/tests/pull.rs": "5246de734148c5e31cc545cec07e4e9750255f5acf46c2b7029d2664393f045c",
-    "tools/rhino_oracle/rhino_worker.py": "a12159b0f2d073bc5ef8cad67b9c4f67a01da18d07e6b341d7fe97b447f51ee0",
-    "tools/rhino_oracle/test_worker.py": "4291adac27b9b057c9e398e8fd52b6c1116fba995233f251fdbaf2b7292e8c34",
     "tools/rhino_oracle/test_mesh_pull.py": "132048a6e4fc68da87c8e595fb2c3baea357c9049ea7911745a75b9260c528b5",
-    "tools/rhino_oracle/fixtures/pull_curve_mesh.json": "3df93446f72ffe6e694969483784c29cc3d43775785b815040969271af3e6b44",
-    "docs/commands/pull.md": "56dafe3a381e3e41c45ccbb84bd6cdf0d5d666c9c747b3d474011d7e921b2257",
-    "docs/architecture.md": "ee41d0426351180fadca1480cb74d6be912ca50f550a270d9b898db1312e38eb",
-    "README.md": "f21edd31e4cbb3c312f31f0ef7b75cf9cf128d1bbe8346344770d5ecbbfc204a"
+    "tools/rhino_oracle/fixtures/pull_curve_mesh.json": "3df93446f72ffe6e694969483784c29cc3d43775785b815040969271af3e6b44"
   },
   "output_sha256": {
     "tools/rhino_oracle/observations/pull_curve_mesh_viboceros_portable.json": "ef72527fdb2c201d623bdb92130bb806dd949d03e6550296a104b5ba7194677a",
@@ -72,6 +60,18 @@
     "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "1fe66c6f212f3f1131ab39ee31ba6abdef1a7283b627c232e9110049d90cf3d0",
     "151fd7d5f9dfa7eeb836466e015c06abc4af067e:docs/curve-approximation.md": "0636e5b96233bb30ed3c81dc6205119c635dd12fc55ba125bb6aa154d54ff9f1",
     "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/mesh/projection/pull.rs": "a0220cc0f79b20f67db455b6936c1b7cc93f9632c1737665462bc8da40068d23",
-    "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/mesh/projection/pull/tests.rs": "28874d3c0c69f986b2b52cf7e86bc45038e0d6b5ae337c667d0ac9b9fa33d1ad"
+    "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/mesh/projection/pull/tests.rs": "28874d3c0c69f986b2b52cf7e86bc45038e0d6b5ae337c667d0ac9b9fa33d1ad",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-oracle/src/mesh_pull.rs": "61f376ae920717e861a27d81813aa67c4731f3e724922d7079059052db80f1c2",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:docs/commands/pull.md": "56dafe3a381e3e41c45ccbb84bd6cdf0d5d666c9c747b3d474011d7e921b2257",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-command/src/pull/tests.rs": "a9c80bc5199b190153c17a2257394fc1205229a7c2553b5caabe7684b5b5f672",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-oracle/src/lib.rs": "4e7e6c0d58787301c554597e2deb95df069b40ad724cdd236325342af308cbae",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-geometry/src/error.rs": "9c63b02462f43ce10d6cda4d68b97c7f4eafe8532352584a1d0e6b666825954d",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:README.md": "f21edd31e4cbb3c312f31f0ef7b75cf9cf128d1bbe8346344770d5ecbbfc204a",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:docs/architecture.md": "ee41d0426351180fadca1480cb74d6be912ca50f550a270d9b898db1312e38eb",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:tools/rhino_oracle/rhino_worker.py": "a12159b0f2d073bc5ef8cad67b9c4f67a01da18d07e6b341d7fe97b447f51ee0",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:src/app/tests/pull.rs": "5246de734148c5e31cc545cec07e4e9750255f5acf46c2b7029d2664393f045c",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-oracle/src/project.rs": "205d92e8afd69d3020151c0cced98b0676c3a1398024380b138187968415e2eb",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-command/src/pull.rs": "3cd62964e4989879d5a8aae59ec934315f3a7b37efde3d25c933de961bbd44c2",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:tools/rhino_oracle/test_worker.py": "4291adac27b9b057c9e398e8fd52b6c1116fba995233f251fdbaf2b7292e8c34"
   }
 }

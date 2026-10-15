@@ -199,7 +199,7 @@ fn invalid_options_and_later_unsupported_targets_roll_back() {
     for option in [
         "Direction=Custom",
         "Direction=0,0,1",
-        "Loose=Yes",
+        "Loose=Maybe",
         "OutputLayer=Other",
         "DeleteInput=Maybe",
     ] {

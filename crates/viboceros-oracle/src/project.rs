@@ -61,6 +61,7 @@ pub(super) fn run(
     surface: &NurbsSurfaceDefinition,
     direction: [f64; 3],
     tolerance: Tolerance,
+    loose: bool,
 ) -> Result<(Value, u64), ProbeError> {
     let source = nurbs_curve_from_definition(curve)?;
     let target = nurbs_surface_from_definition(surface)?;
@@ -71,6 +72,7 @@ pub(super) fn run(
         direction,
         tolerance,
         false,
+        loose,
     )
 }
 
@@ -81,6 +83,7 @@ fn run_geometry(
     direction: [f64; 3],
     tolerance: Tolerance,
     point_output: bool,
+    loose: bool,
 ) -> Result<(Value, u64), ProbeError> {
     let direction = Vector3::try_from(direction)?
         .normalized_nonzero()?
@@ -94,8 +97,11 @@ fn run_geometry(
         CommandRegistry::with_builtins().execute(
             &mut doc,
             &format!(
-                "Project Direction={},{},{}",
-                direction[0], direction[1], direction[2]
+                "Project Direction={},{},{} Loose={}",
+                direction[0],
+                direction[1],
+                direction[2],
+                if loose { "Yes" } else { "No" }
             ),
         )?;
         let mut curves = Vec::new();
@@ -129,9 +135,12 @@ fn run_geometry(
             if compare_point(points.last().unwrap(), &points[0]).is_lt() {
                 points.reverse();
             }
-            curves.push(
-                json!({"samples":points,"length":c.length(tolerance)?,"closed":c.is_closed()?}),
-            );
+            let mut record =
+                json!({"samples":points,"length":c.length(tolerance)?,"closed":c.is_closed()?});
+            if loose {
+                record["definition"] = nurbs_curve_definition_value(&c);
+            }
+            curves.push(record);
         }
         curves.sort_by(|a, b| {
             let point = |v: &Value| std::array::from_fn(|i| v["samples"][0][i].as_f64().unwrap());
@@ -168,6 +177,7 @@ pub(super) fn mesh_curve(
     faces: &[Vec<u32>],
     direction: [f64; 3],
     tolerance: Tolerance,
+    loose: bool,
 ) -> Result<(Value, u64), ProbeError> {
     run_geometry(
         iterations,
@@ -176,6 +186,7 @@ pub(super) fn mesh_curve(
         direction,
         tolerance,
         false,
+        loose,
     )
 }
 pub(super) fn mesh_point(
@@ -193,6 +204,7 @@ pub(super) fn mesh_point(
         direction,
         tolerance,
         true,
+        false,
     )
 }
 

@@ -43,8 +43,6 @@
     "crates/viboceros-smlib/native/CMakeLists.txt": "189167987cb5299bac0bd4cd7b4c8d938e73ca2cdbeb6c1b1919307c20420e49",
     "crates/viboceros-smlib/native/bridge.cpp": "36383d5f510931ee70d114a5cf2a409b320ac0f3150a8f3373fba331f272361c",
     "crates/viboceros-smlib/native/bridge.h": "c937106c073c1e9343c5376e3a03ca70b1a6c089056a63ff1ac6701040e7ac9e",
-    "crates/viboceros-smlib/src/lib.rs": "3fdbb313d12c48817c84e2271accc28f4418f0efe0b6fc2a93363b5f2d163e4a",
-    "crates/viboceros-smlib/src/native.rs": "7ffce331b641baea299f1ee35c3a2d13d04f8d1a62f2c3c52c04c0ab47ba05f6",
     "crates/viboceros-smlib/src/native/surface_pull.rs": "89ca411ff11b6e3f94aa0d39261b8cae514ba3ebaf06ffa61b37666fb316275c",
     "crates/viboceros-smlib/src/native/surface_pull/tests.rs": "e875cf36ed04c7143c9bc788841ced0616f76c050e5d0fc53a3ef5bce18b6def",
     "crates/viboceros-smlib/src/native/surface_intersections.rs": "00b029d3a57ff98e8e41db27dca4f1e9d5000fc649dd1c899dec9413431bdd4b",
@@ -66,7 +64,9 @@
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:crates/viboceros-oracle/src/surface_pull.rs": "072d2d1978979b3ff6274dc7fc164230ae9ea6be0e021bc7164f2dca1d9e2878",
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:tools/rhino_oracle/rhino_worker.py": "5b88b1c53c2c65b1a8a2c653e802086ff0e1156ec188b1ef7b766d2583e177fa",
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:tools/rhino_oracle/test_worker.py": "a9f9916f87a2ab84e1d7cf2c17353dd3c403b27638a0ae25f3c5c3f2d9f7a430",
-    "0e6b430ef487df6626b39891c4e9a4add814d44b:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "3261b2144600a79614c8e273881108ae96f59238e05d66a2124a0ad1257fa6b2"
+    "0e6b430ef487df6626b39891c4e9a4add814d44b:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "3261b2144600a79614c8e273881108ae96f59238e05d66a2124a0ad1257fa6b2",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-smlib/src/native.rs": "7ffce331b641baea299f1ee35c3a2d13d04f8d1a62f2c3c52c04c0ab47ba05f6",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-smlib/src/lib.rs": "3fdbb313d12c48817c84e2271accc28f4418f0efe0b6fc2a93363b5f2d163e4a"
   },
   "current_patch_sha256": {
     "third_party/patches/usd-brep-surface-drop-start-normal.patch": "e428d3aeaa053816bcddc1af4681899db840f5300da006c26e515ba0d12f73ea"

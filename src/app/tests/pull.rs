@@ -1,5 +1,28 @@
 use super::*;
 #[test]
+fn loose_preferences_are_independent_and_execute_through_the_shared_picker() {
+    let (mut app, ids) = setup();
+    app.document
+        .select_objects_direct([ids[1]], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Project Loose=Yes");
+    assert!(app.project_options.command().contains("Loose=Yes"));
+    app.cancel_interactive_command(true);
+    enter(&mut app, "Pull");
+    assert!(app.command_log.back().unwrap().contains("Loose=No"));
+    enter(&mut app, "Loose=Yes");
+    enter(&mut app, &ids[0].to_string());
+    enter(&mut app, "");
+    assert!(app.intersection_prompt.is_none());
+    assert!(matches!(
+        app.document.selected_objects().next().unwrap().geometry(),
+        Geometry::NurbsCurve(_)
+    ));
+    assert_eq!(app.document.undo_label(), Some("Pull"));
+    enter(&mut app, "Undo");
+    assert!(app.document.object(ids[1]).is_some());
+}
+#[test]
 fn pull_mesh_target_completes_shared_picker_and_undo() {
     let mut app = test_app();
     let source = app

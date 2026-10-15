@@ -36,6 +36,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Infinite-plane projection and input](docs/commands/project-infinite-plane.md)
 - [IPlane intersections and shared plane picking](docs/commands/iplane.md)
 - [Pull curves and points toward surfaces and meshes](docs/commands/pull.md)
+- [Loose projection and pulling through edit points](docs/commands/projection-loose.md)
 - [Mesh curve pulling and qualifications](docs/commands/pull-mesh.md)
 - [Mesh projection and qualification](docs/commands/project-mesh.md)
 - [Bounded curve approximation and mesh Pull preparation](docs/curve-approximation.md)

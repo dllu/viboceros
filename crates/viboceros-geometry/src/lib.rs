@@ -24,6 +24,8 @@ mod curve_chamfer_pair;
 mod curve_connect_pair;
 mod curve_continuity;
 mod curve_edit;
+mod curve_edit_points;
+pub use curve_edit_points::{CurveEditPoint, CurveEditPointInterpolation};
 mod curve_evaluate;
 mod curve_fillet_operations;
 mod curve_fillet_pair;

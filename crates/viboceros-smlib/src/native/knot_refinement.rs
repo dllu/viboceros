@@ -280,6 +280,28 @@ pub fn morph_interpolation(
     })
 }
 
+/// Original Greville edit-point systems reuse native fixed-row or nonuniform
+/// periodic collocation, retaining shared reconstruction and exact admission.
+pub fn curve_edit_point_interpolation(
+    input: &viboceros_geometry::CurveEditPointInterpolation<'_>,
+) -> Result<Vec<f64>, GeometryError> {
+    solve_interpolation(
+        &input.system.system,
+        if input.periodic_shift.is_some() {
+            None
+        } else {
+            Some(input.system.fixed_rows)
+        },
+        input.periodic_shift,
+    )
+    .map_err(|error| match error {
+        Error::Geometry(e) => e,
+        error => GeometryError::InterpolationBackendFailed {
+            message: error.to_string(),
+        },
+    })
+}
+
 fn solve_with_fixed_rows(
     input: &viboceros_geometry::NurbsInterpolationSystem<'_>,
     fixed: Option<&[u8]>,

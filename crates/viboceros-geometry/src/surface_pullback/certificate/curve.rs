@@ -7,6 +7,29 @@ pub(super) struct Spline<const D: usize> {
     controls: Vec<[Rational; D]>,
 }
 impl<const D: usize> Spline<D> {
+    pub fn value_on_side(
+        &self,
+        t: &Rational,
+        side: crate::ParameterSide,
+        budget: &mut Budget,
+    ) -> Result<[Rational; D], GeometryError> {
+        let span = match side {
+            crate::ParameterSide::Left => self.knots.partition_point(|k| k < t),
+            crate::ParameterSide::Right => self.knots.partition_point(|k| k <= t),
+        }
+        .saturating_sub(1)
+        .clamp(self.degree, self.controls.len() - 1);
+        Ok(extract(
+            &self.knots,
+            self.degree,
+            span,
+            &self.controls[span - self.degree..=span],
+            t,
+            t,
+            budget,
+        )?[0]
+            .clone())
+    }
     pub fn cuts(&self) -> Vec<Rational> {
         self.knots
             .iter()

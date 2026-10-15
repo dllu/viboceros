@@ -7,12 +7,16 @@ pub(super) fn run(
     vertices: &[[f64; 3]],
     faces: &[Vec<u32>],
     tolerance: Tolerance,
+    loose: bool,
 ) -> Result<(Value, u64), ProbeError> {
     let mut source = Document::new(tolerance);
     let first = source.add_geometry(Geometry::NurbsCurve(nurbs_curve_from_definition(curve)?))?;
     let target = source.add_geometry(project::target_mesh(vertices, faces, tolerance)?)?;
     let registry = CommandRegistry::with_builtins();
-    let command = format!("Pull Sources={first} Targets={target}");
+    let command = format!(
+        "Pull Sources={first} Targets={target} Loose={}",
+        if loose { "Yes" } else { "No" }
+    );
     measure_probe(iterations, || {
         let mut doc = source.clone();
         registry.execute(&mut doc, &command)?;
@@ -30,7 +34,13 @@ pub(super) fn run(
             if compare_point(samples.last().unwrap(), &samples[0]).is_lt() {
                 samples.reverse();
             }
-            curves.push(json!({"samples":samples,"length":curve.length(tolerance)?,"closed":curve.is_closed()?}));
+            let mut record = json!({"samples":samples,"length":curve.length(tolerance)?,"closed":curve.is_closed()?});
+            if loose {
+                record["definition"] = nurbs_curve_definition_value(
+                    &object.geometry().nurbs_curve_representation()?.unwrap(),
+                );
+            }
+            curves.push(record);
         }
         curves.sort_by(|a, b| {
             let first = |v: &Value| std::array::from_fn(|i| v["samples"][0][i].as_f64().unwrap());

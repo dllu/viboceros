@@ -23,6 +23,35 @@ const MAX_DEPTH: usize = 48;
 const MAX_WORK: usize = 2_000_000;
 const MAX_BITS: u64 = 8192;
 
+pub(crate) fn edit_point_bounds(
+    curve: &NurbsCurve,
+    points: &[(Real, crate::ParameterSide, Point3)],
+    limit: Real,
+) -> Result<bool, GeometryError> {
+    let mut budget = Budget(MAX_WORK);
+    let Some(spline) = curve::Spline::spatial(curve, &mut budget)? else {
+        return Ok(false);
+    };
+    let domain = curve.domain();
+    let start = rational(*domain.start());
+    let length = rational(*domain.end()) - &start;
+    for &(t, side, point) in points {
+        let h = spline.value_on_side(&((rational(t) - &start) / &length), side, &mut budget)?;
+        let xyz = point.to_array();
+        let difference = std::array::from_fn(|i| {
+            if i == 3 {
+                h[3].clone()
+            } else {
+                &h[i] - rational(xyz[i]) * &h[3]
+            }
+        });
+        if algebra::norm_bound(&difference, limit).is_none() {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
 struct Budget(usize);
 impl Budget {
     fn charge(&mut self, n: usize) -> Result<(), GeometryError> {

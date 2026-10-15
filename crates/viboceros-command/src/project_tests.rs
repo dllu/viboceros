@@ -100,7 +100,7 @@ fn project_miss_and_invalid_later_target_preserve_history_selection_and_inputs()
         "Direction=0,0,0",
         "DeleteInput=Maybe",
         "Direction=View",
-        "Loose=Yes",
+        "Loose=Maybe",
     ] {
         assert!(r.execute(&mut d, &format!("Project {option}")).is_err());
         assert_eq!(format!("{d:?}"), format!("{before:?}"));

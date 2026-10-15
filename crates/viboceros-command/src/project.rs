@@ -6,7 +6,7 @@ mod tests;
 #[cfg(feature = "native-smlib")]
 use viboceros_geometry::{SurfaceIntersectionInput, SurfaceSurfaceIntersectionEvent};
 
-pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [InfinitePlane=definition] [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject]";
+pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [InfinitePlane=definition] [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject] [Loose=Yes|No]";
 pub(super) struct ProjectCommand;
 #[derive(Clone, Copy)]
 enum Layer {
@@ -81,7 +81,7 @@ fn bounded_target(target: &Geometry) -> Result<(), CommandError> {
     }
 }
 
-fn line(
+pub(super) fn line(
     point: Point3,
     target: &Geometry,
     direction: Vector3,
@@ -269,6 +269,7 @@ pub(super) fn run_projection(
     let mut direction_end = None;
     let mut view_direction = None;
     let mut delete = false;
+    let mut loose = false;
     let mut layer = Layer::Current;
     let mut seen = BTreeSet::new();
     for argument in arguments {
@@ -306,11 +307,7 @@ pub(super) fn run_projection(
             return Err(CommandError::Usage(usage));
         }
         match key.to_ascii_lowercase().as_str() {
-            "loose" if pull => {
-                if parse_yes_no(value) != Some(false) {
-                    return Err(CommandError::Usage("Pull Loose=Yes is not implemented"));
-                }
-            }
+            "loose" => loose = parse_yes_no(value).ok_or(CommandError::Usage(usage))?,
             "sources" => sources = Some(ids(value, usage)?),
             "targets" => targets = Some(ids(value, usage)?),
             "direction" => {
@@ -446,7 +443,16 @@ pub(super) fn run_projection(
             let target = document
                 .object(*target_id)
                 .ok_or(DocumentError::ObjectNotFound(*target_id))?;
-            let output = if pull {
+            let output = if loose && input.geometry.curve_ref().is_some() {
+                super::project_loose::geometry(
+                    input.geometry.as_ref(),
+                    target.geometry(),
+                    mesh_indexes.get(target_id),
+                    direction,
+                    pull,
+                    tolerance,
+                )?
+            } else if pull {
                 super::pull::geometry(
                     input.geometry.as_ref(),
                     target.geometry(),
@@ -574,7 +580,7 @@ pub(super) fn run_projection(
     ))
 }
 
-fn infinite_plane_output(
+pub(super) fn infinite_plane_output(
     source: &Geometry,
     plane: Plane,
     direction: Vector3,

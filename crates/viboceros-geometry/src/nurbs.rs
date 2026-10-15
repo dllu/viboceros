@@ -1090,7 +1090,7 @@ impl NurbsCurve {
         Ok(periodic::smooth_curves(std::slice::from_ref(self), solve)?.remove(0))
     }
 
-    fn evaluate_scaled_homogeneous(
+    pub(crate) fn evaluate_scaled_homogeneous(
         &self,
         parameter: Real,
         weight_scale: Real,
@@ -4611,7 +4611,7 @@ fn periodic_knots_from_normalized_intervals(
         .collect()
 }
 
-fn periodic_greville_parameters(
+pub(crate) fn periodic_greville_parameters(
     degree: usize,
     control_count: usize,
     unique_count: usize,

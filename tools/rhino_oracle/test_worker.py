@@ -11,6 +11,34 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_loose_sdk_overloads_record_structure_and_dispose_on_failures(self):
+        for kind in ('project_curve_surface','project_curve_mesh','pull_curve_surface_command','pull_curve_mesh'):
+            for failure in (None,'sdk','sampling','record'):
+                with self.subTest(kind=kind,failure=failure):
+                    result=SimpleNamespace(Dispose=Mock(),DivideByCount=Mock(return_value=None if failure=='sampling' else [0.,1.]),PointAt=lambda t:SimpleNamespace(X=t,Y=0.,Z=0.),GetLength=lambda:1.,IsClosed=False)
+                    sdk=Mock(return_value=([result],[],[])if kind=='project_curve_surface'else [result],side_effect=ValueError('sdk')if failure=='sdk'else None)
+                    pull=Mock(return_value=result,side_effect=ValueError('sdk')if failure=='sdk'else None)
+                    source=SimpleNamespace(Dispose=Mock(),PullToMesh=pull)
+                    class Faces:
+                        Count=1
+                        def __getitem__(self,index):return 'face'
+                    brep=SimpleNamespace(Dispose=Mock(),Faces=Faces())
+                    surface=SimpleNamespace(Dispose=Mock(),ToBrep=lambda:brep)
+                    mesh=SimpleNamespace(Dispose=Mock())
+                    geometry=SimpleNamespace(Curve=SimpleNamespace(ProjectToBrep=sdk,ProjectToMesh=sdk,PullToBrepFace=sdk),Brep=SimpleNamespace(CreateFromSurface=lambda s:brep))
+                    with patch.object(self.worker.Rhino,'Geometry',geometry,create=True),patch.object(self.worker,'_nurbs_curve_from_definition',return_value=source),patch.object(self.worker,'_nurbs_surface_from_definition',return_value=surface),patch.object(self.worker,'_polygon_mesh',return_value=mesh),patch.object(self.worker,'_vector',return_value=SimpleNamespace(Unitize=lambda:True)),patch.object(self.worker,'_nurbs_curve_definition',return_value={'degree':3},side_effect=ValueError('record')if failure=='record'else None):
+                        operation=dict(op=kind,curve={},surface={},vertices=[],faces=[],direction=[0.,0.,1.],loose=True)
+                        if failure:
+                            with self.assertRaises(ValueError):self.worker._execute(operation,1,dict(absolute=1e-6))
+                        else:
+                            value,_=self.worker._execute(operation,1,dict(absolute=1e-6));self.assertEqual(value['curves'][0]['definition'],{'degree':3})
+                    source.Dispose.assert_called_once()
+                    self.assertEqual(result.Dispose.call_count,2 if failure is None else int(failure!='sdk'))
+                    self.assertEqual(mesh.Dispose.call_count,int(kind.endswith('mesh')))
+                    self.assertEqual(surface.Dispose.call_count,int(not kind.endswith('mesh')))
+                    self.assertEqual(brep.Dispose.call_count,int(not kind.endswith('mesh')))
+                    self.assertTrue((pull if kind=='pull_curve_mesh'else sdk).call_args.args[-1])
+
     def test_mesh_pull_disposes_source_result_and_target_on_failures(self):
         for failure in (None, 'source', 'sdk', 'null', 'sampling'):
             with self.subTest(failure=failure):

@@ -43,8 +43,6 @@
     "Surface and face point locations reuse the existing bounded closest-query policy, including boundary clamping. Broader native point parity is unqualified."
   ],
   "source_sha256": {
-    "crates/viboceros-command/src/lib.rs": "8159f099cacd81685915f8bb3f1ebafd56c08ee08339fb907d8348e111a7f584",
-    "crates/viboceros-command/src/project.rs": "708d315ed23b971367c59aad08efe96c038188e879ffecfe91b265064debf4cd",
     "crates/viboceros-command/src/uv_inputs.rs": "a0537f3aa50523054c4acf11cde2cd0ec7ceb46718c9481fd810c798290a58c1",
     "crates/viboceros-geometry/src/intersection.rs": "4af65f5e283beec675aa5b105a493a228f942e2f0fe71c3d0a20401a1ad9e9fa",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend.rs": "2f9a8721592bf7ce4c19722157c5e8db05a7d117e50e06c01e308eda8b04ceb6",
@@ -52,9 +50,7 @@
     "crates/viboceros-geometry/src/intersection/surface_surface_backend/tests/trim.rs": "4806497abb9e8c27f4c00f88b323691464b32a0d0d03e04db6d5c28389302019",
     "crates/viboceros-geometry/src/point/distance_key.rs": "84c636f2b8d6cf3d69c5c49ae282e959f2ac30a56a8af16025bc2f2fb606ddd0",
     "crates/viboceros-smlib/src/native/surface_pull.rs": "89ca411ff11b6e3f94aa0d39261b8cae514ba3ebaf06ffa61b37666fb316275c",
-    "crates/viboceros-oracle/src/surface_pull.rs": "363b5ce0a09154cfb917032797e00ec28e4ab1dd62b590690d1dbe6cd4199495",
     "src/app.rs": "fbd8ed5b87d75cbc4a039dedff2e0966d4c3aa28840061e284b2509f50ca5a59",
-    "src/app/project.rs": "8720a83e5546994b83d0eed7422fcf3835e64fe83eaf9f50d16a6306be0c6caf",
     "src/app/project_plane.rs": "a9ed93417adaca0220ffe7bae2c393d2d18a002c84a05617c1bd95faad0c1516",
     "src/app/iplane.rs": "010e777d42ab9aea056ed15ea4b03b0cad66ca6dc2df515b861d2705b69c64ae",
     "src/app/intersect_two_sets.rs": "a83f047b98b6cf295ad7c81f6d8a2a97813a07f1f00ce66fd1217e302daa9141",
@@ -76,6 +72,10 @@
     "d53b93b83ed71fac4326e73de372a6247b4c5c67:tools/rhino_oracle/rhino_worker.py": "e87a07192f9c20416742e4444d0923610f539f900fdf7eae1188bedd646bda77",
     "d53b93b83ed71fac4326e73de372a6247b4c5c67:src/app/tests/pull.rs": "a0d735bb926d3b8f2cff6cd133225d5e681c9027ed0c842651d3c1610182dba8",
     "d53b93b83ed71fac4326e73de372a6247b4c5c67:crates/viboceros-oracle/src/lib.rs": "91b4fb321a590e5ffe43e85caaa654c50dc4c55d59391595971ffc354383d8fe",
-    "d53b93b83ed71fac4326e73de372a6247b4c5c67:tools/rhino_oracle/test_worker.py": "c4669504d54d3f895bf6c4f21bc89c2b6bb5b704850df5402c6386a422c1b34e"
+    "d53b93b83ed71fac4326e73de372a6247b4c5c67:tools/rhino_oracle/test_worker.py": "c4669504d54d3f895bf6c4f21bc89c2b6bb5b704850df5402c6386a422c1b34e",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-oracle/src/surface_pull.rs": "363b5ce0a09154cfb917032797e00ec28e4ab1dd62b590690d1dbe6cd4199495",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-command/src/project.rs": "708d315ed23b971367c59aad08efe96c038188e879ffecfe91b265064debf4cd",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:src/app/project.rs": "8720a83e5546994b83d0eed7422fcf3835e64fe83eaf9f50d16a6306be0c6caf",
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-command/src/lib.rs": "8159f099cacd81685915f8bb3f1ebafd56c08ee08339fb907d8348e111a7f584"
   }
 }

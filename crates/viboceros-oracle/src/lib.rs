@@ -94,6 +94,8 @@ mod edge_analysis;
 mod extract_surface;
 mod iplane;
 mod mesh_pull;
+#[cfg(test)]
+mod projection_loose_tests;
 mod section_command;
 mod surface_pull;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
@@ -1559,12 +1561,16 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
         direction: [f64; 3],
+        #[serde(default)]
+        loose: bool,
     },
     PullCurveMesh {
         id: String,
         curve: NurbsCurveDefinition,
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
+        #[serde(default)]
+        loose: bool,
     },
     ProjectPointMesh {
         id: String,
@@ -1577,6 +1583,8 @@ pub enum Operation {
         id: String,
         curve: NurbsCurveDefinition,
         surface: NurbsSurfaceDefinition,
+        #[serde(default)]
+        loose: bool,
     },
     PullCurveSurface {
         id: String,
@@ -1588,6 +1596,8 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         surface: NurbsSurfaceDefinition,
         direction: [f64; 3],
+        #[serde(default)]
+        loose: bool,
     },
     ProjectCurvePlane {
         id: String,
@@ -5675,14 +5685,18 @@ fn execute(
             vertices,
             faces,
             direction,
+            loose,
             ..
-        } => project::mesh_curve(iterations, curve, vertices, faces, *direction, tolerance)?,
+        } => project::mesh_curve(
+            iterations, curve, vertices, faces, *direction, tolerance, *loose,
+        )?,
         Operation::PullCurveMesh {
             curve,
             vertices,
             faces,
+            loose,
             ..
-        } => mesh_pull::run(iterations, curve, vertices, faces, tolerance)?,
+        } => mesh_pull::run(iterations, curve, vertices, faces, tolerance, *loose)?,
         Operation::ProjectPointMesh {
             point,
             vertices,
@@ -5690,9 +5704,12 @@ fn execute(
             direction,
             ..
         } => project::mesh_point(iterations, *point, vertices, faces, *direction, tolerance)?,
-        Operation::PullCurveSurfaceCommand { curve, surface, .. } => {
-            surface_pull::command(iterations, curve, surface, tolerance)?
-        }
+        Operation::PullCurveSurfaceCommand {
+            curve,
+            surface,
+            loose,
+            ..
+        } => surface_pull::command(iterations, curve, surface, tolerance, *loose)?,
         Operation::PullCurveSurface { curve, surface, .. } => {
             surface_pull::run(iterations, curve, surface, tolerance)?
         }
@@ -5700,8 +5717,9 @@ fn execute(
             curve,
             surface,
             direction,
+            loose,
             ..
-        } => project::run(iterations, curve, surface, *direction, tolerance)?,
+        } => project::run(iterations, curve, surface, *direction, tolerance, *loose)?,
         Operation::ProjectCurvePlane {
             curve,
             origin,

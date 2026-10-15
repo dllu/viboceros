@@ -41,8 +41,9 @@ hole boundaries. Mesh nearest queries reuse the projection BVH, existing
 triangle closest-point solver and exact distance ordering, visiting nearer boxes
 first and retaining deterministic ties.
 
-`Loose=No` is accepted. Loose=Yes, grips, edit points,
-edge subobjects and SubD targets remain pending. Curved paths inherit native
+`Loose=Yes` uses [edit-point pulling](projection-loose.md); `Loose=No` remains
+the default. Grip/edit-point subobject selection, edge subobjects and SubD
+targets remain pending. Curved paths with Loose=No inherit native
 preparation and certificate limits. Global closest-branch choice, native trim
 and seam parity, native getter behavior and comparative speed remain unqualified;
 this is not a claim of complete Rhino compatibility. The [existing Wine issue](../oracle-sspi.md)
