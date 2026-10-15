@@ -1,0 +1,8 @@
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 31.48s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-d329e4600bf9b44c)
+
+running 1 test
+test coplanar_faces::tests::coplanar_fixtures_match_independent_regions_and_integrals ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 514 filtered out; finished in 0.51s

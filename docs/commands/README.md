@@ -329,6 +329,7 @@ Offset ThroughPoint=2,2,0
 OffsetMultiple 1 6,0,0 OffsetCount=3
 ShrinkTrimmedSrf
 ShrinkTrimmedSrfToEdge
+MergeAllCoplanarFaces
 MergeAllEdges
 MergeEdge object-id edge-index [Edge|EdgeA|EdgeB|Both|All]
 SplitEdge object-id edge-index parameter [parameter ...]
@@ -451,3 +452,5 @@ Help
 ```
 
 - [FilletEdge: circular solid-edge rounding and component input](fillet-edge.md)
+
+[MergeAllCoplanarFaces: native B-rep scope and limits](merge-all-coplanar-faces.md).

@@ -727,6 +727,23 @@ extern "C" int vb_shape_face_count(const VbSolid *shape, size_t *count, char *er
     });
 }
 
+extern "C" int vb_shape_merge_coplanar_faces(const VbSolid *shape, double tolerance, double angle_tolerance,
+                                             size_t *removed, VbSolid **out, char *error, size_t capacity) {
+    if (out) *out=nullptr;
+    if (removed) *removed=0;
+    return guarded(error,capacity,[&] {
+        require(shape && shape->value && out && removed && std::isfinite(tolerance) && tolerance>0 &&
+                std::isfinite(angle_tolerance) && angle_tolerance>0,"Invalid coplanar merge arguments");
+        auto owner=std::make_unique<VbSolid>();
+        owner->value.reset(vb_copy_brep(*shape->value));
+        const bool solid=owner->value->IsManifoldSolid();
+        *removed=vb_merge_coplanar_faces(*owner->value,tolerance,angle_tolerance);
+        if (!*removed) return;
+        require(!solid || owner->value->IsManifoldSolid(),"Coplanar merge opened a solid");
+        *out=owner.release();
+    });
+}
+
 extern "C" int vb_shape_bounds(const VbSolid *shape, double bounds[6], char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
         require(shape && bounds, "Invalid shape bounds query");

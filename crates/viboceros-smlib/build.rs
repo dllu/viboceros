@@ -22,6 +22,8 @@ fn build_native() {
         "USD BRep source is missing"
     );
     println!("cargo:rerun-if-changed=native");
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/planarity_zone_probe.cpp");
+    println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-protected-topology.patch");
     println!(
         "cargo:rerun-if-changed=../../third_party/patches/usd-brep-closed-fillet-corner-state.patch"
     );
@@ -33,6 +35,7 @@ fn build_native() {
     );
     for patch in [
         "usd-brep-proto-edge-endpoint-links.patch",
+        "usd-brep-planarity-zone.patch",
         "usd-brep-isolated-loop-owner.patch",
         "usd-brep-tapered-sliver-domains.patch",
         "usd-brep-curve-fillet-sides.patch",

@@ -9989,6 +9989,7 @@ mod tests {
     mod command_line;
     mod construction_plane;
     mod contour;
+    mod coplanar_faces;
     mod copy_options;
     mod create_uv_curves;
     mod curve_rebuild_preview;

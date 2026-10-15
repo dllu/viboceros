@@ -86,9 +86,6 @@
     }
   },
   "source_sha256": {
-    "crates/viboceros-oracle/src/object_source.rs": "59c66aa3fecfcf7fc3e51bff97f93cc1d5e4201d60e2231263cd461c79e22776",
-    "crates/viboceros-smlib/native/boundary_validation.cpp": "e3a535b60d2315d66996eee3376188380f1534d9e12ca3864962b99ea83730c8",
-    "crates/viboceros-smlib/native/brep_data.h": "6b5bb2a3319a8f0e074dbd850682720243cbf13ba3e8299ae074007d34519f03",
     "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
     "crates/viboceros-smlib/tests/chamfer_edges.rs": "c70f7141106a11c5184bc2f0ddcfed608838042074694048b8f46ee08b5020ab",
     "docs/commands/chamfer-edge.md": "03b8addcfdd31febcbb41399a6f7fa2a69ffc3a3e2f16db2058a98495055eb28",
@@ -137,6 +134,9 @@
     "0aecdcd8b107b85d2026207490fabb10704ac491:src/app/edge_fillet.rs": "3eaeb78de23621de44684d5ab55ae734c9a438e8686f9902394a6b500214039b",
     "0aecdcd8b107b85d2026207490fabb10704ac491:tools/rhino_oracle/chamfer_edge_probe.py": "074d873b920ddd25d4545afa03648d2a2d28729a0cda110c7dff3665fb4d1860",
     "0aecdcd8b107b85d2026207490fabb10704ac491:tools/rhino_oracle/client.py": "fb5ab70c8096cf08b477e5cdd15e28cecbfb7582d75276230935b17215f07db8",
-    "0aecdcd8b107b85d2026207490fabb10704ac491:tools/rhino_oracle/rhino_worker.py": "c9adf63cee2fb73869764365e78fb6e6073c6b866b58d7082e945c9e471fa071"
+    "0aecdcd8b107b85d2026207490fabb10704ac491:tools/rhino_oracle/rhino_worker.py": "c9adf63cee2fb73869764365e78fb6e6073c6b866b58d7082e945c9e471fa071",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-oracle/src/object_source.rs": "59c66aa3fecfcf7fc3e51bff97f93cc1d5e4201d60e2231263cd461c79e22776",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/boundary_validation.cpp": "e3a535b60d2315d66996eee3376188380f1534d9e12ca3864962b99ea83730c8",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/brep_data.h": "6b5bb2a3319a8f0e074dbd850682720243cbf13ba3e8299ae074007d34519f03"
   }
 }

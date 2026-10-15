@@ -1,0 +1,14 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 29.83s
+     Running tests/coplanar_merge.rs (target/debug/deps/coplanar_merge-a5347a94db416c07)
+
+running 7 tests
+test adjacent_triangles_merge_without_changing_area_or_source ... ok
+test disconnected_regions_merge_independently ... ok
+test annulus_preserves_inner_hole_and_original_vertices ... ok
+test overlapping_sheet_interiors_are_rejected_before_merging ... ok
+test kinked_faces_and_cylindrical_seam_are_noops ... ok
+test triangulated_closed_box_merges_only_planar_interfaces ... ok
+test rational_closed_interface_merges_without_rebuilding_outer_trims ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s

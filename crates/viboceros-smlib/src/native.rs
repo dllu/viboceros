@@ -71,6 +71,7 @@ pub use knot_refinement::{
     surface_single_span_patches, surface_tweens, surface_tweens_refitted, surface_tweens_sampled,
     sweep_model, sweep_surface, trim_curve, trim_surface, trim_surface_direction,
 };
+mod coplanar_merge;
 mod shape;
 mod silhouette;
 mod surface_extrusion;

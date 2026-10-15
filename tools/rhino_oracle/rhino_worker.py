@@ -5388,6 +5388,15 @@ def _object_source(definition, tolerance):
             raise
     if kind == "mesh":
         return _polygon_mesh(definition["vertices"], definition["faces"])
+    if kind == "mesh_brep":
+        mesh = _polygon_mesh(definition["vertices"], definition["faces"])
+        try:
+            brep = Rhino.Geometry.Brep.CreateFromMesh(mesh, True)
+            if brep is None:
+                raise ValueError("B-rep construction from mesh failed")
+            return brep
+        finally:
+            mesh.Dispose()
     if kind == "surface":
         return _nurbs_surface_from_definition(definition)
     if kind == "brep":
@@ -13403,6 +13412,9 @@ def _execute(operation, iterations, tolerance):
         from surface_apex_extrusion_probe import run
         return run(operation, globals(), iterations, tolerance)
 
+    if kind == 'merge_coplanar_faces':
+        from coplanar_faces_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'blend_edge':
         from blend_edge_probe import run
         return run(operation, globals(), iterations, tolerance)

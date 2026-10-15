@@ -119,9 +119,11 @@ mod surface_path_extrusion;
 pub use surface_path_extrusion::Fixture as SurfacePathExtrusionFixture;
 mod blend_edge;
 mod chamfer_edge;
+mod coplanar_faces;
 mod edge_blend;
 pub use blend_edge::Fixture as BlendEdgeFixture;
 pub use chamfer_edge::Fixture as ChamferEdgeFixture;
+pub use coplanar_faces::Fixture as CoplanarFacesFixture;
 mod shell;
 pub use shell::Fixture as ShellFixture;
 mod surface_tapered_extrusion;
@@ -1627,6 +1629,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SurfaceApexExtrusionFixture,
     },
+    MergeCoplanarFaces {
+        id: String,
+        #[serde(flatten)]
+        fixture: CoplanarFacesFixture,
+    },
     BlendEdge {
         id: String,
         #[serde(flatten)]
@@ -2599,6 +2606,7 @@ impl Operation {
             | Self::ProjectCurveSurface { id, .. }
             | Self::SurfacePathExtrusion { id, .. }
             | Self::SurfaceApexExtrusion { id, .. }
+            | Self::MergeCoplanarFaces { id, .. }
             | Self::BlendEdge { id, .. }
             | Self::ChamferEdge { id, .. }
             | Self::Shell { id, .. }
@@ -5796,6 +5804,9 @@ fn execute(
         }
         Operation::SurfaceApexExtrusion { fixture, .. } => {
             surface_apex_extrusion::run(fixture, iterations, tolerance)?
+        }
+        Operation::MergeCoplanarFaces { fixture, .. } => {
+            coplanar_faces::run(fixture, iterations, tolerance)?
         }
         Operation::BlendEdge { fixture, .. } => blend_edge::run(fixture, iterations, tolerance)?,
         Operation::ChamferEdge { fixture, .. } => {

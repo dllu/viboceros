@@ -156,9 +156,16 @@ void interior_intersections(SmBrep &solid,SmFace &first,SmFace &second,double to
 }
 }
 
-void vb_validate_boundary_intersections(SmBrep &solid, double tolerance) {
+void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool allow_sheets) {
     require(std::isfinite(tolerance)&&tolerance>0,"Invalid boundary intersection tolerance");
-    require(solid.IsManifoldSolid(),"Boundary validation requires a manifold solid");
+    if (!solid.IsManifoldSolid()) {
+        require(allow_sheets,"Boundary validation requires a manifold solid");
+        SmTArray<SmEdge*> edges;solid.GetEdges(edges);
+        for (ULONG i=0;i<edges.GetSize();++i)
+            require(edges[i]->IsLamina() || edges[i]->IsManifold(),"Boundary validation rejects nonmanifold sheet edges");
+        SmTArray<SmVertex*> isolated;solid.GetShellVertices(isolated);
+        require(isolated.GetSize()==0,"Boundary validation rejects isolated shell vertices");
+    }
     SmTArray<SmFace *> faces;
     solid.GetFaces(faces);
     require(faces.GetSize()<=362,"Boundary intersection work limit");

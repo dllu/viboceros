@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "rectangle",
+      "value": {
+        "area": 12.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            3.0,
+            0.0
+          ]
+        ],
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          1
+        ],
+        "removed_faces": 1,
+        "volume": null
+      },
+      "elapsed_ns": 10907917
+    },
+    {
+      "id": "shifted",
+      "value": {
+        "area": 12.0,
+        "bounds": [
+          [
+            1000000.0,
+            -2000000.0,
+            3000000.0
+          ],
+          [
+            1000004.0,
+            -1999997.0,
+            3000000.0
+          ]
+        ],
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          1
+        ],
+        "removed_faces": 1,
+        "volume": null
+      },
+      "elapsed_ns": 10671340
+    },
+    {
+      "id": "annulus",
+      "value": {
+        "area": 8.000000000000023,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            3.0,
+            3.0,
+            0.0
+          ]
+        ],
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          2
+        ],
+        "removed_faces": 7,
+        "volume": null
+      },
+      "elapsed_ns": 27657577
+    },
+    {
+      "id": "box",
+      "value": {
+        "area": 52.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            3.0,
+            4.0
+          ]
+        ],
+        "face_count": 6,
+        "is_solid": true,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 6,
+        "volume": 24.0
+      },
+      "elapsed_ns": 136039669
+    },
+    {
+      "id": "disconnected",
+      "value": {
+        "area": 2.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "removed_faces": 2,
+        "volume": null
+      },
+      "elapsed_ns": 20680998
+    },
+    {
+      "id": "kink",
+      "value": {
+        "area": 1.0000499975002501,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.01
+          ]
+        ],
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "removed_faces": 0,
+        "volume": null
+      },
+      "elapsed_ns": 7169907
+    }
+  ]
+}

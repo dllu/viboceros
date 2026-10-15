@@ -57,6 +57,17 @@ endif()
 list(REMOVE_ITEM KERNEL_SOURCES "${BLEND_PATCHED}")
 list(APPEND KERNEL_SOURCES "${LOOP_OWNER_PATCHED}")
 
+# Respect protected faces/vertices before querying mutable coincidence helpers.
+set(PROTECTED_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-protected-topology.patch")
+set(PROTECTED_PATCHED "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmBrepProtected.cpp")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PROTECTED_PATCH}")
+execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch --fuzz=0 -o "${PROTECTED_PATCHED}" "${LOOP_OWNER_PATCHED}" "${PROTECTED_PATCH}" RESULT_VARIABLE PROTECTED_PATCH_STATUS)
+if(NOT PROTECTED_PATCH_STATUS EQUAL 0)
+    message(FATAL_ERROR "usd-brep protected topology repair failed; review the pinned source")
+endif()
+list(REMOVE_ITEM KERNEL_SOURCES "${LOOP_OWNER_PATCHED}")
+list(APPEND KERNEL_SOURCES "${PROTECTED_PATCHED}")
+
 set(DERIV_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/SmSurface.cpp")
 set(DERIV_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-blend-derivative-scaling.patch")
 set(DERIV_PATCHED "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmSurface.cpp")
@@ -68,6 +79,16 @@ if(NOT DERIV_PATCH_STATUS EQUAL 0)
 endif()
 list(REMOVE_ITEM KERNEL_SOURCES "${DERIV_SOURCE}")
 list(APPEND KERNEL_SOURCES "${DERIV_PATCHED}")
+
+set(PLANAR_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-planarity-zone.patch")
+set(PLANAR_PATCHED "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmSurfacePlanar.cpp")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PLANAR_PATCH}")
+execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch --fuzz=0 -o "${PLANAR_PATCHED}" "${DERIV_PATCHED}" "${PLANAR_PATCH}" RESULT_VARIABLE PLANAR_PATCH_STATUS)
+if(NOT PLANAR_PATCH_STATUS EQUAL 0)
+    message(FATAL_ERROR "usd-brep planarity zone repair failed; review the pinned source")
+endif()
+list(REMOVE_ITEM KERNEL_SOURCES "${DERIV_PATCHED}")
+list(APPEND KERNEL_SOURCES "${PLANAR_PATCHED}")
 # Measure each ruling rail over its own domain when rejecting sliver faces.
 set(TAPER_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/SmPrimitiveCreation.cpp")
 set(TAPER_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-tapered-sliver-domains.patch")
@@ -173,7 +194,7 @@ target_include_directories(SM_API SYSTEM PUBLIC "${USD_BREP_ROOT}/source/SM_API/
 target_compile_definitions(SM_API PRIVATE SM_API_EXPORTS)
 target_compile_options(SM_API PRIVATE -Wno-write-strings)
 target_link_libraries(SM_API PUBLIC SMLib)
-add_library(viboceros_smlib STATIC bridge.cpp basis_preservation.cpp brep_export.cpp brep_import.cpp boundary_validation.cpp knot_refinement.cpp)
+add_library(viboceros_smlib STATIC bridge.cpp basis_preservation.cpp brep_export.cpp brep_import.cpp boundary_validation.cpp coplanar_merge.cpp knot_refinement.cpp)
 target_link_libraries(viboceros_smlib PUBLIC SM_API)
 target_compile_options(viboceros_smlib PRIVATE -Wall -Wextra -Werror)
 add_executable(viboceros_smlib_surface_blend_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_blend_probe.cpp")
@@ -191,6 +212,15 @@ target_compile_options(viboceros_smlib_surface_pull_probe PRIVATE -Wall -Wextra 
 add_executable(viboceros_smlib_surface_pull_baseline EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_pull_probe.cpp" "${DROP_SOURCE}")
 target_link_libraries(viboceros_smlib_surface_pull_baseline PRIVATE SM_API)
 target_compile_options(viboceros_smlib_surface_pull_baseline PRIVATE -Wno-write-strings)
+
+add_executable(viboceros_smlib_planarity_probe EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/planarity_zone_probe.cpp")
+target_link_libraries(viboceros_smlib_planarity_probe PRIVATE SM_API)
+target_compile_options(viboceros_smlib_planarity_probe PRIVATE -Wall -Wextra -Werror)
+add_executable(viboceros_smlib_planarity_baseline EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/planarity_zone_probe.cpp" "${DERIV_PATCHED}")
+target_link_libraries(viboceros_smlib_planarity_baseline PRIVATE SM_API)
+# Generated kernel sources need the kernel precompiled-header includes; the
+# API library also exports a different StdAfx.h directory.
+target_compile_options(viboceros_smlib_planarity_baseline PRIVATE -Wno-write-strings -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
 
 # Optional instrumentation of both complete native libraries and the C ABI.
 option(VIBOCEROS_SMLIB_ASAN "Instrument native geometry with AddressSanitizer" OFF)

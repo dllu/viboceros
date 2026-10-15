@@ -1,0 +1,33 @@
+--- a/source/SMLib/src/SmBrep.cpp
++++ b/source/SMLib/src/SmBrep.cpp
+@@ -25704,15 +25704,14 @@
+         }
+ #endif // SM_DEBUG_CODE
+ 
++      // Honor protected edges before IsTopological can expand their surfaces.
++      if (pOptKeepEdges && pOptKeepEdges->FindElement(pEdge,lFoundIndex))
++        { continue; }
++
+       // skip NonTopological edges - side effect - one Surface may be expanded to 'cover' the other
+       SmExtent2d sMergedFaceDomain;
+       if(!pEdge->IsTopological(pSurfToKeep, dDistBetween, 1.0, &sMergedFaceDomain)) // note: ApproxTol3d Gain = 1.0 is different than
+         { continue ; }                                          //       Gain 10.0 Tol used in SmMerge::BooleanPostProcess
+-
+-      // skip edges on the optional KeepEdges List
+-      if(   pOptKeepEdges
+-         && pOptKeepEdges->FindElement(pEdge, lFoundIndex))
+-        { continue ; }
+ 
+    // code moved to SmEdge::IsTopological()
+    //    // skip nonManifold edges - these are not "topological"
+@@ -25991,6 +25990,10 @@
+           sm_GraphicsLoop();
+         }
+ #endif // SM_DEBUG_CODE
++
++      // Protected vertices include isolated/singular loop vertices.
++      if (pOptKeepVertices && pOptKeepVertices->FindElement(pVertex,lFoundIndex))
++        { continue; }
+ 
+       // delete LoopVertices (not connected to an Edge, connected to just one face)
+       if(pVertex->IsLoopVertex())

@@ -28,6 +28,10 @@ pub enum VertexSource {
     PointCloud {
         points: Vec<[f64; 3]>,
     },
+    MeshBrep {
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
     Mesh {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
@@ -67,7 +71,10 @@ impl ObjectSource {
             Self::Vertices(VertexSource::PointCloud { points: p }) => {
                 Geometry::PointCloud(PointCloud3::try_new(points(p)?)?)
             }
-            Self::Vertices(VertexSource::Mesh { vertices, faces }) => {
+            Self::Vertices(
+                source @ (VertexSource::Mesh { vertices, faces }
+                | VertexSource::MeshBrep { vertices, faces }),
+            ) => {
                 let faces = faces
                     .iter()
                     .map(|f| match f.as_slice() {
@@ -78,11 +85,12 @@ impl ObjectSource {
                         )),
                     })
                     .collect::<Result<Vec<_>, _>>()?;
-                Geometry::Mesh(TriangleMesh::try_new_faces(
-                    points(vertices)?,
-                    faces,
-                    tolerance,
-                )?)
+                let mesh = TriangleMesh::try_new_faces(points(vertices)?, faces, tolerance)?;
+                if matches!(source, VertexSource::MeshBrep { .. }) {
+                    Geometry::Brep(Brep::try_from_mesh(&mesh, true, tolerance)?)
+                } else {
+                    Geometry::Mesh(mesh)
+                }
             }
         })
     }

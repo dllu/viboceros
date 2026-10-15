@@ -104,32 +104,21 @@
     }
   },
   "source_sha256": {
-    "README.md": "7dd5dcbc4be238639e4042bea6f16830c36d09c1f189bb92bef8dcfd53de325a",
     "crates/viboceros-command/src/blend_edge.rs": "98539f38ea62ebb960ff46b473f4a121af7016812b72769dc9165578d3aa9543",
     "crates/viboceros-command/src/blend_edge/tests.rs": "476a2bf7385e88e0a340030e805018406942062a5a40841888f3be6dd7130e37",
     "crates/viboceros-command/src/chamfer_edge.rs": "b57d732ee482a3896303fc23a24d6deb67c5ad3a128d2b1d79a61f987421e0c7",
     "crates/viboceros-command/src/chamfer_edge/tests.rs": "a0e843ad2b387db9befa39b21e7c3e333934ae8cb36fd8b60b88f1e00ca7ad0d",
     "crates/viboceros-command/src/edge_blend_input.rs": "a1c5b0c007276963284c7003e0276051e597382f55b055b681bdfc1eaa19d845",
     "crates/viboceros-command/src/fillet_edge.rs": "6573ef6caeb7c45bb3e8804fd6393d827ab9ef0158fb0cf17898d1edb965f0d8",
-    "crates/viboceros-command/src/lib.rs": "51cfd730e237878612232a159737188aa6537c1978378cc61a9a726312aa5d3e",
     "crates/viboceros-oracle/src/blend_edge.rs": "da4a6cac291f01e94845c1ad6cad7b8f658557328a3f62b84183a757818cb3d3",
     "crates/viboceros-oracle/src/chamfer_edge.rs": "08957c0c4e7ce1344a17e37e18def62b9fa45253640766ca027a41812cc2f9ef",
     "crates/viboceros-oracle/src/edge_blend.rs": "1e277b939e0c2e9f66b01e5ed6de7e2605c5fdc616a21b3124fcc61c34ae85a4",
-    "crates/viboceros-oracle/src/lib.rs": "b581db98ba5e2d1b58df070b419922d65176fbfec4604eba8add7886c21672f3",
-    "crates/viboceros-smlib/build.rs": "5e872cf88a1a23aad6d9206f8b614ec86e8b2d875ef42f02b0b4414e5c9433cb",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "afc52aeccda6d5beb3f5a98831fc53887e4b100a0a5932549cc801eaa5a257bb",
-    "crates/viboceros-smlib/native/boundary_validation.cpp": "e3a535b60d2315d66996eee3376188380f1534d9e12ca3864962b99ea83730c8",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
     "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
-    "crates/viboceros-smlib/native/bridge.cpp": "71ae3c11aac6575ff849a164dd64c42bdbe109f02471d22335b82ad256ba65af",
-    "crates/viboceros-smlib/native/bridge.h": "c793ea8ef0c9c93436e7224957b4543b0713ef7caccdc1fcec56aaeb4d8d6c00",
     "crates/viboceros-smlib/src/lib.rs": "f9f0b7c20a0fca59d0a49d80f4945ea92024cd9950b2e8e19b43bbcebac26347",
-    "crates/viboceros-smlib/src/native.rs": "ffd54e99d36f18648d15941a19b78bf014ca24e45388eff8f5ba59b40ba5718d",
     "crates/viboceros-smlib/src/native/edge_blends.rs": "5cd75e948928dbef5a892d6c7c71dfb20918bcdac5096460627f669c36d713a6",
     "crates/viboceros-smlib/tests/blend_edges.rs": "8aae6ec39a30d23dfe912885a7bd009e0cfa40aec84b2a4288595ead018329a0",
-    "docs/commands/README.md": "f96003b34e278c67aa63a616bf70c91e949a5e8e116df98a8631ae49699489e6",
     "docs/commands/blend-edge.md": "2d7b5b8bbfde918cd79a45dde97b1a8c91b712ca5627627a0dd04382ce556b92",
-    "src/app.rs": "ec40ff1d30b7801bd0eb65ce68e54d877a5751a8ae7e8e66d976dfa04791c27a",
     "src/app/edge_fillet.rs": "6743d6852ae9bcd456ebcf9d8787810a1ce537ae90879a5d2cc28c49c60ff768",
     "src/app/tests/blend_edge.rs": "a1ded62ce3d0994939b4d960ff4d2270af747f9bd23db0d008c3421e1de5e9b2",
     "third_party/patches/usd-brep-closed-fillet-corner-state.patch": "d70c6dc5dd1c4d06da469d844706060c1f08a736170a35d2071a94f47c038dd1",
@@ -147,7 +136,6 @@
     "tools/rhino_oracle/edge_blend_probe.py": "bc837ebdd6a2ba2e0ef2d3656df7111ad2e55c76b93f55b22a580f59cae3c380",
     "tools/rhino_oracle/fixtures/blend_edge.json": "bfe1869a9b6b906aa4a68e4626714298a384749192a9b40b4b92e8d43eede1b7",
     "tools/rhino_oracle/observations/blend_edge_viboceros_native.json": "b93e4373892943b9fdccbba3dfceae9e1c92de7377636873359fb7d304a0380e",
-    "tools/rhino_oracle/rhino_worker.py": "2f0acc418c35f937daf165a518e491dea386157ce43a01957d8e21ee48130a88",
     "tools/rhino_oracle/test_blend_edge.py": "660445e1069b4d765160963c6be69213848526c76abca80ef24f9e950187a3e9"
   },
   "evidence_sha256": {
@@ -161,5 +149,19 @@
     "docs/blend-edge-rail-parameter-baseline.log": "2f752084aa2c4785f710c2ea20626f4b0ab5b12fc753aa6677d51ebdad77b368",
     "docs/blend-edge-asan-release.log": "59daf4a1e1d931f19aad5eb1c8d457f317c8d1e0b2128ff8222a3fb3dd5926d6",
     "docs/blend-edge-asan-ownership.log": "4a31bfc57971e5855cf7bf41741c43450f4390ff7d91068de63d137da1936cca"
+  },
+  "source_git_sha256": {
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:README.md": "7dd5dcbc4be238639e4042bea6f16830c36d09c1f189bb92bef8dcfd53de325a",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-command/src/lib.rs": "51cfd730e237878612232a159737188aa6537c1978378cc61a9a726312aa5d3e",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-oracle/src/lib.rs": "b581db98ba5e2d1b58df070b419922d65176fbfec4604eba8add7886c21672f3",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/build.rs": "5e872cf88a1a23aad6d9206f8b614ec86e8b2d875ef42f02b0b4414e5c9433cb",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/CMakeLists.txt": "afc52aeccda6d5beb3f5a98831fc53887e4b100a0a5932549cc801eaa5a257bb",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/boundary_validation.cpp": "e3a535b60d2315d66996eee3376188380f1534d9e12ca3864962b99ea83730c8",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/bridge.cpp": "71ae3c11aac6575ff849a164dd64c42bdbe109f02471d22335b82ad256ba65af",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/bridge.h": "c793ea8ef0c9c93436e7224957b4543b0713ef7caccdc1fcec56aaeb4d8d6c00",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/src/native.rs": "ffd54e99d36f18648d15941a19b78bf014ca24e45388eff8f5ba59b40ba5718d",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:docs/commands/README.md": "f96003b34e278c67aa63a616bf70c91e949a5e8e116df98a8631ae49699489e6",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:src/app.rs": "ec40ff1d30b7801bd0eb65ce68e54d877a5751a8ae7e8e66d976dfa04791c27a",
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:tools/rhino_oracle/rhino_worker.py": "2f0acc418c35f937daf165a518e491dea386157ce43a01957d8e21ee48130a88"
   }
 }

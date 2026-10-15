@@ -8,6 +8,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Planarity includes topology-zone inflation.** Exact planar NURBS can fail
+  `SmSurface::IsPlanar` below their declared zone tolerance because its bounding
+  box expands by that zone. The [generated repair](../third_party/patches/usd-brep-planarity-zone.patch)
+  measures the unexpanded control support and retains the requested tolerance.
+  The direct rotated-plane/warped-surface probe and
+  [coplanar merge regressions](coplanar-faces-qualification.json) cover this.
+  A [second repair](../third_party/patches/usd-brep-protected-topology.patch)
+  checks protected edges before `IsTopological` can expand their surfaces, and
+  protected vertices before isolated-loop cleanup. Coplanar merging protects
+  surviving boundaries while allowing removed interface vertices to disappear.
+
 - **Offset intersection cleanup can retain deleted topology.**
   Shell failure tests exposed three temporary-topology lifetime errors:
   combining edges records the wrong edge at changed endpoints; a closed edge

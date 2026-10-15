@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "merge_all_coplanar_faces_brep_implemented": true,
+  "mesh_implemented": false,
+  "subd_implemented": false,
+  "merge_selected_coplanar_face_implemented": false,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "general_validity_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "recipes": 6,
+  "scope_notes": [
+    "Only edge-adjacent planar B-rep faces merge. Single NURBS surfaces and single-face B-reps are no-ops. Multi-face merging requires native-smlib. Mesh and SubD merging, face-component selection and MergeCoplanarFace remain unimplemented. No command options are accepted; distance and angle tolerances come from the document.",
+    "The existing usd-brep RemoveTopologicalEdgesAndVertices executive performs face and loop surgery. Native best-fit planes plus explicit absolute distances for every positive-weight surface control admit planar supports. The upstream best-fit helper reports a one-sided maximum gap; independent absolute control-plane distances guard that result. Groups use one fixed anchor plane and angular cutoff to prevent transitive plane drift. This conservatively rejects trimmed planar regions on nonplanar unused support; the native coincidence remover can decline additional cases.",
+    "All other edges, their surviving boundary vertices and pre-existing singular loop vertices are protected. Vertices belonging only to removed internal interfaces can disappear. Input and output boundary-intersection checks opt into manifold open sheets while existing solid-only callers retain their default admission. Crossed sheet interiors fail before mutation. No-op candidates avoid topology edits. Existing import/export and bounded intersection restrictions still apply; this is not a universal geometry-validity proof.",
+    "SmSurface::IsPlanar originally measured an inflated bounding box. A direct rotated exact plane with zone 1e-5 fails at requested tolerance 6.25e-7 and reports gap 1e-5. The generated repair requests the unexpanded bounding box and checks its status: the exact plane reports zero gap and passes, while the warped bilinear surface remains nonplanar. Baseline and corrected opt-in CMake targets use the same probe and otherwise identical patched libraries; the baseline overrides only SmSurface with the derivative-repaired version before the planarity repair.",
+    "The protected-topology patch moves the keep-edge check before IsTopological, which can expand surfaces as a side effect, and checks kept vertices before isolated-loop deletion. Generated sources compose this with existing blend and loop-owner repairs; the pinned upstream checkout is unchanged.",
+    "Modeling uses private localized copies. Every selected source stages before replacements. Identity, attributes, groups and selection survive one batch Undo/Redo transaction. Later unsupported or native-geometry failure preserves previous geometry and Redo. Prepared commits reject changed geometry or document tolerances. No-op commands preserve Redo. Command admission bounds faces and aggregate surface controls before native import; the native path repeats the limits.",
+    "Native geometry checks cover adjacent triangles, an annulus retaining its inner loop and boundary vertices, disconnected regions, a triangulated closed box, a rational closed interface between a planar disk and its surrounding region, unchanged kinked faces and cylinder seams, and rejection of crossed sheet interiors. Independent areas are 12, 8, 2, 52 and 36; the closed box volume is 24. Original source geometry remains unchanged.",
+    "The six actual-command recipes check rectangle, translated rectangle at (1000000,-2000000,3000000), annulus, triangulated box, disconnected regions and a kinked no-op. Face counts, removed counts, sorted loop counts, analytic areas and box volume match. Native tight boundary extents are independently checked within 1e-7 on all six. Conservative control bounds can include unused expanded supports, so they are not used as shape extents in the oracle.",
+    "Public SDK recipes construct an owned Brep.CreateFromMesh(mesh, True), dispose the temporary mesh, and call DuplicateBrep and MergeCoplanarFaces(distance, angle) per iteration. Mocks check strict finite inputs, method routing, no-ops, null/invalid/inconsistent topology, mass/bounds failures and owned resource cleanup. They do not establish licensed Rhino parity. Fresh captures remain pending the recorded Wine SSPI startup blocker.",
+    "Native regressions pass with AddressSanitizer instrumentation on both complete native libraries and the C ABI. Leak detection and optional stack-use-after-return detection are disabled; ordinary validation and exact export checks remain enabled. One pre-existing thin-polar-cap boundary test stays ignored for pathological runtime. Historical records retain original hashes through immutable Git references; 69 already-unverifiable records remain unchanged. The final native helper explicitly rejects nonpositive or nonfinite surface weights before invoking the control-hull admission test; all seven coplanar cases pass again under instrumentation after this guard."
+  ],
+  "validation": {
+    "native_geometry": {
+      "command": "cargo test -p viboceros-smlib --features native --test coplanar_merge -- --nocapture",
+      "passed": 7,
+      "log": "docs/coplanar-faces-native.log"
+    },
+    "native_command_ui": {
+      "command": "cargo test -p viboceros-command -p viboceros-oracle -p viboceros --features native-smlib coplanar_faces:: -- --nocapture",
+      "passed": 9,
+      "command_tests": 6,
+      "ui": 2,
+      "oracle": 1,
+      "log": "docs/coplanar-faces-integration.log",
+      "note": "The separate final oracle run adds tight-bound assertions after this integration run."
+    },
+    "final_oracle_extents": {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib coplanar_faces:: -- --nocapture",
+      "passed": 1,
+      "recipes": 6,
+      "log": "docs/coplanar-faces-bounds.log"
+    },
+    "portable_command_ui": {
+      "command": "cargo test -p viboceros-command -p viboceros-oracle -p viboceros coplanar_faces:: -- --nocapture",
+      "passed": 4,
+      "command_tests": 2,
+      "ui": 2
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_coplanar_faces tools.rhino_oracle.test_chamfer_edge tools.rhino_oracle.test_blend_edge tools.rhino_oracle.test_shell tools.rhino_oracle.test_fillet_edge_probe tools.rhino_oracle.test_client -q",
+      "passed": 35
+    },
+    "native_sanitizer": {
+      "command": "VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test coplanar_merge --test boundary_validation --test blend_edges --test chamfer_edges --test fillet_edges -- --nocapture",
+      "passed": 23,
+      "ignored": 1,
+      "coplanar": 7,
+      "boundary": 2,
+      "blend": 5,
+      "chamfer": 6,
+      "fillet": 3,
+      "leak_detection": false,
+      "stack_use_after_return_detection": false,
+      "log": "docs/coplanar-faces-asan.log",
+      "note": "This 23-test run precedes only the explicit positive finite surface-weight admission guard. All seven coplanar native cases pass again after that guard; the other four native paths do not call the coplanar helper."
+    },
+    "clippy": {
+      "command": "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros -p viboceros-smlib --all-targets --features native-smlib -- -D warnings",
+      "status": "passed",
+      "final_oracle_recheck": "passed"
+    },
+    "format": {
+      "command": "cargo fmt --all -- --check",
+      "status": "passed"
+    },
+    "sorted_help": {
+      "command": "cargo test -p viboceros-command --features native-smlib reports_sorted_help --quiet",
+      "passed": 1
+    },
+    "planarity_probe": {
+      "targets": [
+        "viboceros_smlib_planarity_baseline",
+        "viboceros_smlib_planarity_probe"
+      ],
+      "baseline_qualified": 1,
+      "corrected_qualified": 2,
+      "total_cases": 2
+    },
+    "local_cli_capture": {
+      "command": "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/coplanar_faces.json tools/rhino_oracle/observations/coplanar_faces_viboceros_native.json",
+      "recipes_completed": 6
+    },
+    "portable_check": {
+      "command": "cargo check -p viboceros-oracle",
+      "status": "passed"
+    },
+    "final_weight_admission_sanitizer": {
+      "command": "VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test coplanar_merge -- --nocapture",
+      "passed": 7,
+      "log": "docs/coplanar-faces-final-asan.log"
+    }
+  },
+  "source_sha256": {
+    "README.md": "8fd30c7240661c493bbd202a54554db4dd1f7eebdfb8bf40b3673677b1e9306c",
+    "crates/viboceros-command/src/coplanar_faces.rs": "a035324e4483823c7a95e96b68791667d22a081276101871f6c8e28b55d95f66",
+    "crates/viboceros-command/src/coplanar_faces/tests.rs": "6d65a1ad0b550aa0ea3a8e8a2eb38f3f62a86ae70a366926ac6d0f9ac24f2650",
+    "crates/viboceros-command/src/lib.rs": "fb43af1d49844e2214c889e9a94e73f1f8c0ec88c80fe3276aa7a9061b47afc7",
+    "crates/viboceros-oracle/src/coplanar_faces.rs": "f9d40d62bb26a1949949046dff56e63d47e4f0c8cf66ad2c913fd37610b2ac11",
+    "crates/viboceros-oracle/src/lib.rs": "0fc33a5a0eeb16f502877402405be4327c5ba153774135a0907ba9e1dd64f684",
+    "crates/viboceros-oracle/src/object_source.rs": "07ed817a7c4d7ed817f525c93d8e15f1ff494fa169010b00a08f4f08a4d481e5",
+    "crates/viboceros-smlib/build.rs": "5ddb31db472659e59df2bb72fbc7b63de91042de3ba491e73f4a4d3a75931cc5",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "8d83f8bb7a5eec9a5a51ad1748c7c35d57beb54e42f87379fa4d61186ec83891",
+    "crates/viboceros-smlib/native/boundary_validation.cpp": "31519023b0ed19dfa86a4edd42fdb24fb703a79b76f742f5978d90fde2053adf",
+    "crates/viboceros-smlib/native/brep_data.h": "cc61c2b69779e0a09afd5c3d9339f39ae493ae72fb2ee4d9dfb5124ac96325c7",
+    "crates/viboceros-smlib/native/bridge.cpp": "6e551c86e5a46f0518c7ccaa46bb7c11c54295ef2497ebc0e6905670a6217a34",
+    "crates/viboceros-smlib/native/bridge.h": "299ba323ab1eb66d3d42cb81f092fede805d57b4d444ff38c8bedb103874dea7",
+    "crates/viboceros-smlib/native/coplanar_merge.cpp": "4687e0513f664aac2b5cf9e17c5c2d513b637bc260feb7bf561bfa6a581a542d",
+    "crates/viboceros-smlib/src/native.rs": "93b20bbf59715e15394f5a8586ca5d662f4103bf760f143353c08c1ff6bbb8d8",
+    "crates/viboceros-smlib/src/native/coplanar_merge.rs": "82582680417b04420e30bb303a376cd11a833257aa2d51ac37c2662b09ac4a05",
+    "crates/viboceros-smlib/tests/coplanar_merge.rs": "896195a8c601818afca8af9a74e015d2a5953ca384d668824e9385b49cf55896",
+    "docs/commands/README.md": "48085eed1a44237e9bcf42adcbea980e97b84c1c320bd49b1d33282422aac8a9",
+    "docs/commands/merge-all-coplanar-faces.md": "08fb820478dced84a08a98564067450b981013f675ca234135da4ffab004fd08",
+    "docs/usd-brep-limitations.md": "49361c4313b7ea1985231174d2fbd3dfb62ca0afdb734330710b74f40986eaff",
+    "src/app.rs": "5586c1010cf953f7e09729bc2ca43fe03ddb64d152d9eabbcb9c5a78fc532d97",
+    "src/app/tests/coplanar_faces.rs": "b582e08ee7601934018c94324911d2fdfc933c77ed660799a222ebafb51c42ae",
+    "third_party/patches/usd-brep-planarity-zone.patch": "b80613e66f7fb36af1b53155e4d273b7b06ce6e2b885af239ebddd9616b977a7",
+    "third_party/patches/usd-brep-protected-topology.patch": "b94572c4056228b49095cbbe1526487ef8315f680780521e66618e6179ffbae6",
+    "tools/rhino_oracle/coplanar_faces_probe.py": "46a36f92c24d92300d0cc2ec868cac47654809373f63f767c262b5c9076e8062",
+    "tools/rhino_oracle/fixtures/coplanar_faces.json": "b3052b14e7700dadb4d5339f29294215fe70cf39a779de559fcd1c81818eafe6",
+    "tools/rhino_oracle/rhino_worker.py": "b5d347fd0b9b2e7ca9cff9e70091c30a0ff5b4ff8b70d09be24bd4ac990b0273",
+    "tools/rhino_oracle/test_coplanar_faces.py": "0139a2494fccc23bf35c2dac5826b41fcc998964901d9c0f5048d6bfc15f01b4",
+    "tools/usd_brep/planarity_zone_probe.cpp": "9af275e703730c902a0218dcb4082eb2dcd64b3f16d058c39ff45acf3fe552ca"
+  },
+  "evidence_sha256": {
+    "docs/coplanar-faces-asan.log": "0f2f54683dbcf6cd5a208a23c126017bbb00db73c7ea38b78f1bfbaed7090364",
+    "docs/coplanar-faces-bounds.log": "84bce635f47c4d53024a1f8ea755fb7808c86e275b6388a1cfebdc43ba982d9a",
+    "docs/coplanar-faces-integration.log": "8adec28b938b787d33b32532af88b891f466f081b8b41c73719d0cf95f0f0da2",
+    "docs/coplanar-faces-native.log": "f1b3746a24d1fbe2ece425832682830680703698ef85806cf011e3c4ff9295ab",
+    "docs/coplanar-planarity-baseline.jsonl": "44fd99561c5cb56cdc9f9c3ab760b9789b371ff88f59f5d47322fad867db4407",
+    "docs/coplanar-planarity-corrected.jsonl": "75f4368a39214e443105698c7ae7cf3615ac4db4847e64ff2511e4b03a6430b5",
+    "tools/rhino_oracle/observations/coplanar_faces_viboceros_native.json": "21fc8e7dea2e329d2b6807234ddbe4539b522c7de760b05f9c4f78b1e948ae1d",
+    "docs/coplanar-faces-final-asan.log": "6836bfd3588d7017b811e0274ee84e09fb999920476c3c94b799f6af25dd4c33"
+  },
+  "implementation_base_revision": "1255ea14473b1e1484f8020c528961fa8a0bc150"
+}
