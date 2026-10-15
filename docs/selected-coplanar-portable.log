@@ -1,0 +1,104 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 17s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 9 tests
+test app::merge_coplanar_face::tests::selected_ngon_outline_caches_hole_loops_and_disappears_when_source_changes ... ok
+test app::merge_coplanar_face::tests::selected_face_getter_option_action_typed_indices_and_cancel ... ok
+test app::merge_coplanar_face::tests::selected_face_getter_rejects_stale_tolerance_and_other_objects ... ok
+test app::merge_coplanar_face::tests::selected_mesh_face_getter_retries_then_commits_one_history_step ... ok
+test app::tests::point_grid::coplanar_diagonal_waits_for_height_point_and_uses_first_view_plane ... ok
+test app::tests::coplanar_faces::coplanar_mesh_getter_preselection_picks_cancel_and_history ... ok
+test app::tests::coplanar_faces::coplanar_getter_filters_picks_rejects_options_and_cancels ... ok
+test app::tests::coplanar_faces::coplanar_getter_retains_picks_when_native_kernel_is_unavailable ... ok
+test app::tests::boolean_two::boolean_two_coplanar_cycles_preserve_categories_and_multiple_result_history ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1207 filtered out; finished in 4.07s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-7d1b644388fcdd03)
+
+running 11 tests
+test coplanar_faces::tests::coplanar_merge_options_and_source_filter_are_strict ... ok
+test merge_coplanar_face::tests::selected_coplanar_parser_and_frozen_sources_are_strict ... ok
+test point_matrix::tests::coplanar_diagonal_uses_only_the_height_points_normal_coordinate ... ok
+test coplanar_faces::tests::later_degenerate_mesh_failure_preserves_staged_mesh_and_redo ... ok
+test coplanar_faces::tests::mesh_coplanar_merge_preserves_colors_groups_and_atomic_history ... ok
+test coplanar_faces::tests::coplanar_merge_portable_decline_preserves_document ... ok
+test merge_coplanar_face::tests::selected_mesh_pair_region_and_disconnected_regions_preserve_history ... ok
+test merge_coplanar_face::tests::selected_brep_requires_native_and_preserves_redo ... ok
+test iplane::tests::circle_crossings_tangent_contacts_and_coplanar_overlap_are_retained ... ok
+test boolean_two::tests::boolean_two_coplanar_replays_overlap_boundary_categories_metadata_and_history ... ok
+test boolean_split::tests::open::boolean_split_mixed_open_replays_coplanar_stage_boundary_ownership_and_history ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 1365 filtered out; finished in 10.76s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-6395428b209ddfc7)
+
+running 2 tests
+test coplanar_mesh::tests::mesh_coplanar_recipes_match_independent_regions ... ok
+test selected_coplanar_faces::tests::selected_mesh_commands_match_independent_pair_and_region_expectations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 503 filtered out; finished in 0.04s
+
+     Running unittests src/main.rs (target/debug/deps/viboceros_oracle-43d02528d4446e57)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/block_workflow.rs (target/debug/deps/block_workflow-5fd840de7e9f2347)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/contour_brep.rs (target/debug/deps/contour_brep-b1391081ff5b53a0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/contour_command.rs (target/debug/deps/contour_command-1385d7ed2c83b60f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide.rs (target/debug/deps/divide-1b220b9cdc72b805)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_curved.rs (target/debug/deps/divide_curved-d186ab8e60c6753d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/divide_rational_line.rs (target/debug/deps/divide_rational_line-a9c18014d851cf2d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_turnaround.rs (target/debug/deps/divide_turnaround-2c5e987f1eb428c7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/edge_analysis.rs (target/debug/deps/edge_analysis-496fbf27ea00cb0b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/section_command.rs (target/debug/deps/section_command-a523a09e4f3a01ba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s

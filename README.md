@@ -57,6 +57,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
   and [tapered](docs/commands/extrude-srf-tapered.md)
 - [Native edge chamfers](docs/commands/chamfer-edge.md) and [G2 edge blends](docs/commands/blend-edge.md)
 - [Coplanar face merging for meshes and B-reps](docs/commands/merge-all-coplanar-faces.md)
+- [Merge a selected face pair or connected planar region](docs/commands/merge-coplanar-face.md)
 - [Shell solid walls and face openings](docs/commands/shell.md)
 - [Native surface-normal pulling foundation](docs/smlib-surface-pull.md)
 - [USD BRep limitations and bugs](docs/usd-brep-limitations.md)

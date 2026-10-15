@@ -1,0 +1,28 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 54s
+     Running unittests src/main.rs (target/debug/deps/viboceros-0bc6fbf89d99b5ca)
+
+running 18 tests
+test viewport::edge_picking::tests::picks_real_edges_not_isocurves_and_keeps_overlapping_component_choices ... ok
+test app::tests::domain::domain_viewport_face_hit_reports_the_picked_component_domain ... ok
+test app::tests::evaluate_uv::evaluate_uv_viewport_face_hits_keep_component_choice_across_a_session ... ok
+test app::tests::unjoin_edge::undo_at_the_component_prompt_keeps_the_batch_and_prior_history_none_cancels ... ok
+test viewport::component_picking::tests::subobject_gesture_keeps_press_modifiers_until_release_and_does_not_select_parent ... ok
+test app::tests::create_uv_curves::preselected_component_face_starts_at_extra_input_stage ... ok
+test viewport::component_picking::tests::rectangle_captures_distinct_edges_and_whole_faces_with_window_crossing_and_inverse ... ok
+test app::tests::extrude_surface_path::surface_path_component_sources_and_clicked_path_commit_one_history_entry ... ok
+test app::tests::untrim_holes::wrong_kind_preselection_is_ignored_then_a_single_component_rectangle_edits_and_multiple_keep_prompt ... ok
+test app::tests::untrim_holes::component_click_toggles_ambiguity_is_readonly_and_geometry_changes_invalidate_sources ... ok
+test viewport::edge_picking::tests::picking_refreshes_component_indices_after_edit_and_undo ... ok
+test app::tests::untrim_holes::option_buttons_render_and_typed_component_arguments_continue_to_use_the_registry ... ok
+test app::tests::extrude_surface::surface_extrusion_component_preselection_uses_original_face_indices ... ok
+test app::tests::extrude_surface_apex::surface_apex_component_source_and_typed_point_commit_one_history_entry ... ok
+test viewport::component_picking::tests::command_click_retains_press_modifiers_after_keyboard_release ... ok
+test app::tests::shell::shell_component_preselection_and_thickness_failure_repair_commit_one_history_step ... ok
+test viewport::component_picking::tests::rectangle_gesture_dispatches_once_after_release_without_object_selection ... ok
+test app::tests::extrude_surface_tapered::surface_taper_numeric_and_two_point_input_commit_from_component_sources ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 1209 filtered out; finished in 0.35s

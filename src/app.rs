@@ -131,6 +131,7 @@ mod command_line;
 mod component_selection;
 mod copy_options;
 mod extract_surface;
+mod merge_coplanar_face;
 mod shell;
 mod shrink_trimmed;
 #[cfg(test)]
@@ -2157,6 +2158,7 @@ pub struct VibocerosApp {
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
     shell_prompt: Option<shell::ShellPrompt>,
+    merge_face_prompt: Option<merge_coplanar_face::Prompt>,
     edge_fillet_prompt: Option<edge_fillet::Prompt>,
     component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
@@ -2268,6 +2270,7 @@ impl VibocerosApp {
             hole_prompt: None,
             unjoin_prompt: None,
             shell_prompt: None,
+            merge_face_prompt: None,
             edge_fillet_prompt: None,
             component_selection: Default::default(),
             curve_points: Vec::new(),
@@ -2459,6 +2462,9 @@ impl VibocerosApp {
         if self.continue_subcurve_prompt(&input) {
             return;
         }
+        if self.continue_merge_face_input(&input) {
+            return;
+        }
         if self.try_continue_shell(&input) {
             return;
         }
@@ -2528,7 +2534,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_shell_input(&input)
+        if self.start_merge_face_input(&input)
+            || self.try_start_shell_input(&input)
             || self.try_start_surface_tapered_input(&input)
             || self.try_start_surface_apex_input(&input)
             || self.try_start_surface_path_input(&input)
@@ -5385,6 +5392,9 @@ impl VibocerosApp {
         self.surface_extrusion_sources = None;
         self.surface_path_prompt = None;
         self.cancel_shell_prompt(false);
+        if self.merge_face_prompt.take().is_some() && announce {
+            self.push_log("MergeCoplanarFace canceled".into());
+        }
         self.finish_edge_zoom_options(announce);
         self.cancel_block_add_input();
         self.block_session = None;
@@ -9060,6 +9070,8 @@ impl VibocerosApp {
             // Escape dismisses the rename editor without canceling a modeling prompt.
         } else if self.selection_menu.take().is_some() {
             // Escape dismisses the choice without changing the selection.
+        } else if self.merge_face_prompt.take().is_some() {
+            self.push_log("MergeCoplanarFace canceled".into());
         } else if self.shell_prompt.is_some() {
             self.cancel_shell_prompt(true);
         } else if self.surface_path_prompt.take().is_some() {
@@ -9175,6 +9187,7 @@ impl eframe::App for VibocerosApp {
             && self.hole_prompt.is_none()
             && self.unjoin_prompt.is_none()
             && self.shell_prompt.is_none()
+            && self.merge_face_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
@@ -9365,7 +9378,9 @@ impl eframe::App for VibocerosApp {
             .plane_prompt
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
-        let face_pick = if self.selecting_move_normal_reference()
+        let face_pick = if self.merge_face_prompt.is_some() {
+            Some(FacePickMode::MeshAndBrepAny)
+        } else if self.selecting_move_normal_reference()
             || self.picking_uv_reference()
             || self.picking_mirror_object()
             || self.picking_scale_by_plane_object()
@@ -9477,13 +9492,19 @@ impl eframe::App for VibocerosApp {
         }
         if self.unjoin_prompt.is_none()
             && self.shell_prompt.is_none()
+            && self.merge_face_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.shrink_prompt_mode().is_none()
             && !self.picking_extract_faces()
         {
             self.component_selection.valid_picks(&self.document);
         }
-        let component_highlights = self.component_selection.highlights(&self.document);
+        let mut component_highlights = self.component_selection.highlights(&self.document);
+        component_highlights.extend(
+            self.merge_face_highlight()
+                .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace),
+        );
+        let component_highlight_segments = self.merge_face_mesh_wires();
         let component_preselection = self.component_preselection_available();
         let control_point_pick = model_input_active && self.control_point_picking_available();
         let component_pick = self
@@ -9782,6 +9803,7 @@ impl eframe::App for VibocerosApp {
                             control_point_pick,
                             component_pick,
                             component_highlights: &component_highlights,
+                            component_highlight_segments: &component_highlight_segments,
                             edge_pick,
                             curve_or_edge_pick,
                             edge_analysis: edge_analysis_view.as_ref(),
@@ -10142,6 +10164,7 @@ mod tests {
             hole_prompt: None,
             unjoin_prompt: None,
             shell_prompt: None,
+            merge_face_prompt: None,
             edge_fillet_prompt: None,
             component_selection: Default::default(),
             points_session: None,

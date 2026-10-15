@@ -13412,6 +13412,10 @@ def _execute(operation, iterations, tolerance):
         from surface_apex_extrusion_probe import run
         return run(operation, globals(), iterations, tolerance)
 
+    if kind == 'selected_coplanar_faces':
+        from selected_coplanar_faces_probe import run
+        return run(operation, globals(), iterations, tolerance)
+
     if kind == 'merge_coplanar_faces':
         from coplanar_faces_probe import run
         return run(operation, globals(), iterations, tolerance)

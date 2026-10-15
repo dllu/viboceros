@@ -53,7 +53,7 @@ size_t logical_count(const ON_Mesh &m){
   for(int i=0;i<m.NgonCount();++i){const auto *g=m.Ngon(i);if(g && g->m_Fcount)count-=g->m_Fcount-1;}
   return count;
 }
-size_t merge(ON_Mesh &m,double tolerance,double angle){
+size_t merge(ON_Mesh &m,double tolerance,double angle,const size_t *selected=nullptr,size_t selected_count=0,bool region=false){
   require(std::isfinite(tolerance)&&tolerance>0&&std::isfinite(angle)&&angle>0,"Invalid coplanar merge tolerances");
   const auto &top=m.Topology();const ON_3dPointListRef points(&m);
   const size_t n=m.FaceCount();
@@ -92,6 +92,20 @@ size_t merge(ON_Mesh &m,double tolerance,double angle){
     }
     return true;
   };
+  if(selected){
+    require(selected_count==(region?1U:2U),"Select two faces or one region seed");
+    for(size_t k=0;k<selected_count;++k)require(selected[k]<n,"Selected mesh face index is out of range");
+    const int seed=owner[selected[0]],other=region?-1:owner[selected[1]];
+    require(region || seed!=other,"Select distinct logical mesh faces");
+    // Every member facet identifies the same logical n-gon and fixed plane.
+    const int first=units[seed][0];const auto normal=normals[first];const auto origin=points[m.m_F[first].vi[0]];
+    if(!fits(seed,origin,normal))return 0;
+    group[seed]=0;std::vector<int> queue{seed};
+    for(size_t q=0;q<queue.size();++q)for(int next:neighbors[queue[q]]){
+      if(group[next]>=0 || (!region && next!=other) || !fits(next,origin,normal))continue;
+      group[next]=0;queue.push_back(next);
+    }
+  }else{
   for(size_t seed=0;seed<units.size();++seed){
     if(group[seed]>=0)continue;
     const int first=units[seed][0];const auto normal=normals[first];const auto origin=points[m.m_F[first].vi[0]];
@@ -104,11 +118,12 @@ size_t merge(ON_Mesh &m,double tolerance,double angle){
       group[other]=current_group;queue.push_back(other);
     }
   }
-  ON_SimpleArray<ON_COMPONENT_INDEX> selected;
-  for(const auto &e:edges)if(group[e.a]==group[e.b])selected.Append(ON_COMPONENT_INDEX(ON_COMPONENT_INDEX::meshtop_edge,e.index));
-  if(!selected.Count())return 0;
+  }
+  ON_SimpleArray<ON_COMPONENT_INDEX> selected_edges;
+  for(const auto &e:edges)if(group[e.a]>=0 && group[e.a]==group[e.b])selected_edges.Append(ON_COMPONENT_INDEX(ON_COMPONENT_INDEX::meshtop_edge,e.index));
+  if(!selected_edges.Count())return 0;
   const size_t before=logical_count(m);
-  m.MergeFaceSets(selected);
+  m.MergeFaceSets(selected_edges);
   require(m.IsValid(),"Coplanar merge produced an invalid mesh");
   const size_t after=logical_count(m);require(after<=before,"Coplanar merge increased the logical face count");
   return before-after;
@@ -124,12 +139,12 @@ void export_mesh(const ON_Mesh &m,ViboMeshResult &r){
   }
 }
 }
-extern "C" int vibo_mesh_edit(const ViboMeshView *input,uint32_t operation,double distance,double angle,ViboMeshResult **out,char *error,size_t capacity){
+static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distance,double angle,ViboMeshResult **out,char *error,size_t capacity,const size_t *selected=nullptr,size_t selected_count=0,bool region=false){
   if(out)*out=nullptr;
   try{
     require(input && out,"Missing mesh arguments");vibo_begin_open_nurbs();
     ON_Mesh mesh;import_mesh(*input,mesh);auto result=std::make_unique<ViboMeshResult>();
-    if(operation==1)result->changed=merge(mesh,distance,angle);
+    if(operation==1)result->changed=merge(mesh,distance,angle,selected,selected_count,region);
     else if(operation==2){require(std::isfinite(distance)&&distance>=0,"Invalid planar tolerance");result->changed=mesh.AddPlanarNgons(nullptr,distance,3,2,false);}
     else if(operation==3){
       require(mesh.NgonCount()==0,"Outer boundary query expects undecorated faces");
@@ -142,6 +157,13 @@ extern "C" int vibo_mesh_edit(const ViboMeshView *input,uint32_t operation,doubl
     export_mesh(mesh,*result);*out=result.release();return 1;
   }catch(const std::exception &e){if(error && capacity){std::strncpy(error,e.what(),capacity-1);error[capacity-1]=0;}return 0;}
   catch(...){if(error && capacity){std::strncpy(error,"Unknown native mesh error",capacity-1);error[capacity-1]=0;}return 0;}
+}
+extern "C" int vibo_mesh_edit(const ViboMeshView *input,uint32_t operation,double distance,double angle,ViboMeshResult **out,char *error,size_t capacity){
+  return edit_mesh(input,operation,distance,angle,out,error,capacity);
+}
+extern "C" int vibo_mesh_merge_selected(const ViboMeshView *input,const size_t *selected,size_t count,int region,double distance,double angle,ViboMeshResult **out,char *error,size_t capacity){
+  if(!selected || (region!=0 && region!=1) || count!=(region?1U:2U)){if(out)*out=nullptr;return 0;}
+  return edit_mesh(input,1,distance,angle,out,error,capacity,selected,count,region!=0);
 }
 extern "C" int vibo_mesh_result_view(const ViboMeshResult *r,ViboMeshView *v,size_t *changed){
   if(!r || !v || !changed)return 0;

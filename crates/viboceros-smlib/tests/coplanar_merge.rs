@@ -113,7 +113,18 @@ fn triangulated_closed_box_merges_only_planar_interfaces() {
         [3, 0, 4],
         [3, 4, 7],
     ];
-    let result = check_merge(mesh_brep(points, faces), 6, 52., None);
+    let source = mesh_brep(points, faces);
+    let (selected, n) =
+        Shape::merge_brep_coplanar_subset(&source, &[0, 1], false, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+    let b = selected.to_brep(Tolerance::DEFAULT).unwrap();
+    assert_eq!(n, 1);
+    assert_eq!(b.faces().len(), 11);
+    assert!(b.is_solid());
+    assert!((b.signed_volume(Tolerance::DEFAULT).unwrap() - 24.).abs() < 1e-8);
+    assert!(selected.shelled_faces(&[0], 0.1).is_err()); // Consumed face identities cannot escape.
+    let result = check_merge(source, 6, 52., None);
     assert!((result.signed_volume(Tolerance::DEFAULT).unwrap() - 24.).abs() < 1e-8);
 }
 #[test]
@@ -199,6 +210,11 @@ fn rational_closed_interface_merges_without_rebuilding_outer_trims() {
     let b = joined[0].brep.clone();
     assert_eq!(b.faces().len(), 2);
     assert!(b.edges().iter().any(|e| e.curve().degree() == 2));
+    let (selected, n) = Shape::merge_brep_coplanar_subset(&b, &[1], true, t)
+        .unwrap()
+        .unwrap();
+    assert_eq!(n, 1);
+    assert_eq!(selected.to_brep(t).unwrap().faces().len(), 1);
     check_merge(b, 1, 36., None);
 }
 #[test]

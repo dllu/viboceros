@@ -109,20 +109,11 @@
     "crates/viboceros-smlib/build.rs": "5ddb31db472659e59df2bb72fbc7b63de91042de3ba491e73f4a4d3a75931cc5",
     "crates/viboceros-smlib/native/CMakeLists.txt": "8d83f8bb7a5eec9a5a51ad1748c7c35d57beb54e42f87379fa4d61186ec83891",
     "crates/viboceros-smlib/native/boundary_validation.cpp": "31519023b0ed19dfa86a4edd42fdb24fb703a79b76f742f5978d90fde2053adf",
-    "crates/viboceros-smlib/native/brep_data.h": "cc61c2b69779e0a09afd5c3d9339f39ae493ae72fb2ee4d9dfb5124ac96325c7",
-    "crates/viboceros-smlib/native/bridge.cpp": "6e551c86e5a46f0518c7ccaa46bb7c11c54295ef2497ebc0e6905670a6217a34",
-    "crates/viboceros-smlib/native/bridge.h": "299ba323ab1eb66d3d42cb81f092fede805d57b4d444ff38c8bedb103874dea7",
-    "crates/viboceros-smlib/native/coplanar_merge.cpp": "4687e0513f664aac2b5cf9e17c5c2d513b637bc260feb7bf561bfa6a581a542d",
     "crates/viboceros-smlib/src/native.rs": "93b20bbf59715e15394f5a8586ca5d662f4103bf760f143353c08c1ff6bbb8d8",
-    "crates/viboceros-smlib/src/native/coplanar_merge.rs": "82582680417b04420e30bb303a376cd11a833257aa2d51ac37c2662b09ac4a05",
-    "crates/viboceros-smlib/tests/coplanar_merge.rs": "896195a8c601818afca8af9a74e015d2a5953ca384d668824e9385b49cf55896",
-    "docs/commands/README.md": "48085eed1a44237e9bcf42adcbea980e97b84c1c320bd49b1d33282422aac8a9",
     "docs/usd-brep-limitations.md": "49361c4313b7ea1985231174d2fbd3dfb62ca0afdb734330710b74f40986eaff",
-    "src/app.rs": "5586c1010cf953f7e09729bc2ca43fe03ddb64d152d9eabbcb9c5a78fc532d97",
     "third_party/patches/usd-brep-planarity-zone.patch": "b80613e66f7fb36af1b53155e4d273b7b06ce6e2b885af239ebddd9616b977a7",
     "third_party/patches/usd-brep-protected-topology.patch": "b94572c4056228b49095cbbe1526487ef8315f680780521e66618e6179ffbae6",
     "tools/rhino_oracle/fixtures/coplanar_faces.json": "b3052b14e7700dadb4d5339f29294215fe70cf39a779de559fcd1c81818eafe6",
-    "tools/rhino_oracle/rhino_worker.py": "b5d347fd0b9b2e7ca9cff9e70091c30a0ff5b4ff8b70d09be24bd4ac990b0273",
     "tools/rhino_oracle/test_coplanar_faces.py": "0139a2494fccc23bf35c2dac5826b41fcc998964901d9c0f5048d6bfc15f01b4",
     "tools/usd_brep/planarity_zone_probe.cpp": "9af275e703730c902a0218dcb4082eb2dcd64b3f16d058c39ff45acf3fe552ca"
   },
@@ -146,6 +137,15 @@
     "ef94479d0c780100fe5a5cabdb249bf160157539:crates/viboceros-oracle/src/lib.rs": "0fc33a5a0eeb16f502877402405be4327c5ba153774135a0907ba9e1dd64f684",
     "ef94479d0c780100fe5a5cabdb249bf160157539:docs/commands/merge-all-coplanar-faces.md": "08fb820478dced84a08a98564067450b981013f675ca234135da4ffab004fd08",
     "ef94479d0c780100fe5a5cabdb249bf160157539:src/app/tests/coplanar_faces.rs": "b582e08ee7601934018c94324911d2fdfc933c77ed660799a222ebafb51c42ae",
-    "ef94479d0c780100fe5a5cabdb249bf160157539:tools/rhino_oracle/coplanar_faces_probe.py": "46a36f92c24d92300d0cc2ec868cac47654809373f63f767c262b5c9076e8062"
+    "ef94479d0c780100fe5a5cabdb249bf160157539:tools/rhino_oracle/coplanar_faces_probe.py": "46a36f92c24d92300d0cc2ec868cac47654809373f63f767c262b5c9076e8062",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:crates/viboceros-smlib/native/brep_data.h": "cc61c2b69779e0a09afd5c3d9339f39ae493ae72fb2ee4d9dfb5124ac96325c7",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:crates/viboceros-smlib/native/bridge.cpp": "6e551c86e5a46f0518c7ccaa46bb7c11c54295ef2497ebc0e6905670a6217a34",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:crates/viboceros-smlib/native/bridge.h": "299ba323ab1eb66d3d42cb81f092fede805d57b4d444ff38c8bedb103874dea7",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:crates/viboceros-smlib/native/coplanar_merge.cpp": "4687e0513f664aac2b5cf9e17c5c2d513b637bc260feb7bf561bfa6a581a542d",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:crates/viboceros-smlib/src/native/coplanar_merge.rs": "82582680417b04420e30bb303a376cd11a833257aa2d51ac37c2662b09ac4a05",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:crates/viboceros-smlib/tests/coplanar_merge.rs": "896195a8c601818afca8af9a74e015d2a5953ca384d668824e9385b49cf55896",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:docs/commands/README.md": "48085eed1a44237e9bcf42adcbea980e97b84c1c320bd49b1d33282422aac8a9",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:src/app.rs": "5586c1010cf953f7e09729bc2ca43fe03ddb64d152d9eabbcb9c5a78fc532d97",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:tools/rhino_oracle/rhino_worker.py": "b5d347fd0b9b2e7ca9cff9e70091c30a0ff5b4ff8b70d09be24bd4ac990b0273"
   }
 }

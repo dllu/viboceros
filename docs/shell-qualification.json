@@ -89,7 +89,6 @@
     "docs/shell-asan-isolated-loop-baseline.log": "a6f2e569ceceaacaf9c45811efe4136d82abc45ddc762a7f0467f51bd93a6109",
     "docs/shell-asan-squeezed-vertex-baseline.log": "ef56cc123044214920319240e9533da92268bf529f917816aca10ef6cb80416d",
     "docs/shell-command-asan-fixed.log": "6cf711dba4ccc2d9943e73241ed26d1e817a36073732b7274e500976623a1a3a",
-    "src/app/component_selection.rs": "9a6b16f7e8266992e560531d1d1595c9cefc909550eccc80fec1fc71b773df82",
     "src/app/shell.rs": "fa592d9a9745db9400816a7b8f55e472fe0adec8e971721d22ea80c33fb93334",
     "src/app/tests/shell.rs": "838271db23ba5ed5532e51a1538185a450013ead3630dcd6794859284899a1a0",
     "third_party/patches/usd-brep-isolated-loop-owner.patch": "226da89868d24b4b7ccdf9ae3725d7cb931cba913e7daba66bd1d2d325c946d6",
@@ -123,6 +122,7 @@
     "0aecdcd8b107b85d2026207490fabb10704ac491:crates/viboceros-smlib/build.rs": "80914510c366cc3cc3deffed5ed039eace93d2fadc57e6f359710878bce341da",
     "0aecdcd8b107b85d2026207490fabb10704ac491:crates/viboceros-smlib/native/CMakeLists.txt": "f2b5e03af385814fb7311af49e4d2ee927fd6e2b834f3f0e84260109096b187b",
     "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/brep_data.h": "6b5bb2a3319a8f0e074dbd850682720243cbf13ba3e8299ae074007d34519f03",
-    "1255ea14473b1e1484f8020c528961fa8a0bc150:docs/usd-brep-limitations.md": "b5b08a42150304b2d4307698b928083442a4cd4116da0272900e017f0e20252b"
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:docs/usd-brep-limitations.md": "b5b08a42150304b2d4307698b928083442a4cd4116da0272900e017f0e20252b",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:src/app/component_selection.rs": "9a6b16f7e8266992e560531d1d1595c9cefc909550eccc80fec1fc71b773df82"
   }
 }

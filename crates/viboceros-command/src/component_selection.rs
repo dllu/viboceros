@@ -5,6 +5,7 @@ use super::*;
 pub enum ComponentSelectionKind {
     BrepEdge,
     BrepFace,
+    MeshFace,
 }
 
 #[derive(Clone, Debug, PartialEq)]

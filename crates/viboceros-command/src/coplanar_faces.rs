@@ -9,6 +9,7 @@ pub struct CoplanarMergeSelection {
     replacements: Vec<(ObjectId, Geometry)>,
     tolerance: Tolerance,
     removed: usize,
+    command: &'static str,
 }
 impl CoplanarMergeSelection {
     pub fn prepare(doc: &Document) -> Result<Self, CommandError> {
@@ -44,12 +45,62 @@ impl CoplanarMergeSelection {
             replacements,
             tolerance: doc.tolerance(),
             removed,
+            command: USAGE,
+        })
+    }
+    /// Stage one original face pair or the connected planar region of a seed.
+    pub fn prepare_selected(
+        doc: &Document,
+        id: ObjectId,
+        faces: &[usize],
+        region: bool,
+    ) -> Result<Self, CommandError> {
+        let object = doc
+            .object(id)
+            .filter(|_| doc.is_object_selectable(id))
+            .ok_or(CommandError::NoObjectsSelected)?;
+        let face_count = match object.geometry() {
+            Geometry::Brep(b) => b.faces().len(),
+            Geometry::Mesh(m) => m.face_count(),
+            Geometry::NurbsSurface(_) => 1,
+            _ => return Err(CommandError::UnsupportedCoplanarMergeGeometry),
+        };
+        if faces.len() != if region { 1 } else { 2 }
+            || faces.iter().any(|&f| f >= face_count)
+            || (!region && faces[0] == faces[1])
+        {
+            return Err(CommandError::Usage(
+                "Select two distinct original faces or one region seed",
+            ));
+        }
+        let merged = match object.geometry() {
+            Geometry::NurbsSurface(_) => None,
+            Geometry::Brep(b) if b.faces().len() == 1 => None,
+            Geometry::Brep(b) => merge_brep(b, doc.tolerance(), Some((faces, region)))?
+                .map(|(b, n)| (Geometry::Brep(b), n)),
+            Geometry::Mesh(m) => {
+                let (m, n) = m.merge_coplanar_faces_at(faces, region, doc.tolerance())?;
+                (n > 0).then_some((Geometry::Mesh(m), n))
+            }
+            _ => unreachable!(),
+        };
+        let (replacements, removed) = if let Some((g, n)) = merged {
+            (vec![(id, g)], n)
+        } else {
+            (vec![], 0)
+        };
+        Ok(Self {
+            sources: vec![(id, object.geometry_snapshot().clone())],
+            replacements,
+            removed,
+            tolerance: doc.tolerance(),
+            command: "MergeCoplanarFace",
         })
     }
     pub fn commit(&self, doc: &mut Document) -> Result<(usize, usize), CommandError> {
-        run_command_transaction(doc, USAGE, |doc| self.apply(doc))
+        run_command_transaction(doc, self.command, |doc| self.apply(doc))
     }
-    fn apply(&self, doc: &mut Document) -> Result<(usize, usize), CommandError> {
+    pub(super) fn apply(&self, doc: &mut Document) -> Result<(usize, usize), CommandError> {
         if doc.tolerance() != self.tolerance
             || self.sources.iter().any(|(id, snapshot)| {
                 !doc.is_object_selectable(*id)
@@ -68,6 +119,13 @@ impl CoplanarMergeSelection {
     }
 }
 fn merge(source: &Brep, tolerance: Tolerance) -> Result<Option<(Brep, usize)>, CommandError> {
+    merge_brep(source, tolerance, None)
+}
+fn merge_brep(
+    source: &Brep,
+    tolerance: Tolerance,
+    selection: Option<(&[usize], bool)>,
+) -> Result<Option<(Brep, usize)>, CommandError> {
     #[cfg(feature = "native-smlib")]
     {
         let controls = source.faces().iter().fold(0usize, |n, f| {
@@ -75,7 +133,7 @@ fn merge(source: &Brep, tolerance: Tolerance) -> Result<Option<(Brep, usize)>, C
         });
         if source.faces().len() > 362 || controls > 2_000_000 {
             return Err(CommandError::Usage(
-                "MergeAllCoplanarFaces supports at most 362 faces and 2,000,000 surface controls per B-rep",
+                "Coplanar face merging supports at most 362 faces and 2,000,000 surface controls per B-rep",
             ));
         }
         let origin = source
@@ -88,8 +146,12 @@ fn merge(source: &Brep, tolerance: Tolerance) -> Result<Option<(Brep, usize)>, C
             AffineTransform3::from_translation(origin.vector_to(zero)?),
             tolerance,
         )?;
-        let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
-        match shape.merge_coplanar_faces(tolerance)? {
+        let result = if let Some((faces, region)) = selection {
+            viboceros_smlib::Shape::merge_brep_coplanar_subset(&local, faces, region, tolerance)?
+        } else {
+            viboceros_smlib::Shape::from_brep(&local, tolerance)?.merge_coplanar_faces(tolerance)?
+        };
+        match result {
             None => Ok(None),
             Some((merged, count)) => Ok(Some((
                 merged.to_brep(tolerance)?.transformed(
@@ -102,7 +164,7 @@ fn merge(source: &Brep, tolerance: Tolerance) -> Result<Option<(Brep, usize)>, C
     }
     #[cfg(not(feature = "native-smlib"))]
     {
-        let _ = (source, tolerance);
+        let _ = (source, tolerance, selection);
         Err(CommandError::CoplanarMergeRequiresNativeKernel)
     }
 }

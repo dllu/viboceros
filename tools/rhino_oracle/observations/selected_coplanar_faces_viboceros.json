@@ -1,0 +1,244 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "pair_left",
+      "value": {
+        "area": 6.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            13.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 5,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 1,
+        "volume": null
+      },
+      "elapsed_ns": 50608824
+    },
+    {
+      "id": "pair_right",
+      "value": {
+        "area": 6.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            13.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 5,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 1,
+        "volume": null
+      },
+      "elapsed_ns": 49400403
+    },
+    {
+      "id": "reverse_pair",
+      "value": {
+        "area": 6.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            13.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 5,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 1,
+        "volume": null
+      },
+      "elapsed_ns": 48496960
+    },
+    {
+      "id": "nonadjacent",
+      "value": {
+        "area": 6.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            13.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 6,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 0,
+        "volume": null
+      },
+      "elapsed_ns": 32854749
+    },
+    {
+      "id": "disconnected_pair",
+      "value": {
+        "area": 6.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            13.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 6,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 0,
+        "volume": null
+      },
+      "elapsed_ns": 32934765
+    },
+    {
+      "id": "seed_right",
+      "value": {
+        "area": 6.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            13.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 4,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 2,
+        "volume": null
+      },
+      "elapsed_ns": 45019680
+    },
+    {
+      "id": "shifted_seed",
+      "value": {
+        "area": 6.0,
+        "bounds": [
+          [
+            1000000.0,
+            -2000000.0,
+            3000000.0
+          ],
+          [
+            1000013.0,
+            -1999999.0,
+            3000000.0
+          ]
+        ],
+        "face_count": 4,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 2,
+        "volume": null
+      },
+      "elapsed_ns": 46714536
+    },
+    {
+      "id": "annulus_seed",
+      "value": {
+        "area": 8.000000000000023,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            3.0,
+            3.0,
+            0.0
+          ]
+        ],
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          2
+        ],
+        "removed_faces": 7,
+        "volume": null
+      },
+      "elapsed_ns": 28964908
+    }
+  ]
+}

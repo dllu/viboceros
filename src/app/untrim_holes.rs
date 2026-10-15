@@ -135,12 +135,16 @@ impl VibocerosApp {
             .component_selection
             .valid_picks(&self.document)
             .into_iter()
+            .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace)
             .map(|pick| {
                 (
                     pick.object,
                     match pick.kind {
                         viboceros_command::ComponentSelectionKind::BrepEdge => {
                             UntrimHolesComponent::Edge(pick.index)
+                        }
+                        viboceros_command::ComponentSelectionKind::MeshFace => {
+                            unreachable!("filtered mesh faces")
                         }
                         viboceros_command::ComponentSelectionKind::BrepFace => {
                             UntrimHolesComponent::Face(pick.index)
@@ -406,19 +410,25 @@ impl VibocerosApp {
             return;
         }
         prompt.candidates = None;
-        let picks = picks.into_iter().map(|pick| {
-            (
-                pick.object,
-                match pick.kind {
-                    viboceros_command::ComponentSelectionKind::BrepEdge => {
-                        UntrimHolesComponent::Edge(pick.index)
-                    }
-                    viboceros_command::ComponentSelectionKind::BrepFace => {
-                        UntrimHolesComponent::Face(pick.index)
-                    }
-                },
-            )
-        });
+        let picks = picks
+            .into_iter()
+            .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace)
+            .map(|pick| {
+                (
+                    pick.object,
+                    match pick.kind {
+                        viboceros_command::ComponentSelectionKind::BrepEdge => {
+                            UntrimHolesComponent::Edge(pick.index)
+                        }
+                        viboceros_command::ComponentSelectionKind::MeshFace => {
+                            unreachable!("filtered mesh faces")
+                        }
+                        viboceros_command::ComponentSelectionKind::BrepFace => {
+                            UntrimHolesComponent::Face(pick.index)
+                        }
+                    },
+                )
+            });
         match UntrimHolesSelection::prepare_preselected(&self.document, picks, prompt.options) {
             Ok(Some(selection)) => {
                 match selection.commit_in_group(&mut self.document, &mut prompt.group) {

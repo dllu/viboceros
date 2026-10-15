@@ -203,6 +203,18 @@ impl Viewport {
                     object: pick.object,
                     edge: pick.index,
                 }),
+                ComponentSelectionKind::MeshFace => {
+                    if let Geometry::Mesh(mesh) = object.geometry() {
+                        for [a, b] in mesh_face_outline(mesh, pick.index) {
+                            if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
+                                painter.line_segment(
+                                    [a, b],
+                                    Stroke::new(3., Color32::from_rgb(245, 160, 20)),
+                                );
+                            }
+                        }
+                    }
+                }
                 ComponentSelectionKind::BrepFace => {
                     edges.extend(face_edges(object.geometry(), pick.index).into_iter().map(
                         |edge| EdgePick {
@@ -217,6 +229,38 @@ impl Viewport {
         edges.dedup();
         self.paint_edge_highlights(painter, rect, document, &edges);
     }
+}
+
+/// Boundary segments of one logical mesh face, including every hole loop.
+pub(crate) fn mesh_face_outline(
+    mesh: &viboceros_geometry::TriangleMesh,
+    index: usize,
+) -> Vec<[Point3; 2]> {
+    let Ok(index) = u32::try_from(index) else {
+        return vec![];
+    };
+    let single = [index];
+    let faces = mesh
+        .ngons()
+        .iter()
+        .find(|g| g.faces().contains(&index))
+        .map_or(single.as_slice(), |g| g.faces());
+    let mut boundary = std::collections::BTreeMap::<(u32, u32), usize>::new();
+    for &face in faces {
+        if let Some(face) = mesh.faces().get(face as usize) {
+            let v = face.indices();
+            for i in 0..v.len() {
+                let a = v[i];
+                let b = v[(i + 1) % v.len()];
+                *boundary.entry((a.min(b), a.max(b))).or_default() += 1;
+            }
+        }
+    }
+    boundary
+        .into_iter()
+        .filter(|(_, n)| *n == 1)
+        .map(|((a, b), _)| [mesh.vertices()[a as usize], mesh.vertices()[b as usize]])
+        .collect()
 }
 
 fn face_edges(geometry: &Geometry, face: usize) -> Vec<usize> {

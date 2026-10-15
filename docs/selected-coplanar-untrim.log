@@ -1,0 +1,19 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2m 40s
+     Running unittests src/main.rs (target/debug/deps/viboceros-0bc6fbf89d99b5ca)
+
+running 9 tests
+test app::tests::untrim_holes::noops_ambiguity_and_stale_sources_cannot_modify_foreign_history_or_lose_redo ... ok
+test app::tests::untrim_holes::geometry_commands_finish_the_group_and_view_and_cplane_commands_preserve_it ... ok
+test app::tests::untrim_holes::matching_preselection_applies_before_initial_option_tokens_and_clears_outside_history ... ok
+test app::tests::untrim_holes::rejected_preselection_clears_components_and_preserves_geometry_redo_and_option_memory ... ok
+test app::tests::untrim_holes::component_click_toggles_ambiguity_is_readonly_and_geometry_changes_invalidate_sources ... ok
+test app::tests::untrim_holes::wrong_kind_preselection_is_ignored_then_a_single_component_rectangle_edits_and_multiple_keep_prompt ... ok
+test app::tests::untrim_holes::face_picks_and_option_subprompts_share_command_memory_outside_undo_and_reject_bad_values_atomically ... ok
+test app::tests::untrim_holes::option_buttons_render_and_typed_component_arguments_continue_to_use_the_registry ... ok
+test app::tests::untrim_holes::picks_apply_immediately_local_undo_discards_last_pick_and_enter_or_escape_keeps_one_external_record ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1218 filtered out; finished in 0.18s

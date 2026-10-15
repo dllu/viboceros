@@ -75,6 +75,7 @@ mod raster_tests;
 #[cfg(test)]
 use camera::zoom_pan;
 mod component_picking;
+pub(crate) use component_picking::mesh_face_outline;
 mod control_points;
 mod grip_preview;
 pub use control_points::ControlPointSelection;
@@ -345,6 +346,7 @@ pub struct ViewportInput<'a> {
     pub control_point_pick: bool,
     pub component_pick: Option<ComponentPickFilter>,
     pub component_highlights: &'a [ComponentPick],
+    pub component_highlight_segments: &'a [[Point3; 2]],
     pub edge_analysis: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_zoom: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_highlights: &'a [EdgePick],
@@ -420,6 +422,7 @@ impl Default for ViewportInput<'_> {
             control_point_pick: false,
             component_pick: None,
             component_highlights: &[],
+            component_highlight_segments: &[],
             edge_analysis: None,
             edge_zoom: None,
             edge_highlights: &[],
@@ -1782,6 +1785,11 @@ impl Viewport {
             object_preview,
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);
+        for &[a, b] in input.component_highlight_segments {
+            if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
+                painter.line_segment([a, b], Stroke::new(3., Color32::from_rgb(245, 160, 20)));
+            }
+        }
         self.paint_control_points(
             &painter,
             rect,

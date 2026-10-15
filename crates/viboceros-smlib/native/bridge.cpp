@@ -621,7 +621,7 @@ extern "C" int vb_sheet_from_brep(const VbBrepView *view, double tolerance,
         std::vector<int> inward(component_count, 0);
         auto owner = std::make_unique<VbSolid>();
         owner->value.reset(vb_import_brep(*view, tolerance, components, component_count,
-                                         inward.data(), nullptr, nullptr, true));
+                                         inward.data(), nullptr, nullptr, true, &owner->source_faces));
         *out = owner.release();
     });
 }
@@ -724,6 +724,22 @@ extern "C" int vb_shape_face_count(const VbSolid *shape, size_t *count, char *er
         SmTArray<SmFace *> faces;
         shape->value->GetFaces(faces);
         *count = faces.GetSize();
+    });
+}
+
+extern "C" int vb_imported_shape_merge_coplanar_subset(VbSolid *shape,const size_t *indices,size_t count,
+                                     int region,double tolerance,double angle,size_t *removed,char *error,size_t capacity) {
+    if(removed)*removed=0;
+    return guarded(error,capacity,[&]{
+        require(shape && shape->value && indices && removed && (region==0 || region==1) &&
+                count==(region?1U:2U) && std::isfinite(tolerance) && tolerance>0 && std::isfinite(angle) && angle>0,
+                "Invalid selected coplanar face arguments");
+        std::vector<SmFace*> selected;
+        for(size_t i=0;i<count;++i){require(indices[i]<shape->source_faces.size(),"Selected original face index is out of range");selected.push_back(shape->source_faces[indices[i]]);}
+        const bool solid=shape->value->IsManifoldSolid();
+        *removed=vb_merge_coplanar_faces(*shape->value,tolerance,angle,&selected,region!=0);
+        if(*removed){shape->source_faces.clear();shape->source_edges.clear();}
+        require(!solid || shape->value->IsManifoldSolid(),"Selected coplanar merge opened a solid");
     });
 }
 

@@ -56,7 +56,6 @@
     "crates/viboceros-oracle/src/silhouette.rs": "2b830dfd4ddfdcf80b31c7c17ede7ec86d4982438925fba49eaac8a1d75acc83",
     "src/app/silhouette.rs": "838377b4eff408192f91d960d6c7adbfcd9fe999fa3aaed82fa7e3c7c87d5c53",
     "src/app/tests/silhouette.rs": "07c17bb8cd61fc2d9748bc233d66728e6113b09512682c28131e2e3f30f18947",
-    "src/viewport.rs": "bd4fec0b823892b09aca9d21cab3987a39a4227ebd135b0fc846e0409d7efd7e",
     "tools/rhino_oracle/silhouette_probe.py": "3cf2b05d84ad836fe492e2d03a9185746d8b6677ed45423f6bb3afc86bc729e4",
     "tools/rhino_oracle/test_silhouette.py": "33d0cb5b16b3e61c6b073feed788bd6e4c62a33d219482892c70e8da6019ae26",
     "tools/rhino_oracle/fixtures/silhouette_parallel.json": "e930ef4403dd70079abbca25daec57dfec6f54aba8b148dc93f4bb9f742efe91",
@@ -103,6 +102,7 @@
     "66c49825f93cc3d1569e8379d76afcdb30d35b62:src/app.rs": "5a69bdf9ec614f2dc9cdd0772c5d065812d051df7d55555c22d76527543a30f1",
     "66c49825f93cc3d1569e8379d76afcdb30d35b62:src/app/object_selection.rs": "a4169756d81ee77374be0baba63452a02da7b3fb00466a545eef193e111f1e0f",
     "66c49825f93cc3d1569e8379d76afcdb30d35b62:tools/rhino_oracle/client.py": "fd31f78f8242c1cbddf53aa5a85d29ac0b8e663a4aea3bbc502e342b64307b1c",
-    "66c49825f93cc3d1569e8379d76afcdb30d35b62:tools/rhino_oracle/rhino_worker.py": "02ca9c04ea03f629e8be2b9fd1f360ced7d9d446ba7bb8920eb700dacb62d63a"
+    "66c49825f93cc3d1569e8379d76afcdb30d35b62:tools/rhino_oracle/rhino_worker.py": "02ca9c04ea03f629e8be2b9fd1f360ced7d9d446ba7bb8920eb700dacb62d63a",
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:src/viewport.rs": "bd4fec0b823892b09aca9d21cab3987a39a4227ebd135b0fc846e0409d7efd7e"
   }
 }

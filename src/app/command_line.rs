@@ -42,6 +42,7 @@ impl VibocerosApp {
             && self.active_command.is_none()
             && self.surface_path_prompt.is_none()
             && self.shell_prompt.is_none()
+            && self.merge_face_prompt.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()

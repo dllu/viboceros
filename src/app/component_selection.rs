@@ -122,6 +122,14 @@ fn source(document: &Document, pick: ComponentPick) -> Result<GeometrySnapshot, 
         .object(pick.object)
         .filter(|_| document.is_object_selectable(pick.object))
         .ok_or("component source is unavailable")?;
+    if pick.kind == ComponentSelectionKind::MeshFace {
+        return match object.geometry() {
+            Geometry::Mesh(m) if pick.index < m.face_count() => {
+                Ok(object.geometry_snapshot().clone())
+            }
+            _ => Err("mesh face source is unavailable"),
+        };
+    }
     let converted;
     let brep = match object.geometry() {
         viboceros_document::Geometry::Brep(brep) => brep,
@@ -136,6 +144,7 @@ fn source(document: &Document, pick: ComponentPick) -> Result<GeometrySnapshot, 
     let count = match pick.kind {
         ComponentSelectionKind::BrepEdge => brep.edges().len(),
         ComponentSelectionKind::BrepFace => brep.faces().len(),
+        ComponentSelectionKind::MeshFace => unreachable!("handled mesh face"),
     };
     if pick.index >= count {
         return Err("component index is outside its source");
@@ -148,6 +157,7 @@ impl VibocerosApp {
         self.active_command.is_none()
             && self.surface_path_prompt.is_none()
             && self.shell_prompt.is_none()
+            && self.merge_face_prompt.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
@@ -263,6 +273,7 @@ impl VibocerosApp {
                             let kind = match pick.kind {
                                 ComponentSelectionKind::BrepEdge => "edge",
                                 ComponentSelectionKind::BrepFace => "face",
+                                ComponentSelectionKind::MeshFace => "mesh face",
                             };
                             self.push_log(format!(
                                 "{}: object {} {kind} {}",

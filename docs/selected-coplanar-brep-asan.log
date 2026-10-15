@@ -1,0 +1,17 @@
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+    Finished `release` profile [optimized] target(s) in 2m 28s
+     Running tests/coplanar_merge.rs (target/release/deps/coplanar_merge-c0185ae55abafbe4)
+
+running 7 tests
+test overlapping_sheet_interiors_are_rejected_before_merging ... ok
+test annulus_preserves_inner_hole_and_original_vertices ... ok
+test disconnected_regions_merge_independently ... ok
+test kinked_faces_and_cylindrical_seam_are_noops ... ok
+test adjacent_triangles_merge_without_changing_area_or_source ... ok
+test rational_closed_interface_merges_without_rebuilding_outer_trims ... ok
+test triangulated_closed_box_merges_only_planar_interfaces ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s

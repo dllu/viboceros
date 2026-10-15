@@ -44,9 +44,10 @@ charged face checks. Degenerate faces fail before document replacement.
 single-boundary policy and does not apply the merge command's angular cutoff.
 The shared native bridge lives in `viboceros-opennurbs`, separate from file I/O.
 
-SubD merging, the selected-face `MergeCoplanarFace` command, component face
-selection, and full Rhino command parity remain unimplemented. Portable
-builds report that multi-face merging requires the native kernel. The public
+The [selected-face command](merge-coplanar-face.md) merges one pair or one
+seeded connected planar region. SubD merging and full Rhino command parity
+remain unimplemented. Portable builds report that multi-face B-rep merging
+requires the native kernel. The public
 SDK comparison recipes use `Brep.MergeCoplanarFaces(distance, angle)` and
 `Mesh.MergeAllCoplanarFaces(distance, angle)` on owned copies per iteration. Fresh licensed Rhino captures remain pending the recorded
 [Wine startup blocker](../oracle-sspi.md); mocks and local analytic checks do not

@@ -73,6 +73,8 @@ Rhino's complete command set is still a work in progress.
 - [Flip curve, surface, and mesh directions](flip.md)
 - [Merge redundant surface/B-rep edges](merge-edges.md)
 - [Merge a selected edge or its immediate neighbors](merge-edge.md)
+- [Merge all coplanar mesh or B-rep faces](merge-all-coplanar-faces.md)
+- [Merge a selected face pair or connected planar region](merge-coplanar-face.md)
 - [Split a selected surface/B-rep edge](split-edge.md)
 - [Separate joined surface/B-rep edges](unjoin-edge.md)
 - [World/CPlane bounding boxes](bounding-box.md)

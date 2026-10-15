@@ -1,0 +1,112 @@
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 29s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ee58e91200cf7db8)
+
+running 11 tests
+test app::merge_coplanar_face::tests::selected_ngon_outline_caches_hole_loops_and_disappears_when_source_changes ... ok
+test app::merge_coplanar_face::tests::selected_face_getter_option_action_typed_indices_and_cancel ... ok
+test app::merge_coplanar_face::tests::selected_face_getter_rejects_stale_tolerance_and_other_objects ... ok
+test app::merge_coplanar_face::tests::selected_mesh_face_getter_retries_then_commits_one_history_step ... ok
+test app::tests::point_grid::coplanar_diagonal_waits_for_height_point_and_uses_first_view_plane ... ok
+test app::tests::coplanar_faces::coplanar_getter_filters_picks_rejects_options_and_cancels ... ok
+test app::tests::coplanar_faces::coplanar_mesh_getter_preselection_picks_cancel_and_history ... ok
+test app::merge_coplanar_face::tests::selected_brep_face_clicks_use_original_source_indices ... ok
+test app::tests::coplanar_faces::coplanar_getter_commits_once_for_postselection_and_preselection ... ok
+test app::tests::extrude_surface_apex::surface_apex_coplanar_failure_then_valid_clicked_target_uses_the_same_sources ... ok
+test app::tests::boolean_two::boolean_two_coplanar_cycles_preserve_categories_and_multiple_result_history ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 1216 filtered out; finished in 6.93s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-b6b3368de7d6e19b)
+
+running 17 tests
+test coplanar_faces::tests::coplanar_merge_options_and_source_filter_are_strict ... ok
+test merge_coplanar_face::tests::selected_coplanar_parser_and_frozen_sources_are_strict ... ok
+test coplanar_faces::tests::mesh_coplanar_merge_preserves_colors_groups_and_atomic_history ... ok
+test merge_coplanar_face::tests::selected_mesh_pair_region_and_disconnected_regions_preserve_history ... ok
+test point_matrix::tests::coplanar_diagonal_uses_only_the_height_points_normal_coordinate ... ok
+test coplanar_faces::tests::later_degenerate_mesh_failure_preserves_staged_mesh_and_redo ... ok
+test coplanar_faces::tests::coplanar_merge_native_failure_does_not_commit_earlier_sources ... ok
+test extrude_along_curve::native::tests::later_coplanar_cap_preserves_the_batch_and_redo ... ok
+test coplanar_faces::tests::coplanar_merge_noop_and_stale_tolerance_preserve_history ... ok
+test coplanar_faces::tests::coplanar_merge_preserves_attributes_groups_selection_and_one_history_step ... ok
+test iplane::tests::circle_crossings_tangent_contacts_and_coplanar_overlap_are_retained ... ok
+test coplanar_faces::tests::coplanar_merge_later_failure_and_stale_sources_preserve_history ... ok
+test extrude_surface_apex::tests::surface_apex_later_coplanar_face_failure_preserves_batch_and_redo ... ok
+test merge_coplanar_face::tests::selected_brep_indices_and_region_seed_keep_unrelated_components ... ok
+test coplanar_faces::tests::coplanar_merge_bounds_work_before_native_import ... ok
+test boolean_two::tests::boolean_two_coplanar_replays_overlap_boundary_categories_metadata_and_history ... ok
+test boolean_split::tests::open::boolean_split_mixed_open_replays_coplanar_stage_boundary_ownership_and_history ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 1433 filtered out; finished in 11.36s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-e5396afe9629b735)
+
+running 4 tests
+test selected_coplanar_faces::tests::selected_mesh_commands_match_independent_pair_and_region_expectations ... ok
+test coplanar_mesh::tests::mesh_coplanar_recipes_match_independent_regions ... ok
+test coplanar_faces::tests::coplanar_fixtures_match_independent_regions_and_integrals ... ok
+test selected_coplanar_faces::tests::selected_brep_commands_match_independent_pair_and_region_expectations ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 514 filtered out; finished in 0.89s
+
+     Running unittests src/main.rs (target/debug/deps/viboceros_oracle-b25d546aa82046f5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/block_workflow.rs (target/debug/deps/block_workflow-6258385fbdf5da31)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/contour_brep.rs (target/debug/deps/contour_brep-4b327d1a5f58e251)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/contour_command.rs (target/debug/deps/contour_command-4cc885fae4e6fd58)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide.rs (target/debug/deps/divide-c7402d1576b6b99c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_curved.rs (target/debug/deps/divide_curved-96e72cf353fdfd45)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/divide_rational_line.rs (target/debug/deps/divide_rational_line-41f0d062de178d1b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_turnaround.rs (target/debug/deps/divide_turnaround-70f07473a9cb4699)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/edge_analysis.rs (target/debug/deps/edge_analysis-5716370d26691a31)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/section_command.rs (target/debug/deps/section_command-58d0002325d62559)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s

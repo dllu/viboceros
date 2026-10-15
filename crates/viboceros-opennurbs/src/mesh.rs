@@ -45,6 +45,17 @@ struct NativeResult {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vibo_mesh_merge_selected(
+        input: *const MeshView,
+        indices: *const usize,
+        count: usize,
+        region: c_int,
+        distance: f64,
+        angle: f64,
+        out: *mut *mut NativeResult,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_mesh_edit(
         input: *const MeshView,
         op: u32,
@@ -75,6 +86,20 @@ pub fn merge_coplanar_mesh(
 ) -> Result<(MeshData, usize), MeshError> {
     edit(data, 1, distance, angle)
 }
+/// Merge a selected pair of logical faces or the planar region at one seed.
+/// Raw face indices identify n-gons by any of their member facets.
+pub fn merge_selected_coplanar_mesh(
+    data: &MeshData,
+    faces: &[usize],
+    region: bool,
+    distance: f64,
+    angle: f64,
+) -> Result<(MeshData, usize), MeshError> {
+    if faces.len() != if region { 1 } else { 2 } || faces.iter().any(|&f| f >= data.faces.len()) {
+        return Err(MeshError("Invalid selected mesh faces".into()));
+    }
+    edit_selection(data, 1, distance, angle, Some((faces, region)))
+}
 /// Call OpenNURBS' planar n-gon finder, retaining existing overlays.
 pub fn add_planar_mesh_ngons(
     data: &MeshData,
@@ -96,6 +121,15 @@ fn edit(
     op: u32,
     distance: f64,
     angle: f64,
+) -> Result<(MeshData, usize), MeshError> {
+    edit_selection(data, op, distance, angle, None)
+}
+fn edit_selection(
+    data: &MeshData,
+    op: u32,
+    distance: f64,
+    angle: f64,
+    selection: Option<(&[usize], bool)>,
 ) -> Result<(MeshData, usize), MeshError> {
     if data.vertices.len() > 4_000_000
         || data.faces.len() > 1_000_000
@@ -141,16 +175,32 @@ fn edit(
     };
     let mut error = [0u8; 512];
     let mut raw = std::ptr::null_mut();
-    let status = unsafe {
-        vibo_mesh_edit(
-            &view,
-            op,
-            distance,
-            angle,
-            &mut raw,
-            error.as_mut_ptr().cast(),
-            error.len(),
-        )
+    let status = if let Some((faces, region)) = selection {
+        unsafe {
+            vibo_mesh_merge_selected(
+                &view,
+                faces.as_ptr(),
+                faces.len(),
+                region.into(),
+                distance,
+                angle,
+                &mut raw,
+                error.as_mut_ptr().cast(),
+                error.len(),
+            )
+        }
+    } else {
+        unsafe {
+            vibo_mesh_edit(
+                &view,
+                op,
+                distance,
+                angle,
+                &mut raw,
+                error.as_mut_ptr().cast(),
+                error.len(),
+            )
+        }
     };
     let owner = NonNull::new(raw).map(Owner);
     if status == 0 {
@@ -314,5 +364,77 @@ mod precision_tests {
         let (result, n) = merge_coplanar_mesh(&data, 1e-9, 1e-8).unwrap();
         assert_eq!(n, 0);
         assert_eq!(result, data);
+    }
+}
+
+#[cfg(test)]
+mod selected_tests {
+    use super::*;
+    fn grid() -> MeshData {
+        let vertices = (0..2)
+            .flat_map(|y| (0..4).map(move |x| [x as f64, y as f64, 0.]))
+            .collect();
+        MeshData {
+            vertices,
+            faces: vec![[0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6]],
+            ..Default::default()
+        }
+    }
+    #[test]
+    fn selected_pair_only_and_seeded_region_share_one_native_executive() {
+        let source = grid();
+        let before = source.clone();
+        let (pair, n) = merge_selected_coplanar_mesh(&source, &[0, 1], false, 1e-9, 1e-8).unwrap();
+        assert_eq!(n, 1);
+        assert_eq!(pair.ngons.len(), 1);
+        assert_eq!(pair.ngons[0].faces.len(), 2);
+        assert_eq!(pair.faces, source.faces);
+        let (_, n) = merge_selected_coplanar_mesh(&source, &[0, 2], false, 1e-9, 1e-8).unwrap();
+        assert_eq!(n, 0);
+        let (region, n) = merge_selected_coplanar_mesh(&source, &[2], true, 1e-9, 1e-8).unwrap();
+        assert_eq!(n, 2);
+        assert_eq!(region.ngons[0].faces.len(), 3);
+        assert_eq!(source, before);
+        assert!(merge_selected_coplanar_mesh(&region, &[0, 1], false, 1e-9, 1e-8).is_err());
+    }
+    #[test]
+    fn every_member_of_an_existing_ngon_uses_the_same_region_anchor() {
+        let mut data = grid();
+        let dz = 1e-4;
+        for (i, p) in data.vertices.iter_mut().enumerate() {
+            p[2] = match i % 4 {
+                2 => dz,
+                3 => 2. * dz,
+                _ => 0.,
+            };
+        }
+        data.ngons = vec![Ngon {
+            vertices: vec![0, 1, 2, 6, 5, 4],
+            faces: vec![0, 1],
+        }];
+        // The near-planar n-gon fits its canonical first-facet plane. The
+        // neighbor exceeds that plane's distance tolerance, but would fit a
+        // plane anchored at the second facet. Facet picking must not change it.
+        for seed in [0, 1] {
+            for region in [false, true] {
+                let faces = if region { vec![seed] } else { vec![seed, 2] };
+                let (result, n) =
+                    merge_selected_coplanar_mesh(&data, &faces, region, 1.5 * dz, 2. * dz).unwrap();
+                assert_eq!(n, 0, "seed {seed}, region {region}");
+                assert_eq!(result, data);
+            }
+        }
+    }
+    #[test]
+    fn invalid_selected_indices_fail_without_native_mutation() {
+        let source = grid();
+        for (faces, region) in [
+            (vec![], true),
+            (vec![0, 3], false),
+            (vec![0, 0], false),
+            (vec![0, 1], true),
+        ] {
+            assert!(merge_selected_coplanar_mesh(&source, &faces, region, 1e-9, 1e-8).is_err());
+        }
     }
 }
