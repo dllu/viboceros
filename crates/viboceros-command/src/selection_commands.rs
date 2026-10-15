@@ -253,6 +253,8 @@ mod tests {
             "SelAll",
             "SelNone",
             "Invert",
+            "SelPt",
+            "InvertPt",
             "SelLast",
             "SelPrev",
             "SelName missing",

@@ -188,6 +188,38 @@ impl PendingObjectCommand {
 }
 
 impl VibocerosApp {
+    fn try_select_prompt_points(&mut self, input: &str) -> bool {
+        let Some(pending) = self.object_prompt.as_ref().filter(|p| {
+            p.phase == ObjectPromptPhase::Selecting
+                && (matches!(p.description.command, "Circle FitPoints" | "Smooth")
+                    || (p.description.workflow
+                        == ObjectSelectionWorkflow::PointInputAfterSelection
+                        && super::transform_sources::allows_grips(p.description.command)))
+        }) else {
+            return false;
+        };
+        let action =
+            match viboceros_command::point_selection::PointSelectionAction::from_input(input) {
+                Ok(Some(action)) => action,
+                Ok(None) => return false,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    self.command_input.clear();
+                    return true;
+                }
+            };
+        let filter = pending.description.filter;
+        let excluded = pending.excluded_object;
+        match action.apply(&mut self.document, |o| {
+            Some(o.id()) != excluded && filter.accepts_object(o)
+        }) {
+            Ok(message) => self.push_log(message),
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+        self.command_input.clear();
+        true
+    }
+
     fn point_cloud_prompt_target(&self, input: &str) -> Option<ObjectId> {
         let explicit = input
             .split_whitespace()
@@ -607,6 +639,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.try_select_prompt_points(input) {
+            return true;
+        }
         if self
             .object_prompt
             .as_ref()

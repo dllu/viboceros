@@ -7,6 +7,8 @@ KINDS = ("curve", "rational", "closed", "periodic", "line", "polyline", "circle"
 COUNTS = dict(curve=4, rational=4, closed=4, periodic=4, line=2, polyline=4,
               circle=8, arc=5, surface=9, surface_closed=12, mesh=5, closing=4)
 COMMANDS = {
+    "selpt": ("SelPt", "_SelPt"),
+    "invertpt": ("InvertPt", "_InvertPt"),
     "move": ("Move", "_Move 0,0,0 1,2,3"),
     "zero": ("Move", "_Move 0,0,0 0,0,0"),
     "rotate": ("Rotate", "_Rotate _Copy=_No 0,0,0 30"),

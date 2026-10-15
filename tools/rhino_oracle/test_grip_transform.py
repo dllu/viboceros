@@ -16,6 +16,17 @@ def read(folder):
 
 
 class GripTransformTests(TestCase):
+    def test_pending_point_selection_recipes_use_argument_free_macros(self):
+        pending = json.loads((ROOT / 'tools/rhino_oracle/fixtures/point_selection.json').read_text())
+        self.assertEqual(len(pending['operations']), 6)
+        self.assertEqual({op['source'] for op in pending['operations']}, {'curve', 'rational', 'mesh'})
+        for op in pending['operations']:
+            validate(op)
+            name, script = command_macro(op)
+            self.assertIn(name, ('SelPt', 'InvertPt'))
+            self.assertEqual(script, '_' + name)
+        self.assertEqual(request(), read('fixtures'))
+
     def test_pending_set_point_recipes_use_bounded_commands_without_changing_old_captures(self):
         path = ROOT / 'tools/rhino_oracle/fixtures/set_point_grips.json'
         pending = json.loads(path.read_text())

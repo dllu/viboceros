@@ -1,0 +1,84 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_transform",
+      "id": "point-selection-curve-selpt",
+      "source": "curve",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": true,
+      "command": "selpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "point-selection-curve-invertpt",
+      "source": "curve",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": true,
+      "command": "invertpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "point-selection-rational-selpt",
+      "source": "rational",
+      "selected": [
+        0
+      ],
+      "parent": true,
+      "point": true,
+      "command": "selpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "point-selection-rational-invertpt",
+      "source": "rational",
+      "selected": [
+        0
+      ],
+      "parent": true,
+      "point": true,
+      "command": "invertpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "point-selection-mesh-selpt",
+      "source": "mesh",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": true,
+      "command": "selpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "point-selection-mesh-invertpt",
+      "source": "mesh",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": true,
+      "command": "invertpt",
+      "off": false,
+      "inputs": "auto"
+    }
+  ]
+}

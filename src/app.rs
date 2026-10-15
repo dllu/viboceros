@@ -9830,6 +9830,7 @@ mod tests {
     mod plane_arrays;
     mod point_grid;
     mod point_input;
+    mod point_selection;
     mod points;
     mod project;
     mod radius;

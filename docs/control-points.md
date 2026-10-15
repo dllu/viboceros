@@ -10,6 +10,10 @@ the same picking and transform workflow. `PointsOn` switches back to control
 points; switching modes clears the owner's selected indices. `PointsOff` hides
 either mode. Grip mode is stored with the display snapshot and history.
 
+[`SelPt` and `InvertPt`](commands/point-selection.md) select or invert displayed
+control and edit grips from the keyboard. They also work during grip-capable
+source selection, including SetPt, Move, Smooth and Circle FitPoints.
+
 Click or drag a selection window to select visible control points. Shift adds
 and Ctrl removes picks. Global `SelAll` includes displayed control points and
 their parent objects; FitPoints ignores parent geometry as a fitting input.

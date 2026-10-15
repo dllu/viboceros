@@ -17,7 +17,6 @@
   ],
   "source_sha256": {
     "crates/viboceros-command/src/control_points.rs": "b40f95bcde970eafc49b828375808e907b79d5fbf16a5b8ecea31020aff3e7ac",
-    "crates/viboceros-command/src/lib.rs": "014e6b1dce5f67f2eb5cbb67f81a9bc291e249a91176d90bae3ca252fc1703ad",
     "crates/viboceros-command/src/scale_positions.rs": "f0efe3833e591a0ab0126cadfae9b278e763e042ca7eb596fd5a190b24811f6c",
     "crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
     "crates/viboceros-document/src/control_points/edit_tests.rs": "38937ec5ad57ddd91d3a46cddb5626289d911a19974b8962691b2ece297a9612",
@@ -28,7 +27,6 @@
     "crates/viboceros-geometry/src/curve_edit_points.rs": "8b80112816cca67852196406029b80ece5559160cc08839464ecf79fa8205ad4",
     "crates/viboceros-geometry/src/curve_edit_points/tests.rs": "abad8958a1f58128d79dc97a80e9710cd68155625f07c0a1e2b8ceefc977809f",
     "docs/architecture.md": "2b2e1dac83d9e887613f3987318fe87bcdb4a0861f3d9b922aa03a4746fc2341",
-    "docs/control-points.md": "647e6cd3e24443cf4adcadc1ea353d10d3bf383b98dd267562b0a2b6d8fc0e25",
     "src/app/tests/edit_points.rs": "9eb9390f5820aa76d223096d8471b87197522f9c8d27fcfc94876fcb1e25cdbd",
     "src/viewport/affine_preview.rs": "5579cbb6deb1a8edb5ad82db9e58035c7b783fc32e714cdc504a522005dfdeeb",
     "src/viewport/clipping.rs": "347de01ba764da7c14b14aca05234355de910f9a6899f72717de82940b4f3593",
@@ -78,6 +76,8 @@
     "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:docs/commands/README.md": "abfae0c2c2f9ca3f549b9a6663760a16bad66bafc51733530721361f800b4ccd",
     "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:docs/commands/edit-points.md": "3cfadfc31a2eec4713f5bb34d9ee81da2a9c72f7e280255f16d75da29ccf41e0",
     "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:docs/grip-transforms.md": "31f5cc6964427af6ff07ad105221f60e009b3ee0eb334388d1246e0965edb892",
-    "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:src/app.rs": "9b2f3851a4452323f51e8210979811bfcf3981049644860fe03c7c627acc1402"
+    "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:src/app.rs": "9b2f3851a4452323f51e8210979811bfcf3981049644860fe03c7c627acc1402",
+    "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:crates/viboceros-command/src/lib.rs": "014e6b1dce5f67f2eb5cbb67f81a9bc291e249a91176d90bae3ca252fc1703ad",
+    "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:docs/control-points.md": "647e6cd3e24443cf4adcadc1ea353d10d3bf383b98dd267562b0a2b6d8fc0e25"
   }
 }

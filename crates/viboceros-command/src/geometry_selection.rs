@@ -57,7 +57,6 @@ pub(super) enum GeometrySelectionFilter {
     PlanarCurve,
     Line,
     Polyline,
-    Point,
     PointCloud,
     Surface,
     OpenSurface,
@@ -104,7 +103,6 @@ impl GeometrySelectionFilter {
                 }
                 _ => false,
             },
-            Self::Point => matches!(geometry, Geometry::Point(_)),
             Self::PointCloud => matches!(geometry, Geometry::PointCloud(_)),
             Self::Surface => match geometry {
                 Geometry::NurbsSurface(_) => true,
