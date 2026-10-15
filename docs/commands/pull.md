@@ -47,6 +47,9 @@ and seam parity, native getter behavior and comparative speed remain unqualified
 this is not a claim of complete Rhino compatibility. The [existing Wine issue](../oracle-sspi.md)
 still prevents fresh live Rhino captures.
 
+[Bounded curve approximation and closest-triangle locations](../curve-approximation.md)
+are available in the geometry crate as preparation for mesh curve tracing.
+
 The Python `pull_curve_surface_command` operation accepts full `curve` and
 `surface` definitions, runs the Viboceros command and returns sampled curve
 geometry. Its Rhino counterpart uses public

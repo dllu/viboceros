@@ -48,13 +48,10 @@
     "crates/viboceros-command/src/pull.rs": "f3441fd3a2e1f20970fe5100846b770b766e97db8dfa22c154c3c0eabd3ba9bf",
     "crates/viboceros-command/src/pull/tests.rs": "8aa1c1941f0fa983655aef88721817460ec553f9c9052f93ff0a9a827e03d8b3",
     "crates/viboceros-command/src/uv_inputs.rs": "a0537f3aa50523054c4acf11cde2cd0ec7ceb46718c9481fd810c798290a58c1",
-    "crates/viboceros-geometry/src/lib.rs": "981b81edef93e33b139b00ee4adb37dca7771e01b5537629682d5c2bf3bbc860",
     "crates/viboceros-geometry/src/intersection.rs": "4af65f5e283beec675aa5b105a493a228f942e2f0fe71c3d0a20401a1ad9e9fa",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend.rs": "2f9a8721592bf7ce4c19722157c5e8db05a7d117e50e06c01e308eda8b04ceb6",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend/trim.rs": "021c3592b251114d32cbc4f191e974f163a2645bbeef20a64a2f4e3b44c3dc68",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend/tests/trim.rs": "4806497abb9e8c27f4c00f88b323691464b32a0d0d03e04db6d5c28389302019",
-    "crates/viboceros-geometry/src/mesh/projection.rs": "5faba173b57cb40adbea37ef3a8befeae06b8aeedb6f64b656b0ae75882dce2b",
-    "crates/viboceros-geometry/src/mesh/projection/tests.rs": "672fde9fdb420eb5d7e59336187ded6c17713560d187c082395e62879b56f6f4",
     "crates/viboceros-geometry/src/point/distance_key.rs": "84c636f2b8d6cf3d69c5c49ae282e959f2ac30a56a8af16025bc2f2fb606ddd0",
     "crates/viboceros-smlib/src/native/surface_pull.rs": "89ca411ff11b6e3f94aa0d39261b8cae514ba3ebaf06ffa61b37666fb316275c",
     "crates/viboceros-oracle/src/lib.rs": "91b4fb321a590e5ffe43e85caaa654c50dc4c55d59391595971ffc354383d8fe",
@@ -75,5 +72,10 @@
   "output_sha256": {
     "tools/rhino_oracle/observations/pull_curve_surface_command_viboceros_native.json": "6a9971ec44f0909193a71837d3374f472bed8a822a96b1f6928def49557e9638",
     "tools/rhino_oracle/observations/pull_curve_surface_command_viboceros_portable.json": "861b33c49bdd56629864088b63eedb5af8125c687f8736cb857a05416b4792f0"
+  },
+  "source_git_sha256": {
+    "0e6b430ef487df6626b39891c4e9a4add814d44b:crates/viboceros-geometry/src/mesh/projection.rs": "5faba173b57cb40adbea37ef3a8befeae06b8aeedb6f64b656b0ae75882dce2b",
+    "0e6b430ef487df6626b39891c4e9a4add814d44b:crates/viboceros-geometry/src/lib.rs": "981b81edef93e33b139b00ee4adb37dca7771e01b5537629682d5c2bf3bbc860",
+    "0e6b430ef487df6626b39891c4e9a4add814d44b:crates/viboceros-geometry/src/mesh/projection/tests.rs": "672fde9fdb420eb5d7e59336187ded6c17713560d187c082395e62879b56f6f4"
   }
 }

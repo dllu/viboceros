@@ -5,6 +5,10 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("curve approximation is unsupported: {context}")]
+    UnsupportedCurveApproximation { context: &'static str },
+    #[error("curve approximation exceeded its arithmetic, subdivision, or output budget")]
+    CurveApproximationLimit,
     #[error("mesh projection is ambiguous: {context}")]
     AmbiguousMeshProjection { context: &'static str },
     #[error("mesh projection exceeds the limit of {maximum} triangles")]

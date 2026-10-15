@@ -236,7 +236,6 @@ pub use loft::{
     prepare_loft_sections_with_operations, try_loft_nurbs_curves,
     try_loft_nurbs_curves_with_operations, try_loft_nurbs_curves_with_preparation,
 };
-pub use mesh::MeshProjectionIndex;
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
@@ -250,6 +249,7 @@ pub use mesh::{
     QuadSplitMethod, SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes,
     match_mesh_edges,
 };
+pub use mesh::{MeshClosestLocation, MeshProjectionIndex};
 pub use morph::{
     CurvePreviewCage, MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS,
     MAX_MORPH_SURFACE_SAMPLES, MorphInterpolationSolver, MorphPreviewOperations, PointMorph,

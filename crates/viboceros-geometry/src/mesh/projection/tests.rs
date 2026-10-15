@@ -362,3 +362,32 @@ fn closest_point_orders_far_sheets_even_when_rounded_distances_tie() {
         .unwrap();
     assert_eq!(actual.z(), 1.);
 }
+
+#[test]
+fn closest_location_retains_triangle_identity_and_deterministic_ties() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            p(0., 0., 0.),
+            p(1., 0., 0.),
+            p(0., 1., 0.),
+            p(0., 0., 2.),
+            p(1., 0., 2.),
+            p(0., 1., 2.),
+        ],
+        vec![[0, 1, 2], [3, 4, 5]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let index = MeshProjectionIndex::new(&mesh).unwrap();
+    for (z, triangle_index, foot_z) in [(0.2, 0, 0.), (1., 0, 0.), (1.8, 1, 2.)] {
+        let target = p(0.25, 0.25, z);
+        let actual = index.closest_location(target).unwrap().unwrap();
+        assert_eq!(actual.triangle_index, triangle_index);
+        assert_eq!(actual.point, p(0.25, 0.25, foot_z));
+        assert_eq!(Some(actual.point), index.closest_point(target).unwrap());
+        assert_eq!(
+            index.triangle_points(triangle_index).unwrap()[0].z(),
+            foot_z
+        );
+    }
+}

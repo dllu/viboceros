@@ -24,6 +24,13 @@ pub struct MeshProjectionIndex<'a> {
     order: Vec<usize>,
     nodes: Vec<Node>,
 }
+/// Nearest-point result identifying the indexed triangle, including a quad's
+/// chosen diagonal. Triangle indices belong to this index, not mesh face IDs.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MeshClosestLocation {
+    pub point: Point3,
+    pub triangle_index: usize,
+}
 impl<'a> MeshProjectionIndex<'a> {
     pub fn new(mesh: &'a TriangleMesh) -> Result<Self, GeometryError> {
         if mesh.triangles().len() > MAX_TRIANGLES {
@@ -51,6 +58,16 @@ impl<'a> MeshProjectionIndex<'a> {
     /// Globally nearest point on the indexed mesh. Box pruning and candidate
     /// ordering share exact distance comparisons, retaining deterministic ties.
     pub fn closest_point(&self, target: Point3) -> Result<Option<Point3>, GeometryError> {
+        Ok(self
+            .closest_location(target)?
+            .map(|location| location.point))
+    }
+    /// Globally nearest point and its triangle. Equal-distance candidates use
+    /// the lowest indexed triangle, matching [`Self::closest_point`].
+    pub fn closest_location(
+        &self,
+        target: Point3,
+    ) -> Result<Option<MeshClosestLocation>, GeometryError> {
         use crate::point::PointDistance;
         let mut best: Option<(usize, PointDistance)> = None;
         let mut pending = if self.nodes.is_empty() {
@@ -101,7 +118,10 @@ impl<'a> MeshProjectionIndex<'a> {
                 }
             }
         }
-        Ok(best.map(|(_, d)| d.point()))
+        Ok(best.map(|(triangle_index, d)| MeshClosestLocation {
+            point: d.point(),
+            triangle_index,
+        }))
     }
     /// Original triangle coordinates, including the chosen diagonal of a quad.
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {

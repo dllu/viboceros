@@ -8,6 +8,7 @@ mod affine;
 mod algebra;
 mod curve;
 mod interval;
+mod polyline;
 mod pushup;
 mod surface;
 #[cfg(test)]

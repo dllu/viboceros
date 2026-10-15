@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "feature": "Bounded NURBS polyline approximation and closest mesh triangle locations",
+  "full_rhino_parity": false,
+  "performance_qualified": false,
+  "fresh_rhino_observations": 0,
+  "mesh_curve_pull_command_implemented": false,
+  "behavior": [
+    "Approximation retains native parameters and knot boundaries. Exact rational restriction and Bernstein difference hulls bound continuous positional error, including endpoint rounding.",
+    "Common-sign weights, including uniformly negative gauges, reuse the existing certificate engine; source controls and knots remain unchanged.",
+    "Mesh closest locations preserve deterministic triangle identity through the existing BVH; the point-only API delegates to the same query."
+  ],
+  "checks": {
+    "new_approximation_tests": 10,
+    "shared_certificate_tests_including_approximation": 39,
+    "mesh_projection_tests": 14,
+    "portable_pull_command_tests": 6,
+    "geometry_clippy_all_targets": "Passed with warnings denied",
+    "formatting": "Passed",
+    "historical_provenance_entries_verified": 172,
+    "historical_provenance_records_verified": 6,
+    "native_pull_command_tests": 8,
+    "workspace_check": "Passed",
+    "diff_whitespace": "Passed"
+  },
+  "limitations": [
+    "Mesh curve tracing across faces and closest-branch discontinuities remains pending; the Pull command still declines mesh curve sources.",
+    "Degrees above 16, mixed-sign weights, discontinuities, constant or unresolved closed segments and exhausted parameter or arithmetic precision decline.",
+    "The existing certificate engine bounds work, rational bit size and subdivision depth. Tight tolerances and large models may exceed those budgets.",
+    "The certificate bounds stored mathematical geometry; floating-point evaluation has its own rounding error. Positional error alone does not certify topology or preserve sub-tolerance features.",
+    "No fresh Rhino capture, vertex-count parity or comparative speed qualification is included."
+  ],
+  "historical_provenance_maintenance": [
+    "Changed sources in prior qualification records refer to their verified pre-change Git blobs, preserving historical results and limitations.",
+    "Two already-stale trim-test references now identify the historical blob at 2b0d305f91089141fed271245ec0b83fa0b159a1 matching their existing digest."
+  ],
+  "source_sha256": {
+    "crates/viboceros-geometry/src/error.rs": "c1c2b906c123ce145df199cef4e8edda621c24868877e398e3b7989b4b40147e",
+    "crates/viboceros-geometry/src/lib.rs": "cdbe5c5e45b62d282a6ee056fa2a8586cc111fc7d7a09f448f188e643cff526e",
+    "crates/viboceros-geometry/src/mesh.rs": "2aa2edea65fd5ecab7411ce32121215e9f032eafb47b8f5d5c8f461ccfd799b6",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "c67a40990aefde9a55c215e68a3037663e3538f6330e6e3ec84af837496eefb4",
+    "crates/viboceros-geometry/src/mesh/projection/tests.rs": "7a8608259408fc974b270eb71e077beaddfbc8c23aaa0f9db2bc278f2018337e",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "11165115b766aa48853b209476c508b7918da9a1cda8b1b11ab7673f2f3d98b4",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "ec0b77b7b64eca66c4671ad9772799c324ab54dbfd0494906c2840d6ec11dbe3",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "1fe66c6f212f3f1131ab39ee31ba6abdef1a7283b627c232e9110049d90cf3d0",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline/tests.rs": "7aff44d81bbe2208d9d6c76eebbc44de2931cbc085f30e6fb6aae16558609a45",
+    "docs/curve-approximation.md": "3d23cfeaa7aa16d4a9d0b5aa7501fb3f2bea6c74d4128b66d534c3032813f45c",
+    "docs/commands/pull.md": "699dc3d0c371a7b0636e15056e96516cb789072775cf7062c9ae937bd713cf91",
+    "README.md": "a68b91ef01a08fb8c927e7e87bad16328876b71b8c0ef6717bb0071844aafbee"
+  }
+}
