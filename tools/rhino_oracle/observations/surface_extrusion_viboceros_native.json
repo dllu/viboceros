@@ -1,0 +1,208 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "surface_planar_up",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.0
+          }
+        ]
+      },
+      "elapsed_ns": 35170563
+    },
+    {
+      "id": "surface_planar_down",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -2.0
+              ],
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.0
+          }
+        ]
+      },
+      "elapsed_ns": 34140273
+    },
+    {
+      "id": "surface_warped_up",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                3.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.0
+          }
+        ]
+      },
+      "elapsed_ns": 39383055
+    },
+    {
+      "id": "surface_warped_oblique",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0000000000000004,
+                3.0,
+                3.0000000000000004
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 10.500000000000002
+          }
+        ]
+      },
+      "elapsed_ns": 40877460
+    },
+    {
+      "id": "surface_warped_both",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -2.0
+              ],
+              [
+                2.0,
+                3.0,
+                3.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 24.0
+          }
+        ]
+      },
+      "elapsed_ns": 38978143
+    },
+    {
+      "id": "surface_ring_hole",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0000000000000018,
+                -3.000000000000001,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 50.26548245743669
+          }
+        ]
+      },
+      "elapsed_ns": 61389053
+    },
+    {
+      "id": "surface_ring_walls",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0000000000000018,
+                -3.000000000000001,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "face_count": 2,
+            "is_solid": false,
+            "volume": null
+          }
+        ]
+      },
+      "elapsed_ns": 21762990
+    },
+    {
+      "id": "surface_box_face",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 1.9999999999999998
+          }
+        ]
+      },
+      "elapsed_ns": 36686248
+    }
+  ]
+}

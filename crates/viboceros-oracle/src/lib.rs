@@ -115,6 +115,8 @@ mod project;
 mod remove_holes;
 mod shrink_trimmed;
 mod silhouette;
+mod surface_extrusion;
+pub use surface_extrusion::Fixture as SurfaceExtrusionFixture;
 mod tapered_extrusion;
 pub use tapered_extrusion::Fixture as TaperedExtrusionFixture;
 mod solid_orientation;
@@ -1602,6 +1604,11 @@ pub enum Operation {
         #[serde(default)]
         loose: bool,
     },
+    SurfaceExtrusion {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceExtrusionFixture,
+    },
     TaperedExtrusion {
         id: String,
         #[serde(flatten)]
@@ -2547,6 +2554,7 @@ impl Operation {
             | Self::PullCurveSurfaceCommand { id, .. }
             | Self::PullCurveSurface { id, .. }
             | Self::ProjectCurveSurface { id, .. }
+            | Self::SurfaceExtrusion { id, .. }
             | Self::TaperedExtrusion { id, .. }
             | Self::SilhouetteParallel { id, .. }
             | Self::ProjectCurvePlane { id, .. }
@@ -5734,6 +5742,9 @@ fn execute(
             loose,
             ..
         } => project::run(iterations, curve, surface, *direction, tolerance, *loose)?,
+        Operation::SurfaceExtrusion { fixture, .. } => {
+            surface_extrusion::run(fixture, iterations, tolerance)?
+        }
         Operation::TaperedExtrusion { fixture, .. } => {
             tapered_extrusion::run(fixture, iterations, tolerance)?
         }

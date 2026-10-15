@@ -70,6 +70,7 @@ pub use knot_refinement::{
 };
 mod shape;
 mod silhouette;
+mod surface_extrusion;
 mod tapered;
 pub use shape::StitchResult;
 

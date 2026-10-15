@@ -158,6 +158,7 @@ mod edge_commands;
 mod edge_fillet;
 mod evaluate_point;
 mod evaluate_uv;
+mod extrude_surface;
 mod extrude_tapered;
 mod grid_settings;
 mod group_prompt;
@@ -725,6 +726,10 @@ enum InteractiveCommand {
         base: Option<Point3>,
         options: viboceros_command::extrude_tapered::TaperedExtrusionOptions,
     },
+    ExtrudeSurface {
+        base: Option<Point3>,
+        options: viboceros_command::extrude_surface::SurfaceExtrusionOptions,
+    },
     ExtrudeCurveToPoint {
         delete_input: bool,
         solid: bool,
@@ -852,6 +857,7 @@ impl InteractiveCommand {
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
             Self::ExtrudeCurveTapered { .. } => "ExtrudeCrvTapered",
+            Self::ExtrudeSurface { .. } => "ExtrudeSrf",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
             Self::Revolve { .. } => "Revolve",
         }
@@ -1624,6 +1630,12 @@ impl InteractiveCommand {
             Self::ExtrudeCurveTapered { base: Some(_), .. } => {
                 "ExtrudeCrvTapered: pick the direction target (Esc to cancel)"
             }
+            Self::ExtrudeSurface { base: None, .. } => {
+                "ExtrudeSrf: enter a distance or pick two direction points (BothSides, Solid, DeleteInput, Direction)"
+            }
+            Self::ExtrudeSurface { base: Some(_), .. } => {
+                "ExtrudeSrf: pick the direction target (Esc to cancel)"
+            }
             Self::ExtrudeCurveToPoint { .. } => {
                 "ExtrudeCrvToPoint: pick the apex in the viewport (Esc to cancel)"
             }
@@ -1788,6 +1800,7 @@ impl InteractiveCommand {
             | Self::Shear { origin: None, .. }
             | Self::ExtrudeCurve { base: None, .. }
             | Self::ExtrudeCurveTapered { base: None, .. }
+            | Self::ExtrudeSurface { base: None, .. }
             | Self::ExtrudeCurveToPoint { .. }
             | Self::Revolve {
                 axis_start: None, ..
@@ -1818,6 +1831,7 @@ impl InteractiveCommand {
             | Self::Mirror { start }
             | Self::ExtrudeCurve { base: start, .. }
             | Self::ExtrudeCurveTapered { base: start, .. }
+            | Self::ExtrudeSurface { base: start, .. }
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
@@ -2128,6 +2142,7 @@ pub struct VibocerosApp {
     maelstrom_session: Option<maelstrom_prompt::MaelstromSession>,
     translation_session: Option<translation_prompt::TranslationSession>,
     set_point_sources: Option<set_point::SetPointSources>,
+    surface_extrusion_sources: Option<extrude_surface::SurfaceExtrusionSources>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
@@ -2236,6 +2251,7 @@ impl VibocerosApp {
             maelstrom_session: None,
             translation_session: None,
             set_point_sources: None,
+            surface_extrusion_sources: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
@@ -2445,7 +2461,8 @@ impl VibocerosApp {
         if self.try_continue_point_grid_height(&input) {
             return;
         }
-        if self.try_continue_tapered_extrusion(&input)
+        if self.try_continue_surface_extrusion(&input)
+            || self.try_continue_tapered_extrusion(&input)
             || self.try_continue_set_point_option(&input)
             || self.try_finish_set_point(&input)
         {
@@ -2477,7 +2494,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.start_blend_surface(&input)
+        if self.try_start_surface_extrusion_input(&input)
+            || self.start_blend_surface(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
@@ -2997,6 +3015,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_surface_extrusion_input(input) {
+            return true;
+        }
         if self.try_start_contour_input(input) {
             return true;
         }
@@ -5208,6 +5229,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveTapered { .. }
+                | InteractiveCommand::ExtrudeSurface { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::Curvature { .. }
@@ -5316,6 +5338,7 @@ impl VibocerosApp {
 
     fn cancel_interactive_command(&mut self, announce: bool) {
         self.set_point_sources = None;
+        self.surface_extrusion_sources = None;
         self.finish_edge_zoom_options(announce);
         self.cancel_block_add_input();
         self.block_session = None;
@@ -7933,6 +7956,26 @@ impl VibocerosApp {
                     options,
                 );
             }
+            InteractiveCommand::ExtrudeSurface {
+                base: None,
+                options,
+            } => {
+                self.active_command = Some(InteractiveCommand::ExtrudeSurface {
+                    base: Some(point),
+                    options,
+                });
+                self.push_log("ExtrudeSrf: pick the direction target".into());
+            }
+            InteractiveCommand::ExtrudeSurface {
+                base: Some(base),
+                mut options,
+            } => {
+                options.direction = None;
+                return self.finish_surface_extrusion(
+                    &format!("{} {}", format_model_point(base), format_model_point(point)),
+                    options,
+                );
+            }
             InteractiveCommand::ExtrudeCurveToPoint {
                 delete_input,
                 solid,
@@ -9873,6 +9916,7 @@ mod tests {
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_surface;
+    mod extrude_surface;
     mod extrude_tapered;
     mod grip_transform;
     mod group_prompt;
@@ -10016,6 +10060,7 @@ mod tests {
             maelstrom_session: None,
             translation_session: None,
             set_point_sources: None,
+            surface_extrusion_sources: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),

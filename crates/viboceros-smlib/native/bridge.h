@@ -11,6 +11,10 @@ typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
 typedef struct VbCurveList VbCurveList;
+int vb_shape_extrude_faces(const VbSolid *shape, const double displacement[3], int cap_ends,
+    double tolerance, VbSolid **out, char *error, size_t capacity);
+int vb_shape_single_face_plane_normal(const VbSolid *shape, double tolerance, int *has_plane,
+    double normal[3], char *error, size_t capacity);
 int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3], double height,
     double angle_degrees, int round_corners, int cap_ends, double tolerance,
     VbSolid **out, char *error, size_t capacity);

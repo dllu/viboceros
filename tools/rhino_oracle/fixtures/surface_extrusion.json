@@ -1,0 +1,1243 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "surface_extrusion",
+      "id": "surface_planar_up",
+      "source": {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "op": "surface_extrusion",
+      "id": "surface_planar_down",
+      "source": {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        0.0,
+        0.0,
+        -2.0
+      ],
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "op": "surface_extrusion",
+      "id": "surface_warped_up",
+      "source": {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "op": "surface_extrusion",
+      "id": "surface_warped_oblique",
+      "source": {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        1.0,
+        0.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "op": "surface_extrusion",
+      "id": "surface_warped_both",
+      "source": {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": true
+    },
+    {
+      "op": "surface_extrusion",
+      "id": "surface_ring_hole",
+      "source": {
+        "type": "brep",
+        "surface": {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            -3.0,
+            -3.0,
+            3.0,
+            3.0
+          ],
+          "knots_v": [
+            -3.0,
+            -3.0,
+            3.0,
+            3.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        "boundaries": [
+          {
+            "curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            },
+            "parameter_curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            }
+          },
+          {
+            "curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            },
+            "parameter_curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            }
+          }
+        ],
+        "interior_uv": [
+          2.0,
+          0.0
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "op": "surface_extrusion",
+      "id": "surface_ring_walls",
+      "source": {
+        "type": "brep",
+        "surface": {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            -3.0,
+            -3.0,
+            3.0,
+            3.0
+          ],
+          "knots_v": [
+            -3.0,
+            -3.0,
+            3.0,
+            3.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -3.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        "boundaries": [
+          {
+            "curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            },
+            "parameter_curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    -3.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            }
+          },
+          {
+            "curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            },
+            "parameter_curve": {
+              "degree": 2,
+              "knots": [
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                2.0,
+                2.0,
+                3.0,
+                3.0,
+                4.0,
+                4.0,
+                4.0
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ]
+            }
+          }
+        ],
+        "interior_uv": [
+          2.0,
+          0.0
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "solid": false,
+      "both_sides": false
+    },
+    {
+      "op": "surface_extrusion",
+      "id": "surface_box_face",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "face": 0,
+      "displacement": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "solid": true,
+      "both_sides": false
+    }
+  ]
+}

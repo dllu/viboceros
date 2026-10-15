@@ -25,6 +25,8 @@
 #include <SmCurveFilletExecutive.h>
 #include <SmOffsetCurve.h>
 #include <SmHCR.h>
+#include <SmTopologySweep.h>
+#include <SmTransSweepGeometry.h>
 #include <SmPoly.h>
 #include <SmPrimitiveCreation.h>
 #include <SmPointSet.h>
@@ -1513,6 +1515,99 @@ extern "C" int vb_shape_apex_solid(const VbCurve *curve, const double apex[3], d
         require(std::abs((SmPoint3d(apex[0], apex[1], apex[2]) - plane_point).Dot(normal)) > tolerance,
                 "Apex solid must leave the profile plane");
         *out = capped_surface(apex_surface(*curve, apex), 1, tolerance).release();
+    });
+}
+
+namespace {
+bool surface_control_plane_normal(SmSurface &surface,double tolerance,SmVector3d &normal) {
+    require(surface.IsKindOf(SmBSplineSurface_TYPE),"Surface plane query requires NURBS");
+    auto &spline=static_cast<SmBSplineSurface&>(surface);
+    const size_t nu=spline.GetNumberControlPoints(SM_SP_U),nv=spline.GetNumberControlPoints(SM_SP_V);
+    require(nu && nv && nu<=limit/nv,"Surface plane query control limit");
+    ULONG count_u=0,count_v=0;SmTArray<SmPoint3d> points;SmTArray<double> weights;
+    check(spline.GetControlPointNet(count_u,count_v,points,weights),"read surface plane controls");
+    require(points.GetSize()>0,"Missing surface plane controls");
+    const SmPoint3d origin=points[0];
+    for(ULONG i=0;i<points.GetSize();++i) {
+        points[i]-=origin;
+        require(std::isfinite(points[i].x) && std::isfinite(points[i].y) && std::isfinite(points[i].z),
+                "Surface plane coordinates exceed finite range");
+    }
+    // The generic surface predicate tests a padded pseudobox, which can
+    // decline exact planes. Classify the NURBS controls using the kernel's
+    // point-set classifier, as for numeric curve extrusion direction.
+    SmPointSet3d set(points,tolerance);
+    if(!set.IsPlanar())return false;
+    normal=set.GetNormal();
+    if(!set.IsPlanar())return false;
+    check(normal.Unitize(),"normalize surface control plane");return true;
+}
+}
+extern "C" int vb_shape_single_face_plane_normal(const VbSolid *shape, double tolerance,
+    int *has_plane, double normal[3], char *error, size_t capacity) {
+    if(has_plane)*has_plane=0;
+    return guarded(error,capacity,[&] {
+        require(shape && shape->value && has_plane && normal && std::isfinite(tolerance) && tolerance>0,
+                "Invalid surface plane query");
+        SmTArray<SmFace*> faces;shape->value->GetFaces(faces);
+        require(faces.GetSize()==1,"Surface plane query requires exactly one face");
+        SmVector3d direction;
+        if(!surface_control_plane_normal(*faces[0]->GetSurface(),tolerance,direction))return;
+        for(size_t i=0;i<3;++i)normal[i]=direction[i];
+        require(finite3(normal),"Invalid surface plane normal");*has_plane=1;
+    });
+}
+
+extern "C" int vb_shape_extrude_faces(const VbSolid *shape, const double displacement[3],
+    int cap_ends, double tolerance, VbSolid **out, char *error, size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(shape && shape->value && out && finite3(displacement)
+            && (cap_ends==0 || cap_ends==1) && std::isfinite(tolerance) && tolerance>0,
+            "Invalid surface extrusion input");
+        require(!shape->value->IsManifoldSolid(),"Surface extrusion requires an open sheet");
+        SmVector3d direction(displacement[0],displacement[1],displacement[2]);
+        const double distance=direction.Length();
+        require(std::isfinite(distance) && distance>0,"Invalid surface extrusion displacement");
+        check(direction.Unitize(),"normalize surface extrusion direction");
+        auto owner=std::make_unique<VbSolid>();
+        owner->value.reset(vb_copy_brep(*shape->value));
+        owner->value->SetTolerance(tolerance,FALSE);
+        SmTArray<SmFace*> faces;owner->value->GetFaces(faces);
+        require(faces.GetSize()>0 && faces.GetSize()<=100000,"Surface extrusion face limit");
+        for(ULONG i=0;i<faces.GetSize();++i) {
+            SmVector3d normal;
+            if(surface_control_plane_normal(*faces[i]->GetSurface(),tolerance,normal)) {
+                require(std::abs(direction.Dot(normal))*distance>tolerance,
+                        "Surface extrusion must leave a planar source face");
+            }
+        }
+        // The primitive convenience overload redirects through boundary curves
+        // under USE_NEW_ANALYTICS, rebuilding planar caps. The topology sweep
+        // keeps the actual source surfaces, including curved and trimmed caps.
+        owner->value->m_bEditingEnabled=TRUE;
+        SmTranslationalSweepGeometry geometry(distance*direction,tolerance);
+        SmTopologySweep sweep(geometry);sweep.SetDoStitching(FALSE);
+        SmTArray<SmEdge*> all_edges,edges;owner->value->GetEdges(all_edges);
+        for(ULONG i=0;i<all_edges.GetSize();++i)
+            if(all_edges[i]->IsLamina())edges.Add(all_edges[i]);
+        require(edges.GetSize()>0,"Surface extrusion requires a boundary");
+        // Sweep boundary edges higher, and copy caps to their translated
+        // position. Shared interior edges stay in the cap topology; sweeping
+        // them higher would introduce interior walls on connected sheets.
+        check(sweep.DoSweep(owner->value.get(),owner->value->GetInfiniteRegion(),nullptr,&edges,
+              nullptr,cap_ends?&faces:nullptr),"sweep surface boundaries and caps");
+        if(!cap_ends) {
+            for(ULONG i=0;i<faces.GetSize();++i)
+                check(owner->value->DeleteFace(faces[i],TRUE,TRUE),"remove source cap from wall sweep");
+        }
+        check(owner->value->StitchAndOrient(),"stitch and orient surface extrusion");
+        owner->value->m_bEditingEnabled=FALSE;
+        faces.ReSet();owner->value->GetFaces(faces);
+        require(faces.GetSize()>0,"Empty surface extrusion");
+        require(!cap_ends || owner->value->IsManifoldSolid(),"Surface extrusion did not close");
+        check(SmApiTurnToNurbs(owner->value.get()),"convert surface extrusion to NURBS");
+        *out=owner.release();
     });
 }
 

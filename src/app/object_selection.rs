@@ -587,6 +587,7 @@ impl VibocerosApp {
                     | "ZoomNonManifold"
                     | "Divide"
                     | "ExtrudeCrvTapered"
+                    | "ExtrudeSrf"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());
@@ -860,7 +861,7 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "Section" | "Contour" | "ExtrudeCrvTapered"
+                "Section" | "Contour" | "ExtrudeCrvTapered" | "ExtrudeSrf"
             ) {
                 // Accept the picked sources before starting a point getter;
                 // cancellation otherwise restores the pre-prompt selection.

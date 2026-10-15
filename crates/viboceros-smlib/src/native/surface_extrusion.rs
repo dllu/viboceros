@@ -1,0 +1,80 @@
+//! Native topology sweep preserves the source faces as curved or trimmed caps.
+use super::*;
+unsafe extern "C" {
+    fn vb_shape_single_face_plane_normal(
+        shape: *const NativeSolid,
+        tolerance: f64,
+        has_plane: *mut c_int,
+        normal: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_shape_extrude_faces(
+        shape: *const NativeSolid,
+        displacement: *const f64,
+        cap_ends: c_int,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+}
+impl Shape {
+    /// Query the native plane classifier for a single face; curved faces return None.
+    pub fn single_face_plane_normal(
+        &self,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Option<viboceros_geometry::Vector3>, Error> {
+        let mut has_plane = 0;
+        let mut normal = [0.; 3];
+        call(|error, capacity| unsafe {
+            vb_shape_single_face_plane_normal(
+                self.model.handle.as_ptr(),
+                tolerance.absolute(),
+                &mut has_plane,
+                normal.as_mut_ptr(),
+                error,
+                capacity,
+            )
+        })?;
+        match has_plane {
+            0 => Ok(None),
+            1 => Ok(Some(
+                viboceros_geometry::Vector3::try_from(normal)?
+                    .normalized_nonzero()?
+                    .as_vector(),
+            )),
+            _ => Err(Error::InvalidOutput),
+        }
+    }
+    /// Sweep all faces of an open sheet along a fixed displacement.
+    /// Native topology construction operates on an independent copy. With caps,
+    /// the original face images and their translated copies bound the result;
+    /// curved caps are retained. A capped result must be a manifold solid.
+    pub fn extruded_faces(
+        &self,
+        displacement: viboceros_geometry::Vector3,
+        cap_ends: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Self, Error> {
+        displacement.normalized_nonzero()?;
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_extrude_faces(
+                self.model.handle.as_ptr(),
+                displacement.to_array().as_ptr(),
+                c_int::from(cap_ends),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
+}
