@@ -51,24 +51,24 @@
     }
   },
   "source_sha256": {
-    "README.md": "f1c97a224474cf1abf4a6328be3858323da6967fb3fff4f2e03ac6112c8df863",
     "crates/viboceros-command/src/point_selection.rs": "84aa1ef2b5efd56672b0914dea56e00a9a07a34a8a6c3f668e8ca2837a784f74",
     "crates/viboceros-command/src/point_selection/tests.rs": "1858d1f2d030add5aff4e868b37feee9b37083d2ac5278f8df4a5b9d8a567cd4",
     "crates/viboceros-command/src/geometry_selection.rs": "47e730c96cc142544754415fa47f2d071c44573db40e35a286da84a036296c3d",
     "crates/viboceros-command/src/selection_commands.rs": "ff15d17295f73b3a600d468ac9f1b72c3a06b8a873e57ba6401f7b466a972b07",
-    "crates/viboceros-command/src/lib.rs": "fbe8c2bfc15bdec9d41fc9690023ab060bab4a83cdf3aca1bc8f489d4a794886",
     "crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
-    "src/app/object_selection.rs": "fac9fda19436948cbd3ec068d662c5de6474176de9907575659623212f844ede",
     "src/app/transform_sources.rs": "75ffaec0947e4cad87249176ea10ca31f1e7b6cfd6db0e2cc80d97817819f87e",
     "src/app/tests/point_selection.rs": "c952f9d30c70b885d2180eaedc00234ac7e987374e4c5bfb70f29dc219febe19",
     "docs/commands/point-selection.md": "5ebf14020395c82b861ab5383392bbd66f9f890697e94bf78c4e5501dbcd3e53",
     "docs/control-points.md": "4395a57db1737ceb59731a0d6732c8922365981402b11d0309496da19d610cae",
-    "docs/commands/README.md": "b0791b635d60a588d1f3fc0e26bdca31cb08e157f0386eeb0e3c1abc2839944f",
     "tools/rhino_oracle/grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
     "tools/rhino_oracle/test_grip_transform.py": "d42cfc1dc28d05659023a15dad87a825c6887a7aaf0fa2a1549d23eb0aa7c31f",
     "tools/rhino_oracle/fixtures/point_selection.json": "c8c8542d9f2f75fadde98967ab2b758c727a30a3e25ca970ce88c2dd081eb18d"
   },
   "source_git_sha256": {
-    "426a0042edb6d3207dc9177ed891c07a4c72fceb:src/app.rs": "be4cae96dfb279e23708dea30e5e79f4c0b47b34653fc0798c08b0480243ef8a"
+    "426a0042edb6d3207dc9177ed891c07a4c72fceb:src/app.rs": "be4cae96dfb279e23708dea30e5e79f4c0b47b34653fc0798c08b0480243ef8a",
+    "d59d97e5c73561647e5f82ade753c719733318b4:README.md": "f1c97a224474cf1abf4a6328be3858323da6967fb3fff4f2e03ac6112c8df863",
+    "d59d97e5c73561647e5f82ade753c719733318b4:crates/viboceros-command/src/lib.rs": "fbe8c2bfc15bdec9d41fc9690023ab060bab4a83cdf3aca1bc8f489d4a794886",
+    "d59d97e5c73561647e5f82ade753c719733318b4:src/app/object_selection.rs": "fac9fda19436948cbd3ec068d662c5de6474176de9907575659623212f844ede",
+    "d59d97e5c73561647e5f82ade753c719733318b4:docs/commands/README.md": "b0791b635d60a588d1f3fc0e26bdca31cb08e157f0386eeb0e3c1abc2839944f"
   }
 }

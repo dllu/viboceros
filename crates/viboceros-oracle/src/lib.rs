@@ -114,6 +114,7 @@ mod polyhedral_boolean;
 mod project;
 mod remove_holes;
 mod shrink_trimmed;
+mod silhouette;
 mod solid_orientation;
 mod surface_curve_image;
 pub use apply_curves::ApplyCurvesFixture;
@@ -1599,6 +1600,10 @@ pub enum Operation {
         #[serde(default)]
         loose: bool,
     },
+    SilhouetteParallel {
+        id: String,
+        case: String,
+    },
     ProjectCurvePlane {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2535,6 +2540,7 @@ impl Operation {
             | Self::PullCurveSurfaceCommand { id, .. }
             | Self::PullCurveSurface { id, .. }
             | Self::ProjectCurveSurface { id, .. }
+            | Self::SilhouetteParallel { id, .. }
             | Self::ProjectCurvePlane { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
@@ -5720,6 +5726,7 @@ fn execute(
             loose,
             ..
         } => project::run(iterations, curve, surface, *direction, tolerance, *loose)?,
+        Operation::SilhouetteParallel { case, .. } => silhouette::run(iterations, case, tolerance)?,
         Operation::ProjectCurvePlane {
             curve,
             origin,

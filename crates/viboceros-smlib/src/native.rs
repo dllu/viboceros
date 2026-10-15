@@ -69,6 +69,7 @@ pub use knot_refinement::{
     sweep_model, sweep_surface, trim_curve, trim_surface, trim_surface_direction,
 };
 mod shape;
+mod silhouette;
 pub use shape::StitchResult;
 
 /// A native manifold sheet or solid, owned independently of a document.

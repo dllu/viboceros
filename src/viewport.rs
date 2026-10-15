@@ -562,6 +562,10 @@ impl Default for Viewport {
 }
 
 impl Viewport {
+    pub(crate) fn parallel_view_direction(&self) -> Option<Vector3> {
+        (self.kind != ViewKind::Perspective).then(|| self.viewward_direction())
+    }
+
     pub fn new(kind: ViewKind) -> Self {
         Self {
             display_cache: Default::default(),

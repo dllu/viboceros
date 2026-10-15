@@ -45,6 +45,7 @@ Rhino's complete command set is still a work in progress.
 - [Apply World-XY curves and points onto surfaces](apply-curves.md)
 - [Create UV curves from a surface and spatial inputs](create-uv-curves.md)
 - [Project curves and points directionally onto surfaces, B-reps and meshes](project.md)
+- [Parallel-view silhouettes of surfaces, B-reps and meshes](silhouette.md)
 - [Intersect objects with an infinite plane](iplane.md)
 - [Pull curves and points toward surfaces, B-reps and meshes](pull.md)
 - [Union convex polyhedral solids](boolean-union.md)

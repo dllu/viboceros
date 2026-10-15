@@ -186,6 +186,7 @@ mod scale_positions;
 mod section;
 mod set_point;
 mod set_view;
+mod silhouette;
 mod smooth;
 mod snapping;
 mod subcurve_direction;
@@ -2854,6 +2855,14 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
+        let input = match self.silhouette_input(input) {
+            Ok(input) => input,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                return false;
+            }
+        };
+        let input: &str = input.as_ref();
         self.selection_menu = None;
         if self.try_continue_component_choice(input)
             || self.try_continue_edge_fillet(input)
@@ -9850,6 +9859,7 @@ mod tests {
     mod set_point_preview;
     mod set_view;
     mod shrink_trimmed;
+    mod silhouette;
     mod single_span_selection;
     mod smooth;
     mod split_edge;

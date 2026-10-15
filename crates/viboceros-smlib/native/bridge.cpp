@@ -24,6 +24,7 @@
 #include <SmFilletExecutive.h>
 #include <SmCurveFilletExecutive.h>
 #include <SmOffsetCurve.h>
+#include <SmHCR.h>
 #include <SmPoly.h>
 #include <SmPrimitiveCreation.h>
 #include <SmPointSet.h>
@@ -61,6 +62,9 @@ struct VbCurveSurfaceIntersections {
     std::vector<VbCurveSurfaceIntersection> events;
 };
 struct NurbsSnapshotDelete { void operator()(VbSurfaceData *p) const { vb_surface_data_free(p); } };
+struct VbCurveList {
+    std::vector<std::unique_ptr<VbSurfaceData, NurbsSnapshotDelete>> curves;
+};
 struct SurfaceIntersectionEntry {
     int kind;
     double point[3]{};
@@ -1155,6 +1159,49 @@ VbSurfaceData *intersection_curve_snapshot(SmCurve &curve,double tolerance) {
     return vb_export_curve(*exact);
 }
 }
+extern "C" int vb_shape_silhouettes(const VbSolid *shape, const double toward_eye[3],
+    double approximation, double angle, int internal_edges, VbCurveList **out, char *error, size_t capacity) {
+    if(out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(shape && shape->value && out && finite3(toward_eye)
+            && std::isfinite(approximation) && approximation>0 && approximation*0.5>0
+            && std::isfinite(angle) && angle>0 && angle<=SM_PI
+            && (internal_edges==0 || internal_edges==1),"Invalid silhouette input");
+        SmVector3d direction(toward_eye[0],toward_eye[1],toward_eye[2]);
+        check(direction.Unitize(),"normalize silhouette view direction");
+        const auto &context=*SmApiGetOrCreateContext();
+        // HCR owns its transformed scene and copies its visible intervals.
+        // The original native shape is borrowed and never edited.
+        SmHCR hcr(context,shape->value.get(),direction,approximation*0.5,angle,
+                  internal_edges!=0,internal_edges!=0);
+        hcr.SetHCRForSilhouettes(internal_edges==0);
+        check(hcr.ComputeGlobalVisibility(),"compute parallel silhouette visibility");
+        SmTArray<SmCurve*> curves;
+        hcr.GetVisibleCurves(curves); // borrowed from hcr
+        require(curves.GetSize()<=limit,"Silhouette curve count limit");
+        auto result=std::make_unique<VbCurveList>();
+        result->curves.reserve(curves.GetSize());
+        for(ULONG i=0;i<curves.GetSize();++i) {
+            require(curves[i],"Missing silhouette curve");
+            result->curves.emplace_back(intersection_curve_snapshot(*curves[i],approximation*0.5));
+        }
+        *out=result.release();
+    });
+}
+extern "C" size_t vb_curve_list_count(const VbCurveList *curves) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);
+    return curves?curves->curves.size():0;
+}
+extern "C" int vb_curve_list_take(VbCurveList *curves,size_t index,VbSurfaceData **out) {
+    if(out)*out=nullptr;
+    std::lock_guard<std::mutex> lock(kernel_mutex);
+    if(!curves || !out || index>=curves->curves.size() || !curves->curves[index])return 1;
+    *out=curves->curves[index].release();return 0;
+}
+extern "C" void vb_curve_list_free(VbCurveList *curves) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);delete curves;
+}
+
 extern "C" int vb_surface_intersect(const VbNurbsData *first,const VbNurbsData *second,
     double tolerance,double angle,VbSurfaceIntersections **out,char *error,size_t capacity) {
     if(out)*out=nullptr;

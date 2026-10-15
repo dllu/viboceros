@@ -890,6 +890,13 @@ impl VibocerosApp {
                 self.try_start_interactive_command(&command);
                 return true;
             }
+            let command = match self.silhouette_input(&command) {
+                Ok(command) => command,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return true;
+                }
+            };
             self.push_log(format!("> {command}"));
             let context = viboceros_command::CommandContext {
                 construction_plane: self.viewports[self.active_viewport].construction_plane(),

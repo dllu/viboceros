@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-05,
+    "relative": 1e-12,
+    "angular": 0.05
+  },
+  "operations": [
+    {
+      "op": "silhouette_parallel",
+      "id": "silhouette_box_top",
+      "case": "box_top"
+    },
+    {
+      "op": "silhouette_parallel",
+      "id": "silhouette_box_bottom",
+      "case": "box_bottom"
+    },
+    {
+      "op": "silhouette_parallel",
+      "id": "silhouette_box_oblique",
+      "case": "box_oblique"
+    },
+    {
+      "op": "silhouette_parallel",
+      "id": "silhouette_box_internal",
+      "case": "box_internal"
+    },
+    {
+      "op": "silhouette_parallel",
+      "id": "silhouette_sphere_top",
+      "case": "sphere_top"
+    },
+    {
+      "op": "silhouette_parallel",
+      "id": "silhouette_sphere_oblique",
+      "case": "sphere_oblique"
+    },
+    {
+      "op": "silhouette_parallel",
+      "id": "silhouette_torus_top",
+      "case": "torus_top"
+    }
+  ]
+}

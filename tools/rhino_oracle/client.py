@@ -295,6 +295,10 @@ class OracleClient:
             for op in request['operations']:
                 if op.get('op') == 'mesh_edit_records':
                     validate(op)
+        for op in request.get('operations', []):
+            if op.get('op') == 'silhouette_parallel':
+                from .silhouette_probe import validate
+                validate(op)
         if any(op.get('op') == 'grip_transform' for op in request.get('operations', [])):
             from .grip_transform_probe import validate
             if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1) != 1:
@@ -1292,6 +1296,8 @@ class OracleClient:
             if any(op.get('op') == 'apply_uv_curves_command' for op in request.get('operations', [])):
                 for name in ('apply_uv_curves_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
+            if any(op.get('op') == 'silhouette_parallel' for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('silhouette_probe.py'), job_path/'silhouette_probe.py')
             if any(op.get('op') == 'create_uv_curves_command' for op in request.get('operations', [])):
                 for name in ('create_uv_curves_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)

@@ -43,7 +43,6 @@
     "crates/viboceros-oracle/src/edge_analysis.rs": "99cdb647080020bea8e53c0a262eae3ae22ebfcc0336ef02d2a09e1097f9c307",
     "crates/viboceros-oracle/tests/edge_analysis.rs": "95319f2300f37fda1fce6d6580ba585f5ce3947587b61411d68b8056f8a13924",
     "src/app/edge_analysis.rs": "c28aeafa927bb67965c03c21e0547f689b0366722c5fea1e801e69f24005029d",
-    "src/viewport.rs": "68f482d718d4e24363216096743702cde897b239f5b599fe94471d5e43a4fc04",
     "src/viewport/display_cache.rs": "81fe2b7dee6a0047cedd753b92e9ab6bba0b50c5d3cf5c097e600d3c9f29e993",
     "tools/rhino_oracle/edge_analysis_probe.py": "bd61878e2d5cfe0267ed6560486be774a20420996fcb89c5d921b698633cd7b8",
     "tools/rhino_oracle/test_edge_analysis_probe.py": "7be03ddb8427354bdbab9be7ccc94ba45edda5622ac860be2a57060bf5971fb3",
@@ -90,6 +89,7 @@
     }
   },
   "source_git_sha256": {
-    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app/command_line.rs": "d235268d2d4594bc935b9bf97efafd65f4765ad557e894c917481c06864eb5be"
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app/command_line.rs": "d235268d2d4594bc935b9bf97efafd65f4765ad557e894c917481c06864eb5be",
+    "d59d97e5c73561647e5f82ade753c719733318b4:src/viewport.rs": "68f482d718d4e24363216096743702cde897b239f5b599fe94471d5e43a4fc04"
   }
 }

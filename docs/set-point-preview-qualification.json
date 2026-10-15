@@ -58,7 +58,6 @@
     "crates/viboceros-command/src/point_transform.rs": "23b00165d349e17b5a0c6feb064b0a5a64ea0d6ef0fe453bf6f8d8ab0039aca5",
     "crates/viboceros-document/src/geometry.rs": "9e112a5747f425f50333ab4d026c59bf11f1d0f16fe8a3c1caec782c4aedb8ad",
     "crates/viboceros-document/src/control_points/geometry.rs": "2229e7ffc828d64d606f3576eb16f404b1ce724599385811206dc215ba383097",
-    "src/app.rs": "39690e18ffefe2cf199448c16e12c3d53bca0545cd9cf53d6f50a36b77a335f7",
     "src/app/set_point.rs": "94f2dcd1b4a2ce3e6083b026b7906f5973484477c3420df6d2411c49958a2b06",
     "src/app/transform_prompt.rs": "6485d512618c28860fe70f8d214948ee3463a9205929fe01c99bfd953c9dd6b9",
     "src/app/tests/set_point_preview.rs": "ec3453ae7fcf468b18392a08ad20698122979bad4234d2bdfe7adf4510fda5ea",
@@ -69,5 +68,8 @@
     "src/viewport/scene/grip_tests.rs": "760c24fe6952f0cb40cdf917a949b76e9efe4616d7cccffd9efe413c1ba6a787",
     "docs/commands/set-point.md": "e4c434366130e94f3ac59a2084552106263e94ce75e0cedb44edc67e612dfa13",
     "docs/grip-transforms.md": "85b071bfd5f1a9e35bef771e8267b0082ffa229d9e784a6a631f93921c40f854"
+  },
+  "source_git_sha256": {
+    "d59d97e5c73561647e5f82ade753c719733318b4:src/app.rs": "39690e18ffefe2cf199448c16e12c3d53bca0545cd9cf53d6f50a36b77a335f7"
   }
 }

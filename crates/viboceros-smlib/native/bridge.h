@@ -10,6 +10,12 @@ typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
+typedef struct VbCurveList VbCurveList;
+int vb_shape_silhouettes(const VbSolid *shape, const double toward_eye[3], double approximation,
+                         double angle, int internal_edges, VbCurveList **out, char *error, size_t capacity);
+size_t vb_curve_list_count(const VbCurveList *curves);
+int vb_curve_list_take(VbCurveList *curves, size_t index, VbSurfaceData **out);
+void vb_curve_list_free(VbCurveList *curves);
 typedef struct VbInterpolationSystem VbInterpolationSystem;
 int vb_interpolation_solve(const VbInterpolationSystem *input,double *output,size_t output_count,char *error,size_t capacity);
 int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,double parameter,
