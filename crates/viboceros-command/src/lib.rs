@@ -16,9 +16,11 @@ pub mod edge_analysis;
 mod iplane;
 pub mod orient_curve;
 pub mod orient_points;
+pub mod orient_surface;
 pub mod point_deviation;
 pub mod replace_block;
 pub mod section;
+pub mod surface_reference;
 mod uv_inputs;
 mod uv_reference;
 use apply_curves::ApplyCurvesCommand;
@@ -1584,7 +1586,7 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(OrientOnSurfaceCommand)
+            .register(orient_surface::OrientSurfaceCommand)
             .expect("unique built-in command");
         registry
             .register(orient_curve::OrientCurveCommand::default())
@@ -15457,257 +15459,6 @@ fn apply_transform_or_copy(
     }
 }
 
-const ORIENT_ON_SURFACE_USAGE: &str = "OrientOnSrf base-point reference-point target-point \
-    [Scale=factor] [Rotation=degrees] [Copy=Yes|No] [Rigid=Yes|No] [Flip=Yes|No] \
-    [SourceNormal=x,y,z] [ConstrainNormal=Yes|No] [IgnoreTrims=Yes|No] [SurfaceName=name]";
-
-struct OrientOnSurfaceCommand;
-
-impl Command for OrientOnSurfaceCommand {
-    fn copy_option_default(&self) -> Option<bool> {
-        Some(true)
-    }
-
-    fn name(&self) -> &'static str {
-        "OrientOnSrf"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["OrientOnSurface"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (base_point, consumed_1) = parse_point(arguments)?;
-        let (reference_point, consumed_2) = parse_point(&arguments[consumed_1..])?;
-        let (target_point, consumed_3) = parse_point(&arguments[consumed_1 + consumed_2..])?;
-        let consumed = consumed_1 + consumed_2 + consumed_3;
-        let options = parse_orient_on_surface_options(&arguments[consumed..])?;
-        let (surface, surface_id, sources) =
-            orient_on_surface_inputs(document, options.surface_name.as_deref())?;
-        let tolerance = document.tolerance();
-        let source_frame = Frame3::try_from_x_and_normal(
-            base_point,
-            base_point.vector_to(reference_point)?,
-            options.source_normal,
-            tolerance,
-        )?;
-        let (target_u, target_v) = surface.closest_parameters(target_point, tolerance)?;
-        let rotation_radians = options.rotation_degrees.to_radians();
-        if !rotation_radians.is_finite() {
-            return Err(CommandError::InvalidNumber(
-                options.rotation_degrees.to_string(),
-            ));
-        }
-
-        let (transformed, copied) = if options.rigid {
-            if options.constrain_normal {
-                return Err(CommandError::Usage(ORIENT_ON_SURFACE_USAGE));
-            }
-            let target_frame = orient_on_surface_target_frame(
-                surface.frame_at(target_u, target_v, tolerance)?,
-                rotation_radians,
-                options.flip,
-                tolerance,
-            )?;
-            let transform = AffineTransform3::try_frame_mapping(
-                source_frame,
-                target_frame,
-                [options.scale; 3],
-            )?;
-            apply_transform_or_copy(document, sources.as_slice(), transform, options.copy)?
-        } else {
-            let morph = SurfacePointMorph::try_new(
-                source_frame,
-                &surface,
-                target_u,
-                target_v,
-                options.scale,
-                rotation_radians,
-                options.flip,
-                tolerance,
-            )?;
-            let morph = if let Some(solver) = morph_interpolation_solver() {
-                morph.with_interpolation_solver(solver)
-            } else {
-                morph
-            };
-            if options.constrain_normal {
-                // The standalone command has no viewport state yet, so its
-                // source construction-plane normal is also the placement
-                // construction-plane normal used by Rhino's toggle.
-                let morph = morph.with_constrained_normal(options.source_normal)?;
-                apply_orient_surface_morph(document, sources.as_slice(), &morph, options.copy)?
-            } else {
-                apply_orient_surface_morph(document, sources.as_slice(), &morph, options.copy)?
-            }
-        };
-        document.select_objects_direct(sources.iter().copied(), SelectionMode::Replace)?;
-        debug_assert!(!document.is_selected(surface_id));
-        Ok(format!(
-            "Oriented {transformed} object(s) onto surface parameters {target_u:.6},{target_v:.6} with {} placement, creating {copied} copy object(s)",
-            if options.rigid { "rigid" } else { "deformable" }
-        ))
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-struct OrientOnSurfaceOptions {
-    scale: Real,
-    rotation_degrees: Real,
-    copy: bool,
-    rigid: bool,
-    flip: bool,
-    source_normal: Vector3,
-    constrain_normal: bool,
-    surface_name: Option<String>,
-}
-
-fn parse_orient_on_surface_options(
-    arguments: &[&str],
-) -> Result<OrientOnSurfaceOptions, CommandError> {
-    let mut options = OrientOnSurfaceOptions {
-        scale: 1.0,
-        rotation_degrees: 0.0,
-        copy: true,
-        rigid: true,
-        flip: false,
-        source_normal: Vector3::try_new(0.0, 0.0, 1.0).expect("the world z direction is finite"),
-        constrain_normal: false,
-        surface_name: None,
-    };
-    let mut seen = BTreeSet::new();
-    let mut index = 0;
-    while index < arguments.len() {
-        let (name, value, consumed) = orient_option(arguments, index, ORIENT_ON_SURFACE_USAGE)?;
-        let normalized_name = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        if !seen.insert(normalized_name.clone()) {
-            return Err(CommandError::Usage(ORIENT_ON_SURFACE_USAGE));
-        }
-        match normalized_name.as_str() {
-            "scale" => {
-                options.scale = parse_finite_real(value)?;
-                if options.scale <= 0.0 {
-                    return Err(CommandError::InvalidScaleFactor(value.to_owned()));
-                }
-            }
-            "rotation" | "angle" => options.rotation_degrees = parse_finite_real(value)?,
-            "copy" => {
-                options.copy =
-                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
-            }
-            "rigid" => {
-                options.rigid =
-                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
-            }
-            "flip" => {
-                options.flip =
-                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
-            }
-            "sourcenormal" | "up" => {
-                options.source_normal = Vector3::try_from(
-                    parse_single_option_point(value, ORIENT_ON_SURFACE_USAGE)?.to_array(),
-                )?;
-            }
-            "constrainnormal" => {
-                options.constrain_normal =
-                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
-            }
-            "ignoretrims" => {
-                parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
-            }
-            "surfacename" if !value.is_empty() => options.surface_name = Some(value.to_owned()),
-            _ => return Err(CommandError::Usage(ORIENT_ON_SURFACE_USAGE)),
-        }
-        index += consumed;
-    }
-    Ok(options)
-}
-
-fn orient_on_surface_inputs(
-    document: &Document,
-    surface_name: Option<&str>,
-) -> Result<(NurbsSurface, ObjectId, Vec<ObjectId>), CommandError> {
-    let selected = selected_ids(document)?;
-    let surface_id = if let Some(name) = surface_name {
-        let matches = document
-            .objects()
-            .filter(|object| {
-                object
-                    .attributes()
-                    .name()
-                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
-            })
-            .map(|object| object.id())
-            .collect::<Vec<_>>();
-        match matches.as_slice() {
-            [] => return Err(CommandError::SurfaceOrientTargetNotFound(name.to_owned())),
-            [id] => *id,
-            _ => return Err(CommandError::AmbiguousSurfaceOrientTarget(name.to_owned())),
-        }
-    } else {
-        *selected
-            .last()
-            .ok_or(CommandError::SurfaceOrientTargetRequired)?
-    };
-    let target = document
-        .object(surface_id)
-        .expect("resolved surface-orient target identifiers are present");
-    let Geometry::NurbsSurface(surface) = target.geometry() else {
-        return Err(CommandError::SurfaceOrientTargetNotSurface);
-    };
-    let sources = selected
-        .into_iter()
-        .filter(|id| *id != surface_id)
-        .collect::<Vec<_>>();
-    if sources.is_empty() {
-        return Err(CommandError::SurfaceOrientSourcesRequired);
-    }
-    Ok((surface.clone(), surface_id, sources))
-}
-
-fn orient_on_surface_target_frame(
-    frame: Frame3,
-    rotation_radians: Real,
-    flip: bool,
-    tolerance: Tolerance,
-) -> Result<Frame3, GeometryError> {
-    let (sine, cosine) = rotation_radians.sin_cos();
-    let y_sign = if flip { -1.0 } else { 1.0 };
-    let x = combine_frame_axes(frame.x_axis(), frame.y_axis(), cosine, sine * y_sign)?;
-    let y = combine_frame_axes(frame.x_axis(), frame.y_axis(), -sine, cosine * y_sign)?;
-    Frame3::try_from_directions(frame.origin(), x, y, tolerance)
-}
-
-fn combine_frame_axes(
-    first: UnitVector3,
-    second: UnitVector3,
-    first_scale: Real,
-    second_scale: Real,
-) -> Result<Vector3, GeometryError> {
-    let first = first.as_vector().to_array();
-    let second = second.as_vector().to_array();
-    Vector3::try_new(
-        first_scale.mul_add(first[0], second_scale * second[0]),
-        first_scale.mul_add(first[1], second_scale * second[1]),
-        first_scale.mul_add(first[2], second_scale * second[2]),
-    )
-}
-
-fn apply_orient_surface_morph(
-    document: &mut Document,
-    selected: &[ObjectId],
-    morph: &SurfacePointMorph<'_>,
-    copy: bool,
-) -> Result<(usize, usize), DocumentError> {
-    if copy {
-        let copies = document.copy_objects_morphed(selected.iter().copied(), morph)?;
-        Ok((selected.len(), copies.len()))
-    } else {
-        let transformed = document.morph_objects(selected.iter().copied(), morph)?;
-        Ok((transformed, 0))
-    }
-}
-
 const ARRAY_CURVE_USAGE: &str = "ArrayCrv item-count | ArrayCrv Items item-count | \
     ArrayCrv Distance spacing [Orientation=Freeform|Roadlike|Stairlike|NoRotation] \
     [BasePoint=x,y,z] [PathName=name]";
@@ -17058,7 +16809,7 @@ pub enum CommandError {
     #[error("OrientOnSrf requires a named target surface or a selected surface as the last object")]
     SurfaceOrientTargetRequired,
 
-    #[error("the OrientOnSrf target must be an untrimmed NURBS surface")]
+    #[error("the OrientOnSrf target must be a NURBS surface or an explicit B-rep face")]
     SurfaceOrientTargetNotSurface,
 
     #[error("OrientOnSrf requires at least one selected source object besides the target surface")]
@@ -43691,19 +43442,19 @@ mod tests {
         }
         registry.execute(&mut document, "Undo").unwrap();
 
-        registry
-            .execute(
-                &mut document,
-                "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
-                 Copy=No Rigid=No ConstrainNormal=Yes SurfaceName=Target",
-            )
-            .unwrap();
-        let z = match document.object(originals[2]).unwrap().geometry() {
-            Geometry::NurbsCurve(curve) => curve,
-            _ => panic!("expected an in-place surface morph"),
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(registry.execute(&mut document,
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Copy=No Rigid=No ConstrainNormal=Yes SurfaceName=Target"
+        ).is_err());
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        registry.execute(&mut document,
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Copy=No Rigid=No ConstrainNormal=Yes DestinationNormal=1,0,0 SurfaceName=Target"
+        ).unwrap();
+        let Geometry::NurbsCurve(z) = document.object(originals[2]).unwrap().geometry() else {
+            panic!("expected a fitted curve")
         };
         assert!(z.evaluate(*z.domain().end()).unwrap().is_near(
-            Point3::try_new(base.x(), base.y(), 5.0).unwrap(),
+            Point3::try_new(base.x() + 1. / 0.8973756499953726, base.y(), base.z()).unwrap(),
             document.tolerance()
         ));
         registry.execute(&mut document, "Undo").unwrap();

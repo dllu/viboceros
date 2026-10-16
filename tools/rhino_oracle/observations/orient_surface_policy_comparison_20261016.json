@@ -1,0 +1,66 @@
+{
+  "cases": 10,
+  "matched_cases": 10,
+  "results": [
+    {
+      "id": "constrain-top-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "constrain-top-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.6431300764452317e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "constrain-front-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.7763568394002505e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "constrain-front-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "constrain-cylinder-right-False",
+      "metadata_match": true,
+      "max_coordinate_error": 3.160027794990583e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "constrain-cylinder-right-True",
+      "metadata_match": true,
+      "max_coordinate_error": 3.160027794990583e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "flip-scale-half",
+      "metadata_match": true,
+      "max_coordinate_error": 2.5665025660259744e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "flip-scale-2",
+      "metadata_match": true,
+      "max_coordinate_error": 2.5662805214210493e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "constrain-warp-top",
+      "metadata_match": true,
+      "max_coordinate_error": 8.881784197001252e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "constrain-warp-right",
+      "metadata_match": true,
+      "max_coordinate_error": 2.4424906541753444e-15,
+      "within_1e_minus_6": true
+    }
+  ]
+}

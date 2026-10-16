@@ -38,6 +38,8 @@ mod mirror_preview;
 pub(crate) use mirror_preview::MirrorPreview;
 pub(crate) mod affine_preview;
 pub(crate) mod bend_preview;
+pub(crate) mod orient_surface_preview;
+pub(crate) use orient_surface_preview::{OrientSurfacePreview, OrientSurfacePreviewCache};
 pub(crate) mod maelstrom_preview;
 mod morph_preview;
 mod object_preview;
@@ -337,6 +339,7 @@ pub struct ViewportInput<'a> {
     pub affine_preview: Option<AffinePreview<'a>>,
     pub twist_preview: Option<TwistPreview<'a>>,
     pub bend_preview: Option<BendPreview<'a>>,
+    pub orient_surface_preview: Option<OrientSurfacePreview<'a>>,
     pub maelstrom_preview: Option<MaelstromPreview<'a>>,
     pub taper_preview: Option<TaperPreview<'a>>,
     pub angle_plane: Option<Frame3>,
@@ -418,6 +421,7 @@ impl Default for ViewportInput<'_> {
             affine_preview: None,
             twist_preview: None,
             bend_preview: None,
+            orient_surface_preview: None,
             taper_preview: None,
             maelstrom_preview: None,
             angle_plane: None,
@@ -473,6 +477,7 @@ pub struct ViewportOutput {
     pub affine_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
     pub twist_preview: Option<Option<Real>>,
     pub bend_preview: Option<Option<Point3>>,
+    pub orient_surface_preview: Option<Option<Point3>>,
     pub taper_preview: Option<Option<Point3>>,
     pub maelstrom_preview: Option<MaelstromCursor>,
     pub selection_click: Option<SelectionClick>,
@@ -1159,6 +1164,9 @@ impl Viewport {
         let previous_twist = input
             .twist_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_surface = input
+            .orient_surface_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
         let previous_bend = input
             .bend_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
@@ -1174,6 +1182,11 @@ impl Viewport {
                 previous_twist
                     .as_ref()
                     .map(|p| object_preview::ObjectPreview::Deformed(&p.objects))
+            })
+            .or_else(|| {
+                previous_surface.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
             })
             .or_else(|| {
                 previous_bend.as_ref().map(|p| {
@@ -1682,6 +1695,22 @@ impl Viewport {
                     &self.display_cache,
                 )
             });
+        let (surface_preview, surface_preview_update) =
+            input
+                .orient_surface_preview
+                .map_or((None, None), |preview| {
+                    preview.resolve(
+                        drafting_cursor
+                            .filter(|_| {
+                                !input.point_filter.is_some_and(
+                                    viboceros_drafting::PointFilterSession::awaiting_source,
+                                )
+                            })
+                            .map(|c| c.point),
+                        document,
+                        &self.display_cache,
+                    )
+                });
         let (bend_preview, bend_preview_update) =
             input.bend_preview.map_or((None, None), |preview| {
                 preview.resolve(
@@ -1734,6 +1763,11 @@ impl Viewport {
                     .map(|p| object_preview::ObjectPreview::Deformed(&p.objects))
             })
             .or_else(|| {
+                surface_preview.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
                 bend_preview.as_ref().map(|p| {
                     object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
                 })
@@ -1752,6 +1786,7 @@ impl Viewport {
             || translation_preview_update.is_some()
             || affine_preview_update.is_some()
             || twist_preview_update.is_some()
+            || surface_preview_update.is_some()
             || bend_preview_update.is_some()
             || taper_preview_update.is_some()
             || maelstrom_preview_update.is_some()
@@ -2197,6 +2232,7 @@ impl Viewport {
             affine_preview: affine_preview_update,
             twist_preview: twist_preview_update,
             bend_preview: bend_preview_update,
+            orient_surface_preview: surface_preview_update,
             taper_preview: taper_preview_update,
             maelstrom_preview: maelstrom_preview_update,
             toggle_maximized: response.double_clicked_by(PointerButton::Primary)

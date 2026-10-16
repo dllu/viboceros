@@ -193,6 +193,21 @@ pub(crate) fn fit_surface(
     )
 }
 
+#[derive(Clone, Debug)]
+enum MorphSurface<'a> {
+    Borrowed(&'a NurbsSurface),
+    Owned(std::sync::Arc<NurbsSurface>),
+}
+impl std::ops::Deref for MorphSurface<'_> {
+    type Target = NurbsSurface;
+    fn deref(&self) -> &NurbsSurface {
+        match self {
+            Self::Borrowed(s) => s,
+            Self::Owned(s) => s,
+        }
+    }
+}
+
 /// Rhino-compatible plane-to-surface ("splop") point morph.
 ///
 /// Plane x/y distances are converted into target surface parameter offsets by
@@ -201,13 +216,15 @@ pub(crate) fn fit_surface(
 #[derive(Clone, Debug)]
 pub struct SurfacePointMorph<'a> {
     source: Frame3,
-    surface: &'a NurbsSurface,
+    surface: MorphSurface<'a>,
     target_u: Real,
     target_v: Real,
     u_per_x: Real,
     u_per_y: Real,
+    v_per_x: Real,
     v_per_y: Real,
     scale: Real,
+    normal_scale: Real,
     sine: Real,
     cosine: Real,
     flip: bool,
@@ -226,6 +243,29 @@ impl<'a> SurfacePointMorph<'a> {
     pub fn try_new(
         source: Frame3,
         surface: &'a NurbsSurface,
+        target_u: Real,
+        target_v: Real,
+        scale: Real,
+        angle_radians: Real,
+        flip: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::try_with_surface(
+            source,
+            MorphSurface::Borrowed(surface),
+            target_u,
+            target_v,
+            scale,
+            angle_radians,
+            flip,
+            tolerance,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn try_with_surface(
+        source: Frame3,
+        surface: MorphSurface<'a>,
         target_u: Real,
         target_v: Real,
         scale: Real,
@@ -275,8 +315,10 @@ impl<'a> SurfacePointMorph<'a> {
             target_v,
             u_per_x,
             u_per_y,
+            v_per_x: 0.,
             v_per_y,
             scale,
+            normal_scale: scale,
             sine,
             cosine,
             flip,
@@ -293,9 +335,87 @@ impl<'a> SurfacePointMorph<'a> {
         Ok(self)
     }
 
+    /// Applies OrientOnSrf command policy to a newly constructed splop map.
+    /// Flipped placements keep unit source height. With a preferred normal,
+    /// the surface differential is projected onto its perpendicular plane;
+    /// height uses the anchor's obliquity. A tangent projection is singular.
+    /// The plain SplopSpaceMorph-compatible constructor remains unchanged.
+    pub fn with_surface_orientation_policy(
+        mut self,
+        normal: Option<Vector3>,
+    ) -> Result<Self, GeometryError> {
+        self.normal_scale = if self.flip { 1. } else { self.scale };
+        if let Some(normal) = normal {
+            let n = normal.normalized_nonzero()?;
+            let (_, du, dv) = self
+                .surface
+                .evaluate_with_derivatives(self.target_u, self.target_v)?;
+            let x = du.normalized_nonzero()?.as_vector();
+            let z = du.cross(dv)?.normalized_nonzero()?.as_vector();
+            let y = z.cross(x)?;
+            let a = x.dot(n.as_vector())?;
+            let b = y.dot(n.as_vector())?;
+            let c = z.dot(n.as_vector())?;
+            if c.abs() <= self.tolerance.angular().sin().abs().max(1e-12) {
+                return Err(GeometryError::Degenerate {
+                    context: "surface orientation normal is tangent to target",
+                });
+            }
+            let s = a.hypot(c);
+            let m11 = s / c;
+            let m21 = a * b / (c * s);
+            let m22 = c.signum() / s;
+            self.u_per_x = self.u_per_x.mul_add(m11, self.u_per_y * m21);
+            self.u_per_y *= m22;
+            self.v_per_x = self.v_per_y * m21;
+            self.v_per_y *= m22;
+            if !self.flip {
+                self.normal_scale /= c.abs();
+            }
+            self.constrained_normal = Some(n);
+        }
+        require_finite(
+            [
+                self.u_per_x,
+                self.u_per_y,
+                self.v_per_x,
+                self.v_per_y,
+                self.normal_scale,
+            ],
+            "surface orientation projected differential",
+        )?;
+        Ok(self)
+    }
+
     #[inline]
     pub const fn target_parameters(&self) -> (Real, Real) {
         (self.target_u, self.target_v)
+    }
+}
+
+impl SurfacePointMorph<'static> {
+    /// Retains an immutable surface for shared display previews without a self-reference.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_new_owned(
+        source: Frame3,
+        surface: std::sync::Arc<NurbsSurface>,
+        target_u: Real,
+        target_v: Real,
+        scale: Real,
+        angle_radians: Real,
+        flip: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::try_with_surface(
+            source,
+            MorphSurface::Owned(surface),
+            target_u,
+            target_v,
+            scale,
+            angle_radians,
+            flip,
+            tolerance,
+        )
     }
 }
 
@@ -311,7 +431,7 @@ impl PointMorph for SurfacePointMorph<'_> {
         let source_z = offset.dot(self.source.z_axis().as_vector())?;
         let target_x = self.scale * self.cosine.mul_add(source_x, -self.sine * source_y);
         let mut target_y = self.scale * self.sine.mul_add(source_x, self.cosine * source_y);
-        let mut target_z = self.scale * source_z;
+        let mut target_z = self.normal_scale * source_z;
         if self.flip {
             target_y = -target_y;
             target_z = -target_z;
@@ -323,7 +443,9 @@ impl PointMorph for SurfacePointMorph<'_> {
         let u = self
             .u_per_x
             .mul_add(target_x, self.u_per_y.mul_add(target_y, self.target_u));
-        let v = self.v_per_y.mul_add(target_y, self.target_v);
+        let v = self
+            .v_per_x
+            .mul_add(target_x, self.v_per_y.mul_add(target_y, self.target_v));
         let (surface_point, derivative_u, derivative_v) =
             self.surface.evaluate_extended_with_derivatives(u, v)?;
         let normal = if let Some(normal) = self.constrained_normal {
@@ -383,6 +505,88 @@ mod tests {
                 "{actual} != {expected}"
             );
         }
+    }
+
+    #[test]
+    fn surface_point_morph_owned_matches_borrowed_and_retains_only_shared_surface() {
+        use std::sync::Arc;
+        let surface = Arc::new(quarter_cylinder());
+        let weak = Arc::downgrade(&surface);
+        let source = Frame3::try_from_directions(
+            point(0., 0., 0.),
+            Vector3::try_new(1., 0., 0.).unwrap(),
+            Vector3::try_new(0., 1., 0.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for flip in [false, true] {
+            let borrowed = SurfacePointMorph::try_new(
+                source,
+                &surface,
+                0.3,
+                0.4,
+                1.4,
+                0.7,
+                flip,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let owned = SurfacePointMorph::try_new_owned(
+                source,
+                surface.clone(),
+                0.3,
+                0.4,
+                1.4,
+                0.7,
+                flip,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            for i in -8..=8 {
+                for j in -8..=8 {
+                    for k in [-2., 0., 1.] {
+                        let p = point(i as Real * 0.7, j as Real * 0.4, k);
+                        assert_eq!(
+                            borrowed.morph_point(p).unwrap(),
+                            owned.morph_point(p).unwrap()
+                        );
+                    }
+                }
+            }
+            assert_eq!(Arc::strong_count(&surface), 2);
+            let clone = owned.clone();
+            assert_eq!(Arc::strong_count(&surface), 3);
+            drop(clone);
+        }
+        let owned = SurfacePointMorph::try_new_owned(
+            source,
+            surface.clone(),
+            0.3,
+            0.4,
+            1.,
+            0.,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            SurfacePointMorph::try_new_owned(
+                source,
+                surface.clone(),
+                0.3,
+                0.4,
+                0.,
+                0.,
+                false,
+                Tolerance::DEFAULT
+            )
+            .is_err()
+        );
+        assert_eq!(Arc::strong_count(&surface), 2);
+        drop(surface);
+        assert!(owned.morph_point(point(1., 2., 3.)).is_ok());
+        drop(owned);
+        assert!(weak.upgrade().is_none());
     }
 
     #[test]

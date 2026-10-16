@@ -10,6 +10,10 @@ pub(crate) enum Mapping<'a> {
     Point(PointTransform),
     Curve(&'a viboceros_command::orient_curve::Placement),
     Orient(viboceros_command::orient_points::Preview),
+    Surface {
+        placement: &'a viboceros_command::orient_surface::Placement,
+        phase: viboceros_command::orient_surface::PreviewPhase,
+    },
     Fixed(AffineTransform3),
     Rotation {
         prior: AffineTransform3,
@@ -40,6 +44,10 @@ impl Mapping<'_> {
             Self::Point(p) => p.transform_at(frame, point, tolerance),
             Self::Curve(p) => p.transform_at(point),
             Self::Orient(p) => p.transform_at(point, tolerance),
+            Self::Surface { placement, phase } => {
+                let (pose, options) = placement.preview_pose(phase, point)?;
+                placement.transform_at_pose(pose, options)
+            }
             Self::Fixed(map) => Ok(map),
             Self::Rotation {
                 prior,
@@ -62,7 +70,16 @@ impl Mapping<'_> {
         self.point()?.mouse_line(tolerance)
     }
     fn mouse_plane(self, tolerance: Tolerance) -> Option<(Point3, UnitVector3)> {
-        if let Self::Rotation { plane, .. } = self {
+        if let Self::Surface {
+            placement,
+            phase:
+                viboceros_command::orient_surface::PreviewPhase::Scale(pose)
+                | viboceros_command::orient_surface::PreviewPhase::Rotation(pose),
+        } = self
+        {
+            let plane = placement.rotation_plane(pose).ok()?;
+            Some((plane.origin(), plane.z_axis()))
+        } else if let Self::Rotation { plane, .. } = self {
             Some((plane.origin(), plane.z_axis()))
         } else {
             self.point()?.mouse_plane(tolerance)

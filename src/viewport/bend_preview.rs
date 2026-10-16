@@ -22,7 +22,10 @@ pub(crate) struct Key {
 
 impl MorphPreviewKey for Key {
     type Morph = BendPointMorph;
-    fn morph(self, tolerance: Tolerance) -> Result<Self::Morph, viboceros_geometry::GeometryError> {
+    fn morph(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Self::Morph, viboceros_geometry::GeometryError> {
         let morph = BendPointMorph::try_for_command(
             self.start,
             self.end,
@@ -41,20 +44,20 @@ impl MorphPreviewKey for Key {
             },
         )
     }
-    fn rigid(self) -> bool {
+    fn rigid(&self) -> bool {
         self.rigid
     }
-    fn preserve(self) -> bool {
+    fn preserve(&self) -> bool {
         self.preserve
     }
     fn rigid_transform(
-        self,
+        &self,
         morph: &Self::Morph,
         center: Point3,
     ) -> Result<AffineTransform3, viboceros_geometry::GeometryError> {
         morph.rigid_transform(center)
     }
-    fn guide(self, morph: &Self::Morph) -> Result<Vec<Point3>, viboceros_geometry::GeometryError> {
+    fn guide(&self, morph: &Self::Morph) -> Result<Vec<Point3>, viboceros_geometry::GeometryError> {
         let axis = self
             .start
             .vector_to(self.end)?
@@ -83,7 +86,7 @@ impl MorphPreviewKey for Key {
         }
         Ok(points)
     }
-    fn omit_shaded_isocurves(self) -> bool {
+    fn omit_shaded_isocurves(&self) -> bool {
         true
     }
 }

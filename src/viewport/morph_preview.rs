@@ -10,20 +10,24 @@ use viboceros_geometry::{
     AffineTransform3, BoundingBox3, BrepWireCage, PointMorph, SurfacePreviewCage,
 };
 
-pub(crate) trait MorphPreviewKey: Copy + PartialEq {
+pub(crate) trait MorphPreviewKey: Clone + PartialEq {
     type Morph: PointMorph;
-    fn morph(self, tolerance: Tolerance) -> Result<Self::Morph, viboceros_geometry::GeometryError>;
-    fn rigid(self) -> bool;
-    fn preserve(self) -> bool;
+    fn morph(&self, tolerance: Tolerance)
+    -> Result<Self::Morph, viboceros_geometry::GeometryError>;
+    fn rigid(&self) -> bool;
+    fn preserve(&self) -> bool;
     fn rigid_transform(
-        self,
+        &self,
         morph: &Self::Morph,
         center: Point3,
     ) -> Result<AffineTransform3, viboceros_geometry::GeometryError>;
-    fn guide(self, _morph: &Self::Morph) -> Result<Vec<Point3>, viboceros_geometry::GeometryError> {
+    fn guide(
+        &self,
+        _morph: &Self::Morph,
+    ) -> Result<Vec<Point3>, viboceros_geometry::GeometryError> {
         Ok(Vec::new())
     }
-    fn omit_shaded_isocurves(self) -> bool {
+    fn omit_shaded_isocurves(&self) -> bool {
         false
     }
 }
@@ -124,7 +128,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
             self.key = None;
             self.image = None;
         }
-        if self.key == Some(key) {
+        if self.key.as_ref() == Some(&key) {
             return Ok(self.image.as_ref().unwrap().clone());
         }
         let morph = key.morph(document.tolerance())?;

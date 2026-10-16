@@ -34,6 +34,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Command reference and examples](docs/commands/README.md)
 - [Orient and Orient3Pt point placement](docs/commands/orient.md), plus
   [curve, edge, and temporary-portion placement](docs/commands/orient-on-curve.md)
+  and [rigid/deformable surface placement](docs/commands/orient-on-surface.md)
 - Fit [planes](docs/commands/plane-through-points.md) and [lines](docs/commands/line-through-points.md) through points, clouds and grips
 - Fit [spheres through points and grips](docs/commands/sphere-fit-points.md)
 - [Point deviation analysis and distance display](docs/commands/point-deviation.md)

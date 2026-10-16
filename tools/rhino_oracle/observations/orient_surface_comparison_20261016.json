@@ -1,0 +1,138 @@
+{
+  "cases": 22,
+  "matched_cases": 22,
+  "results": [
+    {
+      "id": "bilinear-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "bilinear-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "bilinear-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "bilinear-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "cylinder-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.36251035296209e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "cylinder-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 3.007594173709549e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "brep-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "brep-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "picked-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.509903313490213e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "on-surface-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.219335826225688e-10,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "batch-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "cylinder-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.36251035296209e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "cylinder-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.7570723482028825e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "brep-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "brep-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "picked-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.7319479184152442e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "on-surface-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.219247008383718e-10,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "batch-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "front-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "front-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.7763568394002505e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "right-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "right-False",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    }
+  ]
+}

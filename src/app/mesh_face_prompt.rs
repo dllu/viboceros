@@ -17,6 +17,10 @@ impl VibocerosApp {
         if self.accept_uv_reference_face(object, face) {
             return;
         }
+        if self.picking_orient_surface() {
+            self.accept_orient_surface(object, Some(face));
+            return;
+        }
         if self.selecting_move_normal_reference() {
             self.accept_move_normal_reference(object, Some(face));
             return;

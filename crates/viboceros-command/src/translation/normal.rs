@@ -23,39 +23,12 @@ pub fn normal_location(
         let parameter = curve.closest_parameter(pick, tolerance)?;
         return normal_curve_location(curve, parameter);
     }
-    let (surface, u, v) = match geometry {
-        Geometry::NurbsSurface(surface) if face.is_none_or(|face| face == 0) => {
-            let (u, v) = surface.closest_parameters(pick, tolerance)?;
-            (surface, u, v)
-        }
-        Geometry::Brep(brep) => {
-            let face = match face {
-                Some(face) => face,
-                None if brep.faces().len() == 1 => 0,
-                None => {
-                    brep.closest_face_parameters(pick, tolerance)?
-                        .ok_or(CommandError::Usage(MOVE_NORMAL_USAGE))?
-                        .0
-                }
-            };
-            let surface = brep
-                .faces()
-                .get(face)
-                .ok_or(CommandError::Usage(MOVE_NORMAL_USAGE))?
-                .surface();
-            let (u, v) = if ignore_trims {
-                surface.closest_parameters(pick, tolerance)?
-            } else {
-                brep.closest_parameters_on_face(face, pick, tolerance)?
-                    .ok_or(CommandError::Usage(MOVE_NORMAL_USAGE))?
-            };
-            (surface, u, v)
-        }
-        _ => return Err(CommandError::Usage(MOVE_NORMAL_USAGE)),
-    };
+    let location =
+        crate::surface_reference::closest(geometry, face, pick, ignore_trims, tolerance)?
+            .ok_or(CommandError::Usage(MOVE_NORMAL_USAGE))?;
     Ok(NormalLocation {
-        point: surface.evaluate(u, v)?,
-        direction: surface.normal_at(u, v)?,
+        point: location.point,
+        direction: location.surface.normal_at(location.uv[0], location.uv[1])?,
     })
 }
 

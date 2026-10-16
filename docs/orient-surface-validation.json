@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de",
+  "component": "Interactive OrientOnSrf with shared affine and deformable surface placement",
+  "complete_native_command_parity_qualified": false,
+  "native_undo_redo_qualified": false,
+  "native_grip_workflows_qualified": false,
+  "performance_qualified": false,
+  "gpu_appearance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "implementation": "Extract a shared immutable surface/face reference and placement solver. Reuse affine object previews for rigid placements and shared morph display cages with Arc-owned surface data for deformation. Add source/guide/target/scale/angle getters, separate source and destination CPlanes, repeated copy history, stale-guide recovery and trim-aware point resolution. Use measured native face orientation, flipped height and normal projection policies without changing the generic borrowed Splop map.",
+  "coverage": {
+    "native_model_state_comparisons": 32,
+    "matched_native_model_states": 32,
+    "ui_native_workflow_replays": 32,
+    "native_failed_tangent_projection_models": 1,
+    "real_pointer_scenarios": 12,
+    "unique_rust_tests": 231,
+    "passed_rust_test_executions": 285,
+    "new_rust_tests": 11,
+    "python_tests": 13,
+    "new_python_tests": 3,
+    "ignored_gpu_tests": 4,
+    "coordinate_epsilon": 1e-06,
+    "maximum_coordinate_error": 2.219335826225688e-10,
+    "portable_and_usd_brep_backends_checked": true
+  },
+  "native_version": "8.32.26160.13001",
+  "native_captures": [
+    {
+      "fixture": "orient_surface",
+      "scheme": "VibocerosOracleOrientSurface20261016d",
+      "rows": 22
+    },
+    {
+      "fixture": "orient_surface_policy",
+      "scheme": "VibocerosOracleOrientSurface20261016f",
+      "rows": 10
+    }
+  ],
+  "native_capture_method": "Actual -OrientOnSrf macros against owned point clouds and authored NURBS/face recipes. Explicit Copy/Rigid/Flip/IgnoreTrims settings; explicit ConstrainNormal yes/no in deformable rows. Restore CPlane and delete only owned objects/groups. Compare all cloud witnesses, original identity, selection, group memberships/definitions and unchanged guides. RunScript true is not sufficient: the tangent-normal row retains its unchanged native model.",
+  "point_map_policy": "Project the anchor differential onto the plane perpendicular to the preferred normal with signed orientation. Source height uses anchor obliquity when unflipped; flipped height stays unscaled. New command policy is opt-in and leaves the existing generic Splop constructor/fixed-normal API unchanged.",
+  "checks": [
+    {
+      "name": "fmt",
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "elapsed_seconds": 5.827,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "geometry",
+      "command": "cargo test -p viboceros-geometry --lib surface_point_morph",
+      "exit_code": 0,
+      "elapsed_seconds": 68.812,
+      "log_sha256": "7ade484fcfabe78251c46b0f2d8e329e43a1888926a52216d731a0ea3a5c2361",
+      "passed_rust_tests": 2
+    },
+    {
+      "name": "command",
+      "command": "cargo test -p viboceros-command --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 51.252,
+      "log_sha256": "e1ade6073bbafc65228e9f09fb1060097dc143e870b04b8a1e9e5e3f0c21753e",
+      "passed_rust_tests": 12
+    },
+    {
+      "name": "normal-command",
+      "command": "cargo test -p viboceros-command --lib normal_",
+      "exit_code": 0,
+      "elapsed_seconds": 0.461,
+      "log_sha256": "57807944e345970e4d7a4ed258b0a6a3937bb877668905b391f0e3b6c3cd13ce",
+      "passed_rust_tests": 20
+    },
+    {
+      "name": "set-point",
+      "command": "cargo test -p viboceros-command --lib set_point",
+      "exit_code": 0,
+      "elapsed_seconds": 0.213,
+      "log_sha256": "cf0f865b62c7935fe325e163ab3da6528c24960cec6eff7258a427e280284af7",
+      "passed_rust_tests": 6
+    },
+    {
+      "name": "project-cplane",
+      "command": "cargo test -p viboceros-command --lib project_to_cplane",
+      "exit_code": 0,
+      "elapsed_seconds": 0.2,
+      "log_sha256": "aff92dda3c981337f685c52d3855bd4bbdb12a0cdb463cd2e2b3b5501e62e6e4",
+      "passed_rust_tests": 1
+    },
+    {
+      "name": "ui",
+      "command": "cargo test -p viboceros --bin viboceros orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 67.725,
+      "log_sha256": "4aefddf69ddba1720b26c28eacf39cf7d6fa14c72d9ff03b8250eacc0599d87c",
+      "passed_rust_tests": 28
+    },
+    {
+      "name": "preview",
+      "command": "cargo test -p viboceros --bin viboceros preview",
+      "exit_code": 0,
+      "elapsed_seconds": 26.144,
+      "log_sha256": "dd31db316f2932c396ae6937aed4cdc15f6a8ff80a4925f0fbe556b0acc7b923",
+      "passed_rust_tests": 111
+    },
+    {
+      "name": "normal-point",
+      "command": "cargo test -p viboceros --bin viboceros normal_point",
+      "exit_code": 0,
+      "elapsed_seconds": 0.387,
+      "log_sha256": "317039e5871ba94b5bccc1f66adc77dfb2434e30e895319eaab9780b24450820",
+      "passed_rust_tests": 3
+    },
+    {
+      "name": "point-input",
+      "command": "cargo test -p viboceros --bin viboceros point_input",
+      "exit_code": 0,
+      "elapsed_seconds": 0.519,
+      "log_sha256": "04c16ba5ac358f3717c9e48ec36e8648a0b8684922a5bce0ff7a11ceb930afed",
+      "passed_rust_tests": 62
+    },
+    {
+      "name": "oracle",
+      "command": "cargo test -p viboceros-oracle --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 53.487,
+      "log_sha256": "f20da84a361e26823c78c741299a3d045f8ec49dd7de99c8af10b61bd6554840",
+      "passed_rust_tests": 4
+    },
+    {
+      "name": "native-command",
+      "command": "cargo test -p viboceros-command --features native-smlib --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 77.611,
+      "log_sha256": "058013407a68ecfb76a302e39dbbd49c35a990ee2a41b769caa473820ce447ae",
+      "passed_rust_tests": 12
+    },
+    {
+      "name": "native-oracle",
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 92.227,
+      "log_sha256": "76969c579ec0da69844b9d27251e65e334b715066219e2c771a8cffcaad623b0",
+      "passed_rust_tests": 4
+    },
+    {
+      "name": "native-ui",
+      "command": "cargo test -p viboceros --features native-smlib --bin viboceros orient_surface",
+      "exit_code": 0,
+      "elapsed_seconds": 127.252,
+      "log_sha256": "d3ea9a26c9b1368a50da2fc1a08ea222eeeba29f4f010c6b486014697d556c2a",
+      "passed_rust_tests": 9
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 119.336,
+      "log_sha256": "b9a446bd33647ac465a5324082a52a6f65815cd4513343c3f4d62ab8120c1a0f",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 94.62,
+      "log_sha256": "94b92b502a7e37adb6d765edd9699ebb5d14ad2a3fe6fa05f97324cde48d45cb",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "orient_surface-comparison",
+      "command": "python3 -m tools.rhino_oracle.orient_surface_comparison tools/rhino_oracle/fixtures/orient_surface.json tools/rhino_oracle/observations/orient_surface_viboceros_20261016.json tools/rhino_oracle/observations/orient_surface_rhino_20261016.json tools/rhino_oracle/observations/orient_surface_comparison_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.062,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "orient_surface_policy-comparison",
+      "command": "python3 -m tools.rhino_oracle.orient_surface_comparison tools/rhino_oracle/fixtures/orient_surface_policy.json tools/rhino_oracle/observations/orient_surface_policy_viboceros_20261016.json tools/rhino_oracle/observations/orient_surface_policy_rhino_20261016.json tools/rhino_oracle/observations/orient_surface_policy_comparison_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.074,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "python",
+      "command": "python3 -m unittest tools.rhino_oracle.test_orient_surface tools.rhino_oracle.test_orient_points tools.rhino_oracle.test_orient_on_curve",
+      "exit_code": 0,
+      "elapsed_seconds": 0.102,
+      "log_sha256": "a926f71fe0cbbf5cd61d9c19b58a8c68829722ca58cf51b999b49434c79392db",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "portable-final-surface-ui",
+      "command": "cargo test -p viboceros --bin viboceros orient_surface",
+      "exit_code": 0,
+      "elapsed_seconds": 64.448,
+      "log_sha256": "f6a0ce04284d36411dc10bd5a89986c73718f7e7ad38c6343b7924195deb2c48",
+      "passed_rust_tests": 9
+    },
+    {
+      "name": "portable-final-surface-oracle",
+      "command": "cargo test -p viboceros-oracle --lib orient_surface",
+      "exit_code": 0,
+      "elapsed_seconds": 105.342,
+      "log_sha256": "e1b6ec39618c6a3a89324836a54ad45efe0270b65a8df3ef02f446ab9dbaebd7",
+      "passed_rust_tests": 1
+    },
+    {
+      "name": "native-final-surface-oracle",
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib orient_surface",
+      "exit_code": 0,
+      "elapsed_seconds": 58.303,
+      "log_sha256": "6bccb89dc830a0299bd829bab2a3d4754ac5ce8e13febbc4e9ac650fac232aac",
+      "passed_rust_tests": 1
+    },
+    {
+      "name": "final-fmt",
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "elapsed_seconds": 6.084,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    }
+  ],
+  "limitations": [
+    "Whole-object sources only; grip sources and XYZ scale are not implemented.",
+    "Scale/Rotation prompt-mode menus and non-copy preferences between invocations are not implemented.",
+    "Native fixtures qualify point-cloud model results, not every fitted object or arbitrary NURBS map. Existing curve/surface/B-rep fitting qualification still applies.",
+    "Trimmed guide picking, point scale/rotation getters, cross-view normal freezing, and stale references have local coverage, without a retained matching native interaction capture.",
+    "Pointer tests exercise CPU geometry/display preparation, not GPU pixel appearance or native preview appearance.",
+    "Native Undo/Redo and performance parity are not qualified."
+  ],
+  "historical_provenance": {
+    "preserved_records": 5,
+    "preserved_entries": 18,
+    "preexisting_unverifiable_records_unchanged": 69,
+    "method": "Keep original digests and non-hash metadata; move baseline-verifiable affected paths to immutable full base-revision Git references."
+  },
+  "sha256": {
+    "README.md": "500ad0837843af332157eae9869ee0e5e01c216d9d9e07ad91d25683479ae081",
+    "crates/viboceros-command/src/lib.rs": "98f13f2a5c6524e25581eda5e013f253bb7c0482ded03d21a195cf5909789b6f",
+    "crates/viboceros-command/src/orient_surface.rs": "14223d0047e76519a8b88799b200b53c17665383f0ecfb2d3f2ceece23d0a39a",
+    "crates/viboceros-command/src/surface_reference.rs": "ad90798b8b4ecf197243e83c9ab3a4e2152e7af5542565249ea370305bfd5131",
+    "crates/viboceros-command/src/translation/normal.rs": "8293847d445e159ec00415385c238164d28ca79e95e66c969990c40764c497be",
+    "crates/viboceros-geometry/src/morph.rs": "fdd0490dddf74eb2f29b1c1568e28a2ed22af0004571eae8e1adb709a5ebd8b4",
+    "crates/viboceros-oracle/src/lib.rs": "76ef73b514bb7eb94b5ec0712058fcac13de48a20258b24fe96b6db675dea79d",
+    "crates/viboceros-oracle/src/orient_surface.rs": "9ee82e7157381c9419da13c73f3f482916ae5083b99c61deb3f0bf9691b4f7ed",
+    "docs/commands/README.md": "6f3dde43f7fb63a6323fa50c473fbb1f9f457798c277e703d7e8cf81493ae98e",
+    "docs/commands/orient-on-surface.md": "f8fbaaa75d131818b535c95f4398ba36229b02a5b2265be0a85c2cf484466302",
+    "docs/commands/transforms.md": "fac6698bafe825bc20a3032feceeaaa5d0b319a2b957d4d14b1d8a7e829612d7",
+    "docs/orient-on-curve-edge-validation.json": "6ee07640918bb9b3f4a963f48dec88d44d472f9ec4c5ac6a97ba9b70b2918c4d",
+    "docs/orient-on-curve-subcurve-validation.json": "ec1c30d0a20dbfcee902790a862407e83a0385b317c30706f810207aaec1fa7d",
+    "docs/orient-on-curve-validation.json": "8f5b5d5dd732c6b0107c249a2f6a8a48e5ad361ccb2f40184c173fc38292dacd",
+    "docs/orient-points-validation.json": "e30a3f70695adf7897d030a50d3000eba15408f23083564b3a14757e13e19d35",
+    "docs/selected-coplanar-faces-qualification.json": "87a99f4ebcfb03f02397548ee791e0f1171365f9bee263076d01a58927f8f204",
+    "src/app.rs": "e0fc9c104e447dda6ebdca387acfeaf0bb0a68c95136610f782d91a23a351d4b",
+    "src/app/mesh_face_prompt.rs": "501085858483065af7c50c605ec669354708f2ded6202f830481edf4eebfbf07",
+    "src/app/object_selection.rs": "5a9ae5e495036355262be7315f6d5945eec97e7965aed84a748f9ccdc731b68a",
+    "src/app/orient_surface.rs": "cba6190853306cd17583dd50876e1fbc3da8dd4b970b147eccad33ed2aedb6bf",
+    "src/app/point_input.rs": "5f3a48a8c422ad819b8fe625f581e4c3eb94c58822ec76c75d665adf3d4813e6",
+    "src/app/tests/orient_surface.rs": "d26a2103a6fd81ce7b2274722f5bef6745c96ba88fef11f753be6eaeaef7f3d9",
+    "src/app/transform_prompt.rs": "8ecd572469b24c0546c10c6093ed4517525f6ae4e2570f869cefc35a6457eb1a",
+    "src/viewport.rs": "89db971ef6afc19d5f225667091a335d1495f8756908dff59b8f5a0a2c3c1d44",
+    "src/viewport/affine_preview.rs": "3fe7536191c78f40edeb277c590f126cbabf55db6273c1926b26343421cbd563",
+    "src/viewport/bend_preview.rs": "0f44d3e68ca2416fbf8ce8b5de1ffd77bdc3b3a40eea2b68480428968b87d61b",
+    "src/viewport/maelstrom_preview.rs": "8259b9fa889bb50d00eb33736ad01cdd405cffdaa614932d7455240daae70775",
+    "src/viewport/morph_preview.rs": "0b9eb3fe7e4517eb46d121f9bc43cb89f77d5af85b5c1707e0e712df8dcec735",
+    "src/viewport/orient_surface_preview.rs": "edd9c947c8617d8294931205fa6aebfcf92df685d1b3e8c392415e93ad38dda5",
+    "src/viewport/taper_preview.rs": "c97d765edd02a424a9a4e507a74b773ab777ba610fcb8f99c2e5692ad746dae9",
+    "src/viewport/twist_preview.rs": "056da0dc07525d43f4f15eb2333394226a4c0abe96763737ece8bc4e7dd3d083",
+    "tools/rhino_oracle/fixtures/orient_surface.json": "ffccdf5ffe80adad54dddcd8cb830ab89eaee9df66eef7ae2031e5f820b4d3fb",
+    "tools/rhino_oracle/fixtures/orient_surface_policy.json": "d7ddd7339509540a0f933f2253a8387291e5dfda1845295a82ba6082fea01a2a",
+    "tools/rhino_oracle/observations/orient_surface_comparison_20261016.json": "4fee70d15dab5dbe66221b7d59793a427e99aa0d59dd27834c5bdb8383fcbf7c",
+    "tools/rhino_oracle/observations/orient_surface_policy_comparison_20261016.json": "b70f59c9f7b1a122610775e8ee827ac8f73a5e03efe45f3e81547b2bbe314c72",
+    "tools/rhino_oracle/observations/orient_surface_policy_rhino_20261016.json": "375096a31b1e6ffcdc8e1c23ca63f429ecac95a03e52669493b3c48455e12a6a",
+    "tools/rhino_oracle/observations/orient_surface_policy_viboceros_20261016.json": "dbb56c72ad807d1a5e1a351ab714e2162798e87507b966438179e2596b61df6b",
+    "tools/rhino_oracle/observations/orient_surface_rhino_20261016.json": "e3aca313f6d70f0bfe4a25b5e8d7125b238543280265791c97fdd2ca13bf4475",
+    "tools/rhino_oracle/observations/orient_surface_viboceros_20261016.json": "245deda5538ecb559d0d432506b0602a1484bb9ab32f07dfec7f7a6b8e531780",
+    "tools/rhino_oracle/orient_surface_comparison.py": "3044d31605ee670856b94b113ce13ab1cad346b3f94f3f12063c54d1ed007f2e",
+    "tools/rhino_oracle/orient_surface_probe.py": "95783a77584234073094c4d4a6126e0859861c68bc6d3ec58909ab5030c0ddde",
+    "tools/rhino_oracle/rhino_worker.py": "8b3c23a338fb3a37496023cd9b58c3d14466cfc7c74d00390ab5599dc701d385",
+    "tools/rhino_oracle/structural_sdk.py": "d4ec213ea66a0702379a0e4c07287d202123b4b10693522a790af69582dd3b42",
+    "tools/rhino_oracle/test_orient_surface.py": "039653c9ccb7adbb8964043f48ee1407663ac0701c77b4844f381da95ac226d1"
+  }
+}

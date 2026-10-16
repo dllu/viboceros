@@ -102,21 +102,16 @@ the first point pair. Both commands initially use in-place, unscaled transforms.
 remembered independently. `Copy=Yes` retains preselection and uses the shared
 transform group policy; command-first source selection is released on completion.
 
-`OrientOnSrf` uses a source base/reference pair and a point nearest the target
-NURBS surface. Name that surface with `SurfaceName=`, or make it the last
-selected object. `Rigid=Yes` (the default) maps a frame without deformation;
-`Rigid=No` applies the plane-to-surface point map; all supported curves,
-including lines and polylines, receive tolerance-driven adaptive cubic fits,
-untrimmed NURBS surfaces use checked control mapping or adaptive bicubic fitting,
-trimmed B-reps fit shared edges and underlying faces while retaining exact UV
-trims, and meshes map per vertex.
-`Scale=` must be positive,
-`Rotation=` is in degrees, `Flip=Yes` reverses surface Y and Z, and
-`SourceNormal=` defaults to world Z. In deformable mode, `ConstrainNormal=Yes`
-keeps normal offsets parallel to `SourceNormal`, the command-line stand-in for
-Rhino's placement-viewport construction-plane normal.
-This command initially defaults to `Copy=Yes`; originals remain selected and
-copied group topology is preserved. Use `Copy=No` for an identity-preserving in-place morph.
+[`OrientOnSrf`](orient-on-surface.md) now supports interactive source references,
+surface/face picking, repeated target/scale/rotation prompts, and live rigid or
+deformable previews. `Rigid=Yes` maps frames; `Rigid=No` reuses tolerance-driven
+curve, surface and trimmed B-rep fitting and direct point/mesh mapping.
+The source normal comes from the source view's CPlane (or `OnSurface=Yes`), while
+`ConstrainNormal=Yes` uses the target view's CPlane. `Flip=Yes` and reversed faces
+reverse placement orientation; flipped deformable height follows the native
+command's unit-height policy. `Copy=Yes` initially retains originals, and copies
+share one Undo step. See the command page for scripted references, group policy,
+validation, and remaining option limits.
 
 See [curve morphing](../curve-morphing.md), [surface morphing](../surface-morphing.md),
 and [B-rep morphing](../brep-morphing.md)

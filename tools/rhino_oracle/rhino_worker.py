@@ -13429,6 +13429,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'curvature_graph':
         from curvature_graph_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'orient_surface':
+        from orient_surface_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'orient_points':
         from orient_points_probe import run
         return run(operation, globals(), iterations, tolerance)

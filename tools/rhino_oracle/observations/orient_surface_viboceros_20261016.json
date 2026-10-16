@@ -1,0 +1,1104 @@
+{
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 900018,
+      "id": "bilinear-True-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.2400000000000126,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 755682,
+      "id": "bilinear-True-True",
+      "value": {
+        "error": null,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.2400000000000126,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 749522,
+      "id": "bilinear-False-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.239111111111124,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 727681,
+      "id": "bilinear-False-True",
+      "value": {
+        "error": null,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.239111111111124,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 955697,
+      "id": "cylinder-True-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999894835,
+                0.882534855507735,
+                1.2
+              ],
+              [
+                1.2597429767730342,
+                1.970545008993962,
+                1.9
+              ],
+              [
+                2.103638499417191,
+                0.2543719005114159,
+                2.412435565298214
+              ],
+              [
+                3.0510772099821217,
+                1.5003092543631495,
+                1.2
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 942546,
+      "id": "cylinder-True-True",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999894835,
+                0.882534855507735,
+                1.2
+              ],
+              [
+                1.2597429767730342,
+                1.970545008993962,
+                0.5000000000000001
+              ],
+              [
+                2.103638499417191,
+                0.2543719005114159,
+                -0.012435565298214213
+              ],
+              [
+                0.5384253899968452,
+                0.2647604566523205,
+                1.2
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 840961,
+      "id": "brep-True-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.2400000000000126,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 822865,
+      "id": "brep-True-True",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.2400000000000126,
+                3.105572809000101,
+                1.5527864045000506
+              ],
+              [
+                3.2400000000000126,
+                4.447213595499975,
+                1.1055728090000927
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 729217,
+      "id": "picked-True",
+      "value": {
+        "error": null,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.367631144943102,
+                3.6329054607278173,
+                1.8164527303639086
+              ],
+              [
+                3.650424171990815,
+                5.008583957455484,
+                2.504291978727742
+              ],
+              [
+                3.2400000000000126,
+                3.4633436854000674,
+                3.0733126291999073
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 1123026,
+      "id": "on-surface-True",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                6.599999999778077,
+                4.999999999997884,
+                2.499999999998942
+              ],
+              [
+                7.599999999778077,
+                4.999999999997893,
+                2.4999999999989466
+              ],
+              [
+                6.599999999778068,
+                5.999999999997884,
+                2.499999999998942
+              ],
+              [
+                6.599999999778072,
+                4.999999999997884,
+                3.499999999998942
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 771586,
+      "id": "batch-True",
+      "value": {
+        "error": null,
+        "group_count": 3,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.2400000000000126,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                6.8400000000000105,
+                7.0000000000000115,
+                3.5000000000000058
+              ],
+              [
+                7.405685424949248,
+                7.505964425626952,
+                3.752982212813476
+              ],
+              [
+                6.274314575050773,
+                7.505964425626952,
+                3.7529822128134764
+              ],
+              [
+                6.8400000000000105,
+                6.642229123600045,
+                4.215541752799939
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 487489,
+      "id": "cylinder-False-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999894835,
+                0.882534855507735,
+                1.2
+              ],
+              [
+                0.9517304355035578,
+                1.7590364345675755,
+                1.9
+              ],
+              [
+                1.9855941850962453,
+                0.23961580104821548,
+                2.4124355652982143
+              ],
+              [
+                3.0510772099821217,
+                1.5003092543631495,
+                1.2
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 566913,
+      "id": "cylinder-False-True",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999894835,
+                0.882534855507735,
+                1.2
+              ],
+              [
+                0.9517304355035578,
+                1.7590364345675755,
+                0.5000000000000002
+              ],
+              [
+                1.9855941850962453,
+                0.23961580104821548,
+                -0.012435565298214034
+              ],
+              [
+                0.8973756499947417,
+                0.44126742775386746,
+                1.2
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 400401,
+      "id": "brep-False-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.239111111111124,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 400257,
+      "id": "brep-False-True",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.2391111111111237,
+                3.105572809000101,
+                1.5527864045000506
+              ],
+              [
+                3.2400000000000126,
+                4.447213595499975,
+                1.1055728090000927
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 360064,
+      "id": "picked-False",
+      "value": {
+        "error": null,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.359815723838145,
+                3.6329054607278173,
+                1.8164527303639086
+              ],
+              [
+                3.6569595930957726,
+                5.008583957455484,
+                2.504291978727742
+              ],
+              [
+                3.2400000000000126,
+                3.4633436854000674,
+                3.0733126291999073
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 665553,
+      "id": "on-surface-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                6.599999999778078,
+                4.999999999997884,
+                2.499999999998942
+              ],
+              [
+                7.599999999778078,
+                4.999999999997893,
+                2.4999999999989466
+              ],
+              [
+                6.59860363614175,
+                5.9999999999978835,
+                2.4999999999989417
+              ],
+              [
+                6.599650908868993,
+                4.999999999997884,
+                3.499999999998942
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 672353,
+      "id": "batch-False",
+      "value": {
+        "error": null,
+        "group_count": 3,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.240000000000013,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.239111111111124,
+                4.894427190999933,
+                2.4472135954999663
+              ],
+              [
+                3.2400000000000126,
+                3.552786404500059,
+                2.894427190999924
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                6.8400000000000105,
+                7.0000000000000115,
+                3.5000000000000058
+              ],
+              [
+                7.410167823214511,
+                7.505964425626952,
+                3.752982212813476
+              ],
+              [
+                6.268754282048667,
+                7.505964425626953,
+                3.7529822128134764
+              ],
+              [
+                6.8400000000000105,
+                6.642229123600045,
+                4.215541752799939
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 371232,
+      "id": "front-True",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                4.192627944162895,
+                4.49193495504997,
+                2.245967477524985
+              ],
+              [
+                3.2400000000000126,
+                3.508065044950063,
+                2.9838699100999158
+              ],
+              [
+                3.7900000000000125,
+                3.147943663834385,
+                1.5739718319171925
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 377585,
+      "id": "front-False",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                2.3054329954404484,
+                2.9000000000000172,
+                1.4500000000000086
+              ],
+              [
+                3.2400000000000126,
+                6.459674775249786,
+                2.0000000000000084
+              ],
+              [
+                2.6665612826189173,
+                5.905255888325782,
+                2.952627944162891
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 377841,
+      "id": "right-True",
+      "value": {
+        "error": null,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000126,
+                4.000000000000017,
+                2.0000000000000084
+              ],
+              [
+                3.2400000000000126,
+                3.508065044950063,
+                2.9838699100999158
+              ],
+              [
+                4.192627944162895,
+                4.49193495504997,
+                2.245967477524985
+              ],
+              [
+                2.690000000000013,
+                4.852056336165649,
+                2.4260281680828246
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnSrf"
+      }
+    },
+    {
+      "elapsed_ns": 374208,
+      "id": "right-False",
+      "value": {
+        "error": "surface orientation normal is tangent to target is degenerate at the requested tolerance",
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": null
+      }
+    }
+  ]
+}

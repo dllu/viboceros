@@ -181,6 +181,7 @@ mod named_view;
 mod object_selection;
 mod orient_curve;
 mod orient_points;
+mod orient_surface;
 mod planar_boolean;
 mod plane_primitives;
 mod point_deviation;
@@ -324,6 +325,9 @@ impl InteractiveScaleKind {
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
     OrientOnCurve,
+    OrientOnSurface {
+        last: Option<Point3>,
+    },
     OrientPoints {
         kind: viboceros_command::orient_points::Kind,
         last: Option<Point3>,
@@ -770,6 +774,7 @@ impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
             Self::OrientOnCurve => "OrientOnCrv",
+            Self::OrientOnSurface { .. } => "OrientOnSrf",
             Self::OrientPoints { kind, .. } => kind.name(),
             Self::ProjectDirection { .. } => "Project",
             Self::ProjectPlane { command, .. } => command,
@@ -895,6 +900,9 @@ impl InteractiveCommand {
     const fn prompt(self) -> &'static str {
         match self {
             Self::OrientOnCurve => "OrientOnCrv: follow the curve placement prompt (Esc finishes)",
+            Self::OrientOnSurface { .. } => {
+                "OrientOnSrf: follow the surface placement prompt (Esc finishes)"
+            }
             Self::OrientPoints { .. } => {
                 "Pick the next orientation reference or target point (Esc cancels)"
             }
@@ -1700,7 +1708,7 @@ impl InteractiveCommand {
     const fn anchor(self) -> Option<Point3> {
         match self {
             Self::ProjectDirection { start } => start,
-            Self::OrientPoints { last, .. } => last,
+            Self::OrientPoints { last, .. } | Self::OrientOnSurface { last } => last,
             Self::ProjectPlane { anchor, .. } => anchor,
             Self::Section { start, .. } => start,
             Self::Contour {
@@ -2200,6 +2208,7 @@ pub struct VibocerosApp {
     set_point_sources: Option<set_point::SetPointSources>,
     orient_curve_session: Option<orient_curve::Session>,
     orient_points_session: Option<orient_points::Session>,
+    orient_surface_session: Option<orient_surface::Session>,
     surface_extrusion_sources: Option<extrude_surface::SurfaceExtrusionSources>,
     surface_path_prompt: Option<extrude_surface_path::SurfacePathSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
@@ -2314,6 +2323,7 @@ impl VibocerosApp {
             set_point_sources: None,
             orient_curve_session: None,
             orient_points_session: None,
+            orient_surface_session: None,
             surface_extrusion_sources: None,
             surface_path_prompt: None,
             evaluate_uv_session: None,
@@ -2515,7 +2525,8 @@ impl VibocerosApp {
         {
             return;
         }
-        if self.try_continue_orient_points(&input)
+        if self.try_continue_orient_surface(&input)
+            || self.try_continue_orient_points(&input)
             || self.try_continue_orient_curve(&input)
             || self.try_continue_translation(&input)
             || self.try_continue_transform(&input)
@@ -3119,6 +3130,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_section_input(input) {
+            return true;
+        }
+        if self.try_start_orient_surface_input(input, picked_sources.as_deref()) {
             return true;
         }
         if self.try_start_orient_points_input(input, picked_sources.as_deref()) {
@@ -5473,7 +5487,8 @@ impl VibocerosApp {
         if self.subcurve_prompt.take().is_some() {
             self.document.clear_selection();
         }
-        let transform_applied = self.finish_orient_points_session()
+        let transform_applied = self.finish_orient_surface_session()
+            | self.finish_orient_points_session()
             | self.finish_orient_curve_session()
             | self.finish_maelstrom_session()
             | self.finish_transform_session()
@@ -5543,6 +5558,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_orient_surface_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_orient_points_point(point) {
             return accepted;
         }
@@ -5579,6 +5597,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::OrientOnSurface { .. }
             | InteractiveCommand::Section { .. }
             | InteractiveCommand::Contour { .. } => {
                 return false;
@@ -8316,6 +8335,12 @@ impl VibocerosApp {
         if self.pick_subcurve_source(click.object_id) {
             return;
         }
+        if self.picking_orient_surface() {
+            if let Some(id) = click.object_id {
+                self.accept_orient_surface(id, None);
+            }
+            return;
+        }
         if self.pick_orient_curve(click.object_id) {
             return;
         }
@@ -9292,6 +9317,7 @@ impl eframe::App for VibocerosApp {
         self.show_point_deviation(ui);
         self.show_curve_deviation(ui);
         self.validate_orient_guide();
+        self.validate_orient_surface();
         self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9351,6 +9377,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
                 && !self.picking_orient_curve()
+                && !self.picking_orient_surface()
                 && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
                 && self.plane_prompt.as_ref().map_or_else(
@@ -9501,6 +9528,11 @@ impl eframe::App for VibocerosApp {
                     .as_ref()
                     .and_then(orient_points::Session::preview)
             })
+            .or_else(|| {
+                self.orient_surface_session
+                    .as_ref()
+                    .and_then(orient_surface::Session::preview)
+            })
             .filter(|_| model_input_active && self.plane_prompt.is_none());
         let insert_surface_pick = model_input_active
             && matches!(
@@ -9527,7 +9559,8 @@ impl eframe::App for VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
-        } else if self.selecting_move_normal_reference()
+        } else if self.picking_orient_surface()
+            || self.selecting_move_normal_reference()
             || self.picking_uv_reference()
             || self.picking_mirror_object()
             || self.picking_scale_by_plane_object()
@@ -9748,7 +9781,10 @@ impl eframe::App for VibocerosApp {
         });
         let tween_corner_controls = self.tween_corner_controls().to_vec();
         let normal_surface = model_input_active
-            .then(|| self.move_normal_surface())
+            .then(|| {
+                self.orient_surface_location()
+                    .or_else(|| self.move_normal_surface())
+            })
             .flatten();
         let selecting_normal = model_input_active && self.selecting_move_normal_reference();
         let curve_or_edge_pick =
@@ -9784,6 +9820,15 @@ impl eframe::App for VibocerosApp {
                 self.viewports[self.active_viewport].construction_plane(),
             )
         });
+        let surface_session = self
+            .orient_surface_session
+            .as_ref()
+            .filter(|_| model_input_active);
+        let surface_normals = self
+            .viewports
+            .iter()
+            .map(|v| v.construction_plane().z_axis().as_vector())
+            .collect::<Vec<_>>();
         let angle_plane = matches!(
             self.active_command,
             Some(
@@ -9813,6 +9858,8 @@ impl eframe::App for VibocerosApp {
                 .and_then(|p| p.circle_getter)
                 .and_then(viboceros_command::circle_input::CircleInput::mouse_plane)
         });
+        let angle_plane =
+            angle_plane.or_else(|| surface_session.and_then(orient_surface::Session::angle_plane));
         let translation_constraint = model_input_active
             .then(|| self.translation_constraint())
             .flatten();
@@ -9972,6 +10019,8 @@ impl eframe::App for VibocerosApp {
                             bend_preview,
                             taper_preview,
                             maelstrom_preview,
+                            orient_surface_preview: surface_session
+                                .and_then(|s| s.deformation(surface_normals[index])),
                             face_pick,
                             component_preselection,
                             control_point_pick,
@@ -10079,6 +10128,11 @@ impl eframe::App for VibocerosApp {
             }
             if let Some(cursor) = output.maelstrom_preview
                 && self.update_maelstrom_preview(cursor)
+            {
+                ui.ctx().request_repaint();
+            }
+            if let Some(point) = output.orient_surface_preview
+                && self.update_orient_surface_preview(point, surface_normals[index])
             {
                 ui.ctx().request_repaint();
             }
@@ -10233,6 +10287,7 @@ mod tests {
     mod orient_curve_edge;
     mod orient_curve_subcurve;
     mod orient_points;
+    mod orient_surface;
     mod planar_boolean;
     mod plane_arrays;
     mod plane_through_points;
@@ -10370,6 +10425,7 @@ mod tests {
             set_point_sources: None,
             orient_curve_session: None,
             orient_points_session: None,
+            orient_surface_session: None,
             surface_extrusion_sources: None,
             surface_path_prompt: None,
             evaluate_uv_session: None,

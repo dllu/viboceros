@@ -191,7 +191,6 @@
     "docs/extract-curvature-graph-validation.json": "8f18c2e867f69f2ebab01f92555157225c3fe48a23791807c74b241e4b3657b6",
     "docs/geometry-check-qualification.json": "5e00eafe371346871d6667e2e26695a9247ad02753cf84a07f49ce674b1e96a9",
     "docs/set-point-preview-qualification.json": "d42f702495f6e27411d1d16d2b70ebe1ee8cea9874ef915be673c5e375add2e3",
-    "src/app/object_selection.rs": "8bde3a041394ca7726ca9485da7227fc1364dd2c856ea2f8534220d4723c5711",
     "src/app/set_point.rs": "9836b90262a5501bd39d00e3ee353f5630f3558e86b739f78656081165e15962",
     "src/app/tests/orient_curve.rs": "03c4d84af3d3297879786b0921007d97c13719517acd8582d2b0e28894c23b7d",
     "src/viewport/affine_preview/set_point_tests.rs": "f463b8f91b4afbf913d9fde08523a8b85973cdee3a1bd1d6d07e13fa40b46424",
@@ -235,6 +234,7 @@
     "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:crates/viboceros-oracle/src/lib.rs": "e8acf7fd8b06405a86863db2da3045cfa035a1e8c9e340aca67afe73ad1f9f72",
     "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:docs/commands/README.md": "56e0bdfedb143c10e21b57de890160802adb230f3ffda010c804bb8a27f1f9ed",
     "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:src/app/transform_prompt.rs": "fd20e915959d3a0a9ac985d11279d2342cda18ab173b9ca1e918e7bc9db2d5ed",
-    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:src/viewport/affine_preview.rs": "25896821d11c74bd0cb63e14c38c32d97e07fedd3f446f889687a20850dd2882"
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:src/viewport/affine_preview.rs": "25896821d11c74bd0cb63e14c38c32d97e07fedd3f446f889687a20850dd2882",
+    "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de:src/app/object_selection.rs": "8bde3a041394ca7726ca9485da7227fc1364dd2c856ea2f8534220d4723c5711"
   }
 }

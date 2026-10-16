@@ -18,7 +18,7 @@ pub(crate) struct Key {
 }
 impl MorphPreviewKey for Key {
     type Morph = TaperPointMorph;
-    fn morph(self, _: Tolerance) -> Result<Self::Morph, GeometryError> {
+    fn morph(&self, _: Tolerance) -> Result<Self::Morph, GeometryError> {
         point_morph(
             self.start,
             self.end,
@@ -37,14 +37,14 @@ impl MorphPreviewKey for Key {
             }
         })
     }
-    fn rigid(self) -> bool {
+    fn rigid(&self) -> bool {
         self.options.rigid
     }
-    fn preserve(self) -> bool {
+    fn preserve(&self) -> bool {
         self.options.preserve_structure
     }
     fn rigid_transform(
-        self,
+        &self,
         morph: &Self::Morph,
         center: Point3,
     ) -> Result<AffineTransform3, GeometryError> {

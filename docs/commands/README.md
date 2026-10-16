@@ -471,3 +471,5 @@ Help
 [MergeAllCoplanarFaces: native B-rep scope and limits](merge-all-coplanar-faces.md).
 
 [RailRevolve usage, options and qualification](rail-revolve.md).
+
+See [OrientOnSrf interactive surface placement](orient-on-surface.md) for source references, face picking, scale/rotation, previews, and compatibility limits.

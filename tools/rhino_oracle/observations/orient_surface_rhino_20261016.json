@@ -1,0 +1,1126 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "bilinear-True-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Python Script ( ResetEngine ): _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 52b9233f-1a4a-4778-9b63-87b1a294367a\n1 surface added to selection.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=No  Rigid=Yes ): 1.0\nRotation angle <0.000> ( Copy=No  Rigid=Yes ): 0.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 52b9233f-1a4a-4778-9b63-87b1a294367a _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.24,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                3.2400000000000007,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "bilinear-True-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 1c2781fb-f1ab-4d64-a3a6-d913035070fe\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=Yes  Rigid=Yes ): 1.0\nRotation angle <0.000> ( Copy=Yes  Rigid=Yes ): 0.0\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Enter\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes )\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 1c2781fb-f1ab-4d64-a3a6-d913035070fe _Copy=_Yes _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.24,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                3.2400000000000007,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "bilinear-False-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 315cc523-326e-4c07-92eb-53639d78848b\n1 surface added to selection.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=No  Rigid=No ): 1.0\nRotation angle <0.000> ( Copy=No  Rigid=No ): 0.0\nMorphed one object.\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 315cc523-326e-4c07-92eb-53639d78848b _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.239999999999999,
+                4.0,
+                2.0
+              ],
+              [
+                3.2391111111111117,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "bilinear-False-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 92512838-d1fc-415f-accb-cfd34091a027\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=Yes  Rigid=No ): 1.0\nRotation angle <0.000> ( Copy=Yes  Rigid=No ): 0.0\nMorphed one object.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Enter\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No )\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 92512838-d1fc-415f-accb-cfd34091a027 _Copy=_Yes _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.239999999999999,
+                4.0,
+                2.0
+              ],
+              [
+                3.2391111111111117,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cylinder-True-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 6a1ddb5c-8dc7-4a1f-b800-5f74e7bd712b\n1 surface added to selection.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): w1.7947512999907451,0.88253485550516897,1.2000000000000000\nScale factor <1.000> ( Copy=No  Rigid=Yes ): 1.3999999999999999\nRotation angle <0.000> ( Copy=No  Rigid=Yes ): 30.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 6a1ddb5c-8dc7-4a1f-b800-5f74e7bd712b _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w1.7947512999907451,0.88253485550516897,1.2000000000000000 1.3999999999999999 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999907458,
+                0.882534855505169,
+                1.2000000000000002
+              ],
+              [
+                1.2597429767758523,
+                1.9705450089921608,
+                1.8999999999999997
+              ],
+              [
+                2.1036384994175545,
+                0.2543719005084082,
+                2.4124355652982143
+              ],
+              [
+                3.0510772099842676,
+                1.500309254358787,
+                1.2000000000000002
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cylinder-True-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 0aee1abd-9c85-46c3-a635-a50bedd6d0d6\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_Yes\nPoint on surface to orient to ( Copy=No  Flip=Yes  IgnoreTrims=No  Rigid=Yes ): w1.7947512999907451,0.88253485550516897,1.2000000000000000\nScale factor <1.400> ( Copy=No  Rigid=Yes ): 1.3999999999999999\nRotation angle <30.000> ( Copy=No  Rigid=Yes ): 30.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 0aee1abd-9c85-46c3-a635-a50bedd6d0d6 _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_Yes w1.7947512999907451,0.88253485550516897,1.2000000000000000 1.3999999999999999 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999907458,
+                0.8825348555051691,
+                1.1999999999999997
+              ],
+              [
+                1.2597429767758523,
+                1.970545008992161,
+                0.5000000000000002
+              ],
+              [
+                2.1036384994175545,
+                0.2543719005084083,
+                -0.012435565298214435
+              ],
+              [
+                0.5384253899972242,
+                0.264760456651551,
+                1.1999999999999997
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "brep-True-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 3d6717dd-68f1-451f-87d1-babaf88bc71b\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.400> ( Copy=No  Rigid=Yes ): 1.0\nRotation angle <30.000> ( Copy=No  Rigid=Yes ): 0.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 3d6717dd-68f1-451f-87d1-babaf88bc71b _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.24,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                3.2400000000000007,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "brep-True-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: bbf69cda-0fbd-4cb8-b4b0-d3c251b30ceb\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=No  Rigid=Yes ): 1.0\nRotation angle <0.000> ( Copy=No  Rigid=Yes ): 0.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID bbf69cda-0fbd-4cb8-b4b0-d3c251b30ceb _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.24,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                3.2400000000000007,
+                3.105572809000085,
+                1.5527864045000426
+              ],
+              [
+                3.2400000000000007,
+                4.447213595499958,
+                1.1055728090000847
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "picked-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nSelect objects to orient: _SelID\nObject ID to select: 891e8994-edbc-4aa0-9467-27c149b7f294\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 62b5e80d-402a-41b3-a6dc-2df9ffb2ddd4\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=Yes  Rigid=Yes ): 1.2000000000000000\nRotation angle <0.000> ( Copy=Yes  Rigid=Yes ): -20.0\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Enter\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes )\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf _SelID 891e8994-edbc-4aa0-9467-27c149b7f294 _Enter w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 62b5e80d-402a-41b3-a6dc-2df9ffb2ddd4 _Copy=_Yes _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.2000000000000000 -20.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                3.240000000000001,
+                4.000000000000002,
+                2.0000000000000004
+              ],
+              [
+                4.367631144943092,
+                3.632905460727802,
+                1.8164527303639006
+              ],
+              [
+                3.6504241719908035,
+                5.008583957455469,
+                2.504291978727734
+              ],
+              [
+                3.240000000000001,
+                3.4633436854000523,
+                3.0733126291998993
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "on-surface-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): _OnSurface\nSurface to orient on: '_-SelID\nObject ID to select: 3b297359-1198-472f-a963-0e78706359e3\n1 surface added to selection.\nBase point: w2.1200000000000001,3.0,1.5\nReference point for scaling and rotation: w3.1200000000000001,3.0,1.5\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): w6.5999999999999996,5.0,2.5\nScale factor <1.200> ( Copy=No  Rigid=Yes ): 1.0\nRotation angle <-20.000> ( Copy=No  Rigid=Yes ): 0.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf _OnSurface '_-SelID 3b297359-1198-472f-a963-0e78706359e3 w2.1200000000000001,3.0,1.5 w3.1200000000000001,3.0,1.5 _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w6.5999999999999996,5.0,2.5 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                6.600000000000002,
+                5.0,
+                2.5
+              ],
+              [
+                7.600000000000002,
+                5.0,
+                2.5
+              ],
+              [
+                6.600000000000001,
+                6.0,
+                2.5
+              ],
+              [
+                6.600000000000002,
+                5.0,
+                3.5
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "batch-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 3,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nSelect objects to orient: _SelID\nObject ID to select: 7138dff2-69ad-4709-9740-82ea5e7b8853\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 6d40bbe4-be3e-4d00-8b14-07a971857205\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=Yes  Rigid=Yes ): 1.0\nRotation angle <0.000> ( Copy=Yes  Rigid=Yes ): 0.0\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): w6.8399999999999999,7.0,3.5\nScale factor <1.000> ( Copy=Yes  Rigid=Yes ): 0.80000000000000004\nRotation angle <0.000> ( Copy=Yes  Rigid=Yes ): 45.0\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Enter\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes )\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf _SelID 7138dff2-69ad-4709-9740-82ea5e7b8853 _Enter w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 6d40bbe4-be3e-4d00-8b14-07a971857205 _Copy=_Yes _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 w6.8399999999999999,7.0,3.5 0.80000000000000004 45.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                6.8400000000000025,
+                6.999999999999998,
+                3.5
+              ],
+              [
+                7.40568542494924,
+                7.505964425626939,
+                3.75298221281347
+              ],
+              [
+                6.274314575050765,
+                7.505964425626939,
+                3.75298221281347
+              ],
+              [
+                6.8400000000000025,
+                6.642229123600032,
+                4.215541752799933
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.24,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                3.2400000000000007,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cylinder-False-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 049d3e17-9048-40d1-98d8-850636d614c6\n1 surface added to selection.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w1.7947512999907451,0.88253485550516897,1.2000000000000000\nScale factor <0.800> ( Copy=No  Rigid=No ): 1.3999999999999999\nRotation angle <45.000> ( Copy=No  Rigid=No ): 30.0\nMorphed one object.\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 049d3e17-9048-40d1-98d8-850636d614c6 _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w1.7947512999907451,0.88253485550516897,1.2000000000000000 1.3999999999999999 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999907456,
+                0.882534855505169,
+                1.2
+              ],
+              [
+                0.9517304355058342,
+                1.7590364345663436,
+                1.8999999999999992
+              ],
+              [
+                1.9855941850965777,
+                0.2396158010454584,
+                2.4124355652982143
+              ],
+              [
+                3.051077209984267,
+                1.500309254358787,
+                1.2
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "cylinder-False-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 6ac78e8c-65e4-4bea-afd7-3df7e166f159\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_Yes\nPoint on surface to orient to ( Copy=No  Flip=Yes  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=No  Flip=Yes  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w1.7947512999907451,0.88253485550516897,1.2000000000000000\nScale factor <1.400> ( Copy=No  Rigid=No ): 1.3999999999999999\nRotation angle <30.000> ( Copy=No  Rigid=No ): 30.0\nMorphed one object.\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 6ac78e8c-65e4-4bea-afd7-3df7e166f159 _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_Yes _ConstrainNormal=_No w1.7947512999907451,0.88253485550516897,1.2000000000000000 1.3999999999999999 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                1.7947512999907456,
+                0.882534855505169,
+                1.2
+              ],
+              [
+                0.9517304355058342,
+                1.7590364345663438,
+                0.5000000000000006
+              ],
+              [
+                1.985594185096578,
+                0.2396158010454584,
+                -0.012435565298214437
+              ],
+              [
+                0.8973756499953729,
+                0.44126742775258454,
+                1.2
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "brep-False-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 94e8590a-e0de-4a66-a5d2-83bc6e72346f\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.400> ( Copy=No  Rigid=No ): 1.0\nRotation angle <30.000> ( Copy=No  Rigid=No ): 0.0\nMorphed one object.\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 94e8590a-e0de-4a66-a5d2-83bc6e72346f _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.239999999999999,
+                4.0,
+                2.0
+              ],
+              [
+                3.2391111111111117,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "brep-False-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: c2da4ddb-8917-482f-b67b-ae01c3c8e930\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=No  Rigid=No ): 1.0\nRotation angle <0.000> ( Copy=No  Rigid=No ): 0.0\nMorphed one object.\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID c2da4ddb-8917-482f-b67b-ae01c3c8e930 _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.239999999999999,
+                4.0,
+                2.0
+              ],
+              [
+                3.239111111111112,
+                3.105572809000085,
+                1.5527864045000426
+              ],
+              [
+                3.2400000000000007,
+                4.447213595499959,
+                1.1055728090000847
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "picked-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nSelect objects to orient: _SelID\nObject ID to select: eb5e8399-ffb2-45b1-ae16-b79b19df57a9\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: cf4c9e5e-eb80-4d5e-8edc-4a4a483cb5ea\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=Yes  Rigid=No ): 1.2000000000000000\nRotation angle <0.000> ( Copy=Yes  Rigid=No ): -20.0\nMorphed one object.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Enter\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No )\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf _SelID eb5e8399-ffb2-45b1-ae16-b79b19df57a9 _Enter w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID cf4c9e5e-eb80-4d5e-8edc-4a4a483cb5ea _Copy=_Yes _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.2000000000000000 -20.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.359815723838133,
+                3.6329054607278,
+                1.8164527303639
+              ],
+              [
+                3.656959593095759,
+                5.008583957455467,
+                2.5042919787277333
+              ],
+              [
+                3.2400000000000007,
+                3.4633436854000514,
+                3.0733126291998993
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "on-surface-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): _OnSurface\nSurface to orient on: '_-SelID\nObject ID to select: 485bef62-dde5-4d73-baec-da98bdb46a42\n1 surface added to selection.\nBase point: w2.1200000000000001,3.0,1.5\nReference point for scaling and rotation: w3.1200000000000001,3.0,1.5\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w6.5999999999999996,5.0,2.5\nScale factor <1.200> ( Copy=No  Rigid=No ): 1.0\nRotation angle <-20.000> ( Copy=No  Rigid=No ): 0.0\nMorphed one object.\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf _OnSurface '_-SelID 485bef62-dde5-4d73-baec-da98bdb46a42 w2.1200000000000001,3.0,1.5 w3.1200000000000001,3.0,1.5 _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w6.5999999999999996,5.0,2.5 1.0 0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                6.600000000000002,
+                4.999999999999999,
+                2.4999999999999996
+              ],
+              [
+                7.600000000000002,
+                4.999999999999999,
+                2.4999999999999996
+              ],
+              [
+                6.598603636363639,
+                5.999999999999999,
+                2.4999999999999996
+              ],
+              [
+                6.5996509090909115,
+                4.999999999999999,
+                3.499999999999999
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "batch-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 3,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nSelect objects to orient: _SelID\nObject ID to select: eb784d9f-7cda-4c11-8d4c-d28c0dd03924\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: f1bca866-1e51-4812-a472-993fe9c22360\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_Yes\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_No\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.000> ( Copy=Yes  Rigid=No ): 1.0\nRotation angle <0.000> ( Copy=Yes  Rigid=No ): 0.0\nMorphed one object.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): w6.8399999999999999,7.0,3.5\nScale factor <1.000> ( Copy=Yes  Rigid=No ): 0.80000000000000004\nRotation angle <0.000> ( Copy=Yes  Rigid=No ): 45.0\nMorphed one object.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Enter\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No )\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf _SelID eb784d9f-7cda-4c11-8d4c-d28c0dd03924 _Enter w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID f1bca866-1e51-4812-a472-993fe9c22360 _Copy=_Yes _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.0 0.0 w6.8399999999999999,7.0,3.5 0.80000000000000004 45.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                6.840000000000002,
+                6.999999999999998,
+                3.499999999999999
+              ],
+              [
+                7.410167823214502,
+                7.505964425626937,
+                3.7529822128134684
+              ],
+              [
+                6.2687542820486595,
+                7.505964425626939,
+                3.7529822128134693
+              ],
+              [
+                6.840000000000002,
+                6.642229123600032,
+                4.215541752799932
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": false,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.239999999999999,
+                4.0,
+                2.0
+              ],
+              [
+                3.2391111111111117,
+                4.894427190999917,
+                2.4472135954999583
+              ],
+              [
+                3.2400000000000007,
+                3.552786404500043,
+                2.894427190999916
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "front-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 462bb339-48a2-4e78-a7c6-5c8b1b8ddab3\n1 surface added to selection.\nPoint on surface to orient to ( Copy=Yes  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <0.800> ( Copy=No  Rigid=Yes ): 1.1000000000000001\nRotation angle <45.000> ( Copy=No  Rigid=Yes ): 30.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 462bb339-48a2-4e78-a7c6-5c8b1b8ddab3 _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.1000000000000001 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                4.192627944162883,
+                4.491934955049954,
+                2.245967477524977
+              ],
+              [
+                3.2400000000000007,
+                3.508065044950047,
+                2.9838699100999078
+              ],
+              [
+                3.7900000000000005,
+                3.147943663834369,
+                1.5739718319171845
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "front-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w1.0,0.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 184e0832-2f56-4340-8dc0-b7d96602584d\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=No ): _ConstrainNormal=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.100> ( Copy=No  Rigid=No ): 1.1000000000000001\nRotation angle <30.000> ( Copy=No  Rigid=No ): 30.0\nMorphed one object.\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w1.0,0.0,0.0 '_-SelID 184e0832-2f56-4340-8dc0-b7d96602584d _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_Yes w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.1000000000000001 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                2.3054329954404356,
+                2.9000000000000004,
+                1.4500000000000002
+              ],
+              [
+                3.2400000000000007,
+                6.45967477524977,
+                2.0000000000000004
+              ],
+              [
+                2.6665612826189045,
+                5.905255888325764,
+                2.952627944162882
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "right-True",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w0.0,1.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: 18e2764a-9f8b-403d-954c-8d680427d001\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=Yes ): _Rigid=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.100> ( Copy=No  Rigid=Yes ): 1.1000000000000001\nRotation angle <30.000> ( Copy=No  Rigid=Yes ): 30.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w0.0,1.0,0.0 '_-SelID 18e2764a-9f8b-403d-954c-8d680427d001 _Copy=_No _Rigid=_Yes _IgnoreTrims=_No _Flip=_No w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.1000000000000001 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                3.2400000000000007,
+                4.000000000000001,
+                2.0000000000000004
+              ],
+              [
+                3.2400000000000007,
+                3.508065044950047,
+                2.9838699100999078
+              ],
+              [
+                4.192627944162883,
+                4.491934955049954,
+                2.245967477524977
+              ],
+              [
+                2.690000000000001,
+                4.852056336165633,
+                2.426028168082816
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "right-False",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "guide_selected": false,
+        "guide_unchanged": true,
+        "history": "Command: _-OrientOnSrf\nBase point ( OnSurface ): w0.0,0.0,0.0\nReference point for scaling and rotation: w0.0,1.0,0.0\nSurface to orient on: '_-SelID\nObject ID to select: d4b8cc60-eee5-4111-9f0d-adf1d3632ae2\n1 surface added to selection.\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Copy=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=Yes ): _Rigid=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=Yes ): _IgnoreTrims=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=Yes ): _Flip=_No\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=Yes ): _ConstrainNormal=_Yes\nPoint on surface to orient to ( Copy=No  Flip=No  IgnoreTrims=No  Rigid=No  ConstrainNormal=Yes ): w3.2400000000000007,4.0000000000000009,2.0000000000000004\nScale factor <1.100> ( Copy=No  Rigid=No ): 1.1000000000000001\nRotation angle <30.000> ( Copy=No  Rigid=No ): 30.0\nCommand: _Cancel",
+        "macro": "_-OrientOnSrf w0.0,0.0,0.0 w0.0,1.0,0.0 '_-SelID d4b8cc60-eee5-4111-9f0d-adf1d3632ae2 _Copy=_No _Rigid=_No _IgnoreTrims=_No _Flip=_No _ConstrainNormal=_Yes w3.2400000000000007,4.0000000000000009,2.0000000000000004 1.1000000000000001 30.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    }
+  ]
+}

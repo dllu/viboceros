@@ -21,7 +21,10 @@ pub(crate) struct Key {
 
 impl MorphPreviewKey for Key {
     type Morph = TwistPointMorph;
-    fn morph(self, tolerance: Tolerance) -> Result<Self::Morph, viboceros_geometry::GeometryError> {
+    fn morph(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Self::Morph, viboceros_geometry::GeometryError> {
         TwistPointMorph::try_new(
             self.start,
             self.end,
@@ -37,14 +40,14 @@ impl MorphPreviewKey for Key {
             }
         })
     }
-    fn rigid(self) -> bool {
+    fn rigid(&self) -> bool {
         self.rigid
     }
-    fn preserve(self) -> bool {
+    fn preserve(&self) -> bool {
         self.preserve
     }
     fn rigid_transform(
-        self,
+        &self,
         morph: &Self::Morph,
         center: Point3,
     ) -> Result<AffineTransform3, viboceros_geometry::GeometryError> {
