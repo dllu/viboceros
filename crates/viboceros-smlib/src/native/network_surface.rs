@@ -28,6 +28,9 @@ pub use fitting::{
     GordonCurveFamilyFit, GordonCurveFitClock, GordonCurveFitInput, fit_gordon_curve_family,
     fit_gordon_curve_family_with_clock,
 };
+mod automatic;
+mod nearby;
+pub use automatic::{FittedGordonNetwork, GordonNetworkSourceImage, fitted_gordon_network_surface};
 
 /// Build a position-matched open curve network. Families, order and direction
 /// are inferred from intersections; original curves and their domains survive.
@@ -38,17 +41,35 @@ pub fn gordon_network_surface(
     edge: Tolerance,
     interior: Tolerance,
 ) -> Result<NurbsSurface, Error> {
+    let (working, layout) = discover(prepare(curves, edge, interior)?, false)?;
+    construct(curves, working, layout, edge, interior)
+}
+
+fn discover(
+    working: WorkingNetwork,
+    fit_contacts: bool,
+) -> Result<(WorkingNetwork, Layout), Error> {
     let WorkingNetwork {
         mut local,
         origin,
         scale,
         tolerance,
-    } = prepare(curves, edge, interior)?;
+    } = working;
     let n = local.len();
     let mut contacts = vec![vec![None; n]; n];
     for i in 0..n {
         for j in i + 1..n {
-            let events = curve_intersection_events(&local[i], &local[j], tolerance)?;
+            let mut events = curve_intersection_events(&local[i], &local[j], tolerance)?;
+            if events.is_empty() && fit_contacts {
+                events = local[i].intersection_events_with_curve(&local[j], tolerance)?;
+                if events.is_empty()
+                    && let Some([a, b]) = nearby::contact(&local[i], &local[j], tolerance)?
+                {
+                    contacts[i][j] = Some(a);
+                    contacts[j][i] = Some(b);
+                    continue;
+                }
+            }
             match events.as_slice() {
                 [] => {}
                 [CurveCurveIntersectionEvent::Point(p)] => {
@@ -127,8 +148,7 @@ pub fn gordon_network_surface(
             parameters[i] = other.iter().map(|&j| contacts[i][j].unwrap()).collect();
         }
     }
-    construct(
-        curves,
+    Ok((
         WorkingNetwork {
             local,
             origin,
@@ -141,9 +161,7 @@ pub fn gordon_network_surface(
             reversed,
             strict: false,
         },
-        edge,
-        interior,
-    )
+    ))
 }
 
 struct WorkingNetwork {

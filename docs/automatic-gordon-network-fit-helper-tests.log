@@ -1,0 +1,25 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on shared package cache
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 30.97s
+     Running unittests src/lib.rs (target/release/deps/viboceros_smlib-7be85bbb14a04c07)
+
+running 6 tests
+test native::network_surface::fitting::clock::tests::local_clock_declines_collapsed_transition_charts ... ok
+test native::network_surface::fitting::clock::tests::half_windows_share_the_same_nonbinary_midpoint_and_endpoints ... ok
+test native::network_surface::fitting::clock::tests::nonbinary_windows_keep_literal_contacts_without_rounding_extrapolation ... ok
+test native::network_surface::fitting::clock::tests::local_clocks_keep_affine_centers_and_match_arc_length_jets_at_contacts ... ok
+test native::network_surface::nearby::tests::sweep_proposals_preserve_distinct_curve_parameters_and_reject_separated_hulls ... ok
+test native::network_surface::fitting::attempt_tests::seed_trials_separate_geometric_refinement_from_invalid_targets ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.01s
+
+     Running tests/fitted_network.rs (target/release/deps/fitted_network-2e3273e083080a7f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s

@@ -1,0 +1,17 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 42.58s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-cab8caa67c164a6a)
+
+running 3 tests
+test network_surface::validation_tests::source_sample_limits_reject_before_native_construction ... ok
+test network_surface::tests::source_sample_diagnostics_keep_independent_domains_and_actual_world_distances ... ok
+test network_surface::tests::gordon_network_surface_fixtures_hit_independent_world_space_points ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 523 filtered out; finished in 46.90s

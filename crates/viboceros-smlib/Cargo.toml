@@ -38,6 +38,10 @@ name = "network_family_parameterization"
 required-features = ["native"]
 
 [[example]]
+name = "fitted_network"
+required-features = ["native"]
+
+[[example]]
 name = "export_breps"
 required-features = ["native"]
 

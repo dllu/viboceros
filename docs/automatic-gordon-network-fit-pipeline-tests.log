@@ -1,0 +1,14 @@
+    Blocking waiting for file lock on artifact directory
+    Finished `release` profile [optimized] target(s) in 21.98s
+     Running tests/fitted_network.rs (target/release/deps/fitted_network-2e3273e083080a7f)
+
+running 6 tests
+test automatic_plane_keeps_small_grids_reversed_directions_and_remote_original_domains ... ok
+test automatic_fit_declines_invalid_topology_and_excessive_shared_control_budgets ... ok
+test automatic_small_interior_contact_gaps_keep_complete_natural_endpoints ... ok
+test automatic_uneven_families_share_the_total_budget_without_a_uniform_per_source_cap ... ok
+test automatic_rational_network_retains_negative_gauges_and_complete_images ... ok
+test automatic_curved_network_refines_and_certifies_complete_original_isocurves has been running for over 60 seconds
+test automatic_curved_network_refines_and_certifies_complete_original_isocurves ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 231.81s

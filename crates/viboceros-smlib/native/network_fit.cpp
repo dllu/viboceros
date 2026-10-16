@@ -14,21 +14,12 @@ void require(bool valid, const char *message) {
 void check(NL_FLAG value, const char *message) { require(value==NL_NO,message); }
 double point_error(NL_CURVE &curve,const std::vector<NL_POINT> &points,
                    const double *parameters,std::vector<double> *feet=nullptr,double *squared=nullptr) {
-    NL_STACKS stack;
-    SmStackHandler cleanup(&stack);
-    NL_GCPTEMP projection;
-    N_CrvProjectionInitArrays(&projection);
-    NL_CURVEJET jet;
-    N_crvJetInit(&jet,&curve);
     double maximum=0.;
     if(feet) feet->clear();
     if(squared) *squared=0.;
     for(size_t i=0;i<points.size();++i) {
-        N_crvJetSetParam(&jet,parameters[i]);
         auto point=points[i];
-        require(N_crvJetRelax(&jet,&point,&projection,&stack)==NL_TRUE,
-                "Network fit point projection did not converge");
-        NL_PARAMETER parameter=jet.param;
+        NL_PARAMETER parameter=parameters[i];
         NL_POINT projected;
         // This Newton routine returns its best parameter even when roundoff
         // prevents convergence at the requested tolerance. Treat that value
@@ -51,10 +42,10 @@ double point_error(NL_CURVE &curve,const std::vector<NL_POINT> &points,
 VbSurfaceData *vb_fit_network_curve(const double *xyz,const double *parameters,
     size_t point_count,const size_t *fixed,size_t fixed_count,
     const double *knots,size_t knot_count,const double *end_derivatives,
-    double tolerance,double *maximum_error) {
+    int refine,double tolerance,double *maximum_error) {
     require(xyz && parameters && fixed && knots && end_derivatives && maximum_error &&
         point_count>=16 && point_count<=2048 && fixed_count>=2 && fixed_count<=32 &&
-        knot_count>=11 && knot_count<=132 && std::isfinite(tolerance) && tolerance>0.,
+        knot_count>=11 && knot_count<=132 && (refine==0 || refine==1) && std::isfinite(tolerance) && tolerance>0.,
         "Invalid network fit layout");
     const size_t controls=knot_count-4;
     require(controls<=128 && point_count>controls+fixed_count+2,
@@ -108,10 +99,11 @@ VbSurfaceData *vb_fit_network_curve(const double *xyz,const double *parameters,
     // and endpoint-derivative equations inside the existing constrained solve.
     // Each trial retains the common basis. Squared error drives parameter
     // correction; retain the best measured maximum for final admission.
-    // Projection failures or reordered feet never admit output.
+    // Reordered feet stop correction; every measured point is evaluated on
+    // the actual candidate regardless of Newton's stopping status.
     NL_CURVE best=curve;
     double best_maximum=*maximum_error;
-    for(size_t pass=0;pass<16 && *maximum_error>tolerance;++pass) {
+    for(size_t pass=0;refine && pass<16 && *maximum_error>tolerance;++pass) {
         std::vector<double> feet;
         double squared;
         point_error(curve,points,parameters,&feet,&squared);
@@ -135,7 +127,7 @@ VbSurfaceData *vb_fit_network_curve(const double *xyz,const double *parameters,
     }
     curve=best;
     *maximum_error=best_maximum;
-    for(size_t pass=0;pass<4 && *maximum_error>tolerance;++pass) {
+    for(size_t pass=0;refine && pass<4 && *maximum_error>tolerance;++pass) {
         // Existing bounded (100-iteration) geometric point refitter. No global
         // model tolerances change, and its cached errors do not admit output.
         const double before=*maximum_error;

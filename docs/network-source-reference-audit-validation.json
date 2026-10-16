@@ -158,7 +158,6 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "README.md": "7cc09bd38630999262e1042137b5cdc01ef43733bb717ce97451ec443b8b7618",
     "crates/viboceros-geometry/src/binary_accumulator.rs": "990ae206b583200f382617b97b3a28aa00e0d8519bce52423155988e35f8481f",
     "crates/viboceros-geometry/src/binary_accumulator/pair_products.rs": "6c759ec87f2b9ab2b43e6f2984afbd8a9922a626b14bc787776ae011542baa3d",
     "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
@@ -221,6 +220,7 @@
   },
   "source_git_sha256": {
     "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native/network_surface.rs": "add1be50303519ea15c6a4356582bd86fba76771e2df181a3172a5f590c007f8",
-    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:docs/smlib-gordon-network.md": "a35a936b183c8302147a535ee37a3b7be2d12406a6d65ad02b31c29be07bed58"
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:docs/smlib-gordon-network.md": "a35a936b183c8302147a535ee37a3b7be2d12406a6d65ad02b31c29be07bed58",
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:README.md": "7cc09bd38630999262e1042137b5cdc01ef43733bb717ce97451ec443b8b7618"
   }
 }

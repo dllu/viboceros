@@ -122,7 +122,6 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "README.md": "7cc09bd38630999262e1042137b5cdc01ef43733bb717ce97451ec443b8b7618",
     "crates/viboceros-geometry/src/curve_fit.rs": "1b378776573c404f25a187255abd66efe602f1e3fa2c7753cb0bbb8531266a2a",
     "crates/viboceros-geometry/src/curve_fit/sampler.rs": "cb6cf09b98fb1f35996872b9d3be5fdc216f46f2cf2cca4d1d2ab36f5167ed93",
     "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
@@ -148,16 +147,11 @@
     "crates/viboceros-geometry/src/surface_pullback/interpolation/tests.rs": "f002bc0a15d1648904b4686df1867daa9c9f8f8ae5bb721db612986bd745e414",
     "crates/viboceros-geometry/src/surface_pullback/linear.rs": "c845a929f9a3a697915080dc61a926d2131a4525d1283aaa327f73f674c28b50",
     "crates/viboceros-geometry/src/surface_pullback/linear/tests.rs": "ce4c594d91cac8ec51738f719c51adfcda27a340739332d44789d080dc021421",
-    "crates/viboceros-smlib/Cargo.toml": "925acc648ea65f50b1417b4c55e1189b730f0aa9f53b958c17cf534e0242d5b5",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
     "crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
     "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
     "crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
-    "crates/viboceros-smlib/native/bridge.cpp": "7078d41d727862704ca7d7e4588b7f3e72ddff0daf79209adf10ec6c13b50a6f",
-    "crates/viboceros-smlib/native/bridge.h": "62988da3caef22c53ea90b84aafb58ba977339491cf464bd306d45e2739646f8",
-    "crates/viboceros-smlib/native/network_fit.cpp": "6ade0159a18a4040809bdda6e9ea1b46fd4cf2af7d496a71fd53513426dadbe5",
-    "crates/viboceros-smlib/native/network_fit.h": "77e7d77bc252a3cfee06696ebec046f751ba9b10bc15515f2f6bd4c9a698cb50",
     "crates/viboceros-smlib/src/native/network_surface/prepared.rs": "7ab5baf29004873e3b6ad9d4de91c783dcfc302499ca3c5dea927f51cca10ce0",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "docs/common-parameter-curve-fit.md": "c3d07843edbb84d2fc9ad4a6a8098500ea26e3039a9d62acdc68dc18f4ff3a57",
@@ -189,6 +183,12 @@
     "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native/network_surface/fitting.rs": "5709924db47c848f226cb0ca50706857bbc767fbaa2633ed5e2a5725c230a113",
     "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native/network_surface/fitting/clock.rs": "3703adc365f8426e24932ae23bc46aed2fc48fb8eebdf7f371aa5c68593bdcd7",
     "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/tests/network_family_fit.rs": "6d935050496d210fbcd2aac35d110f3c19d0189793c65bb9520a727a943b6760",
-    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:docs/shared-gordon-curve-fit.md": "246d152dd5df7444438319f359cb126d114f92b1853ff0b4b469ba9f8d1e396a"
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:docs/shared-gordon-curve-fit.md": "246d152dd5df7444438319f359cb126d114f92b1853ff0b4b469ba9f8d1e396a",
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:README.md": "7cc09bd38630999262e1042137b5cdc01ef43733bb717ce97451ec443b8b7618",
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/Cargo.toml": "925acc648ea65f50b1417b4c55e1189b730f0aa9f53b958c17cf534e0242d5b5",
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/native/bridge.cpp": "7078d41d727862704ca7d7e4588b7f3e72ddff0daf79209adf10ec6c13b50a6f",
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/native/bridge.h": "62988da3caef22c53ea90b84aafb58ba977339491cf464bd306d45e2739646f8",
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/native/network_fit.cpp": "6ade0159a18a4040809bdda6e9ea1b46fd4cf2af7d496a71fd53513426dadbe5",
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/native/network_fit.h": "77e7d77bc252a3cfee06696ebec046f751ba9b10bc15515f2f6bd4c9a698cb50"
   }
 }

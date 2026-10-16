@@ -121,6 +121,12 @@ The [local transition policy](local-gordon-curve-clock.md) now reduces the C2
 candidate's interior query mismatch while retaining those complete proofs and
 the same control count. It remains experimental.
 
+[Automatic fitting](automatic-gordon-network-fit.md) now connects discovery,
+common arc-length stations, bounded shared-grid refinement, prepared native
+construction and strict complete pre-fit original-image admission in one
+producer. It retains original input domains and returns the certified UV
+witnesses. Rhino interior parity and application registration remain pending.
+
 ## Rhino comparison and remaining work
 
 The [source/reference audit](network-source-reference-audit.md) now proves that

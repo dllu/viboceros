@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Automatic shared cubic Gordon network fitting and complete original-image admission",
+  "base_repository_revision": "c02784ac11502b0b218da67abbed9c9fc861ecbd",
+  "native_kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "automatic_network_producer_validated": true,
+  "rhino_networksrf_fitting_qualified": false,
+  "application_networksrf_command_registered": false,
+  "performance_qualified": false,
+  "implementation": "Discover and orient complete open curve families; choose common stations from normalized contact arc lengths; qualify endpoint-priority shared targets; refine common simple cubic bases with typed seed-only least squares trials; optionally run the existing bounded refitter at the control cap; build the native Gordon tensor; certify every complete unchanged original curve at its prescribed isoparameter. Native, portable and translational-sweep closest-point searches only propose contacts. Existing exact predicates and world-space image certificates qualify accepted output.",
+  "coverage": {
+    "distinct_native_feature_tests_under_asan_linkage": 37,
+    "native_test_executions": 37,
+    "native_oracle_tests": 3,
+    "native_oracle_analytic_fixtures": 9,
+    "total_distinct_rust_tests": 40,
+    "total_rust_test_executions": 40,
+    "new_pipeline_tests": 6,
+    "new_helper_tests": 2,
+    "new_pipeline_complete_original_image_proofs": 56,
+    "diagnostic_complete_original_image_proofs": 20,
+    "comparison_queries": 75,
+    "new_licensed_rhino_captures": 0,
+    "remote_transforms_and_original_domains": true,
+    "curved_refinement": true,
+    "independent_returned_bound_certificate": true,
+    "negative_rational_weight_gauges": true,
+    "uneven_2_by_32_families": true,
+    "balanced_17_by_17_budget_rejection": true,
+    "interior_contact_gap": 5e-08,
+    "typed_refinement_and_prevalidation": true
+  },
+  "diagnostics": [
+    {
+      "fixture": "biquadratic_network",
+      "common_stations": [
+        [
+          0.0,
+          0.5430135166649414,
+          1.0
+        ],
+        [
+          0.0,
+          0.5447566160614018,
+          1.0
+        ]
+      ],
+      "families": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "spans_per_interval": [
+        [
+          62,
+          62
+        ],
+        [
+          62,
+          62
+        ]
+      ],
+      "family_fit_attempts": [
+        6,
+        5
+      ],
+      "maximum_sampled_point_distance": 5.7462759234503264e-08,
+      "surface_control_counts": [
+        127,
+        127
+      ],
+      "surface_degree": [
+        3,
+        3
+      ],
+      "maximum_interior_knot_multiplicities": [
+        1,
+        1
+      ],
+      "maximum_rhino_query_output_distance": 0.0007353540779190035,
+      "query_outputs_within_1e_minus_6": false,
+      "reference_derived_inputs": false,
+      "complete_original_image_proofs": 6,
+      "maximum_complete_original_image_bound": 9.99437307404763e-07
+    },
+    {
+      "fixture": "rational_cylinder",
+      "common_stations": [
+        [
+          0.0,
+          0.49999999999999994,
+          1.0
+        ],
+        [
+          0.0,
+          0.5,
+          1.0
+        ]
+      ],
+      "families": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ]
+      ],
+      "spans_per_interval": [
+        [
+          16,
+          16
+        ],
+        [
+          4,
+          4
+        ]
+      ],
+      "family_fit_attempts": [
+        3,
+        1
+      ],
+      "maximum_sampled_point_distance": 2.2537520371614717e-08,
+      "surface_control_counts": [
+        35,
+        11
+      ],
+      "surface_degree": [
+        3,
+        3
+      ],
+      "maximum_interior_knot_multiplicities": [
+        1,
+        1
+      ],
+      "maximum_rhino_query_output_distance": 5.477753307791159e-06,
+      "query_outputs_within_1e_minus_6": false,
+      "reference_derived_inputs": false,
+      "complete_original_image_proofs": 6,
+      "maximum_complete_original_image_bound": 9.474214403329577e-07
+    },
+    {
+      "fixture": "nonuniform_network",
+      "common_stations": [
+        [
+          0.0,
+          0.25250323565390154,
+          0.7088351348446802,
+          1.0
+        ],
+        [
+          0.0,
+          0.24491140143410536,
+          0.7206031115490132,
+          1.0
+        ]
+      ],
+      "families": [
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6,
+          7
+        ]
+      ],
+      "spans_per_interval": [
+        [
+          41,
+          41,
+          41
+        ],
+        [
+          41,
+          41,
+          41
+        ]
+      ],
+      "family_fit_attempts": [
+        6,
+        6
+      ],
+      "maximum_sampled_point_distance": 9.289167961891203e-08,
+      "surface_control_counts": [
+        126,
+        126
+      ],
+      "surface_degree": [
+        3,
+        3
+      ],
+      "maximum_interior_knot_multiplicities": [
+        1,
+        1
+      ],
+      "maximum_rhino_query_output_distance": 0.0014130284595167504,
+      "query_outputs_within_1e_minus_6": false,
+      "reference_derived_inputs": false,
+      "complete_original_image_proofs": 8,
+      "maximum_complete_original_image_bound": 9.979604516745743e-07
+    }
+  ],
+  "limits": [
+    "The application NetworkSrf command remains unregistered. All three retained comparisons fail the 1e-6 returned-point target; the reference audit separately retains an exact incompatibility with simultaneous original-source preservation for one query. Saved SDK results supply comparisons only and never feed independent fitting.",
+    "The original 4-to-64 curve, 2-to-32 family, degree-16, 128-control/source and 2048-total-input limits remain. Fitted polynomial families retain individual 128-control and total 2048-control limits. The first family reserves the opposite minimum basis; the second consumes the remainder. Uniform refinement has at most six seed levels and one final bounded refit. The order is greedy, not an optimal basis or performance claim.",
+    "Curve-fit tolerance is one tenth of the smaller model tolerance. Sample distances measure every candidate point independently but are not continuous fit bounds. Restored contact constraints, complete fitted-curve admission and complete original-world image certificates remain independent gates. The original numerical, model and certificate work/bit/depth limits remain unchanged.",
+    "Nearby contact searches use an exact translational sweep and certified control-hull separation but do not prove a global pair minimum, uniqueness, contact completeness, injectivity or surface topology. Unsupported or unproved cases reject. Complete natural endpoints are retained. If a UV fixed coordinate changes after pullback, its modified witness receives a fresh proof against the original surface and curve.",
+    "All 20 retained complete original-image bounds satisfy 1e-6, and their UV definitions cover the original natural domains with the prescribed fixed coordinates. Seventy-five closest-point output comparisons are point-query diagnostics, not continuous surface separation bounds or qualified Rhino interior smoothing.",
+    "Release native test linkage uses AddressSanitizer and frame pointers in SMLib, SM_API and the adapter, including the changed native fitting code. Rust and the debug oracle are not separately instrumented. Leak and optional stack-use-after-return checks remain disabled. No performance or boundary surface-continuity qualification is claimed."
+  ],
+  "validation": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --lib network_surface --test fitted_network -- --nocapture",
+      "passed": true,
+      "tests": 6,
+      "log": "docs/automatic-gordon-network-fit-helper-tests.log",
+      "scope_note": "The network_surface name filter selected six helper tests and zero integration tests. The separate pipeline run below executes all six integration tests."
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test fitted_network -- --nocapture",
+      "passed": true,
+      "tests": 6,
+      "log": "docs/automatic-gordon-network-fit-pipeline-tests.log"
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test network_family_fit --test network_surface --test curve_fit -- --nocapture",
+      "passed": true,
+      "tests": 25,
+      "log": "docs/automatic-gordon-network-fit-native-regressions.log"
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib network_surface -- --nocapture",
+      "passed": true,
+      "tests": 3,
+      "log": "docs/automatic-gordon-network-fit-oracle-tests.log"
+    },
+    {
+      "command": "cargo clippy -p viboceros-smlib --features native --all-targets -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/automatic-gordon-network-fit-clippy.log"
+    },
+    {
+      "command": "cargo check -p viboceros-smlib --no-default-features",
+      "passed": true,
+      "tests": null,
+      "log": "docs/automatic-gordon-network-fit-portable.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/automatic-gordon-network-fit-fmt.log"
+    },
+    {
+      "command": "Inspect generated release SMLib, SM_API and adapter compile flags for address sanitizer and frame pointers",
+      "passed": true,
+      "tests": null,
+      "log": "docs/automatic-gordon-network-fit-asan-instrumentation.log"
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo run --release -p viboceros-smlib --features native --example fitted_network",
+      "passed": true,
+      "tests": null,
+      "log": "docs/automatic-gordon-network-fit-probe.log"
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo run --release -p viboceros-smlib --features native --example fitted_network -- nonuniform_network",
+      "passed": true,
+      "tests": null,
+      "log": "docs/automatic-gordon-network-fit-nonuniform-probe.log"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "31414942322c7ff3bb118ebc7874dfa60a32da3924c21ce1ad440139a82fa53e",
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
+    "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
+    "crates/viboceros-geometry/src/nurbs/sampling.rs": "bca2aa4e92def49fa00ccc1158c61987c2294ebd350fc90311047121e59993e4",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/affine.rs": "eade4ad4f52f766678c856b934b3285af8e7945de4926a3387c92e793a49eb79",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/affine/tests.rs": "fe54ed655e781941047518d906b4c4b8100452ad7c5dfae878b1bbf5218ed662",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/candidate.rs": "0b209ea8fb0f3e827777a6abd5b142ae74193ee0849b3646be23595e83e3043f",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/candidate/tests.rs": "2d7b3260e88de94f07572b535aa561cddf7640d6087f985eda7cfe03b42402f5",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/refine.rs": "aefa6bfdc92a168a2a98177d8ad234bff02e6fb84819210a766b4f17569e2639",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/refine/polish.rs": "0a50abeb08c53b5f842d5e591e16ccd4ed68479591f6dcee024eae794883e2d1",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/refine/tests.rs": "74626ed29111dcaa5ed8cc9fc9320d87ef86622515c34a920593e490aebbce22",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point/tests.rs": "ad0c599db125dce363aef26520db0dff4d7f42914eab09a6d63c2514c63318af",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
+    "crates/viboceros-geometry/src/surface_pullback.rs": "393e7424dde66b72cda6290f50b13239644aeeef3f30f354f08aa7adba4f505b",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/affine.rs": "ef63b64d1422bbb98bc67ccd2f1cd397da47e322ec60891345ffbdbc4a49df5d",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": "668772986f52ddb6a8c729c6457e026eddadbe21c43e180a5e90c91942aee103",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/crossing.rs": "01fcb7072c9811002684c9250affb68ba6b7940e67764a13aaddc423da09a466",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tests.rs": "c79aeadaa62891181264a066b9d98fa34fd8d8970911acbb878000e1ca9d44d5",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "9ff46c78989c9a7d5f9c4d269842d9fea9ddd6ad6da83d32d338d45e0c787046",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline/tests.rs": "136b91932e3467602788560ae092172c2df0793fcd1612655c9ee544b45b4363",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/pushup.rs": "e45cf6d503cf0faf95ef8ec4e3b47bc4c721e42a97c534838d13e60ee8f2568a",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/pushup/tests.rs": "e775f1249f3967a8ba7c806496e646a9ced9239f84e0f93c72a2d9d6ccb54698",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": "770bec42526a9615deeb888f20fc9b9883854403b25e9c3948f9fdd36bb139c2",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface/linear.rs": "3b7296f20cc5dcabeb7406ef69e4d74674522628d4e91dc092766282a1a28aef",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface/tests.rs": "1ae314f79b719957a2b4f0d9faa61c41cce1b067726efac21853773f2ea5218a",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs": "07a4c0aced5f93815a4ba2423989791777d44bc579a6c8fa506ac5f08d1d9a4f",
+    "crates/viboceros-geometry/src/surface_pullback/certified_tests.rs": "212bbe984461d712d0df789e4e16854d64a8ffade9102becfa746474e2cc13a8",
+    "crates/viboceros-geometry/src/surface_pullback/interpolation.rs": "bb206f4d395bb30d7ae0e62225ea19c47788e7d5d410bb2a307d2e6281ba9db0",
+    "crates/viboceros-geometry/src/surface_pullback/interpolation/tests.rs": "f002bc0a15d1648904b4686df1867daa9c9f8f8ae5bb721db612986bd745e414",
+    "crates/viboceros-geometry/src/surface_pullback/linear.rs": "c845a929f9a3a697915080dc61a926d2131a4525d1283aaa327f73f674c28b50",
+    "crates/viboceros-geometry/src/surface_pullback/linear/tests.rs": "ce4c594d91cac8ec51738f719c51adfcda27a340739332d44789d080dc021421",
+    "crates/viboceros-geometry/src/transform.rs": "64f59dc88d5d189bcee48b5c53ae22f300779544d72e839d90c4d35fc7f16f66",
+    "crates/viboceros-geometry/src/vector/exact_dot.rs": "a218fcfa8fbe73c235fc69f797714a7cff9ab67b9315a74e37f6fc94fe2a018f",
+    "crates/viboceros-oracle/src/network_surface.rs": "39f47ecc7d8dba3a68179d179de2e7f612c9f56f0aed6d74e5da56886665cc5e",
+    "crates/viboceros-smlib/Cargo.toml": "9f807997ed9ea93a81d24c28956dd2fb609007d050b150c0c46ef9f47db0a5f3",
+    "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
+    "crates/viboceros-smlib/examples/fitted_network.rs": "c2e3e4b24572daec9a8710d529e9a2b8433c4a1ef2dd35ad60342921a9014b3f",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
+    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
+    "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
+    "crates/viboceros-smlib/native/bridge.cpp": "1ae7563d3d05969fe2d5d7de862fe8f7a84c73c0f295a002f4811910f32dae9d",
+    "crates/viboceros-smlib/native/bridge.h": "0cd5bc8cd8400b4091383a7b7f679e5288828f3276a517de8bf1cbbe1f39eb13",
+    "crates/viboceros-smlib/native/network_fit.cpp": "28631000fc8ed8e4a953a1f748e762526b9519c23b1d9def1263e37552a1b51c",
+    "crates/viboceros-smlib/native/network_fit.h": "638b84006c26db361db9fdf7daf10bd3134684fdd871df44943986f2120129dc",
+    "crates/viboceros-smlib/src/lib.rs": "85e77e38825660af12e8c40d42f1533778661cd747fedf5e9e57817db06f59d3",
+    "crates/viboceros-smlib/src/native.rs": "40a39b8ed5d56bd8fc648070b22af0e36b8b0919560d52a7cfb20cdf0d6185c7",
+    "crates/viboceros-smlib/src/native/construction.rs": "14abe0114b165f46e5899f6fe11eb8525231a0fdb42fb4e153122c8dacffece8",
+    "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
+    "crates/viboceros-smlib/src/native/network_surface.rs": "180d03fac2a3fd3918ccf9e79f3d849b6202ae53420213fd444d4dd5b41c5afa",
+    "crates/viboceros-smlib/src/native/network_surface/automatic.rs": "d6bedc4fe805fd58de98609938f0e5352cb5cb3dfdce74f40eb3bcaffa47a958",
+    "crates/viboceros-smlib/src/native/network_surface/fitting.rs": "065ac724b0fe9ce28304ab5a5ebc08b981b0dacc57dd317a5c352465c8dcb02f",
+    "crates/viboceros-smlib/src/native/network_surface/fitting/clock.rs": "fa29f41b73eb1a3e3f622a20e65bd9fe8c776f695e78aa083b316e66221651b7",
+    "crates/viboceros-smlib/src/native/network_surface/nearby.rs": "9114bb6c60aeac27b0ab5e3e792a7cb983ab366d7803386c4090027471275e41",
+    "crates/viboceros-smlib/src/native/network_surface/prepared.rs": "7ab5baf29004873e3b6ad9d4de91c783dcfc302499ca3c5dea927f51cca10ce0",
+    "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
+    "crates/viboceros-smlib/tests/fitted_network.rs": "e7f8177bc1b3cdb6868f682d518f95bdd347536f2829eb8e380aa47f74ee070d",
+    "docs/automatic-gordon-network-fit.md": "d829246ecaa3bbcc3223bdc86034de990e6bb1f72b017756e89931f9e4ab0bb9",
+    "docs/local-gordon-curve-clock.md": "1d925249d89bccb061b6c66c4133ddbda2045dfde223865b5935a791f37a029c",
+    "docs/network-source-reference-audit.md": "dbeb5ba2f09cf746fd514f159bbf1390e6068e74c9acc1cce1acd6fee4af0762",
+    "docs/prepared-gordon-families.md": "1d6b7e512a900286135e415c04125dba64d7ad8d00ff3080769341bcc400154f",
+    "docs/shared-gordon-curve-fit.md": "a590001915e9e715eac15e3db9e9903ec530f9ed1d048d7b779e72bfad9c9f6c",
+    "docs/smlib-gordon-network.md": "18e0ab4e6cfe3c83367359b79ef006072c3bbb354720e0b5c1406d4484169a4f"
+  },
+  "input_sha256": {
+    "tools/rhino_oracle/fixtures/network_surface.json": "8c5eb7601fd8e8172bc3580b2451e73644c242a680b410a2c1bb459139be4605",
+    "tools/rhino_oracle/observations/gordon_network_rhino_20261015.json": "e6f81ec26557ad8715a0150ff6518be89edda8561408150b1a79c3f0688697d5",
+    "tools/rhino_oracle/observations/network_source_audit_viboceros_20261016.json": "3149d3469a88e71e75702433cc82fb479c539cc222aca063a1a75c8278843d37"
+  },
+  "evidence_sha256": {
+    "docs/automatic-gordon-network-fit-helper-tests.log": "20d823e9d3f396cb33cf9387828e8707834ae0255fbce7378385c0780a38e84e",
+    "docs/automatic-gordon-network-fit-pipeline-tests.log": "d44333f4b721fe5d5e35dfb9a170f4bb4d09a2e6f211a736ee15669cec96bc52",
+    "docs/automatic-gordon-network-fit-native-regressions.log": "e196f66ae021f6a443ed26330956195443a4da65faa94e9043793d604f3a9124",
+    "docs/automatic-gordon-network-fit-oracle-tests.log": "10b57e7b2fc39ed70f069a4e3b1c1f8952dfdff135209461bd8cf0dcbf84eac3",
+    "docs/automatic-gordon-network-fit-clippy.log": "092ca3700ca8a025ea78eab67a0f76a60b7dd3f13bce29095e2508a4d1d9f934",
+    "docs/automatic-gordon-network-fit-portable.log": "e5af723eb0eb594902b71fc17e9adb825ffcc558479a650ec700e00c0417d5a8",
+    "docs/automatic-gordon-network-fit-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/automatic-gordon-network-fit-asan-instrumentation.log": "3bf6d26a216c6759063feb9e66a9512de869080ffeadc3830be68dadb93f1aaf",
+    "docs/automatic-gordon-network-fit-probe.log": "e9622dfbfb38b6b53452f8bc72fc8a03399232155fbf0f91c18e087fe0d6ef9d",
+    "docs/automatic-gordon-network-fit-nonuniform-probe.log": "688acb78bbc82e3f53f0620b43d603be01438c0dc019525a3d1dce26fb4ff840",
+    "tools/rhino_oracle/observations/fitted_network_viboceros_20261016.json": "e62faf5d2a69a535f1ba96a09ce60579b0b7dc2155012cc09107880a6006a64b",
+    "tools/rhino_oracle/observations/fitted_network_nonuniform_viboceros_20261016.json": "2be08908e47677e2e279b2efe81d953351764d692139770d16a3ab7f6cb281c0"
+  }
+}

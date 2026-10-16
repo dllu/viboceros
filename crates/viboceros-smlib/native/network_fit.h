@@ -6,4 +6,4 @@
 VbSurfaceData *vb_fit_network_curve(const double *points, const double *parameters,
     size_t point_count, const size_t *fixed, size_t fixed_count,
     const double *knots, size_t knot_count, const double *end_derivatives,
-    double tolerance, double *maximum_error);
+    int refine, double tolerance, double *maximum_error);

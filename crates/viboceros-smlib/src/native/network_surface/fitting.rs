@@ -43,6 +43,7 @@ unsafe extern "C" {
         knots: *const f64,
         knot_count: usize,
         derivatives: *const f64,
+        refine: c_int,
         tolerance: f64,
         maximum_error: *mut f64,
         out: *mut *mut brep::NativeSurfaceData,
@@ -82,6 +83,37 @@ pub fn fit_gordon_curve_family(
     )
 }
 
+pub(super) enum FitAttemptError {
+    Fatal(Error),
+    NeedsRefinement {
+        maximum_sampled_distance: f64,
+        tolerance: f64,
+    },
+}
+impl FitAttemptError {
+    pub(super) fn into_error(self) -> Error {
+        match self {
+            Self::Fatal(error) => error,
+            Self::NeedsRefinement {
+                maximum_sampled_distance,
+                tolerance,
+            } => invalid(&format!(
+                "sampled point distance {maximum_sampled_distance} exceeds {tolerance}"
+            )),
+        }
+    }
+}
+impl From<Error> for FitAttemptError {
+    fn from(error: Error) -> Self {
+        Self::Fatal(error)
+    }
+}
+impl From<GeometryError> for FitAttemptError {
+    fn from(error: GeometryError) -> Self {
+        Self::Fatal(error.into())
+    }
+}
+
 /// Fit the same shared simple cubic basis with an explicit arc-length clock.
 /// Source, control, sample, constraint and tolerance limits are identical to
 /// [`fit_gordon_curve_family`]. Local transitions change only the parameter
@@ -93,6 +125,37 @@ pub fn fit_gordon_curve_family_with_clock(
     numerical: Tolerance,
     policy: GordonCurveFitClock,
 ) -> Result<GordonCurveFamilyFit, Error> {
+    fit_attempt(
+        inputs,
+        interval_spans,
+        fit_tolerance,
+        numerical,
+        policy,
+        true,
+    )
+    .map_err(FitAttemptError::into_error)
+}
+
+pub(super) fn fit_attempt(
+    inputs: &[GordonCurveFitInput<'_>],
+    interval_spans: &[usize],
+    fit_tolerance: f64,
+    numerical: Tolerance,
+    policy: GordonCurveFitClock,
+    refine: bool,
+) -> Result<GordonCurveFamilyFit, FitAttemptError> {
+    validate_clock(policy)?;
+    fit_attempt_validated(
+        inputs,
+        interval_spans,
+        fit_tolerance,
+        numerical,
+        policy,
+        refine,
+    )
+}
+
+pub(super) fn validate_clock(policy: GordonCurveFitClock) -> Result<(), Error> {
     if let GordonCurveFitClock::Local {
         transition_fraction: w,
     } = policy
@@ -100,6 +163,17 @@ pub fn fit_gordon_curve_family_with_clock(
     {
         return Err(invalid("invalid local clock transition fraction"));
     }
+    Ok(())
+}
+
+fn fit_attempt_validated(
+    inputs: &[GordonCurveFitInput<'_>],
+    interval_spans: &[usize],
+    fit_tolerance: f64,
+    numerical: Tolerance,
+    policy: GordonCurveFitClock,
+    refine: bool,
+) -> Result<GordonCurveFamilyFit, FitAttemptError> {
     if !(1..=32).contains(&inputs.len())
         || !fit_tolerance.is_finite()
         || fit_tolerance <= 0.
@@ -109,7 +183,7 @@ pub fn fit_gordon_curve_family_with_clock(
             .sum::<usize>()
             > 2048
     {
-        return Err(invalid("invalid family, tolerance or control budget"));
+        return Err(invalid("invalid family, tolerance or control budget").into());
     }
     let stations = inputs[0].stations;
     if !(2..=32).contains(&stations.len())
@@ -123,7 +197,10 @@ pub fn fit_gordon_curve_family_with_clock(
             .windows(2)
             .any(|p| p[0].fit_parameter >= p[1].fit_parameter)
     {
-        return Err(invalid("invalid common stations or span budget"));
+        return Err(invalid("invalid common stations or span budget").into());
+    }
+    for input in inputs {
+        validate_source(input, stations, fit_tolerance, numerical)?;
     }
     let knots = common_knots(stations, interval_spans)?;
     let origin = inputs[0]
@@ -136,7 +213,7 @@ pub fn fit_gordon_curve_family_with_clock(
             Ok::<_, Error>(m.max(origin.distance_to(p.point())?))
         })?;
     if !diameter.is_finite() || diameter <= fit_tolerance {
-        return Err(invalid("collapsed working frame"));
+        return Err(invalid("collapsed working frame").into());
     }
     // A bounded binary magnification keeps the native fixed absolute stopping
     // tolerance useful. Global tolerances and final admission limits never move.
@@ -157,11 +234,10 @@ pub fn fit_gordon_curve_family_with_clock(
     let mut curves = Vec::with_capacity(inputs.len());
     let mut maximum = 0_f64;
     for input in inputs {
-        validate_source(input, stations, fit_tolerance, numerical)?;
         let local = working_curve::normalized(input.curve, origin, scale)?
             .ok_or_else(|| invalid("unsupported original basis or weights"))?;
         if local.evaluate(0.)?.distance_to(local.evaluate(1.)?)? <= local_numerical.absolute() {
-            return Err(invalid("requires open noncollapsed sources"));
+            return Err(invalid("requires open noncollapsed sources").into());
         }
         let source_parameters = input
             .stations
@@ -169,7 +245,7 @@ pub fn fit_gordon_curve_family_with_clock(
             .map(|s| fraction(input.curve, s.source_parameter))
             .collect::<Vec<_>>();
         if source_parameters.windows(2).any(|p| p[0] >= p[1]) {
-            return Err(invalid("source chart collapsed stations"));
+            return Err(invalid("source chart collapsed stations").into());
         }
         let mut points = vec![];
         let mut parameters = vec![];
@@ -213,7 +289,7 @@ pub fn fit_gordon_curve_family_with_clock(
             let derivative = local.evaluate_with_derivative(t)?.1;
             let length = derivative.length()?;
             if length == 0. {
-                return Err(invalid("stationary source endpoint"));
+                return Err(invalid("stationary source endpoint").into());
             }
             derivatives.extend(
                 derivative
@@ -233,6 +309,7 @@ pub fn fit_gordon_curve_family_with_clock(
                 knots.as_ptr(),
                 knots.len(),
                 derivatives.as_ptr(),
+                c_int::from(refine),
                 fit_tolerance / scale,
                 &mut error_distance,
                 &mut pointer,
@@ -245,13 +322,19 @@ pub fn fit_gordon_curve_family_with_clock(
             || candidate.knots() != knots
             || candidate.control_points().iter().any(|p| p.weight() != 1.)
         {
-            return Err(invalid("native fit changed the shared polynomial basis"));
+            return Err(invalid("native fit changed the shared polynomial basis").into());
         }
-        if !error_distance.is_finite() || error_distance * scale > fit_tolerance {
-            return Err(invalid(&format!(
-                "sampled point distance {} exceeds {fit_tolerance}",
-                error_distance * scale
-            )));
+        if !error_distance.is_finite()
+            || error_distance < 0.
+            || !(error_distance * scale).is_finite()
+        {
+            return Err(Error::InvalidOutput.into());
+        }
+        if error_distance * scale > fit_tolerance {
+            return Err(FitAttemptError::NeedsRefinement {
+                maximum_sampled_distance: error_distance * scale,
+                tolerance: fit_tolerance,
+            });
         }
         let positions = input
             .stations
@@ -259,7 +342,7 @@ pub fn fit_gordon_curve_family_with_clock(
             .map(|s| (s.fit_parameter, ParameterSide::Right, s.point))
             .collect::<Vec<_>>();
         if !candidate.positions_within_distance(&positions, numerical.absolute())? {
-            return Err(invalid("stored-curve position constraints did not certify"));
+            return Err(invalid("stored-curve position constraints did not certify").into());
         }
         maximum = maximum.max(error_distance * scale);
         curves.push(candidate);
@@ -354,4 +437,72 @@ fn validate_source(
         return Err(invalid("targets move beyond source/endpoint tolerance"));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod attempt_tests {
+    use super::*;
+    #[test]
+    fn seed_trials_separate_geometric_refinement_from_invalid_targets() {
+        let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let source = NurbsCurve::try_new(
+            2,
+            vec![p(0., 0., 0.), p(2., 0., 4.), p(4., 0., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let mut stations = [0., 0.5, 1.]
+            .into_iter()
+            .zip([0., 0.3, 1.])
+            .map(|(s, t)| viboceros_geometry::CurveFitStation {
+                source_parameter: s,
+                fit_parameter: t,
+                point: source.evaluate(s).unwrap(),
+            })
+            .collect::<Vec<_>>();
+        let attempt = |stations: &[viboceros_geometry::CurveFitStation]| {
+            fit_attempt(
+                &[GordonCurveFitInput {
+                    curve: &source,
+                    stations,
+                }],
+                &[4, 4],
+                1e-12,
+                Tolerance::DEFAULT,
+                GordonCurveFitClock::Local {
+                    transition_fraction: 0.5,
+                },
+                false,
+            )
+        };
+        assert!(
+            matches!(attempt(&stations),Err(FitAttemptError::NeedsRefinement {maximum_sampled_distance,tolerance})if maximum_sampled_distance>tolerance)
+        );
+        stations[1].point = p(100., 100., 100.);
+        assert!(matches!(attempt(&stations), Err(FitAttemptError::Fatal(_))));
+        let mut valid = stations.clone();
+        valid[1].point = source.evaluate(0.5).unwrap();
+        assert!(matches!(
+            fit_attempt(
+                &[
+                    GordonCurveFitInput {
+                        curve: &source,
+                        stations: &valid
+                    },
+                    GordonCurveFitInput {
+                        curve: &source,
+                        stations: &stations
+                    },
+                ],
+                &[4, 4],
+                1e-12,
+                Tolerance::DEFAULT,
+                GordonCurveFitClock::Local {
+                    transition_fraction: 0.5
+                },
+                false
+            ),
+            Err(FitAttemptError::Fatal(_))
+        ));
+    }
 }
