@@ -36,7 +36,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - Fit [spheres through points and grips](docs/commands/sphere-fit-points.md)
 - [Point deviation analysis and distance display](docs/commands/point-deviation.md)
 - [Curve deviation reports, temporary portions, and compatibility limits](docs/commands/crv-deviation.md)
-- [Persistent curve and surface curvature graphs](docs/commands/curvature-graph.md)
+- [Persistent curvature graphs](docs/commands/curvature-graph.md) and [outline extraction](docs/commands/extract-curvature-graph.md)
 - [Native geometry checks and bad-object selection](docs/commands/check.md)
 - [Degenerate mesh face cleanup](docs/commands/cull-degenerate-mesh-faces.md)
 - [Divide surfaces and polysurfaces along creases](docs/commands/divide-along-creases.md)

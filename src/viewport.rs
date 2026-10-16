@@ -325,6 +325,7 @@ pub struct ViewportInput<'a> {
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub selection_excluded_object: Option<ObjectId>,
+    pub selection_allowed_objects: Option<&'a std::collections::BTreeSet<ObjectId>>,
     pub selection_preview: Option<ObjectSelectionFilter>,
     pub selection_preview_ids: &'a [ObjectId],
     pub point_cloud_remove_target: Option<ObjectId>,
@@ -405,6 +406,7 @@ impl Default for ViewportInput<'_> {
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             selection_excluded_object: None,
+            selection_allowed_objects: None,
             selection_preview: None,
             selection_preview_ids: &[],
             point_cloud_remove_target: None,
@@ -1459,14 +1461,22 @@ impl Viewport {
                     });
                 }
                 Some(SelectionWindow {
-                    object_ids: self.objects_in_selection_mode_preview(
-                        rect,
-                        selection_rect,
-                        resolved_mode,
-                        document,
-                        object_filter,
-                        input.selection_preview,
-                    ),
+                    object_ids: self
+                        .objects_in_selection_mode_preview(
+                            rect,
+                            selection_rect,
+                            resolved_mode,
+                            document,
+                            object_filter,
+                            input.selection_preview,
+                        )
+                        .into_iter()
+                        .filter(|id| {
+                            input
+                                .selection_allowed_objects
+                                .is_none_or(|ids| ids.contains(id))
+                        })
+                        .collect(),
                     mode: selection_mode(modifiers),
                     crossing,
                     inverted: resolved_mode.inverted(),
@@ -1501,14 +1511,22 @@ impl Viewport {
             response.interact_pointer_pos().and_then(|edge| {
                 let radius = center.distance(edge);
                 (radius.is_finite() && radius > 0.0).then(|| SelectionWindow {
-                    object_ids: self.objects_in_circle_selection_preview(
-                        rect,
-                        ScreenCircle { center, radius },
-                        mode,
-                        document,
-                        object_filter,
-                        input.selection_preview,
-                    ),
+                    object_ids: self
+                        .objects_in_circle_selection_preview(
+                            rect,
+                            ScreenCircle { center, radius },
+                            mode,
+                            document,
+                            object_filter,
+                            input.selection_preview,
+                        )
+                        .into_iter()
+                        .filter(|id| {
+                            input
+                                .selection_allowed_objects
+                                .is_none_or(|ids| ids.contains(id))
+                        })
+                        .collect(),
                     mode: selection_mode(modifiers),
                     crossing: mode.crossing(false),
                     inverted: mode.inverted(),
@@ -1748,7 +1766,14 @@ impl Viewport {
                         object_filter,
                         input.selection_preview,
                         input.selection_excluded_object,
-                    ),
+                    )
+                    .into_iter()
+                    .filter(|id| {
+                        input
+                            .selection_allowed_objects
+                            .is_none_or(|ids| ids.contains(id))
+                    })
+                    .collect::<Vec<_>>(),
                 )
             }))
         } else {

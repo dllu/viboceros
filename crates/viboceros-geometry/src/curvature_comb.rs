@@ -1,6 +1,7 @@
 //! Bounded, one-sided curvature samples; no document or display policy.
-use crate::{GeometryError, NurbsCurve, ParameterSide, Point3, Real, Vector3};
+use crate::{GeometryError, NurbsCurve, ParameterSide, Point3, Real, UnitVector3, Vector3};
 use std::ops::Range;
+mod envelopes;
 #[cfg(test)]
 mod tests;
 
@@ -9,6 +10,12 @@ pub struct CurvatureHair {
     pub parameter: Real,
     pub point: Point3,
     pub curvature: Vector3,
+    pub tangent: UnitVector3,
+}
+impl CurvatureHair {
+    pub fn tip(self, factor: Real) -> Result<Point3, GeometryError> {
+        self.point.translated(self.curvature.scaled(-factor)?)
+    }
 }
 
 #[derive(Clone, Debug, Default)]
@@ -17,6 +24,8 @@ pub struct CurvatureComb {
     /// Separate strips prevent a false connection across a knot or singularity.
     pub strips: Vec<Range<usize>>,
     pub singular_samples: usize,
+    pub closed: bool,
+    pub domain: [Real; 2],
 }
 
 /// Sample each nonzero knot span separately, including both one-sided ends.
@@ -35,7 +44,11 @@ pub fn curvature_comb(
     if intervals_per_span == 0 || required > maximum_samples {
         return Err(GeometryError::CurvatureCombLimit);
     }
-    let mut out = CurvatureComb::default();
+    let mut out = CurvatureComb {
+        closed: curve.is_closed()?,
+        domain: [*curve.domain().start(), *curve.domain().end()],
+        ..CurvatureComb::default()
+    };
     for (a, b) in curve.spans() {
         let mut start = out.hairs.len();
         for i in 0..=intervals_per_span {
@@ -66,6 +79,7 @@ pub fn curvature_comb(
                 parameter: t,
                 point,
                 curvature: crate::curve::curvature_from_derivatives(first, second)?,
+                tangent: first.normalized_nonzero()?,
             });
         }
         if start < out.hairs.len() {

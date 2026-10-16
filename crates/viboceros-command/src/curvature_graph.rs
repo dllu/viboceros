@@ -4,8 +4,10 @@ use std::sync::{Arc, Mutex};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{CurvatureComb, curvature_comb};
 
+mod extract;
 #[cfg(test)]
 mod tests;
+pub(super) use extract::ExtractCommand;
 
 pub const USAGE: &str = "CurvatureGraph [Add|Remove] [Scale=0..300] [Density=0..10] [Count=2..64] [U=Yes|No] [V=Yes|No] [Color=r,g,b] [UColor=r,g,b] [VColor=r,g,b] | CurvatureGraphOff";
 const MAX_SAMPLES: usize = 200_000;
@@ -74,7 +76,7 @@ pub struct View {
 }
 impl View {
     pub fn tip(&self, hair: &viboceros_geometry::CurvatureHair) -> Result<Point3, GeometryError> {
-        hair.point.translated(hair.curvature.scaled(-self.factor)?)
+        hair.tip(self.factor)
     }
 }
 #[derive(Clone)]

@@ -7,6 +7,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 pub enum GeometryError {
     #[error("curvature comb exceeds its sample budget or has zero sampling intervals")]
     CurvatureCombLimit,
+    #[error("invalid curvature envelope scale or sample strips")]
+    InvalidCurvatureEnvelope,
     #[error(transparent)]
     OpenNurbsMesh(#[from] viboceros_opennurbs::MeshError),
     #[error("curve edit-point interpolation is unsupported: {context}")]

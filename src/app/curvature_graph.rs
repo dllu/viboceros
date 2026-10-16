@@ -1,6 +1,13 @@
 //! Curvature graph controls update display state without interrupting modeling.
 use super::*;
 impl VibocerosApp {
+    pub(super) fn curvature_graph_selection_ids(
+        &self,
+        command: &str,
+    ) -> Option<std::collections::BTreeSet<viboceros_document::ObjectId>> {
+        (command == "ExtractCurvatureGraph")
+            .then(|| self.commands.curvature_graph_curve_sources(&self.document))
+    }
     pub(super) fn set_curvature_graph_display(&mut self, action: &str) {
         let result = self.commands.execute(&mut self.document, action);
         if let Err(error) = result {

@@ -68,6 +68,9 @@ impl PendingObjectCommand {
         if self.description.command == "CurvatureGraph" {
             return "Select curves, surfaces or polysurfaces; Enter displays curvature graphs, Esc cancels";
         }
+        if self.description.command == "ExtractCurvatureGraph" {
+            return "Select curves with curvature graphs; Enter extracts outlines, Esc cancels";
+        }
         if self.description.command == "RailRevolve" {
             return "Select the profile first, then the rail; Enter picks the axis; Esc cancels";
         }
@@ -527,10 +530,16 @@ impl VibocerosApp {
             }
             _ => 1,
         };
+        let graph_allowed = self.curvature_graph_selection_ids(description.command);
         let selected_objects = self
             .document
             .selected_objects()
             .filter(|o| description.filter.accepts_object(o))
+            .filter(|o| {
+                graph_allowed
+                    .as_ref()
+                    .is_none_or(|ids| ids.contains(&o.id()))
+            })
             .take(required)
             .count();
         let selected_grips = if matches!(
@@ -847,10 +856,14 @@ impl VibocerosApp {
                     );
                     return true;
                 }
+                let graph_allowed = self.curvature_graph_selection_ids(pending.description.command);
                 let has_eligible_picks =
                     self.document.selected_objects().any(|o| {
                         Some(o.id()) != pending.excluded_object
                             && pending.description.filter.accepts_object(o)
+                            && graph_allowed
+                                .as_ref()
+                                .is_none_or(|ids| ids.contains(&o.id()))
                     }) || (matches!(
                         pending.description.command,
                         "Circle FitPoints"
@@ -1426,12 +1439,21 @@ impl VibocerosApp {
             .as_ref()
             .and_then(|prompt| prompt.excluded_object);
         let requested = ids.into_iter().collect::<std::collections::BTreeSet<_>>();
+        let allowed = self
+            .object_prompt
+            .as_ref()
+            .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let ids = self
             .document
             .selectable_objects()
             .filter(|object| requested.contains(&object.id()))
             .filter(|object| Some(object.id()) != excluded)
             .filter(|object| filter.accepts_object(object))
+            .filter(|object| {
+                allowed
+                    .as_ref()
+                    .is_none_or(|ids| ids.contains(&object.id()))
+            })
             .map(|object| object.id())
             .collect::<Vec<_>>();
         let mode = if mode == SelectionMode::Replace {

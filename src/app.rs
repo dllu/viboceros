@@ -9767,6 +9767,10 @@ impl eframe::App for VibocerosApp {
             .then_some(self.point_constraint.filter(|_| model_input_active))
             .flatten();
         let selection_excluded_object = self.planar_boolean_prompt.as_ref().and_then(|p| p.first);
+        let selection_allowed_objects = self
+            .object_prompt
+            .as_ref()
+            .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let viewport_positions = &self.viewport_positions;
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
@@ -9867,6 +9871,7 @@ impl eframe::App for VibocerosApp {
                                 object_filter
                             },
                             selection_excluded_object,
+                            selection_allowed_objects: selection_allowed_objects.as_ref(),
                             selection_preview: if self.surface_path_prompt.is_some()
                                 || plane_object_pick
                                 || end_analysis_picking
@@ -10131,6 +10136,7 @@ mod tests {
     mod edit_points;
     mod evaluate_point;
     mod evaluate_uv;
+    mod extract_curvature_graph;
     mod extract_surface;
     mod extrude_surface;
     mod extrude_surface_apex;

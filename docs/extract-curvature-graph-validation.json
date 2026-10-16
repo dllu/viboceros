@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "ExtractCurvatureGraph model outlines and dynamic graphed-curve picking",
+  "base_repository_revision": "941f544c749c579f62ea5952fb786540e05200e1",
+  "command_registered": true,
+  "complete_native_command_parity_qualified": false,
+  "native_polyline_geometry_qualified": false,
+  "native_undo_redo_qualified": false,
+  "continuous_geometry_distance_qualified": false,
+  "performance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "diagnostic_recipes_chosen_adaptively": true,
+  "implementation": "Build model polylines from the accepted curvature graph cache and scale. Reuse source curvature samples, adding their one-sided unit tangents and original source domain. Weld only adjacent source stations with matching position, tangent and graph tip within model tolerances; preserve curvature jumps, kinks and singular gaps. Join closed-source components across the original seam only when both natural ends survived. Remove consecutive exact duplicate vertices. Construct every output before insertion, use current-layer default attributes and keep outputs unselected. Persistent graph state and source geometry remain. Native preselection retains all preselected objects; postselection clears after extraction. Line/flat no-result queries retain redo and create no history entry.",
+  "picker": "The graph session exposes only its enabled curve owners. The existing object getter applies that set to preselection admission, typed picks, SelAll, mouse candidates, rectangle and circular selection results. Overlapping ungraphed curves are removed before the viewport creates its selection chooser. Empty Enter cancels; unchanged commands retain their prior selection behavior.",
+  "coverage": {
+    "unique_rust_tests": 49,
+    "passed_rust_test_executions_in_retained_logs": 58,
+    "rust_count_note": "31 geometry + 9 portable command + 1 help + 6 UI + 9 native command + 2 oracle. The nine native command tests repeat nine portable command tests.",
+    "new_rust_tests": 11,
+    "python_tests": 44,
+    "new_python_tests": 3,
+    "private_native_launches": 4,
+    "final_reference_cases": 10,
+    "discovery_cases": 9,
+    "retained_native_observations": 19,
+    "invalid_initial_fixture_captures": 1,
+    "final_comparison_counts": {
+      "command_status_matches": 10,
+      "piece_count_matches": 10,
+      "attributes_match": 10,
+      "source_selection_matches": 10,
+      "sources_unchanged": 10,
+      "outline_endpoint_sets_match": 10,
+      "vertex_probes_within_1e_minus_6": 3
+    },
+    "maximum_observed_vertex_to_polyline_distance": 0.11792855208587219
+  },
+  "native_capture_runs": [
+    {
+      "scheme": "VibocerosOracleExtractCurvatureGraph20261016",
+      "request": "tools/rhino_oracle/fixtures/extract_curvature_graph_initial.json",
+      "succeeded": false,
+      "log": "docs/extract-curvature-graph-invalid-fixture.log",
+      "note": "Initial g0 recipe used a full-order interior NURBS knot rejected by the native source constructor. The job rejected before extracting that case. Earlier partial successful rows were not emitted by the failed batch."
+    },
+    {
+      "scheme": "VibocerosOracleExtractCurvatureGraph20261016b",
+      "response": "tools/rhino_oracle/observations/extract_curvature_graph_discovery_rhino_20261016.json",
+      "cases": 9,
+      "note": "Corrected G0 source with a shared endpoint and degree-multiplicity knot; first nine operations of the final recipe."
+    },
+    {
+      "scheme": "VibocerosOracleExtractCurvatureGraph20261016c",
+      "cases": 10,
+      "note": "Added mixed preselection; superseded by the same ten-case capture with explicit Undo/Redo command results and histories."
+    },
+    {
+      "scheme": "VibocerosOracleExtractCurvatureGraph20261016d",
+      "response": "tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json",
+      "cases": 10,
+      "note": "Final geometry, attribute, selection and history diagnostics. A later validator-only reorder makes malformed nested indices reject as ValueError and does not alter these valid recipes or emitted observations."
+    }
+  ],
+  "native_reproduction_command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/extract_curvature_graph.json --scheme VibocerosOracleExtractCurvatureGraph20261016d --timeout 240 --output tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json",
+  "comparison_command": "python3 tools/rhino_oracle/extract_curvature_graph_comparison.py tools/rhino_oracle/fixtures/extract_curvature_graph.json tools/rhino_oracle/observations/extract_curvature_graph_viboceros_20261016.json tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json tools/rhino_oracle/observations/extract_curvature_graph_comparison_20261016.json",
+  "limits": [
+    "All ten actual command statuses, piece counts, raw output attributes, source selections, source retention and outline endpoint sets agree. Output attributes compare current-layer names, raw color/source, name, group count, selection and attribute/geometry user text. Closed, discontinuous and singular strip policies have additional local geometry regressions.",
+    "All seven nonempty extraction cases retain a polyline sampling mismatch at 1e-6. Only the three joint empty-output cases pass both vertex-distance probes. The largest observed vertex-to-other-polyline distance is about 0.118 model units. Local circle output has 65 vertices versus 281 native; the C2 output has 33 versus 217. These are concrete remaining geometry gaps, not full command qualification.",
+    "Bidirectional vertex-to-other-polyline distances are diagnostics, not continuous Hausdorff bounds. Component endpoint matching is orientation independent. No sampling placement, parameter-domain, continuous global-distance or general native seam/scale parity is qualified.",
+    "Native nested-script Undo returns true but prints Nothing to undo and leaves the extracted objects. Its unchanged snapshots are retained; they do not establish native history parity. Local command, UI and oracle checks independently prove one-step extraction undo/redo and preservation of redo on a flat no-result query.",
+    "The initial invalid NURBS fixture and failure log remain; the valid G0 recipe uses the correct shared-endpoint knot representation. The final source/selection recipe was extended after discovery and the ten-case history capture enriched an earlier capture without dropping geometric or policy mismatches.",
+    "Native observations used only the existing owned private headless launcher and public SDK/commands. Graph settings were restored and owned objects, groups and layers cleaned up. No Wine/FEX/license configuration, vendor source, new C ABI, sanitizer or performance qualification was changed or added.",
+    "Historical hash values and nonhash metadata are preserved using immutable Git references. The pre-existing 69 unverifiable historical records remain untouched."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-geometry --lib curvature",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-geometry.log",
+      "tests": 31
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib curvature_graph",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-command.log",
+      "tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-help.log",
+      "tests": 1
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros curvature_graph",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-ui.log",
+      "tests": 6
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --lib curvature_graph",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-native-command.log",
+      "tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib curvature_graph",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-oracle.log",
+      "tests": 2
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/extract_curvature_graph.json tools/rhino_oracle/observations/extract_curvature_graph_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-export.log"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-fmt.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_extract_curvature_graph tools.rhino_oracle.test_curvature_graph tools.rhino_oracle.test_curve_deviation tools.rhino_oracle.test_curve_deviation_subcurves tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "log": "docs/extract-curvature-graph-python.log",
+      "tests": 44
+    }
+  ],
+  "preserved_historical_records": [
+    "docs/curvature-graph-validation.json"
+  ],
+  "sha256": {
+    "README.md": "79680c4b95398afeae1e2bb0db036edc6e3f67c8ab2f6443552f4bf2e92aa033",
+    "crates/viboceros-command/src/curvature_graph.rs": "bb65f929b023dbffc6d658a29b37dc9ce0a3118fb6cc20805095e09102e7c4a0",
+    "crates/viboceros-command/src/curvature_graph/extract.rs": "8d56ce60447232515e4bc973a1fb1cc916b1db3b0268aa111a7b7b1dfa4bf853",
+    "crates/viboceros-command/src/curvature_graph/extract/tests.rs": "d54e05e4f867eedb805666de518d54a35762ecc0d18ae2e214a82c2cc1c40aeb",
+    "crates/viboceros-command/src/lib.rs": "4032be28e97ec1b132095d4eca2251467df219b309c1846777f28ea02cb2dcc9",
+    "crates/viboceros-document/src/object_admission.rs": "30fe0b5c14cb5282d8bb4ffcfff2fcb89e1ea4cac8d50df815d882292a055014",
+    "crates/viboceros-geometry/src/curvature_comb.rs": "ca978eb3a2ff608b77462f0b8a9b59959f82d26cd7ba5332c9903b7783cdf8c1",
+    "crates/viboceros-geometry/src/curvature_comb/envelopes.rs": "7a21491995e6b9acf95892c9246a0035f78d5ed04591bf07a9731b8bcee1af15",
+    "crates/viboceros-geometry/src/curvature_comb/tests.rs": "20f9125ead59879e5797df9004bd826d612b4d8549fe41b25630a92d691873a4",
+    "crates/viboceros-geometry/src/error.rs": "ab7c9d03a6538dda8db6378f0913d07f1e8a485db638dc8bdcc790534e9ea93e",
+    "crates/viboceros-oracle/src/extract_curvature_graph.rs": "e1e1acc8b0e25a574cba749455068e0eb14eae258e281225d0c8d9970dc58501",
+    "crates/viboceros-oracle/src/lib.rs": "90d05347e5b67ebcf354af8a37c11d4efc55f07d9c3292fba20057057797b94b",
+    "docs/commands/README.md": "2e01aec050cdbadba4a6deea3601ba18b42fea02b74f9dae8374d49cdd02971a",
+    "docs/commands/curvature-graph.md": "17bee575da96e68be195d14799bd315b415a29a6edc8635f2850373c2c633a28",
+    "docs/commands/extract-curvature-graph.md": "c68f60a551c6c3035405f8c67cc69a6a3a9a3ba9855bc10592c79823fd534c02",
+    "docs/curvature-graph-validation.json": "ced8c1481f1777f2fe930d779ca6edb3b4aa6413c78493539be89208a55cc73c",
+    "docs/extract-curvature-graph-clippy.log": "7b0d9b12640721d668c864374f93fc14635da84e2c5c1f84de998744d976251d",
+    "docs/extract-curvature-graph-command.log": "75d22266e100f12fb93c2a905d4200f4511ff8b08850251aa94e78ad3c066208",
+    "docs/extract-curvature-graph-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/extract-curvature-graph-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/extract-curvature-graph-geometry.log": "b94b296c22a4932466e0cf045c74a8b30c7eb289fd1bc4e0ae770931654d685b",
+    "docs/extract-curvature-graph-help.log": "266254a66aacb5db6d558400dd8a4f575f457a9a9c39944d88b64c8401f2e23a",
+    "docs/extract-curvature-graph-invalid-fixture.log": "463d3bd483e4b79d7a521d6328b6612e15399453f0b985ec2b0e089426c5e060",
+    "docs/extract-curvature-graph-native-command.log": "61f1d9e659034ddffa863d98859b7c959bf1c1fa009d9e4c70539c40efbda9d4",
+    "docs/extract-curvature-graph-oracle.log": "6e8b783fbc05579e0eea59065a7b8866c61c1750cc8fb5e52b05694abe5e33ad",
+    "docs/extract-curvature-graph-python.log": "19ef159c1d3b79b4c987de5487be1cc0c3d4d9bacd0962878cf6b9cb295c2dff",
+    "docs/extract-curvature-graph-ui.log": "ed7ff29046592351df35cafba90eb95af72336692998898150ae32ae888245bc",
+    "src/app.rs": "d906ce73ff179ef8c44ca794da0e1fae6649615207c80535cbb7465ab0f6b71d",
+    "src/app/curvature_graph.rs": "c38366f81005b5967e12351c50a79e6a0fc7f9d6723a1839ae62e80bc3c7a7ca",
+    "src/app/object_selection.rs": "0c30d14aaeb7f1d7ef0425f53717054a6b8f87f2070c030ba0fcea056b8c19ce",
+    "src/app/tests/extract_curvature_graph.rs": "b003095e09f925badf047c22a2c1691f447e48c766ddf0f3d55d026772f8b469",
+    "src/viewport.rs": "3dfc9739fd08a1f5bec698becfb4e30855e56fdd5cb8b180b38eac85d346a404",
+    "src/viewport/curvature_graph/tests.rs": "55577301afb77dc2b66a602a8efd9381c3b1669291b25caf2efe748bfa9064a3",
+    "tools/rhino_oracle/extract_curvature_graph_comparison.py": "f7ee17fcc5034f754db1bc70ae1066a8c18487e879f100c410684e3953d8ad87",
+    "tools/rhino_oracle/extract_curvature_graph_probe.py": "e38705e2531464c241df700a7f4579d7bee9fd808beb53ecfb98b9774104f735",
+    "tools/rhino_oracle/fixtures/extract_curvature_graph.json": "b70e1a37d06366dbcabac661fe4842e37351241a1d1ea9cb04c5d1c2dd4b227e",
+    "tools/rhino_oracle/fixtures/extract_curvature_graph_initial.json": "bce5d0e8172f53851ab5c13941a5905eef811c1172f64eadc213a68886daa6ae",
+    "tools/rhino_oracle/observations/extract_curvature_graph_comparison_20261016.json": "10152d87aa71459ecef100a95143f9237fd3c8ded0d648864db75ac3b8268ffd",
+    "tools/rhino_oracle/observations/extract_curvature_graph_discovery_rhino_20261016.json": "097220a3a466e5156a78fbca24b89df4ba0874b43f231f556ea058edf8a19677",
+    "tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json": "2536b2493b43e68c3fa5c2b07ac036c2cf0308bae79d74b2fa466a06377968fe",
+    "tools/rhino_oracle/observations/extract_curvature_graph_viboceros_20261016.json": "3ff49d47b13cb1dc2467fdc3c42455ed7e44643eaeb3777fac5d016e288aa1c9",
+    "tools/rhino_oracle/rhino_worker.py": "b586ceec6f2364a43d85985f11e19596d4757eb12d097de7a99326590f8c1512",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/structural_sdk.py": "ba3cb493200c8885deff0b0cef7aae998da2d769f8a5e199b1171879204321ee",
+    "tools/rhino_oracle/test_extract_curvature_graph.py": "dd95da311e369ac63651619aa9d3f4b8244751139c3ed37a395123c2cd48f664",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

@@ -110,6 +110,7 @@ Rhino's complete command set is still a work in progress.
 - [Signed-volume centroid markers](volume-centroid.md)
 - [Local curve radius and diameter](radius.md)
 - [Persistent curve and surface curvature graphs](curvature-graph.md)
+- [Extract curvature graph outlines into model polylines](extract-curvature-graph.md)
 - [Endpoint geometric continuity](gcon.md)
 - [World and construction-plane point coordinates](evaluate-point.md)
 - [Curve and surface parameter domains](domain.md)

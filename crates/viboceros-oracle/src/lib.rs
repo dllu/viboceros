@@ -146,6 +146,8 @@ pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod curvature_graph;
+mod extract_curvature_graph;
+pub use extract_curvature_graph::Fixture as ExtractCurvatureGraphFixture;
 mod geometry_validity;
 pub use curvature_graph::Fixture as CurvatureGraphFixture;
 pub use geometry_validity::Fixture as GeometryValidityFixture;
@@ -1700,6 +1702,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurvatureGraphFixture,
     },
+    ExtractCurvatureGraph {
+        id: String,
+        #[serde(flatten)]
+        fixture: ExtractCurvatureGraphFixture,
+    },
     PointDeviation {
         id: String,
         #[serde(flatten)]
@@ -2710,6 +2717,7 @@ impl Operation {
             | Self::LineThroughPoints { id, .. }
             | Self::CurveDeviation { id, .. }
             | Self::CurvatureGraph { id, .. }
+            | Self::ExtractCurvatureGraph { id, .. }
             | Self::PointDeviation { id, .. }
             | Self::SphereFitPoints { id, .. }
             | Self::RailRevolve { id, .. }
@@ -5940,6 +5948,9 @@ fn execute(
         }
         Operation::CurvatureGraph { fixture, .. } => {
             curvature_graph::run(fixture, iterations, tolerance)?
+        }
+        Operation::ExtractCurvatureGraph { fixture, .. } => {
+            extract_curvature_graph::run(fixture, iterations, tolerance)?
         }
         Operation::PointDeviation { fixture, .. } => {
             point_deviation::run(fixture, iterations, tolerance)?

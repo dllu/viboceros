@@ -1,0 +1,524 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "extract_curvature_graph",
+      "id": "circle-pre",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "circle-post",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": true,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "line",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "no-graph",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "graphs_on": [],
+      "selected": [
+        0
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "ungraphed-selected",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        1
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "mixed-selection",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": true,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "g2",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "g1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                3,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "g0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    },
+    {
+      "op": "extract_curvature_graph",
+      "id": "mixed-pre",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "graphs_on": [
+        0
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "scale": 100,
+      "density": 1,
+      "postselect": false,
+      "undo_redo": true
+    }
+  ]
+}

@@ -18,6 +18,9 @@ CurvatureGraph Remove
 CurvatureGraphOff
 ```
 
+[ExtractCurvatureGraph](extract-curvature-graph.md) creates model polylines from
+selected curve outlines, leaving the sources and analysis display intact.
+
 Use the panel to change scale, density, surface count, U/V visibility and the
 three hair colors. Scale and color edits reuse cached source differentials and
 do not interrupt an active drawing prompt. Add/Remove use ordinary object
