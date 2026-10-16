@@ -494,6 +494,12 @@ pub enum GeometryError {
     #[error("curve fit angle tolerance must be finite and lie in [0, pi]")]
     InvalidCurveFitAngleTolerance,
 
+    #[error("invalid curve fit constraints: {context}")]
+    InvalidCurveFitConstraints { context: &'static str },
+
+    #[error("curve fit could not certify its interpolation constraints within {tolerance}")]
+    CurveFitConstraintDidNotConverge { tolerance: Real },
+
     #[error("curve fit requires more than the maximum of {maximum} control points")]
     TooManyCurveFitControlPoints { maximum: usize },
 

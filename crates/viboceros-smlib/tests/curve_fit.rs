@@ -192,3 +192,60 @@ fn native_fit_validation_retains_typed_errors_and_source_purity() {
     ));
     assert_eq!(s, before);
 }
+
+#[test]
+fn native_constrained_cubic_fit_agrees_with_portable_solver_at_crossings_and_kinks() {
+    use viboceros_geometry::{CurveFitConstraint, try_fit_cubic_curve_with_constraints};
+    let smooth = NurbsCurve::try_new(
+        3,
+        vec![
+            point(0., 0., 0.),
+            point(1., 2., 3.),
+            point(3., -1., 1.),
+            point(4., 1., 2.),
+        ],
+        vec![0., 0., 0., 0., 1., 1., 1., 1.],
+    )
+    .unwrap()
+    .reversed()
+    .unwrap()
+    .try_reparameterized(-7. ..=13.)
+    .unwrap();
+    let kinked = Polyline3::try_new(
+        vec![point(0., 0., 0.), point(2., 0., 0.), point(2., 3., 0.)],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for source in [CurveRef::NurbsCurve(&smooth), CurveRef::Polyline(&kinked)] {
+        let mut pins = [0.79, 0., 0.321, 0.32, 1., 0.07, 0.5].map(|fraction| {
+            let t = source.parameter_at(fraction).unwrap();
+            CurveFitConstraint {
+                source_parameter: t,
+                point: source.evaluate(t).unwrap(),
+            }
+        });
+        // Exercise an allowed small target displacement as well as exact source points.
+        if matches!(source, CurveRef::NurbsCurve(_)) {
+            pins[0].point = point(
+                pins[0].point.x(),
+                pins[0].point.y(),
+                pins[0].point.z() + 1e-7,
+            );
+        }
+        let a = viboceros_smlib::fit_cubic_curve_with_constraints(
+            source,
+            &pins,
+            1e-5,
+            0.,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let e = try_fit_cubic_curve_with_constraints(source, &pins, 1e-5, 0., Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(a.constraint_parameters, e.constraint_parameters);
+        compare(&a.curve, &e.curve);
+        for (pin, t) in pins.iter().zip(a.constraint_parameters) {
+            assert!(a.curve.evaluate(t).unwrap().distance_to(pin.point).unwrap() < 1e-10);
+        }
+    }
+}

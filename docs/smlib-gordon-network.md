@@ -9,10 +9,25 @@ in development; the application does not register that command yet.
 The adapter discovers the families from curve intersections, sorts their
 crossings and aligns their directions. Inputs retain their complete original
 geometry and parameter domains. Construction uses a translated, scaled frame
-and private native curves. `SmBSplineSurface::PrepCurvesForSurfacing` supplies
-compatibility, polynomial approximation of rational curves, station parameters
-and parameter alignment; `N_CreateGordonSrf` constructs the tensor. Native stack
-owners and the existing bridge mutex protect lifetimes and kernel state.
+and private native curves. Existing native intersections supply the original
+crossing stations. `SmBSplineCurve::ApproximateRationalCurve` converts rational
+inputs; native knot insertion, explicit-tolerance compatibility and
+`N_CreateGordonSrf` construct the tensor. Native stack owners and the existing
+bridge mutex protect lifetimes and kernel state.
+
+The adapter aligns intersection stations with native knot insertion and
+piecewise affine knot mapping, rejecting collapsed stored spans. The general
+composition helper deliberately pushes knots near mapping stations by one
+percent of a span, which displaced crossing-constrained refits outside their
+requested tolerance. The bounded affine path preserves their images instead.
+Family bases become compatible only after alignment, using the existing
+explicit-tolerance operation with `1e-300`; the default operation groups knots
+at one-thousandth of the domain. Reusing the original intersection graph also
+avoids a second intersection search. An initial family union would needlessly
+multiply the aligned knot counts and exhaust the surface proof budget.
+Full native output knot arrays survive surface transfer through the existing
+basis-restoration helper. The tensor allocation guard bounds degree elevation
+and the union of the three Gordon component bases before construction.
 
 Rational approximation receives a fraction of the smaller requested curve
 tolerance, with a numerical floor of `1e-12` in the working frame. That floor
@@ -49,6 +64,38 @@ Current construction limits are:
 The source-image certificate does not prove injectivity, topology, arbitrary
 interior shape, symmetric boundary distance or Rhino fitting parity.
 
+## Crossing-constrained curve refitting
+
+The geometry crate provides `try_fit_cubic_curve_with_constraints`; the optional
+native equivalent is `viboceros_smlib::fit_cubic_curve_with_constraints`. Both
+reuse the existing arc-length sampler, adaptive fitter and fixed-row cubic
+collocation. Each `CurveFitConstraint` supplies an original source parameter
+and a target point. `ConstrainedCurveFit` returns the polynomial curve and the
+corresponding arc-length parameters in the caller's original order.
+
+Interior targets can move within the fit tolerance. Source endpoints and
+retained kinks keep their natural positions and tangent handles. Constraints
+introduce simple cubic knots, preserving C2 continuity away from retained
+kinks. The solver replaces selected free collocation equations while retaining
+the existing five-diagonal matrix layout. The native path uses usd-brep's
+existing banded solver.
+
+Every returned constraint has an exact rational stored-curve distance bound at
+the supplied absolute numerical tolerance. An inaccurate or inconclusive
+constraint rejects the result. The adaptive fit between constraints still uses
+the existing sampled error policy; it is not a continuous source-curve distance
+certificate. At most 64 distinct arc-length stations and 4,096 controls are
+supported. Invalid source parameters, conflicting endpoint/kink targets and
+targets outside the fit budget reject without changing the source.
+
+This primitive fixes the missing central contact observed after independently
+refitting the biquadratic network. The native regression fits six curves at
+`1e-7`, detects all nine contacts and requires complete fitted-curve admission
+on the resulting surface at `1e-6`. The
+[validation record](constrained-network-fit-validation.json) covers both fitting
+backends and the downstream Gordon construction. This does not qualify the
+complete NetworkSrf fitter or its interior behavior.
+
 ## Rhino comparison and remaining work
 
 The experimental `network_surface` oracle operation directly exercises this
@@ -75,9 +122,9 @@ the worst fixture, and areas differ as well. Full input-curve interpolation
 therefore does not establish the requested Rhino interior behavior. Rhino's
 output domains are consistent with average curve lengths; matching its
 parameterization and fitting requires further work.
-Next work is constrained refitting that retains network crossings, smooth
-parameter alignment, and fitting/interior comparisons before exposing the
-application command. Closed networks, near-contact best fits, boundary surface
+Crossing-constrained refitting is available. Next work is smooth parameter
+alignment and fitting/interior comparisons before exposing the application
+command. Closed networks, near-contact best fits, boundary surface
 continuity, getter options and associative history remain part of the intended
 NetworkSrf implementation.
 

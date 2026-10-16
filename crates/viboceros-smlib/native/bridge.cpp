@@ -1644,51 +1644,157 @@ extern "C" int vb_curves_swung_surface(const VbCurve *profile, const VbCurve *ra
 
 extern "C" int vb_curves_network_surface(const VbCurve *const *u, size_t nu,
                                          const VbCurve *const *v, size_t nv,
+                                         const double *u_parameters, const double *v_parameters,
                                          double tolerance, double *u_stations, double *v_stations,
                                          VbSurfaceData **out, char *error, size_t capacity) {
     if (out) *out = nullptr;
     return guarded(error, capacity, [&] {
-        require(u && v && out && u_stations && v_stations && nu >= 2 && nu <= 32 && nv >= 2 && nv <= 32 &&
+        require(u && v && u_parameters && v_parameters && out && u_stations && v_stations && nu >= 2 && nu <= 32 && nv >= 2 && nv <= 32 &&
                 std::isfinite(tolerance) && tolerance > 0, "Invalid network surface input");
+        NL_STACKS stack;
+        SmStackHandler cleanup(&stack);
         std::vector<std::unique_ptr<SmBSplineCurve>> owners;
+        std::vector<NL_CURVE> u_data(nu), v_data(nv);
         size_t total = 0;
-        auto family = [&](const VbCurve *const *input, size_t count) {
-            SmTArray<SmBSplineCurve*> curves;
-            for (size_t i = 0; i < count; ++i) {
+        auto family = [&](const VbCurve *const *input, std::vector<NL_CURVE> &data) {
+            std::vector<NL_CURVE*> curves;
+            for (size_t i = 0; i < data.size(); ++i) {
                 require(input[i] && input[i]->degree <= 16 && input[i]->points.size()/4 <= 128,
                         "Network input curve resource limit");
                 total += input[i]->points.size()/4;
                 require(total <= 2048, "Network input control resource limit");
                 owners.push_back(copy_curve(*input[i]));
-                curves.Add(owners.back().get());
+                auto *basis=owners.back().get();
+                if(basis->IsRational()) {
+                    SmBSplineCurve *polynomial=nullptr;
+                    const auto status=basis->ApproximateRationalCurve(*SmApiGetOrCreateContext(),
+                        std::max(tolerance/64.,1e-12),polynomial);
+                    std::unique_ptr<SmBSplineCurve> approximation(polynomial);
+                    check(status,"Approximate rational network curve");
+                    require(polynomial,"Missing polynomial network curve");
+                    owners.push_back(std::move(approximation));
+                    basis=owners.back().get();
+                }
+                require(basis->GetNumberControlPoints()<=2048,"Network polynomial curve resource limit");
+                auto *curve=&data[i];
+                N_CrvInitArrays(curve);
+                require(N_CrvCopy(basis->GetOrCreateGwNurbPointer(),curve,&stack)==NL_NO,
+                        "Copy polynomial network curve");
+                N_CrvReparamToInterval(curve,NL_INTERVAL{0.,1.});
+                curves.push_back(curve);
             }
             return curves;
         };
-        auto uc = family(u, nu), vc = family(v, nv);
-        NL_STACKS stack;
-        SmStackHandler cleanup(&stack);
-        std::vector<NL_CURVE*> prepared_u(nu), prepared_v(nv);
-        double *us = nullptr, *vs = nullptr;
-        // This is the existing CreateGordonSurface pipeline, with the
-        // intermediate data exposed for resource checks and UV certificates.
-        // Intersections use exact original curves; rational approximation and
-        // compatibility happen once, on native private stack data.
-        // Leave room for compatibility and world placement in the final image
-        // certificate. The numeric floor bounds pathological approximation
-        // requests; the original requested tolerance still gates acceptance.
-        check(SmBSplineSurface::PrepCurvesForSurfacing(*SmApiGetOrCreateContext(), uc, vc,
-            prepared_u.data(), prepared_v.data(), stack, std::max(tolerance/64.,1e-12),
-            TRUE, 0, 0, TRUE, TRUE, &us, &vs),
-            "prepare native Gordon network");
+        auto prepared_u=family(u,u_data), prepared_v=family(v,v_data);
+        // Reuse the checked original-curve intersections supplied by Rust.
+        // Align independent native curves before making their bases compatible;
+        // an initial family union would be multiplied by the alignment pass.
+        auto stations = [&](const double *input, size_t count, size_t width) {
+            std::vector<std::vector<double>> rows(count,std::vector<double>(width));
+            for(size_t c=0;c<count;++c) {
+                const double start=input[c*width], end=input[c*width+width-1];
+                require(std::isfinite(start) && std::isfinite(end) && start>=0. && end<=1. && end>start,
+                        "Invalid network endpoint stations");
+                for(size_t j=0;j<width;++j) {
+                    const double t=input[c*width+j];
+                    require(std::isfinite(t) && t>=start && t<=end &&
+                            (!j || t>input[c*width+j-1]),"Invalid original network station order");
+                    rows[c][j]=(t-start)/(end-start);
+                }
+            }
+            return rows;
+        };
+        const auto original_u=stations(u_parameters,nu,nv), original_v=stations(v_parameters,nv,nu);
+        std::vector<double> common_u(nv,0.), common_v(nu,0.);
+        double *us=common_u.data(), *vs=common_v.data();
+        for(size_t i=0;i<nv;++i) {
+            for(size_t j=0;j<nu;++j) common_u[i] += original_u[j][i];
+            common_u[i] /= double(nu);
+        }
+        for(size_t i=0;i<nu;++i) {
+            for(size_t j=0;j<nv;++j) common_v[i] += original_v[j][i];
+            common_v[i] /= double(nv);
+        }
+        auto align = [&](std::vector<NL_CURVE*> &curves, const std::vector<double> &common,
+                         bool along_u) {
+            for(size_t c=0;c<curves.size();++c) {
+                auto *curve=curves[c];
+                std::vector<double> old(common.size());
+                for(size_t j=0;j<old.size();++j) {
+                    old[j] = along_u ? original_u[c][j] : original_v[c][j];
+                    require(std::isfinite(old[j]) && std::isfinite(common[j]) &&
+                            (!j || (old[j]>old[j-1] && common[j]>common[j-1])),
+                            "Invalid network parameter alignment");
+                }
+                require(old.front()==0. && old.back()==1. && common.front()==0. && common.back()==1.,
+                        "Network alignment must retain complete endpoint domains");
+                require(curve && curve->pol && curve->p>=1 && curve->p<=16 &&
+                        curve->pol->n>=curve->p && curve->pol->n<2048,
+                        "Network alignment input resource limit");
+                // Full degree multiplicity separates adjacent affine maps.
+                // Native knot insertion retains the control polygon's image.
+                for(size_t j=1;j+1<old.size();++j) {
+                    NL_INDEX count; double *knots;
+                    N_CrvGetKnots(curve,&count,&knots);
+                    const auto multiplicity=std::count(knots,knots+count+1,old[j]);
+                    require(multiplicity<=curve->p, "Network alignment knot multiplicity");
+                    const auto additions=curve->p-multiplicity;
+                    require(curve->pol->n+additions<2048,"Network aligned curve resource limit");
+                    if(additions)
+                        require(N_CrvInsertKnot(curve,old[j],additions,curve,&stack,&stack)==NL_NO,
+                                "Insert native network alignment knot");
+                }
+                NL_INDEX count; double *knots;
+                N_CrvGetKnots(curve,&count,&knots);
+                const std::vector<double> before(knots,knots+count+1);
+                for(NL_INDEX j=0;j<=count;++j) {
+                    const double t=before[j];
+                    auto upper=std::upper_bound(old.begin(),old.end(),t);
+                    const size_t segment=upper==old.begin() ? 0 :
+                        std::min(size_t(upper-old.begin()-1),old.size()-2);
+                    if(t==old[segment]) knots[j]=common[segment];
+                    else if(t==old[segment+1]) knots[j]=common[segment+1];
+                    else {
+                        const double f=(t-old[segment])/(old[segment+1]-old[segment]);
+                        knots[j]=std::fma(f,common[segment+1]-common[segment],common[segment]);
+                    }
+                    require(std::isfinite(knots[j]) && (!j ||
+                            (before[j]==before[j-1] ? knots[j]==knots[j-1] : knots[j]>knots[j-1])),
+                            "Network alignment collapsed a stored knot span");
+                }
+            }
+            require(N_CrvsMakeCompatibleAdjKnots(curves.data(),curves.size()-1,1e-300,&stack)==NL_NO,
+                    "Synchronize native aligned network bases");
+        };
+        // The general composition helper pushes near knots by 1% of a span.
+        // Crossing-constrained refits can place knots exactly at those stations;
+        // composing with that helper would therefore move the input images.
+        align(prepared_u,common_u,true);
+        align(prepared_v,common_v,false);
         auto bound = [&](const std::vector<NL_CURVE*> &curves, size_t stations) {
             size_t controls = 0, degree = 0;
             for (auto *curve : curves) {
                 require(curve && curve->pol && curve->pol->n >= 0 && curve->pol->n < 2048,
                         "Network prepared curve resource limit");
+                require(curve->p >= 1 && curve->p <= 16 && curve->pol->n >= curve->p,
+                        "Network prepared curve degree limit");
                 controls = std::max(controls, size_t(curve->pol->n+1));
                 degree = std::max(degree, size_t(curve->p));
             }
-            return 4*(controls + (degree+3)*stations + 4);
+            // Each axis merges one prepared curve basis with two loft/tensor
+            // bases of `stations` controls. Degree elevation adds at most one
+            // knot per distinct original knot per added degree. Count complete
+            // knot-vector lengths before their union, without relying on shared
+            // endpoints or identical loft/tensor knots. The former blanket 4x
+            // factor also multiplied already-cubic prepared curves and rejected
+            // modest independently refitted networks.
+            const size_t loft_degree = std::min(size_t(3), stations-1);
+            const size_t output_degree = std::max(degree, loft_degree);
+            const auto elevated = [&](size_t count, size_t p) {
+                return count + (output_degree-p)*(count+p+1);
+            };
+            return elevated(controls,degree) + 2*elevated(stations,loft_degree)
+                   + 2*(output_degree+1);
         };
         const auto ub = bound(prepared_u,nv), vb = bound(prepared_v,nu);
         require(vb && ub <= limit/vb, "Network compatibility control-net resource limit");
@@ -1707,7 +1813,15 @@ extern "C" int vb_curves_network_surface(const VbCurve *const *u, size_t nu,
         require(N_CreateGordonSrf(prepared_u.data(),vs,nu-1,prepared_v.data(),us,nv-1,
                                  pu,pv,pu,pv,NL_YES,&result,&stack,&stack)==NL_NO,
                 "construct native Gordon network tensor");
+        NL_INDEX ku, kv;
+        double *uk, *vk;
+        N_SrfGetKnots(&result, &ku, &kv, &uk, &vk);
+        require(uk && vk && ku>=0 && kv>=0 && ku<NL_INDEX(limit+65) && kv<NL_INDEX(limit+65),
+                "Network tensor knot resource limit");
+        const std::array<std::vector<double>,2> knots = {
+            std::vector<double>(uk,uk+ku+1), std::vector<double>(vk,vk+kv+1)};
         SmBSplineSurface surface(reinterpret_cast<const gw_SURFACE*>(&result));
+        vb_preserve_surface_basis(surface,knots);
         *out = vb_export_surface(surface);
     });
 }

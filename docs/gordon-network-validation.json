@@ -23,7 +23,7 @@
   },
   "limits": [
     "Native optional API only; the application NetworkSrf command remains unregistered pending Rhino fitting work.",
-    "Two families of 2\u201332 open curves; degree at most 16, at most 128 controls per curve and 2048 total. Original complete curves must end at outer-family contacts; ambiguous contacts and overlaps reject.",
+    "Two families of 2–32 open curves; degree at most 16, at most 128 controls per curve and 2048 total. Original complete curves must end at outer-family contacts; ambiguous contacts and overlaps reject.",
     "Shared importer weight/basis restrictions apply. Rational curves are approximated by the existing native polynomial producer. The working-frame approximation floor does not relax requested final image bounds.",
     "Prepared native curves limited to 2048 controls; conservative compatibility guard precedes tensor allocation and native transfer limits output to one million controls.",
     "Raw Gordon output may retain kinks. Smooth parameterization, C2 fitting, near-contact best fits, closed networks, poles, surface continuity, getter options and associative history remain NetworkSrf work.",
@@ -93,7 +93,6 @@
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
     "README.md": "1ba43d470f02fbfb9405c71d78de9f9d44fe9b445608f31b9d0a76155e7228ad",
-    "crates/viboceros-geometry/src/lib.rs": "9f1e3181d6cb0efa5b8919829384192e1286822743051d4c3dc2d5d09159704b",
     "crates/viboceros-geometry/src/surface_pullback.rs": "b73c1eb4d833f5d1af7ee00d07578c5c340df5279e3e7f6b4fd60e07eac8ff8f",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "cb7e27d51a059bde5f1255f13adb4df35f6f9887588c721c371511722a96f7cb",
     "crates/viboceros-geometry/src/surface_pullback/certificate/affine.rs": "ef63b64d1422bbb98bc67ccd2f1cd397da47e322ec60891345ffbdbc4a49df5d",
@@ -109,15 +108,8 @@
     "crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
     "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
-    "crates/viboceros-smlib/native/bridge.cpp": "e5b7e91133d59476a446f47c72fc0ffafeb4befd2f995a96de6ab694fff887f8",
-    "crates/viboceros-smlib/native/bridge.h": "9cd4f9a62499fa153a85b386addd870690512201fb3bef7d19c69e6d78ee22de",
-    "crates/viboceros-smlib/src/lib.rs": "240ef3f47f6fa6e3debb58b14e46a2c0ff63d55b3690bc9b558d54be20b053cc",
-    "crates/viboceros-smlib/src/native.rs": "c172aec12cc19ab9fef3d9656de6d965e92fd26158ca13d124cf45ef6b10ffba",
     "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
-    "crates/viboceros-smlib/src/native/network_surface.rs": "3294dba1ae4c4b71f9010b94fda0efdca2d8d91e69bef0e937d5e5a64b876b02",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
-    "crates/viboceros-smlib/tests/network_surface.rs": "afdd89836c3f1f313fdba719692322c99755d85a64ca1fe8b0f5a363613e21bf",
-    "docs/smlib-gordon-network.md": "36cabd23ae53757052086b8fd45661ebb1b53a262619022462e9fb00c9ff6c5f",
     "docs/usd-brep.md": "a39b6f3fc7da016c564f3806495f981175d7e0c0a7b3ef77afb67b8e17dce988",
     "third_party/usd-brep/source/SMLib/inc/SmBSplineSurface.h": "a89941f1afd02ff8df8f78577f61e35782516a3660bbc62c51fdbf3f9b3df8b3",
     "third_party/usd-brep/source/SMLib/inc/SmNurbsCrv.h": "cc710f8a410a141579335f03b509516a3936a9039dd7d85b7f92a46f3994620e",
@@ -149,5 +141,15 @@
     "tools/rhino_oracle/observations/gordon_network_rhino_20261015.json": "e6f81ec26557ad8715a0150ff6518be89edda8561408150b1a79c3f0688697d5",
     "tools/rhino_oracle/observations/gordon_network_rhino_readback_20261015.json": "1ddc77906b10c7b18ee65bf6fdfb5af63236c70ec259a7e636e9e47f1f40d38b",
     "tools/rhino_oracle/observations/gordon_network_viboceros_20261015.json": "755cb6cdb545cc225753cc609b6d7927ff4ab480ad9f383de2e8d196f63f73c0"
+  },
+  "source_git_sha256": {
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-geometry/src/lib.rs": "9f1e3181d6cb0efa5b8919829384192e1286822743051d4c3dc2d5d09159704b",
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/native/bridge.cpp": "e5b7e91133d59476a446f47c72fc0ffafeb4befd2f995a96de6ab694fff887f8",
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/native/bridge.h": "9cd4f9a62499fa153a85b386addd870690512201fb3bef7d19c69e6d78ee22de",
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/lib.rs": "240ef3f47f6fa6e3debb58b14e46a2c0ff63d55b3690bc9b558d54be20b053cc",
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/native.rs": "c172aec12cc19ab9fef3d9656de6d965e92fd26158ca13d124cf45ef6b10ffba",
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/native/network_surface.rs": "3294dba1ae4c4b71f9010b94fda0efdca2d8d91e69bef0e937d5e5a64b876b02",
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/tests/network_surface.rs": "afdd89836c3f1f313fdba719692322c99755d85a64ca1fe8b0f5a363613e21bf",
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:docs/smlib-gordon-network.md": "36cabd23ae53757052086b8fd45661ebb1b53a262619022462e9fb00c9ff6c5f"
   }
 }

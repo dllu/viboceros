@@ -454,6 +454,25 @@ pub fn fit_curve(
     )
 }
 
+/// Cubic arc-length fitting that interpolates given crossing points using the
+/// existing native fixed-row collocation backend and exact constraint checks.
+pub fn fit_cubic_curve_with_constraints(
+    source: viboceros_geometry::CurveRef<'_>,
+    constraints: &[viboceros_geometry::CurveFitConstraint],
+    fit_tolerance: f64,
+    angle_tolerance: f64,
+    numerical_tolerance: Tolerance,
+) -> Result<viboceros_geometry::ConstrainedCurveFit, Error> {
+    viboceros_geometry::try_fit_cubic_curve_with_constraints_with_solver(
+        source,
+        constraints,
+        fit_tolerance,
+        angle_tolerance,
+        numerical_tolerance,
+        &mut |input| solve_with_fixed_rows(&input.system, Some(input.fixed_rows)),
+    )
+}
+
 /// Interpolate an open mean-chord point grid using the existing native basis
 /// and batched banded solve; degree/count and residual policies stay shared.
 pub fn interpolate_open_point_grid(

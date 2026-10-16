@@ -153,3 +153,108 @@ fn native_gordon_network_retains_kinks_for_a_separate_network_fitting_stage() {
     );
     assert!((s.area(Tolerance::DEFAULT).unwrap() - 6. * 5_f64.sqrt()).abs() < 1e-7);
 }
+
+#[test]
+fn constrained_arc_length_refits_keep_network_crossings_detectable() {
+    use viboceros_geometry::{CurveCurveIntersectionEvent, CurveFitConstraint, CurveRef};
+    let curves = network();
+    let before = curves.clone();
+    let fitted = curves
+        .iter()
+        .map(|source| {
+            let pins = [0., 0.5, 1.].map(|t| CurveFitConstraint {
+                source_parameter: t,
+                point: source.evaluate(t).unwrap(),
+            });
+            viboceros_smlib::fit_cubic_curve_with_constraints(
+                CurveRef::NurbsCurve(source),
+                &pins,
+                1e-7,
+                0.,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .curve
+        })
+        .collect::<Vec<_>>();
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+    for a in &fitted[..3] {
+        for b in &fitted[3..] {
+            let contacts = viboceros_smlib::curve_intersection_events(a, b, tolerance).unwrap();
+            assert!(
+                matches!(contacts.as_slice(), [CurveCurveIntersectionEvent::Point(_)]),
+                "{contacts:?}"
+            );
+        }
+    }
+    let surface = gordon_network_surface(&fitted, tolerance, tolerance).unwrap();
+    for u in [0., 0.5, 1.] {
+        for v in [0., 0.5, 1.] {
+            let q = value(u, v);
+            let (s, t) = surface.closest_parameters(q, tolerance).unwrap();
+            assert!(surface.evaluate(s, t).unwrap().distance_to(q).unwrap() < 1e-6);
+        }
+    }
+    assert_eq!(curves, before);
+}
+
+#[test]
+fn native_network_rejects_oversized_tensor_compatibility_before_construction() {
+    // Straight curves with distinct, redundant interior knots keep the input
+    // below 2,048 controls but force large common bases in both directions.
+    let mut curves = vec![];
+    for along_u in [true, false] {
+        for i in 0..8 {
+            let mut parameters = vec![0.];
+            parameters.extend((1..99).map(|j| (j as f64 + 0.07 * i as f64) / 100.));
+            parameters.push(1.);
+            let points = parameters
+                .iter()
+                .map(|&t| {
+                    let s = i as f64 / 7.;
+                    if along_u {
+                        p(4. * t, 3. * s, 0.)
+                    } else {
+                        p(4. * s, 3. * t, 0.)
+                    }
+                })
+                .collect();
+            let mut knots = vec![0.];
+            knots.extend(parameters);
+            knots.push(1.);
+            curves.push(NurbsCurve::try_new(1, points, knots).unwrap());
+        }
+    }
+    let before = curves.clone();
+    let error =
+        gordon_network_surface(&curves, Tolerance::DEFAULT, Tolerance::DEFAULT).unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("Network compatibility control-net resource limit"),
+        "{error}"
+    );
+    assert_eq!(curves, before);
+}
+
+#[test]
+fn native_network_aligns_asymmetric_families_without_rounding_away_the_endpoint() {
+    let point = |u, v| p(4. * u, 3. * v, 0.25 * u * v);
+    let line = |a, b| NurbsCurve::try_new(1, vec![a, b], vec![0., 0., 1., 1.]).unwrap();
+    let curves = [0., 0.5, 1.]
+        .map(|v| line(point(0., v), point(1., v)))
+        .into_iter()
+        .chain([0., 0.1, 0.2, 0.4, 0.7, 0.9, 1.].map(|u| line(point(u, 0.), point(u, 1.))))
+        .collect::<Vec<_>>();
+    let surface = gordon_network_surface(&curves, Tolerance::DEFAULT, Tolerance::DEFAULT).unwrap();
+    for (u, v) in [(0., 0.), (1., 1.), (0.37, 0.62)] {
+        assert!(
+            surface
+                .evaluate(u, v)
+                .unwrap()
+                .distance_to(point(u, v))
+                .unwrap()
+                < 1e-9
+        );
+    }
+}

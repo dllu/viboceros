@@ -79,18 +79,28 @@ pub(crate) fn collocation_row(
     if fixed {
         row[2] = 1.0;
     } else {
-        let values = bspline_basis_values(knots, DEGREE, knots.len() - DEGREE - 1, t)?;
-        for (j, value) in values.into_iter().enumerate() {
-            if i.abs_diff(j) <= 2 {
-                row[j + 2 - i] = value;
-            } else if value != 0.0 {
-                return Err(GeometryError::Degenerate {
-                    context: "cubic morph collocation bandwidth",
-                });
-            }
-        }
+        row = collocation_row_at(knots, i, t)?;
     }
     Ok((row, t, side, fixed))
+}
+
+pub(crate) fn collocation_row_at(
+    knots: &[Real],
+    i: usize,
+    t: Real,
+) -> Result<[Real; 5], GeometryError> {
+    let values = bspline_basis_values(knots, DEGREE, knots.len() - DEGREE - 1, t)?;
+    let mut row = [0.; 5];
+    for (j, value) in values.into_iter().enumerate() {
+        if i.abs_diff(j) <= 2 {
+            row[j + 2 - i] = value;
+        } else if value != 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "cubic collocation bandwidth",
+            });
+        }
+    }
+    Ok(row)
 }
 
 pub(crate) fn collocation_site(

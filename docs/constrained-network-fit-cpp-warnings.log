@@ -1,0 +1,1 @@
+bridge.cpp: generated CMake flags with -w removed; -Wall -Wextra -Werror -fsyntax-only passed

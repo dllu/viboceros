@@ -7,6 +7,8 @@ unsafe extern "C" {
         nu: usize,
         v: *const *const NativeCurve,
         nv: usize,
+        u_parameters: *const f64,
+        v_parameters: *const f64,
         tolerance: f64,
         u_stations: *mut f64,
         v_stations: *mut f64,
@@ -155,6 +157,16 @@ pub fn gordon_network_surface(
         .iter()
         .map(|&i| native[i].handle.as_ptr().cast_const())
         .collect::<Vec<_>>();
+    let [original_u, original_v] = [(&a, &b), (&b, &a)].map(|(family, other)| {
+        let mut parameters = Vec::with_capacity(family.len() * other.len());
+        for &i in family {
+            for &j in other {
+                let t = contacts[i][j].unwrap();
+                parameters.push(if reversed[i] { 1. - t } else { t });
+            }
+        }
+        parameters
+    });
     let mut u_stations = vec![0.; b.len()];
     let mut v_stations = vec![0.; a.len()];
     let mut pointer = std::ptr::null_mut();
@@ -164,6 +176,8 @@ pub fn gordon_network_surface(
             u.len(),
             v.as_ptr(),
             v.len(),
+            original_u.as_ptr(),
+            original_v.as_ptr(),
             edge.absolute().min(interior.absolute()) / scale,
             u_stations.as_mut_ptr(),
             v_stations.as_mut_ptr(),
@@ -177,8 +191,8 @@ pub fn gordon_network_surface(
         [[scale, 0., 0.], [0., scale, 0.], [0., 0., scale]],
         Vector3::try_from(origin.to_array())?,
     )?)?;
-    // Native Gordon preparation averages intersection parameters and composes
-    // the curves with piecewise linear maps. Use that correspondence as a UV
+    // Native Gordon alignment averages the original intersection parameters
+    // and maps curve knots piecewise affinely. Use that correspondence as a UV
     // proposal, then independently certify it against the original world data.
     // This avoids fitting a general inverse for each rational input isocurve.
     let uv_point = |u: f64, v: f64| {
