@@ -13423,6 +13423,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'two_rail_sweep':
         from two_rail_sweep_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'curve_deviation':
+        from curve_deviation_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'point_deviation':
         from point_deviation_probe import run
         return run(operation, globals(), iterations, tolerance)

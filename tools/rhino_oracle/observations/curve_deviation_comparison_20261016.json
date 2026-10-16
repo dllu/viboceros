@@ -1,0 +1,560 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "reference_derived_inputs": false,
+  "command_registered": false,
+  "complete_native_command_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "performance_qualified": false,
+  "method": "Exact binary-rational scalar differences at 1e-6, preserving all statuses and raw witnesses. Two closer source pairs are evaluated independently with exact polynomial Bernstein arithmetic. No tied-witness position/direction equivalence or native overlap correspondence is inferred.",
+  "cases": 18,
+  "counts": {
+    "status_matches": 16,
+    "maximum_scalar_matches": 13,
+    "minimum_scalar_matches": 11,
+    "scalar_pair_matches": 11,
+    "source_pair_counterexamples": 2
+  },
+  "recorded_scalar_and_status_comparison_passed": false,
+  "results": [
+    {
+      "id": "parallel-lines",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "0",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "partial-lines",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "0",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "partial-reversed",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "0",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "disjoint-lines",
+      "backend_created": false,
+      "native_created": false,
+      "scalars_within_1e_minus_6": {},
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "crossing-lines",
+      "backend_created": false,
+      "native_created": false,
+      "scalars_within_1e_minus_6": {},
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "skew-lines",
+      "backend_created": false,
+      "native_created": false,
+      "scalars_within_1e_minus_6": {},
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "coincident-lines",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "1/1125899906842624",
+      "exact_minimum_scalar_difference": "0",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "concentric-circles",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "1/1125899906842624",
+      "exact_minimum_scalar_difference": "11/9007199254740992",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "crossing-circles",
+      "backend_created": true,
+      "native_created": false,
+      "scalars_within_1e_minus_6": {},
+      "matches_recorded_scalars_and_status": false
+    },
+    {
+      "id": "separated-circles",
+      "backend_created": true,
+      "native_created": false,
+      "scalars_within_1e_minus_6": {},
+      "matches_recorded_scalars_and_status": false
+    },
+    {
+      "id": "stacked-circles",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "1/1125899906842624",
+      "exact_minimum_scalar_difference": "1/1125899906842624",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "line-circle",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "4967757600021511/20282409603651670423947251286016",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "curved-offset",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": false
+      },
+      "exact_maximum_scalar_difference": "1/4503599627370496",
+      "exact_minimum_scalar_difference": "223267317883357/9007199254740992",
+      "whole_interval_minimum_counterexample": {
+        "exact_squared_source_pair_distance": "1847813231259062251819407588107545680842154954020152957674283812892237419966125864554035958173977/4271974071841820164790043412339104229205409044713305539894083215644439451561281100045924173873152",
+        "exact_squared_witness_residuals": [
+          "117828819473059629252702525376540673916962769870561590835758944537/4271974071841820164790043412339104229205409044713305539894083215644439451561281100045924173873152",
+          "0"
+        ],
+        "reference_minimum_exceeds_this_pair_by_at_least": 0.0001,
+        "scope": "Whole source intervals; no assertion about a native correspondence rule."
+      },
+      "matches_recorded_scalars_and_status": false
+    },
+    {
+      "id": "curved-spatial",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": false
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "16202615269151/4503599627370496",
+      "whole_interval_minimum_counterexample": {
+        "exact_squared_source_pair_distance": "1898243407369634763658579143082168891141388731358281787402921144499768843569137838954705841353907449/2187250724783011924372502227117621365353169430893212436425770606409952999199375923223513177023053824",
+        "exact_squared_witness_residuals": [
+          "281996290375109777935121021047122509762357362874609270809868098809/2187250724783011924372502227117621365353169430893212436425770606409952999199375923223513177023053824",
+          "0"
+        ],
+        "reference_minimum_exceeds_this_pair_by_at_least": 0.0001,
+        "scope": "Whole source intervals; no assertion about a native correspondence rule."
+      },
+      "matches_recorded_scalars_and_status": false
+    },
+    {
+      "id": "curved-vs-chord",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "1/2251799813685248",
+      "exact_minimum_scalar_difference": "0",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "polyline-offset",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "3/9007199254740992",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "remote-lines",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "0",
+      "matches_recorded_scalars_and_status": true
+    },
+    {
+      "id": "parallel-postselection",
+      "backend_created": true,
+      "native_created": true,
+      "scalars_within_1e_minus_6": {
+        "maximum": true,
+        "minimum": true
+      },
+      "exact_maximum_scalar_difference": "0",
+      "exact_minimum_scalar_difference": "0",
+      "matches_recorded_scalars_and_status": true
+    }
+  ],
+  "raw_protocol_comparison": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 0,
+    "passed": false,
+    "operations": [
+      {
+        "id": "parallel-lines",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 4511161.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "parallel-lines.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "parallel-lines.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "parallel-lines.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]"
+        ]
+      },
+      {
+        "id": "partial-lines",
+        "passed": false,
+        "max_absolute_error": 1.5625000000000002,
+        "viboceros_ns_per_iteration": 4631689.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "partial-lines.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "partial-lines.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "partial-lines.value.sdk.maximum.parameters[0]: 4.5625 != 3 (error 1.56, limit 1e-06)",
+          "partial-lines.value.sdk.maximum.parameters[1]: 1.5625000000000002 != 0 (error 1.56, limit 1e-06)",
+          "partial-lines.value.sdk.maximum.points[0][0]: 4.5625 != 3 (error 1.56, limit 1e-06)",
+          "partial-lines.value.sdk.maximum.points[1][0]: 4.5625 != 3 (error 1.56, limit 1e-06)",
+          "partial-lines.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]"
+        ]
+      },
+      {
+        "id": "partial-reversed",
+        "passed": false,
+        "max_absolute_error": 2.125,
+        "viboceros_ns_per_iteration": 4515386.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "partial-reversed.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "partial-reversed.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "partial-reversed.value.sdk.maximum.parameters[0]: 5.125 != 3 (error 2.12, limit 1e-06)",
+          "partial-reversed.value.sdk.maximum.parameters[1]: 1.8750000000000002 != 4 (error 2.12, limit 1e-06)",
+          "partial-reversed.value.sdk.maximum.points[0][0]: 4.875 != 7 (error 2.12, limit 1e-06)",
+          "partial-reversed.value.sdk.maximum.points[1][0]: 4.875 != 7 (error 2.12, limit 1e-06)",
+          "partial-reversed.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]"
+        ]
+      },
+      {
+        "id": "disjoint-lines",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1688948.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "disjoint-lines.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']"
+        ]
+      },
+      {
+        "id": "crossing-lines",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1598308.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "crossing-lines.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']"
+        ]
+      },
+      {
+        "id": "skew-lines",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1627460.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "skew-lines.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']"
+        ]
+      },
+      {
+        "id": "coincident-lines",
+        "passed": false,
+        "max_absolute_error": 2.0,
+        "viboceros_ns_per_iteration": 3250951.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "coincident-lines.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "coincident-lines.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "coincident-lines.value.sdk.maximum.parameters[0]: 5 != 7 (error 2, limit 1e-06)",
+          "coincident-lines.value.sdk.maximum.parameters[1]: 2.0000000000000004 != 4 (error 2, limit 1e-06)",
+          "coincident-lines.value.sdk.maximum.points[0][0]: 5 != 7 (error 2, limit 1e-06)",
+          "coincident-lines.value.sdk.maximum.points[1][0]: 5 != 7 (error 2, limit 1e-06)",
+          "coincident-lines.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "coincident-lines.value.sdk.minimum.parameters[0]: 3 != 3.3333333333333335 (error 0.333, limit 1e-06)",
+          "coincident-lines.value.sdk.minimum.parameters[1]: 1.1102230246251565e-16 != 0.33333333333333393 (error 0.333, limit 1e-06)",
+          "coincident-lines.value.sdk.minimum.points[0][0]: 3 != 3.3333333333333339 (error 0.333, limit 1e-06)",
+          "coincident-lines.value.sdk.minimum.points[1][0]: 3 != 3.3333333333333339 (error 0.333, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "concentric-circles",
+        "passed": false,
+        "max_absolute_error": 18.010584668086995,
+        "viboceros_ns_per_iteration": 6053629.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "concentric-circles.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "concentric-circles.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "concentric-circles.value.sdk.maximum.parameters[0]: 0 != 12.007056445391328 (error 12, limit 1e-06)",
+          "concentric-circles.value.sdk.maximum.parameters[1]: 3.6715172432968925e-17 != 18.010584668086995 (error 18, limit 1e-06)",
+          "concentric-circles.value.sdk.maximum.points[0][0]: 2 != 1.9223002968860057 (error 0.0777, limit 1e-06)",
+          "concentric-circles.value.sdk.maximum.points[0][1]: 0 != -0.55205214300097971 (error 0.552, limit 1e-06)",
+          "concentric-circles.value.sdk.maximum.points[1][0]: 3 != 2.8834504453290095 (error 0.117, limit 1e-06)",
+          "concentric-circles.value.sdk.maximum.points[1][1]: 3.6715172432968925e-17 != -0.82807821450146712 (error 0.828, limit 1e-06)",
+          "concentric-circles.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "concentric-circles.value.sdk.minimum.parameters[0]: 0 != 10.178696003851801 (error 10.2, limit 1e-06)",
+          "concentric-circles.value.sdk.minimum.parameters[1]: 3.6715172432968925e-17 != 15.268044005777975 (error 15.3, limit 1e-06)",
+          "concentric-circles.value.sdk.minimum.points[0][0]: 2 != 0.73618941912374602 (error 1.26, limit 1e-06)",
+          "concentric-circles.value.sdk.minimum.points[0][1]: 0 != -1.8595766021248605 (error 1.86, limit 1e-06)",
+          "concentric-circles.value.sdk.minimum.points[1][0]: 3 != 1.1042841286858742 (error 1.9, limit 1e-06)",
+          "concentric-circles.value.sdk.minimum.points[1][1]: 3.6715172432968925e-17 != -2.7893649031871894 (error 2.79, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "crossing-circles",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 5700988.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "crossing-circles.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "crossing-circles.value.sdk.created: True != False",
+          "crossing-circles.value.sdk.maximum: {'distance': 2.0, 'normalized_parameters': [0.0, 0.0], 'parameters': [0.0, 0.0], 'points': [[2.0, 0.0, 0.0], [4.0, 0.0, 0.0]]} != None",
+          "crossing-circles.value.sdk.minimum: {'distance': 6.661338147750939e-16, 'normalized_parameters': [0.1647296556494728, 0.3352703443505272], 'parameters': [2.0943951023931957, 4.1887902047863905], 'points': [[0.9999999999999998, 1.7320508075688774, 0.0], [1.0000000000000004, 1.7320508075688774, 0.0]]} != None"
+        ]
+      },
+      {
+        "id": "separated-circles",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 7332080.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "separated-circles.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "separated-circles.value.sdk.created: True != False",
+          "separated-circles.value.sdk.maximum: {'distance': 8.0, 'normalized_parameters': [0.5, 0.5], 'parameters': [6.283185307179586, 6.283185307179586], 'points': [[-2.0, 2.4492935982947064e-16, 0.0], [6.0, 2.4492935982947064e-16, 0.0]]} != None",
+          "separated-circles.value.sdk.minimum: {'distance': 4.0, 'normalized_parameters': [0.0, 0.5], 'parameters': [0.0, 6.283185307179586], 'points': [[2.0, 0.0, 0.0], [6.0, 2.4492935982947064e-16, 0.0]]} != None"
+        ]
+      },
+      {
+        "id": "stacked-circles",
+        "passed": false,
+        "max_absolute_error": 10.165752160879599,
+        "viboceros_ns_per_iteration": 6411805.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "stacked-circles.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "stacked-circles.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "stacked-circles.value.sdk.maximum.parameters[0]: 0.3659649304055449 != 8.4164178599246444 (error 8.05, limit 1e-06)",
+          "stacked-circles.value.sdk.maximum.parameters[1]: 0.36596493040554778 != 8.4164178599246409 (error 8.05, limit 1e-06)",
+          "stacked-circles.value.sdk.maximum.points[0][0]: 1.9666107368331487 != -0.96617935765531904 (error 2.93, limit 1e-06)",
+          "stacked-circles.value.sdk.maximum.points[0][1]: 0.36392610482428933 != -1.7511417557812832 (error 2.12, limit 1e-06)",
+          "stacked-circles.value.sdk.maximum.points[1][0]: 1.9666107368331482 != -0.96617935765532215 (error 2.93, limit 1e-06)",
+          "stacked-circles.value.sdk.maximum.points[1][1]: 0.36392610482429216 != -1.7511417557812814 (error 2.12, limit 1e-06)",
+          "stacked-circles.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "stacked-circles.value.sdk.minimum.parameters[0]: 0 != 10.165752160879599 (error 10.2, limit 1e-06)",
+          "stacked-circles.value.sdk.minimum.parameters[1]: 0 != 10.165752160879597 (error 10.2, limit 1e-06)",
+          "stacked-circles.value.sdk.minimum.points[0][0]: 2 != 0.72413905149764346 (error 1.28, limit 1e-06)",
+          "stacked-circles.value.sdk.minimum.points[0][1]: 0 != -1.8643021842223146 (error 1.86, limit 1e-06)",
+          "stacked-circles.value.sdk.minimum.points[1][0]: 2 != 0.72413905149764179 (error 1.28, limit 1e-06)",
+          "stacked-circles.value.sdk.minimum.points[1][1]: 0 != -1.8643021842223153 (error 1.86, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-circle",
+        "passed": false,
+        "max_absolute_error": 6.283185307179586,
+        "viboceros_ns_per_iteration": 4256041.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-circle.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "line-circle.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "line-circle.value.sdk.maximum.parameters[1]: 0 != 3.1415926535897931 (error 3.14, limit 1e-06)",
+          "line-circle.value.sdk.maximum.points[1][0]: 2 != 0 (error 2, limit 1e-06)",
+          "line-circle.value.sdk.maximum.points[1][1]: 0 != 2 (error 2, limit 1e-06)",
+          "line-circle.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "line-circle.value.sdk.minimum.parameters[0]: 2 != 6 (error 4, limit 1e-06)",
+          "line-circle.value.sdk.minimum.parameters[1]: 6.2831853071795862 != 0 (error 6.28, limit 1e-06)",
+          "line-circle.value.sdk.minimum.points[0][0]: -2 != 2 (error 4, limit 1e-06)",
+          "line-circle.value.sdk.minimum.points[1][0]: -2 != 2 (error 4, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "curved-offset",
+        "passed": false,
+        "max_absolute_error": 2.5237279221705755,
+        "viboceros_ns_per_iteration": 18221206.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "curved-offset.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "curved-offset.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "curved-offset.value.sdk.maximum.parameters[0]: 0.26158318765947669 != 0 (error 0.262, limit 1e-06)",
+          "curved-offset.value.sdk.maximum.parameters[1]: 0.26158318765966315 != 0 (error 0.262, limit 1e-06)",
+          "curved-offset.value.sdk.maximum.points[0][0]: 2.5237279221686815 != 0 (error 2.52, limit 1e-06)",
+          "curved-offset.value.sdk.maximum.points[0][1]: 1.40840786061492 != 0 (error 1.41, limit 1e-06)",
+          "curved-offset.value.sdk.maximum.points[1][0]: 2.5237279221705755 != 0 (error 2.52, limit 1e-06)",
+          "curved-offset.value.sdk.maximum.points[1][1]: 2.4084078606149202 != 1 (error 1.41, limit 1e-06)",
+          "curved-offset.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "curved-offset.value.sdk.minimum.distance: 0.65768014690550514 != 0.68246779860154583 (error 0.0248, limit 1e-06)",
+          "curved-offset.value.sdk.minimum.parameters[0]: 0.0503693051159258 != 0.037594320553352781 (error 0.0128, limit 1e-06)",
+          "curved-offset.value.sdk.minimum.points[0][0]: 0.46067936614356014 != 0.34248261721075013 (error 0.118, limit 1e-06)",
+          "curved-offset.value.sdk.minimum.points[0][1]: 0.53061987979547487 != 0.40968825775145301 (error 0.121, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "curved-spatial",
+        "passed": false,
+        "max_absolute_error": 2.523727922170132,
+        "viboceros_ns_per_iteration": 20949500.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "curved-spatial.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "curved-spatial.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "curved-spatial.value.sdk.maximum.parameters[0]: 0.26158318765961941 != 0 (error 0.262, limit 1e-06)",
+          "curved-spatial.value.sdk.maximum.parameters[1]: 0.26158318765948946 != 0 (error 0.262, limit 1e-06)",
+          "curved-spatial.value.sdk.maximum.points[0][0]: 2.5237279221701319 != 0 (error 2.52, limit 1e-06)",
+          "curved-spatial.value.sdk.maximum.points[0][1]: 1.4084078606149202 != 0 (error 1.41, limit 1e-06)",
+          "curved-spatial.value.sdk.maximum.points[0][2]: 0.70420393030746009 != 0 (error 0.704, limit 1e-06)",
+          "curved-spatial.value.sdk.maximum.points[1][0]: 2.5237279221688116 != 0 (error 2.52, limit 1e-06)",
+          "curved-spatial.value.sdk.maximum.points[1][1]: 1.4084078606149204 != 0 (error 1.41, limit 1e-06)",
+          "curved-spatial.value.sdk.maximum.points[1][2]: 1.7042039303074601 != 1 (error 0.704, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "curved-spatial.value.sdk.minimum.distance: 0.93159396309941722 != 0.93519166640560814 (error 0.0036, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.parameters[0]: 0.022804209131383618 != 0.035869146533475005 (error 0.0131, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.parameters[1]: 0 != 0.011583227999270732 (error 0.0116, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.points[0][0]: 0.20677426020990325 != 0.32658980764294354 (error 0.12, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.points[0][1]: 0.25826301146722364 != 0.39266257180756381 (error 0.134, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.points[0][2]: 0.12913150573361182 != 0.1963312859037819 (error 0.0672, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.points[1][0]: 0 != 0.10464845723555934 (error 0.105, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.points[1][1]: 0 != 0.13500157529949494 (error 0.135, limit 1e-06)",
+          "curved-spatial.value.sdk.minimum.points[1][2]: 1 != 1.0675007876497475 (error 0.0675, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "curved-vs-chord",
+        "passed": false,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 12135305.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "curved-vs-chord.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "curved-vs-chord.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "curved-vs-chord.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]"
+        ]
+      },
+      {
+        "id": "polyline-offset",
+        "passed": false,
+        "max_absolute_error": 5.333333333333333,
+        "viboceros_ns_per_iteration": 8765890.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "polyline-offset.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "polyline-offset.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "polyline-offset.value.sdk.maximum.parameters[0]: 1 != 0 (error 1, limit 1e-06)",
+          "polyline-offset.value.sdk.maximum.parameters[1]: 1 != 0 (error 1, limit 1e-06)",
+          "polyline-offset.value.sdk.maximum.points[0][0]: 4 != 0 (error 4, limit 1e-06)",
+          "polyline-offset.value.sdk.maximum.points[0][1]: 2 != 0 (error 2, limit 1e-06)",
+          "polyline-offset.value.sdk.maximum.points[1][0]: 4 != 0 (error 4, limit 1e-06)",
+          "polyline-offset.value.sdk.maximum.points[1][1]: 3 != 1 (error 2, limit 1e-06)",
+          "polyline-offset.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "polyline-offset.value.sdk.minimum.parameters[0]: 0.10000000000000001 != 1.2333333333333334 (error 1.13, limit 1e-06)",
+          "polyline-offset.value.sdk.minimum.parameters[1]: 1.0408340855860843e-17 != 1.3333333333333333 (error 1.33, limit 1e-06)",
+          "polyline-offset.value.sdk.minimum.points[0][0]: 0.40000000000000002 != 4.9333333333333336 (error 4.53, limit 1e-06)",
+          "polyline-offset.value.sdk.minimum.points[0][1]: 0.20000000000000001 != 1.5333333333333332 (error 1.33, limit 1e-06)",
+          "polyline-offset.value.sdk.minimum.points[1][0]: 4.163336342344337e-17 != 5.333333333333333 (error 5.33, limit 1e-06)",
+          "polyline-offset.value.sdk.minimum.points[1][1]: 1 != 2.333333333333333 (error 1.33, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "remote-lines",
+        "passed": false,
+        "max_absolute_error": 1.5625000000000002,
+        "viboceros_ns_per_iteration": 4593049.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "remote-lines.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "remote-lines.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "remote-lines.value.sdk.maximum.parameters[0]: 4.5625 != 3 (error 1.56, limit 1e-06)",
+          "remote-lines.value.sdk.maximum.parameters[1]: 1.5625000000000002 != 0 (error 1.56, limit 1e-06)",
+          "remote-lines.value.sdk.maximum.points[0][0]: 1000004.5625 != 1000003 (error 1.56, limit 1e-06)",
+          "remote-lines.value.sdk.maximum.points[1][0]: 1000004.5625 != 1000003 (error 1.56, limit 1e-06)",
+          "remote-lines.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]"
+        ]
+      },
+      {
+        "id": "parallel-postselection",
+        "passed": false,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 3888344.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "parallel-postselection.value: object keys differ; missing=['backend_only', 'command_registered', 'intervals'], extra=['command_history', 'command_returned', 'created_object_count', 'inputs_retained']",
+          "parallel-postselection.value.sdk.maximum: object keys differ; missing=['normalized_parameters'], extra=[]",
+          "parallel-postselection.value.sdk.minimum: object keys differ; missing=['normalized_parameters'], extra=[]"
+        ]
+      }
+    ],
+    "max_absolute_error": 18.010584668086995,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+  }
+}

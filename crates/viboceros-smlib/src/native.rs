@@ -20,9 +20,13 @@ pub use boundary_extension::{
     extend_curve_to_boundaries, join_curve_to_boundaries, separate_curve_extensions_to_boundaries,
 };
 mod curve_connections;
+mod curve_distances;
 mod curve_extension;
 mod curve_fillet_contacts;
 mod curve_intersections;
+pub use curve_distances::{
+    CurveDistanceExtrema, CurveDistanceWitness, curve_distance_extrema, projected_curve_intervals,
+};
 mod curve_surface_intersections;
 mod surface_intersections;
 mod surface_pull;

@@ -1,0 +1,848 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curve_deviation",
+      "id": "parallel-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            2,
+            0
+          ],
+          "end": [
+            7,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-reversed",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            2,
+            0
+          ],
+          "end": [
+            7,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "disjoint-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            2,
+            0
+          ],
+          "end": [
+            7,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            -4,
+            0
+          ],
+          "end": [
+            5,
+            4,
+            0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "skew-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            5,
+            -4,
+            2
+          ],
+          "end": [
+            5,
+            4,
+            2
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "coincident-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            0,
+            0
+          ],
+          "end": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "concentric-circles",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-circles",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            2,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "separated-circles",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            8,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "stacked-circles",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            3
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "line-circle",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -4,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "curved-offset",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                4,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "curved-spatial",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -2,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                4,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "curved-vs-chord",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                4,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "polyline-offset",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              2,
+              0
+            ],
+            [
+              8,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              8,
+              1,
+              0
+            ]
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "remote-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            1000000.0,
+            -2000000.0,
+            3000000.0
+          ],
+          "end": [
+            1000010.0,
+            -2000000.0,
+            3000000.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1000003.0,
+            -1999998.0,
+            3000000.0
+          ],
+          "end": [
+            1000007.0,
+            -1999998.0,
+            3000000.0
+          ]
+        }
+      ],
+      "postselect": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-postselection",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": true
+    }
+  ]
+}

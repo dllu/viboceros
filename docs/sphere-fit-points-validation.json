@@ -137,7 +137,6 @@
     "src/app/circle.rs": "068c2ca364ef50305ce8823c851016c96275a5ae2bea183935e8d8c5d557eee2",
     "src/app/object_selection.rs": "1765954136aa1cc5bd5fcec9a67f818ff9936994df8ba03b1fce4764aaed4250",
     "src/app/tests/sphere_fit_points.rs": "39619dc277e6acb4aa8f2df96f4668b17c6537368b8d6268d011d49e985168d8",
-    "tools/rhino_oracle/client.py": "8007ee7be364e59d9ae5995f918bd4a73dcc0ed4fca14d272319d7a4196f3420",
     "tools/rhino_oracle/line_through_points_probe.py": "a7c3f9054f725b270e3c9a490b39cf21be5f06c3da2d26e66fd2b0fede91fc32",
     "tools/rhino_oracle/plane_through_points_probe.py": "5194c3fc159ca82f9f4ae13ec644980ce4ff7d2aba4b2cf6525334822b9a0878",
     "tools/rhino_oracle/rail_revolve_comparison.py": "fec9b76126cbfec64629405cd82b261ade646cd141ee1b37b7d5f45dc427b171",
@@ -167,6 +166,7 @@
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:docs/commands/README.md": "9942872c0c635953f50b3e6d430309a8fdbffddd36117eaede3e2d2049f1905f",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app.rs": "5329ec8905aceccc609eaa17df165391c6bf56eda56f050ac87ab6c7167b5fac",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:tools/rhino_oracle/rhino_worker.py": "8c53817dfa089d139e7f9d52d30a102935fee3e8b87ae27ed1cca16273f3848b",
-    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:tools/rhino_oracle/structural_sdk.py": "0ebae210c113a753c5738de03685f632d740399404dfdc2b6b588f059fb9f724"
+    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:tools/rhino_oracle/structural_sdk.py": "0ebae210c113a753c5738de03685f632d740399404dfdc2b6b588f059fb9f724",
+    "5c5cc31a1c7a3b24e0d3bc0797fde9d28aa3a8dd:tools/rhino_oracle/client.py": "8007ee7be364e59d9ae5995f918bd4a73dcc0ed4fca14d272319d7a4196f3420"
   }
 }

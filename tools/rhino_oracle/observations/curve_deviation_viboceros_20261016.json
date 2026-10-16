@@ -1,0 +1,1055 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "parallel-lines",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.0,
+              0.0
+            ],
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.0,
+              0.0
+            ],
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 4511161
+    },
+    {
+      "id": "partial-lines",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.3,
+            0.7
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.45625,
+              0.39062500000000006
+            ],
+            "parameters": [
+              4.5625,
+              1.5625000000000002
+            ],
+            "points": [
+              [
+                4.5625,
+                0.0,
+                0.0
+              ],
+              [
+                4.5625,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.3,
+              2.7755575615628914e-17
+            ],
+            "parameters": [
+              3.0,
+              1.1102230246251565e-16
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 4631689
+    },
+    {
+      "id": "partial-reversed",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.3,
+            0.7
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.5125,
+              0.46875000000000006
+            ],
+            "parameters": [
+              5.125,
+              1.8750000000000002
+            ],
+            "points": [
+              [
+                4.875,
+                0.0,
+                0.0
+              ],
+              [
+                4.875,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.3,
+              1.0
+            ],
+            "parameters": [
+              3.0,
+              4.0
+            ],
+            "points": [
+              [
+                7.0,
+                0.0,
+                0.0
+              ],
+              [
+                7.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 4515386
+    },
+    {
+      "id": "disjoint-lines",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": null,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      },
+      "elapsed_ns": 1688948
+    },
+    {
+      "id": "crossing-lines",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": null,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      },
+      "elapsed_ns": 1598308
+    },
+    {
+      "id": "skew-lines",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": null,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      },
+      "elapsed_ns": 1627460
+    },
+    {
+      "id": "coincident-lines",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.3,
+            0.7
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 0.0,
+            "normalized_parameters": [
+              0.5,
+              0.5000000000000001
+            ],
+            "parameters": [
+              5.0,
+              2.0000000000000004
+            ],
+            "points": [
+              [
+                5.0,
+                0.0,
+                0.0
+              ],
+              [
+                5.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.0,
+            "normalized_parameters": [
+              0.3,
+              2.7755575615628914e-17
+            ],
+            "parameters": [
+              3.0,
+              1.1102230246251565e-16
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 3250951
+    },
+    {
+      "id": "concentric-circles",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "normalized_parameters": [
+              0.0,
+              2.163462283315477e-18
+            ],
+            "parameters": [
+              0.0,
+              3.6715172432968925e-17
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.6715172432968925e-17,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 1.0,
+            "normalized_parameters": [
+              0.0,
+              2.163462283315477e-18
+            ],
+            "parameters": [
+              0.0,
+              3.6715172432968925e-17
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.6715172432968925e-17,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 6053629
+    },
+    {
+      "id": "crossing-circles",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.0,
+              0.0
+            ],
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 6.661338147750939e-16,
+            "normalized_parameters": [
+              0.1647296556494728,
+              0.3352703443505272
+            ],
+            "parameters": [
+              2.0943951023931957,
+              4.1887902047863905
+            ],
+            "points": [
+              [
+                0.9999999999999998,
+                1.7320508075688774,
+                0.0
+              ],
+              [
+                1.0000000000000004,
+                1.7320508075688774,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 5700988
+    },
+    {
+      "id": "separated-circles",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 8.0,
+            "normalized_parameters": [
+              0.5,
+              0.5
+            ],
+            "parameters": [
+              6.283185307179586,
+              6.283185307179586
+            ],
+            "points": [
+              [
+                -2.0,
+                2.4492935982947064e-16,
+                0.0
+              ],
+              [
+                6.0,
+                2.4492935982947064e-16,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 4.0,
+            "normalized_parameters": [
+              0.0,
+              0.5
+            ],
+            "parameters": [
+              0.0,
+              6.283185307179586
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                6.0,
+                2.4492935982947064e-16,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 7332080
+    },
+    {
+      "id": "stacked-circles",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 3.0,
+            "normalized_parameters": [
+              0.03125,
+              0.031250000000000236
+            ],
+            "parameters": [
+              0.3659649304055449,
+              0.3659649304055478
+            ],
+            "points": [
+              [
+                1.9666107368331487,
+                0.36392610482428933,
+                0.0
+              ],
+              [
+                1.9666107368331482,
+                0.36392610482429216,
+                3.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 3.0,
+            "normalized_parameters": [
+              0.0,
+              0.0
+            ],
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                3.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 6411805
+    },
+    {
+      "id": "line-circle",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.5,
+              0.0
+            ],
+            "parameters": [
+              4.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.4492935982947064e-16,
+            "normalized_parameters": [
+              0.25,
+              0.5
+            ],
+            "parameters": [
+              2.0,
+              6.283185307179586
+            ],
+            "points": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                -2.0,
+                2.4492935982947064e-16,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 4256041
+    },
+    {
+      "id": "curved-offset",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0503693051159258,
+            1.0
+          ],
+          [
+            0.0,
+            0.9603184439849103
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0000000000000002,
+            "normalized_parameters": [
+              0.2615831876594767,
+              0.26158318765966315
+            ],
+            "parameters": [
+              0.2615831876594767,
+              0.26158318765966315
+            ],
+            "points": [
+              [
+                2.5237279221686815,
+                1.40840786061492,
+                0.0
+              ],
+              [
+                2.5237279221705755,
+                2.40840786061492,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.6576801469055051,
+            "normalized_parameters": [
+              0.0503693051159258,
+              0.0
+            ],
+            "parameters": [
+              0.0503693051159258,
+              0.0
+            ],
+            "points": [
+              [
+                0.46067936614356014,
+                0.5306198797954749,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 18221206
+    },
+    {
+      "id": "curved-spatial",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.02280420913018825,
+            1.0
+          ],
+          [
+            0.0,
+            0.9786435643804441
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "normalized_parameters": [
+              0.2615831876596194,
+              0.26158318765948946
+            ],
+            "parameters": [
+              0.2615831876596194,
+              0.26158318765948946
+            ],
+            "points": [
+              [
+                2.523727922170132,
+                1.4084078606149202,
+                0.7042039303074601
+              ],
+              [
+                2.5237279221688116,
+                1.4084078606149204,
+                1.70420393030746
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.9315939630994172,
+            "normalized_parameters": [
+              0.022804209131383618,
+              0.0
+            ],
+            "parameters": [
+              0.022804209131383618,
+              0.0
+            ],
+            "points": [
+              [
+                0.20677426020990325,
+                0.25826301146722364,
+                0.12913150573361182
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 20949500
+    },
+    {
+      "id": "curved-vs-chord",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.4084078606149204,
+            "normalized_parameters": [
+              0.2615831876594899,
+              0.2523727922168816
+            ],
+            "parameters": [
+              0.2615831876594899,
+              2.523727922168816
+            ],
+            "points": [
+              [
+                2.523727922168816,
+                1.4084078606149204,
+                0.0
+              ],
+              [
+                2.523727922168816,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.0,
+            "normalized_parameters": [
+              0.0,
+              0.0
+            ],
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 12135305
+    },
+    {
+      "id": "polyline-offset",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.05,
+            0.95
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "normalized_parameters": [
+              0.5,
+              0.5
+            ],
+            "parameters": [
+              1.0,
+              1.0
+            ],
+            "points": [
+              [
+                4.0,
+                2.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.8944271909999159,
+            "normalized_parameters": [
+              0.05,
+              5.204170427930421e-18
+            ],
+            "parameters": [
+              0.1,
+              1.0408340855860843e-17
+            ],
+            "points": [
+              [
+                0.4,
+                0.2,
+                0.0
+              ],
+              [
+                4.163336342344337e-17,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 8765890
+    },
+    {
+      "id": "remote-lines",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.3,
+            0.7
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.45625,
+              0.39062500000000006
+            ],
+            "parameters": [
+              4.5625,
+              1.5625000000000002
+            ],
+            "points": [
+              [
+                1000004.5625,
+                -2000000.0,
+                3000000.0
+              ],
+              [
+                1000004.5625,
+                -1999998.0,
+                3000000.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.3,
+              2.7755575615628914e-17
+            ],
+            "parameters": [
+              3.0,
+              1.1102230246251565e-16
+            ],
+            "points": [
+              [
+                1000003.0,
+                -2000000.0,
+                3000000.0
+              ],
+              [
+                1000003.0,
+                -1999998.0,
+                3000000.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 4593049
+    },
+    {
+      "id": "parallel-postselection",
+      "value": {
+        "backend_only": true,
+        "command_registered": false,
+        "intervals": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.0,
+              0.0
+            ],
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "normalized_parameters": [
+              0.0,
+              0.0
+            ],
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      },
+      "elapsed_ns": 3888344
+    }
+  ]
+}

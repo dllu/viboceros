@@ -1,0 +1,746 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "parallel-lines",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "partial-lines",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "parameters": [
+              3.0,
+              0.0
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "parameters": [
+              3.0,
+              0.0
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "partial-reversed",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "parameters": [
+              3.0,
+              4.0
+            ],
+            "points": [
+              [
+                7.0,
+                0.0,
+                0.0
+              ],
+              [
+                7.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "parameters": [
+              3.0,
+              4.0
+            ],
+            "points": [
+              [
+                7.0,
+                0.0,
+                0.0
+              ],
+              [
+                7.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "disjoint-lines",
+      "value": {
+        "command_history": "",
+        "command_returned": false,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "crossing-lines",
+      "value": {
+        "command_history": "",
+        "command_returned": false,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "skew-lines",
+      "value": {
+        "command_history": "",
+        "command_returned": false,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coincident-lines",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 8.881784197001252e-16,
+            "parameters": [
+              7.0,
+              4.0
+            ],
+            "points": [
+              [
+                7.0,
+                0.0,
+                0.0
+              ],
+              [
+                7.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.0,
+            "parameters": [
+              3.3333333333333335,
+              0.3333333333333339
+            ],
+            "points": [
+              [
+                3.333333333333334,
+                0.0,
+                0.0
+              ],
+              [
+                3.333333333333334,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "concentric-circles",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0000000000000009,
+            "parameters": [
+              12.007056445391328,
+              18.010584668086995
+            ],
+            "points": [
+              [
+                1.9223002968860057,
+                -0.5520521430009797,
+                0.0
+              ],
+              [
+                2.8834504453290095,
+                -0.8280782145014671,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.9999999999999988,
+            "parameters": [
+              10.178696003851801,
+              15.268044005777975
+            ],
+            "points": [
+              [
+                0.736189419123746,
+                -1.8595766021248605,
+                0.0
+              ],
+              [
+                1.1042841286858742,
+                -2.7893649031871894,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "crossing-circles",
+      "value": {
+        "command_history": "",
+        "command_returned": false,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "separated-circles",
+      "value": {
+        "command_history": "",
+        "command_returned": false,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "stacked-circles",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 3.000000000000001,
+            "parameters": [
+              8.416417859924644,
+              8.41641785992464
+            ],
+            "points": [
+              [
+                -0.966179357655319,
+                -1.7511417557812832,
+                0.0
+              ],
+              [
+                -0.9661793576553221,
+                -1.7511417557812814,
+                3.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.999999999999999,
+            "parameters": [
+              10.165752160879599,
+              10.165752160879597
+            ],
+            "points": [
+              [
+                0.7241390514976435,
+                -1.8643021842223146,
+                0.0
+              ],
+              [
+                0.7241390514976418,
+                -1.8643021842223153,
+                3.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-circle",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "parameters": [
+              4.0,
+              3.141592653589793
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.0,
+            "parameters": [
+              6.0,
+              0.0
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "curved-offset",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.6824677986015458,
+            "parameters": [
+              0.03759432055335278,
+              0.0
+            ],
+            "points": [
+              [
+                0.34248261721075013,
+                0.409688257751453,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "curved-spatial",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.9351916664056081,
+            "parameters": [
+              0.035869146533475005,
+              0.011583227999270732
+            ],
+            "points": [
+              [
+                0.32658980764294354,
+                0.3926625718075638,
+                0.1963312859037819
+              ],
+              [
+                0.10464845723555934,
+                0.13500157529949494,
+                1.0675007876497475
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "curved-vs-chord",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.40840786061492,
+            "parameters": [
+              0.26158318765949,
+              2.5237279221688165
+            ],
+            "points": [
+              [
+                2.523727922168817,
+                1.40840786061492,
+                0.0
+              ],
+              [
+                2.5237279221688165,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "polyline-offset",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.8944271909999155,
+            "parameters": [
+              1.2333333333333334,
+              1.3333333333333333
+            ],
+            "points": [
+              [
+                4.933333333333334,
+                1.5333333333333332,
+                0.0
+              ],
+              [
+                5.333333333333333,
+                2.333333333333333,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "remote-lines",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "parameters": [
+              3.0,
+              0.0
+            ],
+            "points": [
+              [
+                1000003.0,
+                -2000000.0,
+                3000000.0
+              ],
+              [
+                1000003.0,
+                -1999998.0,
+                3000000.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "parameters": [
+              3.0,
+              0.0
+            ],
+            "points": [
+              [
+                1000003.0,
+                -2000000.0,
+                3000000.0
+              ],
+              [
+                1000003.0,
+                -1999998.0,
+                3000000.0
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "parallel-postselection",
+      "value": {
+        "command_history": "",
+        "command_returned": true,
+        "created_object_count": 0,
+        "inputs_retained": true,
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "parameters": [
+              0.0,
+              0.0
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

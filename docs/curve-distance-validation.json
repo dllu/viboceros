@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Explicit-interval native curve distance backend and retained CrvDeviation compatibility diagnostics",
+  "base_repository_revision": "5c5cc31a1c7a3b24e0d3bc0797fde9d28aa3a8dd",
+  "command_registered": false,
+  "native_command_parity_qualified": false,
+  "native_overlap_policy_qualified": false,
+  "native_minimum_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "directed_witness_parity_qualified": false,
+  "performance_qualified": false,
+  "implementation": "Reuse canonical NURBS import and normalized working frames. Caller-selected source intervals feed SMLib global curve minimum and curve maximum proposals. Independently globally reproject maximum candidates, native knot/span-midpoint/grid samples and local-peak solver candidates before ranking. Re-evaluate final witnesses on original sources and recover original parameters while retaining normalized NURBS fractions and direct line/polyline/NURBS parameter visits. Check nearest-pair membership in at least one direction for maxima and both directions for minima. Only within-tolerance minimum/maximum ordering roundoff selects a shared attained witness; inconsistent results reject. Keep the diagnostic endpoint projection policy separate from the distance producer.",
+  "coverage": {
+    "rust_tests": 31,
+    "native_library_tests": 30,
+    "oracle_tests": 1,
+    "new_rust_tests": 6,
+    "python_tests": 30,
+    "new_python_tests": 3,
+    "bridge_asan_checks": 6,
+    "bridge_and_driver_asan_instrumented": true,
+    "vendor_and_helper_archives_asan_instrumented": false,
+    "leak_detection_enabled": false,
+    "private_rhino_launches": 2,
+    "native_commands_executed": 36,
+    "public_sdk_calls": 36,
+    "retained_final_cases": 18,
+    "retained_initial_cases": 18,
+    "final_native_successful_reports": 13,
+    "local_successful_interval_reports": 15,
+    "matching_statuses": 16,
+    "maximum_scalar_values_admitted": 13,
+    "minimum_scalar_values_admitted": 11,
+    "scalar_pair_values_admitted": 11,
+    "exact_polynomial_source_pair_counterexamples": 2,
+    "localized_knot_span_peak": true,
+    "rational_arc_normal_gap": true,
+    "explicit_subintervals_and_reversal": true,
+    "closed_polyline_parameter_visit_preserved": true,
+    "invalid_ranges_and_null_ffi_arguments": true,
+    "maximum_controls_per_source": 4096,
+    "reference_derived_inputs": false
+  },
+  "native_capture_commands": [
+    "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_deviation.json --scheme VibocerosOracleCurveDeviation20261016 --timeout 240 --output tools/rhino_oracle/observations/curve_deviation_rhino_20261016.json (initial capture: command echo off; moved to curve_deviation_initial_rhino_20261016.json)",
+    "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_deviation.json --scheme VibocerosOracleCurveDeviation20261016b --timeout 240 --output tools/rhino_oracle/observations/curve_deviation_rhino_20261016.json"
+  ],
+  "native_command_finish_macro": " _Enter _Cancel",
+  "native_command_keep_marks": "default No",
+  "recorded_scalar_and_status_comparison_passed": false,
+  "raw_protocol_comparison_passed": false,
+  "limits": [
+    "CrvDeviation remains unregistered. The new public native adapter measures caller-supplied source intervals. Its diagnostic projected-endpoint helper is not a complete native overlap/correspondence policy and must not be treated as one. The local oracle explicitly reports backend_only=true and command_registered=false.",
+    "All 13 successful native maximum scalar values and 11 minimum scalar values agree at exact binary-rational 1e-6 admission. Two cubic minimum values differ by more than 1e-4; exact Bernstein evaluation supplies closer source pairs than the recorded native minima on whole input intervals. This does not assert what native correspondence rule produced those values. Two closed-circle pairs also disagree on whether a report is returned. Overall recorded scalar/status and raw protocol comparisons remain false.",
+    "Original source parameters/images are validated at the requested model tolerance, and pair distances are re-evaluated. Tied extrema can have different witness locations and physical parameters, so no paired witness geometry or directed native parity is claimed. The numerical knot/grid/peak search is not a global-extremum or continuous Hausdorff certificate.",
+    "Every native nonempty knot span contributes a midpoint when representable, preventing the retained localized quadratic peak from disappearing between global grid samples. There are 64 uniform grid intervals plus native breaks. Local maximum proposals are globally reprojected to avoid switching onto a farthest-pair branch. Control count is capped at 4096; inherited canonical degree/weight, discontinuity and working-frame limits remain.",
+    "An independent C ABI driver passes parallel, partial, circle/chord and localized-peak measurements plus invalid-range/null-input guards. AddressSanitizer instruments the current bridge and driver only; the reused SMLib/SM_API and helper archives are uninstrumented. Leak detection is disabled. This is bridge-level coverage, not full-kernel sanitizer qualification.",
+    "Both private captures completed 18 SDK queries and 18 native command attempts. The first used echo off and returned empty command histories; those observations remain separate and do not establish history parity. The second enables echo and validates all nonempty histories, 13 native successes, five no-overlap decisions, retained sources and zero created objects. No Wine, FEX or license configuration was changed.",
+    "Rust runtime tests and local export use debug builds with the native feature. The optional-free oracle also passes cargo check, and workspace Clippy checks all targets with native-smlib enabled. Existing model/certificate tolerances and proof budgets are unchanged; no release benchmark or performance claim is made."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-smlib --features native --lib -- --nocapture",
+      "passed": true,
+      "tests": 30,
+      "log": "docs/curve-distance-native-library.log",
+      "scope": "final implementation"
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib curve_distance -- --nocapture",
+      "passed": true,
+      "tests": 1,
+      "log": "docs/curve-distance-oracle.log",
+      "scope": "final implementation"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_curve_deviation tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "tests": 30,
+      "log": "docs/curve-distance-python.log",
+      "scope": "final implementation"
+    },
+    {
+      "command": "python3 tools/usd_brep/run_curve_distance_probe.py --native-build target/debug/build/viboceros-smlib-f7e792203d361cfb/out/build --output-dir /tmp/viboceros-curve-distance-bridge-asan --asan",
+      "passed": true,
+      "tests": 6,
+      "log": "docs/curve-distance-asan.log",
+      "scope": "bridge and driver instrumented; vendor/helper archives uninstrumented"
+    },
+    {
+      "command": "cargo check -p viboceros-oracle",
+      "passed": true,
+      "tests": null,
+      "log": "docs/curve-distance-default-check.log",
+      "scope": "final implementation"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/curve-distance-clippy.log",
+      "scope": "final implementation"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/curve-distance-fmt.log",
+      "scope": "final implementation"
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/curve_deviation.json tools/rhino_oracle/observations/curve_deviation_viboceros_20261016.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/curve-distance-api.log",
+      "scope": "final implementation"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.curve_distance_comparison tools/rhino_oracle/fixtures/curve_deviation.json tools/rhino_oracle/observations/curve_deviation_viboceros_20261016.json tools/rhino_oracle/observations/curve_deviation_rhino_20261016.json tools/rhino_oracle/observations/curve_deviation_comparison_20261016.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/curve-distance-comparison.log",
+      "scope": "comparison generated; expected parity failure retained"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "db7cfb76e98b5a291ed7a67e5b413d3298aef6d3983976e0434010518e78adf0",
+    "crates/viboceros-geometry/src/curve_trim.rs": "978eb43b305e6024bdf65151d2e07eaffb51256e99d677f08d4d766acd3af249",
+    "crates/viboceros-geometry/src/nurbs/closest_point.rs": "850055bc2d61df856fb2b691111f422d0951f00bebbc14fb5ada85603ca58136",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
+    "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
+    "crates/viboceros-oracle/src/curve_deviation.rs": "1851325cb0cf674c042a0a4d9fa45f2130733c7cf39b78a574eea85d205f64a4",
+    "crates/viboceros-oracle/src/lib.rs": "48779dcd2a43799b48f88e9aee3d57b0af16ae24152a978d72b4976200d304bb",
+    "crates/viboceros-smlib/Cargo.toml": "9f807997ed9ea93a81d24c28956dd2fb609007d050b150c0c46ef9f47db0a5f3",
+    "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
+    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
+    "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
+    "crates/viboceros-smlib/native/bridge.cpp": "af5eec685d5078de5ef18534d33aa5194b92ba0db0c4349ddb8d630ce6ce025c",
+    "crates/viboceros-smlib/native/bridge.h": "4cad5ac98c5926157732afd7b9557c9b7a4df0f334ff69b5a619691bccfd18bb",
+    "crates/viboceros-smlib/src/lib.rs": "44d87c302af42393ec269563ebb2fd366923732638353189d74b995b8c5a8706",
+    "crates/viboceros-smlib/src/native.rs": "0f2390f800625ce7e730ae2973150a635154778c29380e35f6bde975219ddcba",
+    "crates/viboceros-smlib/src/native/curve_distances.rs": "da3482d1154eba3a118f169feefa0227ce428514c1a1d9dcaddf67e073f8d67e",
+    "crates/viboceros-smlib/src/native/curve_distances/tests.rs": "8f5344add41ba239e6635e83e2bf8b6c842040c54e0912801e35d22bfe96864b",
+    "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
+    "docs/curve-distance-queries.md": "ced788f3206a1b5e928331add4f15094465ab30fde46a12e37e601620f06288d",
+    "tools/rhino_oracle/client.py": "d165a599dfd15baed8a6c8e8c0a74118002c1b8731a8585913582bab3290550c",
+    "tools/rhino_oracle/curve_deviation_probe.py": "3df51b4215837dbe44f9f26009228d26fad73b6dfef72bbbda890b1bdb81b5ab",
+    "tools/rhino_oracle/curve_distance_comparison.py": "34d1415d2ae8ca69e0ea1e192843f6a4ec93d7b95dced4490db43ee6ca1629ee",
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+    "tools/rhino_oracle/rhino_worker.py": "86d9d7fb67604d1eec53d7518464664328d739b6f8a2a1ccfe875a58988bbabf",
+    "tools/rhino_oracle/structural_sdk.py": "f788c6e804cacdd53efe6e21180264f283ca7a379ffc09e2fd9d496b492cb8dc",
+    "tools/rhino_oracle/test_curve_deviation.py": "c9288c8569320dfa29db3bdad7b7d7b884a59d884d7e57c8676da2e50c8a37e3",
+    "tools/usd_brep/curve_distance_probe.cpp": "fe89606ce2089dfeb76e53a29b22c1e35e82092d49efe66d678d7af84fe67f0e",
+    "tools/usd_brep/run_curve_distance_probe.py": "424d54b6ee9781751cfd2f8356fea63a636fe97daaa60bf642c7a6c5429ee395",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "upstream_source_sha256": {
+    "third_party/usd-brep/source/SMLib/inc/SmCurve.h": "b60407a833be0ee6744bff247d1ea00dfd21e55c4ca4fb311dc5976cb50598e8",
+    "third_party/usd-brep/source/SMLib/src/SmCurve.cpp": "f0c0a7fb5a6d800556bb206a5f0e80ac2c6f0a65edb101c1629ae2a2b33a6b24",
+    "third_party/usd-brep/source/SMLib/inc/SmCoreTypes.h": "bdefa75ef66caddf624d09f2e279e386e5c58db0f2becbace56f6569c3889f86"
+  },
+  "upstream_repository_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "input_sha256": {
+    "tools/rhino_oracle/fixtures/curve_deviation.json": "877b5e6f72d14851383ba0f2067856af3e191683bf35f94af3caa6932595b973"
+  },
+  "evidence_sha256": {
+    "docs/curve-distance-native-library.log": "2ca32edc4169d34f204af80c6f9332f2386b1d26e8fa03a797a958c1668f151c",
+    "docs/curve-distance-oracle.log": "03060826560e60b8a115184e552055f5a38841545cc3afd7f504945beecfa208",
+    "docs/curve-distance-python.log": "6eba78703a2431b526869526815a0070801f9db062341eb2dc8272a79d817f36",
+    "docs/curve-distance-asan.log": "d76669c17e0442707284031fd3c838bbcc353c3d6b2d972fcd3c844dc3e823ef",
+    "docs/curve-distance-default-check.log": "7bf2e972faf36d0052320960cadd91b7f46e049598ff97f7ad8e4abf80def639",
+    "docs/curve-distance-clippy.log": "bf3dbac31d9db6aa98ab92623d5cee9482246adc57eaf6884e792a8807092565",
+    "docs/curve-distance-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curve-distance-api.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curve-distance-comparison.log": "171cea440163b9b40d2f7035026bf1d81c699e9c6ae4e3c1146cb69622dc373b",
+    "tools/rhino_oracle/observations/curve_deviation_rhino_20261016.json": "5e3217878c28e03fab59006c6ce8c791845f4edcb4d9e9ece70e2d5b73890a20",
+    "tools/rhino_oracle/observations/curve_deviation_initial_rhino_20261016.json": "809b97114151baa907af7aa258d3aed8298bb708ea2e112555c1fd5402b0516d",
+    "tools/rhino_oracle/observations/curve_deviation_viboceros_20261016.json": "6e0b5c2154a6c3b2a2407cd635e8b54e32169f1ded0ff8028944b335472c3ff3",
+    "tools/rhino_oracle/observations/curve_deviation_comparison_20261016.json": "b9cb5e6888e473cd9e3c8ff1b910f66419ffcd7d2eef02ab85f94d9364e6a45e"
+  }
+}

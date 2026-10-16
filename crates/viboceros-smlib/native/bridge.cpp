@@ -2563,3 +2563,93 @@ extern "C" int vb_solid_copy(const VbSolid *solid, VbSolid **out, char *error, s
         *out = owner.release();
     });
 }
+
+extern "C" int vb_curve_distance_extrema(const VbCurve *first, const VbCurve *second,
+    const double intervals[4], double tolerance, double parameters[4],
+    char *error, size_t capacity) {
+    return guarded(error,capacity,[&] {
+        require(first && second && intervals && parameters && std::isfinite(tolerance) && tolerance>0.,
+                "Invalid curve distance query");
+        require(first->points.size()/4<=4096 && second->points.size()/4<=4096,
+                "Curve distance query exceeds control budget");
+        const auto ad=first->value->GetNaturalInterval(),bd=second->value->GetNaturalInterval();
+        for(size_t i=0;i<4;++i) require(std::isfinite(intervals[i]),"Nonfinite curve distance interval");
+        require(intervals[0]>=ad.GetMin() && intervals[1]<=ad.GetMax() && intervals[0]<intervals[1]
+             && intervals[2]>=bd.GetMin() && intervals[3]<=bd.GetMax() && intervals[2]<intervals[3],
+                "Curve distance interval left active domain");
+        SmExtent1d a(intervals[0],intervals[1]),b(intervals[2],intervals[3]);
+        SmSolutionArray solutions;
+        check(first->value->GlobalCurveSolve(a,*second->value,b,SM_SO_MINIMIZE,tolerance,
+                nullptr,nullptr,SM_SR_SINGLE,solutions),"minimum curve distance");
+        require(solutions.GetSize()>0,"Native curve minimum returned no location");
+        parameters[2]=solutions[0].m_vStart[0];parameters[3]=solutions[0].m_vStart[1];
+        double maximum[2]{},pa[2]{},pb[2]{};
+        check(first->value->CurveMaxDistanceBetween(a,*second->value,b.GetMin(),b.GetMax(),0,
+                nullptr,maximum[0],&pa[0],&pb[0]),"first directed curve deviation");
+        check(second->value->CurveMaxDistanceBetween(b,*first->value,a.GetMin(),a.GetMax(),0,
+                nullptr,maximum[1],&pb[1],&pa[1]),"second directed curve deviation");
+        // The upstream precise query supplies candidates. Its local curve
+        // maximizer can leave the nearest-point branch (e.g. a circle/chord).
+        // Reproject every candidate with the global point query before ranking.
+        const SmCurve *curves[2]={first->value.get(),second->value.get()};
+        const SmExtent1d domains[2]={a,b};
+        double best_distance=-1.;
+        struct Candidate { double parameter[2]; double distance; };
+        auto project=[&](size_t source,double t) {
+            SmPoint3d point,foot;
+            check(curves[source]->EvaluatePoint(t,point),"evaluate curve distance seed");
+            SmSolutionArray feet;
+            check(curves[1-source]->GlobalPointSolve(domains[1-source],SM_SO_MINIMIZE,point,
+                tolerance,nullptr,nullptr,SM_SR_SINGLE,feet),"project curve distance seed");
+            require(feet.GetSize()>0,"Curve distance seed has no closest point");
+            const double u=feet[0].m_vStart[0];
+            require(std::isfinite(u) && u>=domains[1-source].GetMin() && u<=domains[1-source].GetMax(),
+                "Curve distance projection left interval");
+            check(curves[1-source]->EvaluatePoint(u,foot),"evaluate curve distance foot");
+            const double distance=std::hypot(std::hypot(point.x-foot.x,point.y-foot.y),point.z-foot.z);
+            require(std::isfinite(distance),"Nonfinite projected curve distance");
+            Candidate candidate{};candidate.parameter[source]=t;candidate.parameter[1-source]=u;candidate.distance=distance;
+            if(distance>best_distance) {
+                best_distance=distance;parameters[0]=candidate.parameter[0];parameters[1]=candidate.parameter[1];
+            }
+            return candidate;
+        };
+        for(size_t source=0;source<2;++source) {
+            project(source,source?pb[0]:pa[0]);project(source,source?pb[1]:pa[1]);
+            SmTArray<double> knots;curves[source]->GetKnots(knots);
+            std::vector<double> sites={domains[source].GetMin(),domains[source].GetMax()};
+            for(ULONG i=0;i<knots.GetSize();++i)
+                if(knots[i]>domains[source].GetMin() && knots[i]<domains[source].GetMax()) sites.push_back(knots[i]);
+            require(sites.size()<=16384,"Curve deviation exceeds knot budget");
+            std::sort(sites.begin(),sites.end());sites.erase(std::unique(sites.begin(),sites.end()),sites.end());
+            const size_t breaks=sites.size();
+            for(size_t i=1;i<breaks;++i) {
+                const double midpoint=sites[i-1]*.5+sites[i]*.5;
+                if(midpoint>sites[i-1] && midpoint<sites[i]) sites.push_back(midpoint);
+            }
+            for(size_t i=1;i<64;++i) sites.push_back(domains[source].Evaluate(double(i)/64.));
+            std::sort(sites.begin(),sites.end());sites.erase(std::unique(sites.begin(),sites.end()),sites.end());
+            std::vector<Candidate> seeds;for(double t:sites) seeds.push_back(project(source,t));
+            // Refine all sampled local peaks with the existing kernel solver.
+            // Even a returned farthest-pair solution is only a new seed; it
+            // must pass the same independent closest-point reprojection.
+            for(size_t i=1;i+1<seeds.size();++i) {
+                const auto &seed=seeds[i];
+                if(seed.distance<seeds[i-1].distance || seed.distance<seeds[i+1].distance) continue;
+                SmBoolean found=FALSE;SmSolution solution;
+                const auto status=first->value->LocalCurveSolve(a,*second->value,b,SM_SO_MAXIMIZE,
+                    tolerance,nullptr,nullptr,seed.parameter[0],seed.parameter[1],found,solution);
+                if(status==SM_SUCCESS && found) {
+                    const double t=solution.m_vStart[source];
+                    if(std::isfinite(t) && t>=domains[source].GetMin() && t<=domains[source].GetMax()) project(source,t);
+                }
+            }
+        }
+        for(size_t i=0;i<4;++i) require(std::isfinite(parameters[i]),"Nonfinite curve distance parameter");
+        for(size_t i=0;i<4;++i) {
+            const auto &domain=(i%2)?b:a;
+            require(parameters[i]>=domain.GetMin() && parameters[i]<=domain.GetMax(),
+                    "Native curve distance parameter left interval");
+        }
+    });
+}

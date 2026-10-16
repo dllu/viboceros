@@ -121,10 +121,12 @@ mod blend_edge;
 mod chamfer_edge;
 mod coplanar_faces;
 mod coplanar_mesh;
+mod curve_deviation;
 mod divide_creases;
 mod network_surface;
 mod plane_through_points;
 mod point_deviation;
+pub use curve_deviation::Fixture as CurveDeviationFixture;
 pub use network_surface::Fixture as NetworkSurfaceFixture;
 pub use plane_through_points::{
     Fixture as PlaneThroughPointsFixture, Source as PlaneThroughPointsSource,
@@ -1686,6 +1688,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: LineThroughPointsFixture,
     },
+    CurveDeviation {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurveDeviationFixture,
+    },
     PointDeviation {
         id: String,
         #[serde(flatten)]
@@ -2694,6 +2701,7 @@ impl Operation {
             | Self::NetworkSurface { id, .. }
             | Self::PlaneThroughPoints { id, .. }
             | Self::LineThroughPoints { id, .. }
+            | Self::CurveDeviation { id, .. }
             | Self::PointDeviation { id, .. }
             | Self::SphereFitPoints { id, .. }
             | Self::RailRevolve { id, .. }
@@ -5919,6 +5927,9 @@ fn execute(
             tolerance,
             viboceros_command::point_fitting::PointFitKind::Line,
         )?,
+        Operation::CurveDeviation { fixture, .. } => {
+            curve_deviation::run(fixture, iterations, tolerance)?
+        }
         Operation::PointDeviation { fixture, .. } => {
             point_deviation::run(fixture, iterations, tolerance)?
         }
