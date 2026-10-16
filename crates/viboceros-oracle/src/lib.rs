@@ -149,9 +149,11 @@ mod curvature_graph;
 mod orient_on_curve;
 mod orient_points;
 mod orient_surface;
+mod orient_surface_grips;
 pub use orient_on_curve::Fixture as OrientOnCurveFixture;
 pub use orient_points::Fixture as OrientPointsFixture;
 pub use orient_surface::Fixture as OrientSurfaceFixture;
+pub use orient_surface_grips::Fixture as OrientSurfaceGripsFixture;
 mod extract_curvature_graph;
 pub use extract_curvature_graph::Fixture as ExtractCurvatureGraphFixture;
 mod geometry_validity;
@@ -1703,6 +1705,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurveDeviationFixture,
     },
+    OrientSurfaceGrips {
+        id: String,
+        #[serde(flatten)]
+        fixture: OrientSurfaceGripsFixture,
+    },
     OrientSurface {
         id: String,
         #[serde(flatten)]
@@ -2739,6 +2746,7 @@ impl Operation {
             | Self::CurveDeviation { id, .. }
             | Self::OrientPoints { id, .. }
             | Self::OrientSurface { id, .. }
+            | Self::OrientSurfaceGrips { id, .. }
             | Self::OrientOnCurve { id, .. }
             | Self::CurvatureGraph { id, .. }
             | Self::ExtractCurvatureGraph { id, .. }
@@ -5969,6 +5977,9 @@ fn execute(
         )?,
         Operation::CurveDeviation { fixture, .. } => {
             curve_deviation::run(fixture, iterations, tolerance)?
+        }
+        Operation::OrientSurfaceGrips { fixture, .. } => {
+            orient_surface_grips::run(fixture, iterations, tolerance)?
         }
         Operation::OrientSurface { fixture, .. } => {
             orient_surface::run(fixture, iterations, tolerance)?

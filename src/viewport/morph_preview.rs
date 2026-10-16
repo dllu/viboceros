@@ -4,8 +4,9 @@ use super::object_preview::PreviewObject;
 use super::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::rc::Rc;
-use viboceros_document::{GeometrySnapshot, GroupId};
+use viboceros_document::{ControlPointId, GeometrySnapshot, GripMode, GroupId};
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, BrepWireCage, PointMorph, SurfacePreviewCage,
 };
@@ -47,11 +48,13 @@ pub(super) struct Source {
     pub(super) cage: Option<Cage>,
     boundary_cage: Option<BrepWireCage>,
     boundary_display: Option<Rc<DisplayGeometry>>,
+    grips: Option<(GripMode, BTreeSet<usize>)>,
 }
 
 pub(crate) struct MorphPreviewImage {
     pub(super) objects: BTreeMap<ObjectId, PreviewObject>,
     pub(super) guide: Vec<Point3>,
+    pub(super) grips: BTreeMap<ControlPointId, Point3>,
     shaded_objects: Option<BTreeMap<ObjectId, PreviewObject>>,
 }
 
@@ -67,6 +70,8 @@ impl MorphPreviewImage {
 
 pub(crate) struct MorphPreviewCache<K> {
     pub(super) sources: Vec<Source>,
+    object_ids: Vec<ObjectId>,
+    grips: Vec<ControlPointId>,
     tolerance: Option<Tolerance>,
     centers: Option<Vec<Point3>>,
     key: Option<K>,
@@ -77,6 +82,8 @@ impl<K> Default for MorphPreviewCache<K> {
     fn default() -> Self {
         Self {
             sources: Vec::new(),
+            object_ids: Vec::new(),
+            grips: Vec::new(),
             tolerance: None,
             centers: None,
             key: None,
@@ -93,19 +100,58 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
         document: &Document,
         display_cache: &RefCell<DisplayCache>,
     ) -> Result<Rc<MorphPreviewImage>, viboceros_command::CommandError> {
+        self.get_with_grips(ids, &[], key, document, display_cache)
+    }
+
+    pub(super) fn get_with_grips(
+        &mut self,
+        ids: &[ObjectId],
+        grips: &[ControlPointId],
+        key: K,
+        document: &Document,
+        display_cache: &RefCell<DisplayCache>,
+    ) -> Result<Rc<MorphPreviewImage>, viboceros_command::CommandError> {
         let valid = self.tolerance == Some(document.tolerance())
-            && self.sources.len() == ids.len()
-            && self.sources.iter().zip(ids).all(|(s, id)| {
-                s.id == *id
-                    && document.object(*id).is_some_and(|o| {
-                        s.snapshot.shares_storage_with(o.geometry_snapshot())
-                            && s.density == o.attributes().wire_density()
-                            && s.group == o.top_group()
-                    })
+            && self.object_ids == ids
+            && self.grips == grips
+            && self.sources.iter().all(|s| {
+                document.object(s.id).is_some_and(|o| {
+                    s.snapshot.shares_storage_with(o.geometry_snapshot())
+                        && s.density == o.attributes().wire_density()
+                        && s.group == o.top_group()
+                        && s.grips
+                            .as_ref()
+                            .is_none_or(|(mode, _)| document.grip_mode(s.id) == Some(*mode))
+                })
             });
         if !valid {
             let mut display = display_cache.borrow_mut();
-            self.sources = ids
+            let mut picks = BTreeMap::<ObjectId, (GripMode, BTreeSet<usize>)>::new();
+            for grip in grips {
+                let mode = document
+                    .grip_mode(grip.object)
+                    .filter(|_| {
+                        document
+                            .control_point_locations(grip.object)
+                            .is_some_and(|p| grip.index < p.len())
+                    })
+                    .ok_or(
+                        viboceros_document::DocumentError::InvalidControlPointSelection {
+                            object: grip.object,
+                            index: grip.index,
+                        },
+                    )?;
+                picks
+                    .entry(grip.object)
+                    .or_insert_with(|| (mode, BTreeSet::new()))
+                    .1
+                    .insert(grip.index);
+            }
+            let mut owners = ids.to_vec();
+            owners.extend(picks.keys().copied().filter(|id| !ids.contains(id)));
+            self.object_ids = ids.to_vec();
+            self.grips = grips.to_vec();
+            self.sources = owners
                 .iter()
                 .map(|id| {
                     let o = document
@@ -120,6 +166,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                         cage: None,
                         boundary_cage: None,
                         boundary_display: None,
+                        grips: picks.get(id).cloned(),
                     })
                 })
                 .collect::<Result<Vec<_>, viboceros_document::DocumentError>>()?;
@@ -162,10 +209,38 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
             );
         }
         let mut objects = BTreeMap::new();
+        let mut posed_grips = BTreeMap::new();
         let mut shaded_objects = key.omit_shaded_isocurves().then(BTreeMap::new);
         let mut group_maps = BTreeMap::new();
         for (i, source) in self.sources.iter_mut().enumerate() {
-            let object = if key.rigid() {
+            let object = if let Some((mode, picks)) = &source.grips {
+                let geometry = source.snapshot.with_morphed_grips_in_mode(
+                    picks,
+                    &morph,
+                    document.tolerance(),
+                    *mode,
+                )?;
+                let points = geometry.grip_locations(*mode)?;
+                for &index in picks {
+                    if let Some(&point) = points.get(index) {
+                        posed_grips.insert(
+                            ControlPointId {
+                                object: source.id,
+                                index,
+                            },
+                            point,
+                        );
+                    }
+                }
+                PreviewObject {
+                    geometry: Rc::new(DisplayGeometry::new(
+                        geometry.into(),
+                        source.density,
+                        document.tolerance(),
+                    )),
+                    transform: None,
+                }
+            } else if key.rigid() {
                 let transform = if let Some(group) = source.group {
                     if let Some(map) = group_maps.get(&group) {
                         *map
@@ -266,7 +341,23 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                 }
             };
             if let Some(shaded) = &mut shaded_objects {
-                let geometry = if key.rigid() {
+                let geometry = if source.grips.is_some() {
+                    let curves = match &*object.geometry.geometry {
+                        Geometry::NurbsSurface(s) => surface_boundaries(s)?,
+                        Geometry::Brep(b) => b.edges().iter().map(|e| e.curve().clone()).collect(),
+                        _ => Vec::new(),
+                    };
+                    if curves.is_empty() {
+                        object.geometry.clone()
+                    } else {
+                        display_with_boundaries(
+                            &object,
+                            source.density,
+                            document.tolerance(),
+                            curves,
+                        )
+                    }
+                } else if key.rigid() {
                     if source.boundary_display.is_none() {
                         let curves = match &*source.snapshot {
                             Geometry::Brep(b) => {
@@ -331,6 +422,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
         let image = Rc::new(MorphPreviewImage {
             objects,
             guide: key.guide(&morph).unwrap_or_default(),
+            grips: posed_grips,
             shaded_objects,
         });
         self.key = Some(key);

@@ -3,6 +3,8 @@ use super::*;
 use std::sync::Arc;
 use viboceros_geometry::Point3;
 mod geometry;
+#[cfg(test)]
+mod morph_tests;
 mod transform;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -45,7 +47,8 @@ impl Geometry {
         ) && !matches!(self, Self::Brep(brep) if brep.faces().len() != 1)
     }
 
-    fn grip_locations(&self, mode: GripMode) -> Result<Vec<Point3>, GeometryError> {
+    /// Source grip coordinates in the selected control/edit basis, independent of display overrides.
+    pub fn grip_locations(&self, mode: GripMode) -> Result<Vec<Point3>, GeometryError> {
         if mode == GripMode::Edit {
             return self
                 .curve_ref()

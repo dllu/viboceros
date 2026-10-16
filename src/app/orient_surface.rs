@@ -16,6 +16,7 @@ enum Phase {
 pub(super) struct Session {
     group: viboceros_document::HistoryGroup,
     sources: Vec<ObjectId>,
+    grips: Vec<viboceros_document::ControlPointId>,
     postselected: bool,
     options: Options,
     phase: Phase,
@@ -44,7 +45,7 @@ impl Session {
         }
         Some(crate::viewport::AffinePreview {
             sources: &self.sources,
-            grips: &[],
+            grips: &self.grips,
             definition: crate::viewport::affine_preview::Mapping::Surface {
                 placement: self.placement.as_ref()?,
                 phase: self.preview_phase()?,
@@ -65,6 +66,7 @@ impl Session {
         let phase = self.preview_phase()?;
         Some(crate::viewport::OrientSurfacePreview {
             sources: &self.sources,
+            grips: &self.grips,
             placement: self.placement.as_ref()?,
             phase,
             normal: if phase == PreviewPhase::Target {
@@ -205,7 +207,12 @@ impl VibocerosApp {
             || self.document.selected_object_ids().collect::<Vec<_>>(),
             |v| v.to_vec(),
         );
-        if sources.is_empty() {
+        let grips = self
+            .document
+            .selected_control_points()
+            .map(|(id, _)| id)
+            .collect::<Vec<_>>();
+        if sources.is_empty() && grips.is_empty() {
             self.start_transform_source_prompt("OrientOnSrf");
             self.object_prompt.as_mut().unwrap().command_override = Some(input.into());
             return true;
@@ -221,6 +228,7 @@ impl VibocerosApp {
         self.orient_surface_session = Some(Session {
             group,
             sources,
+            grips,
             postselected: picked.is_some(),
             options,
             phase: if options.on_surface {
@@ -269,21 +277,18 @@ impl VibocerosApp {
         if !self.picking_orient_surface() {
             return false;
         }
-        let result = Target::capture(&self.document, id, face).and_then(|t| {
-            if self
-                .orient_surface_session
-                .as_ref()
-                .unwrap()
-                .sources
-                .contains(&id)
-            {
-                Err(viboceros_command::CommandError::Usage(
-                    "Select a surface outside the captured source objects",
-                ))
-            } else {
-                Ok(t)
-            }
-        });
+        let result =
+            Target::capture(&self.document, id, face).and_then(|t| {
+                if self.orient_surface_session.as_ref().is_some_and(|s| {
+                    s.sources.contains(&id) || s.grips.iter().any(|g| g.object == id)
+                }) {
+                    Err(viboceros_command::CommandError::Usage(
+                        "Select a surface outside the captured source objects",
+                    ))
+                } else {
+                    Ok(t)
+                }
+            });
         match result {
             Ok(t) => {
                 let s = self.orient_surface_session.as_mut().unwrap();
@@ -421,7 +426,7 @@ impl VibocerosApp {
             options.destination_normal = Some(options.destination_normal.unwrap_or(s.normal));
         }
         let input = format!(
-            "OrientOnSrf {} {} {} Surface={} Face={} {} {}={}",
+            "OrientOnSrf {} {} {} Surface={} Face={} {} {}={} {}",
             format_model_point(s.base.unwrap()),
             format_model_point(s.reference.unwrap()),
             format_model_point(pose.point),
@@ -437,7 +442,8 @@ impl VibocerosApp {
                 .iter()
                 .map(ToString::to_string)
                 .collect::<Vec<_>>()
-                .join(",")
+                .join(","),
+            super::transform_sources::grip_argument(&s.grips, s.postselected)
         );
         match self.commands.execute_in_history_group(
             &mut self.document,
@@ -609,7 +615,11 @@ impl VibocerosApp {
             return false;
         };
         if s.applied && s.postselected {
-            self.document.clear_selection();
+            if s.options.rigid && !s.grips.is_empty() {
+                let _ = self.document.select_command_results([]);
+            } else {
+                self.document.clear_selection();
+            }
         }
         s.applied
     }

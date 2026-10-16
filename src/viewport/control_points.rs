@@ -53,6 +53,7 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         preview: Option<super::object_preview::TransformedObjects<'_>>,
+        deformation: Option<(&std::collections::BTreeMap<ControlPointId, Point3>, bool)>,
     ) {
         let moving_ids = preview
             .map(|p| {
@@ -64,8 +65,15 @@ impl Viewport {
             .unwrap_or_default();
         for (id, point, selected) in document.control_points() {
             let moving = preview.filter(|_| moving_ids.contains(&id));
-            let posed = moving.and_then(|preview| preview.transform.transform_point(point).ok());
-            let point = if moving.is_some_and(|p| !p.copy) {
+            let posed = moving
+                .and_then(|preview| preview.transform.transform_point(point).ok())
+                .or_else(|| deformation.and_then(|(points, _)| points.get(&id).copied()));
+            let copy = moving.map(|p| p.copy).or_else(|| {
+                deformation
+                    .filter(|(points, _)| points.contains_key(&id))
+                    .map(|(_, copy)| copy)
+            });
+            let point = if copy == Some(false) {
                 posed.unwrap_or(point)
             } else {
                 point
@@ -81,7 +89,7 @@ impl Viewport {
                 };
                 painter.rect_filled(Rect::from_center_size(screen, Vec2::splat(6.)), 0., color);
             }
-            if moving.is_some_and(|p| p.copy)
+            if copy == Some(true)
                 && let Some(screen) = posed
                     .and_then(|p| self.project_selection_point(p, rect))
                     .filter(|p| rect.contains(*p))

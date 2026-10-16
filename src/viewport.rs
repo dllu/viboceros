@@ -1890,6 +1890,10 @@ impl Viewport {
                 Some(object_preview::ObjectPreview::Affine(map)) => Some(map),
                 _ => None,
             },
+            surface_preview
+                .as_ref()
+                .zip(input.orient_surface_preview)
+                .map(|(image, p)| (&image.grips, p.placement.options.copy)),
         );
         if let Some((filter, _)) = component_hover_mode
             && let Some(pointer) = response.hover_pos()

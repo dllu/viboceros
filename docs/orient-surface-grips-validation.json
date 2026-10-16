@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337",
+  "component": "OrientOnSrf control/edit grip placement, mixed source edits, copies and previews",
+  "complete_native_command_parity_qualified": false,
+  "native_grip_undo_redo_qualified": false,
+  "native_grip_preview_appearance_qualified": false,
+  "performance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "implementation": "Generalize existing knot/weight/seam-preserving control edits to a point mapper, and reuse staged object/grip transactions for nonlinear edits. Rigid and deformable OrientOnSrf use measured separate grip copy/group/selection policies. Capture original grip IDs through repeated targets; Sources= freezes an empty ordinary object set. Extend shared morph previews to exact partial owner geometry and deformed grip markers without model edits.",
+  "coverage": {
+    "native_grip_model_state_comparisons": 30,
+    "matched_native_grip_models": 30,
+    "ui_native_grip_workflow_replays": 30,
+    "retained_whole_surface_model_cases": 32,
+    "grip_marker_view_scenarios": 4,
+    "new_rust_tests": 8,
+    "unique_rust_tests": 493,
+    "passed_rust_test_executions": 545,
+    "ignored_rust_tests": 9,
+    "python_tests": 16,
+    "new_python_tests": 3,
+    "coordinate_epsilon": 1e-06,
+    "maximum_coordinate_error": 7.743690133565906e-10,
+    "portable_and_usd_brep_backends_checked": true
+  },
+  "native_version": "8.32.26160.13001",
+  "native_capture": {
+    "scheme": "VibocerosOracleSurfaceGrips20261016c",
+    "fixture": "tools/rhino_oracle/fixtures/orient_surface_grips.json",
+    "rows": 30,
+    "method": "Actual -OrientOnSrf macros on authored rational and periodic curves, rational surfaces, meshes and curve edit grips. Capture complete before/after SDK definitions, grip locations, active display and selected indices, group memberships and definition counts, original/peer identity and unchanged guide. SelPt plus Enter drives command-first selection. No native geometry or returned frames feed the Rust inputs."
+  },
+  "observations": {
+    "inactive_knot_padding_normalized_for_sdk": true,
+    "production_full_knots_preserved": true,
+    "knot_note": "RhinoCommon omits the first and last entries of the full vector; the native observer duplicates adjacent exposed knots. Only those two unobservable padding values are normalized in local observation records; every exposed knot and all source production knots remain checked.",
+    "copy_policy": "Rigid grip copies recreate groups and select copied grips. A single ordinary peer copied with them loses memberships. Deformable grip copies join source groups and leave new grips unselected; whole peers retain independent copied groups. Command-first source grip selection follows separate rigid/deformable retention rules.",
+    "capture_helper_note": "The final helper additionally rejects unqualified OnSurface capture recipes. All retained recipes use the ordinary reference path; their captured macros and authored inputs are retained unchanged."
+  },
+  "checks": [
+    {
+      "name": "fmt",
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "elapsed_seconds": 6.395,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "geometry",
+      "command": "cargo test -p viboceros-geometry --lib grip",
+      "exit_code": 0,
+      "elapsed_seconds": 37.071,
+      "log_sha256": "664bbe6575a083526d97e37bc9c6c135d103f1579fccacc87ddd7a27c8b5a5cf",
+      "passed_rust_tests": 3
+    },
+    {
+      "name": "document",
+      "command": "cargo test -p viboceros-document --lib",
+      "exit_code": 0,
+      "elapsed_seconds": 17.424,
+      "log_sha256": "90809b153bfd8a1e29082ffb3adfb8109638361e1e47a7a855fbd75e77b88302",
+      "passed_rust_tests": 272
+    },
+    {
+      "name": "command-grips",
+      "command": "cargo test -p viboceros-command --lib grip",
+      "exit_code": 0,
+      "elapsed_seconds": 69.128,
+      "log_sha256": "bff07d28ab01aae28a2e424f8db7a069b40d67059f70147998ac075943e08c20",
+      "passed_rust_tests": 8
+    },
+    {
+      "name": "command-copy",
+      "command": "cargo test -p viboceros-command --lib copy_",
+      "exit_code": 0,
+      "elapsed_seconds": 4.893,
+      "log_sha256": "014f748a98931cd6b8e3eee561113c81b65b62f25476a34ba53bb39fd3e75690",
+      "passed_rust_tests": 39
+    },
+    {
+      "name": "command-orient",
+      "command": "cargo test -p viboceros-command --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 1.33,
+      "log_sha256": "5f7a2bdf5f0f14296805bba2e9d416ff36394514d272b533f99b81224b643a6e",
+      "passed_rust_tests": 12
+    },
+    {
+      "name": "ui",
+      "command": "cargo test -p viboceros --bin viboceros orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 1.278,
+      "log_sha256": "b44ee8173943f4e388ca34e81b86b6690014e76b952267cca36f2e0da4d6ab50",
+      "passed_rust_tests": 32
+    },
+    {
+      "name": "preview",
+      "command": "cargo test -p viboceros --bin viboceros preview",
+      "exit_code": 0,
+      "elapsed_seconds": 25.078,
+      "log_sha256": "6147f3ef555c9409cd6f718443598c4c2a87c8eea295887f6908ad85d806fe10",
+      "passed_rust_tests": 113
+    },
+    {
+      "name": "ui-grips",
+      "command": "cargo test -p viboceros --bin viboceros grip",
+      "exit_code": 0,
+      "elapsed_seconds": 1.834,
+      "log_sha256": "a036b42f4b29156824114cd575feb7eed53413250d5e03f051d877bcf1e69045",
+      "passed_rust_tests": 34
+    },
+    {
+      "name": "oracle",
+      "command": "cargo test -p viboceros-oracle --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 45.308,
+      "log_sha256": "e9f1e9d05837d99e08f019788074782eeecb3f463c8787f53636c51d6fcc114b",
+      "passed_rust_tests": 5
+    },
+    {
+      "name": "native-command",
+      "command": "cargo test -p viboceros-command --features native-smlib --lib grip",
+      "exit_code": 0,
+      "elapsed_seconds": 76.192,
+      "log_sha256": "4b2012aa1f2f17516b5762855488ce15ad5f615018ddb04fb40e905128dc7a34",
+      "passed_rust_tests": 8
+    },
+    {
+      "name": "native-oracle",
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 102.186,
+      "log_sha256": "7f3f4bc338cf4cfe75fb92ed409d86dcb7d68be763e5fcfea433afc6035e6a2b",
+      "passed_rust_tests": 5
+    },
+    {
+      "name": "native-ui",
+      "command": "cargo test -p viboceros --features native-smlib --bin viboceros orient_surface",
+      "exit_code": 0,
+      "elapsed_seconds": 123.832,
+      "log_sha256": "08740b6b401508947371d37f3b60edec3505fbae559beb365fd5dffab58ee9c6",
+      "passed_rust_tests": 13
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 36.658,
+      "log_sha256": "ed3ddfacf531f9b1f163596ae694a06cb7f6f4a24ef4a66787cdd7b204ff8992",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 51.24,
+      "log_sha256": "073cd115accda5b1d78b8adcaf664339ea6031a1337b1a23d62f96983e922a2e",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "comparison",
+      "command": "python3 -m tools.rhino_oracle.orient_surface_grips_comparison tools/rhino_oracle/fixtures/orient_surface_grips.json tools/rhino_oracle/observations/orient_surface_grips_viboceros_20261016.json tools/rhino_oracle/observations/orient_surface_grips_rhino_20261016.json tools/rhino_oracle/observations/orient_surface_grips_comparison_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.057,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "python",
+      "command": "python3 -m unittest tools.rhino_oracle.test_orient_surface_grips tools.rhino_oracle.test_orient_surface tools.rhino_oracle.test_orient_points tools.rhino_oracle.test_orient_on_curve",
+      "exit_code": 0,
+      "elapsed_seconds": 0.14,
+      "log_sha256": "e08486ec6f804d945e9bfd688d97b239eb9c185dde8796865b4a52ee1cdb59c8",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "final-fmt",
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "elapsed_seconds": 5.533,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "copy-redo",
+      "command": "cargo test -p viboceros-document --lib nonlinear_copy_grips",
+      "exit_code": 0,
+      "elapsed_seconds": null,
+      "log_sha256": "fa60e53853092c724b1f4c0e1fce57e0bb5c5bc9f3e921dce06f8256fa66ea5f",
+      "passed_rust_tests": 1
+    }
+  ],
+  "limitations": [
+    "This is finite fixture coverage, not complete OrientOnSrf or arbitrary-owner parity.",
+    "Native grip Undo/Redo and preview pixels are not qualified; local history, redo grip display/selection and CPU grip marker shapes are checked.",
+    "Grip support follows existing owner editing restrictions. The destination guide cannot also supply source grips.",
+    "Native group definition names, custom layer/attribute combinations and OnSurface grip workflows are not qualified.",
+    "Nonuniform XYZ scaling, Scale/Rotation prompt-mode menus and remembering non-copy settings across invocations remain unimplemented.",
+    "Point-map geometry comes from the existing surface placement solver. Existing curve/surface/B-rep fitting limitations still apply to whole-object peers."
+  ],
+  "historical_provenance": {
+    "preserved_records": 12,
+    "preserved_entries": 32,
+    "preexisting_unverifiable_records_unchanged": 69,
+    "method": "Original digests and non-hash metadata remain intact; only baseline-verifiable affected paths move to immutable full base-revision Git references."
+  },
+  "sha256": {
+    "README.md": "c57a3965fb233669219749c9d9759d135913799ac14a5322e888f751a91ca258",
+    "crates/viboceros-command/src/history_policy.rs": "372c755474936f9ee93b506e641b43a2099618babe67f27e081d77cfbf570d20",
+    "crates/viboceros-command/src/orient_surface.rs": "d6fe4aefdc9ba9c12d777975b8dcf0a248079178c2e179ac1b97e5987e2f7ad1",
+    "crates/viboceros-document/src/control_points.rs": "7e71a5e40e7ad861c39c05678e60ebaafee7590801e475d060df21928714be0b",
+    "crates/viboceros-document/src/control_points/geometry.rs": "06aa7665a2bd7e6406df9cacc77d2bac534674ed04f4822971dac625243e8e0c",
+    "crates/viboceros-document/src/control_points/morph_tests.rs": "557b24a4446b827fa1fdd232022597c5cffd99229d3f820da7ead629087bb552",
+    "crates/viboceros-document/src/control_points/transform.rs": "56bf85e17272f8d7b070240218305166486b7ae515497846bdab93689050d6b0",
+    "crates/viboceros-geometry/src/nurbs/grips.rs": "81281ce283b192913ac66354644c74ab22e4fde6d01aae5e58f522f34e4bec0f",
+    "crates/viboceros-geometry/src/nurbs_surface/grips.rs": "1432ed9695c5448544ba2e023d2a95b44b4e4f829411b4f049a6610c620f99bc",
+    "crates/viboceros-oracle/src/lib.rs": "b0c7b019f12da3266b4d29005a5305c0212f69b57747cce548c000edc4103bb9",
+    "crates/viboceros-oracle/src/orient_surface_grips.rs": "a534ec494f6199e586d81dce365f8c9e18d702dad70eb0560ee3758c6f34baef",
+    "docs/commands/orient-on-surface.md": "56f426a25e19353e2e9d0d05fe087b5621cc639a022f873b81e27564ec8e1d83",
+    "docs/curvature-graph-validation.json": "21617a612175f7165b4d4146d0d4316c7f60200f7ab3b046daf48d1fc158375e",
+    "docs/edit-points-qualification.json": "42c67c74abc8bc872cf26c4b4d54db1621f6cb8305daaf677dde97acfd5afbe5",
+    "docs/line-through-points-validation.json": "0d175866fb3fe7c882d438a4197ea21c90bb8014771e28a444d141c4ee4df76d",
+    "docs/orient-on-curve-edge-validation.json": "37ba40e33f8d0555aec109654d04d6c621db68a78dea1d05d3a0908581f6c6a9",
+    "docs/orient-on-curve-validation.json": "b285412c2287c3a160f5498495658ea4be0a7aff877b1b392c8aca7219457c05",
+    "docs/orient-points-validation.json": "43ce2695092cda27fab6772fc9e3988d503bf9632edaeed1949a101d770a3ef8",
+    "docs/orient-surface-validation.json": "8a9bda740cbeb9932287a28e18a52d3c870fde75693cfd8d7bc448764e47262a",
+    "docs/plane-through-points-validation.json": "2cdd76a9153edcc872ae61100fa47e7db1fce4fec3cfcb3f580ce67356382892",
+    "docs/point-selection-qualification.json": "64caa03bbce227928e635c069f1c7e8f6c7686468dcfd9069d4ed1ab6ebe689c",
+    "docs/set-point-grips-qualification.json": "03b9f00005a9e14ae4035471650b4cca6fb5a9c934d9c8fb1bfc70a209ec77df",
+    "docs/set-point-preview-qualification.json": "6adb46f577442a2e62eb112ef509fb5ea2f59386a7a475ef493cfd897336d340",
+    "docs/sphere-fit-points-validation.json": "8f3c2c8ca53e5627120e48d7c1241691df5364829577759954ebae06f966431d",
+    "src/app.rs": "a10fddf22aa452e9bb3f8d9ea9b1051acd7d8279928b802fda538985513e61d1",
+    "src/app/orient_surface.rs": "93f85ecead03f6f9fb66b2678f464f12719e1afeb8a6ec9c8ac405ff30583158",
+    "src/app/tests/orient_surface_grips.rs": "1435ec4fdf1c5e8de4a48708df68b7e3c11e566e37cd85cc3d29554107437c49",
+    "src/app/transform_sources.rs": "5d17f42b1a372aea9b8b0e336b54ec3229a0cf687e1dc93f886919ab8146cb21",
+    "src/viewport.rs": "ede5a973ff57ff90727e2dd69f8510e30c5cd824b48e11e2d784fc9c4339e652",
+    "src/viewport/control_points.rs": "658e373410ff90a76ba3f438642a5fe1d1773809ca5b496957a94a451903cf5c",
+    "src/viewport/morph_preview.rs": "5a62a9d5f93b2b269da1287e50bc32feb2177d08033194f79195e6c6d32089f5",
+    "src/viewport/orient_surface_preview.rs": "0f44c3e4ee2253d3d10b350267f7180dcb07e95183493cee26ecb69a1d182ec2",
+    "tools/rhino_oracle/fixtures/orient_surface_grips.json": "4f8bea67fab006ef0589beb9537e309b4e08830f0a9d7ef6bc7d07b8795bce44",
+    "tools/rhino_oracle/observations/orient_surface_grips_comparison_20261016.json": "5d2277a75124979a15175f2379ee51613e1eeec2886e28aab6947de93e31a7fa",
+    "tools/rhino_oracle/observations/orient_surface_grips_rhino_20261016.json": "05d87a53ab3c7120eeee4f12090f0bb129fe74bdd0375d16087d8e578897d992",
+    "tools/rhino_oracle/observations/orient_surface_grips_viboceros_20261016.json": "e262c1ca27494a63e5f6244e1520afd70f5529abf525faa2501ae5509a8bbd6b",
+    "tools/rhino_oracle/orient_surface_grips_comparison.py": "7820fe60cd3c72fc5c62dbc892c2eb511adc7d757a967170a1804da32920970d",
+    "tools/rhino_oracle/orient_surface_grips_probe.py": "771982b23f1592aef0679ef167e2ddc5beaed314bacbcdc6fed352798fae6f6c",
+    "tools/rhino_oracle/rhino_worker.py": "825432997f314d1a2f77b910e9cde6abb68cba39dba45d15c7a9fc2278c32ea0",
+    "tools/rhino_oracle/structural_sdk.py": "3e26c2b3cf2a9d4cf17ad025a1b082f45e8933693e85934933862402278a9c03",
+    "tools/rhino_oracle/test_orient_surface_grips.py": "c12889afde0c329831fc21bfd9bb5a4a5e6b08c46d9cc617cc643c8f1035d7ea"
+  }
+}

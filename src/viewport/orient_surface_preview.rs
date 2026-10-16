@@ -57,6 +57,7 @@ pub(crate) type OrientSurfacePreviewCache = MorphPreviewCache<Key>;
 #[derive(Clone, Copy)]
 pub(crate) struct OrientSurfacePreview<'a> {
     pub sources: &'a [ObjectId],
+    pub grips: &'a [viboceros_document::ControlPointId],
     pub placement: &'a Placement,
     pub phase: PreviewPhase,
     pub normal: Vector3,
@@ -86,8 +87,9 @@ impl OrientSurfacePreview<'_> {
             .placement
             .preview_pose(self.phase, point)
             .and_then(|(pose, options)| {
-                self.cache.borrow_mut().get(
+                self.cache.borrow_mut().get_with_grips(
                     self.sources,
+                    self.grips,
                     Key {
                         placement: self.placement.clone(),
                         pose,
@@ -150,6 +152,7 @@ mod tests {
         let normal = Vector3::try_new(0., 0., 1.).unwrap();
         let p = OrientSurfacePreview {
             sources: &ids,
+            grips: &[],
             placement: &placement,
             phase: PreviewPhase::Target,
             normal,
@@ -203,6 +206,7 @@ mod tests {
                 let normal = Vector3::try_new(0., 0., 1.).unwrap();
                 let preview = OrientSurfacePreview {
                     sources: &ids,
+                    grips: &[],
                     placement: &placement,
                     phase: PreviewPhase::Target,
                     normal,
@@ -254,6 +258,249 @@ mod tests {
                 assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
                 assert!(doc.undo_label().is_none());
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod grip_tests {
+    use super::*;
+    use viboceros_document::{ControlPointId, GripMode};
+    use viboceros_oracle::OrientSurfaceGripsFixture;
+    fn recipes() -> serde_json::Value {
+        serde_json::from_str(include_str!(
+            "../../tools/rhino_oracle/fixtures/orient_surface_grips.json"
+        ))
+        .unwrap()
+    }
+    #[test]
+    fn orient_surface_grip_previews_share_exact_partial_owner_edits_and_invalidate_modes_and_picks()
+    {
+        let rows = recipes();
+        for id in [
+            "rational-False-False",
+            "periodic-False-False",
+            "surface-False-False",
+            "mesh-False-False",
+            "edit-False-False",
+        ] {
+            let r = rows["operations"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|r| r["id"] == id)
+                .unwrap();
+            let f: OrientSurfaceGripsFixture = serde_json::from_value(r.clone()).unwrap();
+            let mut doc = Document::default();
+            let guide = doc
+                .add_geometry(f.placement.guide(doc.tolerance()).unwrap())
+                .unwrap();
+            let source = doc
+                .add_geometry(f.source_geometry(doc.tolerance()).unwrap())
+                .unwrap();
+            match f.mode() {
+                GripMode::Control => doc.enable_control_points([source]).unwrap(),
+                GripMode::Edit => doc.enable_edit_points([source]).unwrap(),
+            };
+            let picks = f
+                .selected
+                .iter()
+                .map(|&index| ControlPointId {
+                    object: source,
+                    index,
+                })
+                .collect::<Vec<_>>();
+            let ids = [source];
+            let target =
+                viboceros_command::orient_surface::Target::capture(&doc, guide, None).unwrap();
+            let placement = Placement::try_new(
+                Point3::try_from(f.placement.base).unwrap(),
+                Point3::try_from(f.placement.reference).unwrap(),
+                target,
+                f.placement.options.options(),
+                f.placement.plane(doc.tolerance()).unwrap(),
+                doc.tolerance(),
+            )
+            .unwrap();
+            let q = f.placement.target(f.placement.uv, doc.tolerance()).unwrap();
+            let normal = Vector3::try_new(0., 0., 1.).unwrap();
+            let cache = RefCell::new(OrientSurfacePreviewCache::default());
+            let display = RefCell::new(DisplayCache::default());
+            let preview = OrientSurfacePreview {
+                sources: &ids,
+                grips: &picks,
+                placement: &placement,
+                phase: PreviewPhase::Target,
+                normal,
+                last_normal: normal,
+                last_point: Some(q),
+                cache: &cache,
+            };
+            let before = doc.objects().cloned().collect::<Vec<_>>();
+            doc.clear_history().unwrap();
+            let image = preview.resolve(None, &doc, &display).0.unwrap();
+            for _ in 0..4 {
+                assert!(Rc::ptr_eq(
+                    &image,
+                    &preview.resolve(None, &doc, &display).0.unwrap()
+                ));
+            }
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+            assert!(doc.undo_label().is_none());
+            assert_eq!(image.grips.len(), picks.len());
+            let point = |p: [f64; 3]| p.map(|x| x.to_string()).join(",");
+            let command = format!(
+                "OrientOnSrf {} {} {} Surface={guide} Sources={source} GripSources={} {}",
+                point(f.placement.base),
+                point(f.placement.reference),
+                point(q.to_array()),
+                picks
+                    .iter()
+                    .map(|g| format!("{}:{}", g.object, g.index))
+                    .collect::<Vec<_>>()
+                    .join(","),
+                f.placement.options.options().arguments()
+            );
+            viboceros_command::CommandRegistry::with_builtins()
+                .execute(&mut doc, &command)
+                .unwrap();
+            assert_eq!(
+                &*image.objects[&source].geometry.geometry,
+                doc.object(source).unwrap().geometry(),
+                "{id}"
+            );
+            for (g, p) in &image.grips {
+                assert_eq!(*p, doc.control_point_locations(g.object).unwrap()[g.index]);
+            }
+            let changed = preview.resolve(None, &doc, &display).0.unwrap();
+            assert!(!Rc::ptr_eq(&image, &changed));
+            if f.source_geometry(doc.tolerance())
+                .unwrap()
+                .curve_ref()
+                .is_some()
+            {
+                doc.enable_edit_points([source]).unwrap();
+                let mode_changed = preview.resolve(None, &doc, &display).0.unwrap();
+                if f.mode() == GripMode::Control {
+                    assert!(!Rc::ptr_eq(&changed, &mode_changed));
+                }
+            }
+            let different = [ControlPointId {
+                object: source,
+                index: 1,
+            }];
+            let changed_picks = OrientSurfacePreview {
+                grips: &different,
+                ..preview
+            };
+            let image = changed_picks.resolve(None, &doc, &display).0.unwrap();
+            assert_eq!(image.grips.len(), 1);
+            assert!(image.grips.contains_key(&different[0]));
+            let invalid = [ControlPointId {
+                object: source,
+                index: 999,
+            }];
+            assert!(
+                OrientSurfacePreview {
+                    grips: &invalid,
+                    ..preview
+                }
+                .resolve(Some(q), &doc, &display)
+                .0
+                .is_none()
+            );
+        }
+    }
+    #[test]
+    fn orient_surface_grip_markers_draw_at_deformed_positions_in_every_view() {
+        use crate::viewport::preview_test_support::frame;
+        let rows = recipes();
+        let f: OrientSurfaceGripsFixture =
+            serde_json::from_value(rows["operations"][2].clone()).unwrap();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut doc = Document::default();
+            let guide = doc
+                .add_geometry(f.placement.guide(doc.tolerance()).unwrap())
+                .unwrap();
+            let source = doc
+                .add_geometry(f.source_geometry(doc.tolerance()).unwrap())
+                .unwrap();
+            doc.enable_control_points([source]).unwrap();
+            let picks = [ControlPointId {
+                object: source,
+                index: 0,
+            }];
+            doc.select_control_points(picks, SelectionMode::Add)
+                .unwrap();
+            let target =
+                viboceros_command::orient_surface::Target::capture(&doc, guide, None).unwrap();
+            let placement = Placement::try_new(
+                Point3::try_from(f.placement.base).unwrap(),
+                Point3::try_from(f.placement.reference).unwrap(),
+                target,
+                f.placement.options.options(),
+                f.placement.plane(doc.tolerance()).unwrap(),
+                doc.tolerance(),
+            )
+            .unwrap();
+            let q = f.placement.target(f.placement.uv, doc.tolerance()).unwrap();
+            let normal = Vector3::try_new(0., 0., 1.).unwrap();
+            let cache = RefCell::new(OrientSurfacePreviewCache::default());
+            let preview = OrientSurfacePreview {
+                sources: &[],
+                grips: &picks,
+                placement: &placement,
+                phase: PreviewPhase::Target,
+                normal,
+                last_normal: normal,
+                last_point: Some(q),
+                cache: &cache,
+            };
+            doc.clear_history().unwrap();
+            let mut view = Viewport::new(kind);
+            let context = egui::Context::default();
+            let input = ViewportInput {
+                orient_surface_preview: Some(preview),
+                ..Default::default()
+            };
+            frame(&context, &mut view, &doc, input, vec![]);
+            let posed = cache.borrow().image.as_ref().unwrap().grips[&picks[0]];
+            let pixel = view.project(posed, view.last_rect.unwrap()).unwrap();
+            let mut shapes = Vec::new();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        let _ = view.show(ui, &doc, input, &[], 0, true);
+                    },
+                )
+                .shapes
+                .into_iter()
+                .for_each(|s| shapes.push(s.shape));
+            fn marker(shape: &egui::Shape, pixel: Pos2) -> bool {
+                match shape {
+                    egui::Shape::Rect(r) => {
+                        r.fill == SELECTED_COLOR
+                            && r.rect.width() == 6.
+                            && r.rect.center().distance(pixel) < 0.1
+                    }
+                    egui::Shape::Vec(s) => s.iter().any(|s| marker(s, pixel)),
+                    _ => false,
+                }
+            }
+            assert!(
+                shapes.iter().any(|s| marker(s, pixel)),
+                "{kind:?} missing destination grip marker"
+            );
+            assert!(doc.undo_label().is_none());
         }
     }
 }

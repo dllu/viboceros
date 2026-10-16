@@ -87,16 +87,20 @@ fn source_arguments<'a>(
             if sources.is_some() {
                 return Err(CommandError::Usage(usage));
             }
-            let ids = value
-                .split(',')
-                .map(|id| id.parse::<ObjectId>())
-                .collect::<Result<Vec<_>, _>>()
-                .map_err(|_| CommandError::Usage(usage))?;
+            let ids = if allow_grips && value.is_empty() {
+                Vec::new()
+            } else {
+                value
+                    .split(',')
+                    .map(|id| id.parse::<ObjectId>())
+                    .collect::<Result<Vec<_>, _>>()
+                    .map_err(|_| CommandError::Usage(usage))?
+            };
             let unique = ids
                 .iter()
                 .copied()
                 .collect::<std::collections::BTreeSet<_>>();
-            if ids.is_empty() || unique.len() != ids.len() {
+            if (!allow_grips && ids.is_empty()) || unique.len() != ids.len() {
                 return Err(CommandError::Usage(usage));
             }
             let postselected = super::option_name_eq(name, "PickedSources");

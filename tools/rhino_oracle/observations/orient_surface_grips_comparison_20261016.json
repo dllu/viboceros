@@ -1,0 +1,186 @@
+{
+  "cases": 30,
+  "matched_cases": 30,
+  "results": [
+    {
+      "id": "rational-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "rational-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "rational-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.9369505999122794e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "rational-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.9369505999122794e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "periodic-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "periodic-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "periodic-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.9369505999122794e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "periodic-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.9369505999122794e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 3.449351915207899e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 3.449351915207899e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.5660584768161243e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.5660584768161243e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mesh-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mesh-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mesh-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.9369505999122794e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mesh-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.9369505999122794e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mixed-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "edit-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 8.716805055541954e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mixed-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "edit-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 8.716805055541954e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mixed-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 3.6006753134643077e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "edit-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 7.338130103562435e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "mixed-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 3.6006753134643077e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "edit-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 7.338130103562435e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "batch-True",
+      "metadata_match": true,
+      "max_coordinate_error": 7.743690133565906e-10,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "batch-False",
+      "metadata_match": true,
+      "max_coordinate_error": 6.272774799587211e-10,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "post-True",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "post-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.5274782267104e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "post-copy-True",
+      "metadata_match": true,
+      "max_coordinate_error": 4.373834627813267e-12,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "post-copy-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.5274782267104e-12,
+      "within_1e_minus_6": true
+    }
+  ]
+}

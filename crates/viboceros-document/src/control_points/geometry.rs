@@ -21,6 +21,41 @@ impl Geometry {
         tolerance: Tolerance,
         mode: GripMode,
     ) -> Result<Self, GeometryError> {
+        self.with_grip_map(
+            indices,
+            |point| transform.transform_point(point),
+            tolerance,
+            mode,
+            transform == AffineTransform3::identity(),
+        )
+    }
+
+    /// Move control or Greville edit grips through a point map without fitting
+    /// the whole object. Unselected locations, source knots and weights remain fixed.
+    pub fn with_morphed_grips_in_mode(
+        &self,
+        indices: &BTreeSet<usize>,
+        morph: &(impl viboceros_geometry::PointMorph + ?Sized),
+        tolerance: Tolerance,
+        mode: GripMode,
+    ) -> Result<Self, GeometryError> {
+        self.with_grip_map(
+            indices,
+            |point| morph.morph_point(point),
+            tolerance,
+            mode,
+            false,
+        )
+    }
+
+    fn with_grip_map(
+        &self,
+        indices: &BTreeSet<usize>,
+        map_point: impl Fn(Point3) -> Result<Point3, GeometryError>,
+        tolerance: Tolerance,
+        mode: GripMode,
+        identity: bool,
+    ) -> Result<Self, GeometryError> {
         if mode == GripMode::Edit {
             let curve = self
                 .curve_ref()
@@ -39,11 +74,11 @@ impl Geometry {
                     count: points.len(),
                 });
             }
-            if indices.is_empty() || transform == AffineTransform3::identity() {
+            if indices.is_empty() || identity {
                 return Ok(self.clone());
             }
             for &index in indices {
-                points[index] = transform.transform_point(points[index])?;
+                points[index] = map_point(points[index])?;
             }
             return Ok(Self::NurbsCurve(
                 curve.try_with_edit_points(&points, tolerance)?,
@@ -65,7 +100,7 @@ impl Geometry {
                 .enumerate()
                 .map(|(index, point)| {
                     if indices.contains(&(index % unique)) {
-                        transform.transform_point(*point)
+                        map_point(*point)
                     } else {
                         Ok(*point)
                     }
@@ -84,16 +119,16 @@ impl Geometry {
                 tolerance,
             )?),
             Self::NurbsCurve(curve) => {
-                Self::NurbsCurve(curve.with_transformed_grips(indices, transform)?)
+                Self::NurbsCurve(curve.with_mapped_grips(indices, &map_point)?)
             }
             Self::Circle(_) | Self::Arc(_) | Self::Ellipse(_) => Self::NurbsCurve(
                 self.curve_ref()
                     .unwrap()
                     .to_nurbs()?
-                    .with_transformed_grips(indices, transform)?,
+                    .with_mapped_grips(indices, &map_point)?,
             ),
             Self::NurbsSurface(surface) => {
-                Self::NurbsSurface(surface.with_transformed_grips(indices, transform)?)
+                Self::NurbsSurface(surface.with_mapped_grips(indices, &map_point)?)
             }
             Self::Brep(brep) if brep.faces().len() == 1 => {
                 let face = &brep.faces()[0];
@@ -103,7 +138,7 @@ impl Geometry {
                     },
                 )?;
                 Self::Brep(Brep::try_rectangular_surface_face_with_orientation(
-                    face.surface().with_transformed_grips(indices, transform)?,
+                    face.surface().with_mapped_grips(indices, &map_point)?,
                     bounds[0][0]..=bounds[0][1],
                     bounds[1][0]..=bounds[1][1],
                     face.is_reversed(),

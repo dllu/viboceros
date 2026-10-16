@@ -8,6 +8,15 @@ impl NurbsSurface {
         indices: &BTreeSet<usize>,
         transform: AffineTransform3,
     ) -> Result<Self, GeometryError> {
+        self.with_mapped_grips(indices, |point| transform.transform_point(point))
+    }
+
+    /// Map selected Euclidean controls, retaining weights, knots and seam aliases.
+    pub fn with_mapped_grips(
+        &self,
+        indices: &BTreeSet<usize>,
+        map: impl Fn(Point3) -> Result<Point3, GeometryError>,
+    ) -> Result<Self, GeometryError> {
         let [u_count, v_count] = self.grip_dimensions();
         let count = u_count * v_count;
         if let Some(&index) = indices.last().filter(|&&index| index >= count) {
@@ -22,7 +31,7 @@ impl NurbsSurface {
                 let v = index / self.control_point_count_u;
                 let grip = (u % u_count) * v_count + v % v_count;
                 let point = if indices.contains(&grip) {
-                    transform.transform_point(control.point())?
+                    map(control.point())?
                 } else {
                     control.point()
                 };

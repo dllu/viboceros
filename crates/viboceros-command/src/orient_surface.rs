@@ -417,7 +417,7 @@ impl Command for OrientSurfaceCommand {
         args: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (args, mut sources) = transform_arguments(doc, args, USAGE)?;
+        let (args, mut sources) = affine_transform_arguments(doc, args, USAGE)?;
         let (args, options, reference) = options(&args, Options::default())?;
         if options.rigid && options.constrain_normal {
             return Err(CommandError::Usage(USAGE));
@@ -450,7 +450,13 @@ impl Command for OrientSurfaceCommand {
                 .ok_or(CommandError::SurfaceOrientTargetRequired)?
         };
         sources.ids.retain(|s| *s != id);
-        if sources.ids.is_empty() {
+        if sources.grips.iter().any(|grip| grip.object == id) {
+            return Err(CommandError::Usage(
+                "Destination surface cannot also supply source grips",
+            ));
+        }
+
+        if sources.ids.is_empty() && sources.grips.is_empty() {
             return Err(CommandError::SurfaceOrientSourcesRequired);
         }
         let target = Target::capture(doc, id, reference.face)?;
@@ -463,7 +469,33 @@ impl Command for OrientSurfaceCommand {
             doc.tolerance(),
         )?;
         let uv = placement.target.location(point, options.ignore_trims)?.uv;
-        let (transformed, copied) = if options.rigid {
+        let (transformed, copied) = if options.rigid && !sources.grips.is_empty() {
+            let (owners, copies) = doc.transform_objects_and_grips(
+                sources.ids.iter().copied(),
+                sources.grips.iter().copied(),
+                placement.transform_at(point)?,
+                options.copy,
+                viboceros_document::CopyGroupPolicy::Preserve,
+            )?;
+            // Native copies one ordinary peer without its memberships, while
+            // the copied grip owners keep their independent copied groups.
+            let ordinary = owners
+                .iter()
+                .filter(|id| !sources.grips.iter().any(|g| g.object == **id))
+                .copied()
+                .collect::<Vec<_>>();
+            if options.copy && ordinary.len() == 1 {
+                let copy = copies[owners.iter().position(|id| *id == ordinary[0]).unwrap()];
+                doc.clear_object_group_memberships([copy])?;
+            }
+            if options.copy && sources.postselected {
+                doc.select_control_points(
+                    sources.grips.iter().copied(),
+                    viboceros_document::SelectionMode::Remove,
+                )?;
+            }
+            (owners.len(), copies.len())
+        } else if options.rigid {
             apply_transform_with_renewal(
                 doc,
                 &sources,
@@ -473,18 +505,37 @@ impl Command for OrientSurfaceCommand {
         } else {
             let morph =
                 placement.morph_at(point, context.construction_plane.z_axis().as_vector())?;
-            let count = sources.ids.len();
-            if options.copy {
-                (
-                    count,
-                    doc.copy_objects_morphed(sources.ids.iter().copied(), &morph)?
-                        .len(),
-                )
+            if !sources.grips.is_empty() {
+                let (owners, copies) = doc.morph_objects_and_grips(
+                    sources.ids.iter().copied(),
+                    sources.grips.iter().copied(),
+                    &morph,
+                    options.copy,
+                    viboceros_document::CopyGroupPolicy::Preserve,
+                )?;
+                (owners.len(), copies.len())
             } else {
-                (doc.morph_objects(sources.ids.iter().copied(), &morph)?, 0)
+                let count = sources.ids.len();
+                if options.copy {
+                    (
+                        count,
+                        doc.copy_objects_morphed(sources.ids.iter().copied(), &morph)?
+                            .len(),
+                    )
+                } else {
+                    (doc.morph_objects(sources.ids.iter().copied(), &morph)?, 0)
+                }
             }
         };
         doc.select_objects_direct(sources.ids.iter().copied(), SelectionMode::Replace)?;
+        if sources.postselected && !sources.grips.is_empty() {
+            if options.rigid {
+                doc.select_command_results([])?;
+            } else {
+                doc.clear_selection();
+            }
+        }
+
         Ok(format!(
             "Oriented {transformed} object(s) onto surface parameters {:.6},{:.6} with {} placement, creating {copied} copy object(s)",
             uv[0],

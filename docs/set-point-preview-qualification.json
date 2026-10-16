@@ -57,7 +57,6 @@
     "crates/viboceros-command/src/set_point.rs": "2ed671a8df1261235db2fd73f795cbae200a2e5881f26e59628516cf9f73122d",
     "crates/viboceros-command/src/point_transform.rs": "23b00165d349e17b5a0c6feb064b0a5a64ea0d6ef0fe453bf6f8d8ab0039aca5",
     "crates/viboceros-document/src/geometry.rs": "9e112a5747f425f50333ab4d026c59bf11f1d0f16fe8a3c1caec782c4aedb8ad",
-    "crates/viboceros-document/src/control_points/geometry.rs": "2229e7ffc828d64d606f3576eb16f404b1ce724599385811206dc215ba383097",
     "src/app/tests/set_point_preview.rs": "ec3453ae7fcf468b18392a08ad20698122979bad4234d2bdfe7adf4510fda5ea",
     "src/viewport/grip_preview.rs": "67c22f8dda802d6a83568fd327ce40192c0a27015ed59f5009c45c539c172115",
     "docs/commands/set-point.md": "e4c434366130e94f3ac59a2084552106263e94ce75e0cedb44edc67e612dfa13",
@@ -70,6 +69,7 @@
     "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:src/viewport/affine_preview.rs": "886f271a92a568c93138cf083acd61d3f778ff14313e3d685eab923600678d0d",
     "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:src/viewport/affine_preview/set_point_tests.rs": "8b00a168e06b32e6697615c6d07c57541a7624c33a8b6c421234b41beb178da9",
     "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:src/viewport/scene/affine_tests.rs": "6985acf9443de999c07e2579d1f4027cbe085ca29bb3870f77598d8355cef2d6",
-    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:src/viewport/scene/grip_tests.rs": "760c24fe6952f0cb40cdf917a949b76e9efe4616d7cccffd9efe413c1ba6a787"
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:src/viewport/scene/grip_tests.rs": "760c24fe6952f0cb40cdf917a949b76e9efe4616d7cccffd9efe413c1ba6a787",
+    "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:crates/viboceros-document/src/control_points/geometry.rs": "2229e7ffc828d64d606f3576eb16f404b1ce724599385811206dc215ba383097"
   }
 }

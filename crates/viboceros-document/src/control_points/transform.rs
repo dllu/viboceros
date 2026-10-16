@@ -1,5 +1,10 @@
 //! Validate and stage complete mixed object/grip edits before mutation.
 use super::*;
+#[derive(Clone, Copy, PartialEq)]
+enum GripEditKind {
+    Affine(bool),
+    Morph,
+}
 
 impl Document {
     pub fn transform_objects_and_grips(
@@ -9,6 +14,64 @@ impl Document {
         transform: AffineTransform3,
         copy: bool,
         group_policy: CopyGroupPolicy,
+    ) -> Result<(Vec<ObjectId>, Vec<ObjectId>), DocumentError> {
+        self.map_objects_and_grips(
+            objects,
+            grips,
+            copy,
+            group_policy,
+            GripEditKind::Affine(transform == AffineTransform3::identity()),
+            |geometry, selected, mode, tolerance| {
+                if let Some(selected) = selected {
+                    geometry.with_transformed_grips_in_mode(selected, transform, tolerance, mode)
+                } else {
+                    geometry.transformed_for_edit(transform, tolerance)
+                }
+            },
+        )
+    }
+
+    /// Stage complete mixed object/grip morphs before editing any owner.
+    /// Grips take precedence over a simultaneously selected parent object.
+    /// Whole copies use `group_policy`; grip copies join their source groups
+    /// and enable the source grip mode without selecting the copied grips.
+    pub fn morph_objects_and_grips(
+        &mut self,
+        objects: impl IntoIterator<Item = ObjectId>,
+        grips: impl IntoIterator<Item = ControlPointId>,
+        morph: &(impl viboceros_geometry::PointMorph + ?Sized),
+        copy: bool,
+        group_policy: CopyGroupPolicy,
+    ) -> Result<(Vec<ObjectId>, Vec<ObjectId>), DocumentError> {
+        self.map_objects_and_grips(
+            objects,
+            grips,
+            copy,
+            group_policy,
+            GripEditKind::Morph,
+            |geometry, selected, mode, tolerance| {
+                if let Some(selected) = selected {
+                    geometry.with_morphed_grips_in_mode(selected, morph, tolerance, mode)
+                } else {
+                    geometry.morphed(morph, tolerance)
+                }
+            },
+        )
+    }
+
+    fn map_objects_and_grips(
+        &mut self,
+        objects: impl IntoIterator<Item = ObjectId>,
+        grips: impl IntoIterator<Item = ControlPointId>,
+        copy: bool,
+        group_policy: CopyGroupPolicy,
+        kind: GripEditKind,
+        map: impl Fn(
+            &Geometry,
+            Option<&BTreeSet<usize>>,
+            GripMode,
+            Tolerance,
+        ) -> Result<Geometry, GeometryError>,
     ) -> Result<(Vec<ObjectId>, Vec<ObjectId>), DocumentError> {
         let objects = objects.into_iter().collect::<BTreeSet<_>>();
         let mut picks: BTreeMap<ObjectId, BTreeSet<usize>> = BTreeMap::new();
@@ -46,25 +109,21 @@ impl Document {
             .iter()
             .map(|&i| self.objects[i].id)
             .collect::<Vec<_>>();
-        if !copy && transform == AffineTransform3::identity() {
+        if !copy && kind == GripEditKind::Affine(true) {
             return Ok((owners, Vec::new()));
         }
         let staged = order
             .into_iter()
             .map(|index| {
                 let source = &self.objects[index];
-                let geometry = if let Some(selected) = picks.get(&source.id) {
-                    source.geometry.with_transformed_grips_in_mode(
-                        selected,
-                        transform,
-                        self.tolerance,
-                        self.control_points[&source.id].mode,
-                    )?
-                } else {
-                    source
-                        .geometry
-                        .transformed_for_edit(transform, self.tolerance)?
-                };
+                let geometry = map(
+                    &source.geometry,
+                    picks.get(&source.id),
+                    self.control_points
+                        .get(&source.id)
+                        .map_or(GripMode::Control, |state| state.mode),
+                    self.tolerance,
+                )?;
                 Ok((index, geometry))
             })
             .collect::<Result<Vec<_>, DocumentError>>()?;
@@ -72,20 +131,42 @@ impl Document {
         if owns_transaction {
             self.begin_transaction("Transform grips")?;
         }
-        let result =
-            (|| {
-                if copy {
-                    let copies = self.copy_object_geometries_with_groups(
-                        staged
+        let result = (|| {
+            if copy {
+                let copies = if kind == GripEditKind::Morph {
+                    let (grip_copies, object_copies): (Vec<_>, Vec<_>) = staged
+                        .into_iter()
+                        .partition(|(i, _)| picks.contains_key(&self.objects[*i].id));
+                    let mut copies = self.copy_object_geometries_with_groups(
+                        object_copies
                             .into_iter()
-                            .map(|(index, geometry)| (self.objects[index].id, geometry))
+                            .map(|(i, g)| (self.objects[i].id, g))
                             .collect::<Vec<_>>(),
                         group_policy,
                     )?;
-                    for (&source, &copy) in owners.iter().zip(&copies) {
-                        if let Some(indices) = picks.get(&source) {
-                            self.enable_grips([copy], self.control_points[&source].mode)?;
-                            let count = self.control_points[&copy].points.len();
+                    copies.extend(
+                        self.copy_object_geometries_in_source_groups(
+                            grip_copies
+                                .into_iter()
+                                .map(|(i, g)| (self.objects[i].id, g))
+                                .collect::<Vec<_>>(),
+                        )?,
+                    );
+                    copies
+                } else {
+                    self.copy_object_geometries_with_groups(
+                        staged
+                            .into_iter()
+                            .map(|(index, g)| (self.objects[index].id, g))
+                            .collect::<Vec<_>>(),
+                        group_policy,
+                    )?
+                };
+                for (&source, &copy) in owners.iter().zip(&copies) {
+                    if let Some(indices) = picks.get(&source) {
+                        self.enable_grips([copy], self.control_points[&source].mode)?;
+                        let count = self.control_points[&copy].points.len();
+                        if kind != GripEditKind::Morph {
                             self.select_control_points(
                                 indices.iter().copied().filter(|&index| index < count).map(
                                     |index| ControlPointId {
@@ -97,52 +178,53 @@ impl Document {
                             )?;
                         }
                     }
-                    Ok((owners, copies))
-                } else {
-                    let before = picks
-                        .keys()
-                        .map(|id| (*id, self.control_points[id].clone()))
-                        .collect::<Vec<_>>();
-                    self.commit_object_geometries(
-                        staged,
-                        "Transform grips",
-                        "Transform grip owner",
-                        ReplacementHistory::EveryReplacement,
-                        true,
-                    )?;
-                    for (id, before) in before {
-                        let current = self.control_points.get_mut(&id).unwrap();
-                        // Closing an open endpoint can remove its duplicate seam
-                        // grip. Native clears that vanished index rather than
-                        // selecting the surviving seam grip at index zero.
-                        current.selected = if before
-                            .selected
-                            .last()
-                            .is_some_and(|&index| index >= current.points.len())
-                        {
-                            Arc::new(
-                                before
-                                    .selected
-                                    .iter()
-                                    .copied()
-                                    .filter(|&index| index < current.points.len())
-                                    .collect(),
-                            )
-                        } else {
-                            before.selected.clone()
-                        };
-                        self.record_edit(
-                            "Transform grips",
-                            Edit::ControlPointsChanged {
-                                id,
-                                stored: Some(before),
-                            },
-                        );
-                    }
-                    self.move_objects_to_end_in_order(owners.iter().copied())?;
-                    Ok((owners, Vec::new()))
                 }
-            })();
+                Ok((owners, copies))
+            } else {
+                let before = picks
+                    .keys()
+                    .map(|id| (*id, self.control_points[id].clone()))
+                    .collect::<Vec<_>>();
+                self.commit_object_geometries(
+                    staged,
+                    "Transform grips",
+                    "Transform grip owner",
+                    ReplacementHistory::EveryReplacement,
+                    true,
+                )?;
+                for (id, before) in before {
+                    let current = self.control_points.get_mut(&id).unwrap();
+                    // Closing an open endpoint can remove its duplicate seam
+                    // grip. Native clears that vanished index rather than
+                    // selecting the surviving seam grip at index zero.
+                    current.selected = if before
+                        .selected
+                        .last()
+                        .is_some_and(|&index| index >= current.points.len())
+                    {
+                        Arc::new(
+                            before
+                                .selected
+                                .iter()
+                                .copied()
+                                .filter(|&index| index < current.points.len())
+                                .collect(),
+                        )
+                    } else {
+                        before.selected.clone()
+                    };
+                    self.record_edit(
+                        "Transform grips",
+                        Edit::ControlPointsChanged {
+                            id,
+                            stored: Some(before),
+                        },
+                    );
+                }
+                self.move_objects_to_end_in_order(owners.iter().copied())?;
+                Ok((owners, Vec::new()))
+            }
+        })();
         if owns_transaction {
             match &result {
                 Ok(_) => {

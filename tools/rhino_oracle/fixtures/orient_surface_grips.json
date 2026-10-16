@@ -1,0 +1,4721 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "orient_surface_grips",
+      "id": "rational-True-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "rational-True-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "rational-False-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "rational-False-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "periodic-True-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "periodic-True-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "periodic-False-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "periodic-False-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "surface-True-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              2,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              2,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "surface-True-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              2,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              2,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "surface-False-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              2,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              2,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "surface-False-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              2,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              2,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mesh-True-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            0,
+            -2,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mesh-True-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            0,
+            -2,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mesh-False-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            0,
+            -2,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mesh-False-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            -2,
+            0,
+            0
+          ],
+          [
+            0,
+            -2,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mixed-True-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "parent": true,
+      "peer": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "edit-True-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "edit": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mixed-True-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "parent": true,
+      "peer": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "edit-True-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "edit": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mixed-False-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "parent": true,
+      "peer": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "edit-False-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "edit": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "mixed-False-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "parent": true,
+      "peer": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "edit-False-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "edit": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "batch-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "batch": [
+        {
+          "uv": [
+            0.6,
+            0.5
+          ],
+          "scale": 0.8,
+          "rotation": -45
+        }
+      ]
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "batch-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "batch": [
+        {
+          "uv": [
+            0.6,
+            0.5
+          ],
+          "scale": 0.8,
+          "rotation": -45
+        }
+      ]
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "post-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "postselected": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "post-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": false,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "postselected": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "post-copy-True",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": true,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "postselected": true
+    },
+    {
+      "op": "orient_surface_grips",
+      "id": "post-copy-False",
+      "surface": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              -2,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              0,
+              -2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "reference": [
+        1,
+        0,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "options": {
+        "rigid": false,
+        "copy": true,
+        "scale": 1.4,
+        "rotation": 30
+      },
+      "group": true,
+      "postselected": true
+    }
+  ]
+}

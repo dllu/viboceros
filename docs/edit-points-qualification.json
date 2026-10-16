@@ -18,10 +18,7 @@
   "source_sha256": {
     "crates/viboceros-command/src/control_points.rs": "b40f95bcde970eafc49b828375808e907b79d5fbf16a5b8ecea31020aff3e7ac",
     "crates/viboceros-command/src/scale_positions.rs": "f0efe3833e591a0ab0126cadfae9b278e763e042ca7eb596fd5a190b24811f6c",
-    "crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
     "crates/viboceros-document/src/control_points/edit_tests.rs": "38937ec5ad57ddd91d3a46cddb5626289d911a19974b8962691b2ece297a9612",
-    "crates/viboceros-document/src/control_points/geometry.rs": "2229e7ffc828d64d606f3576eb16f404b1ce724599385811206dc215ba383097",
-    "crates/viboceros-document/src/control_points/transform.rs": "77d0c8605f33e22ffb2c7b7d508b7aed0e439b9b54602cc0a62ad5e0889b7175",
     "crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
     "crates/viboceros-document/src/smoothing.rs": "c65910fae379cea9b221114c4f6c83898da7480dda0a84d9acc456a9bfd05033",
     "crates/viboceros-geometry/src/curve_edit_points.rs": "8b80112816cca67852196406029b80ece5559160cc08839464ecf79fa8205ad4",
@@ -78,6 +75,9 @@
     "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:docs/control-points.md": "647e6cd3e24443cf4adcadc1ea353d10d3bf383b98dd267562b0a2b6d8fc0e25",
     "426a0042edb6d3207dc9177ed891c07a4c72fceb:src/viewport/affine_preview.rs": "5579cbb6deb1a8edb5ad82db9e58035c7b783fc32e714cdc504a522005dfdeeb",
     "426a0042edb6d3207dc9177ed891c07a4c72fceb:src/viewport/grip_preview.rs": "4d95074399a397db7eb8c3f390221b4bb018b4ca39b7a5b95651b76b3f00f850",
-    "ef94479d0c780100fe5a5cabdb249bf160157539:docs/architecture.md": "2b2e1dac83d9e887613f3987318fe87bcdb4a0861f3d9b922aa03a4746fc2341"
+    "ef94479d0c780100fe5a5cabdb249bf160157539:docs/architecture.md": "2b2e1dac83d9e887613f3987318fe87bcdb4a0861f3d9b922aa03a4746fc2341",
+    "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
+    "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:crates/viboceros-document/src/control_points/geometry.rs": "2229e7ffc828d64d606f3576eb16f404b1ce724599385811206dc215ba383097",
+    "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:crates/viboceros-document/src/control_points/transform.rs": "77d0c8605f33e22ffb2c7b7d508b7aed0e439b9b54602cc0a62ad5e0889b7175"
   }
 }

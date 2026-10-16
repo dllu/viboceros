@@ -10288,6 +10288,7 @@ mod tests {
     mod orient_curve_subcurve;
     mod orient_points;
     mod orient_surface;
+    mod orient_surface_grips;
     mod planar_boolean;
     mod plane_arrays;
     mod plane_through_points;

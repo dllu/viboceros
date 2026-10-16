@@ -57,7 +57,25 @@ supported. `Sources=...` and `PickedSources=...` freeze sources for replay;
 `SourceNormal=x,y,z` and `DestinationNormal=x,y,z` explicitly supply the two
 normals for scripted use. CLI context supplies both defaults when omitted.
 
-Validation records are in [orient-surface-validation.json](../orient-surface-validation.json).
+With points on, select individual control or curve edit grips before starting
+OrientOnSrf, or pick them in its source getter. A selected grip takes precedence
+over its selected parent: the other control/edit locations stay fixed. Rational
+weights, degree, knots and periodic seam aliases are retained. Edit grips use the
+existing reconstruction in the source curve basis, so other controls can move
+while unselected edit locations stay fixed. Mixed ordinary objects and grip
+owners are staged together; an invalid owner or point map leaves the whole batch
+unchanged.
+
+Rigid grip copies receive independent copied groups and selected copied grips.
+Deformable grip copies join their source groups and leave their new grips
+unselected. A single ordinary peer copied alongside rigid grip owners is copied
+without group membership. Repeated placement freezes original object/grip IDs;
+newly selected peers or previously copied grips do not become sources. Scripted
+`GripSources=id:index,...` and `PickedGripSources=...` carry the frozen picks;
+`Sources=` explicitly captures an empty whole-object source set.
+
+Validation records are in [orient-surface-validation.json](../orient-surface-validation.json)
+and [orient-surface-grips-validation.json](../orient-surface-grips-validation.json).
 The retained authored fixtures exercise planar/skew and rational cylindrical
 surfaces, rigid and deformable placement, copy/in-place modes, source selection,
 groups, repeated placements, source construction planes, OnSurface, face reversal,
@@ -67,7 +85,9 @@ finite fixtures, not a proof for every surface or fitted object type. Existing
 [curve](../curve-morphing.md), [surface](../surface-morphing.md), and
 [B-rep](../brep-morphing.md) fitting qualifications still apply.
 
-Whole-object sources are supported. Grip sources, nonuniform XYZ scaling,
+Whole-object and selected control/edit grip sources are supported. The destination
+guide must be separate from source grip owners; existing owner-editing restrictions
+still apply. Nonuniform XYZ scaling,
 Rhino's Scale/Rotation prompt-mode menus, and remembering non-copy settings
 between separate invocations remain unimplemented. Trimmed guides and point
 scale/rotation getters have local regression coverage; the retained native
@@ -77,3 +97,13 @@ References: [Rhino 8 command help](https://docs.mcneel.com/rhino/8/help/en-us/co
 [public SplopSpaceMorph API](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.morphs.splopspacemorph/splopspacemorph).
 Behavioral differences above come from owned native command experiments, without
 inspection of proprietary implementation code.
+
+The grip matrix compares 30 actual native commands on rational/periodic curves,
+rational surfaces, meshes, curve edit points, selected parents and ordinary peers,
+including repeated copies and command-first selection. Definitions, control and
+edit locations, grip selection/display, and normalized group memberships are
+compared. The observer duplicates RhinoCommon's compact-knot endpoint padding;
+every SDK-visible knot is compared and production full knot vectors are retained.
+Local tests also check copy history, failure rollback, preview caching and grip
+markers in all four main viewports. Native grip Undo/Redo and OnSurface grip
+interactions remain unqualified.
