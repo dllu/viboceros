@@ -26,6 +26,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.document.clear_selection();
         self.intersection_prompt = Some(TwoSetsPrompt {
+            curve_deviation: None,
             deviation: Some(input.into()),
             first: (!first.is_empty()).then_some(first),
             original_selection,

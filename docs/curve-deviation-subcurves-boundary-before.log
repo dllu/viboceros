@@ -1,0 +1,25 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 34.68s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-cab8caa67c164a6a)
+
+running 1 test
+test curve_deviation::tests::crv_deviation_subcurve_protocol_validates_ranges_and_executes_owned_parts ... FAILED
+
+failures:
+
+---- curve_deviation::tests::crv_deviation_subcurve_protocol_validates_ranges_and_executes_owned_parts stdout ----
+
+thread 'curve_deviation::tests::crv_deviation_subcurve_protocol_validates_ranges_and_executes_owned_parts' (4143232) panicked at crates/viboceros-oracle/src/curve_deviation.rs:153:62:
+circle-seam: SMLib: Native curve distance parameter 3=3.6898212788111443e-16 left [6.2825771485699056e-16, 0.99999999999767608]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    curve_deviation::tests::crv_deviation_subcurve_protocol_validates_ranges_and_executes_owned_parts
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 533 filtered out; finished in 0.07s
+
+error: test failed, to rerun pass `-p viboceros-oracle --lib`

@@ -2648,8 +2648,21 @@ extern "C" int vb_curve_distance_extrema(const VbCurve *first, const VbCurve *se
         for(size_t i=0;i<4;++i) require(std::isfinite(parameters[i]),"Nonfinite curve distance parameter");
         for(size_t i=0;i<4;++i) {
             const auto &domain=(i%2)?b:a;
-            require(parameters[i]>=domain.GetMin() && parameters[i]<=domain.GetMax(),
-                    "Native curve distance parameter left interval");
+            // Solver roundoff can cross an active bound by a few normalized
+            // arithmetic epsilons, even for constant-distance arc pairs.
+            // Clamp only those returned proposals; caller ranges stay strict.
+            // Rust reevaluates the clamped images and independently validates
+            // nearest-pair membership on the original requested portions.
+            const double roundoff=64.*std::numeric_limits<double>::epsilon()
+                *std::max({1.,std::abs(domain.GetMin()),std::abs(domain.GetMax())});
+            const double bounded=std::clamp(parameters[i],domain.GetMin(),domain.GetMax());
+            if(std::abs(parameters[i]-bounded)<=roundoff) parameters[i]=bounded;
+            if(parameters[i]<domain.GetMin() || parameters[i]>domain.GetMax()) {
+                char detail[192];
+                std::snprintf(detail,sizeof(detail),"Native curve distance parameter %zu=%.17g left [%.17g, %.17g]",
+                    i,parameters[i],domain.GetMin(),domain.GetMax());
+                require(false,detail);
+            }
         }
     });
 }

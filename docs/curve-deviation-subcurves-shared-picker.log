@@ -1,0 +1,46 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 40 tests
+test app::subcurve_preview::tests::cache_invalidates_geometry_hover_and_failed_results_by_snapshot_and_inputs ... ok
+test app::tests::standalone_subcurve::standalone_source_cancel_and_bad_lengths_do_not_edit_the_document ... ok
+test app::tests::interactive_subcurve_uses_two_directed_curve_picks_and_copy_option ... ok
+test app::tests::subcurve_direction::subcurve_direction_requires_hover_is_transient_and_retries_invalid_lengths ... ok
+test app::tests::curve_deviation::crv_deviation_subcurve_promotes_picker_and_keeps_source_objects ... ok
+test app::tests::curve_deviation::crv_deviation_subcurve_numeric_length_uses_shared_confirmation ... ok
+test app::tests::project::subcurve::project_nested_numeric_length_uses_the_existing_direction_lock_and_clear_path ... ok
+test app::tests::curve_deviation::crv_deviation_subcurve_empty_cancel_and_clear_preserve_model ... ok
+test app::tests::length::length_subcurve_starts_with_display_units_on_a_preselected_curve ... ok
+test app::tests::curve_deviation::crv_deviation_inline_subcurve_reverse_and_preselection_do_not_duplicate_inputs ... ok
+test app::tests::length::length_display_units_work_through_selection_and_subcurve_point_prompts ... ok
+test app::tests::length::length_subcurve_picks_two_locations_for_pre_and_postselection ... ok
+test app::tests::subcurve_midpoint::midpoint_option_changes_and_invalid_radius_are_pending_without_edits ... ok
+test app::tests::subcurve_mark_ends::mark_ends_mode_changes_during_input_without_geometry_or_history ... ok
+test app::tests::domain::domain_subcurve_picks_two_locations_for_pre_and_postselection ... ok
+test app::tests::project::subcurve::temporary_project_range_uses_filtered_picking_preview_and_one_history_edit ... ok
+test app::tests::subcurve_preferences::subcurve_option_edits_survive_cancel_and_undo_without_affecting_other_commands ... ok
+test app::tests::subcurve_preview::subcurve_preview_tracks_options_locked_side_midpoint_and_cancellation ... ok
+test app::tests::uv_subcurve_input::length_confirmation_retries_bad_quantities_and_cancels_without_edits ... ok
+test app::tests::subcurve_direction::inline_subcurve_direction_remains_captured_after_hover_moves_and_parent_owns_history ... ok
+test app::tests::uv_subcurve_input::create_inline_subcurves_repeat_reverse_and_reject_coincident_endpoints ... ok
+test app::tests::project::subcurve::project_nested_range_cancellation_and_invalid_end_preserve_model_and_redo ... ok
+test app::subcurve_preview::tests::surface_edge_conversion_is_reused_across_hover_and_invalidated_by_edge_or_snapshot ... ok
+test app::tests::uv_subcurve_input::apply_inline_subcurve_accepts_clicks_and_typed_endpoints_without_source_edits ... ok
+test app::tests::uv_subcurve_input::selnone_discards_temporary_ranges_and_another_command_cancels_nested_input ... ok
+test app::tests::uv_subcurve_input::cancelling_nested_uv_subcurve_restores_initial_selection_and_history ... ok
+test app::tests::subcurve_edge::subcurve_edge_stale_preselection_is_rejected_before_command_start ... ok
+test app::tests::subcurve_edge::subcurve_edge_command_first_click_and_typed_reference_preserve_parent_until_commit ... ok
+test app::tests::subcurve_edge::subcurve_edge_ambiguous_choices_cancel_and_reject_changed_parent ... ok
+test app::tests::project::subcurve::project_ranges_and_whole_points_survive_custom_direction_input ... ok
+test app::tests::subcurve_mark_ends::mark_ends_controller_replays_all_native_modes_points_and_history ... ok
+test viewport::tests::subcurve_curve_and_endpoint_overlays_paint_in_every_mode_and_view_without_hover ... ok
+test app::tests::subcurve_preferences::subcurve_option_memory_replays_native_workflow_including_cancelled_changes ... ok
+test app::tests::standalone_subcurve::standalone_numeric_source_picking_and_history_replay_all_native_cases ... ok
+test app::tests::subcurve_edge::subcurve_edge_replays_native_forced_copy_metadata_markers_and_history ... ok
+test app::tests::subcurve_preview::subcurve_preview_replays_native_pending_results_without_model_or_history_changes ... ok
+test app::tests::subcurve_midpoint::midpoint_controller_replays_native_instant_numeric_radius_and_history ... ok
+test app::tests::uv_subcurve_input::numeric_inline_confirmation_replays_native_lengths_orientation_and_clamping ... ok
+test app::tests::subcurve_direction::subcurve_direction_replays_native_hover_lock_numeric_completion_and_history ... ok
+test app::tests::subcurve_direction_grid::closed_direction_matrix_replays_native_inputs_geometry_and_history ... ok
+
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 1207 filtered out; finished in 4.49s

@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Temporary SubCrv inputs for CrvDeviation and bounded native output roundoff",
+  "base_repository_revision": "247a9553061ba774fa9dca45d6e4cc8703e86b2e",
+  "command_registered": true,
+  "temporary_subcurve_inputs_implemented": true,
+  "complete_native_command_parity_qualified": false,
+  "native_overlap_policy_qualified": false,
+  "native_minimum_parity_qualified": false,
+  "directed_witness_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "performance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "implementation": "Reuse the existing nested SubCrv source/start/end getter, preview, directed-length confirmation and source admission. Command inputs are local temporary curves with original owner snapshots. Use the established native NURBS trim backend through a shared resolver callback; leave the existing mapping command resolver unchanged. Explicit portions replace whole selection of their owner, two portions of one owner are admitted, distinct owners follow document order and same-owner occurrences preserve argument order. End/KeepMarks emits only measurement marks in one undo edit.",
+  "numeric_boundary_fix": {
+    "before_log": "docs/curve-deviation-subcurves-boundary-before.log",
+    "trigger": "Seam-crossing concentric arc portions returned normalized parameter 3.6898212788111443e-16 below active bound 6.2825771485699056e-16.",
+    "policy": "Clamp only finite solver output proposals within 64 double arithmetic epsilons scaled by the normalized range magnitude. Preserve strict caller interval validation and reject larger excursions. Rust still reevaluates original curve images, pair distances and independent closest-pair membership.",
+    "regression": "The seam-crossing oracle recipe now reports distance 1. Rust and the C ABI sanitizer driver both reject a caller bound of -f64::EPSILON.",
+    "before_capture_source_note": "Failure log used the base strict output policy with additional numerical diagnostics. It predates the clamp and is retained separately from passing validation logs."
+  },
+  "coverage": {
+    "unique_rust_tests": 91,
+    "passed_rust_test_executions_in_retained_logs": 106,
+    "rust_count_note": "Portable and native command runs share 11 tests; the 40 shared-picker tests include four of the seven UI tests. Unique total: 12 command + 43 UI + 32 native-library + 4 oracle.",
+    "new_rust_tests": 11,
+    "python_tests": 38,
+    "new_python_tests": 4,
+    "asan_driver_checks": 7,
+    "private_native_launches": 4,
+    "native_command_attempts_across_launches": 30,
+    "retained_native_observations": 21,
+    "initial_cases": 3,
+    "discovery_cases": 9,
+    "final_cases": 9,
+    "final_native_successful_reports": 9,
+    "final_local_successful_reports": 9,
+    "final_native_sources_unchanged": 9,
+    "final_local_sources_unchanged": 9,
+    "final_comparison_counts": {
+      "status_matches": 9,
+      "sdk_maximum_scalar_matches": 0,
+      "sdk_minimum_scalar_matches": 0,
+      "command_minimum_display_matches": 9,
+      "command_maximum_display_matches": 8,
+      "permanent_mark_sets_matching": 4,
+      "permanent_mark_cases": 9,
+      "interval_end_sets_matching": 8,
+      "interval_end_cases": 9,
+      "interval_end_report_sets_matching": 8,
+      "interval_end_joint_report_cases": 9
+    }
+  },
+  "native_capture_schemes": [
+    "VibocerosOracleCurveDeviationSubcurves20261016",
+    "VibocerosOracleCurveDeviationSubcurves20261016b",
+    "VibocerosOracleCurveDeviationSubcurves20261016c",
+    "VibocerosOracleCurveDeviationSubcurves20261016d"
+  ],
+  "final_native_reproduction_command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_deviation_subcurves.json --scheme VibocerosOracleCurveDeviationSubcurves20261016d --timeout 240 --output tools/rhino_oracle/observations/curve_deviation_subcurves_rhino_20261016.json",
+  "limits": [
+    "Native SDK values in SubCrv recipes measure whole source curves; local SDK-shaped values measure the temporary inputs. These scalar scopes are deliberately not compared. Status, printed command minima/maxima and emitted permanent marks are compared against actual native command history. Tests show changing whole-source SDK distances cannot affect those comparisons.",
+    "All nine printed minima and eight printed maxima match within the observed display rounding plus 1e-6. The two-parts case retains the known asymmetric line-overlap failure: native maximum sqrt(8), local maximum 2. Interval-end mark sets match eight of nine; full permanent marks match four of nine. Tied witness locations remain different. No overlap or full command qualification is claimed.",
+    "Reverse-open portions use reversed negated native domains; closed portions can cross the original seam into an extended domain. Source geometry remains unchanged in all final native and local recipes. Two portions of the same owner are locally tested, but native duplicate-owner getter behavior is not qualified by these distinct-owner recipes.",
+    "The initial and discovery captures are exploratory retained observations from intermediate probe revisions. Only the final nine-case capture is tied to the current native probe source. The first broad nine-case capture was superseded by the richer source-invariance captures; no failing scalar or marker comparison was removed.",
+    "The seven-check ASAN run instruments the current C ABI bridge and driver, linking uninstrumented helper and vendor static archives. Leak detection was disabled. This is not full vendor-kernel sanitizer or leak qualification and includes no performance measurement.",
+    "Native calls used the existing owned private headless launcher and public SDK/command surface. Wine, FEX, license settings and vendor sources were not changed.",
+    "Historical digest values and nonhash metadata are preserved using immutable Git references when shared files changed. The pre-existing 69 unverifiable historical records remain untouched."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-command --lib crv_deviation",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-command-portable.log",
+      "tests": 11
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros crv_deviation",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-ui.log",
+      "tests": 7
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros subcurve",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-shared-picker.log",
+      "tests": 40
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --lib crv_deviation",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-command-native.log",
+      "tests": 12
+    },
+    {
+      "command": "cargo test -p viboceros-smlib --features native --lib",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-native-library.log",
+      "tests": 32
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib curve_deviation",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-oracle.log",
+      "tests": 4
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/curve_deviation_subcurves.json tools/rhino_oracle/observations/curve_deviation_subcurves_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-export.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_curve_deviation tools.rhino_oracle.test_curve_deviation_subcurves tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-python.log",
+      "tests": 38
+    },
+    {
+      "command": "python3 tools/usd_brep/run_curve_distance_probe.py --native-build target/debug/build/viboceros-smlib-e982af202de3f65b/out/build --output-dir /tmp/viboceros-crv-subcurves-asan --asan",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-asan.log",
+      "checks": 7
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "log": "docs/curve-deviation-subcurves-fmt.log"
+    }
+  ],
+  "comparison_command": "python3 tools/rhino_oracle/curve_deviation_comparison.py tools/rhino_oracle/fixtures/curve_deviation_subcurves.json tools/rhino_oracle/observations/curve_deviation_subcurves_viboceros_20261016.json tools/rhino_oracle/observations/curve_deviation_subcurves_rhino_20261016.json tools/rhino_oracle/observations/curve_deviation_subcurves_comparison_20261016.json --interval-ends",
+  "preserved_historical_records": [
+    "docs/crv-deviation-validation.json",
+    "docs/curve-deviation-overlap-validation.json",
+    "docs/curve-distance-validation.json",
+    "docs/point-deviation-validation.json",
+    "docs/project-subcurve-qualification.json",
+    "docs/pull-command-qualification.json"
+  ],
+  "sha256": {
+    "README.md": "4ff36a49482fad2587e804c4cd1d018f3c62af3eb79b47f2d84b208e7c95dafb",
+    "crates/viboceros-command/src/curve_deviation.rs": "218e87f29ed9aaa81503d5b27bfcbf4cfe0cbe31789453cfae8ea4e9f99ebc4c",
+    "crates/viboceros-command/src/curve_deviation/inputs.rs": "a3b4e6f6338456136231bb1853c518cb870e7ca771f52ac051afb7b4339926ae",
+    "crates/viboceros-command/src/curve_deviation/tests.rs": "338b66b0e0f8127df2be3b573153cabd9b3d23c692df2efe89a9ca5bd80b7f8c",
+    "crates/viboceros-command/src/curve_segments.rs": "8ebc02ab7410317e3354cc633301bc4b7c41c9235d9e89bb2edbff03a10bb7a9",
+    "crates/viboceros-command/src/subcurve_input.rs": "f0765acef3a926429066695f43181c8dc485faf52b5da8e5f01727bcb6326ed2",
+    "crates/viboceros-command/src/uv_inputs.rs": "701fbf86647af7008005da458ead883e084fc9acb61b5686c4ab9bfc6dfdfb7c",
+    "crates/viboceros-oracle/src/curve_deviation.rs": "711426760d6c37a1552a67a85c8e446837392a340f5d0d3aa0819097fe98bcd4",
+    "crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f",
+    "crates/viboceros-smlib/src/native/curve_distances.rs": "1afe28e963bcd0382cfdf4a28a992f777376c1744ebf8aaaba937137a16dd000",
+    "crates/viboceros-smlib/src/native/curve_distances/tests.rs": "45a7c361a9286607ce82a75317d010d31f7b44deee877aa7cdebf1c4e0bbed68",
+    "docs/commands/crv-deviation.md": "114409fd22001b4e1b6fa7fb46b5949e49921974932c780fcf03ba5c65fb16a1",
+    "docs/crv-deviation-validation.json": "cceeed7a8c1670255e125d89b849ca5dac50b48271f46f27d1ec42ff616c595a",
+    "docs/curve-deviation-overlap-validation.json": "c97a6e8556fc741e71c296b34d57c4ad8d35869eb1994601da03b28c04ebc5b1",
+    "docs/curve-deviation-subcurves-asan.log": "217e565a81deb6d1c8f247bcdd003d6098f560ca859a3b1db5042186387ace31",
+    "docs/curve-deviation-subcurves-boundary-before.log": "9694813a29b9f60caf64dd3f05de17b81f5b104801c0e4554bd02767f73e7578",
+    "docs/curve-deviation-subcurves-clippy.log": "b57e5daa67ee9244e352fee7994d4d7f5c30cfbd06ed09320cb011fa5be3e788",
+    "docs/curve-deviation-subcurves-command-native.log": "f5da7efdd7e2d4ec96773e48a4e0d735e12117a8ad67390dbc0850aa061d08bb",
+    "docs/curve-deviation-subcurves-command-portable.log": "dc0eaf97e3a265220c63834e45b95ebc6433e1b5f4678b432d2dae613e47598f",
+    "docs/curve-deviation-subcurves-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curve-deviation-subcurves-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curve-deviation-subcurves-native-library.log": "56fcbef8116b1064f41bbac4b6c4a00e22276609b0a4318b12ea0b054b42f0dc",
+    "docs/curve-deviation-subcurves-oracle.log": "71f3928672ce84cebf31271655197298a2cdacd40d401e6fd37c26b867dc9bac",
+    "docs/curve-deviation-subcurves-python.log": "7dbe63437491ec4aaac5918f46caf8f6e1db5102bd9ab3c46df51421b8f9df20",
+    "docs/curve-deviation-subcurves-shared-picker.log": "d48e5f8c94af212c8639209267ebef027104699a11a2866fced12e3c14c3114f",
+    "docs/curve-deviation-subcurves-ui.log": "0c8f5fd0d0682fbd829a223a04a5e351b8c49b40418905ed2814a310c7e589ef",
+    "docs/curve-distance-queries.md": "6cc93a5b23054c686fd936e835e846d0fe39a1163a163366f20e716bbb36272f",
+    "docs/curve-distance-validation.json": "7481bce40f8753dec7ddaea5c745258ad5ca6a1d2eee987366da28f0267d7d8d",
+    "docs/point-deviation-validation.json": "24a977983334171f1bb83e6ee65350d78efc4b2a1bbd8647d3324bd3e23fd10d",
+    "docs/project-subcurve-qualification.json": "870c7dfe7c45e78fa9a30037d9dc3bafa2281c46466d3015b9aad242c3cf9d98",
+    "docs/pull-command-qualification.json": "2c2bbf4705eb007ac785bdf8560ed1be9ff89d654c4011b741c01d2a5930c503",
+    "src/app/apply_curves.rs": "c3760d67c13e8fd1fcba57cc9993ce500db9000aa1e55f889f266f272efce88e",
+    "src/app/boolean_solids.rs": "20c2f741782e10de10fbfec962eefc369672015734ce570521bbb1bb37903985",
+    "src/app/curve_deviation.rs": "1fa8fd8e0fe8b182d1d101808dc2f6cefd79ea3fbebd9bcce26e518add4c2b76",
+    "src/app/curve_deviation/subcurves.rs": "dcc8d1c1b820237a2cc1b942ec65c1a31fc29ec18032853b1fc6f81f11a3fb2b",
+    "src/app/intersect_two_sets.rs": "3ccf040d3eabee71fa79774e398261cb5f5550fdc2c14b6e9182b1b4e6dd177c",
+    "src/app/iplane.rs": "cf7c9d024243ff471b83b5c9d2dc12a72974c1ea5a9feac66e5970ceece48919",
+    "src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c",
+    "src/app/point_deviation.rs": "1c0165f6811e708f61e1cc2d7e13295557e2b3df472e027b335604bc3e651dcd",
+    "src/app/project.rs": "d3285d11224536759a8350307b62902945f07e2713ebe71d166b564586f2f31d",
+    "src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708",
+    "src/app/tests/curve_deviation.rs": "ba930cdf4af85c796be961f0cd0ba871a75d2fd78e7764f7bdd6c3e844adf370",
+    "src/app/uv_subcurve_input.rs": "892a84d488bdd0014355304fe0542b8f9b19ad2e249d2d76a28cfed0ba5e881a",
+    "tools/rhino_oracle/curve_deviation_comparison.py": "865c60d01d3f284bdba91efe9532077a2b99b94ea8e996aab70b5de11c356325",
+    "tools/rhino_oracle/curve_deviation_probe.py": "c5ecec382099559a5fef5e17acdd34cd8e403abc4a6337840e9d85bf2b621922",
+    "tools/rhino_oracle/fixtures/curve_deviation_subcurves.json": "a6f5cc598deb540373772f61fb1855e4397094d5e65cb005dc80990e9ebaed72",
+    "tools/rhino_oracle/fixtures/curve_deviation_subcurves_initial.json": "2014638b055ee89bb0a75cc5dc4c85caffc288938a6f465a4214294013e1b796",
+    "tools/rhino_oracle/observations/curve_deviation_subcurves_comparison_20261016.json": "83bc9a584df4d94aa8901f528234a52310b7f96024dd9e6304b1ddbba5be14ec",
+    "tools/rhino_oracle/observations/curve_deviation_subcurves_discovery_rhino_20261016.json": "be0dfee6dfae8041ad9123945556f03f4dd16a69301d88138e00ce0f6124c9e5",
+    "tools/rhino_oracle/observations/curve_deviation_subcurves_initial_rhino_20261016.json": "e1a790e23088df5e76c0f100838db1bbffc610e44d1654058f1ad041acbd54e5",
+    "tools/rhino_oracle/observations/curve_deviation_subcurves_rhino_20261016.json": "27322e1b86d53c0a8686d0eabfa158b4a467e3eaf775090469aaf4179991e898",
+    "tools/rhino_oracle/observations/curve_deviation_subcurves_viboceros_20261016.json": "e3b16fd59288ce11735db1fdf4e9d00525a89406db73e21b393c8c225f9259da",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/test_curve_deviation_subcurves.py": "1d7edf7ff57fdd44903a4fde16759c7b5e2403fbc8ad3eea81c0d8b207996777",
+    "tools/usd_brep/curve_distance_probe.cpp": "a72519756bafaed7b1843366745598057964ca20de8bc5bb15bcc276ac50c26a",
+    "tools/usd_brep/run_curve_distance_probe.py": "424d54b6ee9781751cfd2f8356fea63a636fe97daaa60bf642c7a6c5429ee395",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

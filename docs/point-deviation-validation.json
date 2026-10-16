@@ -151,12 +151,6 @@
     "crates/viboceros-oracle/src/point_deviation.rs": "3cc1904e6c9070664c740e3b57a98a52c3f63743a0e592d1272e084b61da4b1b",
     "docs/commands/README.md": "7d13f852b53b2f895c953508ce49600de3f217ddd1117c7e69ddbb8378036547",
     "docs/commands/point-deviation.md": "152f8d99f7e8a9ff7560f3637d969d42faa6fc671a220d7c275cea16f9e5b566",
-    "src/app/apply_curves.rs": "c5326d51d03c0ef89f96fa95c2cb7995f10c4b26a74db5af9888a953e2098fca",
-    "src/app/boolean_solids.rs": "95e3bc8e12e086431bb2e99b5edb781a5ec0354817e4fb0a7732541d67d32a5b",
-    "src/app/intersect_two_sets.rs": "ee860410f65c8427fbc1fc9ca6771ce855036c9ce4f9c61730be0d4bbaa5ca18",
-    "src/app/iplane.rs": "6d6ad80533ba359095de5b3e2a80076084b2239b4f165a3a9fd7b68fbc55facc",
-    "src/app/point_deviation.rs": "d5430e3cb6bdf0dbdd4450cd00ef8a846dae7af9aeb99edf352b7e3542f200c8",
-    "src/app/project.rs": "ef834e9305627ac1bb8c41e61d908828ad00ae9c58f0caadd2743e569a218c14",
     "src/app/tests/point_deviation.rs": "164a22b841b6fc52d047772bc654c2a4befad2da6a1ef03818b4de95a78a18d5",
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
     "tools/rhino_oracle/point_deviation_probe.py": "a004fe2348eaf0136afd184513e8e561f7d21dbee35de60e179711620fb62e7e",
@@ -184,6 +178,12 @@
     "5c5cc31a1c7a3b24e0d3bc0797fde9d28aa3a8dd:tools/rhino_oracle/structural_sdk.py": "6761bd7467deb6c1b86497a82e1dbb0b4c0a0ce00765453df1bc0f9577aaf404",
     "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:crates/viboceros-command/src/lib.rs": "695f3513a8af4bd1b98e05c2b30286db70cf7c3367e0c8ae70b83f568e768337",
     "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:src/app.rs": "97525739629aed9afe5cea90ee9405ad64498820d35189fe56d4b2e444c6c6ad",
-    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:src/viewport.rs": "0c38f52c4d55d675c8d4cc3cb0e391612ea911cb318a32191cc8958086ca59d5"
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:src/viewport.rs": "0c38f52c4d55d675c8d4cc3cb0e391612ea911cb318a32191cc8958086ca59d5",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/apply_curves.rs": "c5326d51d03c0ef89f96fa95c2cb7995f10c4b26a74db5af9888a953e2098fca",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/boolean_solids.rs": "95e3bc8e12e086431bb2e99b5edb781a5ec0354817e4fb0a7732541d67d32a5b",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/intersect_two_sets.rs": "ee860410f65c8427fbc1fc9ca6771ce855036c9ce4f9c61730be0d4bbaa5ca18",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/iplane.rs": "6d6ad80533ba359095de5b3e2a80076084b2239b4f165a3a9fd7b68fbc55facc",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/point_deviation.rs": "d5430e3cb6bdf0dbdd4450cd00ef8a846dae7af9aeb99edf352b7e3542f200c8",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/project.rs": "ef834e9305627ac1bb8c41e61d908828ad00ae9c58f0caadd2743e569a218c14"
   }
 }

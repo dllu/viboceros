@@ -44,13 +44,18 @@ def comparison(request,local,native,interval_ends=False):
     for op,a,b in zip(request['operations'],local['results'],native['results']):
         if not op['id']==a['id']==b['id']:raise ValueError('case identity mismatch')
         x,y=a['value'],b['value'];sa,sb=x['sdk'],y['sdk']
-        row=dict(id=op['id'],local_report=sa['created'],native_report=sb['created'],status_matches=sa['created']==sb['created'],local_approximate_overlap=x['approximate_overlap'])
+        subcurve='subcurves'in op
+        native_report=('Overlap interval 'in y['command_history'])if subcurve else sb['created']
+        if subcurve and (x.get('sdk_scope')!='measured_inputs'or y.get('sdk_scope')!='whole_sources'):raise ValueError('unexpected SubCrv SDK scopes')
+        row=dict(id=op['id'],local_report=sa['created'],native_report=native_report,status_matches=sa['created']==native_report,local_approximate_overlap=x['approximate_overlap'])
+        if subcurve:row.update(sdk_scalars_compared=False,local_sdk_scope=x['sdk_scope'],native_sdk_scope=y['sdk_scope'])
         counts['status_matches']+=row['status_matches']
-        if sa['created']and sb['created']:
+        if sa['created']and native_report:
             for key in ('minimum','maximum'):
-                error=abs(F(sa[key]['distance'])-F(sb[key]['distance']))
-                row['sdk_'+key]=dict(exact_scalar_difference=str(error),within_1e_minus_6=error<=EPS)
-                counts['sdk_'+key+'_scalar_matches']+=error<=EPS
+                if not subcurve:
+                    error=abs(F(sa[key]['distance'])-F(sb[key]['distance']))
+                    row['sdk_'+key]=dict(exact_scalar_difference=str(error),within_1e_minus_6=error<=EPS)
+                    counts['sdk_'+key+'_scalar_matches']+=error<=EPS
                 row['command_'+key]=displayed(sa[key]['distance'],y['command_history'],key)
                 counts['command_'+key+'_display_matches']+=row['command_'+key]['within_display_rounding_and_1e_minus_6']
         if op['keep_marks']:
@@ -65,7 +70,7 @@ def comparison(request,local,native,interval_ends=False):
                 row['interval_end_mark_counts']=[len(first),len(second)]
                 counts['interval_end_cases']+=1
                 counts['interval_end_sets_matching']+=row['interval_end_sets_match']
-                if sa['created']and sb['created']:
+                if sa['created']and native_report:
                     counts['interval_end_joint_report_cases']+=1
                     counts['interval_end_report_sets_matching']+=row['interval_end_sets_match']
         rows.append(row)
@@ -73,6 +78,7 @@ def comparison(request,local,native,interval_ends=False):
         complete_native_command_parity_qualified=False,continuous_global_extrema_qualified=False,performance_qualified=False,
         method='Exact binary-rational SDK scalar differences; native command text compared separately with its observed six-significant-digit rounding interval plus 1e-6 (or finer when printed). Unordered permanent marker matching preserves occurrences and admits point distances at 1e-6. SDK and command minima are not assumed identical. All cases and all mismatches are retained.',results=rows)
     if interval_ends:result['interval_end_comparison_enabled']=True
+    if any('subcurves'in op for op in request['operations']):result['subcurve_sdk_scope_note']='SubCrv compares actual command reports and marks. Native SDK observations measure whole source curves; local SDK-shaped values measure the selected input pieces. Those scalar scopes are not compared.'
     return result
 
 def main():

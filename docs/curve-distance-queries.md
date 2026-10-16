@@ -39,6 +39,12 @@ projected intervals return no report. Canonical working
 frame limitations remain, including degree/weight and discontinuity restrictions.
 Queries allow at most 4096 controls per source. Invalid, reversed, nonfinite or
 out-of-domain interval values reject; equal interval ends return no report.
+Returned kernel parameters can cross a requested bound through numerical
+roundoff. Proposals within 64 arithmetic epsilons of the normalized active
+range are clamped to that bound before source-image and nearest-pair validation.
+Caller-provided intervals remain strict, including small negative values;
+larger or nonfinite output excursions reject. A seam-crossing concentric-arc
+case exposed a `2.6e-16` excursion and now has a regression test.
 
 The [18-case native capture](../tools/rhino_oracle/observations/curve_deviation_rhino_20261016.json)
 retains both public `Curve.GetDistancesBetweenCurves` witnesses and actual

@@ -217,6 +217,49 @@ fn crv_overlap_circle_seam_witness_retains_requested_final_visit() {
     );
 }
 #[test]
+fn curve_distance_seam_arc_portions_keep_returned_parameters_inside_strict_ranges() {
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let mut arcs = Vec::new();
+    for radius in [2., 3.] {
+        let c = Circle3::try_from_center_point(
+            p(0., 0.),
+            p(radius, 0.),
+            Vector3::try_new(0., 0., 1.)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = Curve3::Circle(c);
+        arcs.push(
+            source
+                .try_subcurve(
+                    source.as_ref().parameter_at(0.85).unwrap(),
+                    source.as_ref().parameter_at(0.15).unwrap(),
+                )
+                .unwrap(),
+        );
+    }
+    let a = arcs[0].as_ref();
+    let b = arcs[1].as_ref();
+    let intervals = projected_curve_intervals(a, b, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    let r = curve_distance_extrema(a, b, intervals, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    for w in [&r.minimum, &r.maximum] {
+        assert!((w.distance - 1.).abs() < 1e-9);
+        for (i, range) in intervals.iter().enumerate() {
+            assert!((range[0]..=range[1]).contains(&w.normalized_parameters[i]));
+        }
+    }
+    assert!(
+        curve_distance_extrema(a, b, [[-f64::EPSILON, 1.], [0., 1.]], Tolerance::DEFAULT).is_err()
+    );
+}
+#[test]
 fn curve_distance_rational_arc_translation_keeps_constant_normal_gap() {
     use viboceros_geometry::{AffineTransform3, CircularArc3};
     let arc = CircularArc3::try_from_three_points(

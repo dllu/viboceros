@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "command_registered": true,
+  "reference_derived_inputs": false,
+  "cases": 9,
+  "counts": {
+    "status_matches": 9,
+    "sdk_maximum_scalar_matches": 0,
+    "sdk_minimum_scalar_matches": 0,
+    "command_minimum_display_matches": 9,
+    "command_maximum_display_matches": 8,
+    "permanent_mark_sets_matching": 4,
+    "permanent_mark_cases": 9,
+    "interval_end_sets_matching": 8,
+    "interval_end_cases": 9,
+    "interval_end_report_sets_matching": 8,
+    "interval_end_joint_report_cases": 9
+  },
+  "complete_native_command_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "performance_qualified": false,
+  "method": "Exact binary-rational SDK scalar differences; native command text compared separately with its observed six-significant-digit rounding interval plus 1e-6 (or finer when printed). Unordered permanent marker matching preserves occurrences and admits point distances at 1e-6. SDK and command minima are not assumed identical. All cases and all mismatches are retained.",
+  "results": [
+    {
+      "id": "one-part",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "two-parts",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2.82843",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "reverse-open",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "equal-parts",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "second-part",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "circle-arcs",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "circle-seam",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "polyline-seam",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-parts",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_scalars_compared": false,
+      "local_sdk_scope": "measured_inputs",
+      "native_sdk_scope": "whole_sources",
+      "command_minimum": {
+        "text": "0.5",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "0.5",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    }
+  ],
+  "interval_end_comparison_enabled": true,
+  "subcurve_sdk_scope_note": "SubCrv compares actual command reports and marks. Native SDK observations measure whole source curves; local SDK-shaped values measure the selected input pieces. Those scalar scopes are not compared."
+}

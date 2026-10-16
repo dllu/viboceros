@@ -39,6 +39,18 @@ impl SubcurveInput {
         document: &'a Document,
         usage: &'static str,
     ) -> Result<Input<'a>, CommandError> {
+        self.resolve_with_subcurve(document, usage, |curve, start, end| {
+            Ok(curve.try_subcurve(start, end)?)
+        })
+    }
+    /// Reuse source admission and ownership while choosing the established
+    /// command-specific trim backend. No temporary document objects are made.
+    pub(super) fn resolve_with_subcurve<'a>(
+        self,
+        document: &'a Document,
+        usage: &'static str,
+        subcurve: impl FnOnce(&Curve3, Real, Real) -> Result<Curve3, CommandError>,
+    ) -> Result<Input<'a>, CommandError> {
         if !document.is_object_selectable(self.object) {
             return Err(CommandError::Usage(usage));
         }
@@ -55,7 +67,7 @@ impl SubcurveInput {
                     "Subcurve length exceeds the available curve",
                 ))?
         } else {
-            curve.to_owned().try_subcurve(start, end)?
+            subcurve(&curve.to_owned(), start, end)?
         };
         Ok(Input {
             object: self.object,

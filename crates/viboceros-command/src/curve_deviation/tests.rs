@@ -136,6 +136,104 @@ fn crv_deviation_postselection_and_wrong_counts() {
     assert_eq!(d.selected_object_count(), 0);
     assert!(r.curve_deviation_view(&d).is_some());
 }
+#[test]
+fn crv_deviation_subcurve_inputs_override_whole_selection_and_preserve_redo() {
+    let (r, mut d, ids) = setup();
+    r.execute(&mut d, "Point 8,9,10").unwrap();
+    r.execute(&mut d, "Undo").unwrap();
+    d.select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    let before = format!("{d:?}");
+    r.execute(&mut d, &format!("CrvDeviation SubCrv={},3,7", ids[0]))
+        .unwrap();
+    let v = r.curve_deviation_view(&d).unwrap();
+    assert_eq!(v.ends[0].parameters, [3., 0.]);
+    assert_eq!(v.ends[1].parameters, [7., 4.]);
+    assert_eq!(v.extrema.minimum.distance, 2.);
+    assert_eq!(v.extrema.maximum.distance, 2.);
+    assert_eq!(format!("{d:?}"), before);
+    r.execute(&mut d, "CrvDeviation End").unwrap();
+    r.execute(&mut d, "Redo").unwrap();
+    assert_eq!(d.objects().len(), 3);
+}
+#[test]
+fn crv_deviation_reverse_subcurve_keeps_negative_native_domain_and_undoable_marks() {
+    let (r, mut d, ids) = setup();
+    let sources = ids.map(|id| d.object(id).unwrap().geometry().clone());
+    r.execute(
+        &mut d,
+        &format!("CrvDeviation SubCrv={},7,3 KeepMarks=Yes", ids[0]),
+    )
+    .unwrap();
+    let v = r.curve_deviation_view(&d).unwrap();
+    assert_eq!(v.ends[0].parameters, [-7., 4.]);
+    assert_eq!(v.ends[1].parameters, [-3., 0.]);
+    assert_eq!(v.ends[0].points[0].to_array(), [7., 0., 0.]);
+    r.execute(&mut d, "CrvDeviation End").unwrap();
+    assert_eq!(d.objects().len(), 14);
+    for (id, source) in ids.into_iter().zip(&sources) {
+        assert_eq!(d.object(id).unwrap().geometry(), source);
+    }
+    r.execute(&mut d, "Undo").unwrap();
+    assert_eq!(d.objects().len(), 2);
+}
+#[test]
+fn crv_deviation_two_parts_of_one_owner_bind_to_original_geometry() {
+    let (r, mut d, ids) = setup();
+    d.clear_selection();
+    r.execute(
+        &mut d,
+        &format!("CrvDeviation SubCrv={},0,6 SubCrv={},4,10", ids[0], ids[0]),
+    )
+    .unwrap();
+    let v = r.curve_deviation_view(&d).unwrap();
+    assert_eq!(v.extrema.maximum.distance, 0.);
+    d.select_objects_direct([ids[0]], SelectionMode::Replace)
+        .unwrap();
+    r.execute(&mut d, "Move 0,0,0 0,0,1").unwrap();
+    assert!(r.curve_deviation_view(&d).is_none());
+    assert_eq!(d.objects().len(), 2);
+}
+#[test]
+fn crv_deviation_invalid_parts_leave_report_and_document_unchanged() {
+    let (r, mut d, ids) = setup();
+    r.execute(&mut d, "CrvDeviation").unwrap();
+    let before = format!("{d:?}");
+    for suffix in [
+        format!("SubCrv={},3,3", ids[0]),
+        format!("SubCrv={},-1,7", ids[0]),
+        format!("SubCrv={},NaN,7", ids[0]),
+        "SubCrv=999999,0,1".into(),
+        format!("End SubCrv={},3,7", ids[0]),
+        format!(
+            "SubCrv={},0,2 SubCrv={},3,4 SubCrv={},6,8",
+            ids[0], ids[0], ids[0]
+        ),
+    ] {
+        assert!(
+            r.execute(&mut d, &format!("CrvDeviation {suffix}"))
+                .is_err(),
+            "{suffix}"
+        );
+        assert_eq!(format!("{d:?}"), before);
+        assert!(r.curve_deviation_view(&d).is_some());
+    }
+}
+#[test]
+fn crv_deviation_new_parts_restart_analysis_instead_of_only_updating_options() {
+    let (r, mut d, ids) = setup();
+    r.execute(&mut d, "CrvDeviation").unwrap();
+    assert_eq!(
+        r.curve_deviation_view(&d).unwrap().extrema.intervals[0],
+        [0.3, 0.7]
+    );
+    r.execute(&mut d, &format!("CrvDeviation SubCrv={},3,7", ids[0]))
+        .unwrap();
+    assert_eq!(
+        r.curve_deviation_view(&d).unwrap().extrema.intervals[0],
+        [0., 1.]
+    );
+}
 #[cfg(feature = "native-smlib")]
 #[test]
 fn crv_deviation_curved_backend_is_usable_and_exposes_overlap_limit() {

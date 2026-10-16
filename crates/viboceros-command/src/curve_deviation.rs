@@ -4,9 +4,10 @@ use std::sync::{Arc, Mutex};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{CurveDistanceExtrema, CurveDistanceWitness, CurveRef};
 
+mod inputs;
 #[cfg(test)]
 mod tests;
-pub const USAGE: &str = "CrvDeviation [KeepMarks=Yes|No] | CrvDeviation End|Cancel";
+pub const USAGE: &str = "CrvDeviation [SubCrv=id,start,end] [SubCrv=id,start,end] [KeepMarks=Yes|No] | CrvDeviation End|Cancel";
 
 #[derive(Clone, Debug)]
 pub struct View {
@@ -190,12 +191,22 @@ impl Session {
     }
 }
 
-fn parse<'a>(args: &[&'a str]) -> Result<(Option<&'a str>, Option<bool>), CommandError> {
+struct Arguments<'a> {
+    action: Option<&'a str>,
+    keep: Option<bool>,
+    subcurves: Vec<uv_inputs::SubcurveInput>,
+}
+fn parse<'a>(args: &[&'a str]) -> Result<Arguments<'a>, CommandError> {
     let mut action = None;
     let mut keep = None;
+    let mut subcurves = Vec::new();
     for a in args {
         let a = a.trim_start_matches('_');
         if let Some((key, v)) = a.split_once('=') {
+            if key.eq_ignore_ascii_case("SubCrv") && subcurves.len() < 2 {
+                subcurves.push(uv_inputs::SubcurveInput::parse(v, USAGE)?);
+                continue;
+            }
             if !key.eq_ignore_ascii_case("KeepMarks") || keep.is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -211,7 +222,18 @@ fn parse<'a>(args: &[&'a str]) -> Result<(Option<&'a str>, Option<bool>), Comman
     if action.is_some_and(|a| a.eq_ignore_ascii_case("Cancel")) && keep.is_some() {
         return Err(CommandError::Usage(USAGE));
     }
-    Ok((action, keep))
+    if action.is_some() && !subcurves.is_empty() {
+        return Err(CommandError::Usage(USAGE));
+    }
+    Ok(Arguments {
+        action,
+        keep,
+        subcurves,
+    })
+}
+/// Validate options before the GUI starts a nested SubCrv getter.
+pub fn accepts_subcurve_picker_options(args: &[&str]) -> bool {
+    parse(args).is_ok_and(|p| p.action.is_none() && p.subcurves.is_empty())
 }
 
 pub(super) struct CurveDeviationCommand(pub Arc<Session>);
@@ -223,8 +245,15 @@ impl Command for CurveDeviationCommand {
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let (action, keep) = parse(args)?;
-        if action.is_some() || keep.is_some() && self.0.0.lock().unwrap().active.is_some() {
+        let Arguments {
+            action,
+            keep,
+            subcurves,
+        } = parse(args)?;
+        if action.is_some()
+            || !subcurves.is_empty()
+            || keep.is_some() && self.0.0.lock().unwrap().active.is_some()
+        {
             return Ok(None);
         }
         Ok(Some(ObjectSelectionPrompt {
@@ -241,7 +270,11 @@ impl Command for CurveDeviationCommand {
         }))
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        let (action, keep) = parse(args)?;
+        let Arguments {
+            action,
+            keep,
+            subcurves,
+        } = parse(args)?;
         let mut state = self.0.0.lock().expect("curve deviation session");
         if action.is_some_and(|a| a.eq_ignore_ascii_case("Cancel")) {
             state.active = None;
@@ -296,7 +329,8 @@ impl Command for CurveDeviationCommand {
             }
             .into());
         }
-        if !args.is_empty()
+        if subcurves.is_empty()
+            && !args.is_empty()
             && let Some(active) = state.active.as_mut().filter(|a| a.valid(doc))
         {
             active.view.keep_marks = keep;
@@ -304,28 +338,31 @@ impl Command for CurveDeviationCommand {
             state.keep_marks = keep;
             return Ok(message);
         }
-        let objects = doc
-            .selected_objects()
-            .filter(|o| o.geometry().curve_ref().is_some())
-            .collect::<Vec<_>>();
+        let objects = inputs::resolve(doc, &subcurves)?;
         if objects.len() != 2 {
             return Err(CommandError::Usage(
                 "CrvDeviation requires exactly two curves",
             ));
         }
         let report = analyze(
-            objects[0].geometry().curve_ref().unwrap(),
-            objects[1].geometry().curve_ref().unwrap(),
+            objects[0].geometry.curve_ref().unwrap(),
+            objects[1].geometry.curve_ref().unwrap(),
             doc.tolerance(),
         )?;
         state.keep_marks = keep;
         state.active = report.map(|mut view| {
             view.keep_marks = keep;
             Active {
-                ids: [objects[0].id(), objects[1].id()],
+                ids: [objects[0].object, objects[1].object],
                 sources: [
-                    objects[0].geometry_snapshot().clone(),
-                    objects[1].geometry_snapshot().clone(),
+                    doc.object(objects[0].object)
+                        .unwrap()
+                        .geometry_snapshot()
+                        .clone(),
+                    doc.object(objects[1].object)
+                        .unwrap()
+                        .geometry_snapshot()
+                        .clone(),
                 ],
                 tolerance: doc.tolerance(),
                 view,

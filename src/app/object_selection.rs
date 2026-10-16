@@ -63,7 +63,7 @@ impl PendingObjectCommand {
 
     pub(super) fn hint(&self) -> &'static str {
         if self.description.command == "CrvDeviation" {
-            return "Select exactly two curves; Enter measures deviation, Esc cancels";
+            return "Select exactly two curves; SubCrv picks a portion; Enter measures, Esc cancels";
         }
         if self.description.command == "RailRevolve" {
             return "Select the profile first, then the rail; Enter picks the axis; Esc cancels";
@@ -699,6 +699,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.promote_curve_deviation_subcurve(input) {
+            return true;
+        }
         if self.try_select_prompt_points(input) {
             return true;
         }

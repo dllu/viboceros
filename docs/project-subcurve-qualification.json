@@ -29,7 +29,6 @@
     "https://docs.mcneel.com/rhino/8/help/en-us/commands/project.htm"
   ],
   "source_sha256": {
-    "crates/viboceros-command/src/uv_inputs.rs": "a0537f3aa50523054c4acf11cde2cd0ec7ceb46718c9481fd810c798290a58c1",
     "src/app/uv_subcurve_input.rs": "892a84d488bdd0014355304fe0542b8f9b19ad2e249d2d76a28cfed0ba5e881a",
     "src/app/tests/project_subcurve.rs": "7c99a36ee8a0177aa5014e74d96b0a1dd6aa2239c93302b3a843cd72b2916fcb"
   },
@@ -38,6 +37,7 @@
     "59a3e1cc8ca0e23376317b2b02768f8569a63b52:crates/viboceros-command/src/project_tests.rs": "779ecc073d8f4b2e97aa3f72c6f84f223e5473c92020edd68f3fc9c1f9e2a55d",
     "59a3e1cc8ca0e23376317b2b02768f8569a63b52:src/app/project.rs": "e1377e5e803075236d31dcb73f493680d8d825c41910c8e12868a69eb1206f61",
     "59a3e1cc8ca0e23376317b2b02768f8569a63b52:src/app/intersect_two_sets.rs": "175cc3efedc4f888dd975827ee387b227b25a7b9f9b92f9881021c72e4234b39",
-    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:src/app/tests/project.rs": "a863a6d5da98f558185c4024c1c0015777ef2249262db906c37675e7c10fdfe1"
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:src/app/tests/project.rs": "a863a6d5da98f558185c4024c1c0015777ef2249262db906c37675e7c10fdfe1",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:crates/viboceros-command/src/uv_inputs.rs": "a0537f3aa50523054c4acf11cde2cd0ec7ceb46718c9481fd810c798290a58c1"
   }
 }

@@ -1,5 +1,6 @@
 //! Enter finishes an analysis; Escape or another command dismisses its overlay.
 use super::*;
+mod subcurves;
 impl VibocerosApp {
     pub(super) fn continue_curve_deviation(&mut self, input: &str) -> bool {
         if self.commands.curve_deviation_view(&self.document).is_none() {

@@ -237,6 +237,7 @@ impl VibocerosApp {
         let finish_targets =
             (custom_requested && !first.is_empty() && !targets.is_empty()).then_some(targets);
         self.intersection_prompt = Some(TwoSetsPrompt {
+            curve_deviation: None,
             deviation: None,
             first: (!first.is_empty()).then_some(first),
             original_selection,

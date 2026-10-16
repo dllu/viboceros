@@ -2,6 +2,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -51,8 +52,11 @@ int main() {
         require(std::abs(localized[0]-1)<1e-8,"localized knot-span peak missed");
         char error[2048]{};double params[4]{};const double bad[4]={-1,1,0,1};
         require(vb_curve_distance_extrema(a.get(),b.get(),bad,1e-9,params,error,sizeof(error))!=0,"invalid range accepted");
+        const double tiny_bad[4]={-std::numeric_limits<double>::epsilon(),1,0,1};
+        require(vb_curve_distance_extrema(a.get(),b.get(),tiny_bad,1e-9,params,error,sizeof(error))!=0,
+            "small invalid caller range accepted by output roundoff guard");
         require(vb_curve_distance_extrema(nullptr,b.get(),bad,1e-9,nullptr,error,sizeof(error))!=0,"null arguments accepted");
-        std::cout<<"{\"passed\":true,\"checks\":6,\"parallel_maximum\":"<<parallel[0]
+        std::cout<<"{\"passed\":true,\"checks\":7,\"parallel_maximum\":"<<parallel[0]
                  <<",\"partial_maximum\":"<<partial[0]<<",\"circle_chord_maximum\":"<<circular[0]
                  <<",\"circle_chord_minimum\":"<<circular[1]<<"}\n";
     } catch(const std::exception &error) {std::cerr<<error.what()<<'\n';return 1;}

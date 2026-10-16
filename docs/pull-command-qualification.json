@@ -43,7 +43,6 @@
     "Surface and face point locations reuse the existing bounded closest-query policy, including boundary clamping. Broader native point parity is unqualified."
   ],
   "source_sha256": {
-    "crates/viboceros-command/src/uv_inputs.rs": "a0537f3aa50523054c4acf11cde2cd0ec7ceb46718c9481fd810c798290a58c1",
     "crates/viboceros-geometry/src/intersection.rs": "4af65f5e283beec675aa5b105a493a228f942e2f0fe71c3d0a20401a1ad9e9fa",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend.rs": "2f9a8721592bf7ce4c19722157c5e8db05a7d117e50e06c01e308eda8b04ceb6",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend/trim.rs": "021c3592b251114d32cbc4f191e974f163a2645bbeef20a64a2f4e3b44c3dc68",
@@ -76,6 +75,7 @@
     "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-command/src/lib.rs": "8159f099cacd81685915f8bb3f1ebafd56c08ee08339fb907d8348e111a7f584",
     "462b129706e7be81ccde492c16db1ff7c243e4d5:src/app.rs": "fbd8ed5b87d75cbc4a039dedff2e0966d4c3aa28840061e284b2509f50ca5a59",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/iplane.rs": "010e777d42ab9aea056ed15ea4b03b0cad66ca6dc2df515b861d2705b69c64ae",
-    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/intersect_two_sets.rs": "a83f047b98b6cf295ad7c81f6d8a2a97813a07f1f00ce66fd1217e302daa9141"
+    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/intersect_two_sets.rs": "a83f047b98b6cf295ad7c81f6d8a2a97813a07f1f00ce66fd1217e302daa9141",
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:crates/viboceros-command/src/uv_inputs.rs": "a0537f3aa50523054c4acf11cde2cd0ec7ceb46718c9481fd810c798290a58c1"
   }
 }

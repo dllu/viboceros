@@ -1,0 +1,18 @@
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 28.02s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-57135ca80196f59f)
+
+running 11 tests
+test curve_deviation::tests::crv_deviation_postselection_and_wrong_counts ... ok
+test curve_deviation::tests::crv_deviation_cancel_and_invalid_arguments_do_not_keep_marks ... ok
+test curve_deviation::tests::crv_deviation_coincident_witnesses_keep_one_point_per_mark ... ok
+test curve_deviation::tests::crv_deviation_subcurve_inputs_override_whole_selection_and_preserve_redo ... ok
+test curve_deviation::tests::crv_deviation_report_and_options_preserve_model_and_redo ... ok
+test curve_deviation::tests::crv_deviation_new_parts_restart_analysis_instead_of_only_updating_options ... ok
+test curve_deviation::tests::crv_deviation_invalid_parts_leave_report_and_document_unchanged ... ok
+test curve_deviation::tests::crv_deviation_reverse_subcurve_keeps_negative_native_domain_and_undoable_marks ... ok
+test curve_deviation::tests::crv_deviation_kept_marks_have_native_colors_and_one_undo_step ... ok
+test curve_deviation::tests::crv_deviation_two_parts_of_one_owner_bind_to_original_geometry ... ok
+test curve_deviation::tests::crv_deviation_geometry_and_tolerance_changes_expire_display_and_keep_request ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 1406 filtered out; finished in 0.03s

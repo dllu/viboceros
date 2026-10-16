@@ -6,6 +6,7 @@ use viboceros_document::{ObjectId, SelectionMode};
 
 #[derive(Clone, Debug)]
 pub(super) struct TwoSetsPrompt {
+    pub(super) curve_deviation: Option<String>,
     pub(super) deviation: Option<String>,
     pub(super) first: Option<Vec<ObjectId>>,
     pub(super) output_layer: &'static str,
@@ -58,6 +59,9 @@ impl BooleanOptions {
 
 impl TwoSetsPrompt {
     pub(super) fn name(&self) -> &'static str {
+        if self.curve_deviation.is_some() {
+            return "CrvDeviation";
+        }
         if self.deviation.is_some() {
             return "PointDeviation";
         }
@@ -73,6 +77,9 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
+        if self.curve_deviation.is_some() {
+            return ObjectSelectionFilter::Curves;
+        }
         if self.deviation.is_some() {
             return if self.first.is_some() {
                 ObjectSelectionFilter::DeviationTargets
@@ -109,6 +116,9 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if self.curve_deviation.is_some() {
+            return self.uv_subcurves.hint().unwrap_or("Select two curve inputs; SubCrv picks a temporary portion; Enter measures, Esc cancels");
+        }
         if self.deviation.is_some() {
             return if self.first.is_some() {
                 "Select target curves, surfaces, polysurfaces or meshes; Enter measures, Esc cancels"
@@ -197,6 +207,9 @@ fn output_layer_option(input: &str) -> Option<&'static str> {
 
 impl VibocerosApp {
     pub(super) fn try_start_intersection_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_curve_deviation_subcurve_prompt(input) {
+            return true;
+        }
         if self.try_start_point_deviation(input) {
             return true;
         }
@@ -237,6 +250,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.document.clear_selection();
         self.intersection_prompt = Some(TwoSetsPrompt {
+            curve_deviation: None,
             deviation: None,
             projection: None,
             first: (!first.is_empty()).then_some(first),
@@ -260,7 +274,10 @@ impl VibocerosApp {
                 self.log_project_prompt(&prompt);
                 return;
             }
-            if prompt.uv_mapping.is_some() || prompt.deviation.is_some() {
+            if prompt.uv_mapping.is_some()
+                || prompt.deviation.is_some()
+                || prompt.curve_deviation.is_some()
+            {
                 self.push_log(format!("{}: {}", prompt.name(), prompt.hint()));
                 return;
             }
@@ -284,6 +301,9 @@ impl VibocerosApp {
         let Some(mut prompt) = self.intersection_prompt.clone() else {
             return false;
         };
+        if prompt.curve_deviation.is_some() {
+            return self.continue_curve_deviation_sources(prompt, input);
+        }
         if prompt.deviation.is_some() {
             return self.continue_point_deviation(prompt, input);
         }
@@ -394,6 +414,14 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
+        if self
+            .intersection_prompt
+            .as_ref()
+            .is_some_and(|p| p.curve_deviation.is_some() && p.uv_subcurves.pending.is_some())
+        {
+            self.pick_uv_subcurve_source(ids);
+            return;
+        }
         if let Some(prompt) = &self.intersection_prompt {
             if prompt.projection.is_some() {
                 self.select_project_objects(ids, mode);

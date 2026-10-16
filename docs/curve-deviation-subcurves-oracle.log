@@ -1,0 +1,12 @@
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 30.80s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-cab8caa67c164a6a)
+
+running 4 tests
+test curve_deviation::tests::crv_deviation_protocol_requires_a_boolean_when_keep_marks_is_present ... ok
+test curve_deviation::tests::crv_deviation_subcurve_protocol_validates_ranges_and_executes_owned_parts ... ok
+test curve_deviation::tests::crv_deviation_command_workflows_retain_native_status_maxima_and_known_differences ... ok
+test curve_deviation::tests::curve_distance_protocol_retains_four_native_metric_disagreements ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 530 filtered out; finished in 0.25s

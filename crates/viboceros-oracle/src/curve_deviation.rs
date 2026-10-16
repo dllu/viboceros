@@ -1,12 +1,20 @@
 //! Native command/SDK observations versus an independent interval-query backend.
 use super::*;
 use crate::curve_join_close::CurveInput;
+type SubcurveRanges = [Option<[f64; 2]>; 2];
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
     pub curves: [CurveInput; 2],
     pub postselect: bool,
     #[serde(default, deserialize_with = "keep_marks")]
     pub keep_marks: Option<bool>,
+    #[serde(default, deserialize_with = "subcurve_ranges")]
+    pub subcurves: Option<[Option<[f64; 2]>; 2]>,
+}
+fn subcurve_ranges<'de, D: serde::Deserializer<'de>>(
+    d: D,
+) -> Result<Option<SubcurveRanges>, D::Error> {
+    SubcurveRanges::deserialize(d).map(Some)
 }
 fn keep_marks<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<bool>, D::Error> {
     bool::deserialize(d).map(Some)
@@ -16,6 +24,17 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    if let Some(ranges) = f.subcurves
+        && (!f.postselect
+            || f.keep_marks.is_none()
+            || ranges.iter().flatten().any(|r| {
+                r[0] == r[1] || r.iter().any(|t| !t.is_finite() || !(0. ..=1.).contains(t))
+            }))
+    {
+        return Err(ProbeError::FixtureInvariant(
+            "SubCrv needs postselection, KeepMarks and valid normalized ranges",
+        ));
+    }
     if let Some(keep) = f.keep_marks {
         return run_command(f, keep, iterations, tolerance);
     }
@@ -70,7 +89,20 @@ fn run_command(
         doc.select_objects_direct(ids, viboceros_document::SelectionMode::Replace)?;
         doc.clear_history()?;
         let registry = CommandRegistry::with_builtins();
-        let input = format!("CrvDeviation KeepMarks={}", if keep { "Yes" } else { "No" });
+        let mut input = format!("CrvDeviation KeepMarks={}", if keep { "Yes" } else { "No" });
+        if let Some(ranges) = f.subcurves {
+            for (id, range) in ids.into_iter().zip(ranges) {
+                if let Some([a, b]) = range {
+                    let c = doc.object(id).unwrap().geometry().curve_ref().unwrap();
+                    input.push_str(&format!(
+                        " SubCrv={id},{},{}",
+                        c.parameter_at(a)?,
+                        c.parameter_at(b)?
+                    ));
+                }
+            }
+        }
+        let source_images = ids.map(|id| doc.object(id).unwrap().geometry().clone());
         let history = if f.postselect {
             registry.execute_postselected(
                 &mut doc,
@@ -97,14 +129,63 @@ fn run_command(
             }
             v
         }).collect::<Vec<_>>();
-        Ok(
-            json!({"command_registered":true,"backend_only":false,"sdk":sdk,"command_history":history,"ends":ends,"approximate_overlap":view.as_ref().is_some_and(|v|v.approximate_overlap),"inputs_retained":ids.iter().all(|id|doc.object(*id).is_some()),"created_object_count":outputs.len(),"outputs":outputs,"analysis_dismissed":registry.curve_deviation_view(&doc).is_none(),"undo_label":doc.undo_label()}),
-        )
+        let mut value = json!({"command_registered":true,"backend_only":false,"sdk":sdk,"command_history":history,"ends":ends,"approximate_overlap":view.as_ref().is_some_and(|v|v.approximate_overlap),"inputs_retained":ids.iter().all(|id|doc.object(*id).is_some()),"created_object_count":outputs.len(),"outputs":outputs,"analysis_dismissed":registry.curve_deviation_view(&doc).is_none(),"undo_label":doc.undo_label()});
+        if f.subcurves.is_some() {
+            value["sdk_scope"] = json!("measured_inputs");
+            value["inputs_unchanged"] = json!(
+                ids.into_iter()
+                    .zip(&source_images)
+                    .all(|(id, old)| doc.object(id).is_some_and(|o| o.geometry() == old))
+            );
+        }
+        Ok(value)
     })
 }
 #[cfg(all(test, feature = "native-smlib"))]
 mod tests {
     use super::*;
+    #[test]
+    fn crv_deviation_subcurve_protocol_validates_ranges_and_executes_owned_parts() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curve_deviation_subcurves.json"
+        ))
+        .unwrap();
+        let mut rows = Vec::new();
+        for op in &request.operations {
+            let mut one = request.clone();
+            one.operations = vec![op.clone()];
+            let response = run_request(&one).unwrap_or_else(|e| panic!("{}: {e}", op.id()));
+            rows.extend(response.results);
+        }
+        let results = rows;
+        assert_eq!(results.len(), 9);
+        for row in &results {
+            assert_eq!(row.value["sdk_scope"], "measured_inputs");
+            assert_eq!(row.value["inputs_unchanged"], true);
+            assert_eq!(row.value["analysis_dismissed"], true);
+            assert_eq!(row.value["sdk"]["created"], true);
+        }
+        let reverse = &results
+            .iter()
+            .find(|r| r.id == "reverse-open")
+            .unwrap()
+            .value;
+        assert_eq!(reverse["ends"][0]["parameters"][0], -7.);
+        assert_eq!(reverse["ends"][1]["parameters"][0], -3.);
+        let mut fixture: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curve_deviation_subcurves.json"
+        ))
+        .unwrap();
+        for value in [
+            Value::Null,
+            json!([]),
+            json!([true, null]),
+            json!([[0., 1.]]),
+        ] {
+            fixture["operations"][0]["subcurves"] = value;
+            assert!(serde_json::from_value::<ProbeRequest>(fixture.clone()).is_err());
+        }
+    }
     #[test]
     fn crv_deviation_protocol_requires_a_boolean_when_keep_marks_is_present() {
         let request: Value = serde_json::from_str(include_str!(

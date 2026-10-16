@@ -1,0 +1,526 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curve_deviation",
+      "id": "one-part",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.3,
+          0.7
+        ],
+        null
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "two-parts",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.1,
+          0.9
+        ],
+        [
+          0.3,
+          0.7
+        ]
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "reverse-open",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.7,
+          0.3
+        ],
+        null
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "equal-parts",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.3,
+          0.7
+        ],
+        [
+          0.3,
+          0.7
+        ]
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "second-part",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        null,
+        [
+          0.3,
+          0.7
+        ]
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circle-arcs",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.1,
+          0.3
+        ],
+        [
+          0.1,
+          0.3
+        ]
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circle-seam",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.85,
+          0.15
+        ],
+        [
+          0.85,
+          0.15
+        ]
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "polyline-seam",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              2
+            ],
+            [
+              4,
+              0,
+              2
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              2
+            ],
+            [
+              0,
+              0,
+              2
+            ]
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.8,
+          0.2
+        ],
+        [
+          0.8,
+          0.2
+        ]
+      ]
+    },
+    {
+      "op": "curve_deviation",
+      "id": "cubic-parts",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                4,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0.5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                4,
+                0.5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -2,
+                0.5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true,
+      "subcurves": [
+        [
+          0.2,
+          0.8
+        ],
+        [
+          0.2,
+          0.8
+        ]
+      ]
+    }
+  ]
+}
