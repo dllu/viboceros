@@ -1,0 +1,57 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 1m 28s
+     Running tests/curve_fit.rs (target/release/deps/curve_fit-af088ea56be01566)
+
+running 6 tests
+test native_fit_validation_retains_typed_errors_and_source_purity ... ok
+test native_cubic_fit_keeps_tight_circle_geometry_beyond_the_old_native_point_budget ... ok
+test native_constrained_cubic_fit_agrees_with_portable_solver_at_crossings_and_kinks ... ok
+test native_common_station_fits_agree_with_portable_controls_and_preserve_positions ... ok
+test native_fixed_row_fits_preserve_tiny_channels_and_translated_nearby_detail ... ok
+test native_curve_fit_covers_all_degrees_smooth_closed_and_kink_constraints ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+
+     Running tests/network_surface.rs (target/release/deps/network_surface-21e1de87fbdb0c8d)
+
+running 9 tests
+test native_network_surface_sorts_reversed_shuffled_independent_charts_at_a_remote_origin ... ok
+test native_network_surface_rejects_non_network_duplicate_and_incomplete_constraints_without_mutation ... ok
+test native_gordon_network_retains_kinks_for_a_separate_network_fitting_stage ... ok
+test native_network_aligns_asymmetric_families_without_rounding_away_the_endpoint ... ok
+test native_network_surface_interpolates_complete_curves_and_the_biquadratic_interior ... ok
+test native_network_rejects_oversized_tensor_compatibility_before_construction ... ok
+test native_network_surface_preserves_rational_cylinder_inputs_with_complete_image_certificates ... ok
+test common_station_curve_fits_preserve_network_contacts_and_complete_original_images has been running for over 60 seconds
+test constrained_arc_length_refits_preserve_network_contacts_and_complete_original_images has been running for over 60 seconds
+test common_station_curve_fits_preserve_network_contacts_and_complete_original_images ... ok
+test constrained_arc_length_refits_preserve_network_contacts_and_complete_original_images ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 115.60s
+
+     Running tests/rail_revolve.rs (target/release/deps/rail_revolve-a71ece42e75c8e53)
+
+running 7 tests
+test native_rail_revolution_completes_the_native_clamped_controls_for_unclamped_rational_inputs ... ok
+test native_rail_revolution_rejects_axis_starts_and_translates_at_zero_reference_height ... ok
+test native_rail_revolution_is_invariant_under_common_signed_weight_gauges ... ok
+test native_rail_revolution_height_fallback_uses_the_observed_numeric_boundary ... ok
+test native_rail_revolution_retains_collapsed_profile_ends_as_singular_trims ... ok
+test native_rail_revolution_splits_profile_kinks_with_shared_brep_topology ... ok
+test native_rail_revolution_retains_rational_basis_and_follows_height_without_mutating_sources ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/two_rail_sweep.rs (target/release/deps/two_rail_sweep-daa1af8fc3f4505a)
+
+running 6 tests
+test native_two_rail_sweep_declines_unmatched_missing_duplicate_and_disconnected_sections ... ok
+test native_two_rail_sweep_blends_different_cross_section_shapes ... ok
+test native_two_rail_sweep_weight_gauges_and_resource_failures_are_explicit ... ok
+test native_two_rail_sweep_certifies_remote_geometry ... ok
+test native_two_rail_sweep_interpolates_rails_sections_and_preserves_inputs ... ok
+test native_two_rail_sweep_orients_and_orders_independent_curve_domains ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s

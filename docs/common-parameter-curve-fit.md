@@ -74,10 +74,10 @@ inputs that proves the fitted images; their pre-fit originals still need a
 separate continuous certificate.
 
 The probe now also performs [original-curve admission](original-network-curve-admission.md)
-and emits schema two with per-curve bounds or errors. All six originals certify
-for the smooth candidate; the arc-length candidate certifies five, with one
-proof reaching the unchanged work limit. The linked schema-one capture above
-is retained as historical evidence.
+and emits schema two with per-curve bounds or errors. The subsequent
+[exact isocurve restriction](exact-isocurve-restriction.md) certifies all six
+originals for both refit candidates, closing the earlier arc-length work-limit
+failure. The earlier captures remain historical evidence.
 
 The arc-length candidate improves this fixture's interior comparison. The
 tested global smooth map worsens it. Neither passes the `1e-6` query comparison

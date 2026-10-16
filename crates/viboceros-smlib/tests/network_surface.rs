@@ -30,6 +30,31 @@ fn network() -> Vec<NurbsCurve> {
         .flat_map(|along| [0., 0.5, 1.].map(|t| curve(along, t)))
         .collect()
 }
+fn assert_original_images(
+    surface: &viboceros_geometry::NurbsSurface,
+    originals: &[NurbsCurve],
+    mid: [f64; 2],
+    tolerance: Tolerance,
+) {
+    for (index, source) in originals.iter().enumerate() {
+        let fixed = if index < 3 {
+            [0., mid[1], 1.][index]
+        } else {
+            [0., mid[0], 1.][index - 3]
+        };
+        let endpoints = if index < 3 {
+            [[0., fixed], [1., fixed]]
+        } else {
+            [[fixed, 0.], [fixed, 1.]]
+        };
+        let endpoints = endpoints.map(|p| viboceros_geometry::Point2::try_new(p[0], p[1]).unwrap());
+        let (uv, bound) = surface
+            .try_pullback_curve_certified_with_bound(source, Some(endpoints), tolerance)
+            .unwrap_or_else(|e| panic!("original curve {index}: {e}"));
+        assert_eq!(uv.domain(), source.domain());
+        assert!(bound <= tolerance.absolute());
+    }
+}
 #[test]
 fn native_network_surface_interpolates_complete_curves_and_the_biquadratic_interior() {
     let curves = network();
@@ -155,11 +180,11 @@ fn native_gordon_network_retains_kinks_for_a_separate_network_fitting_stage() {
 }
 
 #[test]
-fn constrained_arc_length_refits_keep_network_crossings_detectable() {
+fn constrained_arc_length_refits_preserve_network_contacts_and_complete_original_images() {
     use viboceros_geometry::{CurveCurveIntersectionEvent, CurveFitConstraint, CurveRef};
     let curves = network();
     let before = curves.clone();
-    let fitted = curves
+    let fits = curves
         .iter()
         .map(|source| {
             let pins = [0., 0.5, 1.].map(|t| CurveFitConstraint {
@@ -174,9 +199,16 @@ fn constrained_arc_length_refits_keep_network_crossings_detectable() {
                 Tolerance::DEFAULT,
             )
             .unwrap()
-            .curve
         })
         .collect::<Vec<_>>();
+    let mid = [&fits[..3], &fits[3..]].map(|family| {
+        family
+            .iter()
+            .map(|fit| fit.constraint_parameters[1] / fit.curve.domain().end())
+            .sum::<f64>()
+            / family.len() as f64
+    });
+    let fitted = fits.into_iter().map(|fit| fit.curve).collect::<Vec<_>>();
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
     for a in &fitted[..3] {
         for b in &fitted[3..] {
@@ -188,6 +220,7 @@ fn constrained_arc_length_refits_keep_network_crossings_detectable() {
         }
     }
     let surface = gordon_network_surface(&fitted, tolerance, tolerance).unwrap();
+    assert_original_images(&surface, &curves, mid, tolerance);
     for u in [0., 0.5, 1.] {
         for v in [0., 0.5, 1.] {
             let q = value(u, v);
@@ -333,24 +366,7 @@ fn common_station_curve_fits_preserve_network_contacts_and_complete_original_ima
         .collect::<Vec<_>>();
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
     let surface = gordon_network_surface(&fitted, tolerance, tolerance).unwrap();
-    for (index, source) in original.iter().enumerate() {
-        let fixed = if index < 3 {
-            [0., mid[1], 1.][index]
-        } else {
-            [0., mid[0], 1.][index - 3]
-        };
-        let endpoints = if index < 3 {
-            [[0., fixed], [1., fixed]]
-        } else {
-            [[fixed, 0.], [fixed, 1.]]
-        };
-        let endpoints = endpoints.map(|p| viboceros_geometry::Point2::try_new(p[0], p[1]).unwrap());
-        let result =
-            surface.try_pullback_curve_certified_with_bound(source, Some(endpoints), tolerance);
-        let (uv, bound) = result.unwrap_or_else(|e| panic!("original curve {index}: {e}"));
-        assert_eq!(uv.domain(), source.domain());
-        assert!(bound <= tolerance.absolute());
-    }
+    assert_original_images(&surface, &original, mid, tolerance);
     for (i, u) in [0., mid[0], 1.].into_iter().enumerate() {
         for (j, v) in [0., mid[1], 1.].into_iter().enumerate() {
             assert!(

@@ -1,6 +1,8 @@
 //! Exact tensor patches and images, including control hulls at knot crossings.
 use super::*;
 mod linear;
+#[cfg(test)]
+mod tests;
 
 pub(super) struct Surface {
     degree: [usize; 2],
@@ -11,6 +13,7 @@ pub(super) struct Surface {
     patches: BTreeMap<[usize; 2], Vec<H>>,
     interval_patches: BTreeMap<[usize; 2], Option<interval::Patch>>,
     interval_coefficients: interval::Coefficients,
+    isocurve: Option<linear::Isocurve>,
 }
 impl Surface {
     pub fn new(surface: &NurbsSurface, budget: &mut Budget) -> Result<Option<Self>, GeometryError> {
@@ -69,6 +72,7 @@ impl Surface {
             patches: BTreeMap::new(),
             interval_patches: BTreeMap::new(),
             interval_coefficients: interval::Coefficients::default(),
+            isocurve: None,
         }))
     }
     pub fn in_domain(&self, bounds: &[[Rational; 2]]) -> bool {
@@ -188,9 +192,17 @@ impl Surface {
         uv: &[Uv],
         budget: &mut Budget,
     ) -> Result<Vec<H>, GeometryError> {
-        if let Some(image) = self.linear_image(span, uv, budget)? {
+        if let Some(image) = self.isocurve_image(span, uv, budget)? {
             return Ok(image);
         }
+        self.tensor_image(span, uv, budget)
+    }
+    fn tensor_image(
+        &mut self,
+        span: [usize; 2],
+        uv: &[Uv],
+        budget: &mut Budget,
+    ) -> Result<Vec<H>, GeometryError> {
         let net = self.patch(span, budget)?;
         let mut bases = Vec::new();
         for axis in 0..2 {
@@ -232,6 +244,29 @@ impl Surface {
         limit: Real,
         budget: &mut Budget,
     ) -> Result<interval::Outcome, GeometryError> {
+        if let Some((net, variable)) = self.isocurve_patch(span, uv, budget)? {
+            let mut degree = [0; 2];
+            degree[variable] = self.degree[variable];
+            let bounds = std::array::from_fn(|axis| {
+                [
+                    self.knots[axis][span[axis]].clone(),
+                    &self.knots[axis][span[axis] + 1] - &self.knots[axis][span[axis]],
+                ]
+            });
+            return Ok(
+                interval::Patch::new(&net).map_or(interval::Outcome::Inconclusive, |net| {
+                    interval::bound_with_cache(
+                        &net,
+                        degree,
+                        &bounds,
+                        uv,
+                        spatial,
+                        limit,
+                        &mut self.interval_coefficients,
+                    )
+                }),
+            );
+        }
         let net = self.patch(span, budget)?;
         let bounds = std::array::from_fn(|axis| {
             [
@@ -290,8 +325,8 @@ impl Surface {
                     let b = bounds[axis][1].clone().min(high.clone());
                     intervals.push([(&a - low) / (high - low), (&b - low) / (high - low)]);
                 }
-                let net = self.patch(span, budget)?;
-                let net = restrict(&net, self.degree, &intervals, budget)?;
+                let (net, degree) = self.box_patch(span, bounds, budget)?;
+                let net = restrict(&net, degree, &intervals, budget)?;
                 let b = curve::bounds(&net, budget)?;
                 if let Some(current) = &mut image_bounds {
                     for axis in 0..3 {
@@ -349,16 +384,20 @@ impl Surface {
                     let b = bounds[axis][1].clone().min(high.clone());
                     intervals.push([(&a - low) / (high - low), (&b - low) / (high - low)]);
                 }
-                let net = self.patch(span, budget)?;
-                let Some(net) = self
-                    .interval_patches
-                    .entry(span)
-                    .or_insert_with(|| interval::Patch::new(&net))
-                    .as_ref()
-                else {
+                let (net, degree) = self.box_patch(span, bounds, budget)?;
+                let reduced = (degree != self.degree).then(|| interval::Patch::new(&net));
+                let patch = if let Some(reduced) = &reduced {
+                    reduced.as_ref()
+                } else {
+                    self.interval_patches
+                        .entry(span)
+                        .or_insert_with(|| interval::Patch::new(&net))
+                        .as_ref()
+                };
+                let Some(patch) = patch else {
                     return Ok(interval::Crossing::Inconclusive);
                 };
-                if boxes.add(net, self.degree, &intervals).is_none() {
+                if boxes.add(patch, degree, &intervals).is_none() {
                     return Ok(interval::Crossing::Inconclusive);
                 }
             }

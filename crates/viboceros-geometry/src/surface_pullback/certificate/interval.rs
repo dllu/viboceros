@@ -173,6 +173,10 @@ fn calculate(
     let spatial = spatial.iter().map(convert).collect::<Option<Vec<_>>>()?;
     let mut bases = Vec::new();
     for axis in 0..2 {
+        if degree[axis] == 0 {
+            bases.push(vec![vec![one()]]);
+            continue;
+        }
         let low = I::exact(&domains[axis][0])?;
         let width = I::exact(&domains[axis][1])?;
         let a = uv

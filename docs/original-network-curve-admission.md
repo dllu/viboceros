@@ -29,26 +29,31 @@ assuming that the sampled curve-fit tolerance was a continuous proof.
 
 The `network_parameterization` example now records a bound or an error for
 every original curve. The retained
-[schema-two observations](../tools/rhino_oracle/observations/network_parameterization_original_bounds_viboceros_20261016.json)
+[initial schema-two observations](../tools/rhino_oracle/observations/network_parameterization_original_bounds_viboceros_20261016.json)
 cover the same single `biquadratic_network` fixture and saved Rhino reference.
 The earlier [schema-one observations](../tools/rhino_oracle/observations/network_parameterization_viboceros_20261016.json)
 remain unchanged.
 
+The subsequent [exact isocurve restriction](exact-isocurve-restriction.md)
+reduces the original stored tensor before extraction and reuses bounded
+one-dimensional data across knot crossings. Its
+[current observations](../tools/rhino_oracle/observations/network_parameterization_isocurve_bounds_viboceros_20261016.json)
+certify every original curve:
+
 | Candidate | Complete original curves certified at `1e-6` |
 | --- | ---: |
 | Raw Gordon | 6 of 6 |
-| Crossing-constrained arc-length refits | 5 of 6 |
+| Crossing-constrained arc-length refits | 6 of 6 |
 | Global smooth station map | 6 of 6 |
 
-The remaining arc-length proof reaches the exact work or arithmetic limit.
-It stays inconclusive; no sampled result or enlarged tolerance admits it.
-The successful smooth-candidate bounds are at most about `9.95e-7`.
+The initial arc-length source-index-1 proof reached the exact work limit.
+Its current bound is about `9.9851e-7`, with the same tolerance and work limit.
+The smooth-candidate bounds remain at most about `9.95e-7`.
 
 These certificates prove a complete original-curve-to-surface correspondence.
 They do not prove injectivity, topology, symmetric boundary distance, surface
 continuity or Rhino interior parity. The three returned-point comparisons
 still fail the `1e-6` Rhino criterion, so NetworkSrf remains unregistered. The
-closer arc-length candidate needs its remaining original-image proof, and the
 surface fitting policy and broader Rhino comparisons remain unfinished.
 
 Reproduce the observations with:
