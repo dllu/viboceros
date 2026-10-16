@@ -1,0 +1,2709 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "x-normal",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Python Script ( ResetEngine ): _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 17ae1cbb-83a9-4dba-8ee4-ef2c23753d97\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w2.5,0.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 17ae1cbb-83a9-4dba-8ee4-ef2c23753d97 _Copy=_No w2.5,0.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.5,
+                0.0,
+                0.0
+              ],
+              [
+                3.5,
+                0.0,
+                0.0
+              ],
+              [
+                2.5,
+                1.0,
+                0.0
+              ],
+              [
+                2.5,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "x-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: d762f0a5-f74e-46cc-a059-5d98fe08dbb0\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.5,0.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID d762f0a5-f74e-46cc-a059-5d98fe08dbb0 _Copy=_No _perpendicular w2.5,0.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.5,
+                0.0,
+                0.0
+              ],
+              [
+                2.5,
+                1.0,
+                0.0
+              ],
+              [
+                2.5,
+                0.0,
+                1.0
+              ],
+              [
+                3.5,
+                0.0,
+                0.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "y-normal",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.5,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.5,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 96e39bc2-fb13-4810-aa61-5a6b13bf759f\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.5,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 96e39bc2-fb13-4810-aa61-5a6b13bf759f _Copy=_No w0.0,2.5,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.5,
+                0.0
+              ],
+              [
+                0.0,
+                3.5,
+                0.0
+              ],
+              [
+                -1.0,
+                2.5,
+                0.0
+              ],
+              [
+                0.0,
+                2.5,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "y-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.5,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.5,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: ad4ae1b4-315c-48d8-a46e-e190afb8022c\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w0.0,2.5,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID ad4ae1b4-315c-48d8-a46e-e190afb8022c _Copy=_No _perpendicular w0.0,2.5,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.5,
+                0.0
+              ],
+              [
+                -1.0,
+                2.5,
+                0.0
+              ],
+              [
+                0.0,
+                2.5,
+                1.0
+              ],
+              [
+                0.0,
+                3.5,
+                0.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "z-normal",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              -0.0
+            ],
+            "z": [
+              -0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 256d7064-4300-4f19-ae85-92f073d7361e\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,0.0,2.5\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 256d7064-4300-4f19-ae85-92f073d7361e _Copy=_No w0.0,0.0,2.5 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                2.5
+              ],
+              [
+                0.0,
+                0.0,
+                3.5
+              ],
+              [
+                0.0,
+                -1.0,
+                2.5
+              ],
+              [
+                1.0,
+                0.0,
+                2.5
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "z-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              -0.0
+            ],
+            "z": [
+              -0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              0.0,
+              2.5
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 33246385-5add-4870-ab59-09820c0321ab\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w0.0,0.0,2.5\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 33246385-5add-4870-ab59-09820c0321ab _Copy=_No _perpendicular w0.0,0.0,2.5 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                2.5
+              ],
+              [
+                0.0,
+                -1.0,
+                2.5
+              ],
+              [
+                1.0,
+                0.0,
+                2.5
+              ],
+              [
+                0.0,
+                0.0,
+                3.5
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "xy-normal",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              0.0
+            ],
+            "x": [
+              0.5547001962252291,
+              0.8320502943378438,
+              0.0
+            ],
+            "y": [
+              0.8320502943378436,
+              -0.554700196225229,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              -1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              0.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.554700196225229,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.5547001962252291,
+              0.8320502943378437,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 395d73bf-a7e4-4259-a158-d4fc971f70ae\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w1.0,1.5,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 395d73bf-a7e4-4259-a158-d4fc971f70ae _Copy=_No w1.0,1.5,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                0.0
+              ],
+              [
+                1.554700196225229,
+                2.3320502943378436,
+                0.0
+              ],
+              [
+                0.16794970566215617,
+                2.054700196225229,
+                0.0
+              ],
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "xy-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              0.0
+            ],
+            "x": [
+              0.5547001962252291,
+              0.8320502943378438,
+              0.0
+            ],
+            "y": [
+              0.8320502943378436,
+              -0.554700196225229,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              -1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              0.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.554700196225229,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.5547001962252291,
+              0.8320502943378437,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 0f8a0060-ee6c-496c-a9f5-68a47ded4fdc\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w1.0,1.5,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 0f8a0060-ee6c-496c-a9f5-68a47ded4fdc _Copy=_No _perpendicular w1.0,1.5,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                0.0
+              ],
+              [
+                0.16794970566215617,
+                2.054700196225229,
+                0.0
+              ],
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.0
+              ],
+              [
+                1.554700196225229,
+                2.3320502943378436,
+                0.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "xz-normal",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              0.0,
+              1.5
+            ],
+            "x": [
+              0.5547001962252291,
+              0.0,
+              0.8320502943378438
+            ],
+            "y": [
+              0.8320502943378436,
+              0.0,
+              -0.554700196225229
+            ],
+            "z": [
+              -0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              0.0,
+              1.5
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              -0.8320502943378437,
+              0.0,
+              0.5547001962252291
+            ],
+            "z": [
+              0.5547001962252291,
+              -0.0,
+              0.8320502943378437
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: e9deca10-793b-44e2-a4df-f2b46c1bae2e\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w1.0,0.0,1.5\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID e9deca10-793b-44e2-a4df-f2b46c1bae2e _Copy=_No w1.0,0.0,1.5 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                0.0,
+                1.4999999999999998
+              ],
+              [
+                1.554700196225229,
+                0.0,
+                2.3320502943378436
+              ],
+              [
+                1.8320502943378436,
+                0.0,
+                0.9452998037747706
+              ],
+              [
+                0.9999999999999999,
+                1.0,
+                1.4999999999999998
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "xz-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              0.0,
+              1.5
+            ],
+            "x": [
+              0.5547001962252291,
+              0.0,
+              0.8320502943378438
+            ],
+            "y": [
+              0.8320502943378436,
+              0.0,
+              -0.554700196225229
+            ],
+            "z": [
+              -0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              0.0,
+              1.5
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              -0.8320502943378437,
+              0.0,
+              0.5547001962252291
+            ],
+            "z": [
+              0.5547001962252291,
+              -0.0,
+              0.8320502943378437
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 6c20906c-7f7d-48cb-abe1-418bfb88e1b1\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w1.0,0.0,1.5\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 6c20906c-7f7d-48cb-abe1-418bfb88e1b1 _Copy=_No _perpendicular w1.0,0.0,1.5 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                0.0,
+                1.4999999999999998
+              ],
+              [
+                1.8320502943378436,
+                0.0,
+                0.9452998037747706
+              ],
+              [
+                0.9999999999999999,
+                1.0,
+                1.4999999999999998
+              ],
+              [
+                1.554700196225229,
+                0.0,
+                2.3320502943378436
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "yz-normal",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              1.0,
+              1.5
+            ],
+            "x": [
+              0.0,
+              0.5547001962252291,
+              0.8320502943378438
+            ],
+            "y": [
+              0.0,
+              0.8320502943378436,
+              -0.554700196225229
+            ],
+            "z": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              1.0,
+              1.5
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.8320502943378437,
+              0.5547001962252291
+            ],
+            "z": [
+              0.0,
+              0.5547001962252291,
+              0.8320502943378437
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 451ba995-304f-44a2-8fe3-93c4d9865232\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,1.0,1.5\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 451ba995-304f-44a2-8fe3-93c4d9865232 _Copy=_No w0.0,1.0,1.5 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.9999999999999999,
+                1.4999999999999998
+              ],
+              [
+                0.0,
+                1.554700196225229,
+                2.3320502943378436
+              ],
+              [
+                0.0,
+                0.16794970566215617,
+                2.054700196225229
+              ],
+              [
+                1.0,
+                0.9999999999999999,
+                1.4999999999999998
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "yz-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              1.0,
+              1.5
+            ],
+            "x": [
+              0.0,
+              0.5547001962252291,
+              0.8320502943378438
+            ],
+            "y": [
+              0.0,
+              0.8320502943378436,
+              -0.554700196225229
+            ],
+            "z": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              1.0,
+              1.5
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.8320502943378437,
+              0.5547001962252291
+            ],
+            "z": [
+              0.0,
+              0.5547001962252291,
+              0.8320502943378437
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: ac31eeae-b0c5-4b74-bc96-354a2caae482\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w0.0,1.0,1.5\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID ac31eeae-b0c5-4b74-bc96-354a2caae482 _Copy=_No _perpendicular w0.0,1.0,1.5 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.9999999999999999,
+                1.4999999999999998
+              ],
+              [
+                0.0,
+                0.16794970566215617,
+                2.054700196225229
+              ],
+              [
+                1.0,
+                0.9999999999999999,
+                1.4999999999999998
+              ],
+              [
+                0.0,
+                1.554700196225229,
+                2.3320502943378436
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "space-normal",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "z": [
+              -0.9284766908852593,
+              0.2228344058124622,
+              0.297112541083283
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6000000000000001
+            ],
+            "z": [
+              -0.9284766908852591,
+              0.2228344058124622,
+              0.29711254108328294
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.5547001962252291,
+              -7.795278524990047e-17
+            ],
+            "y": [
+              -0.412020962099684,
+              -0.6180314431495256,
+              0.6695340634119862
+            ],
+            "z": [
+              0.3713906763541037,
+              0.5570860145311557,
+              0.7427813527082076
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 063fd492-d3fd-48cc-82ca-8705df61b1cf\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w1.0,1.5,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 063fd492-d3fd-48cc-82ca-8705df61b1cf _Copy=_No w1.0,1.5,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.9999999999999998
+              ],
+              [
+                1.3713906763541037,
+                2.0570860145311554,
+                2.7427813527082074
+              ],
+              [
+                0.9999999999999998,
+                2.3,
+                1.3999999999999997
+              ],
+              [
+                0.07152330911474059,
+                1.722834405812462,
+                2.297112541083283
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "space-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "z": [
+              -0.9284766908852593,
+              0.2228344058124622,
+              0.297112541083283
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6000000000000001
+            ],
+            "z": [
+              -0.9284766908852591,
+              0.2228344058124622,
+              0.29711254108328294
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.5547001962252291,
+              -7.795278524990047e-17
+            ],
+            "y": [
+              -0.412020962099684,
+              -0.6180314431495256,
+              0.6695340634119862
+            ],
+            "z": [
+              0.3713906763541037,
+              0.5570860145311557,
+              0.7427813527082076
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: b22c02c0-acc0-4510-aa3c-a185b80df558\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w1.0,1.5,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID b22c02c0-acc0-4510-aa3c-a185b80df558 _Copy=_No _perpendicular w1.0,1.5,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.9999999999999998
+              ],
+              [
+                0.9999999999999998,
+                2.3,
+                1.3999999999999997
+              ],
+              [
+                0.07152330911474047,
+                1.722834405812462,
+                2.297112541083283
+              ],
+              [
+                1.3713906763541037,
+                2.0570860145311554,
+                2.7427813527082074
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "space-front-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "z": [
+              -0.9284766908852593,
+              0.2228344058124622,
+              0.297112541083283
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6000000000000001
+            ],
+            "z": [
+              -0.9284766908852591,
+              0.2228344058124622,
+              0.29711254108328294
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.5547001962252291,
+              -7.795278524990047e-17
+            ],
+            "y": [
+              -0.412020962099684,
+              -0.6180314431495256,
+              0.6695340634119862
+            ],
+            "z": [
+              0.3713906763541037,
+              0.5570860145311557,
+              0.7427813527082076
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 2dea9458-8989-4016-8fba-e500a233728a\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w1.0,1.5,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 2dea9458-8989-4016-8fba-e500a233728a _Copy=_No w1.0,1.5,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.9999999999999998
+              ],
+              [
+                0.9999999999999998,
+                2.3,
+                1.3999999999999997
+              ],
+              [
+                0.07152330911474059,
+                1.722834405812462,
+                2.297112541083283
+              ],
+              [
+                1.3713906763541037,
+                2.0570860145311554,
+                2.7427813527082074
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "space-front-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "z": [
+              -0.9284766908852593,
+              0.2228344058124622,
+              0.297112541083283
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6000000000000001
+            ],
+            "z": [
+              -0.9284766908852591,
+              0.2228344058124622,
+              0.29711254108328294
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.5547001962252291,
+              -7.795278524990047e-17
+            ],
+            "y": [
+              -0.412020962099684,
+              -0.6180314431495256,
+              0.6695340634119862
+            ],
+            "z": [
+              0.3713906763541037,
+              0.5570860145311557,
+              0.7427813527082076
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 3dbebdb1-498f-4f72-8c68-d6384e7cd81b\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w1.0,1.5,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 3dbebdb1-498f-4f72-8c68-d6384e7cd81b _Copy=_No _perpendicular w1.0,1.5,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.9999999999999998
+              ],
+              [
+                0.07152330911474047,
+                1.722834405812462,
+                2.297112541083283
+              ],
+              [
+                1.3713906763541037,
+                2.0570860145311554,
+                2.7427813527082074
+              ],
+              [
+                0.9999999999999998,
+                2.3,
+                1.3999999999999997
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "space-right-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "z": [
+              -0.9284766908852593,
+              0.2228344058124622,
+              0.297112541083283
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6000000000000001
+            ],
+            "z": [
+              -0.9284766908852591,
+              0.2228344058124622,
+              0.29711254108328294
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.5547001962252291,
+              -7.795278524990047e-17
+            ],
+            "y": [
+              -0.412020962099684,
+              -0.6180314431495256,
+              0.6695340634119862
+            ],
+            "z": [
+              0.3713906763541037,
+              0.5570860145311557,
+              0.7427813527082076
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 54f61559-6a1c-4632-912c-6181dd7135ce\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w1.0,1.5,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 54f61559-6a1c-4632-912c-6181dd7135ce _Copy=_No w1.0,1.5,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.9999999999999998
+              ],
+              [
+                0.07152330911474059,
+                1.722834405812462,
+                2.297112541083283
+              ],
+              [
+                1.3713906763541037,
+                2.0570860145311554,
+                2.7427813527082074
+              ],
+              [
+                0.9999999999999998,
+                2.3,
+                1.3999999999999997
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "space-right-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "z": [
+              -0.9284766908852593,
+              0.2228344058124622,
+              0.297112541083283
+            ]
+          },
+          "frame": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              0.3713906763541038,
+              0.5570860145311557,
+              0.7427813527082076
+            ],
+            "y": [
+              0.0,
+              0.8,
+              -0.6000000000000001
+            ],
+            "z": [
+              -0.9284766908852591,
+              0.2228344058124622,
+              0.29711254108328294
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.0,
+              1.5,
+              2.0
+            ],
+            "x": [
+              -0.8320502943378436,
+              0.5547001962252291,
+              -7.795278524990047e-17
+            ],
+            "y": [
+              -0.412020962099684,
+              -0.6180314431495256,
+              0.6695340634119862
+            ],
+            "z": [
+              0.3713906763541037,
+              0.5570860145311557,
+              0.7427813527082076
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 3d1205eb-41ef-48a6-87b6-8fdf44e142e8\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w1.0,1.5,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 3d1205eb-41ef-48a6-87b6-8fdf44e142e8 _Copy=_No _perpendicular w1.0,1.5,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.9999999999999999,
+                1.4999999999999998,
+                1.9999999999999998
+              ],
+              [
+                1.3713906763541037,
+                2.0570860145311554,
+                2.7427813527082074
+              ],
+              [
+                0.9999999999999998,
+                2.3,
+                1.3999999999999997
+              ],
+              [
+                0.07152330911474047,
+                1.722834405812462,
+                2.297112541083283
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-xy-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              -1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.2246467991473532e-16,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.5700924906852012e-16,
+              -1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              -1.0,
+              1.5700924906852012e-16,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: e88b2ea6-a6db-4d26-abfd-aa98ec76af43\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID e88b2ea6-a6db-4d26-abfd-aa98ec76af43 _Copy=_No w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                1.2246467991473532e-16,
+                2.0,
+                0.0
+              ],
+              [
+                -0.9999999999999999,
+                2.0,
+                0.0
+              ],
+              [
+                1.2246467991473532e-16,
+                1.0,
+                0.0
+              ],
+              [
+                1.2246467991473532e-16,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-xy-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              -1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              1.2246467991473532e-16,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.5700924906852012e-16,
+              -1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              -1.0,
+              1.5700924906852012e-16,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 383e4de4-9f3e-4b82-8a8e-1b7289099c1d\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 383e4de4-9f3e-4b82-8a8e-1b7289099c1d _Copy=_No _perpendicular w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                1.2246467991473532e-16,
+                2.0,
+                0.0
+              ],
+              [
+                1.2246467991473532e-16,
+                1.0,
+                0.0
+              ],
+              [
+                1.2246467991473532e-16,
+                2.0,
+                1.0
+              ],
+              [
+                -0.9999999999999999,
+                2.0,
+                0.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-yz-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "x": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              -1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              1.2246467991473532e-16,
+              2.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              1.5700924586837752e-16,
+              1.0
+            ],
+            "z": [
+              0.0,
+              -1.0,
+              1.5700924586837752e-16
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 6485de3a-43ad-4fc3-aa53-9fd2708d9205\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,0.0,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 6485de3a-43ad-4fc3-aa53-9fd2708d9205 _Copy=_No w0.0,0.0,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.2246467991473532e-16,
+                2.0
+              ],
+              [
+                0.0,
+                -0.9999999999999999,
+                2.0
+              ],
+              [
+                0.0,
+                1.2246467991473532e-16,
+                1.0
+              ],
+              [
+                1.0,
+                1.2246467991473532e-16,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-yz-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              0.0,
+              2.0
+            ],
+            "x": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              -1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              1.2246467991473532e-16,
+              2.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              1.5700924586837752e-16,
+              1.0
+            ],
+            "z": [
+              0.0,
+              -1.0,
+              1.5700924586837752e-16
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 4eb9596d-038d-4142-80a6-0e0813b69b1b\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w0.0,0.0,2.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 4eb9596d-038d-4142-80a6-0e0813b69b1b _Copy=_No _perpendicular w0.0,0.0,2.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.2246467991473532e-16,
+                2.0
+              ],
+              [
+                0.0,
+                1.2246467991473532e-16,
+                1.0
+              ],
+              [
+                1.0,
+                1.2246467991473532e-16,
+                2.0
+              ],
+              [
+                0.0,
+                -0.9999999999999999,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "copy",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 37e39f26-e200-4c91-b675-ac54f295a4ef\n1 curve added to selection.\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_Yes\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): w0.0,2.0,0.0\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): _Enter\nNew base point on curve ( Copy=Yes  Flip  Perpendicular )\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 37e39f26-e200-4c91-b675-ac54f295a4ef _Copy=_Yes w0.0,2.0,0.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "rotate",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 8524e919-2c9a-48d3-a424-5d38565e1250\n1 curve added to selection.\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): _Rotate=_Yes\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=Yes ): w0.0,2.0,0.0\nAngle or first reference point <0.000> ( Copy=No ): 30.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 8524e919-2c9a-48d3-a424-5d38565e1250 _Copy=_No _perpendicular _Rotate=_Yes w0.0,2.0,0.0 30.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -0.8660254037844387,
+                2.0,
+                0.49999999999999994
+              ],
+              [
+                0.49999999999999994,
+                2.0,
+                0.8660254037844387
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "on-curve",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): _OnCurve\nSelect orientation curve: _SelID\nObject ID to select: 8cf2d331-7baa-47f9-ac89-6a4cc7b1ce3a\n1 curve added to selection.\nBase point on curve: w0.0,1.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv _OnCurve _SelID 8cf2d331-7baa-47f9-ac89-6a4cc7b1ce3a w0.0,1.0,0.0 _Copy=_No w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    }
+  ]
+}

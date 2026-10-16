@@ -54,7 +54,8 @@ fn affine_preview_resets_invalid_targets_retains_outside_and_rejects_batch_overf
         definition: PointTransform::Scale {
             center: point(0., 0., 0.),
             reference: point(1., 0., 0.),
-        },
+        }
+        .into(),
         frame: None,
         copy: false,
         last_transform: Some(map),
@@ -67,7 +68,8 @@ fn affine_preview_resets_invalid_targets_retains_outside_and_rejects_batch_overf
         PointTransform::Rotate {
             center: point(0., 0., 0.),
             reference: point(1., 0., 0.),
-        },
+        }
+        .into(),
         preview.definition,
     ] {
         let preview = AffinePreview {
@@ -125,6 +127,104 @@ fn frame(
 }
 
 #[test]
+fn orient_curve_preview_and_real_mouse_click_share_the_spatial_curve_parameter() {
+    use viboceros_command::orient_curve::{Options, Placement};
+    let mut document = Document::default();
+    let source = document
+        .add_geometry(Geometry::Point(point(1., 0., 0.)))
+        .unwrap();
+    let guide = viboceros_geometry::LineSegment::try_new(
+        point(0., 0., 2.),
+        point(4., 6., 6.),
+        document.tolerance(),
+    )
+    .unwrap();
+    document.add_geometry(Geometry::Line(guide)).unwrap();
+    let placement = Placement::try_new(
+        viboceros_geometry::Curve3::Line(guide),
+        point(0., 0., 0.),
+        WorldPlane::Top.frame(),
+        Options::default(),
+        document.tolerance(),
+    )
+    .unwrap();
+    let curve = placement.curve().to_nurbs().unwrap();
+    let sources = [source];
+    let before = format!("{document:?}");
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Right,
+        ViewKind::Perspective,
+    ] {
+        let context = egui::Context::default();
+        let mut view = Viewport::new(kind);
+        let preview = AffinePreview {
+            sources: &sources,
+            grips: &[],
+            definition: Mapping::Curve(&placement),
+            frame: None,
+            copy: true,
+            last_transform: None,
+            rigid_layout: None,
+        };
+        let input = ViewportInput {
+            drafting: DraftingInput {
+                active: true,
+                ..Default::default()
+            },
+            edge_curve: Some(&curve),
+            affine_preview: Some(preview),
+            ..Default::default()
+        };
+        frame(&context, &mut view, &document, input, vec![]);
+        let t = *curve.domain().start() + 0.375 * (*curve.domain().end() - *curve.domain().start());
+        let target = curve.evaluate(t).unwrap();
+        let pointer = view.project(target, view.last_rect.unwrap()).unwrap();
+        assert!(
+            view.last_rect.unwrap().contains(pointer),
+            "{kind:?}: {pointer:?}"
+        );
+        let output = frame(
+            &context,
+            &mut view,
+            &document,
+            input,
+            vec![
+                egui::Event::PointerMoved(pointer),
+                egui::Event::PointerButton {
+                    pos: pointer,
+                    button: PointerButton::Primary,
+                    pressed: true,
+                    modifiers: Default::default(),
+                },
+                egui::Event::PointerButton {
+                    pos: pointer,
+                    button: PointerButton::Primary,
+                    pressed: false,
+                    modifiers: Default::default(),
+                },
+            ],
+        );
+        let parameter = output
+            .edge_parameter
+            .unwrap_or_else(|| panic!("{kind:?}: {output:?}"));
+        assert!((parameter - t).abs() < 1e-5, "{kind:?}: {parameter} != {t}");
+        assert!(output.picked_point.is_none());
+        let map = output.affine_preview.unwrap().unwrap();
+        assert!(
+            map.transform_point(point(0., 0., 0.))
+                .unwrap()
+                .distance_to(curve.evaluate(parameter).unwrap())
+                .unwrap()
+                < 1e-7
+        );
+        assert!(map.transform_point(point(0., 0., 0.)).unwrap().z() > 2.);
+    }
+    assert_eq!(format!("{document:?}"), before);
+}
+
+#[test]
 fn affine_preview_egui_snap_filter_and_click_use_the_same_point_and_hold_outside() {
     use viboceros_drafting::{ObjectSnapModes, PointFilter, PointFilterSession};
     let mut document = Document::default();
@@ -145,7 +245,8 @@ fn affine_preview_egui_snap_filter_and_click_use_the_same_point_and_hold_outside
         definition: PointTransform::Scale1D {
             center: point(0., 0., 0.),
             reference: point(4., 0., 0.),
-        },
+        }
+        .into(),
         frame: None,
         copy: true,
         last_transform: None,
@@ -249,7 +350,8 @@ fn affine_preview_zero_numeric_factor_keeps_the_collapsed_directional_map() {
         definition: PointTransform::Scale1DDirection {
             center: point(0., 0., 0.),
             factor: 0.,
-        },
+        }
+        .into(),
         frame: None,
         copy: true,
         last_transform: None,

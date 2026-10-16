@@ -31,7 +31,7 @@ fn set_point_cplane_preview_uses_the_destination_view_and_matches_command_execut
         let preview = AffinePreview {
             sources: &sources,
             grips: &[],
-            definition: PointTransform::SetPoint(options),
+            definition: PointTransform::SetPoint(options).into(),
             frame: None,
             copy: false,
             last_transform: None,
@@ -82,7 +82,7 @@ fn set_point_singular_maps_accept_points_and_reject_a_whole_invalid_batch() {
     let preview = AffinePreview {
         sources: &sources,
         grips: &[],
-        definition: PointTransform::SetPoint(SetPointOptions::default()),
+        definition: PointTransform::SetPoint(SetPointOptions::default()).into(),
         frame: None,
         copy: false,
         last_transform: None,
@@ -123,7 +123,7 @@ fn set_point_edit_preview_retains_last_target_when_reconstruction_overflows() {
     let preview = AffinePreview {
         sources: &[],
         grips: &grips,
-        definition: PointTransform::SetPoint(options()),
+        definition: PointTransform::SetPoint(options()).into(),
         frame: None,
         copy: false,
         last_transform: None,

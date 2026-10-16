@@ -34,7 +34,7 @@ fn set_point_partial_singular_preview_matches_commit_in_all_modes_and_views() {
             let descriptor = super::super::AffinePreview {
                 sources: &[],
                 grips: &grips,
-                definition: PointTransform::SetPoint(options),
+                definition: PointTransform::SetPoint(options).into(),
                 frame: None,
                 copy,
                 last_transform: None,

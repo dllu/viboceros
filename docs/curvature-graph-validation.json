@@ -114,7 +114,6 @@
     "crates/viboceros-command/src/curve_segments.rs": "8ebc02ab7410317e3354cc633301bc4b7c41c9235d9e89bb2edbff03a10bb7a9",
     "crates/viboceros-command/src/surface_segments.rs": "56dae569169981aed5c41b4db7f5180100e6a02525da3979fd21f9320dd15730",
     "crates/viboceros-geometry/src/brep/isocurves.rs": "2cf9b8df68735280f6ac70bfa89c7a45f076a4047bcfc272be8981fbbd5c3dd5",
-    "crates/viboceros-geometry/src/curve.rs": "585164998fc71d7ed9ab5796b2cabe8a9f5235740fa905c6a52083970e325038",
     "docs/crv-deviation-validation.json": "46956d5b9cf8b343c8955d1372c6511dc9d1682ae055db1fbfbe548148efd6fd",
     "docs/curvature-graph-clippy.log": "3ba98b2a2bdb7747a1d913348888e3cf668218893513511995475d6baac1316f",
     "docs/curvature-graph-command.log": "186915e7404c92c96b5cf0cf3bd86bc691dfeae02f9eb9d565b4109788182d2e",
@@ -164,6 +163,7 @@
     "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:crates/viboceros-geometry/src/lib.rs": "05f981f31878e99687b11d145723e82ff5feaed7ca41d0aac32f41d38e773a8f",
     "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:crates/viboceros-oracle/src/curvature_graph.rs": "d4783778a91eca2ee18d1734b8785d2217a64551d97032376339cc85ad0f09d6",
     "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:src/viewport/curvature_graph.rs": "9f8fcba60092e0c8dfe58a2095bed51505f0bc09dd7ba920b2f3a36c506ac8eb",
-    "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:tools/rhino_oracle/curvature_graph_probe.py": "bf2ed70b5069b7222576cf7978abf7402a2dd2113b0c8db0f981a3fc61b6d9d8"
+    "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:tools/rhino_oracle/curvature_graph_probe.py": "bf2ed70b5069b7222576cf7978abf7402a2dd2113b0c8db0f981a3fc61b6d9d8",
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:crates/viboceros-geometry/src/curve.rs": "585164998fc71d7ed9ab5796b2cabe8a9f5235740fa905c6a52083970e325038"
   }
 }

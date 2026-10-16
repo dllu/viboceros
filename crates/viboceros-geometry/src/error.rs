@@ -11,6 +11,8 @@ pub enum GeometryError {
     InvalidCurvatureEnvelope,
     #[error(transparent)]
     OpenNurbsMesh(#[from] viboceros_opennurbs::MeshError),
+    #[error(transparent)]
+    OpenNurbsCurve(#[from] viboceros_opennurbs::CurveQueryError),
     #[error("curve edit-point interpolation is unsupported: {context}")]
     UnsupportedCurveEditPoints { context: &'static str },
     #[error("curve edit-point interpolation did not meet absolute tolerance")]

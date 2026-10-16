@@ -157,6 +157,13 @@ int32_t vibo_geometry_check(const ViboWriteObject* source,
     const char* instance_definition_uuid, int32_t* valid,
     char* diagnostics, size_t capacity);
 
+// Euclidean [x,y,z,weight] controls and a standard full knot vector.
+// Return 1 when IsPlanar ran; planar is then 0 or 1. Inputs remain owned by caller.
+int32_t vibo_curve_plane_normal(uint32_t degree, size_t control_count,
+    const double* controls, size_t knot_count, const double* knots,
+    double tolerance, int32_t* planar, double* normal,
+    char* error, size_t capacity);
+
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
                       char* error, size_t error_capacity);
 void vibo_3dm_free(ViboThreeDmModel* model);

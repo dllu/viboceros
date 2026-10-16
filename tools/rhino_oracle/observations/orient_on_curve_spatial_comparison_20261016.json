@@ -1,0 +1,90 @@
+{
+  "cases": 14,
+  "matched_cases": 14,
+  "results": [
+    {
+      "id": "spatial-t-0",
+      "metadata_match": true,
+      "max_coordinate_error": 2.220446049250313e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-t-0.25",
+      "metadata_match": true,
+      "max_coordinate_error": 4.2584684234459047e-07,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-t-0.5",
+      "metadata_match": true,
+      "max_coordinate_error": 8.087454550498308e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-t-0.75",
+      "metadata_match": true,
+      "max_coordinate_error": 5.110170960831439e-07,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-t-1",
+      "metadata_match": true,
+      "max_coordinate_error": 1.7135810048696243e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-options-5",
+      "metadata_match": true,
+      "max_coordinate_error": 7.154514544693846e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-options-6",
+      "metadata_match": true,
+      "max_coordinate_error": 6.852261877909882e-07,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-options-7",
+      "metadata_match": true,
+      "max_coordinate_error": 3.833628607341488e-07,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-options-8",
+      "metadata_match": true,
+      "max_coordinate_error": 8.486033975518836e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-options-9",
+      "metadata_match": true,
+      "max_coordinate_error": 8.486033975518836e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "initial-y-0",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "initial-y-0.5",
+      "metadata_match": true,
+      "max_coordinate_error": 8.27285644433573e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "initial-z-0",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "initial-z-0.5",
+      "metadata_match": true,
+      "max_coordinate_error": 5.5857695163696874e-08,
+      "within_1e_minus_6": true
+    }
+  ]
+}

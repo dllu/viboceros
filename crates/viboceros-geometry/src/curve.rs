@@ -5,6 +5,7 @@ mod arc_length;
 mod chord_division;
 pub use chord_division::CurveDivisionPoint;
 mod area;
+mod orientation;
 pub(crate) use arc_length::{ArcLengthKink, ArcLengthSampler};
 
 use crate::{

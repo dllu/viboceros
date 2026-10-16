@@ -20,7 +20,8 @@ impl SetPointSources {
         Some(crate::viewport::AffinePreview {
             sources: &self.objects,
             grips: &self.grips,
-            definition: viboceros_command::point_transform::PointTransform::SetPoint(options),
+            definition: viboceros_command::point_transform::PointTransform::SetPoint(options)
+                .into(),
             frame: None,
             copy: options.copy,
             last_transform: self.preview,

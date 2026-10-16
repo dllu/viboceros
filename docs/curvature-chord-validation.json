@@ -370,7 +370,6 @@
     "docs/curvature-chord-oracle.log": "4a739b9e235e3bdbd296dd45ddfbed96e45a962d88767af8e645bca74ba252c0",
     "docs/curvature-chord-python.log": "38c369ace800e2504e15c4efeef2823c8ede750801d50c7df23d7273f4d6ebcf",
     "docs/curvature-chord-ui.log": "bfd246a5f9c9688eedd3caf35d3118edec60c9b7c35b7418183f77b5fcef126a",
-    "docs/curvature-sampling-validation.json": "9c1da527c00678cfd6d76b339bd2af8c5d44073bd22ce4ba0904b69f17a410b3",
     "src/app/tests/curvature_graph.rs": "4bd8d4d2b7273d3cb92bc3fa178bbfc9ec8d094ad635d0023e0fa5e446ae205e",
     "src/viewport/curvature_graph/tests.rs": "55577301afb77dc2b66a602a8efd9381c3b1669291b25caf2efe748bfa9064a3",
     "tools/rhino_oracle/curvature_sampling_comparison.py": "3f66b225f87cc75a808c296c7f3b83d5498349a54282957383acd64cd542dc68",
@@ -394,5 +393,8 @@
     "tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json": "2536b2493b43e68c3fa5c2b07ac036c2cf0308bae79d74b2fa466a06377968fe",
     "tools/rhino_oracle/test_curvature_chord.py": "4301dcbe0aa0c1bb2b7ecc375d6dbdc17eff682ecfc8b4dbd4319d936c98e86c",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "git_sha256": {
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:docs/curvature-sampling-validation.json": "9c1da527c00678cfd6d76b339bd2af8c5d44073bd22ce4ba0904b69f17a410b3"
   }
 }

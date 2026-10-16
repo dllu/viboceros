@@ -108,7 +108,7 @@ impl TransformSession {
         Some(crate::viewport::AffinePreview {
             sources: &self.sources,
             grips: &self.grips,
-            definition,
+            definition: definition.into(),
             frame: match definition {
                 PointTransform::ScaleByPlane { plane, .. } => Some(plane),
                 PointTransform::Scale2D { .. } => None,
@@ -261,6 +261,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn affine_preview(&self) -> Option<crate::viewport::AffinePreview<'_>> {
+        if let Some(s) = &self.orient_curve_session {
+            return s.preview();
+        }
         if matches!(
             self.active_command,
             Some(InteractiveCommand::SetPoint { .. })
@@ -279,6 +282,9 @@ impl VibocerosApp {
         &mut self,
         preview: Option<viboceros_geometry::AffineTransform3>,
     ) -> bool {
+        if let Some(s) = &mut self.orient_curve_session {
+            return s.update_preview(preview);
+        }
         if matches!(
             self.active_command,
             Some(InteractiveCommand::SetPoint { .. })

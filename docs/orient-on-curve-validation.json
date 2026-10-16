@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "OrientOnCrv rigid curve-guided placement and interactive previews",
+  "base_repository_revision": "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0",
+  "complete_native_command_parity_qualified": false,
+  "native_reference_point_rotation_qualified": false,
+  "native_repeated_copy_undo_qualified": false,
+  "performance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "implementation": "Reuse public OpenNURBS IsPlanar on an owned exact NURBS transfer for the oriented supporting plane, including line and closed winding conventions. For spatial curves reuse the Rust rotation-minimizing frame integrator with world-Z cross initial tangent seed and deterministic vertical fallback. Recompute on a reversed guide for Flip; map the base CPlane or original OnCurve frame into the destination frame. Preview and commits share this source-only placement solver. Reuse the existing bounded screen-space curve picker and shared transformed-object history renewal, copy preferences, and history grouping.",
+  "native_version": "8.32.26160.13001",
+  "coverage": {
+    "native_placement_cases": 49,
+    "matching_placement_cases": 49,
+    "affine_witness_points_per_cloud": 4,
+    "unchanged_guide_cases": 49,
+    "matching_selection_cases": 49,
+    "max_coordinate_error": 6.852261877909882e-07,
+    "absolute_coordinate_epsilon": 1e-06,
+    "unique_rust_tests": 61,
+    "passed_rust_test_executions": 65,
+    "new_rust_tests": 12,
+    "python_tests": 3,
+    "asan_test_executions": 2,
+    "ignored_gpu_tests": 1
+  },
+  "native_captures": [
+    {
+      "fixture": "orient_on_curve",
+      "cases": 35,
+      "scheme": "VibocerosOracleOrientCurve20261016d"
+    },
+    {
+      "fixture": "orient_on_curve_spatial",
+      "cases": 14,
+      "scheme": "VibocerosOracleOrientCurve20261016e"
+    }
+  ],
+  "native_capture_note": "The successful comparisons use the two final captures. The initial discovery has three canceled commands caused by an extra Enter after curve selection. The intermediate placement capture has one canceled rotation caused by incorrect angle/target ordering. Keep those rejected setup diagnostics and the 25-case frame discovery as historical evidence; they do not contribute to the 49-case comparison. The probe evolved during discovery, so the current helper digest is a reproducer fingerprint, not proof of byte identity of earlier staged helpers. SDK FrameAt/PerpendicularFrameAt/plane outputs are diagnostic only. Fixture alias front explicitly uses Plane.WorldZX and right uses Plane.WorldYZ.",
+  "local_history_note": "Exactly identity initial-z-0 adds no local undo entry; the other 48 direct placements do. Repeated interactive copies form one external history entry. Accepted copies survive cancellation; cancellation before placement adds no geometry history. Native undo was not captured.",
+  "limitations": [
+    "SubCrv guide selection is not supported.",
+    "The guide itself cannot be included among sources.",
+    "The fixtures do not establish behavior at all self-intersections, singularities, near-planar boundaries, or arbitrarily complex rational curves.",
+    "No broad native performance or rendered GPU parity claim."
+  ],
+  "checks": [
+    {
+      "name": "ui",
+      "command": "cargo test -p viboceros --bin viboceros orient_curve",
+      "exit_code": 0,
+      "elapsed_seconds": 44.667,
+      "log_sha256": "a5f828ea60b9cfcea8e1d06f0f59d78885a4d8be1f339919e2a333ae8643348e",
+      "passed_rust_tests": 5
+    },
+    {
+      "name": "affine",
+      "command": "cargo test -p viboceros --bin viboceros affine",
+      "exit_code": 0,
+      "elapsed_seconds": 1.38,
+      "log_sha256": "fa7dea3c563c499e73ffd66722a2d0ba49d978f38e32ab9b1d04c392211ce64d",
+      "passed_rust_tests": 14,
+      "ignored_gpu_tests": 1
+    },
+    {
+      "name": "edge-point",
+      "command": "cargo test -p viboceros --bin viboceros edge_point",
+      "exit_code": 0,
+      "elapsed_seconds": 0.351,
+      "log_sha256": "0ca9fd27bb15fbf73b366a3a713ab467f33a457974cafba5c1ddb61ecbc1edec",
+      "passed_rust_tests": 11
+    },
+    {
+      "name": "set-point",
+      "command": "cargo test -p viboceros --bin viboceros set_point",
+      "exit_code": 0,
+      "elapsed_seconds": 0.339,
+      "log_sha256": "3c169612d42f54fc9e60d02915694d690089667f07075459c398ec639e0ad595",
+      "passed_rust_tests": 15
+    },
+    {
+      "name": "scale-positions",
+      "command": "cargo test -p viboceros --bin viboceros scale_positions",
+      "exit_code": 0,
+      "elapsed_seconds": 0.895,
+      "log_sha256": "0e3730880fcc73ea1656f5001c8baf5b408e79cd3f34a22b2667eac4b4f6bfbf",
+      "passed_rust_tests": 5
+    },
+    {
+      "name": "command-oracle",
+      "command": "cargo test -p viboceros-command -p viboceros-oracle --lib orient_on_curve",
+      "exit_code": 0,
+      "elapsed_seconds": 37.365,
+      "log_sha256": "3e647dad266bac6b0cfa9fbc3736bda0d0556a69bb1e0c4b587ec3f7d9714bee",
+      "passed_rust_tests": 4
+    },
+    {
+      "name": "copy-options",
+      "command": "cargo test -p viboceros-command --lib copy_options",
+      "exit_code": 0,
+      "elapsed_seconds": 0.239,
+      "log_sha256": "b492b2ad633ce83086ed7a9149d60495a8b59c37cd358ae6d16faa1f8bce4f06",
+      "passed_rust_tests": 7
+    },
+    {
+      "name": "help",
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "exit_code": 0,
+      "elapsed_seconds": 0.181,
+      "log_sha256": "5d4cda1565411d5c5b45e4c6eadce7126a25968a28d01a9e24027ec3c3072402",
+      "passed_rust_tests": 1
+    },
+    {
+      "name": "geometry",
+      "command": "cargo test -p viboceros-geometry --lib curve_supporting_plane",
+      "exit_code": 0,
+      "elapsed_seconds": 75.586,
+      "log_sha256": "c061af85bbfa2329220b22079dac541ba1671873a2ef5616f0dfff0c1877065e",
+      "passed_rust_tests": 1
+    },
+    {
+      "name": "opennurbs",
+      "command": "cargo test -p viboceros-opennurbs --lib curve_plane",
+      "exit_code": 0,
+      "elapsed_seconds": 1.194,
+      "log_sha256": "5b37670bd8b24d6f3e3761b1c2142d969ddac859a30082bfc9d0cd5465ccb52d",
+      "passed_rust_tests": 2
+    },
+    {
+      "name": "python",
+      "command": "python3 -m unittest tools.rhino_oracle.test_orient_on_curve",
+      "exit_code": 0,
+      "log_sha256": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d"
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 9.334,
+      "log_sha256": "7925a689288ed8a8e00472bff95c37d14efabe047d8ace83eddc951d3c8486ce"
+    },
+    {
+      "name": "fmt",
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "elapsed_seconds": 5.276,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "export-main",
+      "command": "cargo run --quiet -p viboceros-oracle -- tools/rhino_oracle/fixtures/orient_on_curve.json tools/rhino_oracle/observations/orient_on_curve_viboceros_20261016.json",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "export-spatial",
+      "command": "cargo run --quiet -p viboceros-oracle -- tools/rhino_oracle/fixtures/orient_on_curve_spatial.json tools/rhino_oracle/observations/orient_on_curve_spatial_viboceros_20261016.json",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "sanitizer": {
+    "command": "VIBOCEROS_OPENNURBS_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-opennurbs --lib curve_plane",
+    "exit_code": 0,
+    "passed": 2,
+    "log_sha256": "aa74f7e228ab4c9d9c5510dbb027058eb2014889329a622401388b0d744ee608",
+    "scope": "AddressSanitizer instruments the OpenNURBS kernel and owned C ABI. Leak detection and stack-use-after-return checks are disabled."
+  },
+  "provenance_preservation": {
+    "records": 8,
+    "preserved_entries": 25,
+    "preexisting_unverifiable_records_left_unchanged": 69,
+    "method": "Preserve only previously verifiable source digests as full immutable base revision Git references; retain non-hash metadata and all original digest values."
+  },
+  "sha256": {
+    "README.md": "a16e8caba1a825c02209f4cd05fe0045b6576f712f7c41623f3beedbefc303af",
+    "crates/viboceros-command/src/copy_options/tests.rs": "b62f1e7b2bc32a62ec4095751d9d4fc35f5a26112346c67bb52e6016f42961c6",
+    "crates/viboceros-command/src/lib.rs": "656890d63a206ef5f1c32df3500065a85e8f5311675c3472e4d4b5daef22e861",
+    "crates/viboceros-command/src/orient_curve.rs": "fe5f228ee2232be5a5378e192233f745ff2cc52fff2f59f7d8bd30655031b4c8",
+    "crates/viboceros-geometry/src/curve.rs": "2a0205608c4717fe90303e21cf26b2b9c051cf5b10e7173ce340022c1bdff821",
+    "crates/viboceros-geometry/src/curve/orientation.rs": "9f11c2d73b4f5efea71a4b5d00c3aefa42ad145aa8ad1ed7ebf01511057209ea",
+    "crates/viboceros-geometry/src/error.rs": "da02514817701563eec277648782be45a813560e321af03e27ad0e750ad7392d",
+    "crates/viboceros-opennurbs/build.rs": "5f01ab64457b2114ec4d647f7dec79ea2ff0b15da80cf6bc4c5acf974e490abc",
+    "crates/viboceros-opennurbs/native/curve_queries.h": "bcd02dd735babaabe83bca752840ab7c2effb1b3d18462bdf92f89f0780cda95",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "bba5c23905fc01835dc2deeef5534d0720a98a12d92d98d6e5cfebd24d48856d",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "7e994c1e3c83ec86fcc12a763bdd13910841d9eebb71bb19d178b1115eccaf00",
+    "crates/viboceros-opennurbs/src/curve.rs": "f253aa334a48b48c26729995590657f449169fedf45d5b87be12c4ac2d3e1871",
+    "crates/viboceros-opennurbs/src/lib.rs": "d3d11dbc8b8386541a31ae28978d29bcb08814f730449d93e34845c56fccbf7d",
+    "crates/viboceros-oracle/src/lib.rs": "e8acf7fd8b06405a86863db2da3045cfa035a1e8c9e340aca67afe73ad1f9f72",
+    "crates/viboceros-oracle/src/orient_on_curve.rs": "a08e029718fb7c4b6c45575c99166299398db857c77bf0b890480b315a88f1ae",
+    "docs/commands/README.md": "56e0bdfedb143c10e21b57de890160802adb230f3ffda010c804bb8a27f1f9ed",
+    "docs/commands/orient-on-curve.md": "99a6899b637e192fe6f285213c227b5dc833d22035caca23ff9346668b162066",
+    "docs/coplanar-mesh-qualification.json": "16f6e3a215c3cc56acafa0d6855e44a1c1a50855fabadb8f16735843c184be94",
+    "docs/cull-degenerate-mesh-faces-qualification.json": "cd6d42da3d009690b3f06cfb0ac0698300ed4a5f60eb1afe5dd4296aa7f4f4dc",
+    "docs/curvature-chord-validation.json": "6a1d2c4396bde1b8220b3781987f2f7ae7fe854c1820a93965d74821b9486c79",
+    "docs/curvature-graph-validation.json": "23a8a63fdb58d7c87dd28a0c6ef8f3bef25d3393723b19677940d97201dc0fdc",
+    "docs/curvature-sampling-validation.json": "8d9b7d628d327ada074d3f9b37d42a5396bd4776c8656258c84e0406bc8e64a0",
+    "docs/development.md": "876b5fd2cdbfe88b2d7c9769dca8a3867bd7bd5c9647af82b2f2db61b6ed778a",
+    "docs/extract-curvature-graph-validation.json": "8f18c2e867f69f2ebab01f92555157225c3fe48a23791807c74b241e4b3657b6",
+    "docs/geometry-check-qualification.json": "5e00eafe371346871d6667e2e26695a9247ad02753cf84a07f49ce674b1e96a9",
+    "docs/set-point-preview-qualification.json": "d42f702495f6e27411d1d16d2b70ebe1ee8cea9874ef915be673c5e375add2e3",
+    "src/app.rs": "698ef036e8670efdbad295cf49fd864d39485b8b80dce6b46af2c45d2d647e7c",
+    "src/app/object_selection.rs": "8bde3a041394ca7726ca9485da7227fc1364dd2c856ea2f8534220d4723c5711",
+    "src/app/orient_curve.rs": "ae2557ec90f9602fce952a240b720d89d77b3e0f2f086d12167c226ba3ad18b3",
+    "src/app/set_point.rs": "9836b90262a5501bd39d00e3ee353f5630f3558e86b739f78656081165e15962",
+    "src/app/tests/orient_curve.rs": "03c4d84af3d3297879786b0921007d97c13719517acd8582d2b0e28894c23b7d",
+    "src/app/transform_prompt.rs": "fd20e915959d3a0a9ac985d11279d2342cda18ab173b9ca1e918e7bc9db2d5ed",
+    "src/viewport.rs": "c114ceed33c37dbadfb451fb1b233bf4c997a08ef0e6e9acd91041738bd1d659",
+    "src/viewport/affine_preview.rs": "25896821d11c74bd0cb63e14c38c32d97e07fedd3f446f889687a20850dd2882",
+    "src/viewport/affine_preview/set_point_tests.rs": "f463b8f91b4afbf913d9fde08523a8b85973cdee3a1bd1d6d07e13fa40b46424",
+    "src/viewport/affine_preview/tests.rs": "6125ce86f330286680f7e48cb038d734c77aa30cd72f2d703bbef9512d2b956e",
+    "src/viewport/scene/affine_tests.rs": "25815c4de2c903357720bd805f49d28af4df6f68e1ca42399b4b39ba93a549e8",
+    "src/viewport/scene/grip_tests.rs": "a17fd47ff54ad6e69a00fbc9d80a65f20e614eebba32b36813332112ba5443da",
+    "tools/rhino_oracle/__main__.py": "57ed9c767e591f9ab2833c5debf671e423412b78782a1a3b15705c94691e338a",
+    "tools/rhino_oracle/client.py": "d165a599dfd15baed8a6c8e8c0a74118002c1b8731a8585913582bab3290550c",
+    "tools/rhino_oracle/fixtures/orient_on_curve.json": "6a2fbd39e45d061ae57a06833b5932886474dcde12671843c4efff7e56a43115",
+    "tools/rhino_oracle/fixtures/orient_on_curve_discovery.json": "902c930763fe0e1aaf389c11b78bbfccf2965047daa213865b71ff17aa06a59a",
+    "tools/rhino_oracle/fixtures/orient_on_curve_frames.json": "a6d70202fd622dd6dbc512bccdc5dd15888a05bab528d7bf8f31eba47fa43116",
+    "tools/rhino_oracle/fixtures/orient_on_curve_placement.json": "16bd3ba32f3d4330f27543bb3bbdf36c51300485da1110744ba70160b006293f",
+    "tools/rhino_oracle/fixtures/orient_on_curve_spatial.json": "7ae6faad80b81a48c9643d5d13bd4f2e3fbab1dd05674137b0583637a3c3bea1",
+    "tools/rhino_oracle/observations/orient_on_curve_comparison_20261016.json": "25b3d0e35adf87f0ececa165a7e3f25921fe06c138c1a86273f481d16d06817c",
+    "tools/rhino_oracle/observations/orient_on_curve_discovery_rhino_20261016.json": "772bcedb49d21291c5fdeba13c2c3ea5d5fd64e2909d83541c7cf03fa6e28a3c",
+    "tools/rhino_oracle/observations/orient_on_curve_frames_rhino_20261016.json": "900dd9aa6d2112bd492f9881584494395c957c1af32dc5a8658b1025b317ad9b",
+    "tools/rhino_oracle/observations/orient_on_curve_placement_rhino_20261016.json": "5572d752003f4b9d774f18f2cd580caff650c669781c54ffcff5a01d2a424238",
+    "tools/rhino_oracle/observations/orient_on_curve_rhino_20261016.json": "16947d3511a971f1b4f91a2bb9ed1f298bbe64b0a26c2948d52d5104f66aec1f",
+    "tools/rhino_oracle/observations/orient_on_curve_spatial_comparison_20261016.json": "04d9a890086699bca596048e68d8be3e7f8eb2bdc696d38e7cd9e5b1ab8e5d13",
+    "tools/rhino_oracle/observations/orient_on_curve_spatial_rhino_20261016.json": "f13cd9cd0a112a7613d70bba6a53b82a1093496e2af6060311b4fa1ffec464e5",
+    "tools/rhino_oracle/observations/orient_on_curve_spatial_viboceros_20261016.json": "9a2bc488e8579806e80afe692a95d4680cfecf19183db650de12f59890393d42",
+    "tools/rhino_oracle/observations/orient_on_curve_viboceros_20261016.json": "28bd181d1a1bb2be1d6137855db71bca21d0451a98c444c01dca4bbaf7ae97fe",
+    "tools/rhino_oracle/orient_on_curve_comparison.py": "2a786edd3175c18c61152bab749331fd9ba1c633a392502bea2d18ad01b962a8",
+    "tools/rhino_oracle/orient_on_curve_probe.py": "5efd2125cb2450cdbee44855cc0e9882478affd824291056efe1241c2369b906",
+    "tools/rhino_oracle/rhino_worker.py": "6bdc52821cd2f779465272fd653e1db978749ccdfd0e2d0aa700169e2df3396d",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/structural_sdk.py": "1f8fdfd53a9f1ce684ddd6c8ed06a7840118b821209baee895ab37ceef6c03de",
+    "tools/rhino_oracle/test_orient_on_curve.py": "8a90490a903443bf47a612709f3af403ff1c70a872c3043ad8b9fa0e9b15d9e0"
+  }
+}

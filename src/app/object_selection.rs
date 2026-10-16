@@ -269,6 +269,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.picking_orient_curve() {
+            return Some(ObjectSelectionFilter::Curves);
+        }
         if self.picking_project_direction() || self.picking_project_plane_points() {
             return None;
         }

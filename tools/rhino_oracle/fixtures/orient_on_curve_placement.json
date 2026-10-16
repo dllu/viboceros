@@ -1,0 +1,324 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "orient_on_curve",
+      "id": "line-x",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          5,
+          0,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        2,
+        0,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": false
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-y",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": false
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-x-perp",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          5,
+          0,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        2,
+        0,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": true
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-y-perp",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": true
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-y-flip",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "flip": true
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-y-perp-xflip",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": true,
+        "xflip": true
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-y-perp-yflip",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": true,
+        "yflip": true
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-y-perp-rotate",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": true,
+        "rotate": 30
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-3d-False",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          2,
+          3,
+          4
+        ]
+      },
+      "base": [
+        1,
+        2,
+        3
+      ],
+      "target": [
+        1,
+        1.5,
+        2
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": false
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "line-3d-True",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          2,
+          3,
+          4
+        ]
+      },
+      "base": [
+        1,
+        2,
+        3
+      ],
+      "target": [
+        1,
+        1.5,
+        2
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": true
+      }
+    }
+  ]
+}

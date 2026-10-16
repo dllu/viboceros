@@ -1,0 +1,216 @@
+{
+  "cases": 35,
+  "matched_cases": 35,
+  "results": [
+    {
+      "id": "x-normal",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "x-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "y-normal",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "y-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "z-normal",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "z-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "xy-normal",
+      "metadata_match": true,
+      "max_coordinate_error": 6.661338147750939e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "xy-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 6.661338147750939e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "xz-normal",
+      "metadata_match": true,
+      "max_coordinate_error": 6.661338147750939e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "xz-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 6.661338147750939e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "yz-normal",
+      "metadata_match": true,
+      "max_coordinate_error": 6.661338147750939e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "yz-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 6.661338147750939e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "space-normal",
+      "metadata_match": true,
+      "max_coordinate_error": 4.440892098500626e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "space-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 3.3306690738754696e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "space-front-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.440892098500626e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "space-front-True",
+      "metadata_match": true,
+      "max_coordinate_error": 3.3306690738754696e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "space-right-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.440892098500626e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "space-right-True",
+      "metadata_match": true,
+      "max_coordinate_error": 3.3306690738754696e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-xy-False",
+      "metadata_match": true,
+      "max_coordinate_error": 6.123233995736766e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-xy-True",
+      "metadata_match": true,
+      "max_coordinate_error": 6.123233995736766e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-yz-False",
+      "metadata_match": true,
+      "max_coordinate_error": 6.123233995736766e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-yz-True",
+      "metadata_match": true,
+      "max_coordinate_error": 6.123233995736766e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "copy",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "rotate",
+      "metadata_match": true,
+      "max_coordinate_error": 5.551115123125783e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "on-curve",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-spline-False",
+      "metadata_match": true,
+      "max_coordinate_error": 8.087454533844962e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-spline-True",
+      "metadata_match": true,
+      "max_coordinate_error": 8.087454533844962e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "on-circle-27",
+      "metadata_match": true,
+      "max_coordinate_error": 6.123233995736766e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "on-circle-28",
+      "metadata_match": true,
+      "max_coordinate_error": 7.968705128724864e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "on-circle-29",
+      "metadata_match": true,
+      "max_coordinate_error": 6.123233995736765e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "rotation-flips-30",
+      "metadata_match": true,
+      "max_coordinate_error": 5.551115123125783e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "rotation-flips-31",
+      "metadata_match": true,
+      "max_coordinate_error": 5.551115123125783e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "rotation-flips-32",
+      "metadata_match": true,
+      "max_coordinate_error": 5.551115123125783e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "polyline-corner",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "off-curve-target",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    }
+  ]
+}

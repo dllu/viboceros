@@ -2,13 +2,83 @@
 use super::object_preview::TransformedObjects;
 use super::*;
 use viboceros_command::point_transform::PointTransform;
-use viboceros_geometry::AffineTransform3;
+use viboceros_geometry::{AffineTransform3, UnitVector3};
+
+/// Cursor-dependent placement or an already accepted map awaiting rotation.
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum Mapping<'a> {
+    Point(PointTransform),
+    Curve(&'a viboceros_command::orient_curve::Placement),
+    Fixed(AffineTransform3),
+    Rotation {
+        prior: AffineTransform3,
+        plane: Frame3,
+        reference: Point3,
+    },
+}
+impl From<PointTransform> for Mapping<'_> {
+    fn from(value: PointTransform) -> Self {
+        Self::Point(value)
+    }
+}
+impl Mapping<'_> {
+    fn point(self) -> Option<PointTransform> {
+        if let Self::Point(p) = self {
+            Some(p)
+        } else {
+            None
+        }
+    }
+    pub(crate) fn transform_at(
+        self,
+        frame: Frame3,
+        point: Point3,
+        tolerance: Tolerance,
+    ) -> Result<AffineTransform3, viboceros_command::CommandError> {
+        match self {
+            Self::Point(p) => p.transform_at(frame, point, tolerance),
+            Self::Curve(p) => p.transform_at(point),
+            Self::Fixed(map) => Ok(map),
+            Self::Rotation {
+                prior,
+                plane,
+                reference,
+            } => {
+                let rotation = PointTransform::Rotate {
+                    center: plane.origin(),
+                    reference,
+                }
+                .transform_at(plane, point, tolerance)?;
+                Ok(prior.then(rotation)?)
+            }
+        }
+    }
+    pub(crate) fn mouse_line(
+        self,
+        tolerance: Tolerance,
+    ) -> Option<viboceros_command::translation::DestinationConstraint> {
+        self.point()?.mouse_line(tolerance)
+    }
+    fn mouse_plane(self, tolerance: Tolerance) -> Option<(Point3, UnitVector3)> {
+        if let Self::Rotation { plane, .. } = self {
+            Some((plane.origin(), plane.z_axis()))
+        } else {
+            self.point()?.mouse_plane(tolerance)
+        }
+    }
+    fn retain_invalid(self) -> bool {
+        self.point().is_none() || matches!(self.point(), Some(PointTransform::SetPoint(_)))
+    }
+    pub(super) fn follows_curve(self) -> bool {
+        matches!(self, Self::Curve(_))
+    }
+}
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct AffinePreview<'a> {
     pub sources: &'a [ObjectId],
     pub grips: &'a [viboceros_document::ControlPointId],
-    pub definition: PointTransform,
+    pub definition: Mapping<'a>,
     /// Scale2D and SetPt use the destination viewport; other planar transforms retain their start plane.
     pub frame: Option<Frame3>,
     pub copy: bool,
@@ -36,15 +106,17 @@ impl<'a> AffinePreview<'a> {
                 .filter(|map| {
                     self.rigid_layout.is_some()
                         || matches!(
-                            self.definition,
-                            PointTransform::Scale1DDirection { factor: 0., .. }
-                                | PointTransform::ScaleNU { .. }
-                                | PointTransform::SetPoint(_)
+                            self.definition.point(),
+                            Some(
+                                PointTransform::Scale1DDirection { factor: 0., .. }
+                                    | PointTransform::ScaleNU { .. }
+                                    | PointTransform::SetPoint(_)
+                            )
                         )
                         || map.orientation_reversing().is_ok()
                 })
                 .or_else(|| {
-                    if matches!(self.definition, PointTransform::SetPoint(_)) {
+                    if self.definition.retain_invalid() {
                         self.last_transform
                     } else {
                         Some(AffineTransform3::identity())
@@ -91,20 +163,22 @@ impl Viewport {
             && resolved.1.is_some()
         {
             let mut cache = self.display_cache.borrow_mut();
-            let valid = (!matches!(preview.definition, PointTransform::SetPoint(_))
-                || objects
-                    .sources
-                    .iter()
-                    .filter(|id| !objects.grips.iter().any(|p| p.object == **id))
-                    .all(|id| {
-                        document.object(*id).is_some_and(|object| {
-                            self.whole_edit_preview_is_valid(
-                                object,
-                                objects.transform,
-                                document.tolerance(),
-                            )
-                        })
-                    }))
+            let valid = (!matches!(
+                preview.definition.point(),
+                Some(PointTransform::SetPoint(_))
+            ) || objects
+                .sources
+                .iter()
+                .filter(|id| !objects.grips.iter().any(|p| p.object == **id))
+                .all(|id| {
+                    document.object(*id).is_some_and(|object| {
+                        self.whole_edit_preview_is_valid(
+                            object,
+                            objects.transform,
+                            document.tolerance(),
+                        )
+                    })
+                }))
                 && objects
                     .grips
                     .iter()
@@ -189,7 +263,9 @@ impl Viewport {
         let definition = input.affine_preview.map(|p| p.definition);
         // ScalePositions mouse input uses the CPlane through its origin.
         // Its 1D reference getter additionally constrains the viewing line.
-        let drafting = if let Some(PointTransform::ScalePositions { origin, .. }) = definition {
+        let drafting = if let Some(PointTransform::ScalePositions { origin, .. }) =
+            definition.and_then(|p| p.point())
+        {
             DraftingInput {
                 anchor: Some(origin),
                 planar: true,

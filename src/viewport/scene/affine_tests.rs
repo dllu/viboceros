@@ -310,7 +310,7 @@ fn gpu_affine_preview_renders_deformed_faces_points_and_source_styles() {
                         rigid_layout: None,
                         grips: &[],
                         sources: &sources,
-                        definition,
+                        definition: definition.into(),
                         frame: None,
                         copy,
                         last_transform: None,

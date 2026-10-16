@@ -1629,17 +1629,42 @@ impl Viewport {
                     document,
                 )
             });
+        let edge_cursor = input
+            .edge_curve
+            .filter(|_| !input.zoom_window && input.zoom_target.is_none())
+            .and_then(|curve| {
+                self.edge_point_cursor(
+                    curve,
+                    input.edge_distance_parameters,
+                    response.hover_pos()?,
+                    rect,
+                    document,
+                    drafting.snap_options(),
+                )
+            });
         let (affine_preview, affine_preview_update) =
             input.affine_preview.map_or((None, None), |preview| {
                 self.resolve_affine_preview(
                     preview,
-                    drafting_cursor
-                        .filter(|_| {
-                            !input.point_filter.is_some_and(
-                                viboceros_drafting::PointFilterSession::awaiting_source,
-                            )
-                        })
-                        .map(|cursor| cursor.point),
+                    if input
+                        .point_filter
+                        .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+                    {
+                        None
+                    } else if preview.definition.follows_curve() && input.edge_curve.is_some() {
+                        input
+                            .edge_curve
+                            .zip(edge_cursor)
+                            .and_then(|(curve, cursor)| curve.evaluate(cursor.parameter).ok())
+                    } else {
+                        drafting_cursor
+                            .filter(|_| {
+                                !input.point_filter.is_some_and(
+                                    viboceros_drafting::PointFilterSession::awaiting_source,
+                                )
+                            })
+                            .map(|cursor| cursor.point)
+                    },
                     document,
                 )
             });
@@ -1956,16 +1981,8 @@ impl Viewport {
                         painter.circle_stroke(pixel, 4., Stroke::new(2., SELECTED_COLOR));
                     }
                 }
-                let pointer = response.hover_pos()?;
                 ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
-                let cursor = self.edge_point_cursor(
-                    curve,
-                    input.edge_distance_parameters,
-                    pointer,
-                    rect,
-                    document,
-                    drafting.snap_options(),
-                )?;
+                let cursor = edge_cursor?;
                 self.paint_edge_point_cursor(&painter, rect, curve, cursor);
                 Some(cursor.parameter)
             });

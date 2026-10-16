@@ -233,7 +233,6 @@
     "https://developer.rhino3d.com/api/rhinocommon/rhino.applicationsettings.curvaturegraphsettings"
   ],
   "sha256": {
-    "README.md": "70ca8bb7df1534298b619b269761adfb752b65722a1a4c4d21092f9359148463",
     "crates/viboceros-command/src/curvature_graph.rs": "8905884dffbde4aa05ab1fafa9337724539af203694a3facf2a9c957110a8993",
     "crates/viboceros-command/src/curvature_graph/extract/tests.rs": "7048572e94f9e2075af837ac78dc4a83d41c31b529e5c4b2d1ac76936f44665d",
     "crates/viboceros-command/src/curvature_graph/tests.rs": "3e5e20bc957b5fcf04cbda8e7d87b8cfcbcc73e80eb4cabdbca322d9e0909bde",
@@ -241,13 +240,11 @@
     "crates/viboceros-geometry/src/curvature_comb.rs": "b3e4ee6b74d30d12597e8e2c4821ff2ce60fbc3de7129663f02c2d8287d0c80c",
     "crates/viboceros-geometry/src/curvature_comb/envelopes.rs": "7a21491995e6b9acf95892c9246a0035f78d5ed04591bf07a9731b8bcee1af15",
     "crates/viboceros-geometry/src/curvature_comb/tests/adaptive.rs": "9ea17c62a0913c4d5929b8267cb582bf0465982f71f41eadc42498cfc5860413",
-    "crates/viboceros-geometry/src/curve.rs": "585164998fc71d7ed9ab5796b2cabe8a9f5235740fa905c6a52083970e325038",
     "crates/viboceros-geometry/src/lib.rs": "2b223cf216ab4dd0f2cea4a3fe6b5f953174356742a3ad72dfc577fc95d1a826",
     "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
     "crates/viboceros-geometry/src/parameter.rs": "66eff84b5540d40dd2396bcc14d81fcc97f1595926b22e8d048807448f657253",
     "crates/viboceros-oracle/src/extract_curvature_graph.rs": "21f72c379e584307247e7bf6a28d9f15b57053d7a439d6533a5a212424406f9d",
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "0fb7e43039ac67b80a3329d7bd5afe59b449b6d344a5807bd394e4e29c887d8f",
-    "docs/curvature-graph-validation.json": "b7c9a8c9c8827aace5a9f9dabe708a330ec6abef6d4afb0f4f9e6cc06a59ba9a",
     "docs/curvature-sampling-clippy.log": "711f8000e1c165bda31c865df39afb1f9f6edb688ae652e56d641a3a492af0fb",
     "docs/curvature-sampling-command.log": "6c2323f529c77e81e649da426f5602afcf82238a34145cfc6833bcc0679a43a7",
     "docs/curvature-sampling-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -258,7 +255,6 @@
     "docs/curvature-sampling-oracle.log": "1b6fdaa88007f8d5d6fe83f5bf7038e4f333adcde10fe230f1d2a37c26f403e6",
     "docs/curvature-sampling-python.log": "97258fb2e7884323bf441120037d073160b42cb836da7000f996015c7522fbf2",
     "docs/curvature-sampling-ui.log": "40f7fcef959b6c70ff03ebb2a0e620ece75f20e3637b6dff4360ce20b278b7a0",
-    "docs/extract-curvature-graph-validation.json": "9b4c2d68dc477b423cfac891f93818001b4f26e7f463a6d623b9d95ec6f30cee",
     "src/app/tests/curvature_graph.rs": "4bd8d4d2b7273d3cb92bc3fa178bbfc9ec8d094ad635d0023e0fa5e446ae205e",
     "src/viewport/curvature_graph.rs": "6c657b06ee0e01efc920d18a86aef1de78b0d47f923b1d7b0e8621740f37ccd9",
     "src/viewport/curvature_graph/tests.rs": "55577301afb77dc2b66a602a8efd9381c3b1669291b25caf2efe748bfa9064a3",
@@ -282,9 +278,7 @@
     "tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json": "2536b2493b43e68c3fa5c2b07ac036c2cf0308bae79d74b2fa466a06377968fe",
     "tools/rhino_oracle/observations/extract_curvature_graph_sampling_comparison_20261016.json": "7e60734d5e432498b7bc8c1ee931495f01a303b4b0ed512be3ab8a37778f1b29",
     "tools/rhino_oracle/observations/extract_curvature_graph_sampling_viboceros_20261016.json": "f295100d82e0d173b4ee3479b80a95d8fb27c09eac597cf9fffbcc33dd0f32f3",
-    "tools/rhino_oracle/rhino_worker.py": "2dd01b8fe3f1a4aba79eb4d7a717453e4f7df4838eb80ae395c9db6fd9cfe4ba",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
-    "tools/rhino_oracle/structural_sdk.py": "a2bc494ba20edd9b571e0719ff7a77a4dd40e5ff34e36fbea79fae4d65f5568e",
     "tools/rhino_oracle/test_curvature_sampling.py": "67ee496b5d24c802cbc45b666cdbbb849d63cd64bef6b5ce5a105a1ef11d83ba",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
@@ -294,6 +288,12 @@
     "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:crates/viboceros-oracle/src/curvature_graph.rs": "563fbcabd1a077f6d7a9fb7ffc105ab88817a0f0e5694baceeff23ce9d6da487",
     "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:docs/commands/curvature-graph.md": "e16e50295a177b20a947a3850ec204f475f259f569d6e571e3ddd5def2fa1775",
     "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:docs/commands/extract-curvature-graph.md": "58208f6696fd8839d766b7efe5488886f27b8dbe8ee7011d3caf3c08f1faccf3",
-    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/curvature_sampling_comparison.py": "3a22c06965ae4ad2b7dba53d8d9bd3f5770c70346fd467286a791352373fd739"
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/curvature_sampling_comparison.py": "3a22c06965ae4ad2b7dba53d8d9bd3f5770c70346fd467286a791352373fd739",
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:README.md": "70ca8bb7df1534298b619b269761adfb752b65722a1a4c4d21092f9359148463",
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:crates/viboceros-geometry/src/curve.rs": "585164998fc71d7ed9ab5796b2cabe8a9f5235740fa905c6a52083970e325038",
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:docs/curvature-graph-validation.json": "b7c9a8c9c8827aace5a9f9dabe708a330ec6abef6d4afb0f4f9e6cc06a59ba9a",
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:tools/rhino_oracle/rhino_worker.py": "2dd01b8fe3f1a4aba79eb4d7a717453e4f7df4838eb80ae395c9db6fd9cfe4ba",
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:tools/rhino_oracle/structural_sdk.py": "a2bc494ba20edd9b571e0719ff7a77a4dd40e5ff34e36fbea79fae4d65f5568e",
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:docs/extract-curvature-graph-validation.json": "9b4c2d68dc477b423cfac891f93818001b4f26e7f463a6d623b9d95ec6f30cee"
   }
 }

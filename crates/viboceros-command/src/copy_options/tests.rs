@@ -199,6 +199,7 @@ fn shared_policy_covers_each_implemented_affected_command() {
         "Orient",
         "Orient3Pt",
         "OrientOnSrf",
+        "OrientOnCrv",
         "Scale",
         "Scale1D",
         "Scale2D",
