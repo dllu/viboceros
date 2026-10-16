@@ -249,3 +249,62 @@ fn native_constrained_cubic_fit_agrees_with_portable_solver_at_crossings_and_kin
         }
     }
 }
+
+#[test]
+fn native_common_station_fits_agree_with_portable_controls_and_preserve_positions() {
+    use viboceros_geometry::{CurveFitStation, try_fit_cubic_curve_at_stations};
+    let smooth = NurbsCurve::try_new(
+        3,
+        vec![
+            point(0., 0., 0.),
+            point(1., 2., 3.),
+            point(3., -1., 1.),
+            point(4., 1., 2.),
+        ],
+        vec![0., 0., 0., 0., 1., 1., 1., 1.],
+    )
+    .unwrap()
+    .reversed()
+    .unwrap()
+    .try_reparameterized(-13. ..=29.)
+    .unwrap();
+    let corner = Polyline3::try_new(
+        vec![point(0., 0., 0.), point(2., 0., 0.), point(2., 3., 0.)],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for source in [CurveRef::NurbsCurve(&smooth), CurveRef::Polyline(&corner)] {
+        let stations = [1., 0.5, 0.].map(|fit_parameter| {
+            let source_parameter = source.parameter_at(fit_parameter).unwrap();
+            CurveFitStation {
+                source_parameter,
+                fit_parameter,
+                point: source.evaluate(source_parameter).unwrap(),
+            }
+        });
+        let actual = viboceros_smlib::fit_cubic_curve_at_stations(
+            source,
+            &stations,
+            1e-6,
+            0.1,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let expected =
+            try_fit_cubic_curve_at_stations(source, &stations, 1e-6, 0.1, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(actual.constraint_parameters, [1., 0.5, 0.]);
+        compare(&actual.curve, &expected.curve);
+        for station in stations {
+            assert!(
+                actual
+                    .curve
+                    .evaluate(station.fit_parameter)
+                    .unwrap()
+                    .distance_to(station.point)
+                    .unwrap()
+                    < 1e-11
+            );
+        }
+    }
+}

@@ -7,6 +7,9 @@ use crate::{
     nurbs::bspline_basis_values,
 };
 
+mod sampler;
+use sampler::{FitKink, FitSampler};
+
 /// Largest degree accepted by Rhino's `FitCrv` command.
 pub const MAX_CURVE_FIT_DEGREE: usize = 11;
 
@@ -38,12 +41,34 @@ pub struct CurveFitConstraint {
     pub point: Point3,
 }
 
-/// Polynomial curve and the arc-length parameters of the requested constraints,
-/// in the caller's original order.
+/// Polynomial curve and its parameters for the requested constraints, in the
+/// caller's original order. Arc-length fits return source arc-length stations.
 #[derive(Clone, Debug)]
 pub struct ConstrainedCurveFit {
     pub curve: NurbsCurve,
     pub constraint_parameters: Vec<Real>,
+}
+
+/// Position constraint with a requested unit output parameter. A common map
+/// requires both original endpoints at 0 and 1 and strictly increasing stations.
+#[derive(Clone, Copy, Debug)]
+pub struct CurveFitStation {
+    pub source_parameter: Real,
+    pub fit_parameter: Real,
+    pub point: Point3,
+}
+
+struct FitConstraints<'a> {
+    points: &'a [CurveFitConstraint],
+    parameters: Option<&'a [Real]>,
+}
+impl<'a> FitConstraints<'a> {
+    fn arc_length(points: &'a [CurveFitConstraint]) -> Self {
+        Self {
+            points,
+            parameters: None,
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -70,7 +95,7 @@ pub fn try_fit_cubic_curve_with_constraints(
         fit_tolerance,
         angle_tolerance_radians,
         numerical_tolerance,
-        constraints,
+        FitConstraints::arc_length(constraints),
         None,
     )
 }
@@ -90,8 +115,85 @@ pub fn try_fit_cubic_curve_with_constraints_with_solver<E: From<GeometryError>>(
         fit_tolerance,
         angle_tolerance_radians,
         numerical_tolerance,
-        constraints,
+        FitConstraints::arc_length(constraints),
         Some(solve),
+    )
+}
+
+/// Fit a cubic in a common unit parameter chart. An interpolating scalar map
+/// from the requested stations to normalized source arc length uses degree
+/// min(3, station_count-1). Positive derivative controls must prove that it is
+/// strictly increasing. The adaptive fit, fixed handles and exact position
+/// checks are shared with the arc-length fitter.
+pub fn try_fit_cubic_curve_at_stations(
+    source: CurveRef<'_>,
+    stations: &[CurveFitStation],
+    fit_tolerance: Real,
+    angle_tolerance_radians: Real,
+    numerical_tolerance: Tolerance,
+) -> Result<ConstrainedCurveFit, GeometryError> {
+    fit_at_stations(
+        source,
+        stations,
+        fit_tolerance,
+        angle_tolerance_radians,
+        numerical_tolerance,
+        None,
+    )
+}
+
+/// Common-parameter fitting with the caller's fixed-row interpolation backend.
+pub fn try_fit_cubic_curve_at_stations_with_solver<E: From<GeometryError>>(
+    source: CurveRef<'_>,
+    stations: &[CurveFitStation],
+    fit_tolerance: Real,
+    angle_tolerance_radians: Real,
+    numerical_tolerance: Tolerance,
+    solve: &mut impl FnMut(&CurveFitInterpolation<'_>) -> Result<Vec<Real>, E>,
+) -> Result<ConstrainedCurveFit, E> {
+    fit_at_stations(
+        source,
+        stations,
+        fit_tolerance,
+        angle_tolerance_radians,
+        numerical_tolerance,
+        Some(solve),
+    )
+}
+
+fn fit_at_stations<E: From<GeometryError>>(
+    source: CurveRef<'_>,
+    stations: &[CurveFitStation],
+    fit_tolerance: Real,
+    angle_tolerance_radians: Real,
+    numerical_tolerance: Tolerance,
+    solve: Option<&mut FitSolver<'_, E>>,
+) -> Result<ConstrainedCurveFit, E> {
+    if !(2..=MAX_FIT_CONSTRAINTS).contains(&stations.len()) {
+        return Err(GeometryError::InvalidCurveFitConstraints {
+            context: "2 to 64 stations including both endpoints are required",
+        }
+        .into());
+    }
+    let constraints = stations
+        .iter()
+        .map(|s| CurveFitConstraint {
+            source_parameter: s.source_parameter,
+            point: s.point,
+        })
+        .collect::<Vec<_>>();
+    let parameters = stations.iter().map(|s| s.fit_parameter).collect::<Vec<_>>();
+    try_fit_curve_impl(
+        source,
+        3,
+        fit_tolerance,
+        angle_tolerance_radians,
+        numerical_tolerance,
+        FitConstraints {
+            points: &constraints,
+            parameters: Some(&parameters),
+        },
+        solve,
     )
 }
 
@@ -122,7 +224,7 @@ pub fn try_fit_curve(
         fit_tolerance,
         angle_tolerance_radians,
         numerical_tolerance,
-        &[],
+        FitConstraints::arc_length(&[]),
         None,
     )
     .map(|result| result.curve)
@@ -144,7 +246,7 @@ pub fn try_fit_curve_with_solver<E: From<GeometryError>>(
         fit_tolerance,
         angle_tolerance_radians,
         numerical_tolerance,
-        &[],
+        FitConstraints::arc_length(&[]),
         Some(solve),
     )
     .map(|result| result.curve)
@@ -156,7 +258,7 @@ fn try_fit_curve_impl<E: From<GeometryError>>(
     fit_tolerance: Real,
     angle_tolerance_radians: Real,
     numerical_tolerance: Tolerance,
-    constraints: &[CurveFitConstraint],
+    constraints: FitConstraints<'_>,
     mut solve: Option<&mut FitSolver<'_, E>>,
 ) -> Result<ConstrainedCurveFit, E> {
     if degree == 0 || degree > MAX_CURVE_FIT_DEGREE {
@@ -180,7 +282,7 @@ fn try_fit_curve_impl<E: From<GeometryError>>(
         MAX_DENSE_CURVE_FIT_CONTROL_POINTS
     };
 
-    if constraints.len() > MAX_FIT_CONSTRAINTS {
+    if constraints.points.len() > MAX_FIT_CONSTRAINTS {
         return Err(GeometryError::InvalidCurveFitConstraints {
             context: "at most 64 constraints are supported",
         }
@@ -190,9 +292,9 @@ fn try_fit_curve_impl<E: From<GeometryError>>(
     sampler.prepare_budgeted_repeated_sampling(32)?;
     let total_length = sampler.total_length();
     let kinks = sampler.kinks(angle_tolerance_radians)?;
-    let mut pins = Vec::with_capacity(constraints.len());
-    let mut constraint_parameters = Vec::with_capacity(constraints.len());
-    for pin in constraints {
+    let mut pins = Vec::with_capacity(constraints.points.len());
+    let mut constraint_parameters = Vec::with_capacity(constraints.points.len());
+    for pin in constraints.points {
         let distance = sampler.distance_at_parameter(pin.source_parameter)?;
         let point = source.evaluate(pin.source_parameter)?;
         if point.distance_to(pin.point)? > fit_tolerance {
@@ -224,18 +326,48 @@ fn try_fit_curve_impl<E: From<GeometryError>>(
         .into());
     }
 
-    let mut breaks = sampler
-        .natural_break_distances()
-        .map(|distance| FitBreak {
-            distance,
-            multiplicity: if kinks.iter().any(|kink| kink.distance == distance) {
-                degree
-            } else {
-                1
-            },
+    let natural_breaks = sampler.natural_break_distances().collect::<Vec<_>>();
+    if natural_breaks.len() > maximum_controls.saturating_sub(degree + 1) {
+        return Err(GeometryError::TooManyCurveFitControlPoints {
+            maximum: maximum_controls,
+        }
+        .into());
+    }
+    let sampler = FitSampler::try_new(sampler, &constraint_parameters, constraints.parameters)?;
+    for pin in &mut pins {
+        pin.distance = sampler.parameter_at_distance(pin.distance)?;
+    }
+    for parameter in &mut constraint_parameters {
+        *parameter = sampler.parameter_at_distance(*parameter)?;
+    }
+    let kinks = sampler.map_kinks(&kinks)?;
+    let total_length = sampler.end_parameter();
+    let mut breaks = natural_breaks
+        .into_iter()
+        .map(|distance| {
+            let parameter = sampler.parameter_at_distance(distance)?;
+            Ok(FitBreak {
+                distance: parameter,
+                multiplicity: if kinks.iter().any(|k| k.parameter == parameter) {
+                    degree
+                } else {
+                    1
+                },
+            })
         })
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>, GeometryError>>()?;
 
+    if constraints.parameters.is_some()
+        && (breaks
+            .iter()
+            .any(|b| b.distance <= 0. || b.distance >= total_length)
+            || breaks.windows(2).any(|p| p[0].distance >= p[1].distance))
+    {
+        return Err(GeometryError::InvalidCurveFitConstraints {
+            context: "common parameter map collapsed a natural source span",
+        }
+        .into());
+    }
     for pin in &pins {
         if pin.distance > 0. && pin.distance < total_length {
             insert_smooth_break(&mut breaks, pin.distance);
@@ -247,7 +379,7 @@ fn try_fit_curve_impl<E: From<GeometryError>>(
     if degree == 2 {
         let mut hard_boundaries = Vec::with_capacity(kinks.len() + 2);
         hard_boundaries.push(0.0);
-        hard_boundaries.extend(kinks.iter().map(|kink| kink.distance));
+        hard_boundaries.extend(kinks.iter().map(|kink| kink.parameter));
         hard_boundaries.push(total_length);
         for interval in hard_boundaries.windows(2) {
             if !breaks
@@ -376,17 +508,17 @@ fn fit_knots(
 }
 
 fn interpolate_fit<E: From<GeometryError>>(
-    sampler: &ArcLengthSampler<'_>,
+    sampler: &FitSampler<'_>,
     degree: usize,
     knots: &[Real],
-    kinks: &[ArcLengthKink],
+    kinks: &[FitKink],
     pins: &[Pin],
     solve: &mut Option<&mut FitSolver<'_, E>>,
 ) -> Result<NurbsCurve, E> {
     let control_count = knots.len() - degree - 1;
     if degree == 1 {
         let controls = (0..control_count)
-            .map(|index| sampler.point_at_distance(knots[index + 1]))
+            .map(|index| sampler.point_at_parameter(knots[index + 1]))
             .collect::<Result<Vec<_>, _>>()?;
         return Ok(NurbsCurve::try_new(degree, controls, knots.to_vec())?);
     }
@@ -463,7 +595,7 @@ fn constrained_sites(
 }
 
 fn solve_external_fit_controls<E: From<GeometryError>>(
-    sampler: &ArcLengthSampler<'_>,
+    sampler: &FitSampler<'_>,
     degree: usize,
     knots: &[Real],
     controls: &mut [Option<Point3>],
@@ -486,7 +618,7 @@ fn solve_external_fit_controls<E: From<GeometryError>>(
         } else {
             pin_targets[i]
                 .map(Ok)
-                .unwrap_or_else(|| sampler.point_at_distance(t))?
+                .unwrap_or_else(|| sampler.point_at_parameter(t))?
         };
         let xyz = p.to_array();
         targets.extend([
@@ -528,7 +660,7 @@ fn solve_external_fit_controls<E: From<GeometryError>>(
 }
 
 fn solve_cubic_fit_controls(
-    sampler: &ArcLengthSampler<'_>,
+    sampler: &FitSampler<'_>,
     knots: &[Real],
     controls: &mut [Option<Point3>],
     pins: &[Pin],
@@ -542,7 +674,7 @@ fn solve_cubic_fit_controls(
             ([0.0, 0.0, 1.0, 0.0, 0.0], *point)
         } else if pins.is_empty() {
             let (row, parameter, _, _) = crate::spline_collocation::collocation_row(knots, i)?;
-            (row, sampler.point_at_distance(parameter)?)
+            (row, sampler.point_at_parameter(parameter)?)
         } else {
             let parameter = parameters[i];
             let row = crate::spline_collocation::collocation_row_at(knots, i, parameter)?;
@@ -550,7 +682,7 @@ fn solve_cubic_fit_controls(
                 row,
                 pin_targets[i]
                     .map(Ok)
-                    .unwrap_or_else(|| sampler.point_at_distance(parameter))?,
+                    .unwrap_or_else(|| sampler.point_at_parameter(parameter))?,
             )
         };
         rows.push(row);
@@ -569,7 +701,7 @@ fn solve_cubic_fit_controls(
 }
 
 fn solve_dense_fit_controls(
-    sampler: &ArcLengthSampler<'_>,
+    sampler: &FitSampler<'_>,
     degree: usize,
     knots: &[Real],
     controls: &mut [Option<Point3>],
@@ -587,7 +719,7 @@ fn solve_dense_fit_controls(
         for &control_index in &unknown {
             let parameter = greville_parameter(knots, degree, control_index)?;
             let basis = bspline_basis_values(knots, degree, control_count, parameter)?;
-            let mut target = sampler.point_at_distance(parameter)?.to_array();
+            let mut target = sampler.point_at_parameter(parameter)?.to_array();
             for (fixed_index, fixed) in controls.iter().enumerate() {
                 if let Some(point) = fixed {
                     let coordinates = point.to_array();
@@ -623,16 +755,18 @@ fn solve_dense_fit_controls(
 }
 
 fn constrain_endpoint_handles(
-    sampler: &ArcLengthSampler<'_>,
+    sampler: &FitSampler<'_>,
     degree: usize,
     knots: &[Real],
     controls: &mut [Option<Point3>],
 ) -> Result<(), GeometryError> {
     let last = controls.len() - 1;
-    let start = sampler.sample_at_distance(0.0)?;
-    let end = sampler.sample_at_distance(sampler.total_length())?;
-    let start_handle_length = (knots[degree + 1] - knots[degree]) / degree as Real;
-    let end_handle_length = (knots[controls.len()] - knots[controls.len() - 1]) / degree as Real;
+    let start = sampler.sample_at_parameter(0.0)?;
+    let end = sampler.sample_at_parameter(sampler.end_parameter())?;
+    let start_handle_length =
+        (knots[degree + 1] - knots[degree]) / degree as Real * sampler.speed_at_parameter(0.)?;
+    let end_handle_length = (knots[controls.len()] - knots[controls.len() - 1]) / degree as Real
+        * sampler.speed_at_parameter(sampler.end_parameter())?;
     controls[0] = Some(start.point());
     controls[1] = Some(
         start
@@ -648,17 +782,18 @@ fn constrain_endpoint_handles(
 }
 
 fn constrain_kink_handles(
-    sampler: &ArcLengthSampler<'_>,
+    sampler: &FitSampler<'_>,
     degree: usize,
     knots: &[Real],
-    kink: &ArcLengthKink,
+    kink: &FitKink,
     controls: &mut [Option<Point3>],
 ) -> Result<(), GeometryError> {
-    let run_start = knots.partition_point(|knot| *knot < kink.distance);
+    let run_start = knots.partition_point(|knot| *knot < kink.parameter);
     let junction = run_start - 1;
-    let point = sampler.point_at_distance(kink.distance)?;
-    let incoming_length = (kink.distance - knots[junction]) / degree as Real;
-    let outgoing_length = (knots[junction + degree + 1] - kink.distance) / degree as Real;
+    let point = sampler.point_at_parameter(kink.parameter)?;
+    let speed = sampler.speed_at_parameter(kink.parameter)?;
+    let incoming_length = (kink.parameter - knots[junction]) / degree as Real * speed;
+    let outgoing_length = (knots[junction + degree + 1] - kink.parameter) / degree as Real * speed;
     controls[junction - 1] =
         Some(point.translated(kink.incoming_tangent.as_vector().scaled(-incoming_length)?)?);
     controls[junction] = Some(point);
@@ -695,7 +830,7 @@ struct SpanError {
 }
 
 fn sampled_span_errors(
-    sampler: &ArcLengthSampler<'_>,
+    sampler: &FitSampler<'_>,
     approximation: &NurbsCurve,
     total_length: Real,
     breaks: &[FitBreak],
@@ -719,7 +854,7 @@ fn sampled_span_errors(
                 let exact = if let Some(&point) = points.get(&parameter.to_bits()) {
                     point
                 } else {
-                    let point = sampler.point_at_distance(parameter)?;
+                    let point = sampler.point_at_parameter(parameter)?;
                     if points.len() < MAX_CACHED_FIT_POINTS {
                         points.insert(parameter.to_bits(), point);
                     }
@@ -866,20 +1001,22 @@ mod tests {
         )
         .unwrap();
         for source in [CurveRef::NurbsCurve(&spatial), CurveRef::Polyline(&kinked)] {
-            let sampler = ArcLengthSampler::try_new(source, Tolerance::DEFAULT).unwrap();
-            let kinks = sampler.kinks(1e-10).unwrap();
+            let arc = ArcLengthSampler::try_new(source, Tolerance::DEFAULT).unwrap();
+            let source_kinks = arc.kinks(1e-10).unwrap();
+            let sampler = FitSampler::try_new(arc, &[], None).unwrap();
+            let kinks = sampler.map_kinks(&source_kinks).unwrap();
             let mut breaks = kinks
                 .iter()
                 .map(|k| FitBreak {
-                    distance: k.distance,
+                    distance: k.parameter,
                     multiplicity: 3,
                 })
                 .collect::<Vec<_>>();
             for f in [0.03, 0.07, 0.23, 0.31, 0.44, 0.67, 0.88, 0.99] {
-                insert_smooth_break(&mut breaks, f * sampler.total_length());
+                insert_smooth_break(&mut breaks, f * sampler.end_parameter());
             }
             let n = fit_control_count(3, &breaks, MAX_CURVE_FIT_CONTROL_POINTS).unwrap();
-            let knots = fit_knots(3, sampler.total_length(), &breaks, n);
+            let knots = fit_knots(3, sampler.end_parameter(), &breaks, n);
             let mut banded = vec![None; n];
             constrain_endpoint_handles(&sampler, 3, &knots, &mut banded).unwrap();
             for kink in &kinks {
@@ -1144,3 +1281,7 @@ mod tests {
 #[cfg(test)]
 #[path = "curve_fit/constraints_tests.rs"]
 mod constraints_tests;
+
+#[cfg(test)]
+#[path = "curve_fit/station_tests.rs"]
+mod station_tests;

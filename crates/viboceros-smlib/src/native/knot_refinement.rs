@@ -473,6 +473,25 @@ pub fn fit_cubic_curve_with_constraints(
     )
 }
 
+/// Cubic fitting in a common unit parameter with shared smooth arc-length
+/// station maps and native fixed-row collocation.
+pub fn fit_cubic_curve_at_stations(
+    source: viboceros_geometry::CurveRef<'_>,
+    stations: &[viboceros_geometry::CurveFitStation],
+    fit_tolerance: f64,
+    angle_tolerance: f64,
+    numerical_tolerance: Tolerance,
+) -> Result<viboceros_geometry::ConstrainedCurveFit, Error> {
+    viboceros_geometry::try_fit_cubic_curve_at_stations_with_solver(
+        source,
+        stations,
+        fit_tolerance,
+        angle_tolerance,
+        numerical_tolerance,
+        &mut |input| solve_with_fixed_rows(&input.system, Some(input.fixed_rows)),
+    )
+}
+
 /// Interpolate an open mean-chord point grid using the existing native basis
 /// and batched banded solve; degree/count and residual policies stay shared.
 pub fn interpolate_open_point_grid(

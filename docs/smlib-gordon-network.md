@@ -96,6 +96,12 @@ on the resulting surface at `1e-6`. The
 backends and the downstream Gordon construction. This does not qualify the
 complete NetworkSrf fitter or its interior behavior.
 
+The [common-parameter curve fitter](common-parameter-curve-fit.md) adds supplied
+unit stations, a monotone scalar map and chain-rule endpoint/corner speeds.
+Its reproducible network comparison retains both the improved arc-length
+candidate and the worse global smooth-map candidate. Neither qualifies Rhino
+interior fitting; the application command remains unregistered.
+
 ## Rhino comparison and remaining work
 
 The experimental `network_surface` oracle operation directly exercises this

@@ -353,7 +353,9 @@ pub(crate) fn checked_solve<E: From<GeometryError>>(
     Ok(solution)
 }
 
-fn portable_solve(input: &UniformInterpolationSystem<'_>) -> Result<Vec<Real>, GeometryError> {
+pub(crate) fn portable_solve(
+    input: &UniformInterpolationSystem<'_>,
+) -> Result<Vec<Real>, GeometryError> {
     let n = input.parameters.len() - usize::from(input.periodic);
     let controls = n + if input.periodic { input.degree } else { 0 };
     let rows = input.parameters[..n]

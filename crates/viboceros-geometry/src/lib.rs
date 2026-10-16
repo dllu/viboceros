@@ -182,9 +182,11 @@ pub use curve_fillet_pair::{
     try_fillet_curves_parts_with_producers, try_fillet_curves_parts_with_styles,
 };
 pub use curve_fit::{
-    ConstrainedCurveFit, CurveFitConstraint, CurveFitInterpolation, FixedInterpolationSystem,
-    MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_cubic_curve_with_constraints,
-    try_fit_cubic_curve_with_constraints_with_solver, try_fit_curve, try_fit_curve_with_solver,
+    ConstrainedCurveFit, CurveFitConstraint, CurveFitInterpolation, CurveFitStation,
+    FixedInterpolationSystem, MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE,
+    try_fit_cubic_curve_at_stations, try_fit_cubic_curve_at_stations_with_solver,
+    try_fit_cubic_curve_with_constraints, try_fit_cubic_curve_with_constraints_with_solver,
+    try_fit_curve, try_fit_curve_with_solver,
 };
 pub use curve_frame::FrameTransportOptions;
 pub use curve_join::{

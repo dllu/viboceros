@@ -258,3 +258,92 @@ fn native_network_aligns_asymmetric_families_without_rounding_away_the_endpoint(
         );
     }
 }
+
+#[test]
+fn common_station_curve_fits_preserve_network_contacts_and_complete_fitted_images() {
+    use viboceros_geometry::{CurveFitConstraint, CurveFitStation, CurveRef};
+    let original = network();
+    let before = original.clone();
+    let pins = |source: &NurbsCurve| {
+        [0., 0.5, 1.].map(|t| CurveFitConstraint {
+            source_parameter: t,
+            point: source.evaluate(t).unwrap(),
+        })
+    };
+    let arc = original
+        .iter()
+        .map(|source| {
+            viboceros_smlib::fit_cubic_curve_with_constraints(
+                CurveRef::NurbsCurve(source),
+                &pins(source),
+                1e-7,
+                0.,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+        })
+        .collect::<Vec<_>>();
+    let mid = [&arc[..3], &arc[3..]].map(|family| {
+        family
+            .iter()
+            .map(|fit| fit.constraint_parameters[1] / fit.curve.domain().end())
+            .sum::<f64>()
+            / family.len() as f64
+    });
+    let fitted = original
+        .iter()
+        .enumerate()
+        .map(|(i, source)| {
+            let stations = pins(source)
+                .into_iter()
+                .zip([0., mid[i / 3], 1.])
+                .map(|(pin, fit_parameter)| CurveFitStation {
+                    source_parameter: pin.source_parameter,
+                    fit_parameter,
+                    point: pin.point,
+                })
+                .collect::<Vec<_>>();
+            let fit = viboceros_smlib::fit_cubic_curve_at_stations(
+                CurveRef::NurbsCurve(source),
+                &stations,
+                1e-7,
+                0.,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert!(
+                fit.curve
+                    .knots()
+                    .chunk_by(|a, b| a == b)
+                    .filter(|g| g[0] > 0. && g[0] < 1.)
+                    .all(|g| g.len() == 1)
+            );
+            for station in stations {
+                assert!(
+                    fit.curve
+                        .evaluate(station.fit_parameter)
+                        .unwrap()
+                        .distance_to(station.point)
+                        .unwrap()
+                        < 1e-11
+                );
+            }
+            fit.curve
+        })
+        .collect::<Vec<_>>();
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+    let surface = gordon_network_surface(&fitted, tolerance, tolerance).unwrap();
+    for (i, u) in [0., mid[0], 1.].into_iter().enumerate() {
+        for (j, v) in [0., mid[1], 1.].into_iter().enumerate() {
+            assert!(
+                surface
+                    .evaluate(u, v)
+                    .unwrap()
+                    .distance_to(value(i as f64 / 2., j as f64 / 2.))
+                    .unwrap()
+                    < 1e-6
+            );
+        }
+    }
+    assert_eq!(original, before);
+}

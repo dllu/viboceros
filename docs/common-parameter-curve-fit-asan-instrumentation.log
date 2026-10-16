@@ -1,0 +1,3 @@
+SMLib: address sanitizer and frame pointers enabled
+SM_API: address sanitizer and frame pointers enabled
+viboceros_smlib: address sanitizer and frame pointers enabled
