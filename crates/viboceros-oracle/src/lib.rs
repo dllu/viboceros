@@ -1710,6 +1710,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: OrientSurfaceGripsFixture,
     },
+    OrientSurfaceOptions {
+        id: String,
+        #[serde(flatten)]
+        fixture: OrientSurfaceFixture,
+    },
     OrientSurface {
         id: String,
         #[serde(flatten)]
@@ -2745,6 +2750,7 @@ impl Operation {
             | Self::LineThroughPoints { id, .. }
             | Self::CurveDeviation { id, .. }
             | Self::OrientPoints { id, .. }
+            | Self::OrientSurfaceOptions { id, .. }
             | Self::OrientSurface { id, .. }
             | Self::OrientSurfaceGrips { id, .. }
             | Self::OrientOnCurve { id, .. }
@@ -5980,6 +5986,9 @@ fn execute(
         }
         Operation::OrientSurfaceGrips { fixture, .. } => {
             orient_surface_grips::run(fixture, iterations, tolerance)?
+        }
+        Operation::OrientSurfaceOptions { fixture, .. } => {
+            orient_surface::run_options(fixture, iterations, tolerance)?
         }
         Operation::OrientSurface { fixture, .. } => {
             orient_surface::run(fixture, iterations, tolerance)?

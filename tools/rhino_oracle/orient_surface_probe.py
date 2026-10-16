@@ -35,7 +35,7 @@ def validate(op):
     for key in('postselected','group','reverse_face','as_brep'):
         if type(op.get(key,False))is not bool:raise ValueError('invalid selection flag')
 
-def run(op,host,iterations,tolerance):
+def run(op,host,iterations,tolerance,macro_builder=None):
     validate(op)
     if iterations!=1:raise ValueError('surface orientation requires one iteration')
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;vp=doc.Views.ActiveView.ActiveViewport
@@ -69,6 +69,7 @@ def run(op,host,iterations,tolerance):
             for entry in op['batch']:
                 q=surface.PointAt(*entry['uv']);macro+=' '+point(host['_xyz'](q))+' '+repr(float(entry.get('scale',options.get('scale',1))))+' '+repr(float(entry.get('rotation',options.get('rotation',0))))
             macro+=' _Enter _Cancel'
+        if macro_builder is not None:macro=macro_builder(op,macro)
         returned=R.RhinoApp.RunScript(macro,True)
         outputs=[]
         for obj in doc.Objects:

@@ -449,6 +449,12 @@ pub trait Command: Send + Sync {
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
         false
     }
+    fn orient_surface_options(&self) -> Option<orient_surface::Options> {
+        None
+    }
+    fn remember_orient_surface_options(&self, _value: orient_surface::Options) -> bool {
+        false
+    }
     /// Built-in Copy default for commands governed by RememberCopyOptions.
     fn copy_option_default(&self) -> Option<bool> {
         None
@@ -1586,7 +1592,7 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(orient_surface::OrientSurfaceCommand)
+            .register(orient_surface::OrientSurfaceCommand::default())
             .expect("unique built-in command");
         registry
             .register(orient_curve::OrientCurveCommand::default())
@@ -1955,6 +1961,26 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn orient_surface_options(&self) -> orient_surface::Options {
+        self.lookup
+            .get(&normalize_command_name("OrientOnSrf"))
+            .and_then(|i| self.commands[*i].orient_surface_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_orient_surface_options(&self, value: orient_surface::Options) -> bool {
+        let valid = value.scale.is_finite()
+            && value.scale > 0.
+            && value.rotation.is_finite()
+            && value.rotation.to_radians().is_finite()
+            && value
+                .axes
+                .is_none_or(|a| a.into_iter().all(|v| v.is_finite() && v != 0.));
+        valid
+            && self
+                .lookup
+                .get(&normalize_command_name("OrientOnSrf"))
+                .is_some_and(|i| self.commands[*i].remember_orient_surface_options(value))
+    }
     /// Start an interactive command, including the reset when remembering is off.
     pub fn begin_copy_options(&self, name: &str) -> Option<bool> {
         let command = self
@@ -43444,11 +43470,11 @@ mod tests {
 
         let before = document.objects().cloned().collect::<Vec<_>>();
         assert!(registry.execute(&mut document,
-            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Copy=No Rigid=No ConstrainNormal=Yes SurfaceName=Target"
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Scale=1 Rotation=0 Copy=No Rigid=No ConstrainNormal=Yes SurfaceName=Target"
         ).is_err());
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
         registry.execute(&mut document,
-            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Copy=No Rigid=No ConstrainNormal=Yes DestinationNormal=1,0,0 SurfaceName=Target"
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Scale=1 Rotation=0 Copy=No Rigid=No ConstrainNormal=Yes DestinationNormal=1,0,0 SurfaceName=Target"
         ).unwrap();
         let Geometry::NurbsCurve(z) = document.object(originals[2]).unwrap().geometry() else {
             panic!("expected a fitted curve")
@@ -43463,7 +43489,7 @@ mod tests {
             .execute(
                 &mut document,
                 "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
-                 Copy=No Rigid=No Flip=Yes SurfaceName=Target",
+                 Scale=1 Rotation=0 ConstrainNormal=No Copy=No Rigid=No Flip=Yes SurfaceName=Target",
             )
             .unwrap();
         assert_eq!(document.objects().len(), 4);

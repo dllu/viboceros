@@ -1,5 +1,6 @@
 //! Surface picking, scale/angle getters, and repeated rigid or deformable placement.
 use super::*;
+mod option_input;
 use std::cell::RefCell;
 use viboceros_command::orient_surface::{
     self as solver, Options, Placement, Pose, PreviewPhase, Target,
@@ -19,6 +20,8 @@ pub(super) struct Session {
     grips: Vec<viboceros_document::ControlPointId>,
     postselected: bool,
     options: Options,
+    menu: Option<option_input::Menu>,
+    value_prompt: Option<option_input::ValuePrompt>,
     phase: Phase,
     base: Option<Point3>,
     reference: Option<Point3>,
@@ -183,7 +186,12 @@ impl VibocerosApp {
             return false;
         }
         let args = tokens.collect::<Vec<_>>();
-        let Ok((rest, mut options, r)) = solver::options(&args, Options::default()) else {
+        let mut defaults = self.commands.orient_surface_options();
+        if name.trim_start_matches('_').starts_with('-') {
+            defaults.scale_prompt = true;
+            defaults.rotation_prompt = true;
+        }
+        let Ok((rest, mut options, r)) = solver::options(&args, defaults) else {
             return false;
         };
         if !rest.is_empty() || r.id.is_some() || r.name.is_some() || r.face.is_some() {
@@ -231,6 +239,8 @@ impl VibocerosApp {
             grips,
             postselected: picked.is_some(),
             options,
+            menu: None,
+            value_prompt: None,
             phase: if options.on_surface {
                 Phase::Guide
             } else {
@@ -247,11 +257,15 @@ impl VibocerosApp {
             cache: Default::default(),
             applied: false,
         });
+        self.commands.remember_orient_surface_options(options);
         self.active_command = Some(InteractiveCommand::OrientOnSurface { last: None });
         self.orient_surface_prompt();
         true
     }
     fn orient_surface_prompt(&mut self) {
+        if self.orient_surface_option_prompt() {
+            return;
+        }
         let s = self.orient_surface_session.as_ref().unwrap();
         let prompt = match s.phase {
             Phase::Base => "pick the source base point (OnSurface=Yes)",
@@ -329,10 +343,19 @@ impl VibocerosApp {
     }
     pub(super) fn accept_orient_surface_point(&mut self, point: Point3) -> Option<bool> {
         self.orient_surface_session.as_ref()?;
+        if self
+            .orient_surface_session
+            .as_ref()
+            .is_some_and(|s| s.value_prompt.is_some())
+        {
+            self.push_log("Error: enter a numeric preset value".into());
+            return Some(false);
+        }
         if !self.validate_orient_surface() {
             return Some(false);
         }
         let s = self.orient_surface_session.as_mut().unwrap();
+        s.menu = None;
         let result = match s.phase {
             Phase::Base | Phase::OnSurfaceBase => {
                 s.base = Some(point);
@@ -382,9 +405,7 @@ impl VibocerosApp {
                             .construction_plane()
                             .z_axis()
                             .as_vector();
-                        s.phase = Phase::Placement(PreviewPhase::Scale(p));
-                        s.clear_preview();
-                        true
+                        self.advance_orient_surface_pose(p, true)
                     }
                     Err(e) => {
                         self.push_log(format!("Error: {e}"));
@@ -397,11 +418,9 @@ impl VibocerosApp {
                     Ok((p, o)) => {
                         s.options = o;
                         s.sync();
+                        self.commands.remember_orient_surface_options(o);
                         match phase {
-                            PreviewPhase::Scale(_) => {
-                                s.phase = Phase::Placement(PreviewPhase::Rotation(p));
-                                true
-                            }
+                            PreviewPhase::Scale(_) => self.advance_orient_surface_pose(p, false),
                             _ => self.commit_orient_surface(p),
                         }
                     }
@@ -417,6 +436,19 @@ impl VibocerosApp {
             self.orient_surface_prompt();
         }
         Some(result)
+    }
+    fn advance_orient_surface_pose(&mut self, pose: Pose, scale: bool) -> bool {
+        let s = self.orient_surface_session.as_mut().unwrap();
+        s.clear_preview();
+        if scale && s.options.scale_prompt {
+            s.phase = Phase::Placement(PreviewPhase::Scale(pose));
+            true
+        } else if s.options.rotation_prompt {
+            s.phase = Phase::Placement(PreviewPhase::Rotation(pose));
+            true
+        } else {
+            self.commit_orient_surface(pose)
+        }
     }
     fn commit_orient_surface(&mut self, pose: Pose) -> bool {
         let s = self.orient_surface_session.as_mut().unwrap();
@@ -474,6 +506,9 @@ impl VibocerosApp {
         if self.orient_surface_session.is_some() && !self.validate_orient_surface() {
             return true;
         }
+        if self.continue_orient_surface_option_input(input) {
+            return true;
+        }
         let Some(s) = self.orient_surface_session.as_ref() else {
             return false;
         };
@@ -484,10 +519,10 @@ impl VibocerosApp {
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             match s.phase {
                 Phase::Placement(PreviewPhase::Scale(p)) => {
-                    let s = self.orient_surface_session.as_mut().unwrap();
-                    s.phase = Phase::Placement(PreviewPhase::Rotation(p));
-                    s.clear_preview();
-                    self.orient_surface_prompt();
+                    self.advance_orient_surface_pose(p, false);
+                    if self.orient_surface_session.is_some() {
+                        self.orient_surface_prompt();
+                    }
                 }
                 Phase::Placement(PreviewPhase::Rotation(p)) => {
                     self.commit_orient_surface(p);
@@ -506,8 +541,11 @@ impl VibocerosApp {
                     let s = self.orient_surface_session.as_mut().unwrap();
                     s.options.scale = value;
                     s.sync();
-                    s.phase = Phase::Placement(PreviewPhase::Rotation(p));
-                    self.orient_surface_prompt();
+                    self.commands.remember_orient_surface_options(s.options);
+                    self.advance_orient_surface_pose(p, false);
+                    if self.orient_surface_session.is_some() {
+                        self.orient_surface_prompt();
+                    }
                     self.command_input.clear();
                     return true;
                 }
@@ -517,6 +555,7 @@ impl VibocerosApp {
                     let s = self.orient_surface_session.as_mut().unwrap();
                     s.options.rotation = value;
                     s.sync();
+                    self.commands.remember_orient_surface_options(s.options);
                     self.commit_orient_surface(p);
                     if self.orient_surface_session.is_some() {
                         self.orient_surface_prompt();
@@ -582,6 +621,7 @@ impl VibocerosApp {
                 }
                 s.options = o;
                 s.sync();
+                self.commands.remember_orient_surface_options(o);
                 if let Some(id) = r.id {
                     self.accept_orient_surface(id, r.face);
                 } else if r.name.is_some() || r.face.is_some() {

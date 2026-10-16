@@ -1,0 +1,202 @@
+{
+  "cases": 28,
+  "matched_cases": 28,
+  "results": [
+    {
+      "id": "plane-True-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.509903313490213e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "plane-True-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.6431300764452317e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "plane-True-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "plane-True-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "plane-False-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "plane-False-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "plane-False-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "plane-False-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-True-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.283240180782741e-11,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-True-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 7.699174631170536e-12,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-True-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 7.701395077219786e-12,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-True-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 3.4847680296934413e-12,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-False-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.283328998624711e-11,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-False-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 7.698730541960686e-12,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-False-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.5660584768161243e-12,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "cylinder-False-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.6995385093986357e-12,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "prompt-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.21903384556299e-10,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "prompt-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.218989436642005e-10,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "prompt-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.219024963778793e-10,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "prompt-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.219007200210399e-10,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "constrained-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.7763568394002505e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "constrained-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.6431300764452317e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "remembered-False",
+      "metadata_match": true,
+      "max_coordinate_error": 1.509903313490213e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "remembered-True",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "axes-True--2-3",
+      "metadata_match": true,
+      "max_coordinate_error": 1.4210854715202004e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "axes-True-2-2",
+      "metadata_match": true,
+      "max_coordinate_error": 1.5987211554602254e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "axes-False--2-3",
+      "metadata_match": true,
+      "max_coordinate_error": 1.6431300764452317e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    },
+    {
+      "id": "axes-False-2-2",
+      "metadata_match": true,
+      "max_coordinate_error": 1.687538997430238e-14,
+      "within_1e_minus_6": true,
+      "dialog_options_match": true
+    }
+  ]
+}

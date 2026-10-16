@@ -166,7 +166,10 @@ fn orient_surface_grips_freezes_empty_object_sources_and_rejects_guide_owner_gri
         .add_geometry(Geometry::Point(point(99., 0., 0.)))
         .unwrap();
     app.document.clear_history().unwrap();
-    enter(&mut app, "OrientOnSrf Copy=No");
+    enter(
+        &mut app,
+        "OrientOnSrf ScalePrompt=Yes RotationPrompt=Yes Copy=No",
+    );
     enter(&mut app, "w0,0,0");
     enter(&mut app, "w1,0,0");
     app.accept_orient_surface(guide, None);

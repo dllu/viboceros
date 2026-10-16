@@ -47,6 +47,12 @@ fn orient_surface_interactive_replays_all_native_clouds_selection_and_groups() {
                 "../../../tools/rhino_oracle/observations/orient_surface_policy_rhino_20261016.json"
             ),
         ),
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/orient_surface_options.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/orient_surface_options_rhino_20261016.json"
+            ),
+        ),
     ] {
         let input: serde_json::Value = serde_json::from_str(input).unwrap();
         let reference: serde_json::Value = serde_json::from_str(reference).unwrap();
@@ -66,10 +72,28 @@ fn orient_surface_interactive_replays_all_native_clouds_selection_and_groups() {
             if f.postselected {
                 app.document.clear_selection();
             }
-            enter(
-                &mut app,
-                &format!("OrientOnSrf {}", f.options.options().arguments()),
-            );
+            if let Some(seed) = &f.setup {
+                enter(
+                    &mut app,
+                    &format!("OrientOnSrf {}", seed.options().arguments()),
+                );
+                enter(&mut app, "w0,0,0");
+                enter(&mut app, "w1,0,0");
+                app.accept_orient_surface(guide, None);
+                enter(&mut app, "Cancel");
+                assert!(app.document.undo_label().is_none());
+            }
+            let initial = if f.inherit {
+                app.commands.orient_surface_options()
+            } else {
+                f.options.options()
+            };
+            let args = if f.inherit {
+                format!("Copy={}", if f.options.copy { "Yes" } else { "No" })
+            } else {
+                initial.arguments()
+            };
+            enter(&mut app, &format!("OrientOnSrf {args}"));
             if f.postselected {
                 enter(&mut app, &format!("SelID {source}"));
                 enter(&mut app, "");
@@ -108,13 +132,69 @@ fn orient_surface_interactive_replays_all_native_clouds_selection_and_groups() {
                 )
             {
                 let target = f.target(uv, app.document.tolerance()).unwrap();
+                // Preset previews use only authored source/guide data. Native
+                // coordinates are expectations, never placement inputs.
+                if !initial.scale_prompt && !initial.rotation_prompt {
+                    use viboceros_geometry::PointMorph;
+                    let before = format!("{:?}", app.document);
+                    let session = app.orient_surface_session.as_ref().unwrap();
+                    let normal = Vector3::try_new(0., 0., 1.).unwrap();
+                    let affine = app.affine_preview().map(|preview| {
+                        preview
+                            .definition
+                            .transform_at(preview.frame.unwrap(), target, app.document.tolerance())
+                            .unwrap()
+                    });
+                    let morph = session
+                        .deformation(normal)
+                        .map(|preview| preview.placement.morph_at(target, normal).unwrap());
+                    let points = f
+                        .source()
+                        .unwrap()
+                        .points()
+                        .iter()
+                        .map(|p| {
+                            if initial.rigid {
+                                affine.as_ref().unwrap().transform_point(*p).unwrap()
+                            } else {
+                                morph.as_ref().unwrap().morph_point(*p).unwrap()
+                            }
+                        })
+                        .collect::<Vec<_>>();
+                    assert!(
+                        n["value"]["outputs"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .any(|cloud| {
+                                points.iter().zip(cloud["points"].as_array().unwrap()).all(
+                                    |(p, q)| {
+                                        p.to_array()
+                                            .iter()
+                                            .zip(q.as_array().unwrap())
+                                            .all(|(x, y)| (x - y.as_f64().unwrap()).abs() < 1e-6)
+                                    },
+                                )
+                            }),
+                        "{} preset preview {:?}",
+                        r["id"],
+                        points
+                    );
+                    assert_eq!(format!("{:?}", app.document), before);
+                }
                 enter(
                     &mut app,
                     &format!("w{}", target.to_array().map(|x| x.to_string()).join(",")),
                 );
-                assert!(app.document.undo_label().is_none() || !f.batch.is_empty());
-                enter(&mut app, &scale.to_string());
-                enter(&mut app, &rotation.to_string());
+                if initial.scale_prompt || initial.rotation_prompt {
+                    assert!(app.document.undo_label().is_none() || !f.batch.is_empty());
+                }
+                if initial.scale_prompt {
+                    enter(&mut app, &scale.to_string());
+                }
+                if initial.rotation_prompt {
+                    enter(&mut app, &rotation.to_string());
+                }
             }
             if app.active_command.is_some() {
                 enter(&mut app, "Cancel");
@@ -191,7 +271,7 @@ fn orient_surface_copy_batch_getters_previews_and_one_undo() {
         enter(
             &mut app,
             &format!(
-                "OrientOnSrf Rigid={} Copy=Yes",
+                "OrientOnSrf ScalePrompt=Yes RotationPrompt=Yes Rigid={} Copy=Yes",
                 if rigid { "Yes" } else { "No" }
             ),
         );
@@ -280,7 +360,10 @@ fn orient_surface_scale_and_rotation_points_use_target_tangent_plane() {
     let mut f = recipe();
     f.options.copy = false;
     let (mut app, _, guide) = setup(&f);
-    enter(&mut app, "OrientOnSrf Copy=No");
+    enter(
+        &mut app,
+        "OrientOnSrf ScalePrompt=Yes RotationPrompt=Yes Copy=No",
+    );
     enter(&mut app, "w0,0,0");
     enter(&mut app, "w1,0,0");
     app.accept_orient_surface(guide, None);
@@ -319,7 +402,10 @@ fn orient_surface_freezes_source_and_destination_planes_independently() {
     )
     .unwrap();
     app.viewports[app.active_viewport].set_construction_plane(source_plane);
-    enter(&mut app, "OrientOnSrf Rigid=No ConstrainNormal=Yes Copy=No");
+    enter(
+        &mut app,
+        "OrientOnSrf ScalePrompt=Yes RotationPrompt=Yes Rigid=No ConstrainNormal=Yes Copy=No",
+    );
     enter(&mut app, "w0,0,0");
     app.viewports[app.active_viewport]
         .set_construction_plane(viboceros_command::construction_plane::WorldPlane::Top.frame());
@@ -353,7 +439,10 @@ fn orient_surface_freezes_source_and_destination_planes_independently() {
 fn orient_surface_negative_scale_is_rejected_and_negative_angle_is_preserved() {
     let f = recipe();
     let (mut app, source, guide) = setup(&f);
-    enter(&mut app, "OrientOnSrf Copy=No");
+    enter(
+        &mut app,
+        "OrientOnSrf ScalePrompt=Yes RotationPrompt=Yes Copy=No",
+    );
     enter(&mut app, "w0,0,0");
     enter(&mut app, "w1,0,0");
     app.accept_orient_surface(guide, None);
@@ -401,7 +490,10 @@ fn orient_surface_trimmed_guide_clamps_targets_and_ignore_trims_uses_full_domain
             .unwrap(),
         ))
         .unwrap();
-    enter(&mut app, "OrientOnSrf Copy=Yes");
+    enter(
+        &mut app,
+        "OrientOnSrf ScalePrompt=Yes RotationPrompt=Yes Copy=Yes",
+    );
     enter(&mut app, "w0,0,0");
     enter(&mut app, "w1,0,0");
     app.accept_component_face_hit(guide, 0, None);
@@ -416,4 +508,112 @@ fn orient_surface_trimmed_guide_clamps_targets_and_ignore_trims_uses_full_domain
     );
     enter(&mut app, "Cancel");
     assert!(app.document.undo_label().is_some()); // Guide creation only.
+}
+
+#[test]
+fn orient_surface_option_menus_persist_on_cancel_without_model_edits() {
+    let f = recipe();
+    let (mut app, _, _) = setup(&f);
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "OrientOnSurface Copy=No");
+    for text in [
+        "Scale", "X", "2", "Y=3", "Z=4", "", "Rotation", "Angle", "-45", "",
+    ] {
+        enter(&mut app, text);
+    }
+    let options = app.commands.orient_surface_options();
+    assert_eq!(options.axes, Some([2., 3., 4.]));
+    assert_eq!(options.rotation, -45.);
+    assert!(!options.scale_prompt && !options.rotation_prompt);
+    let accepted = options;
+    enter(&mut app, "Scale");
+    for invalid in ["X=NaN", "X=0", "Uniform=0", "X=2,3", "Prompt=Maybe"] {
+        enter(&mut app, invalid);
+        assert_eq!(app.commands.orient_surface_options(), accepted);
+    }
+    enter(&mut app, "Cancel");
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "_OrientOnSrf");
+    assert_eq!(
+        app.commands.orient_surface_options().axes,
+        Some([2., 3., 4.])
+    );
+    // Canceling before placement leaves Copy under its existing policy.
+    assert_eq!(app.commands.copy_default("OrientOnSrf"), Some(true));
+    enter(&mut app, "Scale");
+    enter(&mut app, "Prompt=Yes");
+    enter(&mut app, "");
+    enter(&mut app, "Rotation");
+    enter(&mut app, "Prompt");
+    enter(&mut app, "");
+    assert!(app.commands.orient_surface_options().scale_prompt);
+    assert!(app.commands.orient_surface_options().rotation_prompt);
+    enter(&mut app, "Cancel");
+    assert!(test_app().commands.orient_surface_options().axes.is_none());
+    assert_eq!(format!("{:?}", app.document), before);
+}
+
+#[test]
+fn orient_surface_fixed_and_conditional_getters_copy_in_one_history_group() {
+    for scale_prompt in [false, true] {
+        for rotation_prompt in [false, true] {
+            let f = recipe();
+            let (mut app, _, guide) = setup(&f);
+            enter(
+                &mut app,
+                &format!(
+                    "OrientOnSrf Copy=Yes Scale=1.4 Rotation=30 ScalePrompt={} RotationPrompt={}",
+                    if scale_prompt { "Yes" } else { "No" },
+                    if rotation_prompt { "Yes" } else { "No" }
+                ),
+            );
+            enter(&mut app, "w0,0,0");
+            enter(&mut app, "w1,0,0");
+            app.accept_orient_surface(guide, None);
+            let target = f.target([0.3, 0.4], app.document.tolerance()).unwrap();
+            for i in 0..2 {
+                assert!(app.accept_drafting_point(target));
+                if scale_prompt {
+                    assert!(app.command_log.back().unwrap().contains("scale factor"));
+                    enter(&mut app, if i == 0 { "1.4" } else { "0.8" });
+                }
+                if rotation_prompt {
+                    assert!(app.command_log.back().unwrap().contains("rotation angle"));
+                    enter(&mut app, if i == 0 { "30" } else { "-45" });
+                }
+                assert_eq!(app.document.objects().count(), 3 + i);
+                assert!(app.orient_surface_location().is_some());
+            }
+            enter(&mut app, "");
+            assert!(app.active_command.is_none());
+            let preferences = app.commands.orient_surface_options();
+            assert_eq!(app.document.undo().unwrap().as_deref(), Some("OrientOnSrf"));
+            assert_eq!(app.document.objects().count(), 2);
+            assert!(app.document.undo().unwrap().is_none());
+            assert_eq!(app.commands.orient_surface_options(), preferences);
+            app.document.redo().unwrap();
+            assert_eq!(app.document.objects().count(), 4);
+        }
+    }
+}
+
+#[test]
+fn orient_surface_normal_defaults_place_immediately_and_dash_requests_values() {
+    for name in ["OrientOnSrf Copy=No", "_-OrientOnSrf Copy=No"] {
+        let f = recipe();
+        let (mut app, _, guide) = setup(&f);
+        enter(&mut app, name);
+        enter(&mut app, "w0,0,0");
+        enter(&mut app, "w1,0,0");
+        app.accept_orient_surface(guide, None);
+        assert!(app.accept_drafting_point(f.target([0.3, 0.4], app.document.tolerance()).unwrap()));
+        if name.starts_with("_-") {
+            assert!(app.active_command.is_some());
+            assert!(app.document.undo_label().is_none());
+            enter(&mut app, "");
+            enter(&mut app, "");
+        }
+        assert!(app.active_command.is_none());
+        assert_eq!(app.document.undo_label(), Some("OrientOnSrf"));
+    }
 }

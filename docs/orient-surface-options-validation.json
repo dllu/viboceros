@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "588c04e3c44165e5d150a089674a53f1e689b1f7",
+  "component": "OrientOnSrf XYZ presets, optional scale/rotation getters and application preferences",
+  "complete_native_command_parity_qualified": false,
+  "native_preview_appearance_qualified": false,
+  "native_undo_redo_qualified": false,
+  "performance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "implementation": "Reuse the existing source/target frame mapping and surface point morph. Apply XYZ scaling before rotation and retain native flipped deformable unit-height policy. Skip disabled per-placement getters, expose command-line preset menus, and store accepted settings in the command registry independently of Copy and model history.",
+  "coverage": {
+    "native_gui_model_cases": 28,
+    "matched_native_models": 28,
+    "retained_whole_surface_cases": 32,
+    "retained_grip_cases": 30,
+    "ui_native_workflow_replays": 90,
+    "ui_preset_preview_placements": 26,
+    "new_rust_tests": 7,
+    "unique_rust_tests": 159,
+    "passed_rust_test_executions": 207,
+    "python_tests": 18,
+    "coordinate_epsilon": 1e-06,
+    "maximum_coordinate_error": 2.21903384556299e-10,
+    "portable_and_usd_brep_backends_checked": true
+  },
+  "native_version": "8.32.26160.13001",
+  "native_capture": {
+    "scheme": "VibocerosOracleSurfaceOptions20261016f",
+    "fixture": "tools/rhino_oracle/fixtures/orient_surface_options.json",
+    "method": "Actual OrientOnSrf GUI commands in an owned private display. A timer configures public Win32 controls restricted to the current process and records before/after control text, state and enabled flags. Authored skew/planar and rational cylindrical guides with eight point witnesses cover rigid/deformable XYZ and uniform presets, flips, constrained normals, signed X, equal XYZ axes, four prompt combinations and repeated copies. Two setup invocations accept the dialog then cancel placement; a following invocation accepts inherited settings unchanged. No source inspection, decompilation, returned frame or returned geometry input.",
+    "all_dialogs_applied_without_errors": true,
+    "helper_note": "Final validation additionally rejects inconsistent uniform preset arrays, non-dictionary options and inheritance without an owned setup. All retained recipes and their captured control actions are unchanged."
+  },
+  "checks": [
+    {
+      "name": "geometry",
+      "command": "cargo test -p viboceros-geometry --lib surface_point_morph",
+      "exit_code": 0,
+      "elapsed_seconds": 47.78,
+      "log_sha256": "4a31207d7a2f3181a25d23d495b60ba351af160850ec625e8861c1fb234d9131",
+      "passed_rust_tests": 3
+    },
+    {
+      "name": "ui",
+      "command": "cargo test -p viboceros --bin viboceros orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 52.556,
+      "log_sha256": "697a16df0118fd608390f9105d0526e1025f89a2f916208732097ad2bec1e12b",
+      "passed_rust_tests": 35
+    },
+    {
+      "name": "preview",
+      "command": "cargo test -p viboceros --bin viboceros preview",
+      "exit_code": 0,
+      "elapsed_seconds": 24.532,
+      "log_sha256": "675c3fae818d6a1eedcda19894eb1da9ff401c6c3e9d9cc7bd0be934679c35af",
+      "passed_rust_tests": 113
+    },
+    {
+      "name": "command",
+      "command": "cargo test -p viboceros-command --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 30.126,
+      "log_sha256": "2efc8793983e46857d783564951c2275fbd76f70eec3c1b00fe2ebf3b3f66cbb",
+      "passed_rust_tests": 14
+    },
+    {
+      "name": "oracle",
+      "command": "cargo test -p viboceros-oracle --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 40.701,
+      "log_sha256": "7b9812560243d331f939c0b3a55f8c947bcd85df2a0a33ca6fafe9dc64ede140",
+      "passed_rust_tests": 6
+    },
+    {
+      "name": "native-command",
+      "command": "cargo test -p viboceros-command --features native-smlib --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 45.404,
+      "log_sha256": "3363078984d5feae2b12c5108fe8770a478ad0b8b0b3cbe47ce0fad24ac9da53",
+      "passed_rust_tests": 14
+    },
+    {
+      "name": "native-oracle",
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 57.032,
+      "log_sha256": "72a2b318f1be2e0f9aa424dc2fe5af0ce98f0ff6185041089a03f2a274c8113c",
+      "passed_rust_tests": 6
+    },
+    {
+      "name": "native-ui",
+      "command": "cargo test -p viboceros --features native-smlib --bin viboceros orient_surface",
+      "exit_code": 0,
+      "elapsed_seconds": 81.751,
+      "log_sha256": "c44eda3f5c1ad65b455c9223261e2d34190bafeff17e59d8b56fac8753c45cae",
+      "passed_rust_tests": 16
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 29.008,
+      "log_sha256": "91312cb2cc5a9f475bbda762a400950efb1ae13ba7dbc6455be5e97813927784",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 36.883,
+      "log_sha256": "1873e1dc085daed05b6b54f82adfab6255cce6205f22825d1a47c9d78ff033ec",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "fmt",
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "elapsed_seconds": 5.172,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "local",
+      "command": "cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/orient_surface_options.json tools/rhino_oracle/observations/orient_surface_options_viboceros_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 27.715,
+      "log_sha256": "0c55a1d9fab7610c795fb0435c60217852eb0c3bffe10d023c4ad792b604f78b",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "comparison",
+      "command": "python3 -m tools.rhino_oracle.orient_surface_options_comparison tools/rhino_oracle/fixtures/orient_surface_options.json tools/rhino_oracle/observations/orient_surface_options_viboceros_20261016.json tools/rhino_oracle/observations/orient_surface_options_rhino_20261016.json tools/rhino_oracle/observations/orient_surface_options_comparison_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.045,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "python",
+      "command": "python3 -m unittest tools.rhino_oracle.test_orient_surface_options tools.rhino_oracle.test_orient_surface_grips tools.rhino_oracle.test_orient_surface tools.rhino_oracle.test_orient_points tools.rhino_oracle.test_orient_on_curve",
+      "exit_code": 0,
+      "elapsed_seconds": 0.158,
+      "log_sha256": "3e85363e7d5ecd5a073bc6bd1b0049e0e1428a42464fcc3e4ae5bc9403a8c2e4",
+      "passed_rust_tests": 0
+    }
+  ],
+  "limitations": [
+    "Finite authored fixture coverage does not establish complete OrientOnSrf parity or arbitrary geometry fitting accuracy.",
+    "The UI uses command-line menus; native dialog appearance and preview pixels are not qualified.",
+    "The retained GUI memory cases qualify XYZ/uniform presets and rotation retained after accepting the dialog and canceling placement. Other preference combinations and GUI/scripted-mode transitions are not native-qualified.",
+    "Zero axis scales are rejected. A separate owned diagnostic displayed the native Scale can not be zero warning; zero cases are not part of the retained 28-case model matrix. Signed X is native-qualified; arbitrary signed Y/Z combinations are covered only by local point-map composition tests.",
+    "Local tests cover menu cancellation, invalid inputs, conditional getters, registry isolation, one grouped Undo/Redo and retained grip workflows. Native GUI Undo/Redo, trimmed-guide interactions, OnSurface grips, disk preference persistence and performance parity remain unqualified.",
+    "Existing adaptive curve, surface and B-rep fitting qualifications still apply."
+  ],
+  "historical_provenance": {
+    "preserved_records": 2,
+    "preserved_entries": 14,
+    "preexisting_unverifiable_records_unchanged": 69,
+    "method": "Keep original digests and all non-hash metadata; move baseline-verifiable affected paths to immutable full base-revision Git references."
+  },
+  "sha256": {
+    "README.md": "94cb990162993c6c18f7ea279ee8d8f5798b02b530d36a4d778e4127bebf6072",
+    "crates/viboceros-command/src/lib.rs": "0aa51da6d428ed17d0e6ffa21dbe4602626abbab41e66ab58813ae7bf542ee89",
+    "crates/viboceros-command/src/orient_surface.rs": "429defbef089762a2f4a538568329b23b12e0b6c042955992f77428522c9a664",
+    "crates/viboceros-geometry/src/morph.rs": "46c5742635a2c127b4f663ec09544d031d13d624c58504ad8e95a9387b4d2230",
+    "crates/viboceros-oracle/src/lib.rs": "a3884657feac1cd57d68e85ec79ac90419a5e45cdcf3d2b6dcbc35f846c23700",
+    "crates/viboceros-oracle/src/orient_surface.rs": "9dcb0f237ea62ea7a2340d10562e4ad420c2c7a1261089546b6ced3256de7a05",
+    "docs/commands/orient-on-surface.md": "cd4b663a7d34af9148ed4f42129e5954fe998cd7df2cee6c05f3f4f21dbd555c",
+    "docs/orient-surface-grips-validation.json": "62050bf1b57746e534f7c4cc35daee0aebe14402bab5f89c4329847dcd7755df",
+    "docs/orient-surface-validation.json": "ba75e21eb59b5c9cf7623a0b39dd3612a06d375bc10f0d944d5b8b5269c59bf7",
+    "src/app/orient_surface.rs": "b0549800f972369bd45b692b2a160bc66a148572edd26c0499a8318d51e7cc0a",
+    "src/app/orient_surface/option_input.rs": "c50a3cfa8602268f8c8ee6781411c0992ef4588c7d5950a5faa9b8c7ee8561ff",
+    "src/app/tests/orient_surface.rs": "8cbb24119598360c18503de50e3aac3dfe7e12ee03c662b751061b7def068122",
+    "src/app/tests/orient_surface_grips.rs": "cc9effcc93a6b38cf36b513f008e11df5d4cba6d7a5592388b20fadcf4fce8d2",
+    "tools/rhino_oracle/fixtures/orient_surface_options.json": "0afd46c57d7b3186fb90735ad1839c325964c5571306514b78d6391cc838aed4",
+    "tools/rhino_oracle/observations/orient_surface_options_comparison_20261016.json": "f0198ce8e0ffce2cc4652edb1912be281ce2f31bc80034108176ab2120e69799",
+    "tools/rhino_oracle/observations/orient_surface_options_rhino_20261016.json": "e96594d6c76e241d5a54ceda403c6f772e9095aab1d9afea6784152d57a386ee",
+    "tools/rhino_oracle/observations/orient_surface_options_viboceros_20261016.json": "01e132523933dc5938ee88b23cd916a719bf7202ff28d1cd15c7f3650e2848c4",
+    "tools/rhino_oracle/orient_surface_dialog.py": "a94a19a28580b501b8272baa6a252a97c2d3f8ce8f77b53a91c37ed9a6747323",
+    "tools/rhino_oracle/orient_surface_options_comparison.py": "dfff4c67226205e777dfcaa943bcf50d72f29863ed0cc81b225208f876bb296a",
+    "tools/rhino_oracle/orient_surface_options_probe.py": "24ad711d186a1ba9319b278212655722c76ae0159d0a77d4007e6b8c6ae8c633",
+    "tools/rhino_oracle/orient_surface_probe.py": "f6061ff679bb74b568908c75d8617e5044b7ca7a227795aab16bec0e0da32034",
+    "tools/rhino_oracle/rhino_worker.py": "ca88238f2befd6dc5654023ef449a6ad07e0c60929e8a3cbf9904a9eb8a82f00",
+    "tools/rhino_oracle/structural_sdk.py": "9ac8ed25c998bb0dc64a67b893b679fe5c5bd05ae9218d45eb4d646e14021de1",
+    "tools/rhino_oracle/test_orient_surface_options.py": "6f4e07915cd11d2ed3fa7a0ca48ba99d4cbdd42f76f2fac41c375bc52c6ae920"
+  }
+}

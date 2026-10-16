@@ -2,10 +2,13 @@
 use super::*;
 use std::sync::Arc;
 use viboceros_document::GeometrySnapshot;
-pub const USAGE: &str = "OrientOnSrf base reference target [Surface=id] [Face=index] [SurfaceName=name] [Scale=factor] [Rotation=degrees] [Rigid=Yes|No] [Copy=Yes|No] [Flip=Yes|No] [ConstrainNormal=Yes|No] [SourceNormal=x,y,z] [DestinationNormal=x,y,z] [OnSurface=Yes|No] [IgnoreTrims=Yes|No]";
+pub const USAGE: &str = "OrientOnSrf base reference target [Surface=id] [Face=index] [SurfaceName=name] [Scale=factor|Prompt|Uniform|XYZ] [ScaleXYZ=x,y,z] [X=factor] [Y=factor] [Z=factor] [ScalePrompt=Yes|No] [Rotation=degrees|Prompt|Angle] [RotationPrompt=Yes|No] [Rigid=Yes|No] [Copy=Yes|No] [Flip=Yes|No] [ConstrainNormal=Yes|No] [SourceNormal=x,y,z] [DestinationNormal=x,y,z] [OnSurface=Yes|No] [IgnoreTrims=Yes|No]";
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub scale: Real,
+    pub axes: Option<[Real; 3]>,
+    pub scale_prompt: bool,
+    pub rotation_prompt: bool,
     pub rotation: Real,
     pub copy: bool,
     pub rigid: bool,
@@ -20,6 +23,9 @@ impl Default for Options {
     fn default() -> Self {
         Self {
             scale: 1.,
+            axes: None,
+            scale_prompt: false,
+            rotation_prompt: false,
             rotation: 0.,
             copy: true,
             rigid: true,
@@ -33,6 +39,23 @@ impl Default for Options {
     }
 }
 impl Options {
+    pub fn scales(self) -> [Real; 3] {
+        if self.scale_prompt {
+            [self.scale; 3]
+        } else {
+            self.axes.unwrap_or([self.scale; 3])
+        }
+    }
+    pub fn preferences(mut self) -> Self {
+        self.copy = true;
+        self.on_surface = false;
+        self.source_normal = None;
+        self.destination_normal = None;
+        if self.rigid {
+            self.constrain_normal = false;
+        }
+        self
+    }
     pub fn arguments(self) -> String {
         let yes = |v| if v { "Yes" } else { "No" };
         let mut args = format!(
@@ -45,6 +68,14 @@ impl Options {
             yes(self.constrain_normal),
             yes(self.ignore_trims),
             yes(self.on_surface)
+        );
+        if let Some([x, y, z]) = self.axes {
+            args += &format!(" ScaleXYZ={x},{y},{z}");
+        }
+        args += &format!(
+            " ScalePrompt={} RotationPrompt={}",
+            yes(self.scale_prompt),
+            yes(self.rotation_prompt)
         );
         for (name, value) in [
             ("SourceNormal", self.source_normal),
@@ -79,12 +110,23 @@ pub fn options<'a>(
         let key = key.trim_start_matches(['_', '-']).to_ascii_lowercase();
         let key = match key.as_str() {
             "angle" => "rotation",
+            "uniform" => "scale",
+            "scalex" => "x",
+            "scaley" => "y",
+            "scalez" => "z",
             "up" => "sourcenormal",
             _ => &key,
         };
         if [
             "scale",
             "rotation",
+            "angle",
+            "scalexyz",
+            "scaleprompt",
+            "rotationprompt",
+            "x",
+            "y",
+            "z",
             "copy",
             "rigid",
             "flip",
@@ -111,16 +153,56 @@ pub fn options<'a>(
             };
             let toggle = || parse_yes_no(value).ok_or(CommandError::Usage(USAGE));
             match key {
-                "scale" => {
-                    options.scale = parse_finite_real(value)?;
-                    if options.scale <= 0. {
-                        return Err(CommandError::InvalidScaleFactor(value.into()));
+                "scale" => match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                    "prompt" => options.scale_prompt = true,
+                    "uniform" => {
+                        options.scale_prompt = false;
+                        options.axes = None;
                     }
+                    "xyz" => {
+                        options.axes = Some(options.axes.unwrap_or([options.scale; 3]));
+                        options.scale_prompt = false;
+                    }
+                    _ if value.contains(',') => {
+                        options.axes = Some(parse_axes(value)?);
+                        options.scale_prompt = false;
+                    }
+                    _ => {
+                        options.scale = parse_finite_real(value)?;
+                        if options.scale <= 0. {
+                            return Err(CommandError::InvalidScaleFactor(value.into()));
+                        }
+                        options.axes = None;
+                        options.scale_prompt = false;
+                    }
+                },
+                "scalexyz" => {
+                    options.axes = Some(parse_axes(value)?);
+                    options.scale_prompt = false;
                 }
-                "rotation" => {
-                    options.rotation = parse_finite_real(value)?;
-                    if !options.rotation.to_radians().is_finite() {
-                        return Err(CommandError::InvalidNumber(value.into()));
+                "x" | "y" | "z" => {
+                    let mut axes = options.axes.unwrap_or([options.scale; 3]);
+                    axes[match key {
+                        "x" => 0,
+                        "y" => 1,
+                        _ => 2,
+                    }] = parse_finite_real(value)?;
+                    options.axes = Some(axes);
+                    options.scale_prompt = false;
+                }
+                "scaleprompt" => options.scale_prompt = toggle()?,
+                "rotationprompt" => options.rotation_prompt = toggle()?,
+                "rotation" | "angle" => {
+                    match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                        "prompt" if key == "rotation" => options.rotation_prompt = true,
+                        "angle" if key == "rotation" => options.rotation_prompt = false,
+                        _ => {
+                            options.rotation = parse_finite_real(value)?;
+                            if !options.rotation.to_radians().is_finite() {
+                                return Err(CommandError::InvalidNumber(value.into()));
+                            }
+                            options.rotation_prompt = false;
+                        }
                     }
                 }
                 "copy" => options.copy = toggle()?,
@@ -155,7 +237,22 @@ pub fn options<'a>(
     if reference.id.is_some() && reference.name.is_some() {
         return Err(CommandError::Usage(USAGE));
     }
+    if options.rigid && !seen.contains("constrainnormal") {
+        options.constrain_normal = false;
+    }
+    if options.axes.is_some_and(|axes| axes.contains(&0.)) {
+        return Err(CommandError::InvalidScaleFactor(
+            "axis scale cannot be zero".into(),
+        ));
+    }
     Ok((rest, options, reference))
+}
+fn parse_axes(value: &str) -> Result<[Real; 3], CommandError> {
+    let parts = value
+        .split(',')
+        .map(parse_finite_real)
+        .collect::<Result<Vec<_>, _>>()?;
+    parts.try_into().map_err(|_| CommandError::Usage(USAGE))
 }
 #[derive(Clone, Debug)]
 pub struct Target {
@@ -286,7 +383,7 @@ impl Placement {
         Ok(AffineTransform3::try_frame_mapping(
             self.source,
             frame,
-            [options.scale; 3],
+            options.scales(),
         )?)
     }
     pub fn morph_at(
@@ -307,11 +404,20 @@ impl Placement {
             self.target.surface.clone(),
             pose.uv[0],
             pose.uv[1],
-            options.scale,
+            if !options.scale_prompt && options.axes.is_some() {
+                1.
+            } else {
+                options.scale
+            },
             options.rotation.to_radians(),
             options.flip ^ self.target.reversed,
             self.tolerance,
         )?;
+        if !options.scale_prompt
+            && let Some(axes) = options.axes
+        {
+            morph = morph.with_source_axis_scales(axes)?;
+        }
         morph = morph.with_surface_orientation_policy(
             options
                 .constrain_normal
@@ -397,13 +503,21 @@ fn combine_frame_axes(
     let s = second.as_vector().to_array();
     Vector3::try_from(std::array::from_fn(|i| a.mul_add(f[i], b * s[i])))
 }
-pub(super) struct OrientSurfaceCommand;
+#[derive(Default)]
+pub(super) struct OrientSurfaceCommand(remembered::Remembered<Options>);
 impl Command for OrientSurfaceCommand {
     fn name(&self) -> &'static str {
         "OrientOnSrf"
     }
     fn aliases(&self) -> &'static [&'static str] {
         &["OrientOnSurface"]
+    }
+    fn orient_surface_options(&self) -> Option<Options> {
+        Some(self.0.get())
+    }
+    fn remember_orient_surface_options(&self, value: Options) -> bool {
+        self.0.set(value.preferences());
+        true
     }
     fn copy_option_default(&self) -> Option<bool> {
         Some(true)
@@ -418,7 +532,7 @@ impl Command for OrientSurfaceCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let (args, mut sources) = affine_transform_arguments(doc, args, USAGE)?;
-        let (args, options, reference) = options(&args, Options::default())?;
+        let (args, options, reference) = options(&args, self.0.get())?;
         if options.rigid && options.constrain_normal {
             return Err(CommandError::Usage(USAGE));
         }
@@ -536,11 +650,102 @@ impl Command for OrientSurfaceCommand {
             }
         }
 
+        self.0.set(options.preferences());
         Ok(format!(
             "Oriented {transformed} object(s) onto surface parameters {:.6},{:.6} with {} placement, creating {copied} copy object(s)",
             uv[0],
             uv[1],
             if options.rigid { "rigid" } else { "deformable" }
         ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn orient_surface_presets_roundtrip_modes_axes_and_reject_invalid_values() {
+        let initial = Options {
+            axes: Some([-2., 3., 4.]),
+            scale_prompt: true,
+            rotation_prompt: true,
+            rotation: -45.,
+            ..Default::default()
+        };
+        let args = initial.arguments();
+        let (_, parsed, _) = options(
+            &args.split_whitespace().collect::<Vec<_>>(),
+            Options::default(),
+        )
+        .unwrap();
+        assert_eq!(initial, parsed);
+        assert_eq!(parsed.scales(), [1.; 3]);
+        let (_, xyz, _) = options(&["ScalePrompt=No"], parsed).unwrap();
+        assert_eq!(xyz.scales(), [-2., 3., 4.]);
+        let (_, uniform, _) = options(&["Uniform=2"], xyz).unwrap();
+        assert_eq!(uniform.scales(), [2.; 3]);
+        assert!(uniform.axes.is_none());
+        let remembered = Options {
+            rigid: false,
+            constrain_normal: true,
+            ..uniform
+        };
+        let (_, rigid, _) = options(&["Rigid=Yes"], remembered).unwrap();
+        assert!(!rigid.constrain_normal);
+        for args in [
+            vec!["X=0"],
+            vec!["ScaleXYZ=1,2,0"],
+            vec!["ScaleXYZ=1,2"],
+            vec!["ScaleXYZ=1,NaN,3"],
+            vec!["Angle=inf"],
+            vec!["ScalePrompt=Maybe"],
+            vec!["X=2", "ScaleX=3"],
+        ] {
+            assert!(options(&args, initial).is_err(), "{args:?}");
+        }
+    }
+    #[test]
+    fn orient_surface_preferences_are_registry_scoped_and_failed_cli_is_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let desired = Options {
+            axes: Some([-2., 3., 4.]),
+            rotation: 30.,
+            rigid: false,
+            copy: false,
+            source_normal: Some(Vector3::try_new(0., 0., 1.).unwrap()),
+            ..Default::default()
+        };
+        assert!(registry.remember_orient_surface_options(desired));
+        assert_eq!(registry.orient_surface_options(), desired.preferences());
+        assert_eq!(
+            CommandRegistry::with_builtins().orient_surface_options(),
+            Options::default()
+        );
+        let mut doc = Document::default();
+        registry.execute(&mut doc, "Point 0,0,0").unwrap();
+        let before = format!("{doc:?}");
+        for args in [
+            "ScaleXYZ=2,0,4",
+            "X=NaN",
+            "Rotation=inf",
+            "ScaleXYZ=2,3,4 SurfaceName=Missing",
+        ] {
+            assert!(
+                registry
+                    .execute(
+                        &mut doc,
+                        &format!("OrientOnSurface 0,0,0 1,0,0 2,3,4 {args}")
+                    )
+                    .is_err()
+            );
+            assert_eq!(registry.orient_surface_options(), desired.preferences());
+            assert_eq!(format!("{doc:?}"), before);
+        }
+        let invalid = Options {
+            axes: Some([2., 0., 4.]),
+            ..desired
+        };
+        assert!(!registry.remember_orient_surface_options(invalid));
+        assert_eq!(registry.orient_surface_options(), desired.preferences());
     }
 }

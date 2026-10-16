@@ -26,6 +26,14 @@ pub struct PlacementOptions {
     pub scale: Real,
     #[serde(default)]
     pub rotation: Real,
+    #[serde(default)]
+    pub axes: Option<[Real; 3]>,
+    #[serde(default)]
+    pub uniform: Option<bool>,
+    #[serde(default)]
+    pub scale_prompt: Option<bool>,
+    #[serde(default)]
+    pub rotation_prompt: Option<bool>,
 }
 impl PlacementOptions {
     pub fn options(&self) -> Options {
@@ -37,6 +45,13 @@ impl PlacementOptions {
             on_surface: self.on_surface,
             scale: self.scale,
             rotation: self.rotation,
+            axes: if self.uniform == Some(false) {
+                self.axes
+            } else {
+                None
+            },
+            scale_prompt: self.scale_prompt.unwrap_or(true),
+            rotation_prompt: self.rotation_prompt.unwrap_or(true),
             ..Default::default()
         }
     }
@@ -69,6 +84,10 @@ pub struct Fixture {
     pub batch: Vec<Batch>,
     #[serde(default)]
     pub offsets: Option<Vec<[Real; 3]>>,
+    #[serde(default)]
+    pub inherit: bool,
+    #[serde(default)]
+    pub setup: Option<PlacementOptions>,
 }
 impl Fixture {
     pub fn guide(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
@@ -127,6 +146,20 @@ impl Fixture {
         Ok(s.evaluate(uv[0], uv[1])?)
     }
 }
+/// GUI defaults differ from the retained scripted `-OrientOnSrf` fixtures.
+pub(super) fn run_options(
+    f: &Fixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let mut f = f.clone();
+    for options in std::iter::once(&mut f.options).chain(f.setup.iter_mut()) {
+        options.scale_prompt.get_or_insert(false);
+        options.rotation_prompt.get_or_insert(false);
+    }
+    run(&f, iterations, tolerance)
+}
+
 pub(super) fn run(
     f: &Fixture,
     iterations: u32,
@@ -143,24 +176,44 @@ pub(super) fn run(
         doc.select_objects_direct([source], SelectionMode::Replace)?;
         doc.clear_history()?;
         let registry = CommandRegistry::with_builtins();
+        if let Some(seed) = &f.setup
+            && !registry.remember_orient_surface_options(seed.options())
+        {
+            return Err(ProbeError::FixtureInvariant(
+                "invalid surface orientation preset",
+            ));
+        }
+        let mut initial = if f.inherit {
+            registry.orient_surface_options()
+        } else {
+            f.options.options()
+        };
+        initial.copy = f.options.copy;
         let plane = f.plane(tolerance)?;
         let mut group = doc.begin_history_group("OrientOnSrf")?;
         let mut error = None;
-        let placements =
-            std::iter::once((f.uv, f.options.options())).chain(f.batch.iter().map(|b| {
-                let mut o = f.options.options();
+        let placements = std::iter::once((f.uv, initial)).chain(f.batch.iter().map(|b| {
+            let mut o = initial;
+            if o.scale_prompt {
                 o.scale = b.scale.unwrap_or(o.scale);
+            }
+            if o.rotation_prompt {
                 o.rotation = b.rotation.unwrap_or(o.rotation);
-                (b.uv, o)
-            }));
-        for (uv, options) in placements {
+            }
+            (b.uv, o)
+        }));
+        for (index, (uv, options)) in placements.enumerate() {
             let point = |p: [Real; 3]| p.map(|x| x.to_string()).join(",");
             let command = format!(
                 "OrientOnSrf {} {} {} Surface={guide_id} Face=0 {} {}={source}",
                 point(f.base),
                 point(f.reference),
                 point(f.target(uv, tolerance)?.to_array()),
-                options.arguments(),
+                if f.inherit && index == 0 {
+                    format!("Copy={}", if options.copy { "Yes" } else { "No" })
+                } else {
+                    options.arguments()
+                },
                 if f.postselected {
                     "PickedSources"
                 } else {
@@ -195,6 +248,27 @@ pub(super) fn run(
 mod tests {
     use super::*;
     #[test]
+    fn orient_surface_options_protocol_uses_fixed_gui_defaults() {
+        let mut request: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/orient_surface_options.json"
+        ))
+        .unwrap();
+        request["operations"] = json!([request["operations"][16].clone()]);
+        let explicit: ProbeRequest = serde_json::from_value(request.clone()).unwrap();
+        for key in ["scale_prompt", "rotation_prompt"] {
+            request["operations"][0]["options"]
+                .as_object_mut()
+                .unwrap()
+                .remove(key);
+        }
+        let implicit: ProbeRequest = serde_json::from_value(request).unwrap();
+        assert_eq!(
+            run_request(&explicit).unwrap().results[0].value,
+            run_request(&implicit).unwrap().results[0].value
+        );
+    }
+
+    #[test]
     fn orient_surface_matches_native_rigid_splop_normals_and_face_reversal() {
         for (fixture, reference) in [
             (
@@ -207,6 +281,12 @@ mod tests {
                 include_str!("../../../tools/rhino_oracle/fixtures/orient_surface_policy.json"),
                 include_str!(
                     "../../../tools/rhino_oracle/observations/orient_surface_policy_rhino_20261016.json"
+                ),
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/orient_surface_options.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/orient_surface_options_rhino_20261016.json"
                 ),
             ),
         ] {

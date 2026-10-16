@@ -225,6 +225,7 @@ pub struct SurfacePointMorph<'a> {
     v_per_y: Real,
     scale: Real,
     normal_scale: Real,
+    source_scales: [Real; 3],
     sine: Real,
     cosine: Real,
     flip: bool,
@@ -319,6 +320,7 @@ impl<'a> SurfacePointMorph<'a> {
             v_per_y,
             scale,
             normal_scale: scale,
+            source_scales: [1.; 3],
             sine,
             cosine,
             flip,
@@ -335,6 +337,14 @@ impl<'a> SurfacePointMorph<'a> {
         Ok(self)
     }
 
+    /// Scale source frame coordinates before the point map's rotation.
+    /// Signed and zero factors are valid; owner admission checks resulting geometry.
+    pub fn with_source_axis_scales(mut self, scales: [Real; 3]) -> Result<Self, GeometryError> {
+        require_finite(scales, "surface point morph source scale")?;
+        self.source_scales = scales;
+        Ok(self)
+    }
+
     /// Applies OrientOnSrf command policy to a newly constructed splop map.
     /// Flipped placements keep unit source height. With a preferred normal,
     /// the surface differential is projected onto its perpendicular plane;
@@ -345,6 +355,9 @@ impl<'a> SurfacePointMorph<'a> {
         normal: Option<Vector3>,
     ) -> Result<Self, GeometryError> {
         self.normal_scale = if self.flip { 1. } else { self.scale };
+        if self.flip {
+            self.source_scales[2] = 1.;
+        }
         if let Some(normal) = normal {
             let n = normal.normalized_nonzero()?;
             let (_, du, dv) = self
@@ -426,9 +439,9 @@ impl PointMorph for SurfacePointMorph<'_> {
 
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
         let offset = self.source.origin().vector_to(point)?;
-        let source_x = offset.dot(self.source.x_axis().as_vector())?;
-        let source_y = offset.dot(self.source.y_axis().as_vector())?;
-        let source_z = offset.dot(self.source.z_axis().as_vector())?;
+        let source_x = offset.dot(self.source.x_axis().as_vector())? * self.source_scales[0];
+        let source_y = offset.dot(self.source.y_axis().as_vector())? * self.source_scales[1];
+        let source_z = offset.dot(self.source.z_axis().as_vector())? * self.source_scales[2];
         let target_x = self.scale * self.cosine.mul_add(source_x, -self.sine * source_y);
         let mut target_y = self.scale * self.sine.mul_add(source_x, self.cosine * source_y);
         let mut target_z = self.normal_scale * source_z;
@@ -504,6 +517,61 @@ mod tests {
                 (actual - expected).abs() <= 2.0e-12,
                 "{actual} != {expected}"
             );
+        }
+    }
+
+    #[test]
+    fn surface_point_morph_xyz_precedes_rotation_and_command_flip_keeps_unit_height() {
+        let surface = quarter_cylinder();
+        let source = Frame3::try_from_directions(
+            point(2., 3., 4.),
+            Vector3::try_new(0., 1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for flip in [false, true] {
+            let plain = SurfacePointMorph::try_new(
+                source,
+                &surface,
+                0.3,
+                0.4,
+                1.,
+                0.7,
+                flip,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            for scales in [[2., 3., 4.], [-2., 3., -4.], [2., 0., 4.]] {
+                let scaled = plain.clone().with_source_axis_scales(scales).unwrap();
+                for i in -5..=5 {
+                    for j in -5..=5 {
+                        let x = i as f64 * 0.2;
+                        let y = j as f64 * 0.2;
+                        let p = point(2.5, 3. + x, 4. + y);
+                        let pre =
+                            point(2. + 0.5 * scales[2], 3. + x * scales[0], 4. + y * scales[1]);
+                        assert!(
+                            scaled
+                                .morph_point(p)
+                                .unwrap()
+                                .distance_to(plain.morph_point(pre).unwrap())
+                                .unwrap()
+                                < 1e-12
+                        );
+                    }
+                }
+                let command = scaled.with_surface_orientation_policy(None).unwrap();
+                let z = if flip { 1. } else { scales[2] };
+                assert!(
+                    command
+                        .morph_point(point(3., 3., 4.))
+                        .unwrap()
+                        .distance_to(plain.morph_point(point(2. + z, 3., 4.)).unwrap())
+                        .unwrap()
+                        < 1e-12
+                );
+            }
         }
     }
 

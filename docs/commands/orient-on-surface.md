@@ -3,10 +3,35 @@
 `OrientOnSrf` (`OrientOnSurface`) places objects on a NURBS surface or an explicit
 B-rep face. Start with selected sources, or select sources after starting the
 command and press Enter. Pick the source base and reference points, then pick a
-destination surface/face. Each placement asks for a target point, a positive
-uniform scale, and a rotation angle in degrees. Enter accepts the current scale
-or angle. A reference point can set the scale by distance from the target, and
-a direction point can set the angle in its tangent plane.
+destination surface/face. A fresh command uses fixed unit scale and zero rotation,
+so picking the target places the sources immediately.
+
+Enter `Scale` to edit `Uniform=factor` or independent `X=factor`, `Y=factor`,
+`Z=factor` presets. Bare `Uniform`, `X`, `Y`, or `Z` opens a numeric getter.
+`ScaleXYZ=x,y,z` sets all three factors directly. XYZ factors may be signed but
+must be nonzero; uniform scale must be positive. Scaling follows the source
+frame axes **before** rotation.
+
+Enter `Rotation` to edit `Angle=degrees`, or use bare `Angle` for a numeric getter.
+Inside either menu, `Prompt=Yes` enables a per-placement getter and `Prompt=No`
+uses the preset. Enter returns from a menu to placement. The direct forms are
+`ScalePrompt=Yes|No` and `RotationPrompt=Yes|No`; `Scale=Prompt` and
+`Rotation=Prompt` also enable the getters. Scale prompting uses uniform scaling;
+the XYZ preset remains available when prompting is turned off.
+
+At per-placement getters, Enter keeps the current scale or angle. A reference
+point can set uniform scale by distance from the target, and a direction point
+can set the angle in its tangent plane. `-OrientOnSrf` starts with both getters
+enabled, following Rhino's scripted workflow. Explicit numeric `Scale` and
+`Rotation` options choose fixed values.
+
+Accepted presets, prompt modes, Rigid, Flip, IgnoreTrims and ConstrainNormal
+settings are remembered by the application command registry across invocations
+and aliases. They survive cancellation and model Undo, and apply to subsequent
+documents in the same application session. Explicit source/destination normals
+and OnSurface are invocation settings. Copy follows `RememberCopyOptions`
+independently. Invalid inputs and failed complete scripted commands preserve the
+previous preferences. Choose presets before picking a target.
 
 `Copy=Yes` is the initial setting. Repeated copies always use the captured source
 objects and share one Undo step. Enter at the target prompt or Escape finishes;
@@ -36,7 +61,7 @@ perpendicular plane and adjusts height by anchor obliquity. Tangent and nearly t
 are rejected before model edits using the model angular tolerance and a
 `1e-12` floor on the absolute normal dot product. Native command measurements also
 show that flipped deformable placements keep unit source height even when their
-in-plane scale differs from one. These command policies are separate from the
+uniform or XYZ scale differs from one. These command policies are separate from the
 public generic Splop-style morph API.
 
 Targets and OnSurface source bases use the surface-constrained point getter.
@@ -76,6 +101,8 @@ newly selected peers or previously copied grips do not become sources. Scripted
 
 Validation records are in [orient-surface-validation.json](../orient-surface-validation.json)
 and [orient-surface-grips-validation.json](../orient-surface-grips-validation.json).
+Preset and prompt-mode coverage is recorded in
+[orient-surface-options-validation.json](../orient-surface-options-validation.json).
 The retained authored fixtures exercise planar/skew and rational cylindrical
 surfaces, rigid and deformable placement, copy/in-place modes, source selection,
 groups, repeated placements, source construction planes, OnSurface, face reversal,
@@ -87,11 +114,14 @@ finite fixtures, not a proof for every surface or fitted object type. Existing
 
 Whole-object and selected control/edit grip sources are supported. The destination
 guide must be separate from source grip owners; existing owner-editing restrictions
-still apply. Nonuniform XYZ scaling,
-Rhino's Scale/Rotation prompt-mode menus, and remembering non-copy settings
-between separate invocations remain unimplemented. Trimmed guides and point
-scale/rotation getters have local regression coverage; the retained native
-fixtures do not qualify those interactions. No performance parity claim is made.
+still apply. Trimmed guides and point scale/rotation getters have local regression
+coverage; the retained native fixtures do not qualify those interactions.
+Native GUI measurements cover fixed XYZ/uniform settings, all four prompt-mode
+combinations, signed X factors, flipped height, constrained normals, and scale/
+rotation preferences retained after accepting the dialog and canceling placement.
+Viboceros exposes these settings through command-line menus. Native preview
+pixels, all preference combinations, disk persistence and performance parity
+remain unqualified.
 
 References: [Rhino 8 command help](https://docs.mcneel.com/rhino/8/help/en-us/commands/orientonsrf.htm),
 [public SplopSpaceMorph API](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.morphs.splopspacemorph/splopspacemorph).
