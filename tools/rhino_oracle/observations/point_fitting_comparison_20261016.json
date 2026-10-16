@@ -1,0 +1,1221 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "reference_derived_inputs": false,
+  "command_cases": 42,
+  "complete_command_images_certified": 35,
+  "complete_sdk_line_images_certified": 21,
+  "geometry_and_metadata_comparison_passed": true,
+  "method": "An exact rational squared-distance predicate admits every polynomial Bernstein control under an explicit normalized unit chart (two segment orientations or eight tensor rectangle symmetries). Convexity bounds the complete paired images. Raw endpoint orders, tensor definitions and domains remain unmodified.",
+  "maximum_command_control_distance_diagnostic": 9.599853366654507e-10,
+  "cases": [
+    {
+      "id": "line-points-pre",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-points-post",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-cloud",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-curve-grips",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 2.220446049250313e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-mesh",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-mesh-post",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-mesh-grips",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-two-points",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-two-cloud",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-one-point",
+      "operation": "line_through_points",
+      "command_returned": false,
+      "output_count": 0
+    },
+    {
+      "id": "line-one-cloud",
+      "operation": "line_through_points",
+      "command_returned": false,
+      "output_count": 0
+    },
+    {
+      "id": "line-coincident",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 0
+    },
+    {
+      "id": "line-noisy-xy",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.76314273772631e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-reversed-noisy",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.762364433181674e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 9.762364433181674e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-weighted-duplicates",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 8.959775382615402e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 8.959775382615402e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-noisy-3d",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 9.30465311181897e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 9.30465311181897e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-remote-noisy",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 4.656612873077393e-10,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 4.656612873077393e-10,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-axis-x",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-axis-y",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-axis-z",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-symmetric-flat",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 4.291468873614596e-17,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 4.291468873614596e-17,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-ambiguous-square",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": true,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-small",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 1.3587799907866186e-18,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 1.3587799907866186e-18,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "line-coincident-post",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 0
+    },
+    {
+      "id": "line-below-model-tolerance",
+      "operation": "line_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "reference_reversed": false,
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "xy-points-pre",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "xy-points-post",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "xy-cloud",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "xy-mesh-grips",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "xy-curve-grips",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "yz",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "xz",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 4.440892098500626e-16,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "rotated-rectangle",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "triangle",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "maximum_control_distance_diagnostic": 0.0,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "tilted",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          2,
+          3,
+          0,
+          1
+        ],
+        "maximum_control_distance_diagnostic": 1.793886252542988e-15,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "nonplanar",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 1.1443916996305594e-15,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "remote-tilted",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 9.599853366654507e-10,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "one-cloud",
+      "operation": "plane_through_points",
+      "command_returned": false,
+      "output_count": 0
+    },
+    {
+      "id": "two-cloud",
+      "operation": "plane_through_points",
+      "command_returned": false,
+      "output_count": 0
+    },
+    {
+      "id": "collinear-cloud",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "collinear-points",
+      "operation": "plane_through_points",
+      "command_returned": true,
+      "output_count": 1,
+      "command_image": {
+        "reference_corner_permutation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+        "exact_squared_control_admission": true,
+        "whole_image_within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "coincident-cloud",
+      "operation": "plane_through_points",
+      "command_returned": false,
+      "output_count": 0
+    }
+  ],
+  "raw_protocol_comparison": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 0,
+    "passed": false,
+    "operations": [
+      {
+        "id": "line-points-pre",
+        "passed": false,
+        "max_absolute_error": 6.0,
+        "viboceros_ns_per_iteration": 1375283.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-points-pre.value.outputs[0].definition.control_points[0].point[0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-points-pre.value.outputs[0].definition.control_points[0].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-points-pre.value.outputs[0].definition.control_points[1].point[0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-points-pre.value.outputs[0].definition.control_points[1].point[1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-points-pre.value.outputs[0].endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-points-pre.value.outputs[0].endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-points-pre.value.outputs[0].endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-points-pre.value.outputs[0].endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-points-pre.value.sdk.endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-points-pre.value.sdk.endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-points-pre.value.sdk.endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-points-pre.value.sdk.endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-points-post",
+        "passed": false,
+        "max_absolute_error": 6.0,
+        "viboceros_ns_per_iteration": 1237746.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-points-post.value.outputs[0].definition.control_points[0].point[0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-points-post.value.outputs[0].definition.control_points[0].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-points-post.value.outputs[0].definition.control_points[1].point[0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-points-post.value.outputs[0].definition.control_points[1].point[1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-points-post.value.outputs[0].endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-points-post.value.outputs[0].endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-points-post.value.outputs[0].endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-points-post.value.outputs[0].endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-points-post.value.sdk.endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-points-post.value.sdk.endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-points-post.value.sdk.endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-points-post.value.sdk.endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-cloud",
+        "passed": false,
+        "max_absolute_error": 6.0,
+        "viboceros_ns_per_iteration": 1154083.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-cloud.value.outputs[0].definition.control_points[0].point[0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-cloud.value.outputs[0].definition.control_points[0].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-cloud.value.outputs[0].definition.control_points[1].point[0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-cloud.value.outputs[0].definition.control_points[1].point[1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-cloud.value.outputs[0].endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-cloud.value.outputs[0].endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-cloud.value.outputs[0].endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-cloud.value.outputs[0].endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-cloud.value.sdk.endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-cloud.value.sdk.endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-cloud.value.sdk.endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-cloud.value.sdk.endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-curve-grips",
+        "passed": false,
+        "max_absolute_error": 6.0,
+        "viboceros_ns_per_iteration": 1189266.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-curve-grips.value.outputs[0].definition.control_points[0].point[0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-curve-grips.value.outputs[0].definition.control_points[0].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-curve-grips.value.outputs[0].definition.control_points[1].point[0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-curve-grips.value.outputs[0].definition.control_points[1].point[1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-curve-grips.value.outputs[0].endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-curve-grips.value.outputs[0].endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-curve-grips.value.outputs[0].endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-curve-grips.value.outputs[0].endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)",
+          "line-curve-grips.value.sdk.endpoints[0][0]: 0 != 6 (error 6, limit 1e-06)",
+          "line-curve-grips.value.sdk.endpoints[0][1]: 0 != 3 (error 3, limit 1e-06)",
+          "line-curve-grips.value.sdk.endpoints[1][0]: 6 != 0 (error 6, limit 1e-06)",
+          "line-curve-grips.value.sdk.endpoints[1][1]: 3 != 2.2204460492503131e-16 (error 3, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-mesh",
+        "passed": true,
+        "max_absolute_error": 9.762156361059482e-16,
+        "viboceros_ns_per_iteration": 5493770.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-mesh-post",
+        "passed": true,
+        "max_absolute_error": 9.762156361059482e-16,
+        "viboceros_ns_per_iteration": 5348442.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-mesh-grips",
+        "passed": true,
+        "max_absolute_error": 9.762156361059482e-16,
+        "viboceros_ns_per_iteration": 5322363.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-two-points",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1170482.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-two-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1154115.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-one-point",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 770722.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-one-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 773474.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-coincident",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 771778.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-noisy-xy",
+        "passed": true,
+        "max_absolute_error": 9.762156361059482e-16,
+        "viboceros_ns_per_iteration": 5356410.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-reversed-noisy",
+        "passed": true,
+        "max_absolute_error": 9.753482743679598e-16,
+        "viboceros_ns_per_iteration": 5431722.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-weighted-duplicates",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 7469214.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-noisy-3d",
+        "passed": false,
+        "max_absolute_error": 5.999824831129478,
+        "viboceros_ns_per_iteration": 7921551.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-noisy-3d.value.outputs[0].definition.control_points[0].point[0]: -0.015014121257755062 != 5.9848107098717236 (error 6, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].definition.control_points[0].point[1]: 0.030637022458494666 != 3.0342426798884672 (error 3, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].definition.control_points[0].point[2]: 0.12278108952661154 != 0.037647477237771065 (error 0.0851, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].definition.control_points[1].point[0]: 5.9848107098717236 != -0.015014121257755253 (error 6, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].definition.control_points[1].point[1]: 3.0342426798884667 != 0.030637022458493757 (error 3, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].definition.control_points[1].point[2]: 0.037647477237770934 != 0.1227810895266116 (error 0.0851, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].endpoints[0][0]: -0.015014121257755062 != 5.9848107098717236 (error 6, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].endpoints[0][1]: 0.030637022458494666 != 3.0342426798884672 (error 3, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].endpoints[0][2]: 0.12278108952661154 != 0.037647477237771065 (error 0.0851, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].endpoints[1][0]: 5.9848107098717236 != -0.015014121257755253 (error 6, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].endpoints[1][1]: 3.0342426798884667 != 0.030637022458493757 (error 3, limit 1e-06)",
+          "line-noisy-3d.value.outputs[0].endpoints[1][2]: 0.037647477237770934 != 0.1227810895266116 (error 0.0851, limit 1e-06)",
+          "line-noisy-3d.value.sdk.endpoints[0][0]: -0.015014121257755062 != 5.9848107098717236 (error 6, limit 1e-06)",
+          "line-noisy-3d.value.sdk.endpoints[0][1]: 0.030637022458494666 != 3.0342426798884672 (error 3, limit 1e-06)",
+          "line-noisy-3d.value.sdk.endpoints[0][2]: 0.12278108952661154 != 0.037647477237771065 (error 0.0851, limit 1e-06)",
+          "line-noisy-3d.value.sdk.endpoints[1][0]: 5.9848107098717236 != -0.015014121257755253 (error 6, limit 1e-06)",
+          "line-noisy-3d.value.sdk.endpoints[1][1]: 3.0342426798884667 != 0.030637022458493757 (error 3, limit 1e-06)",
+          "line-noisy-3d.value.sdk.endpoints[1][2]: 0.037647477237770934 != 0.1227810895266116 (error 0.0851, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-remote-noisy",
+        "passed": false,
+        "max_absolute_error": 5.9998248311458156,
+        "viboceros_ns_per_iteration": 7668318.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-remote-noisy.value.outputs[0].definition.control_points[0].point[0]: 999999.98498587869 != 1000005.9848107098 (error 6, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].definition.control_points[0].point[1]: -1999999.9693629777 != -1999996.9657573202 (error 3, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].definition.control_points[0].point[2]: 3000000.1227810895 != 3000000.0376474769 (error 0.0851, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].definition.control_points[1].point[0]: 1000005.9848107098 != 999999.98498587869 (error 6, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].definition.control_points[1].point[1]: -1999996.9657573202 != -1999999.9693629777 (error 3, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].definition.control_points[1].point[2]: 3000000.0376474774 != 3000000.122781089 (error 0.0851, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].endpoints[0][0]: 999999.98498587869 != 1000005.9848107098 (error 6, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].endpoints[0][1]: -1999999.9693629777 != -1999996.9657573202 (error 3, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].endpoints[0][2]: 3000000.1227810895 != 3000000.0376474769 (error 0.0851, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].endpoints[1][0]: 1000005.9848107098 != 999999.98498587869 (error 6, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].endpoints[1][1]: -1999996.9657573202 != -1999999.9693629777 (error 3, limit 1e-06)",
+          "line-remote-noisy.value.outputs[0].endpoints[1][2]: 3000000.0376474774 != 3000000.122781089 (error 0.0851, limit 1e-06)",
+          "line-remote-noisy.value.sdk.endpoints[0][0]: 999999.98498587869 != 1000005.9848107098 (error 6, limit 1e-06)",
+          "line-remote-noisy.value.sdk.endpoints[0][1]: -1999999.9693629777 != -1999996.9657573202 (error 3, limit 1e-06)",
+          "line-remote-noisy.value.sdk.endpoints[0][2]: 3000000.1227810895 != 3000000.0376474769 (error 0.0851, limit 1e-06)",
+          "line-remote-noisy.value.sdk.endpoints[1][0]: 1000005.9848107098 != 999999.98498587869 (error 6, limit 1e-06)",
+          "line-remote-noisy.value.sdk.endpoints[1][1]: -1999996.9657573202 != -1999999.9693629777 (error 3, limit 1e-06)",
+          "line-remote-noisy.value.sdk.endpoints[1][2]: 3000000.0376474774 != 3000000.122781089 (error 0.0851, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-axis-x",
+        "passed": false,
+        "max_absolute_error": 3.0,
+        "viboceros_ns_per_iteration": 1050338.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-axis-x.value.outputs[0].definition.control_points[0].point[0]: 1 != 4 (error 3, limit 1e-06)",
+          "line-axis-x.value.outputs[0].definition.control_points[1].point[0]: 4 != 1 (error 3, limit 1e-06)",
+          "line-axis-x.value.outputs[0].endpoints[0][0]: 1 != 4 (error 3, limit 1e-06)",
+          "line-axis-x.value.outputs[0].endpoints[1][0]: 4 != 1 (error 3, limit 1e-06)",
+          "line-axis-x.value.sdk.endpoints[0][0]: 1 != 4 (error 3, limit 1e-06)",
+          "line-axis-x.value.sdk.endpoints[1][0]: 4 != 1 (error 3, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-axis-y",
+        "passed": false,
+        "max_absolute_error": 4.0,
+        "viboceros_ns_per_iteration": 1028242.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-axis-y.value.outputs[0].definition.control_points[0].point[1]: 1 != 5 (error 4, limit 1e-06)",
+          "line-axis-y.value.outputs[0].definition.control_points[1].point[1]: 5 != 1 (error 4, limit 1e-06)",
+          "line-axis-y.value.outputs[0].endpoints[0][1]: 1 != 5 (error 4, limit 1e-06)",
+          "line-axis-y.value.outputs[0].endpoints[1][1]: 5 != 1 (error 4, limit 1e-06)",
+          "line-axis-y.value.sdk.endpoints[0][1]: 1 != 5 (error 4, limit 1e-06)",
+          "line-axis-y.value.sdk.endpoints[1][1]: 5 != 1 (error 4, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-axis-z",
+        "passed": false,
+        "max_absolute_error": 4.0,
+        "viboceros_ns_per_iteration": 1002082.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-axis-z.value.outputs[0].definition.control_points[0].point[2]: 1 != 5 (error 4, limit 1e-06)",
+          "line-axis-z.value.outputs[0].definition.control_points[1].point[2]: 5 != 1 (error 4, limit 1e-06)",
+          "line-axis-z.value.outputs[0].endpoints[0][2]: 1 != 5 (error 4, limit 1e-06)",
+          "line-axis-z.value.outputs[0].endpoints[1][2]: 5 != 1 (error 4, limit 1e-06)",
+          "line-axis-z.value.sdk.endpoints[0][2]: 1 != 5 (error 4, limit 1e-06)",
+          "line-axis-z.value.sdk.endpoints[1][2]: 5 != 1 (error 4, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-symmetric-flat",
+        "passed": true,
+        "max_absolute_error": 4.291468873614596e-17,
+        "viboceros_ns_per_iteration": 1380082.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-ambiguous-square",
+        "passed": false,
+        "max_absolute_error": 2.0,
+        "viboceros_ns_per_iteration": 1339603.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "line-ambiguous-square.value.outputs[0].definition.control_points[0].point[1]: -1 != 1 (error 2, limit 1e-06)",
+          "line-ambiguous-square.value.outputs[0].definition.control_points[1].point[1]: 1 != -1 (error 2, limit 1e-06)",
+          "line-ambiguous-square.value.outputs[0].endpoints[0][1]: -1 != 1 (error 2, limit 1e-06)",
+          "line-ambiguous-square.value.outputs[0].endpoints[1][1]: 1 != -1 (error 2, limit 1e-06)",
+          "line-ambiguous-square.value.sdk.endpoints[0][1]: -1 != 1 (error 2, limit 1e-06)",
+          "line-ambiguous-square.value.sdk.endpoints[1][1]: 1 != -1 (error 2, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "line-small",
+        "passed": true,
+        "max_absolute_error": 1.3582173309222706e-18,
+        "viboceros_ns_per_iteration": 7177646.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-coincident-post",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 792689.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "line-below-model-tolerance",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1571683.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-points-pre",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 979298.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-points-post",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 987922.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 926049.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-mesh-grips",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 954946.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-curve-grips",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 984626.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "yz",
+        "passed": false,
+        "max_absolute_error": 4.0,
+        "viboceros_ns_per_iteration": 973330.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "yz.value.outputs[0].corners[0][1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].corners[1][1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].corners[2][1]: 0 != 4 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].corners[3][1]: 0 != 4 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[0].point[1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[1].point[1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[2].point[1]: 0 != 4 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[3].point[1]: 0 != 4 (error 4, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "xz",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 989234.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "rotated-rectangle",
+        "passed": false,
+        "max_absolute_error": 4.814155678319024,
+        "viboceros_ns_per_iteration": 1299458.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "rotated-rectangle.value.outputs[0].corners[0][0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].corners[1][0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].corners[2][0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].corners[3][0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[0].point[0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[1].point[0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[2].point[0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[3].point[0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "triangle",
+        "passed": false,
+        "max_absolute_error": 3.0,
+        "viboceros_ns_per_iteration": 998066.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "triangle.value.outputs[0].corners[0][0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].corners[1][0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].corners[2][0]: 1 != 4 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].corners[3][0]: 1 != 4 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[0].point[0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[1].point[0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[2].point[0]: 1 != 4 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[3].point[0]: 1 != 4 (error 3, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "tilted",
+        "passed": false,
+        "max_absolute_error": 3.5637583892617464,
+        "viboceros_ns_per_iteration": 3486391.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "tilted.value.outputs[0].corners[0][1]: -1.3266768080865211e-15 != 3.5637583892617446 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[0][2]: 2.1999999999999997 != -0.29463087248322073 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].corners[1][1]: -0.5637583892617456 != 2.9999999999999996 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[1][2]: 1.3946308724832215 != -1.0999999999999992 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].corners[2][1]: 3.5637583892617455 != 0 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[2][2]: -0.29463087248322095 != 2.2000000000000002 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].corners[3][1]: 3.0000000000000013 != -0.56375838926174493 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[3][2]: -1.0999999999999994 != 1.3946308724832215 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[0].point[1]: -1.3266768080865211e-15 != 3.5637583892617446 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[0].point[2]: 2.1999999999999997 != -0.29463087248322073 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[1].point[1]: -0.5637583892617456 != 2.9999999999999996 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[1].point[2]: 1.3946308724832215 != -1.0999999999999992 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[2].point[1]: 3.5637583892617455 != 0 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[2].point[2]: -0.29463087248322095 != 2.2000000000000002 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[3].point[1]: 3.0000000000000013 != -0.56375838926174493 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[3].point[2]: -1.0999999999999994 != 1.3946308724832215 (error 2.49, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "nonplanar",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 3028117.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "remote-tilted",
+        "passed": true,
+        "max_absolute_error": 9.313225746154785e-10,
+        "viboceros_ns_per_iteration": 2619749.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "one-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 804897.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "two-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 762385.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "collinear-cloud",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 1079602.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "collinear-points",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 1081730.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "coincident-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 789714.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      }
+    ],
+    "max_absolute_error": 6.0,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+  }
+}

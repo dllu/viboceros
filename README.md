@@ -32,7 +32,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 ## Documentation
 
 - [Command reference and examples](docs/commands/README.md)
-- [Fit planes through points, clouds and grips](docs/commands/plane-through-points.md)
+- Fit [planes](docs/commands/plane-through-points.md) and [lines](docs/commands/line-through-points.md) through points, clouds and grips
 - [Native geometry checks and bad-object selection](docs/commands/check.md)
 - [Degenerate mesh face cleanup](docs/commands/cull-degenerate-mesh-faces.md)
 - [Divide surfaces and polysurfaces along creases](docs/commands/divide-along-creases.md)

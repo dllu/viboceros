@@ -68,6 +68,10 @@ fn object_filters_cover_geometry_and_memberships_without_changing_selection_poli
                 ObjectSelectionFilter::PlaneFitPoints,
                 [true, false, false, false, true],
             ),
+            (
+                ObjectSelectionFilter::LineFitPoints,
+                [true, false, true, false, true],
+            ),
         ] {
             assert_eq!(
                 document

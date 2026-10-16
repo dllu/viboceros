@@ -1,8 +1,10 @@
-//! Euclidean least-squares planes, distinct from command selection policy.
+//! Shared Euclidean least-squares axes, distinct from command selection policy.
 use super::*;
 use crate::FiniteSum;
 use num_traits::{One, Signed};
+mod line;
 mod normalized;
+pub use line::MAX_LINE_FIT_POINTS;
 mod surface;
 
 /// Input ceiling for a fit's linear-memory rank check and thin N-by-3 SVD.
@@ -35,42 +37,65 @@ impl PointProjection3 {
             return Ok(plane);
         }
 
-        let mut sums: [FiniteSum; 3] = std::array::from_fn(|_| FiniteSum::default());
-        let mut lo = points[0].to_array();
-        let mut hi = lo;
-        for point in points {
-            for (i, value) in point.to_array().into_iter().enumerate() {
-                sums[i].add(value)?;
-                lo[i] = lo[i].min(value);
-                hi[i] = hi[i].max(value);
-            }
-        }
-        let center = [
-            sums[0].exact_mean()?,
-            sums[1].exact_mean()?,
-            sums[2].exact_mean()?,
-        ];
-        // A common scale preserves the Euclidean objective; per-axis scaling
-        // would solve a different weighted least-squares problem.
-        let scale = (0..3)
-            .map(|i| rational(hi[i]) - rational(lo[i]))
-            .max()
-            .unwrap();
-        let matrix = normalized::matrix(points, &center, &scale)?;
-        let decomposition = matrix
-            .thin_svd()
-            .map_err(|_| GeometryError::PlaneFitDidNotConverge)?;
-        let values = decomposition.S().column_vector();
-        if (0..3).any(|i| !values[i].is_finite() || values[i] <= 0.) {
-            return Err(GeometryError::PlaneFitDidNotConverge);
-        }
-        let index = (0..3)
-            .min_by(|&i, &j| values[i].total_cmp(&values[j]))
-            .unwrap();
-        let normal: [f64; 3] = std::array::from_fn(|i| decomposition.V()[(i, index)]);
-        crate::require_finite(normal, "best-fit plane normal")?;
-        Self::new_exact(center, normal.map(rational), false)
+        principal_axis(points, false)
     }
+}
+
+/// Shared exactly centered, isotropically scaled thin SVD. Plane fitting uses
+/// the smallest axis of full-rank data; line fitting uses the largest axis and
+/// permits rank-two input. Exact lines bypass this numerical solve.
+fn principal_axis(points: &[Point3], largest: bool) -> Result<PointProjection3, GeometryError> {
+    let mut sums: [FiniteSum; 3] = std::array::from_fn(|_| FiniteSum::default());
+    let mut lo = points[0].to_array();
+    let mut hi = lo;
+    for point in points {
+        for (i, value) in point.to_array().into_iter().enumerate() {
+            sums[i].add(value)?;
+            lo[i] = lo[i].min(value);
+            hi[i] = hi[i].max(value);
+        }
+    }
+    let center = [
+        sums[0].exact_mean()?,
+        sums[1].exact_mean()?,
+        sums[2].exact_mean()?,
+    ];
+    // A common scale preserves the Euclidean objective; per-axis scaling
+    // would solve a different weighted least-squares problem.
+    let scale = (0..3)
+        .map(|i| rational(hi[i]) - rational(lo[i]))
+        .max()
+        .unwrap();
+    let matrix = normalized::matrix(points, &center, &scale)?;
+    let decomposition = matrix
+        .thin_svd()
+        .map_err(|_| GeometryError::PlaneFitDidNotConverge)?;
+    let values = decomposition.S().column_vector();
+    if (0..3).any(|i| !values[i].is_finite() || values[i] < 0. || (!largest && values[i] == 0.)) {
+        return Err(GeometryError::PlaneFitDidNotConverge);
+    }
+    let index = (0..3)
+        .min_by(|&i, &j| {
+            if largest {
+                values[j].total_cmp(&values[i])
+            } else {
+                values[i].total_cmp(&values[j])
+            }
+        })
+        .unwrap();
+    if values[index] == 0. {
+        return Err(GeometryError::PlaneFitDidNotConverge);
+    }
+    let normal: [f64; 3] = std::array::from_fn(|i| decomposition.V()[(i, index)]);
+    crate::require_finite(
+        normal,
+        if largest {
+            "best-fit line direction"
+        } else {
+            "best-fit plane normal"
+        },
+    )?;
+    PointProjection3::new_exact(center, normal.map(rational), largest)
 }
 
 /// Exact affine-rank check. Full-dimensional inputs usually exit after four

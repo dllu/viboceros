@@ -3,7 +3,7 @@ use crate::exact_scalar::{Rational, rational, scalar};
 use crate::{GeometryError, Point3, Vector3};
 use num_traits::Zero;
 mod fit;
-pub use fit::MAX_PLANE_FIT_POINTS;
+pub use fit::{MAX_LINE_FIT_POINTS, MAX_PLANE_FIT_POINTS};
 
 #[cfg(test)]
 mod tests;

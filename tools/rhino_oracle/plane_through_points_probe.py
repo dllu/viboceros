@@ -25,13 +25,30 @@ def validate(op):
 
 def run(op, host, iterations, tolerance):
     validate(op)
+    return run_owned(op, host, iterations, tolerance, 'PlaneThroughPt', surface_value)
+
+
+def surface_value(geo, host):
+    G=host['Rhino'].Geometry
+    surface=geo.Surfaces[0] if isinstance(geo,G.Brep) else geo
+    n=surface.ToNurbsSurface()
+    try:
+        return dict(definition=host['_nurbs_surface_definition'](n),
+            corners=[host['_xyz'](n.PointAt(n.Domain(0).ParameterAt(u),n.Domain(1).ParameterAt(v)))
+                     for u,v in [(0,0),(1,0),(0,1),(1,1)]])
+    finally:n.Dispose()
+
+
+def run_owned(op, host, iterations, tolerance, command, geometry_value):
+    """Shared private source setup and command lifetime for point fitting."""
     if iterations != 1:
-        raise ValueError('PlaneThroughPt commands require one iteration')
+        raise ValueError('Point fitting commands require one iteration')
     R=host['Rhino']; G=R.Geometry; doc=R.RhinoDoc.ActiveDoc
     ids=[];created=[];owned=[]
     saved_layer=doc.Layers.CurrentLayerIndex
-    source_layer=doc.Layers.Add('PlaneFitSource', host['System'].Drawing.Color.Red)
-    current_layer=doc.Layers.Add('PlaneFitCurrent', host['System'].Drawing.Color.Blue)
+    prefix='PlaneFit' if command=='PlaneThroughPt' else 'LineFit'
+    source_layer=doc.Layers.Add(prefix+'Source', host['System'].Drawing.Color.Red)
+    current_layer=doc.Layers.Add(prefix+'Current', host['System'].Drawing.Color.Blue)
     if source_layer<0 or current_layer<0: raise ValueError('private fit layers failed')
     doc.Layers.SetCurrentLayerIndex(current_layer, True)
     try:
@@ -44,7 +61,7 @@ def run(op, host, iterations, tolerance):
         elif op['source']=='cloud':
             cloud=G.PointCloud(points);owned.append(cloud)
             ids=[doc.Objects.AddPointCloud(cloud,attr)]
-        elif op['source']=='mesh_grips':
+        elif op['source'] in ('mesh_grips','mesh'):
             mesh=G.Mesh();owned.append(mesh)
             for p in points:mesh.Vertices.Add(p)
             mesh.Faces.AddFace(0,1,2)
@@ -61,11 +78,11 @@ def run(op, host, iterations, tolerance):
             for grip in obj.GetGrips():grip.Select(True)
         elif not op['postselect']:
             for i in ids:doc.Objects.Select(i,True)
-        macro='_-PlaneThroughPt'
+        macro='_-'+command
         if op['postselect']:
             macro+=' '+' '.join('_SelID '+str(i) for i in ids)+' _Enter'
         before=set(o.Id for o in doc.Objects)
-        serial=doc.BeginUndoRecord('PlaneThroughPt oracle')
+        serial=doc.BeginUndoRecord(command+' oracle')
         try:ran=R.RhinoApp.RunScript(macro,False)
         finally:
             if serial:doc.EndUndoRecord(serial)
@@ -73,16 +90,11 @@ def run(op, host, iterations, tolerance):
         outputs=[]
         for i in created:
             obj=doc.Objects.FindId(i);geo=obj.Geometry
-            surface=geo.Surfaces[0] if isinstance(geo,G.Brep) else geo
-            n=surface.ToNurbsSurface()
-            try:
-                outputs.append(dict(definition=host['_nurbs_surface_definition'](n),
-                    corners=[host['_xyz'](n.PointAt(n.Domain(0).ParameterAt(u),n.Domain(1).ParameterAt(v)))
-                             for u,v in [(0,0),(1,0),(0,1),(1,1)]],
-                    layer=doc.Layers[obj.Attributes.LayerIndex].Name,name=obj.Attributes.Name or None,
-                    selected=bool(obj.IsSelected(False)),groups=list(obj.Attributes.GetGroupList() or []),
-                    color_source=str(obj.Attributes.ColorSource)))
-            finally:n.Dispose()
+            value=geometry_value(geo,host)
+            value.update(layer=doc.Layers[obj.Attributes.LayerIndex].Name,name=obj.Attributes.Name or None,
+                selected=bool(obj.IsSelected(False)),groups=list(obj.Attributes.GetGroupList() or []),
+                color_source=str(obj.Attributes.ColorSource))
+            outputs.append(value)
         source_states=[]
         for i in ids:
             obj=doc.Objects.FindId(i)

@@ -128,6 +128,9 @@ pub use network_surface::Fixture as NetworkSurfaceFixture;
 pub use plane_through_points::{
     Fixture as PlaneThroughPointsFixture, Source as PlaneThroughPointsSource,
 };
+pub use plane_through_points::{
+    Fixture as LineThroughPointsFixture, Source as LineThroughPointsSource,
+};
 mod rail_revolve;
 mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
@@ -1673,6 +1676,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: PlaneThroughPointsFixture,
     },
+    LineThroughPoints {
+        id: String,
+        #[serde(flatten)]
+        fixture: LineThroughPointsFixture,
+    },
     RailRevolve {
         id: String,
         #[serde(flatten)]
@@ -2670,6 +2678,7 @@ impl Operation {
             | Self::TwoRailSweep { id, .. }
             | Self::NetworkSurface { id, .. }
             | Self::PlaneThroughPoints { id, .. }
+            | Self::LineThroughPoints { id, .. }
             | Self::RailRevolve { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
@@ -5887,6 +5896,12 @@ fn execute(
         Operation::PlaneThroughPoints { fixture, .. } => {
             plane_through_points::run(fixture, iterations, tolerance)?
         }
+        Operation::LineThroughPoints { fixture, .. } => plane_through_points::run_kind(
+            fixture,
+            iterations,
+            tolerance,
+            viboceros_command::point_fitting::PointFitKind::Line,
+        )?,
         Operation::RailRevolve { fixture, .. } => {
             rail_revolve::run(fixture, iterations, tolerance)?
         }

@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "LineThroughPt and shared point/line/plane fitting machinery",
+  "base_repository_revision": "c1ad337e5dfd11c3bcdf389c322834f0ed64cf13",
+  "command_registered": true,
+  "retained_complete_line_image_cases_qualified": 21,
+  "retained_complete_plane_image_cases_qualified": 14,
+  "directed_rhino_endpoint_parity_qualified": false,
+  "general_ambiguous_fit_parity_qualified": false,
+  "performance_qualified": false,
+  "implementation": "Share exact centroid/normalization and thin SVD between plane and line fitting; choose the largest singular direction for lines, preserving exact collinear inputs. Exact scalar products select full projection extrema and only the two final endpoints round. Preserve short representable lines without changing existing model tolerances. Share command source gathering, selection/history and Python/Rust oracle scene setup, retaining plane-specific filters and no-result behavior.",
+  "coverage": {
+    "rust_tests": 110,
+    "rust_by_target": {
+      "application": 68,
+      "commands": 12,
+      "geometry": 28,
+      "oracle": 2
+    },
+    "python_tests": 30,
+    "new_rust_tests": 12,
+    "new_python_tests": 3,
+    "new_line_command_cases": 25,
+    "plane_command_regressions": 17,
+    "complete_command_image_certificates": 35,
+    "complete_line_sdk_image_certificates": 21,
+    "licensed_capture_launches": 2,
+    "licensed_native_command_executions": 65,
+    "licensed_line_sdk_calls": 48,
+    "retained_native_commands": 42,
+    "full_mesh_and_orphan_vertices": true,
+    "point_clouds_and_grips": true,
+    "duplicate_weights_and_permutations": true,
+    "coincident_postselection_and_no_history": true,
+    "short_line_length": 1e-09,
+    "model_absolute_tolerance": 1e-06,
+    "collinear_scale_exponents": [
+      -333,
+      333
+    ],
+    "extreme_coordinate_exponent": 1000,
+    "subnormal_line_length": true,
+    "maximum_fit_points": 1000000,
+    "reference_derived_inputs": false
+  },
+  "native_capture_commands": [
+    "python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/line_through_points.json --scheme VibocerosOracleLineFit20261016 --timeout 240 (exploratory 23-case input; superseded by retained combined capture)",
+    "python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/point_fitting.json --scheme VibocerosOraclePointFit20261016 --timeout 240 --output tools/rhino_oracle/observations/point_fitting_rhino_20261016.json"
+  ],
+  "raw_protocol_comparison_passed": false,
+  "maximum_command_control_distance_diagnostic": 9.599853366654507e-10,
+  "limits": [
+    "All 21 retained command line images, 21 SDK line images and 14 plane images pass exact 1e-6 control-distance admission under explicitly matched normalized charts. Endpoint orientation, physical knot domains and surface normal signs remain raw comparison data; no directed parity claim is made.",
+    "The kernel preserves exact collinear lines and uses the shared exactly centered thin SVD for other point sets. Repeated largest singular values admit multiple optimal lines. The retained square matches its native image, but general ambiguous configurations remain unqualified.",
+    "Each repeated point and each full mesh/cloud vertex contributes equally; selected grips use Euclidean locations. Exact scalar products bound all input projections. The stored endpoint distance must remain finite and nonzero. Coordinate normalization can reject unresolved numerical ranges rather than silently collapsing input.",
+    "The original one-million-point plane fit cap remains, with an equal line-fit cap. Existing plane error policy and all model/certificate tolerances remain. Line fits admit short representable geometry through the existing validated line representation instead of a model-distance collapse gate.",
+    "A coincident line selection accepts a no-output command, retaining Redo and clearing only postselected object picks. The plane no-result policy still declines. Whole mesh selection is eligible for lines; the plane command still requires point/cloud objects or selected grips. Native source/metadata and local Undo/Redo/cancellation/viewport tests remain separate evidence.",
+    "All runtime tests and the local protocol export use the default debug build. Workspace clippy checks all targets with native-smlib enabled. No new native C++ code, sanitizer run or performance qualification is claimed. Upstream N_LineFit3dPts forms a covariance-derived normal matrix; this path reuses the existing centered thin SVD instead of introducing a second solver."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-geometry -p viboceros-command -p viboceros-oracle -p viboceros -- point_projection point_fitting line_through_points plane_through_points circle_fit object_selection --nocapture",
+      "passed": true,
+      "tests": 110,
+      "log": "docs/line-through-points-regressions.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_line_through_points tools.rhino_oracle.test_plane_through_points tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "tests": 30,
+      "log": "docs/line-through-points-python.log"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/line-through-points-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/line-through-points-fmt.log"
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle -- tools/rhino_oracle/fixtures/point_fitting.json tools/rhino_oracle/observations/point_fitting_viboceros_20261016.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/line-through-points-api.log"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "60c3373fe842bb305b0eb2b68f25d9ad27cdea5336665693a53a2537d137f8d6",
+    "crates/viboceros-command/Cargo.toml": "81c393837c217b29527314ffef3a1bfa227ba176201a58b8a4a345cecf7f8362",
+    "crates/viboceros-command/src/lib.rs": "58845e4260ab687a0f2b3b303566abb165212912067ee1fbef47e57d10b2dc42",
+    "crates/viboceros-command/src/object_selection.rs": "6a4e4aef1d483a52bb324e618be66cd9cdfd4225a3903aa9cce3c4c4a40d1a11",
+    "crates/viboceros-command/src/object_selection/tests.rs": "403bf7ba66e9feb6d866143ec934605d5eb3f515253780127d2be6260217cfd2",
+    "crates/viboceros-command/src/point_fitting.rs": "d800e4e4d9b5042cea37045ade3428ed4fe40fbbaead9bd8e53f4e172d429ae5",
+    "crates/viboceros-command/src/point_fitting/tests.rs": "6d1e4d6add231e9ffdd5d6b7420935752a07f64f100504de7201c61dfd88749c",
+    "crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
+    "crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
+    "crates/viboceros-geometry/Cargo.toml": "d94db7dfc20e4c5cc4a375cd77d197d11ee10d51054ac6551c1cb69e9316ee5c",
+    "crates/viboceros-geometry/src/binary_accumulator.rs": "990ae206b583200f382617b97b3a28aa00e0d8519bce52423155988e35f8481f",
+    "crates/viboceros-geometry/src/error.rs": "090defb0704c2124b5ca1434a1fbbe2228ee6b70244755bacce23a245f8476cb",
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/src/finite_sum.rs": "d56fa845aa7e65cfffb75453280012a7f8447bd1da1102cdc8cd15f497d061d0",
+    "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
+    "crates/viboceros-geometry/src/lib.rs": "1b31513a386206444c5f725ff642682d33090dc2ee1cbfe0d0c13e027e0237b0",
+    "crates/viboceros-geometry/src/line.rs": "a11a1c64fa364f5ee69b58e4b449bd1ab8441ff9bacaf96a7ebf8de54ca433d4",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
+    "crates/viboceros-geometry/src/point_projection.rs": "f297f74f124a39cb6dd80abc2abe37cb16f302d23cc71f464004bb44c54a4556",
+    "crates/viboceros-geometry/src/point_projection/fit.rs": "ff9b24930ffdd88aa820d62037fc7c435aeaaa32aeca15040d3bd634e11cba91",
+    "crates/viboceros-geometry/src/point_projection/fit/line.rs": "ba554344f6449f6da57c27f34c035f29d968285f34a54415cf54b3b967d2624a",
+    "crates/viboceros-geometry/src/point_projection/fit/line/tests.rs": "df7075ba1761e9c1eac5e30f952726d5cc995a2a4a4c0d224837b83d32b136aa",
+    "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
+    "crates/viboceros-geometry/src/point_projection/fit/surface.rs": "d9eee3837cdb8ecc6435a2d476c1151a6864b5ff85c54be203b7d0cf89376e24",
+    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
+    "crates/viboceros-oracle/src/lib.rs": "f6637e858dcc0b7e20946099a603ad65334a623abcf25a9ca9cecfa9dc799fc3",
+    "crates/viboceros-oracle/src/plane_through_points.rs": "5bb9a8d3289a6104f20d83db3e182902d6f736289fdf2fac0fbefc5fe644eba6",
+    "docs/commands/README.md": "b6f4c9f2cfd646a1d0f2693c5764cafc9b917de497efa783eeef18a68b9f9da6",
+    "docs/commands/line-through-points.md": "1cad8d2ad96dfa29c99d011752e4cbcac1be55f5964c95bbaddd202eb4193c9f",
+    "docs/commands/plane-through-points.md": "af5ef16b4868515438b6ff6d8f0029d4c75709533bb4d581deb672d9f9d40851",
+    "src/app.rs": "27fdbe5397da5d4b4ec997a8ff755e71a268be2a41e4702b98e082b50e77863c",
+    "src/app/object_selection.rs": "9ee33dce08289f67089c6be73291746fbd666dc0afcda019a9ee6c75aaf42c3f",
+    "src/app/tests/line_through_points.rs": "f665a79bb7b894728670e4d009470daaf1ce13498a141ac06ae43650f0220647",
+    "tools/rhino_oracle/client.py": "a837006de4b2fe4b6f2bffa9eabc7032905c90438c9aabd4474711a70d3b9c64",
+    "tools/rhino_oracle/line_through_points_probe.py": "a7c3f9054f725b270e3c9a490b39cf21be5f06c3da2d26e66fd2b0fede91fc32",
+    "tools/rhino_oracle/plane_through_points_probe.py": "06e95244e66bf7cde8caf54d1410b1cdf14e697993201d01535dee2e2a4c1498",
+    "tools/rhino_oracle/rhino_worker.py": "a6f68fb8ba5e77fc6157e774b0495df0ec614a245b58c74a127f3ee8cdc80bc6",
+    "tools/rhino_oracle/structural_sdk.py": "07a51cd22f4fbf40c999732415bc6fed69ac4df491bc7cc7771b2c5e737bc502",
+    "tools/rhino_oracle/test_line_through_points.py": "15d364f522453b7af33bb51d249c02c73c0b560c231bdbe39d3086a1413429ab",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "removed_source_git_sha256": {
+    "c1ad337e5dfd11c3bcdf389c322834f0ed64cf13:crates/viboceros-command/src/plane_through_points.rs": "cf90aa3c213b1cd05e81b5c2297dda9dee83f6ed40ae3c90bf838b3f6f8e9711"
+  },
+  "input_sha256": {
+    "tools/rhino_oracle/fixtures/point_fitting.json": "390c64b6c9e1c4fb936348d6e521f002eff088f900d793cfeaa7f7a6d01030e5",
+    "tools/rhino_oracle/fixtures/line_through_points.json": "55ad37dbcec26dc9fa864f826bf1c4ece0e2871dee88960556f02ec5c32dc6f5",
+    "tools/rhino_oracle/fixtures/plane_through_points.json": "e46aaf12870fefb7d85ab66944fb139665e55b3da90412b9ffd9dac4ab8ac354",
+    "tools/rhino_oracle/observations/plane_through_points_rhino_20261016.json": "5964c7fc35326c6a079361f68a009f5303dd7a04bcc67073fe9e646bd60d2afe"
+  },
+  "evidence_sha256": {
+    "docs/line-through-points-regressions.log": "d8a7eb6f899f0588f589ab1d60b2cf66ce69326451ef97f5aebbc24720c617e6",
+    "docs/line-through-points-python.log": "93c99fa7345a9c42026143a273dc9778abdc431f39be573af126352a1f2cab6f",
+    "docs/line-through-points-clippy.log": "521875a17dde63cbb60c814a11e830f0f2e582142eb33da2d4d63fc1c5b7c8e8",
+    "docs/line-through-points-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/line-through-points-api.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tools/rhino_oracle/observations/point_fitting_rhino_20261016.json": "ead40a9aba6912bc613fc5d499ad78091c956e21b095255ed471d6137d56a0a9",
+    "tools/rhino_oracle/observations/point_fitting_viboceros_20261016.json": "ee289c983db3e855825d16ffe9b709e18af951af48539f0725544982b8e31117",
+    "tools/rhino_oracle/observations/point_fitting_comparison_20261016.json": "43ac72b4286d90e16b5771e6bfedaf9a58ddf07649764c165589a3be001e373d"
+  }
+}

@@ -100,6 +100,9 @@ impl PendingObjectCommand {
                 "Edit counts, degrees or output options; Enter rebuilds, Esc cancels"
             };
         }
+        if self.description.command == "LineThroughPt" {
+            return "Select at least two points, cloud points, meshes or grips; Enter fits a line, Esc cancels";
+        }
         if self.description.command == "PlaneThroughPt" {
             return "Select at least three points, cloud points or control points; Enter fits a plane, Esc cancels";
         }
@@ -199,7 +202,7 @@ impl VibocerosApp {
             p.phase == ObjectPromptPhase::Selecting
                 && (matches!(
                     p.description.command,
-                    "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
                 ) || (p.description.workflow
                     == ObjectSelectionWorkflow::PointInputAfterSelection
                     && super::transform_sources::allows_grips(p.description.command)))
@@ -506,7 +509,7 @@ impl VibocerosApp {
                 }
             }
             "Circle FitPoints" | "PlaneThroughPt" => 3,
-            "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" => 2,
+            "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" | "LineThroughPt" => 2,
             _ => 1,
         };
         let selected_objects = self
@@ -517,7 +520,7 @@ impl VibocerosApp {
             .count();
         let selected_grips = if matches!(
             description.command,
-            "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+            "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
         ) {
             self.document
                 .selected_control_points()
@@ -533,17 +536,10 @@ impl VibocerosApp {
         } else {
             0
         };
-        let preselected = if description.command == "PlaneThroughPt" {
-            self.document
-                .selected_objects()
-                .map(|o| match o.geometry() {
-                    Geometry::Point(_) => 1,
-                    Geometry::PointCloud(cloud) => cloud.points().len(),
-                    _ => 0,
-                })
-                .fold(0usize, usize::saturating_add)
-                .saturating_add(selected_grips)
-                >= 3
+        let preselected = if let Some(kind) =
+            viboceros_command::point_fitting::PointFitKind::from_command(description.command)
+        {
+            kind.selected_point_count(&self.document) >= kind.minimum_points()
         } else {
             selected_objects + selected_grips >= required
         };
@@ -838,7 +834,7 @@ impl VibocerosApp {
                             && pending.description.filter.accepts_object(o)
                     }) || (matches!(
                         pending.description.command,
-                        "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                        "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
                     ) && self.document.selected_control_points().next().is_some());
                 if !has_eligible_picks {
                     if self
@@ -1065,7 +1061,7 @@ impl VibocerosApp {
                 self.select_prompt_objects(ids, SelectionMode::Add);
                 if matches!(
                     pending.description.command,
-                    "Circle FitPoints" | "PlaneThroughPt"
+                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt"
                 ) {
                     self.document.select_all_control_points();
                 }

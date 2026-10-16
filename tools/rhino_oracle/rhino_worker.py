@@ -13423,6 +13423,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'two_rail_sweep':
         from two_rail_sweep_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'line_through_points':
+        from line_through_points_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'plane_through_points':
         from plane_through_points_probe import run
         return run(operation, globals(), iterations, tolerance)

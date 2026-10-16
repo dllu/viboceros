@@ -1,0 +1,3771 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "line-points-pre",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.0,
+                    3.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.708203932499369
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.708203932499369,
+                6.708203932499369
+              ]
+            },
+            "endpoints": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                6.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              6.0,
+              3.0,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1375283
+    },
+    {
+      "id": "line-points-post",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.0,
+                    3.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.708203932499369
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.708203932499369,
+                6.708203932499369
+              ]
+            },
+            "endpoints": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                6.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              6.0,
+              3.0,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 1237746
+    },
+    {
+      "id": "line-cloud",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.0,
+                    3.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.708203932499369
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.708203932499369,
+                6.708203932499369
+              ]
+            },
+            "endpoints": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                6.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              6.0,
+              3.0,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1154083
+    },
+    {
+      "id": "line-curve-grips",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.0,
+                    3.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.708203932499369
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.708203932499369,
+                6.708203932499369
+              ]
+            },
+            "endpoints": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                6.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              6.0,
+              3.0,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 4,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 1189266
+    },
+    {
+      "id": "line-mesh",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0025060988148700495,
+                    0.10006863544294987,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.001248116455723,
+                    -0.050162655256438426,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.000622903908814
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.000622903908814,
+                6.000622903908814
+              ]
+            },
+            "endpoints": [
+              [
+                0.0025060988148700495,
+                0.10006863544294987,
+                1.0
+              ],
+              [
+                6.001248116455723,
+                -0.050162655256438426,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0025060988148700495,
+              0.10006863544294987,
+              1.0
+            ],
+            [
+              6.001248116455723,
+              -0.050162655256438426,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 5493770
+    },
+    {
+      "id": "line-mesh-post",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0025060988148700495,
+                    0.10006863544294987,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.001248116455723,
+                    -0.050162655256438426,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.000622903908814
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.000622903908814,
+                6.000622903908814
+              ]
+            },
+            "endpoints": [
+              [
+                0.0025060988148700495,
+                0.10006863544294987,
+                1.0
+              ],
+              [
+                6.001248116455723,
+                -0.050162655256438426,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0025060988148700495,
+              0.10006863544294987,
+              1.0
+            ],
+            [
+              6.001248116455723,
+              -0.050162655256438426,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 5348442
+    },
+    {
+      "id": "line-mesh-grips",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0025060988148700495,
+                    0.10006863544294987,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.001248116455723,
+                    -0.050162655256438426,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.000622903908814
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.000622903908814,
+                6.000622903908814
+              ]
+            },
+            "endpoints": [
+              [
+                0.0025060988148700495,
+                0.10006863544294987,
+                1.0
+              ],
+              [
+                6.001248116455723,
+                -0.050162655256438426,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0025060988148700495,
+              0.10006863544294987,
+              1.0
+            ],
+            [
+              6.001248116455723,
+              -0.050162655256438426,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 4,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 5322363
+    },
+    {
+      "id": "line-two-points",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    6.0,
+                    8.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                7.0710678118654755
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                7.0710678118654755,
+                7.0710678118654755
+              ]
+            },
+            "endpoints": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                8.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              1.0,
+              2.0,
+              3.0
+            ],
+            [
+              4.0,
+              6.0,
+              8.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1170482
+    },
+    {
+      "id": "line-two-cloud",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    6.0,
+                    8.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                7.0710678118654755
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                7.0710678118654755,
+                7.0710678118654755
+              ]
+            },
+            "endpoints": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                6.0,
+                8.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              1.0,
+              2.0,
+              3.0
+            ],
+            [
+              4.0,
+              6.0,
+              8.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1154115
+    },
+    {
+      "id": "line-one-point",
+      "value": {
+        "command_returned": false,
+        "outputs": [],
+        "sdk": {
+          "created": false,
+          "endpoints": []
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 770722
+    },
+    {
+      "id": "line-one-cloud",
+      "value": {
+        "command_returned": false,
+        "outputs": [],
+        "sdk": {
+          "created": false,
+          "endpoints": []
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 773474
+    },
+    {
+      "id": "line-coincident",
+      "value": {
+        "command_returned": true,
+        "outputs": [],
+        "sdk": {
+          "created": false,
+          "endpoints": []
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 771778
+    },
+    {
+      "id": "line-noisy-xy",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0025060988148700495,
+                    0.10006863544294987,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.001248116455723,
+                    -0.050162655256438426,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.000622903908814
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.000622903908814,
+                6.000622903908814
+              ]
+            },
+            "endpoints": [
+              [
+                0.0025060988148700495,
+                0.10006863544294987,
+                1.0
+              ],
+              [
+                6.001248116455723,
+                -0.050162655256438426,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0025060988148700495,
+              0.10006863544294987,
+              1.0
+            ],
+            [
+              6.001248116455723,
+              -0.050162655256438426,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 5356410
+    },
+    {
+      "id": "line-reversed-noisy",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0025060988148700486,
+                    0.10006863544294985,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.001248116455723,
+                    -0.050162655256438406,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.000622903908814
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.000622903908814,
+                6.000622903908814
+              ]
+            },
+            "endpoints": [
+              [
+                0.0025060988148700486,
+                0.10006863544294985,
+                1.0
+              ],
+              [
+                6.001248116455723,
+                -0.050162655256438406,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0025060988148700486,
+              0.10006863544294985,
+              1.0
+            ],
+            [
+              6.001248116455723,
+              -0.050162655256438406,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 5431722
+    },
+    {
+      "id": "line-weighted-duplicates",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.009421815018350144,
+                    0.22854994786242014,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    6.003357886986129,
+                    -0.018545960187806708,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                5.999027089671432
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                5.999027089671432,
+                5.999027089671432
+              ]
+            },
+            "endpoints": [
+              [
+                0.009421815018350144,
+                0.22854994786242014,
+                1.0
+              ],
+              [
+                6.003357886986129,
+                -0.018545960187806708,
+                1.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.009421815018350144,
+              0.22854994786242014,
+              1.0
+            ],
+            [
+              6.003357886986129,
+              -0.018545960187806708,
+              1.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 7469214
+    },
+    {
+      "id": "line-noisy-3d",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    -0.015014121257755062,
+                    0.030637022458494666,
+                    0.12278108952661154
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.984810709871724,
+                    3.0342426798884667,
+                    0.037647477237770934
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.710200643909581
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.710200643909581,
+                6.710200643909581
+              ]
+            },
+            "endpoints": [
+              [
+                -0.015014121257755062,
+                0.030637022458494666,
+                0.12278108952661154
+              ],
+              [
+                5.984810709871724,
+                3.0342426798884667,
+                0.037647477237770934
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              -0.015014121257755062,
+              0.030637022458494666,
+              0.12278108952661154
+            ],
+            [
+              5.984810709871724,
+              3.0342426798884667,
+              0.037647477237770934
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 7921551
+    },
+    {
+      "id": "line-remote-noisy",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    999999.9849858787,
+                    -1999999.9693629777,
+                    3000000.1227810895
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1000005.9848107098,
+                    -1999996.9657573202,
+                    3000000.0376474774
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                6.710200643949358
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                6.710200643949358,
+                6.710200643949358
+              ]
+            },
+            "endpoints": [
+              [
+                999999.9849858787,
+                -1999999.9693629777,
+                3000000.1227810895
+              ],
+              [
+                1000005.9848107098,
+                -1999996.9657573202,
+                3000000.0376474774
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              999999.9849858787,
+              -1999999.9693629777,
+              3000000.1227810895
+            ],
+            [
+              1000005.9848107098,
+              -1999996.9657573202,
+              3000000.0376474774
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 7668318
+    },
+    {
+      "id": "line-axis-x",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                3.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ]
+            },
+            "endpoints": [
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              1.0,
+              2.0,
+              3.0
+            ],
+            [
+              4.0,
+              2.0,
+              3.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1050338
+    },
+    {
+      "id": "line-axis-y",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    5.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "endpoints": [
+              [
+                1.0,
+                1.0,
+                3.0
+              ],
+              [
+                1.0,
+                5.0,
+                3.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              1.0,
+              1.0,
+              3.0
+            ],
+            [
+              1.0,
+              5.0,
+              3.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1028242
+    },
+    {
+      "id": "line-axis-z",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    5.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                4.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "endpoints": [
+              [
+                1.0,
+                2.0,
+                1.0
+              ],
+              [
+                1.0,
+                2.0,
+                5.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              1.0,
+              2.0,
+              1.0
+            ],
+            [
+              1.0,
+              2.0,
+              5.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1002082
+    },
+    {
+      "id": "line-symmetric-flat",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    -4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                8.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                8.0,
+                8.0
+              ]
+            },
+            "endpoints": [
+              [
+                -4.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              -4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1380082
+    },
+    {
+      "id": "line-ambiguous-square",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                2.0
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                2.0,
+                2.0
+              ]
+            },
+            "endpoints": [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1339603
+    },
+    {
+      "id": "line-small",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    2.50609881487005e-8,
+                    1.0006863544294987e-6,
+                    0.00001
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.00006001248116455724,
+                    -5.016265525643844e-7,
+                    0.00001
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                0.00006000622903908816
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                0.00006000622903908816,
+                0.00006000622903908816
+              ]
+            },
+            "endpoints": [
+              [
+                2.50609881487005e-8,
+                1.0006863544294987e-6,
+                0.00001
+              ],
+              [
+                0.00006001248116455724,
+                -5.016265525643844e-7,
+                0.00001
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              2.50609881487005e-8,
+              1.0006863544294987e-6,
+              0.00001
+            ],
+            [
+              0.00006001248116455724,
+              -5.016265525643844e-7,
+              0.00001
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 7177646
+    },
+    {
+      "id": "line-coincident-post",
+      "value": {
+        "command_returned": true,
+        "outputs": [],
+        "sdk": {
+          "created": false,
+          "endpoints": []
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 792689
+    },
+    {
+      "id": "line-below-model-tolerance",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "definition": {
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1e-9,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": 1,
+              "domain": [
+                0.0,
+                1e-9
+              ],
+              "knots": [
+                0.0,
+                0.0,
+                1e-9,
+                1e-9
+              ]
+            },
+            "endpoints": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1e-9,
+                0.0,
+                0.0
+              ]
+            ],
+            "groups": [],
+            "layer": "LineFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "endpoints": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-9,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1571683
+    },
+    {
+      "id": "xy-points-pre",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                3.0
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 979298
+    },
+    {
+      "id": "xy-points-post",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                3.0
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 987922
+    },
+    {
+      "id": "xy-cloud",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                3.0
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 926049
+    },
+    {
+      "id": "xy-mesh-grips",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                3.0
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 5,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 954946
+    },
+    {
+      "id": "xy-curve-grips",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                4.0,
+                0.0,
+                2.0
+              ],
+              [
+                4.0,
+                3.0,
+                2.0
+              ],
+              [
+                0.0,
+                0.0,
+                2.0
+              ],
+              [
+                0.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    3.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                3.0
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 5,
+            "present": true,
+            "selected": false
+          }
+        ]
+      },
+      "elapsed_ns": 984626
+    },
+    {
+      "id": "yz",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                2.0,
+                4.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                3.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                3.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    2.0,
+                    4.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    4.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                3.0
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 973330
+    },
+    {
+      "id": "xz",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                0.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                4.0,
+                2.0,
+                0.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    2.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                4.0
+              ],
+              "domain_v": [
+                0.0,
+                3.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 989234
+    },
+    {
+      "id": "rotated-rectangle",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                3.729309382424138,
+                0.0,
+                2.0
+              ],
+              [
+                3.729309382424138,
+                4.243443764677951,
+                2.0
+              ],
+              [
+                -1.084846295894886,
+                0.0,
+                2.0
+              ],
+              [
+                -1.084846295894886,
+                4.243443764677951,
+                2.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    3.729309382424138,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.729309382424138,
+                    4.243443764677951,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.084846295894886,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.084846295894886,
+                    4.243443764677951,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                4.243443764677951
+              ],
+              "domain_v": [
+                0.0,
+                4.814155678319024
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                4.243443764677951,
+                4.243443764677951
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.814155678319024,
+                4.814155678319024
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1299458
+    },
+    {
+      "id": "triangle",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                4.0,
+                2.0,
+                3.0
+              ],
+              [
+                4.0,
+                5.0,
+                3.0
+              ],
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                1.0,
+                5.0,
+                3.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    5.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    5.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                3.0
+              ],
+              "domain_v": [
+                0.0,
+                3.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 998066
+    },
+    {
+      "id": "tilted",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                4.0,
+                -1.3266768080865211e-15,
+                2.1999999999999997
+              ],
+              [
+                5.972972520746008e-17,
+                -0.5637583892617456,
+                1.3946308724832215
+              ],
+              [
+                4.0,
+                3.5637583892617455,
+                -0.29463087248322095
+              ],
+              [
+                5.972972520746008e-17,
+                3.0000000000000013,
+                -1.0999999999999994
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.0,
+                    -1.3266768080865211e-15,
+                    2.1999999999999997
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.972972520746008e-17,
+                    -0.5637583892617456,
+                    1.3946308724832215
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    3.5637583892617455,
+                    -0.29463087248322095
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.972972520746008e-17,
+                    3.0000000000000013,
+                    -1.0999999999999994
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                4.119034225764595
+              ],
+              "domain_v": [
+                0.0,
+                4.350121497956105
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                4.119034225764595,
+                4.119034225764595
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.350121497956105,
+                4.350121497956105
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 3486391
+    },
+    {
+      "id": "nonplanar",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                5.007584687752348,
+                0.0026916902836866294,
+                -0.04941315237883074
+              ],
+              [
+                5.002306499665799,
+                4.0051774364079,
+                -0.1542066166659936
+              ],
+              [
+                0.005165007854416061,
+                0.0026916902836866294,
+                0.20254637713916276
+              ],
+              [
+                -0.00011318023213267612,
+                4.0051774364079,
+                0.09775291285199988
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    5.007584687752348,
+                    0.0026916902836866294,
+                    -0.04941315237883074
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    5.002306499665799,
+                    4.0051774364079,
+                    -0.1542066166659936
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.005165007854416061,
+                    0.0026916902836866294,
+                    0.20254637713916276
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -0.00011318023213267612,
+                    4.0051774364079,
+                    0.09775291285199988
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                4.003860846402418
+              ],
+              "domain_v": [
+                0.0,
+                5.0087609504092985
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                4.003860846402418,
+                4.003860846402418
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                5.0087609504092985,
+                5.0087609504092985
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 3028117
+    },
+    {
+      "id": "remote-tilted",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                1000004.0,
+                -1999996.4362416107,
+                2999999.7053691274
+              ],
+              [
+                1000000.0,
+                -1999997.0,
+                2999998.9
+              ],
+              [
+                1000004.0,
+                -2000000.0,
+                3000002.2
+              ],
+              [
+                1000000.0,
+                -2000000.5637583893,
+                3000001.3946308726
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1000004.0,
+                    -1999996.4362416107,
+                    2999999.7053691274
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1000000.0,
+                    -1999997.0,
+                    2999998.9
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1000004.0,
+                    -2000000.0,
+                    3000002.2
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1000000.0,
+                    -2000000.5637583893,
+                    3000001.3946308726
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                4.1190342258088
+              ],
+              "domain_v": [
+                0.0,
+                4.350121498126198
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                4.1190342258088,
+                4.1190342258088
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.350121498126198,
+                4.350121498126198
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 2619749
+    },
+    {
+      "id": "one-cloud",
+      "value": {
+        "command_returned": false,
+        "outputs": [],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 804897
+    },
+    {
+      "id": "two-cloud",
+      "value": {
+        "command_returned": false,
+        "outputs": [],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 762385
+    },
+    {
+      "id": "collinear-cloud",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                1.0,
+                6.000000000000001,
+                9.0
+              ],
+              [
+                3.0,
+                6.000000000000001,
+                9.0
+              ],
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                3.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    6.000000000000001,
+                    9.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    6.000000000000001,
+                    9.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                2.0
+              ],
+              "domain_v": [
+                0.0,
+                7.211102550927979
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                2.0,
+                2.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                7.211102550927979,
+                7.211102550927979
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1079602
+    },
+    {
+      "id": "collinear-points",
+      "value": {
+        "command_returned": true,
+        "outputs": [
+          {
+            "color_source": "ColorFromLayer",
+            "corners": [
+              [
+                1.0,
+                6.000000000000001,
+                9.0
+              ],
+              [
+                3.0,
+                6.000000000000001,
+                9.0
+              ],
+              [
+                1.0,
+                2.0,
+                3.0
+              ],
+              [
+                3.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "definition": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    6.000000000000001,
+                    9.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    6.000000000000001,
+                    9.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    3.0,
+                    2.0,
+                    3.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                2.0
+              ],
+              "domain_v": [
+                0.0,
+                7.211102550927979
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                2.0,
+                2.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                7.211102550927979,
+                7.211102550927979
+              ]
+            },
+            "groups": [],
+            "layer": "PlaneFitCurrent",
+            "name": null,
+            "selected": false
+          }
+        ],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          },
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 1081730
+    },
+    {
+      "id": "coincident-cloud",
+      "value": {
+        "command_returned": false,
+        "outputs": [],
+        "sources": [
+          {
+            "grips_selected": 0,
+            "present": true,
+            "selected": true
+          }
+        ]
+      },
+      "elapsed_ns": 789714
+    }
+  ]
+}

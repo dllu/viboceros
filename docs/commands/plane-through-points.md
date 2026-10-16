@@ -37,6 +37,10 @@ bilinear tensor constructor. usd-brep's `N_FitPlaneToPts` instead chooses a
 minimum-area bounding rectangle; it does not supply this command's measured
 rectangle policy. No second plane solver is introduced.
 
+[LineThroughPt](line-through-points.md) shares the centered SVD, source
+gathering and selection/history machinery. Each command retains its own input
+filter, minimum point count and no-result policy.
+
 Seventeen native commands captured on private Xvfb cover point preselection
 and postselection, clouds, mesh and curve grips, all coordinate planes, rotated
 rectangles, triangles, tilted/nonplanar inputs, a remote origin and degenerate

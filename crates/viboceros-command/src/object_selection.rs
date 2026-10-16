@@ -32,6 +32,7 @@ pub enum ObjectSelectionFilter {
     Surfaces,
     Points,
     PlaneFitPoints,
+    LineFitPoints,
     ControlPoints,
     PointCloudSources,
     PointCloudAddSources,
@@ -81,6 +82,10 @@ impl ObjectSelectionFilter {
             Self::PlaneFitPoints => {
                 matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))
             }
+            Self::LineFitPoints => matches!(
+                geometry,
+                Geometry::Point(_) | Geometry::PointCloud(_) | Geometry::Mesh(_)
+            ),
             Self::ControlPoints => geometry.supports_control_points(),
             Self::PointCloudAddSources => {
                 matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))

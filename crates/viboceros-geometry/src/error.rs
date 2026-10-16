@@ -93,6 +93,12 @@ pub enum GeometryError {
         "best-fit plane singular-value decomposition did not resolve a finite full-rank solution"
     )]
     PlaneFitDidNotConverge,
+    #[error("best-fit line exceeds the input limit of {maximum} points")]
+    LineFitResourceLimit { maximum: usize },
+    #[error("best-fit line coordinates exceed the solver's normalized numerical range")]
+    LineFitNumericalRange,
+    #[error("best-fit line singular-value decomposition did not resolve a finite direction")]
+    LineFitDidNotConverge,
     #[error("mesh decomposition exceeds the limit of {maximum} components")]
     MeshComponentLimit { maximum: usize },
     #[error("Bezier decomposition exceeded its work or output-control budget")]

@@ -87,7 +87,6 @@
     "crates/viboceros-geometry/src/curve/arc_length.rs": "2022499da072f43e57dd5a071b3f5d35a59f9ae7f8c6aa8088ab220e5fcff6c8",
     "crates/viboceros-geometry/src/curve/arc_length/spans.rs": "32546d55b61a1921d019ffcfc97c9d18699693b4df862fc24658ff13be388fd5",
     "crates/viboceros-geometry/src/curve_fit/constraints_tests.rs": "fac8294fd228907be0c607d0f88d10780fd11b00a08b26b7d6c3bafb1cec0aba",
-    "crates/viboceros-geometry/src/error.rs": "e5da49390851fc391db3912c7e57a61661d422655ced84734c8db0e2484a679c",
     "crates/viboceros-geometry/src/spline_collocation.rs": "8abe7a91ffbdea3c146a0102c277a94549f0c837148124c9af93a8f26aa7c45e",
     "crates/viboceros-geometry/src/spline_collocation/banded.rs": "a205d028f0c14499ebe80fe6cf33fa7394586e29b164a21d8acd7f801a0e6d18",
     "crates/viboceros-geometry/src/surface_pullback/certificate/affine.rs": "ef63b64d1422bbb98bc67ccd2f1cd397da47e322ec60891345ffbdbc4a49df5d",
@@ -140,6 +139,7 @@
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs": "3579b0959183bfe18a734240259785e792ea1f7210fa3dd6b283218dac2efd15",
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/native/bridge.h": "c57dcdcc47c84678066089f2233c4259118301e35c5f76b4a8d66cf02f223e35",
-    "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d"
+    "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
+    "c1ad337e5dfd11c3bcdf389c322834f0ed64cf13:crates/viboceros-geometry/src/error.rs": "e5da49390851fc391db3912c7e57a61661d422655ced84734c8db0e2484a679c"
   }
 }

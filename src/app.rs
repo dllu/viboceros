@@ -8849,7 +8849,7 @@ impl VibocerosApp {
             let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
                 matches!(
                     prompt.description.command,
-                    "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
                 ) || (prompt.description.workflow
                     == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                     && transform_sources::allows_grips(prompt.description.command))
@@ -9015,7 +9015,7 @@ impl VibocerosApp {
                 || self.object_prompt.as_ref().is_some_and(|prompt| {
                     (matches!(
                         prompt.description.command,
-                        "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                        "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
                     ) || (prompt.description.workflow
                         == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                         && transform_sources::allows_grips(prompt.description.command)))
@@ -10098,6 +10098,7 @@ mod tests {
     mod interface;
     mod intersect_two_sets;
     mod length;
+    mod line_through_points;
     mod maelstrom;
     mod merge_edge;
     mod mesh_face_prompt;
