@@ -1,0 +1,18 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-document v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-document)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-drafting v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-drafting)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `release` profile [optimized] target(s) in 16m 08s
+     Running unittests src/main.rs (target/release/deps/viboceros-cdd7ed46a0528046)
+
+running 4 tests
+test app::tests::plane_through_points::plane_through_points_cancel_and_insufficient_selection_preserve_redo ... ok
+test app::tests::plane_through_points::plane_through_points_viewport_grip_picks_accumulate_until_enter ... ok
+test app::tests::plane_through_points::plane_through_points_postselection_filters_sources_and_accepts_one_history_edit ... ok
+test app::tests::plane_through_points::plane_through_points_preselected_cloud_and_grips_execute_without_reselecting ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1226 filtered out; finished in 0.01s

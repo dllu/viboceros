@@ -100,6 +100,9 @@ impl PendingObjectCommand {
                 "Edit counts, degrees or output options; Enter rebuilds, Esc cancels"
             };
         }
+        if self.description.command == "PlaneThroughPt" {
+            return "Select at least three points, cloud points or control points; Enter fits a plane, Esc cancels";
+        }
         if self.description.command == "Circle FitPoints" {
             return "Select at least three points or control points; Enter fits the circle, Esc cancels";
         }
@@ -194,10 +197,12 @@ impl VibocerosApp {
     fn try_select_prompt_points(&mut self, input: &str) -> bool {
         let Some(pending) = self.object_prompt.as_ref().filter(|p| {
             p.phase == ObjectPromptPhase::Selecting
-                && (matches!(p.description.command, "Circle FitPoints" | "Smooth")
-                    || (p.description.workflow
-                        == ObjectSelectionWorkflow::PointInputAfterSelection
-                        && super::transform_sources::allows_grips(p.description.command)))
+                && (matches!(
+                    p.description.command,
+                    "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                ) || (p.description.workflow
+                    == ObjectSelectionWorkflow::PointInputAfterSelection
+                    && super::transform_sources::allows_grips(p.description.command)))
         }) else {
             return false;
         };
@@ -500,7 +505,7 @@ impl VibocerosApp {
                     2
                 }
             }
-            "Circle FitPoints" => 3,
+            "Circle FitPoints" | "PlaneThroughPt" => 3,
             "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" => 2,
             _ => 1,
         };
@@ -510,7 +515,10 @@ impl VibocerosApp {
             .filter(|o| description.filter.accepts_object(o))
             .take(required)
             .count();
-        let selected_grips = if matches!(description.command, "Circle FitPoints" | "Smooth") {
+        let selected_grips = if matches!(
+            description.command,
+            "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+        ) {
             self.document
                 .selected_control_points()
                 .filter(|(p, _)| {
@@ -525,7 +533,20 @@ impl VibocerosApp {
         } else {
             0
         };
-        let preselected = selected_objects + selected_grips >= required;
+        let preselected = if description.command == "PlaneThroughPt" {
+            self.document
+                .selected_objects()
+                .map(|o| match o.geometry() {
+                    Geometry::Point(_) => 1,
+                    Geometry::PointCloud(cloud) => cloud.points().len(),
+                    _ => 0,
+                })
+                .fold(0usize, usize::saturating_add)
+                .saturating_add(selected_grips)
+                >= 3
+        } else {
+            selected_objects + selected_grips >= required
+        };
         if description.command == "Smooth"
             && preselected
             && words
@@ -815,8 +836,10 @@ impl VibocerosApp {
                     self.document.selected_objects().any(|o| {
                         Some(o.id()) != pending.excluded_object
                             && pending.description.filter.accepts_object(o)
-                    }) || (matches!(pending.description.command, "Circle FitPoints" | "Smooth")
-                        && self.document.selected_control_points().next().is_some());
+                    }) || (matches!(
+                        pending.description.command,
+                        "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                    ) && self.document.selected_control_points().next().is_some());
                 if !has_eligible_picks {
                     if self
                         .commands
@@ -1040,7 +1063,10 @@ impl VibocerosApp {
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
                 self.select_prompt_objects(ids, SelectionMode::Add);
-                if pending.description.command == "Circle FitPoints" {
+                if matches!(
+                    pending.description.command,
+                    "Circle FitPoints" | "PlaneThroughPt"
+                ) {
                     self.document.select_all_control_points();
                 }
             }

@@ -26,6 +26,26 @@ pub struct PointProjection3 {
 }
 
 impl PointProjection3 {
+    /// A finite plane representation of a plane projector. Its unit normal
+    /// retains the represented orientation; normalizing can round its direction
+    /// and the exact internal origin is rounded once. Line projectors reject.
+    pub fn as_plane(&self) -> Result<crate::Plane, GeometryError> {
+        use num_traits::Signed;
+        if self.line {
+            return Err(GeometryError::Degenerate {
+                context: "plane representation of a line projector",
+            });
+        }
+        let scale = self.axis.iter().map(Signed::abs).max().unwrap();
+        let normal = Vector3::try_new(
+            scalar(&(&self.axis[0] / &scale))?,
+            scalar(&(&self.axis[1] / &scale))?,
+            scalar(&(&self.axis[2] / &scale))?,
+        )?
+        .normalized_nonzero()?;
+        Ok(crate::Plane::new(self.rounded_origin, normal))
+    }
+
     /// Project onto the supporting line through two distinct points (unclamped).
     pub fn onto_line(start: Point3, end: Point3) -> Result<Self, GeometryError> {
         Self::new(start, difference(end, start), true)

@@ -290,7 +290,6 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "README.md": "31414942322c7ff3bb118ebc7874dfa60a32da3924c21ce1ad440139a82fa53e",
     "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
     "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
     "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
@@ -378,5 +377,8 @@
     "docs/automatic-gordon-network-fit-nonuniform-probe.log": "688acb78bbc82e3f53f0620b43d603be01438c0dc019525a3d1dce26fb4ff840",
     "tools/rhino_oracle/observations/fitted_network_viboceros_20261016.json": "e62faf5d2a69a535f1ba96a09ce60579b0b7dc2155012cc09107880a6006a64b",
     "tools/rhino_oracle/observations/fitted_network_nonuniform_viboceros_20261016.json": "2be08908e47677e2e279b2efe81d953351764d692139770d16a3ab7f6cb281c0"
+  },
+  "source_git_sha256": {
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:README.md": "31414942322c7ff3bb118ebc7874dfa60a32da3924c21ce1ad440139a82fa53e"
   }
 }

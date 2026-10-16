@@ -64,6 +64,10 @@ fn object_filters_cover_geometry_and_memberships_without_changing_selection_poli
                 ObjectSelectionFilter::PointCloudSources,
                 [true, false, true, false, false],
             ),
+            (
+                ObjectSelectionFilter::PlaneFitPoints,
+                [true, false, false, false, true],
+            ),
         ] {
             assert_eq!(
                 document

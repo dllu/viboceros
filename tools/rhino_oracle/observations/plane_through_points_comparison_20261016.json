@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "reference_derived_inputs": false,
+  "complete_bilinear_images_certified": 14,
+  "retained_cases": 17,
+  "geometry_and_metadata_comparison_passed": true,
+  "method": "All four polynomial bilinear controls satisfy an exact rational squared-distance predicate under one of eight explicit normalized unit tensor charts. Convex Bernstein weights bound the complete paired surface images. Native domains, controls and orientations remain in the unmodified raw records.",
+  "cases": [
+    {
+      "id": "xy-points-pre",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "xy-points-post",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "xy-cloud",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "xy-mesh-grips",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "xy-curve-grips",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "yz",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "xz",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 4.440892098500626e-16,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "rotated-rectangle",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "triangle",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "maximum_control_distance_diagnostic": 0.0,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "tilted",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "maximum_control_distance_diagnostic": 1.793886252542988e-15,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "nonplanar",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 1.1443916996305594e-15,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "remote-tilted",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 9.599853366654507e-10,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "one-cloud",
+      "command_returned": false,
+      "output_count": 0
+    },
+    {
+      "id": "two-cloud",
+      "command_returned": false,
+      "output_count": 0
+    },
+    {
+      "id": "collinear-cloud",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "collinear-points",
+      "command_returned": true,
+      "output_count": 1,
+      "whole_bilinear_image_within_1e_minus_6": true,
+      "reference_corner_permutation": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+      "normalized_unit_chart": true,
+      "exact_squared_control_admission": true
+    },
+    {
+      "id": "coincident-cloud",
+      "command_returned": false,
+      "output_count": 0
+    }
+  ],
+  "raw_protocol_comparison": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 0,
+    "passed": false,
+    "operations": [
+      {
+        "id": "xy-points-pre",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 336705.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-points-post",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 278672.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 200384.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-mesh-grips",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 203217.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "xy-curve-grips",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 209457.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "yz",
+        "passed": false,
+        "max_absolute_error": 4.0,
+        "viboceros_ns_per_iteration": 212049.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "yz.value.outputs[0].corners[0][1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].corners[1][1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].corners[2][1]: 0 != 4 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].corners[3][1]: 0 != 4 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[0].point[1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[1].point[1]: 4 != 0 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[2].point[1]: 0 != 4 (error 4, limit 1e-06)",
+          "yz.value.outputs[0].definition.control_points[3].point[1]: 0 != 4 (error 4, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "xz",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 213745.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "rotated-rectangle",
+        "passed": false,
+        "max_absolute_error": 4.814155678319024,
+        "viboceros_ns_per_iteration": 223953.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "rotated-rectangle.value.outputs[0].corners[0][0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].corners[1][0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].corners[2][0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].corners[3][0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[0].point[0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[1].point[0]: 3.7293093824241379 != -1.0848462958948859 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[2].point[0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)",
+          "rotated-rectangle.value.outputs[0].definition.control_points[3].point[0]: -1.0848462958948859 != 3.7293093824241379 (error 4.81, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "triangle",
+        "passed": false,
+        "max_absolute_error": 3.0,
+        "viboceros_ns_per_iteration": 193024.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "triangle.value.outputs[0].corners[0][0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].corners[1][0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].corners[2][0]: 1 != 4 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].corners[3][0]: 1 != 4 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[0].point[0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[1].point[0]: 4 != 1 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[2].point[0]: 1 != 4 (error 3, limit 1e-06)",
+          "triangle.value.outputs[0].definition.control_points[3].point[0]: 1 != 4 (error 3, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "tilted",
+        "passed": false,
+        "max_absolute_error": 3.5637583892617464,
+        "viboceros_ns_per_iteration": 383169.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "tilted.value.outputs[0].corners[0][1]: -1.3266768080865211e-15 != 3.5637583892617446 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[0][2]: 2.1999999999999997 != -0.29463087248322073 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].corners[1][1]: -0.5637583892617456 != 2.9999999999999996 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[1][2]: 1.3946308724832215 != -1.0999999999999992 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].corners[2][1]: 3.5637583892617455 != 0 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[2][2]: -0.29463087248322095 != 2.2000000000000002 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].corners[3][1]: 3.0000000000000013 != -0.56375838926174493 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].corners[3][2]: -1.0999999999999994 != 1.3946308724832215 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[0].point[1]: -1.3266768080865211e-15 != 3.5637583892617446 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[0].point[2]: 2.1999999999999997 != -0.29463087248322073 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[1].point[1]: -0.5637583892617456 != 2.9999999999999996 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[1].point[2]: 1.3946308724832215 != -1.0999999999999992 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[2].point[1]: 3.5637583892617455 != 0 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[2].point[2]: -0.29463087248322095 != 2.2000000000000002 (error 2.49, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[3].point[1]: 3.0000000000000013 != -0.56375838926174493 (error 3.56, limit 1e-06)",
+          "tilted.value.outputs[0].definition.control_points[3].point[2]: -1.0999999999999994 != 1.3946308724832215 (error 2.49, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "nonplanar",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 348161.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "remote-tilted",
+        "passed": true,
+        "max_absolute_error": 9.313225746154785e-10,
+        "viboceros_ns_per_iteration": 322689.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "one-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 151281.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "two-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 144673.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "collinear-cloud",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 191009.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "collinear-points",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 210929.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "coincident-cloud",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 150753.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      }
+    ],
+    "max_absolute_error": 4.814155678319024,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+  }
+}

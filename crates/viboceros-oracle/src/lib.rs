@@ -123,7 +123,11 @@ mod coplanar_faces;
 mod coplanar_mesh;
 mod divide_creases;
 mod network_surface;
+mod plane_through_points;
 pub use network_surface::Fixture as NetworkSurfaceFixture;
+pub use plane_through_points::{
+    Fixture as PlaneThroughPointsFixture, Source as PlaneThroughPointsSource,
+};
 mod rail_revolve;
 mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
@@ -1664,6 +1668,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: NetworkSurfaceFixture,
     },
+    PlaneThroughPoints {
+        id: String,
+        #[serde(flatten)]
+        fixture: PlaneThroughPointsFixture,
+    },
     RailRevolve {
         id: String,
         #[serde(flatten)]
@@ -2660,6 +2669,7 @@ impl Operation {
             | Self::DivideAlongCreases { id, .. }
             | Self::TwoRailSweep { id, .. }
             | Self::NetworkSurface { id, .. }
+            | Self::PlaneThroughPoints { id, .. }
             | Self::RailRevolve { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
@@ -5873,6 +5883,9 @@ fn execute(
         }
         Operation::NetworkSurface { fixture, .. } => {
             network_surface::run(fixture, iterations, tolerance)?
+        }
+        Operation::PlaneThroughPoints { fixture, .. } => {
+            plane_through_points::run(fixture, iterations, tolerance)?
         }
         Operation::RailRevolve { fixture, .. } => {
             rail_revolve::run(fixture, iterations, tolerance)?

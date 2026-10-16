@@ -248,8 +248,7 @@
     "crates/viboceros-smlib/tests/network_surface.rs": "b587cd1ab088fe6b612cfa72136c4b6a3ea1d2ba57db27e71a91491ab1870b43",
     "docs/common-parameter-curve-fit.md": "c3d07843edbb84d2fc9ad4a6a8098500ea26e3039a9d62acdc68dc18f4ff3a57",
     "docs/prepared-gordon-families.md": "1d6b7e512a900286135e415c04125dba64d7ad8d00ff3080769341bcc400154f",
-    "docs/smlib-curve-fit.md": "b0112828971bdd39f604846e112660dabed8f6d8ebee95b3338a13e5872471a4",
-    "tools/rhino_oracle/rhino_worker.py": "8ecb446ed6610cd787600a352f27e53e926d1e0ec5faf61f9c69e4e51d618afc"
+    "docs/smlib-curve-fit.md": "b0112828971bdd39f604846e112660dabed8f6d8ebee95b3338a13e5872471a4"
   },
   "input_sha256": {
     "tools/rhino_oracle/fixtures/network_curve_fit.json": "6cd683f1dce1d0ec80a0bca0c727911cb39a7a0742f7a82eacca35628dd00684",
@@ -282,6 +281,7 @@
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/src/native/network_surface.rs": "efe9fe9dcd5bfe9893326c3d9d98ee62e1bc74821e8884413e2fe88ae15688ed",
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:docs/smlib-gordon-network.md": "0919ce24c5a1919a38a7e75d3750a952d23a147dde8781d6a8881a12b36a792e",
     "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
-    "23a970097bf8c88b7db94af4ae1e8837173edd3e:tools/rhino_oracle/network_surface_probe.py": "22f1a99934b59aa61b2cd61f09e2188c0e35a9bf4d13e70b6e599c36215a6132"
+    "23a970097bf8c88b7db94af4ae1e8837173edd3e:tools/rhino_oracle/network_surface_probe.py": "22f1a99934b59aa61b2cd61f09e2188c0e35a9bf4d13e70b6e599c36215a6132",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:tools/rhino_oracle/rhino_worker.py": "8ecb446ed6610cd787600a352f27e53e926d1e0ec5faf61f9c69e4e51d618afc"
   }
 }

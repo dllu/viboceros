@@ -3,6 +3,7 @@ use super::*;
 use crate::FiniteSum;
 use num_traits::{One, Signed};
 mod normalized;
+mod surface;
 
 /// Input ceiling for a fit's linear-memory rank check and thin N-by-3 SVD.
 pub const MAX_PLANE_FIT_POINTS: usize = 1_000_000;

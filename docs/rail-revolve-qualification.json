@@ -101,8 +101,6 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "crates/viboceros-command/src/lib.rs": "b2a7324bdafa4d3f6729f2d66b0b1788f6205893e22a8fc92007ff9d7556ad5c",
-    "crates/viboceros-command/src/object_selection.rs": "78e7c0c8b48bd3f8e38dc30e9c43051deab0c1fa67db1c1bc82b399269269b13",
     "crates/viboceros-command/src/rail_revolve.rs": "487d5c2213a5bb8bb4a5d24334d9b13e653844e2a603e5a1c56b16a48077f469",
     "crates/viboceros-command/src/rail_revolve/tests.rs": "240005ba42a94bee81e67359069bc2277f072cf00a6c87b52d2908397b6262c2",
     "crates/viboceros-oracle/src/rail_revolve.rs": "7cfd6f372ae50f5cfb9d849234e7e5bcef299ba35c39b6663c37681f261feed8",
@@ -113,16 +111,12 @@
     "crates/viboceros-smlib/src/native/face_creases.rs": "eee367d755a3a2cd038dc4a540f3d4f0e36664a5f66d6e704122883f6606a2f1",
     "crates/viboceros-smlib/src/native/rail_revolve.rs": "8a715fbf40c0f7826aedfb33ecba4a89f4f78cac9ad1454969c067302d22764d",
     "crates/viboceros-smlib/tests/rail_revolve.rs": "7cf1c4b8f591cd01c7d9f3a844c0b3207873c2da48d5c78aab2d7e88fcd2ddb0",
-    "docs/commands/README.md": "c45ea37539e0e272d1e6a94bd91ca4764b6410692e4400a31aee8cb6e8e77f73",
     "docs/commands/rail-revolve.md": "36302f67bafda43385c6943dd4103c0397e82d3af03b8f8bea739dc0a737c552",
-    "src/app.rs": "7bed76e2270d0bba2f2fc230e5f0f655b60fd92056142a0505cd79c66a2f4e8f",
-    "src/app/object_selection.rs": "4b760e9e7c7013456ad4baf4a06cb351dff88cfb4cbfecadb124c164a8f1e8cd",
     "src/app/rail_revolve.rs": "27b888105e29b489d159c1a36c449ea4d62b30edb35da0d93d6494d270e6fbe0",
     "src/app/tests/rail_revolve.rs": "7263f06056cedb3e2d2cf5c1c04d72c04c2fc8c7eb4551578af9e71f784e52fe",
     "third_party/usd-brep/source/SMLib/inc/SmBSplineSurface.h": "a89941f1afd02ff8df8f78577f61e35782516a3660bbc62c51fdbf3f9b3df8b3",
     "third_party/usd-brep/source/SMLib/src/NL_SrfAdv.cpp": "00e24340417dd111d4abb0258eae2a42649290043d6a4c23be682132a9a3eace",
     "third_party/usd-brep/source/SMLib/src/SmBSplineSurfaceNLib.cpp": "b971fc6c381f25805d6b5fec6463359bd20850f0e50fb0c75510c4e563061b1b",
-    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
     "tools/rhino_oracle/fixtures/rail_revolve.json": "1bb2810c0e58c0ede6810eff8577a5ddae5497121e1aeb5262d2cbbd311707b7",
     "tools/rhino_oracle/fixtures/rail_revolve_height_boundary.json": "972834b9eb4ee71f33e933a3363f2aa0d0093085a95ce7748c9b1d8589ff2b95",
     "tools/rhino_oracle/fixtures/rail_revolve_unclamped_diagnostic.json": "b8cf131f4aae0ffb97fe04e391c4e219c8f2a812858a61f10de15ab183d0172d",
@@ -159,6 +153,12 @@
     "b80f97d6bad11b546a6fe4532bff326f1f82895f:tools/rhino_oracle/rhino_worker.py": "67e34fbbea2cb191b32f1682c57b79f95b985d954865412075337b9a16615d7f",
     "b80f97d6bad11b546a6fe4532bff326f1f82895f:tools/rhino_oracle/structural_sdk.py": "5c99ca972b59859db91fdb15b9ba0c9b8cf5ed979e4db8e1c6f2b3051eaf027a",
     "b80f97d6bad11b546a6fe4532bff326f1f82895f:tools/rhino_oracle/test_structural_sdk.py": "5c2a1eb245173b645fd0ef03975b16bf4f1e4045ea772ec08688517b360f9fd3",
-    "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1"
+    "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:crates/viboceros-command/src/lib.rs": "b2a7324bdafa4d3f6729f2d66b0b1788f6205893e22a8fc92007ff9d7556ad5c",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:crates/viboceros-command/src/object_selection.rs": "78e7c0c8b48bd3f8e38dc30e9c43051deab0c1fa67db1c1bc82b399269269b13",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:docs/commands/README.md": "c45ea37539e0e272d1e6a94bd91ca4764b6410692e4400a31aee8cb6e8e77f73",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:src/app.rs": "7bed76e2270d0bba2f2fc230e5f0f655b60fd92056142a0505cd79c66a2f4e8f",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:src/app/object_selection.rs": "4b760e9e7c7013456ad4baf4a06cb351dff88cfb4cbfecadb124c164a8f1e8cd",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d"
   }
 }

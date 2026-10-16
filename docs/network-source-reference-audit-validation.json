@@ -184,16 +184,12 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs": "07a4c0aced5f93815a4ba2423989791777d44bc579a6c8fa506ac5f08d1d9a4f",
     "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
     "crates/viboceros-oracle/examples/network_source_audit.rs": "3bf0d34b197fc069278e3f6507c5166d583a96358e26e688c0dab856185fad44",
-    "crates/viboceros-oracle/src/lib.rs": "90e62f66f337847c9110af90b4c5afeb8a1d06377e1e145a6e24cb2a491c5785",
     "crates/viboceros-oracle/src/network_surface.rs": "39f47ecc7d8dba3a68179d179de2e7f612c9f56f0aed6d74e5da56886665cc5e",
     "crates/viboceros-smlib/src/native/network_surface/prepared.rs": "7ab5baf29004873e3b6ad9d4de91c783dcfc302499ca3c5dea927f51cca10ce0",
     "docs/network-source-reference-audit.md": "dbeb5ba2f09cf746fd514f159bbf1390e6068e74c9acc1cce1acd6fee4af0762",
-    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
     "tools/rhino_oracle/curve_recipe.py": "f24004acd2951d5c63d2bd71b9c69c63c83ad40eb2b5838402fa43ff619bea26",
     "tools/rhino_oracle/network_surface_probe.py": "950f3902fc009de8981b6636f7eff5e54fcbf0a740aa5e0f5986ad31d035242f",
     "tools/rhino_oracle/network_surface_readback.py": "c19bab7515ff9a8f0c3923ab373be9ae6ee85b94e7e759db37679b0a48714402",
-    "tools/rhino_oracle/rhino_worker.py": "8ecb446ed6610cd787600a352f27e53e926d1e0ec5faf61f9c69e4e51d618afc",
-    "tools/rhino_oracle/structural_sdk.py": "1eaaf4c99c223a394a55104ae64830da7bfe6ba5b7dbc836ab2f816c7acb6c98",
     "tools/rhino_oracle/test_network_surface.py": "e5282901fc237786fbceff3a34a0db6158ff51d1fefbb5413d50f9ea9bfc6124",
     "tools/rhino_oracle/test_network_surface_readback.py": "091b7b75eebfae87ce101237fca47799fee1e3ca1bf5c9fa3164d73c81316e6f"
   },
@@ -221,6 +217,10 @@
   "source_git_sha256": {
     "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native/network_surface.rs": "add1be50303519ea15c6a4356582bd86fba76771e2df181a3172a5f590c007f8",
     "1ca118e095bf593e7cf772eb93faf8ecae7a948f:docs/smlib-gordon-network.md": "a35a936b183c8302147a535ee37a3b7be2d12406a6d65ad02b31c29be07bed58",
-    "c02784ac11502b0b218da67abbed9c9fc861ecbd:README.md": "7cc09bd38630999262e1042137b5cdc01ef43733bb717ce97451ec443b8b7618"
+    "c02784ac11502b0b218da67abbed9c9fc861ecbd:README.md": "7cc09bd38630999262e1042137b5cdc01ef43733bb717ce97451ec443b8b7618",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:crates/viboceros-oracle/src/lib.rs": "90e62f66f337847c9110af90b4c5afeb8a1d06377e1e145a6e24cb2a491c5785",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:tools/rhino_oracle/rhino_worker.py": "8ecb446ed6610cd787600a352f27e53e926d1e0ec5faf61f9c69e4e51d618afc",
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:tools/rhino_oracle/structural_sdk.py": "1eaaf4c99c223a394a55104ae64830da7bfe6ba5b7dbc836ab2f816c7acb6c98"
   }
 }

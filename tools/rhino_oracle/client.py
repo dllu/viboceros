@@ -223,6 +223,9 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         validate_structural_sdk_operations(request)
+        if any(op.get('op') == 'plane_through_points' for op in request.get('operations', [])):
+            if self.settings_scheme is None or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('PlaneThroughPt commands require a private scheme and one iteration')
         worker_source = Path(__file__).with_name("rhino_worker.py")
         if any(op.get('op') == 'fillet_edge_reference' for op in request.get('operations', [])):
             from .fillet_edge_probe import validate

@@ -1,0 +1,26 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `release` profile [optimized] target(s) in 11m 23s
+     Running unittests src/lib.rs (target/release/deps/viboceros_geometry-b224b5d66ce6650b)
+
+running 17 tests
+test point_projection::fit::surface::tests::plane_representation_normalizes_exact_cross_products_outside_float_range ... ok
+test point_projection::tests::exact_displacements_survive_overflow_and_anisotropic_underflow ... ok
+test point_projection::tests::supporting_line_is_unclamped_and_exactly_defined_by_its_endpoints ... ok
+test point_projection::tests::only_degenerate_definitions_and_unrepresentable_results_are_rejected ... ok
+test point_projection::fit::tests::fit_rejects_empty_oversized_and_unresolved_full_range_inputs ... ok
+test point_projection::fit::tests::isotropic_scatter_accepts_any_plane_through_the_centroid_with_optimal_residual ... ok
+test point_projection::tests::coordinate_projections_preserve_extreme_tangential_coordinates ... ok
+test point_projection::fit::tests::exact_coplanarity_preserves_extreme_thin_clouds_and_degenerate_sets ... ok
+test point_projection::fit::tests::duplicate_occurrences_are_weighted_and_centroid_is_not_rounded_before_projection ... ok
+test point_projection::fit::surface::tests::plane_fit_degenerate_sets_and_resource_limits_are_explicit ... ok
+test point_projection::fit::surface::tests::plane_fit_rectangle_encloses_projected_data_and_has_physical_domains ... ok
+test point_projection::fit::surface::tests::plane_fit_symmetric_nonplanar_data_uses_the_least_squares_plane ... ok
+test point_projection::tests::plane_variants_agree_without_assuming_a_unit_normal ... ok
+test point_projection::tests::cancellation_preserves_small_plane_origins ... ok
+test point_projection::fit::tests::fit_is_permutation_invariant_for_a_separated_normal ... ok
+test point_projection::fit::tests::orthogonal_scatter_axes_determine_the_least_squares_plane_across_scales ... ok
+test point_projection::fit::normalized::tests::compact_integer_entries_match_independent_rational_centering_bit_for_bit ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 2287 filtered out; finished in 0.02s

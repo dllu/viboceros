@@ -8847,10 +8847,12 @@ impl VibocerosApp {
         }
         if let Some(selection) = output.control_point_selection.take() {
             let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
-                matches!(prompt.description.command, "Circle FitPoints" | "Smooth")
-                    || (prompt.description.workflow
-                        == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
-                        && transform_sources::allows_grips(prompt.description.command))
+                matches!(
+                    prompt.description.command,
+                    "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                ) || (prompt.description.workflow
+                    == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
+                    && transform_sources::allows_grips(prompt.description.command))
             });
             let mode = if fit_prompt && selection.mode == SelectionMode::Replace {
                 SelectionMode::Add
@@ -9011,10 +9013,12 @@ impl VibocerosApp {
             && self.set_view_prompt.is_none()
             && (self.component_preselection_available()
                 || self.object_prompt.as_ref().is_some_and(|prompt| {
-                    (matches!(prompt.description.command, "Circle FitPoints" | "Smooth")
-                        || (prompt.description.workflow
-                            == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
-                            && transform_sources::allows_grips(prompt.description.command)))
+                    (matches!(
+                        prompt.description.command,
+                        "Circle FitPoints" | "PlaneThroughPt" | "Smooth"
+                    ) || (prompt.description.workflow
+                        == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
+                        && transform_sources::allows_grips(prompt.description.command)))
                         && prompt.phase == object_selection::ObjectPromptPhase::Selecting
                 }))
     }
@@ -10106,6 +10110,7 @@ mod tests {
     mod offset_surface;
     mod planar_boolean;
     mod plane_arrays;
+    mod plane_through_points;
     mod point_grid;
     mod point_input;
     mod point_selection;

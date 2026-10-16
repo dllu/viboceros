@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "PlaneThroughPt command, shared fitted rectangular planes and public oracle operation",
+  "base_repository_revision": "9ca745f433bda8557d5f9019e5f875e36fe726ed",
+  "command_registered": true,
+  "complete_rectangle_image_cases_qualified": 14,
+  "oriented_rhino_tensor_parity_qualified": false,
+  "performance_qualified": false,
+  "implementation": "Reuse the existing exact-rank and exactly centered faer plane fitter, normal-derived frame and bilinear tensor constructor. A scale-safe plane representation exposes the shared projector normal. Fit rectangular projected extents with physical parameter domains; exact three-point construction rejects world-restoration collapse. Point/cloud/grip source gathering, current-layer default output, postselection release and atomic history share existing document and prompt mechanisms.",
+  "coverage": {
+    "rust_tests": 98,
+    "rust_test_executions": 119,
+    "release_test_executions": 21,
+    "python_tests": 27,
+    "new_rust_tests": 11,
+    "new_python_tests": 3,
+    "rust_by_target": {
+      "application": 64,
+      "commands": 10,
+      "geometry": 23,
+      "oracle": 1
+    },
+    "retained_native_commands": 17,
+    "retained_native_outputs": 14,
+    "retained_native_failures": 3,
+    "licensed_capture_launches": 2,
+    "licensed_command_executions": 29,
+    "complete_bilinear_image_certificates": 14,
+    "reference_derived_inputs": false,
+    "small_and_large_coordinate_scales": [
+      1e-100,
+      1e+100
+    ],
+    "maximum_fit_points": 1000000,
+    "pre_and_postselection": true,
+    "cloud_and_curve_mesh_grips": true,
+    "viewport_additive_grip_picks": true,
+    "cancellation_and_undo_redo": true,
+    "tilted_nonplanar_collinear_and_remote_fits": true
+  },
+  "native_capture_commands": [
+    "python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/plane_through_points.json --scheme VibocerosOraclePlaneFit20261016 --timeout 180 (initial 12-case exploratory request; superseded by retained capture)",
+    "python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/plane_through_points.json --scheme VibocerosOraclePlaneFit20261016b --timeout 180 --output tools/rhino_oracle/observations/plane_through_points_rhino_20261016.json"
+  ],
+  "raw_protocol_comparison_passed": false,
+  "maximum_control_distance_diagnostic": 9.599853366654507e-10,
+  "limits": [
+    "Fourteen complete polynomial bilinear images pass the 1e-6 exact control-distance gate under an explicit normalized unit tensor chart. This does not qualify identical Rhino normal signs, UV orientation or physical knot domains. Raw comparison differences remain retained, without normalization or filtering.",
+    "Coincident inputs and zero-width rectangles decline without creating history. Some collinear sets produce a nonzero rectangle in a deterministic containing plane. Repeated smallest singular values permit different optimal planes; general ambiguous inputs do not have qualified Rhino parity.",
+    "The native N_FitPlaneToPts producer optimizes a bounding rectangle, while observed PlaneThroughPt uses normal-frame rectangular extents. The implementation reuses the existing shared faer fitter and tensor constructor; no new native C++ or independent plane solver is introduced.",
+    "Fits retain the existing one-million-point cap and exact-rank/centering behavior. A finite unit normal and rounded origin represent the output plane; rounding or unrepresentable restored corners can reject. No proof work/tolerance limit is changed.",
+    "Ninety-eight distinct focused Rust tests run in the default debug configuration, with 21 repeated release executions and 27 Python host/staging checks. Workspace clippy checks all targets with native-smlib enabled. No new sanitizer or performance qualification is claimed. The earlier preliminary two-command release run is not counted here.",
+    "The retained licensed capture covers native geometry, output attributes and source/grip selection. Undo/Redo, cancellation and viewport dispatch are separately tested locally; native history and rendered preview parity are not claimed."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-geometry -p viboceros-command -p viboceros-oracle -p viboceros -- point_projection plane_through_points circle_fit object_selection --nocapture",
+      "passed": true,
+      "tests": 98,
+      "log": "docs/plane-through-points-regressions.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_plane_through_points tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "tests": 27,
+      "log": "docs/plane-through-points-python.log"
+    },
+    {
+      "command": "cargo test --release -p viboceros-geometry point_projection -- --nocapture",
+      "passed": true,
+      "tests": 17,
+      "log": "docs/plane-through-points-release-geometry.log"
+    },
+    {
+      "command": "cargo test --release -p viboceros plane_through_points -- --nocapture",
+      "passed": true,
+      "tests": 4,
+      "log": "docs/plane-through-points-release-app.log"
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/plane-through-points-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/plane-through-points-fmt.log"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/plane_through_points.json --timeout 900 --output tools/rhino_oracle/observations/plane_through_points_viboceros_20261016.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/plane-through-points-api.log"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "00e851a9045b403660c6fd8081e968f7040fa1341a0cdc1629223b1a29ab648c",
+    "crates/viboceros-command/Cargo.toml": "81c393837c217b29527314ffef3a1bfa227ba176201a58b8a4a345cecf7f8362",
+    "crates/viboceros-command/src/lib.rs": "77ba5820271743daf79cf67037386d2e19929cf586b7cc0aecf033a78a2e367c",
+    "crates/viboceros-command/src/object_selection.rs": "b655312ff27c68e0000cdbed5ada84a6301452d254e2996dd917297477704051",
+    "crates/viboceros-command/src/object_selection/tests.rs": "b0a988d2fdcca510412643479456abf5effb65783b26cca52a4d0144f23983dd",
+    "crates/viboceros-command/src/plane_through_points.rs": "cf90aa3c213b1cd05e81b5c2297dda9dee83f6ed40ae3c90bf838b3f6f8e9711",
+    "crates/viboceros-command/src/plane_through_points/tests.rs": "d2a2b3d9dee1865bbb30483849977386911da8ef7f7b989e86d394935b61346a",
+    "crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
+    "crates/viboceros-geometry/Cargo.toml": "d94db7dfc20e4c5cc4a375cd77d197d11ee10d51054ac6551c1cb69e9316ee5c",
+    "crates/viboceros-geometry/src/finite_sum.rs": "d56fa845aa7e65cfffb75453280012a7f8447bd1da1102cdc8cd15f497d061d0",
+    "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
+    "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
+    "crates/viboceros-geometry/src/point_projection.rs": "e824c06a12a2ce5d95f8cbe43d4a2db881cc2878d81309f8f1a93c5d3e2956bf",
+    "crates/viboceros-geometry/src/point_projection/fit.rs": "0fbd6e32e80ebcda5e71257863015eea8a614aa90b03e69c7ce49196199f75f2",
+    "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
+    "crates/viboceros-geometry/src/point_projection/fit/surface.rs": "d9eee3837cdb8ecc6435a2d476c1151a6864b5ff85c54be203b7d0cf89376e24",
+    "crates/viboceros-geometry/src/point_projection/fit/surface/tests.rs": "bc4a663acd17c1c193c1b81a14c60fff77a46ce023c0ce335125961aa1502e5c",
+    "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
+    "crates/viboceros-oracle/src/lib.rs": "9e1d07fea5cb4c060e2f51b08dd441d4550924d06e0c3ab9ddcb7e834f849bd0",
+    "crates/viboceros-oracle/src/plane_through_points.rs": "6e00ce19b598504aecd6165e49b0e2818a9a53fcc868a15d7aef5511288bbf05",
+    "docs/commands/README.md": "751b45eda0d5ac9c2e9613c2bafa08c73ad930f6a8c01b1ab3b2dae06854b91d",
+    "docs/commands/plane-through-points.md": "85c800c892b9ce72cc6f93da6999a9ac92f34eb46fdffdcc437dadf99e0831b7",
+    "src/app.rs": "49b796dd0e55206b8b0d37f12f5cf554b2dfe7f4e6c1e026713b020de36915ef",
+    "src/app/object_selection.rs": "28a4cebdf09c49e59c25bedf64dec6c41f17d22aba73464c01d764a21ea1b5a2",
+    "src/app/tests/plane_through_points.rs": "9e3d7aba2999a1ebe98db30221f809abfbf624a53890ccc609cb6caf8dfe350c",
+    "tools/rhino_oracle/client.py": "e3927658896dc77eb1aa35588aec9ccb052e8abaa6d086283e19bbb12aa97d55",
+    "tools/rhino_oracle/plane_through_points_probe.py": "ebd89b025dcecea7e17d9e1060068ec48bc9a48db476e04717280c9323f99d20",
+    "tools/rhino_oracle/rhino_worker.py": "1eab401be216747e9b195e89592c252186c3c118a731f72e46701bab2480b282",
+    "tools/rhino_oracle/structural_sdk.py": "b355ca4c7f8c3e2f4e17e2f8681ea8cb0bea9454477abf65b763328b23ab3a6c",
+    "tools/rhino_oracle/test_plane_through_points.py": "af26a4dac0bbdfcb261f3175ab3461d8cbde2f66009ce42638e3be0383535c38",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "input_sha256": {
+    "tools/rhino_oracle/fixtures/plane_through_points.json": "e46aaf12870fefb7d85ab66944fb139665e55b3da90412b9ffd9dac4ab8ac354"
+  },
+  "evidence_sha256": {
+    "docs/plane-through-points-regressions.log": "b831d5cfb7ac68a42fb7df2565d952719c4819a86b166dc34354d2cd4835516c",
+    "docs/plane-through-points-python.log": "facf4335405473449e9fbac9f89d3b49ce24516d1e988ad93fdfb5dc99d5b349",
+    "docs/plane-through-points-release-geometry.log": "a26058ecf4db28c4285c0208c91650606908de959513af347964f850a695d6cd",
+    "docs/plane-through-points-release-app.log": "6c6b4ab54a33ebf8dfc40a3af50a97266899894387f74e8c75b159b9d60986f9",
+    "docs/plane-through-points-clippy.log": "172dffa0c153c97b112a30e7d8100e396a61ef71444cc5f19cc3402e2a9b5784",
+    "docs/plane-through-points-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/plane-through-points-api.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tools/rhino_oracle/observations/plane_through_points_rhino_20261016.json": "5964c7fc35326c6a079361f68a009f5303dd7a04bcc67073fe9e646bd60d2afe",
+    "tools/rhino_oracle/observations/plane_through_points_viboceros_20261016.json": "bab4b9965343f7ded97f76bc6080a4166f39445186a27abeb876ac1515278fa5",
+    "tools/rhino_oracle/observations/plane_through_points_comparison_20261016.json": "410bd13e545919e88809bd2e7b91e8139b89342a6a8494396b03b16038d37d8a"
+  }
+}
