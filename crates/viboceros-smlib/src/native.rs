@@ -78,6 +78,8 @@ mod silhouette;
 mod surface_extrusion;
 mod two_rail_sweep;
 pub use two_rail_sweep::two_rail_sweep_surface;
+mod rail_revolve;
+pub use rail_revolve::{rail_revolved_brep, rail_revolved_surface};
 mod tapered;
 pub use shape::StitchResult;
 

@@ -19,6 +19,10 @@ regions, plus [native surface joining](smlib-joining.md) and
 [planar surfaces](smlib-planar-surfaces.md), [apex extrusion](smlib-apex.md) and
 [exact curve-path extrusion](smlib-translational-sweep.md).
 
+[RailRevolve](commands/rail-revolve.md) reuses native rational swung-surface
+construction with axis-local rotation and height following. Native continuity
+classification and crease subdivision handle tangent splitting.
+
 [Sweep2](commands/sweep2.md) uses native rail-constrained skin construction on
 private curves, with continuous world-space rail/section deviation checks.
 Broader arbitrary-input qualification remains open. The kernel can be

@@ -92,7 +92,6 @@
     "crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63",
     "crates/viboceros-smlib/tests/face_creases.rs": "0de1de68bab504ac7f4131cd8291b1807f04047a81e6734c44fee3b82145fd41",
     "docs/commands/divide-along-creases.md": "4529049fb8a032d3b01e83aff3b853e012a00dadd9125116f388f7f998156596",
-    "src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2",
     "src/app/tests/divide_creases.rs": "c171fb4c5d3ce3d1555620d7da93902eac81b32b339a1ca497ce432405af3851",
     "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
     "third_party/usd-brep/source/SMLib/src/SmBrep.cpp": "5d44d6ac347fa42e4e83fead8bbde82ce46c5ff48e0a973b5c7cddc778a2fca1",
@@ -125,6 +124,7 @@
     "df63f892789a42f612a6a153fd810c788b6b7dfb:src/app.rs": "2e08864c6d4128fe31349b83e0dfc007d2115e13456c2fa78f4779a1c6cb1047",
     "df63f892789a42f612a6a153fd810c788b6b7dfb:tools/rhino_oracle/rhino_worker.py": "2691b938937931406c3f2bcdf42e4a6be171143a4c3fceef5374ed8df2b98a35",
     "df63f892789a42f612a6a153fd810c788b6b7dfb:tools/rhino_oracle/structural_sdk.py": "8a7cbfc25f90a41a80324aa9ada9198a0a5ee92399f55bb31e3bb4bae497a065",
-    "df63f892789a42f612a6a153fd810c788b6b7dfb:tools/rhino_oracle/test_structural_sdk.py": "d290410f601bb313ed305c3ccdfa9d2dc03cd0d3e7cf88de712304872e29a504"
+    "df63f892789a42f612a6a153fd810c788b6b7dfb:tools/rhino_oracle/test_structural_sdk.py": "d290410f601bb313ed305c3ccdfa9d2dc03cd0d3e7cf88de712304872e29a504",
+    "f3e115163c130c4ae2fd071a8a81b3699712605e:src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2"
   }
 }

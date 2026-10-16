@@ -1,0 +1,4 @@
+SMLib: CXX_FLAGS =  -ffunction-sections -fdata-sections -fPIC -w -O3 -DNDEBUG -std=gnu++17 -fPIC -Wno-write-strings -fsanitize=address -g -fno-omit-frame-pointer
+SM_API: CXX_FLAGS =  -ffunction-sections -fdata-sections -fPIC -w -O3 -DNDEBUG -std=gnu++17 -fPIC -Wno-write-strings -fsanitize=address -g -fno-omit-frame-pointer
+viboceros_smlib: CXX_FLAGS =  -ffunction-sections -fdata-sections -fPIC -w -O3 -DNDEBUG -std=gnu++17 -fPIC -Wall -Wextra -Werror -fsanitize=address -g -fno-omit-frame-pointer
+All three native archives instrumented; exit=0

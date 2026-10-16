@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "command": "RailRevolve",
+  "native_kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "implementation": "usd-brep CreateSwungSurface supplies exact tensor basis and product weights; axis-local complex radial completion and axial following handle spatial profiles, arbitrary axes and signed reference heights. Existing native continuity classification/crease subdivision supplies SplitAtTangents B-reps.",
+  "fresh_licensed_rhino_cases": 12,
+  "fresh_licensed_query_points": 300,
+  "fixture_comparison_passed": true,
+  "maximum_continuous_fixture_surface_bound": 9.830249847454215e-07,
+  "maximum_rhino_closest_query_point_distance": 1.9258850123171223e-06,
+  "maximum_rhino_area_difference": 5.4433188658720155e-06,
+  "qualification": {
+    "continuous_full_fixture_surface_distance_bounds": true,
+    "general_input_surface_parity": false,
+    "native_command_getter_parity": false,
+    "native_split_topology_parity": false,
+    "comparative_kernel_performance": false,
+    "general_injectivity_certificate": false
+  },
+  "limits": [
+    "Native Linux feature required. Finite curves with common-sign nonzero weights; one-million-control output net plus existing transfer/crease limits. Rail start radius must exceed model tolerance.",
+    "Rational/spatial profiles, arbitrary/reversed/remote axes, independent parameter domains, closed rails and unclamped input bases are covered. Native surface charts are preserved independently of Rhino chart orientation.",
+    "ScaleHeight requires endpoint-clamped active bases; public SDK diagnostic observations show unmatched unclamped rational-quadratic behavior. The combination is rejected before native construction or document mutation.",
+    "ScaleHeight falls back to axial translation at absolute reference heights <=2^-26, including zero. Boundary behavior is based on four public SDK observations and a native regression test.",
+    "SplitAtTangents=Yes splits native classified kink and tangent joins; No retains a single tensor surface. Native B-rep shared-edge and pole handling is tested locally; Rhino split topology is not qualified.",
+    "Twelve complete stored rational fixture surfaces have continuous geometric distance bounds <=1e-6. The positive rational tensor partition bounds control displacement and weight ratio oscillation after chart alignment. These are fixture-specific certificates, not a runtime acceptance proof for arbitrary inputs.",
+    "Three hundred closest-point output comparisons use 2e-6 model units; area comparisons use 1e-5 square model units. The closest-point allowance includes solver and evaluation roundoff at a 3e9 world origin; no relative coordinate tolerance is used.",
+    "Reference uses the public NurbsSurface.CreateRailRevolvedSurface API with private curve copies. Rhino native command getter, split topology, metadata, associative history and performance parity remain unqualified.",
+    "AddressSanitizer instruments the complete SMLib, SM_API and adapter archives. Rust and separately bundled dependencies are not separately instrumented; leak and optional stack-use-after-return checks are disabled.",
+    "3 historical qualification records preserve source hashes through immutable Git references; their non-hash fields remain unchanged. Pre-existing unverifiable records are untouched."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-smlib --features native --test rail_revolve -- --nocapture",
+      "passed": true,
+      "tests": 7,
+      "log": "docs/rail-revolve-native-dev-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-oracle --features native-smlib --lib --bins rail_revolve -- --nocapture",
+      "passed": true,
+      "tests": 6,
+      "log": "docs/rail-revolve-command-ui-oracle-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros -p viboceros-command --lib --bins rail_revolve -- --nocapture",
+      "passed": true,
+      "tests": 4,
+      "log": "docs/rail-revolve-portable-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help -- --nocapture",
+      "passed": true,
+      "tests": 1,
+      "log": "docs/rail-revolve-help-test.log"
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test rail_revolve -- --nocapture",
+      "passed": true,
+      "tests": 7,
+      "log": "docs/rail-revolve-asan-tests.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_rail_revolve tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_worker tools.rhino_oracle.test_worker_exit",
+      "passed": true,
+      "tests": 130,
+      "log": "docs/rail-revolve-python-tests.log"
+    },
+    {
+      "command": "cargo clippy -p viboceros-smlib -p viboceros-command -p viboceros-oracle -p viboceros --features native-smlib --all-targets -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/rail-revolve-clippy-native.log"
+    },
+    {
+      "command": "cargo clippy -p viboceros -p viboceros-command -p viboceros-oracle --all-targets -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/rail-revolve-clippy-portable.log"
+    },
+    {
+      "command": "bridge.cpp: generated CMake flags, -w removed; -Wall -Wextra -Werror -fsyntax-only",
+      "passed": true,
+      "tests": null,
+      "log": "docs/rail-revolve-cpp-warnings.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/rail-revolve-fmt.log"
+    },
+    {
+      "command": "Inspect generated flags for SMLib, SM_API and the C ABI archive",
+      "passed": true,
+      "tests": null,
+      "log": "docs/rail-revolve-asan-instrumentation.log"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "a12f3b43c6bd41626822ffc17bdc74396fe99a2cc838110e7ab65417ebb9fc9f",
+    "crates/viboceros-command/src/lib.rs": "b2a7324bdafa4d3f6729f2d66b0b1788f6205893e22a8fc92007ff9d7556ad5c",
+    "crates/viboceros-command/src/object_selection.rs": "78e7c0c8b48bd3f8e38dc30e9c43051deab0c1fa67db1c1bc82b399269269b13",
+    "crates/viboceros-command/src/rail_revolve.rs": "487d5c2213a5bb8bb4a5d24334d9b13e653844e2a603e5a1c56b16a48077f469",
+    "crates/viboceros-command/src/rail_revolve/tests.rs": "240005ba42a94bee81e67359069bc2277f072cf00a6c87b52d2908397b6262c2",
+    "crates/viboceros-oracle/src/lib.rs": "1f8313410afa87e9b700781964be8cebf23082fcbb10878dbf9c528fa08c5c32",
+    "crates/viboceros-oracle/src/rail_revolve.rs": "7cfd6f372ae50f5cfb9d849234e7e5bcef299ba35c39b6663c37681f261feed8",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
+    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
+    "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
+    "crates/viboceros-smlib/native/bridge.cpp": "752c78e2b98a83468d7ab2ecdadcca669ed5fa83180d32785a56decc91fc72de",
+    "crates/viboceros-smlib/native/bridge.h": "13ffd6d560ae2956e19b8600ac1fc60d9f0f975ca558cb522a6870eec992ddda",
+    "crates/viboceros-smlib/native/face_creases.cpp": "8ec04f7f63ed365247f4bec1777ef115a11b5906117735e5b45fcd72c4020477",
+    "crates/viboceros-smlib/src/lib.rs": "0ca6db6a1ba1586fb0ce00101bf5e7ed016fe011f3f32ebe504dbde7316ca724",
+    "crates/viboceros-smlib/src/native.rs": "ab78a70f920349a76f5e3a24757ad937fa56bcfc29292de7fa6f78b5daf13bb3",
+    "crates/viboceros-smlib/src/native/construction.rs": "14abe0114b165f46e5899f6fe11eb8525231a0fdb42fb4e153122c8dacffece8",
+    "crates/viboceros-smlib/src/native/face_creases.rs": "eee367d755a3a2cd038dc4a540f3d4f0e36664a5f66d6e704122883f6606a2f1",
+    "crates/viboceros-smlib/src/native/rail_revolve.rs": "8a715fbf40c0f7826aedfb33ecba4a89f4f78cac9ad1454969c067302d22764d",
+    "crates/viboceros-smlib/tests/rail_revolve.rs": "7cf1c4b8f591cd01c7d9f3a844c0b3207873c2da48d5c78aab2d7e88fcd2ddb0",
+    "docs/commands/README.md": "c45ea37539e0e272d1e6a94bd91ca4764b6410692e4400a31aee8cb6e8e77f73",
+    "docs/commands/rail-revolve.md": "36302f67bafda43385c6943dd4103c0397e82d3af03b8f8bea739dc0a737c552",
+    "docs/usd-brep.md": "cc057e8ec79e623d334df37897f80e7c54f604f8cd68e575fe6a86ad5a6896bd",
+    "src/app.rs": "7bed76e2270d0bba2f2fc230e5f0f655b60fd92056142a0505cd79c66a2f4e8f",
+    "src/app/object_selection.rs": "4b760e9e7c7013456ad4baf4a06cb351dff88cfb4cbfecadb124c164a8f1e8cd",
+    "src/app/rail_revolve.rs": "27b888105e29b489d159c1a36c449ea4d62b30edb35da0d93d6494d270e6fbe0",
+    "src/app/tests/rail_revolve.rs": "7263f06056cedb3e2d2cf5c1c04d72c04c2fc8c7eb4551578af9e71f784e52fe",
+    "third_party/usd-brep/source/SMLib/inc/SmBSplineSurface.h": "a89941f1afd02ff8df8f78577f61e35782516a3660bbc62c51fdbf3f9b3df8b3",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfAdv.cpp": "00e24340417dd111d4abb0258eae2a42649290043d6a4c23be682132a9a3eace",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurfaceNLib.cpp": "b971fc6c381f25805d6b5fec6463359bd20850f0e50fb0c75510c4e563061b1b",
+    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "tools/rhino_oracle/fixtures/rail_revolve.json": "1bb2810c0e58c0ede6810eff8577a5ddae5497121e1aeb5262d2cbbd311707b7",
+    "tools/rhino_oracle/fixtures/rail_revolve_height_boundary.json": "972834b9eb4ee71f33e933a3363f2aa0d0093085a95ce7748c9b1d8589ff2b95",
+    "tools/rhino_oracle/fixtures/rail_revolve_unclamped_diagnostic.json": "b8cf131f4aae0ffb97fe04e391c4e219c8f2a812858a61f10de15ab183d0172d",
+    "tools/rhino_oracle/rail_revolve_comparison.py": "fec9b76126cbfec64629405cd82b261ade646cd141ee1b37b7d5f45dc427b171",
+    "tools/rhino_oracle/rail_revolve_probe.py": "123160bc9a54cadff695ccb8a61564f27960ecb956d7e1891d14fd47e4dbaae3",
+    "tools/rhino_oracle/rhino_worker.py": "67e34fbbea2cb191b32f1682c57b79f95b985d954865412075337b9a16615d7f",
+    "tools/rhino_oracle/structural_sdk.py": "5c99ca972b59859db91fdb15b9ba0c9b8cf5ed979e4db8e1c6f2b3051eaf027a",
+    "tools/rhino_oracle/test_rail_revolve.py": "dec0ecba189c5be68149764603deb940cecba2f3241d4d731072462faa16249c",
+    "tools/rhino_oracle/test_structural_sdk.py": "5c2a1eb245173b645fd0ef03975b16bf4f1e4045ea772ec08688517b360f9fd3"
+  },
+  "evidence_sha256": {
+    "docs/rail-revolve-asan-instrumentation.log": "a1b687e92bb4d6ca7ffa87ea0966433b597f7084f13edeed8d6cd50cfef3843d",
+    "docs/rail-revolve-asan-tests.log": "e94a6d7cd1bc3bb7fd6e4d9cc953c6f2b7a4ee558bd94a98e8c45070a59adfa5",
+    "docs/rail-revolve-clippy-native.log": "69e566ab5c18753b85455e515f6d324b5d6866191dbdc41438488c145dad35d2",
+    "docs/rail-revolve-clippy-portable.log": "22e0df986057b9ba5be07526ac5fb348862a3dedef42108383cc3e088acbb889",
+    "docs/rail-revolve-command-ui-oracle-tests.log": "9827661b99d95dcfe8a9f658341a75843e955bcc87d713ebe7e39e2702064914",
+    "docs/rail-revolve-comparison.json": "60a682f6a9355bdd87aace1810594d964015743f9ac01d898c87e9ba4a389eb3",
+    "docs/rail-revolve-cpp-warnings.log": "f899f79664b639756741d5f17a4ef3a640c4e1e3731acba34cdf3bec5c49d9da",
+    "docs/rail-revolve-fmt.log": "19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061",
+    "docs/rail-revolve-help-test.log": "a39c26a827a730e5b39e975cbd43ebeb009e8f17743036b99818505b74fa9f85",
+    "docs/rail-revolve-native-dev-tests.log": "0deb40a1dbb04a14cfb94d94fcc0363ec85121c32862311b6d859e320f73b448",
+    "docs/rail-revolve-portable-tests.log": "c8f27ac6d0d0b78af67e2cb89d456618711980de584405bbef2580fa2a2574f2",
+    "docs/rail-revolve-python-tests.log": "a56678c0786e0b5ea629e3f141369f1d55ecc5b988ffba812950ebc48f250ebe",
+    "tools/rhino_oracle/observations/rail_revolve_height_boundary_rhino_20261015.json": "49130c21f91a3122119efcca0c7edaf37ce46708c17b3079faa3c43d1d4903b3",
+    "tools/rhino_oracle/observations/rail_revolve_rhino_20261015.json": "5465ec9af58204caad4d6ac34aca28b6e339410ccde4075922d4ffe9c65d2b52",
+    "tools/rhino_oracle/observations/rail_revolve_unclamped_diagnostic_rhino_20261015.json": "741281a39acf5cf91c8876aa9ca31421bdd3bce7554cc5c71e3a1ecf7b72e3ea",
+    "tools/rhino_oracle/observations/rail_revolve_viboceros_20261015.json": "6a16bf4fc980db34e210739f7abdea51a9fa888a2c564fbb67e72ac38c486f3e"
+  }
+}

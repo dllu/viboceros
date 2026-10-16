@@ -1619,6 +1619,27 @@ extern "C" int vb_curve_apex_surface(const VbCurve *curve, const double apex[3],
     });
 }
 
+extern "C" int vb_curves_swung_surface(const VbCurve *profile, const VbCurve *rail,
+                                       double scale, VbSurfaceData **out,
+                                       char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(profile && rail && out && std::isfinite(scale) && scale > 0,
+                "Invalid swung surface input");
+        require(profile->points.size()/4 <= limit/(rail->points.size()/4),
+                "Swung surface control-net resource limit");
+        auto p = copy_curve(*profile);
+        auto r = copy_curve(*rail);
+        SmBSplineSurface *raw = nullptr;
+        const auto status = SmBSplineSurface::CreateSwungSurface(
+            *SmApiGetOrCreateContext(), p.get(), r.get(), scale, raw);
+        std::unique_ptr<SmBSplineSurface> surface(raw);
+        check(status, "construct swung surface");
+        require(raw, "Missing swung surface");
+        *out = vb_export_surface(*surface);
+    });
+}
+
 extern "C" int vb_curves_two_rail_sweep(const VbCurve *first, const VbCurve *second,
                                         const VbCurve *const *sections, size_t count,
                                         const double *parameters, VbSurfaceData **out,

@@ -186,6 +186,7 @@ mod preferences;
 mod project;
 mod project_plane;
 mod radius;
+mod rail_revolve;
 mod replace_block;
 mod scale_by_plane;
 mod scale_nu;
@@ -752,6 +753,7 @@ enum InteractiveCommand {
         sweep_degrees: f64,
         delete_input: bool,
     },
+    RailRevolve(viboceros_command::rail_revolve::RailRevolveStart),
 }
 
 impl InteractiveCommand {
@@ -874,6 +876,7 @@ impl InteractiveCommand {
             Self::ExtrudeSurfaceToPoint { .. } => "ExtrudeSrfToPoint",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
             Self::Revolve { .. } => "Revolve",
+            Self::RailRevolve(_) => "RailRevolve",
         }
     }
 
@@ -1665,6 +1668,12 @@ impl InteractiveCommand {
             Self::Revolve {
                 axis_start: None, ..
             } => "Revolve: pick the axis start in the viewport (Esc to cancel)",
+            Self::RailRevolve(state) if state.axis_start.is_none() => {
+                "RailRevolve: pick the axis start (ScaleHeight, SplitAtTangents; Esc cancels)"
+            }
+            Self::RailRevolve(_) => {
+                "RailRevolve: pick the axis end or press Enter for CPlane Z (Esc cancels)"
+            }
             Self::Revolve {
                 axis_start: Some(_),
                 ..
@@ -1861,6 +1870,7 @@ impl InteractiveCommand {
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::RailRevolve(state) => state.axis_start,
             Self::MirrorThreePoint { points } => match points[1] {
                 Some(point) => Some(point),
                 None => points[0],
@@ -2439,6 +2449,9 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_object_prompt(&input) {
+            return;
+        }
+        if self.continue_rail_revolve_input(&input) {
             return;
         }
         if self.continue_contour_input(&input) {
@@ -3993,6 +4006,19 @@ impl VibocerosApp {
             InteractiveCommand::ExtrudeCurveToPoint {
                 delete_input,
                 solid,
+            }
+        } else if normalized == "railrevolve" {
+            let options = match self.commands.object_selection_prompt(input) {
+                Ok(Some(p)) => viboceros_command::rail_revolve::RailRevolveOptions::from_prompt(&p),
+                _ => return false,
+            };
+            match viboceros_command::rail_revolve::start(&self.document, &arguments, options) {
+                Ok(Some(state)) => InteractiveCommand::RailRevolve(state),
+                Ok(None) => return false,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return true;
+                }
             }
         } else if normalized == "revolve" {
             let mut start_angle_degrees = 0.0;
@@ -8107,6 +8133,36 @@ impl VibocerosApp {
                     if delete_input { "Yes" } else { "No" }
                 ));
             }
+            InteractiveCommand::RailRevolve(mut state) => {
+                if let Some(start) = state.axis_start {
+                    if start.is_near(point, self.document.tolerance()) {
+                        self.push_log("Error: rail revolve axis points must differ".into());
+                        return false;
+                    }
+                    let profiles = self
+                        .document
+                        .selected_object_ids()
+                        .filter(|id| *id != state.rail)
+                        .collect::<Vec<_>>();
+                    if profiles != [state.profile] {
+                        self.push_log("Error: RailRevolve source selection changed".into());
+                        return false;
+                    }
+                    self.active_command = None;
+                    self.execute_command(&format!(
+                        "RailRevolve {} {} RailId={}{}",
+                        format_model_point(start),
+                        format_model_point(point),
+                        state.rail,
+                        state.options.arguments()
+                    ));
+                } else {
+                    state.axis_start = Some(point);
+                    self.active_command = Some(InteractiveCommand::RailRevolve(state));
+                    self.push_log(format!("Axis start: {}", format_model_point(point)));
+                    self.push_log(self.active_command.unwrap().prompt().into());
+                }
+            }
         }
         true
     }
@@ -10056,6 +10112,7 @@ mod tests {
     mod points;
     mod project;
     mod radius;
+    mod rail_revolve;
     mod rebuild_preview;
     mod rhino_curve_prompt;
     mod scale_by_plane;

@@ -13423,6 +13423,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'two_rail_sweep':
         from two_rail_sweep_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'rail_revolve':
+        from rail_revolve_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'cull_degenerate_mesh_faces':
         from cull_degenerate_probe import run
         return run(operation, globals(), iterations, tolerance)

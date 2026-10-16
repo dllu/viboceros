@@ -122,8 +122,10 @@ mod chamfer_edge;
 mod coplanar_faces;
 mod coplanar_mesh;
 mod divide_creases;
+mod rail_revolve;
 mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
+pub use rail_revolve::Fixture as RailRevolveFixture;
 pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
@@ -1655,6 +1657,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: TwoRailSweepFixture,
     },
+    RailRevolve {
+        id: String,
+        #[serde(flatten)]
+        fixture: RailRevolveFixture,
+    },
     CullDegenerateMeshFaces {
         id: String,
         #[serde(flatten)]
@@ -2645,6 +2652,7 @@ impl Operation {
             | Self::SelectedCoplanarFaces { id, .. }
             | Self::DivideAlongCreases { id, .. }
             | Self::TwoRailSweep { id, .. }
+            | Self::RailRevolve { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
             | Self::MergeCoplanarFaces { id, .. }
@@ -5854,6 +5862,9 @@ fn execute(
         }
         Operation::TwoRailSweep { fixture, .. } => {
             two_rail_sweep::run(fixture, iterations, tolerance)?
+        }
+        Operation::RailRevolve { fixture, .. } => {
+            rail_revolve::run(fixture, iterations, tolerance)?
         }
         Operation::CullDegenerateMeshFaces { fixture, .. } => {
             cull_degenerate::run(fixture, iterations, tolerance)?

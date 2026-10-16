@@ -62,6 +62,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "RailRevolve" {
+            return "Select the profile first, then the rail; Enter picks the axis; Esc cancels";
+        }
         if self.description.command == "Divide" {
             return if self.phase == ObjectPromptPhase::Selecting {
                 if self.description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
@@ -487,6 +490,16 @@ impl VibocerosApp {
             return true;
         }
         let required = match description.command {
+            "RailRevolve" => {
+                if words.iter().skip(1).any(|w| {
+                    let name = w.split('=').next().unwrap().trim_start_matches(['_', '-']);
+                    name.eq_ignore_ascii_case("RailName") || name.eq_ignore_ascii_case("RailId")
+                }) {
+                    1
+                } else {
+                    2
+                }
+            }
             "Circle FitPoints" => 3,
             "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" => 2,
             _ => 1,
@@ -576,7 +589,19 @@ impl VibocerosApp {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
+            let rail_revolve_partial = (description.command == "RailRevolve").then(|| {
+                self.document
+                    .selected_objects()
+                    .filter(|o| description.filter.accepts_object(o))
+                    .map(|o| o.id())
+                    .collect::<Vec<_>>()
+            });
             self.document.clear_selection();
+            if let Some(ids) = rail_revolve_partial {
+                let _ = self
+                    .document
+                    .select_objects_direct(ids, SelectionMode::Replace);
+            }
             let command_override = (matches!(
                 description.command,
                 "TweenSurfaces"
@@ -591,6 +616,7 @@ impl VibocerosApp {
                     | "ExtrudeSrfAlongCrv"
                     | "ExtrudeSrfToPoint"
                     | "ExtrudeSrfTapered"
+                    | "RailRevolve"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());
@@ -857,6 +883,15 @@ impl VibocerosApp {
             if let Some(units) = pending.measurement_display_units {
                 command.push_str(&format!(" Units={units}"));
             }
+            if pending.description.command == "RailRevolve" {
+                command = match self.rail_revolve_selection_input(&command, &pending.description) {
+                    Ok(command) => command,
+                    Err(error) => {
+                        self.push_log(format!("Error: {error}"));
+                        return true;
+                    }
+                };
+            }
             if pending.subcurve_measurement && self.domain_has_one_curve() {
                 self.object_prompt = None;
                 self.try_start_interactive_command(&command);
@@ -871,6 +906,7 @@ impl VibocerosApp {
                     | "ExtrudeSrfAlongCrv"
                     | "ExtrudeSrfToPoint"
                     | "ExtrudeSrfTapered"
+                    | "RailRevolve"
             ) {
                 // Accept the picked sources before starting a point getter;
                 // cancellation otherwise restores the pre-prompt selection.

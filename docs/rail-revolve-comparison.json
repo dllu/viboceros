@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "continuous_surface_distance_epsilon": 1e-06,
+  "closest_query_distance_epsilon": 2e-06,
+  "area_absolute_epsilon": 1e-05,
+  "note": "Continuous bounds apply to the complete stored rational fixture surfaces under matched affine-normalized tensor bases, allowing chart transposition/reversal. Exact rational arithmetic bounds control displacement and positive weight ratio oscillation, then rounds outward. Closest-point outputs also include solver and evaluation roundoff; no relative world-coordinate tolerance is used. These fixtures do not establish arbitrary-input or topology parity.",
+  "passed": true,
+  "case_count": 12,
+  "query_count": 300,
+  "cases": [
+    {
+      "id": "planar_ellipse",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 4.440892098500626e-16,
+      "maximum_closest_query_point_distance": 2.3402155537334934e-11,
+      "absolute_area_difference": 1.3293981080408912e-06,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "planar_ellipse_scaled",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 4.440892098500626e-16,
+      "maximum_closest_query_point_distance": 2.339965094585625e-11,
+      "absolute_area_difference": 1.3293981293571733e-06,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "nonplanar_translate",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 8.881784197001252e-16,
+      "maximum_closest_query_point_distance": 4.7268762782192375e-12,
+      "absolute_area_difference": 1.204009453914523e-06,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "nonplanar_scale",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 8.881784197001252e-16,
+      "maximum_closest_query_point_distance": 8.273795621102421e-13,
+      "absolute_area_difference": 2.7320949058662336e-07,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "spatial_profile_translate",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 8.950904182623621e-16,
+      "maximum_closest_query_point_distance": 2.5530652832918664e-11,
+      "absolute_area_difference": 1.1565688513570649e-06,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "spatial_profile_scale",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 8.881784197001252e-16,
+      "maximum_closest_query_point_distance": 2.012988998109373e-12,
+      "absolute_area_difference": 4.089044161048605e-07,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "zero_reference_height",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 8.881784197001252e-16,
+      "maximum_closest_query_point_distance": 4.7271944702667186e-12,
+      "absolute_area_difference": 1.2040094770071619e-06,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "reversed_axis",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 4.440892098500626e-16,
+      "maximum_closest_query_point_distance": 3.0962000465869756e-11,
+      "absolute_area_difference": 3.7618471004918774e-07,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "arbitrary_axis",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 3.552713678800501e-15,
+      "maximum_closest_query_point_distance": 8.299266951911164e-13,
+      "absolute_area_difference": 2.7320950835019175e-07,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "remote_axis",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 9.830249847454215e-07,
+      "maximum_closest_query_point_distance": 1.9258850123171223e-06,
+      "absolute_area_difference": 5.4433188658720155e-06,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "closed_rail",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 0.0,
+      "maximum_closest_query_point_distance": 8.848104132610613e-12,
+      "absolute_area_difference": 1.3392057667260815e-06,
+      "creation_and_validity_match": true
+    },
+    {
+      "id": "unclamped_rail",
+      "query_count": 25,
+      "continuous_surface_distance_bound": 8.881784197001252e-16,
+      "maximum_closest_query_point_distance": 5.148227397988787e-12,
+      "absolute_area_difference": 1.4994978325688635e-06,
+      "creation_and_validity_match": true
+    }
+  ],
+  "height_boundary_public_sdk_observations": [
+    {
+      "reference_height": 1.4901160971803051e-08,
+      "scales_height": false,
+      "observed_corner_height": 7.0
+    },
+    {
+      "reference_height": 1.4901161193847656e-08,
+      "scales_height": false,
+      "observed_corner_height": 7.0
+    },
+    {
+      "reference_height": 1.490116141589226e-08,
+      "scales_height": true,
+      "observed_corner_height": 402653185.00000006
+    },
+    {
+      "reference_height": -1.4901161193847656e-08,
+      "scales_height": false,
+      "observed_corner_height": 7.0
+    }
+  ]
+}

@@ -78,7 +78,6 @@
     "docs/commands/extrude-srf-tapered.md": "df8a14e641e95f1962bc9a0f506f7ea69c36308a315c0e2210baf2118c87b6fb",
     "src/app/extrude_surface_tapered.rs": "11d5c30569b07508a2ee5c206907bfd631a9665d4bc793b2c4a7ce031dedeeab",
     "src/app/extrude_tapered.rs": "93cde405b6341aa1050be8a6af187f0c006e67708a30a577044f066f5f088104",
-    "src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2",
     "src/app/tests/extrude_surface.rs": "2b321819a3b6347cb51633562c2e70057e03a9e694d68dfa8c5ce93f274eb393",
     "src/app/tests/extrude_surface_tapered.rs": "cec5f804affc0b71f0cd2009a946594d54946082cdceb10bb721c93d0f5a98a2",
     "src/app/tests/extrude_tapered.rs": "2fd70bacebf53c8d72160c35d254103004b0db9b146ed044eee2c6bc8ea18954",
@@ -108,6 +107,7 @@
     "a077e3bcef2cd29816e5f404a9b989ceddc9a125:docs/commands/README.md": "02c849353ba3b673165b223fd9175187eaa2cd29c5959a468eda5610a2ba7226",
     "a077e3bcef2cd29816e5f404a9b989ceddc9a125:src/app.rs": "4abff83fba642dc410881cf6d5c915d7b22089aa4b72b9cbe3a3a8e4e0fec393",
     "a077e3bcef2cd29816e5f404a9b989ceddc9a125:tools/rhino_oracle/client.py": "b03ab6cde3f0583902b0178dd4612f650d2e17546ad333887f2f0091793f13d5",
-    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:tools/rhino_oracle/rhino_worker.py": "4a4ad3b23057c8c68fdd20203c6942b4b78c35b4681503e01f65550f0eb6f04e"
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:tools/rhino_oracle/rhino_worker.py": "4a4ad3b23057c8c68fdd20203c6942b4b78c35b4681503e01f65550f0eb6f04e",
+    "f3e115163c130c4ae2fd071a8a81b3699712605e:src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2"
   }
 }

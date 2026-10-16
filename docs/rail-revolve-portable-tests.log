@@ -1,0 +1,19 @@
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 14s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 2 tests
+test app::tests::rail_revolve::rail_revolve_picker_keeps_a_preselected_profile_filters_geometry_and_cancels ... ok
+test app::tests::rail_revolve::rail_revolve_without_native_keeps_model_after_finishing_axis_input ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1224 filtered out; finished in 0.03s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-7d1b644388fcdd03)
+
+running 2 tests
+test rail_revolve::tests::rail_revolve_without_native_rejects_without_losing_sources ... ok
+test rail_revolve::tests::rail_revolve_options_roles_and_failures_keep_geometry_history_and_redo ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1390 filtered out; finished in 0.02s
