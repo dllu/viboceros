@@ -122,6 +122,8 @@ mod chamfer_edge;
 mod coplanar_faces;
 mod coplanar_mesh;
 mod divide_creases;
+mod network_surface;
+pub use network_surface::Fixture as NetworkSurfaceFixture;
 mod rail_revolve;
 mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
@@ -1657,6 +1659,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: TwoRailSweepFixture,
     },
+    NetworkSurface {
+        id: String,
+        #[serde(flatten)]
+        fixture: NetworkSurfaceFixture,
+    },
     RailRevolve {
         id: String,
         #[serde(flatten)]
@@ -2652,6 +2659,7 @@ impl Operation {
             | Self::SelectedCoplanarFaces { id, .. }
             | Self::DivideAlongCreases { id, .. }
             | Self::TwoRailSweep { id, .. }
+            | Self::NetworkSurface { id, .. }
             | Self::RailRevolve { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
@@ -5862,6 +5870,9 @@ fn execute(
         }
         Operation::TwoRailSweep { fixture, .. } => {
             two_rail_sweep::run(fixture, iterations, tolerance)?
+        }
+        Operation::NetworkSurface { fixture, .. } => {
+            network_surface::run(fixture, iterations, tolerance)?
         }
         Operation::RailRevolve { fixture, .. } => {
             rail_revolve::run(fixture, iterations, tolerance)?

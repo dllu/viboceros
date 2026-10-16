@@ -3,7 +3,7 @@ use crate::{
     Point3, Real, Tolerance, Vector3, WeightedPoint2, require_finite,
 };
 mod certificate;
-pub(crate) use certificate::PreparedSurfaceCurveBounds;
+pub use certificate::PreparedSurfaceCurveBounds;
 pub(crate) use certificate::edit_point_bounds;
 #[cfg(test)]
 pub(crate) mod certified_tests;

@@ -99,7 +99,6 @@
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
     "crates/viboceros-command/src/cull_degenerate.rs": "2583ab655ab3ea6fd80b00b8aa3c6cdcc108960996bfa02e0be3ba3de7cf481c",
     "crates/viboceros-command/src/cull_degenerate/tests.rs": "5119fb03bf58f55c20a688e6ce40c367cc54041a2d6587d040e0c13a52aaa417",
-    "crates/viboceros-geometry/src/lib.rs": "39ded796a7c9e7fcf5a8bc33ecf809c33041c776d11e3022fe7c7a7d5f5355e7",
     "crates/viboceros-geometry/src/mesh.rs": "13adcc0e70f0e955fb1e52274855cbbca4857cfaaf38320047d3296f03fcc469",
     "crates/viboceros-geometry/src/mesh/degenerate_faces.rs": "1c5e499536cd986cb314c07e5e31e335e1250bb77a4f0fa6b43d1cdc61d2020d",
     "crates/viboceros-geometry/src/mesh/degenerate_faces/tests.rs": "bbbe8e985d892fd36178a1ebc3e85364cddf7fed2ae38f48ec8716e22bb160d1",
@@ -148,6 +147,7 @@
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:src/app.rs": "3b6d81ac768f5e2e790f3d37e45f247ccac4c74b92bbb3057ed29b86dcea97e5",
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:tools/rhino_oracle/rhino_worker.py": "15cae3af3d8b97b644653de9dbf6293723614f55bfe3715af0a5d1165669169a",
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:tools/rhino_oracle/structural_sdk.py": "094d641cf566ee8d94846d0c847f9c437b367f51b5711c52ed97e926844340a8",
-    "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:tools/rhino_oracle/test_structural_sdk.py": "afe1e8d44407fbefe46c83ef2d6a58c68421c7613099110224c15cc225ac3a39"
+    "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:tools/rhino_oracle/test_structural_sdk.py": "afe1e8d44407fbefe46c83ef2d6a58c68421c7613099110224c15cc225ac3a39",
+    "b80f97d6bad11b546a6fe4532bff326f1f82895f:crates/viboceros-geometry/src/lib.rs": "39ded796a7c9e7fcf5a8bc33ecf809c33041c776d11e3022fe7c7a7d5f5355e7"
   }
 }

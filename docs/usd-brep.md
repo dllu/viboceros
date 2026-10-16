@@ -19,6 +19,11 @@ regions, plus [native surface joining](smlib-joining.md) and
 [planar surfaces](smlib-planar-surfaces.md), [apex extrusion](smlib-apex.md) and
 [exact curve-path extrusion](smlib-translational-sweep.md).
 
+[Gordon network construction](smlib-gordon-network.md) now reuses native curve
+preparation and tensor construction with complete input-image certificates.
+Rhino NetworkSrf interior fitting remains unmatched and is not exposed as an
+application command.
+
 [RailRevolve](commands/rail-revolve.md) reuses native rational swung-surface
 construction with axis-local rotation and height following. Native continuity
 classification and crease subdivision handle tangent splitting.

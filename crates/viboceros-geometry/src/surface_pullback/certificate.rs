@@ -71,7 +71,9 @@ impl Budget {
 }
 
 impl NurbsSurface {
-    pub(crate) fn prepare_surface_curve_bounds(
+    /// Cache exact surface extraction for repeated independent UV/spatial
+    /// correspondence proofs. Each proof retains the usual fresh work limit.
+    pub fn prepare_surface_curve_bounds(
         &self,
     ) -> Result<Option<PreparedSurfaceCurveBounds<'_>>, GeometryError> {
         let mut budget = Budget(MAX_WORK);
@@ -190,13 +192,15 @@ impl NurbsSurface {
 
 /// Immutable surface extraction/patch caches are shared across independent proofs.
 /// Every proposal still owns a fresh, unchanged rational work limit.
-pub(crate) struct PreparedSurfaceCurveBounds<'a> {
+pub struct PreparedSurfaceCurveBounds<'a> {
     source: &'a NurbsSurface,
     surface: surface::Surface,
     initial_work: usize,
 }
 impl PreparedSurfaceCurveBounds<'_> {
-    pub(crate) fn bound(
+    /// Certify the complete correspondence using cached exact surface data.
+    /// Limits and `None` semantics match `parameter_curve_deviation_bound`.
+    pub fn bound(
         &mut self,
         uv: &NurbsCurve2,
         spatial: &NurbsCurve,

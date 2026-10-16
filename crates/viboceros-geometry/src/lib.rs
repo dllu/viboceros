@@ -118,6 +118,7 @@ mod spiral;
 mod spline_collocation;
 mod surface_curvature;
 mod surface_pullback;
+pub use surface_pullback::PreparedSurfaceCurveBounds;
 mod sweep;
 mod tolerance;
 mod transform;

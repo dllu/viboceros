@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "component": "Native Gordon curve-network foundation",
+  "native_kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "construction_validation_passed": true,
+  "rhino_networksrf_fitting_qualified": false,
+  "application_networksrf_command_registered": false,
+  "implementation": "Existing usd-brep PrepCurvesForSurfacing and N_CreateGordonSrf, with privately owned originals, model-based rational approximation, native station metadata, automatic family/order/orientation discovery, resource guards and original-world continuous input-image admission. Existing exact surface proof caches are reusable through a public API.",
+  "fresh_licensed_rhino_cases": 9,
+  "fresh_licensed_query_points": 225,
+  "native_complete_curve_constraints": 50,
+  "rhino_comparison_passed": false,
+  "maximum_closest_query_output_distance": 0.027515146015096206,
+  "maximum_rhino_area_difference": 0.0513906700543032,
+  "qualification": {
+    "continuous_complete_input_image_acceptance": true,
+    "analytic_fixture_queries": true,
+    "rhino_interior_fitting": false,
+    "native_command_getter": false,
+    "general_injectivity_or_topology": false,
+    "comparative_kernel_performance": false
+  },
+  "limits": [
+    "Native optional API only; the application NetworkSrf command remains unregistered pending Rhino fitting work.",
+    "Two families of 2\u201332 open curves; degree at most 16, at most 128 controls per curve and 2048 total. Original complete curves must end at outer-family contacts; ambiguous contacts and overlaps reject.",
+    "Shared importer weight/basis restrictions apply. Rational curves are approximated by the existing native polynomial producer. The working-frame approximation floor does not relax requested final image bounds.",
+    "Prepared native curves limited to 2048 controls; conservative compatibility guard precedes tensor allocation and native transfer limits output to one million controls.",
+    "Raw Gordon output may retain kinks. Smooth parameterization, C2 fitting, near-contact best fits, closed networks, poles, surface continuity, getter options and associative history remain NetworkSrf work.",
+    "All returned native fixtures admit complete original input-image certificates within their edge/interior tolerances, and analytic query points agree within 1e-6. This does not qualify arbitrary interiors, symmetric boundary distance or injectivity.",
+    "Rhino closest-point output and area comparisons fail on curved networks. All failed cases and full definitions are retained, with comparison status false. Closest-point output distances are not continuous geometric separation certificates.",
+    "SDK area is measured on an owned translated duplicate after the remote-origin integrator failed; construction and world-space query outputs are unchanged.",
+    "AddressSanitizer instruments SMLib, SM_API and adapter archives; Rust and separately bundled dependencies are not separately instrumented. Leak and optional stack-use-after-return checks are disabled.",
+    "4 verifiable historical records preserve source hashes through immutable Git references; non-hash metadata stays unchanged. Pre-existing unverifiable records are untouched."
+  ],
+  "validation": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test network_surface --test rail_revolve --test two_rail_sweep -- --nocapture",
+      "passed": true,
+      "tests": 18,
+      "log": "docs/gordon-network-asan-final-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib network_surface -- --nocapture",
+      "passed": true,
+      "tests": 1,
+      "log": "docs/gordon-network-oracle-final-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib network_surface -- --nocapture",
+      "passed": true,
+      "tests": 1,
+      "log": "docs/gordon-network-portable-tests.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_network_surface tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_worker tools.rhino_oracle.test_worker_exit",
+      "passed": true,
+      "tests": 128,
+      "log": "docs/gordon-network-python-tests.log"
+    },
+    {
+      "command": "cargo clippy -p viboceros-geometry -p viboceros-smlib -p viboceros-oracle --features native-smlib --all-targets -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/gordon-network-clippy-native.log"
+    },
+    {
+      "command": "cargo clippy -p viboceros-geometry -p viboceros-oracle --all-targets -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/gordon-network-clippy-portable.log"
+    },
+    {
+      "command": "bridge.cpp: generated CMake flags with -w removed; -Wall -Wextra -Werror -fsyntax-only",
+      "passed": true,
+      "tests": null,
+      "log": "docs/gordon-network-cpp-warnings.log"
+    },
+    {
+      "command": "Inspect generated SMLib, SM_API and C ABI compile flags for address sanitizer and frame pointers",
+      "passed": true,
+      "tests": null,
+      "log": "docs/gordon-network-asan-instrumentation.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/gordon-network-fmt.log"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "1ba43d470f02fbfb9405c71d78de9f9d44fe9b445608f31b9d0a76155e7228ad",
+    "crates/viboceros-geometry/src/lib.rs": "9f1e3181d6cb0efa5b8919829384192e1286822743051d4c3dc2d5d09159704b",
+    "crates/viboceros-geometry/src/surface_pullback.rs": "b73c1eb4d833f5d1af7ee00d07578c5c340df5279e3e7f6b4fd60e07eac8ff8f",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "cb7e27d51a059bde5f1255f13adb4df35f6f9887588c721c371511722a96f7cb",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/affine.rs": "ef63b64d1422bbb98bc67ccd2f1cd397da47e322ec60891345ffbdbc4a49df5d",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": "76eb873e5dda8230edd42446d79ad46c35f867e9979122129ef3f7a088ea0bef",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "9ff46c78989c9a7d5f9c4d269842d9fea9ddd6ad6da83d32d338d45e0c787046",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/pushup.rs": "e45cf6d503cf0faf95ef8ec4e3b47bc4c721e42a97c534838d13e60ee8f2568a",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": "a42c0758dbb09903602b58be248ccc9df78f7717da05aff9e320cde105e365d7",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs": "3579b0959183bfe18a734240259785e792ea1f7210fa3dd6b283218dac2efd15",
+    "crates/viboceros-oracle/src/lib.rs": "90e62f66f337847c9110af90b4c5afeb8a1d06377e1e145a6e24cb2a491c5785",
+    "crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
+    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
+    "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
+    "crates/viboceros-smlib/native/bridge.cpp": "e5b7e91133d59476a446f47c72fc0ffafeb4befd2f995a96de6ab694fff887f8",
+    "crates/viboceros-smlib/native/bridge.h": "9cd4f9a62499fa153a85b386addd870690512201fb3bef7d19c69e6d78ee22de",
+    "crates/viboceros-smlib/src/lib.rs": "240ef3f47f6fa6e3debb58b14e46a2c0ff63d55b3690bc9b558d54be20b053cc",
+    "crates/viboceros-smlib/src/native.rs": "c172aec12cc19ab9fef3d9656de6d965e92fd26158ca13d124cf45ef6b10ffba",
+    "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
+    "crates/viboceros-smlib/src/native/network_surface.rs": "3294dba1ae4c4b71f9010b94fda0efdca2d8d91e69bef0e937d5e5a64b876b02",
+    "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
+    "crates/viboceros-smlib/tests/network_surface.rs": "afdd89836c3f1f313fdba719692322c99755d85a64ca1fe8b0f5a363613e21bf",
+    "docs/smlib-gordon-network.md": "36cabd23ae53757052086b8fd45661ebb1b53a262619022462e9fb00c9ff6c5f",
+    "docs/usd-brep.md": "a39b6f3fc7da016c564f3806495f981175d7e0c0a7b3ef77afb67b8e17dce988",
+    "third_party/usd-brep/source/SMLib/inc/SmBSplineSurface.h": "a89941f1afd02ff8df8f78577f61e35782516a3660bbc62c51fdbf3f9b3df8b3",
+    "third_party/usd-brep/source/SMLib/inc/SmNurbsCrv.h": "cc710f8a410a141579335f03b509516a3936a9039dd7d85b7f92a46f3994620e",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvApprox.cpp": "48d29a528a1eeca94c2fcee1517bc36a63dcfeeb92f2657943718e2a68f84aab",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfAdv.cpp": "00e24340417dd111d4abb0258eae2a42649290043d6a4c23be682132a9a3eace",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurfaceNLib.cpp": "b971fc6c381f25805d6b5fec6463359bd20850f0e50fb0c75510c4e563061b1b",
+    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "tools/rhino_oracle/curve_recipe.py": "f24004acd2951d5c63d2bd71b9c69c63c83ad40eb2b5838402fa43ff619bea26",
+    "tools/rhino_oracle/fixtures/network_surface.json": "8c5eb7601fd8e8172bc3580b2451e73644c242a680b410a2c1bb459139be4605",
+    "tools/rhino_oracle/network_surface_probe.py": "22f1a99934b59aa61b2cd61f09e2188c0e35a9bf4d13e70b6e599c36215a6132",
+    "tools/rhino_oracle/network_surface_readback.py": "3bf0ae9a416524cf225786955b7f67b789b6850d3b210d9f918234e85f395bfb",
+    "tools/rhino_oracle/rhino_worker.py": "8ecb446ed6610cd787600a352f27e53e926d1e0ec5faf61f9c69e4e51d618afc",
+    "tools/rhino_oracle/structural_sdk.py": "1eaaf4c99c223a394a55104ae64830da7bfe6ba5b7dbc836ab2f816c7acb6c98",
+    "tools/rhino_oracle/test_network_surface.py": "711050de46128598902b75d37bbfd565e1eddb30f592b0050703a45d9c103ff0",
+    "tools/rhino_oracle/test_structural_sdk.py": "012ba6eecbc51ed844a01a8cc28c8ee043161ddac54117726e72a81aab6d97db",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "evidence_sha256": {
+    "docs/gordon-network-asan-final-tests.log": "3fdc31c357e50facc00bcd385908d5814516eb9bc7c5c642e51c095f8f6a0ba4",
+    "docs/gordon-network-asan-instrumentation.log": "efd0afc6b5b1e086737fe458974d18173b92b7022935a481f4850b5a7b5c17b6",
+    "docs/gordon-network-clippy-native.log": "c9922f4fe0aa0c9848f55f24f1a5bc1f96dac23f8bb9438befcecbee01235122",
+    "docs/gordon-network-clippy-portable.log": "a41051563a4cb5fc1b1bcdd9aa0ba28ca80f7736d629d90cc138218756e8e3a9",
+    "docs/gordon-network-comparison.json": "6456611e8beccb53d3d240b02f401f849f6f65bb140fb52c6f835a58ce75009c",
+    "docs/gordon-network-cpp-warnings.log": "f899f79664b639756741d5f17a4ef3a640c4e1e3731acba34cdf3bec5c49d9da",
+    "docs/gordon-network-fmt.log": "19eaf43821a7660ec323a87c8457bf74823beb296c39f5e01aa8a683aa50f061",
+    "docs/gordon-network-oracle-final-tests.log": "02814ad7475f1ff2ac6d9325b05b71fe3f6a07ae0566365f7b8d9f7881ef4546",
+    "docs/gordon-network-portable-tests.log": "fc856b927c62a160b08ee9ec11fceeb10807cd0de47e66617b83dccacfb1c18b",
+    "docs/gordon-network-python-tests.log": "10b8ea0f66992e614e79d8727564c423e74a77223417bb31527749b85f07b270",
+    "tools/rhino_oracle/observations/gordon_network_rhino_20261015.json": "e6f81ec26557ad8715a0150ff6518be89edda8561408150b1a79c3f0688697d5",
+    "tools/rhino_oracle/observations/gordon_network_rhino_readback_20261015.json": "1ddc77906b10c7b18ee65bf6fdfb5af63236c70ec259a7e636e9e47f1f40d38b",
+    "tools/rhino_oracle/observations/gordon_network_viboceros_20261015.json": "755cb6cdb545cc225753cc609b6d7927ff4ab480ad9f383de2e8d196f63f73c0"
+  }
+}

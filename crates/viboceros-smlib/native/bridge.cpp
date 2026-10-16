@@ -12,6 +12,8 @@
 #include <SmSolutionArray.h>
 #include <SmBSplineSurface.h>
 #include <NL_Nurbsdef.h>
+#include <nurbs.h>
+#include <SmNurbsCrv.h>
 #include <SmAxis2Placement.h>
 #include <SmBrep.h>
 #include <SmFace.h>
@@ -1637,6 +1639,76 @@ extern "C" int vb_curves_swung_surface(const VbCurve *profile, const VbCurve *ra
         check(status, "construct swung surface");
         require(raw, "Missing swung surface");
         *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_curves_network_surface(const VbCurve *const *u, size_t nu,
+                                         const VbCurve *const *v, size_t nv,
+                                         double tolerance, double *u_stations, double *v_stations,
+                                         VbSurfaceData **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(u && v && out && u_stations && v_stations && nu >= 2 && nu <= 32 && nv >= 2 && nv <= 32 &&
+                std::isfinite(tolerance) && tolerance > 0, "Invalid network surface input");
+        std::vector<std::unique_ptr<SmBSplineCurve>> owners;
+        size_t total = 0;
+        auto family = [&](const VbCurve *const *input, size_t count) {
+            SmTArray<SmBSplineCurve*> curves;
+            for (size_t i = 0; i < count; ++i) {
+                require(input[i] && input[i]->degree <= 16 && input[i]->points.size()/4 <= 128,
+                        "Network input curve resource limit");
+                total += input[i]->points.size()/4;
+                require(total <= 2048, "Network input control resource limit");
+                owners.push_back(copy_curve(*input[i]));
+                curves.Add(owners.back().get());
+            }
+            return curves;
+        };
+        auto uc = family(u, nu), vc = family(v, nv);
+        NL_STACKS stack;
+        SmStackHandler cleanup(&stack);
+        std::vector<NL_CURVE*> prepared_u(nu), prepared_v(nv);
+        double *us = nullptr, *vs = nullptr;
+        // This is the existing CreateGordonSurface pipeline, with the
+        // intermediate data exposed for resource checks and UV certificates.
+        // Intersections use exact original curves; rational approximation and
+        // compatibility happen once, on native private stack data.
+        // Leave room for compatibility and world placement in the final image
+        // certificate. The numeric floor bounds pathological approximation
+        // requests; the original requested tolerance still gates acceptance.
+        check(SmBSplineSurface::PrepCurvesForSurfacing(*SmApiGetOrCreateContext(), uc, vc,
+            prepared_u.data(), prepared_v.data(), stack, std::max(tolerance/64.,1e-12),
+            TRUE, 0, 0, TRUE, TRUE, &us, &vs),
+            "prepare native Gordon network");
+        auto bound = [&](const std::vector<NL_CURVE*> &curves, size_t stations) {
+            size_t controls = 0, degree = 0;
+            for (auto *curve : curves) {
+                require(curve && curve->pol && curve->pol->n >= 0 && curve->pol->n < 2048,
+                        "Network prepared curve resource limit");
+                controls = std::max(controls, size_t(curve->pol->n+1));
+                degree = std::max(degree, size_t(curve->p));
+            }
+            return 4*(controls + (degree+3)*stations + 4);
+        };
+        const auto ub = bound(prepared_u,nv), vb = bound(prepared_v,nu);
+        require(vb && ub <= limit/vb, "Network compatibility control-net resource limit");
+        require(us && vs, "Missing native network stations");
+        for (size_t i = 0; i < nv; ++i) {
+            require(std::isfinite(us[i]) && (i==0 || us[i]>us[i-1]), "Invalid native U stations");
+            u_stations[i] = us[i];
+        }
+        for (size_t i = 0; i < nu; ++i) {
+            require(std::isfinite(vs[i]) && (i==0 || vs[i]>vs[i-1]), "Invalid native V stations");
+            v_stations[i] = vs[i];
+        }
+        NL_SURFACE result;
+        N_SrfInitArrays(&result);
+        const NL_DEGREE pu = std::min(size_t(3),nv-1), pv = std::min(size_t(3),nu-1);
+        require(N_CreateGordonSrf(prepared_u.data(),vs,nu-1,prepared_v.data(),us,nv-1,
+                                 pu,pv,pu,pv,NL_YES,&result,&stack,&stack)==NL_NO,
+                "construct native Gordon network tensor");
+        SmBSplineSurface surface(reinterpret_cast<const gw_SURFACE*>(&result));
+        *out = vb_export_surface(surface);
     });
 }
 

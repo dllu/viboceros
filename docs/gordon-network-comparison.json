@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "status": "Rhino NetworkSrf fitting unmatched",
+  "rhino_comparison_passed": false,
+  "application_networksrf_command_registered": false,
+  "point_output_distance_epsilon": 1e-06,
+  "area_absolute_epsilon": 1e-05,
+  "note": "Distances compare returned world-space closest-point outputs, including solver roundoff; they are not continuous surface Hausdorff bounds. Areas use square model units. No relative coordinate tolerance is used. Native analytic-query agreement and continuous complete input-image admission do not establish Rhino interior fitting parity.",
+  "area_reference": "Public SDK area on an owned surface duplicate translated near the origin; shape construction, point queries and retained definitions remain in original world coordinates.",
+  "independent_saved_rhino_tensor_queries": [
+    {
+      "id": "coons_arches",
+      "query_index": 12,
+      "sdk_distance": 2.395718853149614e-05,
+      "rust_distance_on_saved_rhino_tensor": 2.3957188531575908e-05,
+      "absolute_distance_difference": 7.976678670883197e-17
+    },
+    {
+      "id": "biquadratic_network",
+      "query_index": 18,
+      "sdk_distance": 0.027426132983479096,
+      "rust_distance_on_saved_rhino_tensor": 0.027426132983479644,
+      "absolute_distance_difference": 5.48172618408671e-16
+    },
+    {
+      "id": "rational_cylinder",
+      "query_index": 14,
+      "sdk_distance": 5.494972005637691e-06,
+      "rust_distance_on_saved_rhino_tensor": 5.494972005113773e-06,
+      "absolute_distance_difference": 5.239178299640442e-16
+    }
+  ],
+  "case_count": 9,
+  "curve_constraint_count": 50,
+  "query_count": 225,
+  "maximum_closest_query_output_distance": 0.027515146015096206,
+  "maximum_absolute_area_difference": 0.0513906700543032,
+  "cases": [
+    {
+      "id": "rectangle",
+      "curve_count": 4,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 0.0,
+      "maximum_closest_query_output_distance": 9.485749680535094e-16,
+      "absolute_area_difference": 5.329070518200751e-15,
+      "closest_query_outputs_within_epsilon": true,
+      "areas_within_epsilon": true,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "coons_arches",
+      "curve_count": 4,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 2.1292079068427173e-09,
+      "maximum_closest_query_output_distance": 2.3957188551944973e-05,
+      "absolute_area_difference": 2.538738127988438e-05,
+      "closest_query_outputs_within_epsilon": false,
+      "areas_within_epsilon": false,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "bilinear_saddle",
+      "curve_count": 4,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 7.546750080845106e-11,
+      "maximum_closest_query_output_distance": 7.54675550783666e-11,
+      "absolute_area_difference": 5.112354983793921e-12,
+      "closest_query_outputs_within_epsilon": true,
+      "areas_within_epsilon": true,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "biquadratic_network",
+      "curve_count": 6,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 2.3617034631914278e-11,
+      "maximum_closest_query_output_distance": 0.0274261329834857,
+      "absolute_area_difference": 0.05137245876260366,
+      "closest_query_outputs_within_epsilon": false,
+      "areas_within_epsilon": false,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "nonuniform_network",
+      "curve_count": 8,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 1.0518553211557965e-09,
+      "maximum_closest_query_output_distance": 0.00805811266348251,
+      "absolute_area_difference": 0.004078911952952069,
+      "closest_query_outputs_within_epsilon": false,
+      "areas_within_epsilon": false,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "reversed_independent_domains",
+      "curve_count": 6,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 2.3616949896905697e-11,
+      "maximum_closest_query_output_distance": 0.027515146015096206,
+      "absolute_area_difference": 0.05129671881536879,
+      "closest_query_outputs_within_epsilon": false,
+      "areas_within_epsilon": false,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "rotated_network",
+      "curve_count": 6,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 2.3616814291188983e-11,
+      "maximum_closest_query_output_distance": 0.027426132983482197,
+      "absolute_area_difference": 0.051372458762575235,
+      "closest_query_outputs_within_epsilon": false,
+      "areas_within_epsilon": false,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "remote_network",
+      "curve_count": 6,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 1.4901161193847656e-08,
+      "maximum_closest_query_output_distance": 0.027454711365460977,
+      "absolute_area_difference": 0.0513906700543032,
+      "closest_query_outputs_within_epsilon": false,
+      "areas_within_epsilon": false,
+      "created_and_valid_in_both_engines": true
+    },
+    {
+      "id": "rational_cylinder",
+      "curve_count": 6,
+      "query_count": 25,
+      "native_analytic_query_maximum_distance": 7.2994853273419255e-09,
+      "maximum_closest_query_output_distance": 5.493955424365259e-06,
+      "absolute_area_difference": 9.453537508363752e-08,
+      "closest_query_outputs_within_epsilon": false,
+      "areas_within_epsilon": true,
+      "created_and_valid_in_both_engines": true
+    }
+  ]
+}
