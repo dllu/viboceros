@@ -79,6 +79,7 @@ pub(crate) use component_picking::mesh_face_outline;
 mod control_points;
 mod grip_preview;
 pub use control_points::ControlPointSelection;
+mod curvature_graph;
 mod curve_sampling;
 mod edge_picking;
 pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
@@ -350,6 +351,7 @@ pub struct ViewportInput<'a> {
     pub point_deviation: Option<&'a viboceros_command::point_deviation::View>,
     pub curve_deviation: Option<&'a viboceros_command::curve_deviation::View>,
     pub edge_analysis: Option<&'a viboceros_command::edge_analysis::View>,
+    pub curvature_graph: Option<&'a viboceros_command::curvature_graph::View>,
     pub edge_zoom: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_highlights: &'a [EdgePick],
     pub edge_endpoints: Option<[Point3; 2]>,
@@ -428,6 +430,7 @@ impl Default for ViewportInput<'_> {
             point_deviation: None,
             curve_deviation: None,
             edge_analysis: None,
+            curvature_graph: None,
             edge_zoom: None,
             edge_highlights: &[],
             edge_endpoints: None,
@@ -1885,6 +1888,9 @@ impl Viewport {
         }
         if let Some(view) = input.edge_analysis {
             self.paint_edge_analysis(&painter, rect, document, view);
+        }
+        if let Some(view) = input.curvature_graph {
+            self.paint_curvature_graph(&painter, rect, document, view);
         }
         if let Some(view) = input.edge_zoom {
             self.paint_edge_analysis(&painter, rect, document, view);

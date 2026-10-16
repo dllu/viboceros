@@ -1,0 +1,32 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-document v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-document)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-drafting v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-drafting)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 33.81s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-57135ca80196f59f)
+
+running 21 tests
+test curvature::radius::tests::radius_units_can_represent_a_diameter_whose_model_unit_value_overflows ... ok
+test curvature::tests::flat_curve_marking_produces_only_a_point_and_failures_are_atomic ... ok
+test curvature::radius::tests::radius_markers_are_atomic_and_undoable_and_invalid_inputs_preserve_redo ... ok
+test curvature::radius::tests::explicit_radius_selection_limits_candidates_and_empty_search_is_read_only ... ok
+test curvature::radius::tests::radius_and_diameter_measure_local_curvature_without_changing_history ... ok
+test curvature::radius::tests::radius_display_units_convert_reports_without_scaling_geometry_or_history ... ok
+test curvature::tests::curve_measurement_is_read_only_and_markers_have_atomic_fresh_state ... ok
+test curvature::radius::tests::unselected_radius_ignores_hidden_locked_and_noncurve_objects ... ok
+test curvature::radius::tests::radius_is_local_on_ellipses_and_native_nurbs_and_chooses_nearest_curve ... ok
+test translation::normal::tests::a_selected_normal_reference_moves_once_using_its_original_curvature ... ok
+test blend::tests::curvature_option_creates_quartic_without_changing_sources ... ok
+test curvature::radius::tests::bare_radius_recognizes_preselected_native_and_nurbs_circles_read_only ... ok
+test curvature_graph::tests::curvature_graph_is_readonly_and_scale_color_updates_reuse_cached_differentials ... ok
+test curvature_graph::tests::curvature_graph_display_updates_preserve_redo_history ... ok
+test curvature_graph::tests::curvature_graph_tracks_edits_and_source_sets_and_rejects_bad_options_atomically ... ok
+test curvature::tests::surface_markers_are_normal_section_half_circles ... ok
+test curvature_graph::tests::curvature_graph_surface_directions_and_primitive_brep_are_supported ... ok
+test curvature_graph::tests::curvature_graph_repeated_view_queries_cannot_resurrect_stale_graphs_after_budget_failure ... ok
+test curvature::tests::only_the_nearest_selected_object_is_differentially_evaluated ... ok
+test match_curve::tests::average_curvature_matches_an_arc_and_preserves_source_far_end ... ok
+test curvature_graph::tests::curvature_graph_trimmed_face_combs_stay_outside_holes ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 1402 filtered out; finished in 0.04s

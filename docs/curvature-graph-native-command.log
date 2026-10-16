@@ -1,0 +1,15 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 54.92s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-e02609ba8ddec502)
+
+running 6 tests
+test curvature_graph::tests::curvature_graph_display_updates_preserve_redo_history ... ok
+test curvature_graph::tests::curvature_graph_is_readonly_and_scale_color_updates_reuse_cached_differentials ... ok
+test curvature_graph::tests::curvature_graph_repeated_view_queries_cannot_resurrect_stale_graphs_after_budget_failure ... ok
+test curvature_graph::tests::curvature_graph_surface_directions_and_primitive_brep_are_supported ... ok
+test curvature_graph::tests::curvature_graph_tracks_edits_and_source_sets_and_rejects_bad_options_atomically ... ok
+test curvature_graph::tests::curvature_graph_trimmed_face_combs_stay_outside_holes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1493 filtered out; finished in 0.04s

@@ -143,7 +143,6 @@
     "docs/pull-command-qualification.json"
   ],
   "sha256": {
-    "README.md": "4ff36a49482fad2587e804c4cd1d018f3c62af3eb79b47f2d84b208e7c95dafb",
     "crates/viboceros-command/src/curve_deviation.rs": "218e87f29ed9aaa81503d5b27bfcbf4cfe0cbe31789453cfae8ea4e9f99ebc4c",
     "crates/viboceros-command/src/curve_deviation/inputs.rs": "a3b4e6f6338456136231bb1853c518cb870e7ca771f52ac051afb7b4339926ae",
     "crates/viboceros-command/src/curve_deviation/tests.rs": "338b66b0e0f8127df2be3b573153cabd9b3d23c692df2efe89a9ca5bd80b7f8c",
@@ -155,8 +154,6 @@
     "crates/viboceros-smlib/src/native/curve_distances.rs": "1afe28e963bcd0382cfdf4a28a992f777376c1744ebf8aaaba937137a16dd000",
     "crates/viboceros-smlib/src/native/curve_distances/tests.rs": "45a7c361a9286607ce82a75317d010d31f7b44deee877aa7cdebf1c4e0bbed68",
     "docs/commands/crv-deviation.md": "114409fd22001b4e1b6fa7fb46b5949e49921974932c780fcf03ba5c65fb16a1",
-    "docs/crv-deviation-validation.json": "cceeed7a8c1670255e125d89b849ca5dac50b48271f46f27d1ec42ff616c595a",
-    "docs/curve-deviation-overlap-validation.json": "c97a6e8556fc741e71c296b34d57c4ad8d35869eb1994601da03b28c04ebc5b1",
     "docs/curve-deviation-subcurves-asan.log": "217e565a81deb6d1c8f247bcdd003d6098f560ca859a3b1db5042186387ace31",
     "docs/curve-deviation-subcurves-boundary-before.log": "9694813a29b9f60caf64dd3f05de17b81f5b104801c0e4554bd02767f73e7578",
     "docs/curve-deviation-subcurves-clippy.log": "b57e5daa67ee9244e352fee7994d4d7f5c30cfbd06ed09320cb011fa5be3e788",
@@ -170,8 +167,6 @@
     "docs/curve-deviation-subcurves-shared-picker.log": "d48e5f8c94af212c8639209267ebef027104699a11a2866fced12e3c14c3114f",
     "docs/curve-deviation-subcurves-ui.log": "0c8f5fd0d0682fbd829a223a04a5e351b8c49b40418905ed2814a310c7e589ef",
     "docs/curve-distance-queries.md": "6cc93a5b23054c686fd936e835e846d0fe39a1163a163366f20e716bbb36272f",
-    "docs/curve-distance-validation.json": "7481bce40f8753dec7ddaea5c745258ad5ca6a1d2eee987366da28f0267d7d8d",
-    "docs/point-deviation-validation.json": "24a977983334171f1bb83e6ee65350d78efc4b2a1bbd8647d3324bd3e23fd10d",
     "docs/project-subcurve-qualification.json": "870c7dfe7c45e78fa9a30037d9dc3bafa2281c46466d3015b9aad242c3cf9d98",
     "docs/pull-command-qualification.json": "2c2bbf4705eb007ac785bdf8560ed1be9ff89d654c4011b741c01d2a5930c503",
     "src/app/apply_curves.rs": "c3760d67c13e8fd1fcba57cc9993ce500db9000aa1e55f889f266f272efce88e",
@@ -180,7 +175,6 @@
     "src/app/curve_deviation/subcurves.rs": "dcc8d1c1b820237a2cc1b942ec65c1a31fc29ec18032853b1fc6f81f11a3fb2b",
     "src/app/intersect_two_sets.rs": "3ccf040d3eabee71fa79774e398261cb5f5550fdc2c14b6e9182b1b4e6dd177c",
     "src/app/iplane.rs": "cf7c9d024243ff471b83b5c9d2dc12a72974c1ea5a9feac66e5970ceece48919",
-    "src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c",
     "src/app/point_deviation.rs": "1c0165f6811e708f61e1cc2d7e13295557e2b3df472e027b335604bc3e651dcd",
     "src/app/project.rs": "d3285d11224536759a8350307b62902945f07e2713ebe71d166b564586f2f31d",
     "src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708",
@@ -200,5 +194,13 @@
     "tools/usd_brep/curve_distance_probe.cpp": "a72519756bafaed7b1843366745598057964ca20de8bc5bb15bcc276ac50c26a",
     "tools/usd_brep/run_curve_distance_probe.py": "424d54b6ee9781751cfd2f8356fea63a636fe97daaa60bf642c7a6c5429ee395",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "git_sha256": {
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:README.md": "4ff36a49482fad2587e804c4cd1d018f3c62af3eb79b47f2d84b208e7c95dafb",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/crv-deviation-validation.json": "cceeed7a8c1670255e125d89b849ca5dac50b48271f46f27d1ec42ff616c595a",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/curve-deviation-overlap-validation.json": "c97a6e8556fc741e71c296b34d57c4ad8d35869eb1994601da03b28c04ebc5b1",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/curve-distance-validation.json": "7481bce40f8753dec7ddaea5c745258ad5ca6a1d2eee987366da28f0267d7d8d",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/point-deviation-validation.json": "24a977983334171f1bb83e6ee65350d78efc4b2a1bbd8647d3324bd3e23fd10d",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c"
   }
 }

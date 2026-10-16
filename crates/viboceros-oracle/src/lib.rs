@@ -145,7 +145,9 @@ pub use rail_revolve::Fixture as RailRevolveFixture;
 pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
+mod curvature_graph;
 mod geometry_validity;
+pub use curvature_graph::Fixture as CurvatureGraphFixture;
 pub use geometry_validity::Fixture as GeometryValidityFixture;
 mod selected_coplanar_faces;
 pub use selected_coplanar_faces::Fixture as SelectedCoplanarFacesFixture;
@@ -1693,6 +1695,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurveDeviationFixture,
     },
+    CurvatureGraph {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurvatureGraphFixture,
+    },
     PointDeviation {
         id: String,
         #[serde(flatten)]
@@ -2702,6 +2709,7 @@ impl Operation {
             | Self::PlaneThroughPoints { id, .. }
             | Self::LineThroughPoints { id, .. }
             | Self::CurveDeviation { id, .. }
+            | Self::CurvatureGraph { id, .. }
             | Self::PointDeviation { id, .. }
             | Self::SphereFitPoints { id, .. }
             | Self::RailRevolve { id, .. }
@@ -5929,6 +5937,9 @@ fn execute(
         )?,
         Operation::CurveDeviation { fixture, .. } => {
             curve_deviation::run(fixture, iterations, tolerance)?
+        }
+        Operation::CurvatureGraph { fixture, .. } => {
+            curvature_graph::run(fixture, iterations, tolerance)?
         }
         Operation::PointDeviation { fixture, .. } => {
             point_deviation::run(fixture, iterations, tolerance)?

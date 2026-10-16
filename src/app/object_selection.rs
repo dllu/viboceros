@@ -65,6 +65,9 @@ impl PendingObjectCommand {
         if self.description.command == "CrvDeviation" {
             return "Select exactly two curves; SubCrv picks a portion; Enter measures, Esc cancels";
         }
+        if self.description.command == "CurvatureGraph" {
+            return "Select curves, surfaces or polysurfaces; Enter displays curvature graphs, Esc cancels";
+        }
         if self.description.command == "RailRevolve" {
             return "Select the profile first, then the rail; Enter picks the axis; Esc cancels";
         }
@@ -637,6 +640,7 @@ impl VibocerosApp {
                     | "OffsetSrf"
                     | "Rebuild"
                     | "ShowEdges"
+                    | "CurvatureGraph"
                     | "ZoomNaked"
                     | "ZoomNonManifold"
                     | "Divide"

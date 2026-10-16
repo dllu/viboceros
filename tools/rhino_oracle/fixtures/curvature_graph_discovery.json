@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curvature_graph",
+      "id": "circle-scale-50",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 50,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "circle-scale-100",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "circle-scale-200",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 200,
+      "density": 1
+    }
+  ]
+}

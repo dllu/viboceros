@@ -151,6 +151,7 @@ mod boolean_solids;
 mod boolean_two;
 mod construction_plane;
 mod contour;
+mod curvature_graph;
 mod curve_deviation;
 mod curve_preview;
 mod curve_prompt;
@@ -9245,6 +9246,7 @@ impl eframe::App for VibocerosApp {
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.show_edge_analysis(ui);
+        self.show_curvature_graph(ui);
         self.show_point_deviation(ui);
         self.show_curve_deviation(ui);
         self.validate_blend_surface();
@@ -9564,6 +9566,11 @@ impl eframe::App for VibocerosApp {
         let edge_analysis_view = self
             .commands
             .edge_analysis_view(&self.document)
+            .ok()
+            .flatten();
+        let curvature_graph_view = self
+            .commands
+            .curvature_graph_view(&self.document)
             .ok()
             .flatten();
         let deviation_view = self
@@ -9902,6 +9909,7 @@ impl eframe::App for VibocerosApp {
                             point_deviation: deviation_view.as_ref(),
                             curve_deviation: curve_deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),
+                            curvature_graph: curvature_graph_view.as_ref(),
                             edge_zoom: edge_zoom_view.as_ref(),
                             edge_highlights: &edge_highlights,
                             edge_endpoints,
@@ -10110,6 +10118,7 @@ mod tests {
     mod copy_options;
     mod create_uv_curves;
     mod cull_degenerate;
+    mod curvature_graph;
     mod curve_deviation;
     mod curve_rebuild_preview;
     mod distance;

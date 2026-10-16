@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "cases": 9,
+  "sample_pairs": 153,
+  "matched_sample_cases": 9,
+  "unchanged_source_cases": 9,
+  "complete_native_graph_parity_qualified": false,
+  "continuous_global_curvature_qualified": false,
+  "performance_qualified": false,
+  "method": "17 common source-chart samples per case, using the NURBS chart for ellipse admission. Original recipe geometry is the only input. Native graph extraction retains actual polylines; independent local knot-span sampling is not asserted to match native tessellation or hair density. Circle envelope ratios independently check the exponential display multiplier.",
+  "results": [
+    {
+      "id": "circle-98",
+      "maximum_sample_errors": {
+        "point": 3.6739403974420594e-16,
+        "curvature": 2.3551386880256624e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 68,
+      "native_circle_envelope_relative_error": 3.9474596431116675e-16,
+      "native_circle_scale_rule_matches": true,
+      "local_maximum_hair_length_error": 3.885780586188048e-16
+    },
+    {
+      "id": "circle-100",
+      "maximum_sample_errors": {
+        "point": 3.6739403974420594e-16,
+        "curvature": 2.3551386880256624e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 68,
+      "native_circle_envelope_relative_error": 3.552713678800501e-16,
+      "native_circle_scale_rule_matches": true,
+      "local_maximum_hair_length_error": 5.551115123125783e-16
+    },
+    {
+      "id": "circle-102",
+      "maximum_sample_errors": {
+        "point": 3.6739403974420594e-16,
+        "curvature": 2.3551386880256624e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 68,
+      "native_circle_envelope_relative_error": 4.440892098500626e-16,
+      "native_circle_scale_rule_matches": true,
+      "local_maximum_hair_length_error": 8.881784197001252e-16
+    },
+    {
+      "id": "circle-density-0",
+      "maximum_sample_errors": {
+        "point": 3.6739403974420594e-16,
+        "curvature": 2.3551386880256624e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 36,
+      "native_circle_envelope_relative_error": 3.552713678800501e-16,
+      "native_circle_scale_rule_matches": true,
+      "local_maximum_hair_length_error": 5.551115123125783e-16
+    },
+    {
+      "id": "circle-density-2",
+      "maximum_sample_errors": {
+        "point": 3.6739403974420594e-16,
+        "curvature": 2.3551386880256624e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 132,
+      "native_circle_envelope_relative_error": 3.552713678800501e-16,
+      "native_circle_scale_rule_matches": true,
+      "local_maximum_hair_length_error": 5.551115123125783e-16
+    },
+    {
+      "id": "ellipse",
+      "maximum_sample_errors": {
+        "point": 4.577566798522237e-16,
+        "curvature": 3.1031676915590914e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 68
+    },
+    {
+      "id": "line",
+      "maximum_sample_errors": {
+        "point": 0.0,
+        "curvature": 0.0
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 0,
+      "local_hair_samples": 17
+    },
+    {
+      "id": "arc",
+      "maximum_sample_errors": {
+        "point": 2.7947392578311284e-16,
+        "curvature": 4.710277376051325e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 34
+    },
+    {
+      "id": "cubic",
+      "maximum_sample_errors": {
+        "point": 2.220446049250313e-16,
+        "curvature": 7.021666937153402e-16
+      },
+      "sampled_points_and_curvatures_within_1e_minus_6": true,
+      "sources_unchanged": true,
+      "native_extracted_graph_objects": 1,
+      "local_hair_samples": 17
+    }
+  ]
+}

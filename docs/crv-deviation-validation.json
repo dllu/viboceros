@@ -111,7 +111,6 @@
     "docs/sphere-fit-points-validation.json"
   ],
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "51145ee1da326caeab0f3a03c24b759d29c8828c704a8001884abe7e8cee0d57",
     "crates/viboceros-geometry/src/curve_distance/tests.rs": "0eed8b2a450a948a9ed363b62de539b33b799fb9a114f4ecda526b5a4d9ac5c4",
     "docs/crv-deviation-clippy.log": "96d1c8385aeb2641dba5d313cd3de3becf9df9add5cd5d9be6c74665cd3cce9f",
     "docs/crv-deviation-command.log": "8830d55d1a3e4abfd2b0797cee779826cd1ef06da2d8ffc81ed9eb62aed89c23",
@@ -124,9 +123,6 @@
     "docs/crv-deviation-oracle.log": "5e0161193d1daa7d4547a60b0606a1fc5b1e00c7944e2c84cb964e2963326361",
     "docs/crv-deviation-python.log": "9794693c9d6cc226416d5cb0daf6e591be87d306edd03202a2a70872123d3311",
     "docs/crv-deviation-ui.log": "52dc3343584cf357ececb47447161f0905c6b8fabab0774703d9775f9beae7d7",
-    "docs/sphere-fit-points-validation.json": "1d2af691404c3f5619824bad03d0591e0b97734cfaffc38e9d85d83e7c510631",
-    "src/app.rs": "e4aa1fc037db24fc4affa533fe9f232b96ca1a7f98b8ec8005d1d7c9e47b7f1a",
-    "src/viewport.rs": "ba3c1ae83e863cbbc0c34b9c4e20bcb899c25fcfeab9876360bcbec2a676d1c3",
     "tools/rhino_oracle/curve_distance_comparison.py": "35a319ecc9885f0f7642c8019141554df07d82921a0b77eb69d742d6dd324fbf",
     "tools/rhino_oracle/fixtures/curve_deviation_workflows.json": "c236207d6edda479c5ef17a90eaa433d4da21479f58a892f4c1ac296396875e4",
     "tools/rhino_oracle/observations/curve_deviation_workflows_comparison_20261016.json": "3b25300da18c49bc431257a1bb93d567f77ba6d8f1d6580548ff7c9fafb28056",
@@ -150,6 +146,10 @@
     "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/object_selection.rs": "a993ef3812a5000d9e23e3fc7b7e40a10e0811a0315e2247c487ba4b98787a1b",
     "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/tests/curve_deviation.rs": "652e9325405d500d90b3fc1ace2f61c1d2db99c9321d825b989d3e9e30ce6155",
     "247a9553061ba774fa9dca45d6e4cc8703e86b2e:tools/rhino_oracle/curve_deviation_probe.py": "349bb64d2dc926464a32468ed8a3dd66329ce61e7a82c3de187f2ce750f7ce32",
-    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:docs/point-deviation-validation.json": "80231d5db348d29dfc8ee468250df02a6e308b601544059edcd4dc0c2f0c705a"
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:docs/point-deviation-validation.json": "80231d5db348d29dfc8ee468250df02a6e308b601544059edcd4dc0c2f0c705a",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:crates/viboceros-command/src/lib.rs": "51145ee1da326caeab0f3a03c24b759d29c8828c704a8001884abe7e8cee0d57",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:src/app.rs": "e4aa1fc037db24fc4affa533fe9f232b96ca1a7f98b8ec8005d1d7c9e47b7f1a",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:src/viewport.rs": "ba3c1ae83e863cbbc0c34b9c4e20bcb899c25fcfeab9876360bcbec2a676d1c3",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/sphere-fit-points-validation.json": "1d2af691404c3f5619824bad03d0591e0b97734cfaffc38e9d85d83e7c510631"
   }
 }

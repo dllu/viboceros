@@ -151,7 +151,6 @@
     "crates/viboceros-geometry/src/curve_distance/overlap/tests.rs": "de8f0f9e479db4db74c91c6022c4a265483d2e9beadb0b0b846f4f8fab54721e",
     "crates/viboceros-geometry/src/curve_parameter_map.rs": "7bddcd8cc607d9636a6337f3436841f10a20874af2d1c4d90b28f2d43f0564d8",
     "crates/viboceros-geometry/src/curve_parameter_map/tests.rs": "e17bccac145691c781f1bb169f1c614b3daf29085f59648faf6e5fc9d70a7a74",
-    "crates/viboceros-geometry/src/lib.rs": "b9fe7f6bd2c2f7ebb6a16b6fcf9fc23b5b0fc8645fb3d9cdfc217a275e44dd0d",
     "crates/viboceros-smlib/src/native/curve_distances.rs": "1afe28e963bcd0382cfdf4a28a992f777376c1744ebf8aaaba937137a16dd000",
     "docs/curve-deviation-overlap-clippy.log": "d81fc3944433e8a0d48e90482b3fd08a7cca2799598e10fa1792e22601286876",
     "docs/curve-deviation-overlap-command.log": "85d9df4ab918f409be23f95ddb0113293f694e9338dc4964c7c342375961123e",
@@ -187,6 +186,7 @@
     "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/curve_deviation.rs": "92e2ff098d5e2ac607ed0cbf4fafcb54ffa9b3713bc257ee67ba54f68ecc486a",
     "247a9553061ba774fa9dca45d6e4cc8703e86b2e:tools/rhino_oracle/curve_deviation_comparison.py": "33b8ba3930d02f774af3ac68ef1536dccff9571994cf00872d963fcac2c4fe5d",
     "247a9553061ba774fa9dca45d6e4cc8703e86b2e:tools/rhino_oracle/curve_deviation_probe.py": "349bb64d2dc926464a32468ed8a3dd66329ce61e7a82c3de187f2ce750f7ce32",
-    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:docs/curve-distance-validation.json": "79083eddff74477b86901be9cbceaed2efe900fdd186e01eebac7c9efed2a2e0"
+    "247a9553061ba774fa9dca45d6e4cc8703e86b2e:docs/curve-distance-validation.json": "79083eddff74477b86901be9cbceaed2efe900fdd186e01eebac7c9efed2a2e0",
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:crates/viboceros-geometry/src/lib.rs": "b9fe7f6bd2c2f7ebb6a16b6fcf9fc23b5b0fc8645fb3d9cdfc217a275e44dd0d"
   }
 }

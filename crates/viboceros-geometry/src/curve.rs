@@ -514,6 +514,16 @@ impl CurveRef<'_> {
     /// the interior of a polyline segment it is zero; vertices have no unique
     /// curvature and deterministically use the active segment's zero value.
     pub fn curvature_vector(self, parameter: Real) -> Result<Vector3, GeometryError> {
+        self.curvature_vector_on_side(parameter, ParameterSide::Right)
+    }
+
+    /// Evaluate a specified side at a knot or composite join. Curvature need
+    /// not agree across a tangent-continuous join.
+    pub fn curvature_vector_on_side(
+        self,
+        parameter: Real,
+        side: ParameterSide,
+    ) -> Result<Vector3, GeometryError> {
         self.evaluate(parameter)?;
         match self {
             Self::Line(_) | Self::Polyline(_) => Vector3::try_new(0.0, 0.0, 0.0),
@@ -538,7 +548,11 @@ impl CurveRef<'_> {
                 )?,
             ),
             Self::Ellipse(ellipse) => {
-                let jet = crate::curve_evaluate::ellipse_unit_jet(parameter, ellipse.domain())?;
+                let jet = crate::curve_evaluate::ellipse_unit_jet_on_side(
+                    parameter,
+                    ellipse.domain(),
+                    side,
+                )?;
                 let first = combine_vectors(
                     ellipse.x_axis().as_vector(),
                     ellipse.y_axis().as_vector(),
@@ -554,12 +568,12 @@ impl CurveRef<'_> {
                 curvature_from_derivatives(first, second)
             }
             Self::NurbsCurve(curve) => {
-                let (_, first, second) = curve.evaluate_with_second_derivative(parameter)?;
+                let (_, first, second) =
+                    curve.evaluate_with_second_derivative_on_side(parameter, side)?;
                 curvature_from_derivatives(first, second)
             }
             Self::PolyCurve(curve) => {
-                let (_, first, second) =
-                    curve.evaluate_with_second_derivative(parameter, ParameterSide::Right)?;
+                let (_, first, second) = curve.evaluate_with_second_derivative(parameter, side)?;
                 curvature_from_derivatives(first, second)
             }
         }
@@ -600,7 +614,10 @@ fn combine_vectors(
     )
 }
 
-fn curvature_from_derivatives(first: Vector3, second: Vector3) -> Result<Vector3, GeometryError> {
+pub(crate) fn curvature_from_derivatives(
+    first: Vector3,
+    second: Vector3,
+) -> Result<Vector3, GeometryError> {
     let speed = first.length()?;
     if speed == 0.0 {
         return Err(GeometryError::Degenerate {
