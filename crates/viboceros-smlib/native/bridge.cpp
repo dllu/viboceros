@@ -1705,16 +1705,21 @@ extern "C" int vb_curves_network_surface(const VbCurve *const *u, size_t nu,
             return rows;
         };
         const auto original_u=stations(u_parameters,nu,nv), original_v=stations(v_parameters,nv,nu);
-        std::vector<double> common_u(nv,0.), common_v(nu,0.);
+        auto common_stations = [](const std::vector<std::vector<double>> &rows) {
+            auto common=rows.front();
+            for(size_t i=0;i<common.size();++i) {
+                // An already shared station must survive bit for bit. Even
+                // averaging identical nonbinary values can move it by an ulp.
+                if(std::all_of(rows.begin(),rows.end(),[&](const auto &row) { return row[i]==common[i]; }))
+                    continue;
+                common[i]=0.;
+                for(const auto &row:rows) common[i]+=row[i];
+                common[i]/=double(rows.size());
+            }
+            return common;
+        };
+        auto common_u=common_stations(original_u), common_v=common_stations(original_v);
         double *us=common_u.data(), *vs=common_v.data();
-        for(size_t i=0;i<nv;++i) {
-            for(size_t j=0;j<nu;++j) common_u[i] += original_u[j][i];
-            common_u[i] /= double(nu);
-        }
-        for(size_t i=0;i<nu;++i) {
-            for(size_t j=0;j<nv;++j) common_v[i] += original_v[j][i];
-            common_v[i] /= double(nv);
-        }
         auto align = [&](std::vector<NL_CURVE*> &curves, const std::vector<double> &common,
                          bool along_u) {
             for(size_t c=0;c<curves.size();++c) {
@@ -1731,6 +1736,7 @@ extern "C" int vb_curves_network_surface(const VbCurve *const *u, size_t nu,
                 require(curve && curve->pol && curve->p>=1 && curve->p<=16 &&
                         curve->pol->n>=curve->p && curve->pol->n<2048,
                         "Network alignment input resource limit");
+                if(old==common) continue;
                 // Full degree multiplicity separates adjacent affine maps.
                 // Native knot insertion retains the control polygon's image.
                 for(size_t j=1;j+1<old.size();++j) {

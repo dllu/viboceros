@@ -1,0 +1,9 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 13.37s
+     Running tests/network_surface.rs (target/release/deps/network_surface-21e1de87fbdb0c8d)
+
+running 1 test
+test common_station_curve_fits_preserve_network_contacts_and_complete_original_images has been running for over 60 seconds
+test common_station_curve_fits_preserve_network_contacts_and_complete_original_images ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 71.53s

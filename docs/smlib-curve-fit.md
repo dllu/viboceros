@@ -49,9 +49,11 @@ the shared residual guard checks each channel without changing kernel tolerances
 Accuracy is sampled, not a continuous source-curve bound. Arbitrary span/coordinate
 ratios and speed relative to Rhino are unqualified.
 
-Fresh Rhino fitting capture remains pending the Wine licensing startup recorded
-in [isocurve qualification](smlib-isocurves.md). These new records use the
-pre-change portable implementation as their reference. See the
+The [prepared-network investigation](prepared-gordon-families.md) retains twelve
+fresh public Rhino Fit results for six smooth quadratics at two tolerances.
+Those records support parameterization diagnostics; the 50-record native
+comparison above still uses the pre-change portable implementation as its
+reference. Broader Rhino fitting parity remains unqualified. See the
 [limitations ledger](usd-brep-limitations.md).
 
 ```sh

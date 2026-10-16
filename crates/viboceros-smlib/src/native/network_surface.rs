@@ -21,6 +21,9 @@ fn failure(message: &str) -> Error {
     Error::Kernel(format!("Gordon network: {message}"))
 }
 
+mod prepared;
+pub use prepared::prepared_gordon_surface;
+
 /// Build a position-matched open curve network. Families, order and direction
 /// are inferred from intersections; original curves and their domains survive.
 /// Every complete input image must certify against the resulting surface at
@@ -30,44 +33,12 @@ pub fn gordon_network_surface(
     edge: Tolerance,
     interior: Tolerance,
 ) -> Result<NurbsSurface, Error> {
-    if !(4..=64).contains(&curves.len())
-        || curves
-            .iter()
-            .map(|c| c.control_points().len())
-            .sum::<usize>()
-            > 2048
-    {
-        return Err(failure(
-            "requires 4–64 curves and at most 2048 total controls",
-        ));
-    }
-    let origin = curves[0].evaluate(*curves[0].domain().start())?;
-    let scale = curves
-        .iter()
-        .flat_map(|c| c.control_points())
-        .try_fold(0_f64, |s, p| {
-            Ok::<_, Error>(s.max(origin.distance_to(p.point())?))
-        })?;
-    if !scale.is_finite() || scale <= edge.absolute().max(interior.absolute()) {
-        return Err(failure("collapsed network"));
-    }
-    let tolerance = Tolerance::try_new(
-        edge.absolute().max(interior.absolute()) / scale,
-        edge.relative(),
-        edge.angular(),
-    )?;
-    let mut local = vec![];
-    for c in curves {
-        if c.degree() > 16 || c.control_points().len() > 128 {
-            return Err(failure("degree limit 16; control limit 128 per curve"));
-        }
-        let p = working_curve::normalized(c, origin, scale)?
-            .ok_or_else(|| failure("unsupported input basis or rational weights"))?;
-        if p.evaluate(0.)?.distance_to(p.evaluate(1.)?)? <= tolerance.absolute() {
-            return Err(failure("requires open noncollapsed curves"));
-        }
-        local.push(p);
-    }
+    let WorkingNetwork {
+        mut local,
+        origin,
+        scale,
+        tolerance,
+    } = prepare(curves, edge, interior)?;
     let n = local.len();
     let mut contacts = vec![vec![None; n]; n];
     for i in 0..n {
@@ -145,6 +116,109 @@ pub fn gordon_network_surface(
             }
         }
     }
+    let mut parameters = vec![vec![]; n];
+    for (family, other) in [(&a, &b), (&b, &a)] {
+        for &i in family {
+            parameters[i] = other.iter().map(|&j| contacts[i][j].unwrap()).collect();
+        }
+    }
+    construct(
+        curves,
+        WorkingNetwork {
+            local,
+            origin,
+            scale,
+            tolerance,
+        },
+        Layout {
+            families: [a, b],
+            parameters,
+            reversed,
+            strict: false,
+        },
+        edge,
+        interior,
+    )
+}
+
+struct WorkingNetwork {
+    local: Vec<NurbsCurve>,
+    origin: Point3,
+    scale: f64,
+    tolerance: Tolerance,
+}
+struct Layout {
+    families: [Vec<usize>; 2],
+    parameters: Vec<Vec<f64>>,
+    reversed: Vec<bool>,
+    strict: bool,
+}
+fn prepare(
+    curves: &[NurbsCurve],
+    edge: Tolerance,
+    interior: Tolerance,
+) -> Result<WorkingNetwork, Error> {
+    if !(4..=64).contains(&curves.len())
+        || curves
+            .iter()
+            .map(|c| c.control_points().len())
+            .sum::<usize>()
+            > 2048
+    {
+        return Err(failure(
+            "requires 4–64 curves and at most 2048 total controls",
+        ));
+    }
+    let origin = curves[0].evaluate(*curves[0].domain().start())?;
+    let scale = curves
+        .iter()
+        .flat_map(|c| c.control_points())
+        .try_fold(0_f64, |s, p| {
+            Ok::<_, Error>(s.max(origin.distance_to(p.point())?))
+        })?;
+    if !scale.is_finite() || scale <= edge.absolute().max(interior.absolute()) {
+        return Err(failure("collapsed network"));
+    }
+    let tolerance = Tolerance::try_new(
+        edge.absolute().max(interior.absolute()) / scale,
+        edge.relative(),
+        edge.angular(),
+    )?;
+    let mut local = vec![];
+    for c in curves {
+        if c.degree() > 16 || c.control_points().len() > 128 {
+            return Err(failure("degree limit 16; control limit 128 per curve"));
+        }
+        let p = working_curve::normalized(c, origin, scale)?
+            .ok_or_else(|| failure("unsupported input basis or rational weights"))?;
+        if p.evaluate(0.)?.distance_to(p.evaluate(1.)?)? <= tolerance.absolute() {
+            return Err(failure("requires open noncollapsed curves"));
+        }
+        local.push(p);
+    }
+    Ok(WorkingNetwork {
+        local,
+        origin,
+        scale,
+        tolerance,
+    })
+}
+
+fn construct(
+    curves: &[NurbsCurve],
+    working: WorkingNetwork,
+    layout: Layout,
+    edge: Tolerance,
+    interior: Tolerance,
+) -> Result<NurbsSurface, Error> {
+    let WorkingNetwork {
+        local,
+        origin,
+        scale,
+        ..
+    } = working;
+    let [a, b] = &layout.families;
+    let reversed = &layout.reversed;
     let native = local
         .iter()
         .map(KernelCurve::from_nurbs_for_modeling)
@@ -157,11 +231,10 @@ pub fn gordon_network_surface(
         .iter()
         .map(|&i| native[i].handle.as_ptr().cast_const())
         .collect::<Vec<_>>();
-    let [original_u, original_v] = [(&a, &b), (&b, &a)].map(|(family, other)| {
+    let [original_u, original_v] = [(a, b), (b, a)].map(|(family, other)| {
         let mut parameters = Vec::with_capacity(family.len() * other.len());
         for &i in family {
-            for &j in other {
-                let t = contacts[i][j].unwrap();
+            for &t in &layout.parameters[i] {
                 parameters.push(if reversed[i] { 1. - t } else { t });
             }
         }
@@ -211,8 +284,8 @@ pub fn gordon_network_surface(
         .prepare_surface_curve_bounds()?
         .ok_or_else(|| failure("unsupported target certificate basis"))?;
     for (family, other, fixed, moving, along_u) in [
-        (&a, &b, &v_stations, &u_stations, true),
-        (&b, &a, &u_stations, &v_stations, false),
+        (a, b, &v_stations, &u_stations, true),
+        (b, a, &u_stations, &v_stations, false),
     ] {
         for (index, &i) in family.iter().enumerate() {
             let limit = if index == 0 || index + 1 == family.len() {
@@ -225,9 +298,9 @@ pub fn gordon_network_surface(
             let mut nodes = other
                 .iter()
                 .enumerate()
-                .map(|(j, &k)| {
+                .map(|(j, _)| {
                     Ok((
-                        contacts[i][k].unwrap(),
+                        layout.parameters[i][j],
                         if along_u {
                             uv_point(moving[j], fixed[index])?
                         } else {
@@ -248,6 +321,11 @@ pub fn gordon_network_surface(
             knots.extend([*domain.end(), *domain.end()]);
             let uv = NurbsCurve2::try_new(1, nodes.into_iter().map(|(_, p)| p).collect(), knots)?;
             if certificate.bound(&uv, source, limit.absolute())?.is_none() {
+                if layout.strict {
+                    return Err(failure(
+                        "prepared curve did not certify at its prescribed isoparameter",
+                    ));
+                }
                 surface
                     .try_pullback_curve_certified(source, limit)
                     .map_err(|e| {

@@ -107,6 +107,12 @@ the six pre-fit originals for both refit candidates on the retained fixture.
 [Exact isocurve restrictions](exact-isocurve-restriction.md) close the earlier
 arc-length work-limit failure without enlarging proof limits.
 
+[Prepared Gordon families](prepared-gordon-families.md) add an explicit shared
+chart and strict prescribed-isoparameter admission. Identity alignment now
+retains shared stations and simple cubic knots, including the common-station
+auto-sorted case. The extended diagnostics retain fresh public Fit references
+and isolate Gordon construction from the unfinished family-fitting policy.
+
 ## Rhino comparison and remaining work
 
 The experimental `network_surface` oracle operation directly exercises this

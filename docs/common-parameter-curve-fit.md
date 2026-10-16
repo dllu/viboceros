@@ -90,3 +90,8 @@ NetworkSrf remains unregistered in the application. Further work must resolve
 the surface fitting policy, continuity, complete original-curve admission and
 broader Rhino comparisons. The global scalar-map policy is a curve-fitting
 building block, not the selected NetworkSrf algorithm.
+
+[Prepared-family construction](prepared-gordon-families.md) now preserves shared
+stations and simple knots without identity-alignment insertions. The extended
+schema-three probe retains that C2 candidate alongside the earlier choices;
+its interior comparison remains unqualified.

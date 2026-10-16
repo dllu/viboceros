@@ -171,16 +171,10 @@
     "crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
     "crates/viboceros-smlib/Cargo.toml": "7defb09a995e54b6936a637fb297a8590ba91129c3a2e24beec60bb15b09392e",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "crates/viboceros-smlib/examples/network_parameterization.rs": "a53913c424471a6574600f32ec7b7aa1223f2352ac1d072f0c6b3783c025634a",
     "crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
-    "crates/viboceros-smlib/native/bridge.cpp": "7fcb946a811c20be583722f3bbb66daa7aad0e62ef42bebde09fc7e3008d9f61",
     "crates/viboceros-smlib/native/bridge.h": "c57dcdcc47c84678066089f2233c4259118301e35c5f76b4a8d66cf02f223e35",
-    "crates/viboceros-smlib/src/native/network_surface.rs": "9ac9a6a89914dfbc5bea9accbec38d133a5e3f14a26e39f9a28529e5fc82974e",
-    "crates/viboceros-smlib/tests/network_surface.rs": "be84f2a0f012f7761dc3e0266fb6fef00b20b324b6364e552fa86d115048c187",
-    "docs/common-parameter-curve-fit.md": "f9a183d860af7f0919b97cbf09774473658b01061e4dfde56bfd767e5d86380c",
     "docs/exact-isocurve-restriction.md": "3814a8c616dda2dac6f18dab69504aa060c7b9fe1f7206c08217e4d2ae7b8e55",
-    "docs/original-network-curve-admission.md": "b00f814ffaf72686527bbd110069970ae192aea63d3e6168db55dd398f2ae7ab",
-    "docs/smlib-gordon-network.md": "1e50a4583325e1ab236a4f03db2aa5e2d26f8d1e046e39b41b9d260f909cc4ee"
+    "docs/original-network-curve-admission.md": "b00f814ffaf72686527bbd110069970ae192aea63d3e6168db55dd398f2ae7ab"
   },
   "input_sha256": {
     "tools/rhino_oracle/fixtures/network_surface.json": "8c5eb7601fd8e8172bc3580b2451e73644c242a680b410a2c1bb459139be4605",
@@ -197,5 +191,13 @@
     "docs/exact-isocurve-restriction-asan-instrumentation.log": "9651016c564535a92919d432a522e492b345ad64863a651c66e4494bb76add59",
     "docs/exact-isocurve-restriction-probe.log": "9d8dcd34841498dd51c61f984264e152c230510c58b3875146b86e401ada885f",
     "tools/rhino_oracle/observations/network_parameterization_isocurve_bounds_viboceros_20261016.json": "20dd1972b3e6c5d6cc29979cf9a9ad93049a4d27dc6af972b84de6c9d278f927"
+  },
+  "source_git_sha256": {
+    "47f4cf29758e802e9ee8911c57b2875758b91c0c:crates/viboceros-smlib/examples/network_parameterization.rs": "a53913c424471a6574600f32ec7b7aa1223f2352ac1d072f0c6b3783c025634a",
+    "47f4cf29758e802e9ee8911c57b2875758b91c0c:crates/viboceros-smlib/native/bridge.cpp": "7fcb946a811c20be583722f3bbb66daa7aad0e62ef42bebde09fc7e3008d9f61",
+    "47f4cf29758e802e9ee8911c57b2875758b91c0c:crates/viboceros-smlib/src/native/network_surface.rs": "9ac9a6a89914dfbc5bea9accbec38d133a5e3f14a26e39f9a28529e5fc82974e",
+    "47f4cf29758e802e9ee8911c57b2875758b91c0c:crates/viboceros-smlib/tests/network_surface.rs": "be84f2a0f012f7761dc3e0266fb6fef00b20b324b6364e552fa86d115048c187",
+    "47f4cf29758e802e9ee8911c57b2875758b91c0c:docs/common-parameter-curve-fit.md": "f9a183d860af7f0919b97cbf09774473658b01061e4dfde56bfd767e5d86380c",
+    "47f4cf29758e802e9ee8911c57b2875758b91c0c:docs/smlib-gordon-network.md": "1e50a4583325e1ab236a4f03db2aa5e2d26f8d1e046e39b41b9d260f909cc4ee"
   }
 }

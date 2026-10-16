@@ -55,6 +55,204 @@ fn assert_original_images(
         assert!(bound <= tolerance.absolute());
     }
 }
+
+fn prepared_cubic_families() -> [Vec<NurbsCurve>; 2] {
+    [true, false].map(|along_u| {
+        let stations = if along_u {
+            [0., 0.4, 1.]
+        } else {
+            [0., 0.2, 1.]
+        };
+        stations
+            .into_iter()
+            .map(|station| {
+                let quadratic = curve(along_u, station);
+                let q = quadratic
+                    .control_points()
+                    .iter()
+                    .map(|p| p.point().to_array())
+                    .collect::<Vec<_>>();
+                let mix = |a: usize, b: usize| {
+                    Point3::try_from(std::array::from_fn(|k| (q[a][k] + 2. * q[b][k]) / 3.))
+                        .unwrap()
+                };
+                let mut source = NurbsCurve::try_new(
+                    3,
+                    vec![
+                        Point3::try_from(q[0]).unwrap(),
+                        mix(0, 1),
+                        mix(2, 1),
+                        Point3::try_from(q[2]).unwrap(),
+                    ],
+                    vec![0., 0., 0., 0., 1., 1., 1., 1.],
+                )
+                .unwrap();
+                for t in if along_u {
+                    [0.2, 0.4, 0.7]
+                } else {
+                    [0.1, 0.4, 0.8]
+                } {
+                    source = source.try_insert_knot(t, 1).unwrap();
+                }
+                source
+            })
+            .collect()
+    })
+}
+
+#[test]
+fn prepared_gordon_preserves_nonbinary_stations_and_simple_cubic_bases() {
+    let families = prepared_cubic_families();
+    let before = families.clone();
+    let u_stations = [0., 0.2, 1.];
+    let v_stations = [0., 0.4, 1.];
+    // Averaging three identical stations would move both interior values.
+    assert_ne!((0.2 + 0.2 + 0.2) / 3., u_stations[1]);
+    assert_ne!((0.4 + 0.4 + 0.4) / 3., v_stations[1]);
+    let tolerance = Tolerance::try_new(1e-8, 1e-12, 1e-8).unwrap();
+    let surface = viboceros_smlib::prepared_gordon_surface(
+        &families[0],
+        &families[1],
+        &u_stations,
+        &v_stations,
+        tolerance,
+        tolerance,
+    )
+    .unwrap();
+    assert_eq!((surface.degree_u(), surface.degree_v()), (3, 3));
+    assert_eq!(
+        (
+            surface.control_point_count_u(),
+            surface.control_point_count_v()
+        ),
+        (7, 7)
+    );
+    assert_eq!(surface.knots_u(), families[0][0].knots());
+    assert_eq!(surface.knots_v(), families[1][0].knots());
+    for u in [0., 0.13, 0.2, 0.51, 0.73, 1.] {
+        for v in [0., 0.17, 0.4, 0.52, 0.81, 1.] {
+            assert!(
+                surface
+                    .evaluate(u, v)
+                    .unwrap()
+                    .distance_to(value(u, v))
+                    .unwrap()
+                    < 1e-9
+            );
+        }
+    }
+    let originals = families[0]
+        .iter()
+        .chain(&families[1])
+        .cloned()
+        .collect::<Vec<_>>();
+    assert_original_images(&surface, &originals, [0.2, 0.4], tolerance);
+    assert_eq!(families, before);
+}
+
+#[test]
+fn prepared_gordon_rejects_bad_charts_contacts_and_nonpolynomial_inputs() {
+    let families = prepared_cubic_families();
+    let before = families.clone();
+    let tolerance = Tolerance::DEFAULT;
+    let construct = |u: &[NurbsCurve], v: &[NurbsCurve], us: &[f64], vs: &[f64]| {
+        viboceros_smlib::prepared_gordon_surface(u, v, us, vs, tolerance, tolerance)
+    };
+    for stations in [
+        vec![0., 1.],
+        vec![0., 0.2, 0.2],
+        vec![0., 1., 0.2],
+        vec![0., f64::NAN, 1.],
+        vec![0.1, 0.2, 1.],
+        vec![0., 0.3, 1.],
+    ] {
+        assert!(construct(&families[0], &families[1], &stations, &[0., 0.4, 1.]).is_err());
+    }
+    assert!(construct(&[], &families[1], &[0., 0.2, 1.], &[0., 0.4, 1.]).is_err());
+    let mut altered = families[0].clone();
+    altered[1] = altered[1].try_reparameterized(-3. ..=7.).unwrap();
+    assert!(construct(&altered, &families[1], &[0., 0.2, 1.], &[0., 0.4, 1.]).is_err());
+    altered = families[0].clone();
+    let mut controls = altered[1].control_points().to_vec();
+    controls[1] = viboceros_geometry::WeightedPoint3::try_new(controls[1].point(), 2.).unwrap();
+    altered[1] = NurbsCurve::try_new_rational(3, controls, altered[1].knots().to_vec()).unwrap();
+    assert!(construct(&altered, &families[1], &[0., 0.2, 1.], &[0., 0.4, 1.]).is_err());
+    altered = families[0].clone();
+    altered.swap(0, 1);
+    assert!(construct(&altered, &families[1], &[0., 0.2, 1.], &[0., 0.4, 1.]).is_err());
+    assert_eq!(families, before);
+}
+
+#[test]
+fn prepared_gordon_retains_signed_weight_gauges_at_remote_rotated_origins() {
+    let transform = AffineTransform3::try_new(
+        [[0., -1., 0.], [1., 0., 0.], [0., 0., 1.]],
+        Vector3::try_new(1e8, -2e8, 3e8).unwrap(),
+    )
+    .unwrap();
+    for gauge in [-2., 1e-280] {
+        let families = prepared_cubic_families().map(|family| {
+            family
+                .into_iter()
+                .map(|curve| {
+                    let transformed = curve.transformed(transform).unwrap();
+                    NurbsCurve::try_new_rational(
+                        3,
+                        transformed
+                            .control_points()
+                            .iter()
+                            .map(|p| {
+                                viboceros_geometry::WeightedPoint3::try_new(p.point(), gauge)
+                                    .unwrap()
+                            })
+                            .collect(),
+                        transformed.knots().to_vec(),
+                    )
+                    .unwrap()
+                })
+                .collect::<Vec<_>>()
+        });
+        let before = families.clone();
+        // World-coordinate rounding has displaced these contacts by more
+        // than 1e-9. A strict request must reject instead of enlarging it.
+        assert!(
+            viboceros_smlib::prepared_gordon_surface(
+                &families[0],
+                &families[1],
+                &[0., 0.2, 1.],
+                &[0., 0.4, 1.],
+                Tolerance::DEFAULT,
+                Tolerance::DEFAULT,
+            )
+            .unwrap_err()
+            .to_string()
+            .contains("prescribed contact")
+        );
+        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+        let surface = viboceros_smlib::prepared_gordon_surface(
+            &families[0],
+            &families[1],
+            &[0., 0.2, 1.],
+            &[0., 0.4, 1.],
+            tolerance,
+            tolerance,
+        )
+        .unwrap();
+        assert_eq!(surface.knots_u(), families[0][0].knots());
+        assert_eq!(surface.knots_v(), families[1][0].knots());
+        for (u, v) in [(0., 0.), (0.2, 0.4), (0.37, 0.63), (1., 1.)] {
+            assert!(
+                surface
+                    .evaluate(u, v)
+                    .unwrap()
+                    .distance_to(transform.transform_point(value(u, v)).unwrap())
+                    .unwrap()
+                    <= tolerance.absolute()
+            );
+        }
+        assert_eq!(families, before);
+    }
+}
 #[test]
 fn native_network_surface_interpolates_complete_curves_and_the_biquadratic_interior() {
     let curves = network();
@@ -367,6 +565,20 @@ fn common_station_curve_fits_preserve_network_contacts_and_complete_original_ima
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
     let surface = gordon_network_surface(&fitted, tolerance, tolerance).unwrap();
     assert_original_images(&surface, &original, mid, tolerance);
+    // Shared station maps already supply C2 curves. Identity alignment must
+    // retain simple knots instead of introducing repeated crossing knots.
+    assert_eq!((surface.degree_u(), surface.degree_v()), (3, 3));
+    for (knots, domain) in [
+        (surface.knots_u(), surface.domain_u()),
+        (surface.knots_v(), surface.domain_v()),
+    ] {
+        assert!(
+            knots
+                .chunk_by(|a, b| a == b)
+                .filter(|k| k[0] > *domain.start() && k[0] < *domain.end())
+                .all(|k| k.len() == 1)
+        );
+    }
     for (i, u) in [0., mid[0], 1.].into_iter().enumerate() {
         for (j, v) in [0., mid[1], 1.].into_iter().enumerate() {
             assert!(

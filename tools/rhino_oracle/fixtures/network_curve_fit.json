@@ -1,0 +1,539 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-0-fit-1e-06",
+      "degree": 3,
+      "fit_tolerance": 1e-06,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-1-fit-1e-06",
+      "degree": 3,
+      "fit_tolerance": 1e-06,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              1.5,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              1.5,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.5,
+              1.5
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-2-fit-1e-06",
+      "degree": 3,
+      "fit_tolerance": 1e-06,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-3-fit-1e-06",
+      "degree": 3,
+      "fit_tolerance": 1e-06,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.5,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-4-fit-1e-06",
+      "degree": 3,
+      "fit_tolerance": 1e-06,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              1.5,
+              3.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-5-fit-1e-06",
+      "degree": 3,
+      "fit_tolerance": 1e-06,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.5,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-0-fit-1e-07",
+      "degree": 3,
+      "fit_tolerance": 1e-07,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-1-fit-1e-07",
+      "degree": 3,
+      "fit_tolerance": 1e-07,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              1.5,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              1.5,
+              4.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.5,
+              1.5
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-2-fit-1e-07",
+      "degree": 3,
+      "fit_tolerance": 1e-07,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-3-fit-1e-07",
+      "degree": 3,
+      "fit_tolerance": 1e-07,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.5,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-4-fit-1e-07",
+      "degree": 3,
+      "fit_tolerance": 1e-07,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              1.5,
+              3.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "network-curve-5-fit-1e-07",
+      "degree": 3,
+      "fit_tolerance": 1e-07,
+      "angle_tolerance_radians": 1e-10,
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              1.5,
+              2.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}
