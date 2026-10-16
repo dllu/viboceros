@@ -1,0 +1,315 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "orient_points",
+      "id": "Orient-0",
+      "command": "Orient",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ]
+      ],
+      "scale": "3D",
+      "copy": false,
+      "postselected": false,
+      "group": false
+    },
+    {
+      "op": "orient_points",
+      "id": "Orient-1",
+      "command": "Orient",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ]
+      ],
+      "scale": "3D",
+      "copy": true,
+      "postselected": false,
+      "group": true
+    },
+    {
+      "op": "orient_points",
+      "id": "Orient-2",
+      "command": "Orient",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ]
+      ],
+      "scale": "3D",
+      "copy": false,
+      "postselected": true,
+      "group": true
+    },
+    {
+      "op": "orient_points",
+      "id": "Orient-3",
+      "command": "Orient",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ]
+      ],
+      "scale": "3D",
+      "copy": true,
+      "postselected": true,
+      "group": true
+    },
+    {
+      "op": "orient_points",
+      "id": "Orient3Pt-4",
+      "command": "Orient3Pt",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "scale": "Yes",
+      "copy": false,
+      "postselected": false,
+      "group": false
+    },
+    {
+      "op": "orient_points",
+      "id": "Orient3Pt-5",
+      "command": "Orient3Pt",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "scale": "Yes",
+      "copy": true,
+      "postselected": false,
+      "group": true
+    },
+    {
+      "op": "orient_points",
+      "id": "Orient3Pt-6",
+      "command": "Orient3Pt",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "scale": "Yes",
+      "copy": false,
+      "postselected": true,
+      "group": true
+    },
+    {
+      "op": "orient_points",
+      "id": "Orient3Pt-7",
+      "command": "Orient3Pt",
+      "references": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "targets": [
+        [
+          5,
+          2,
+          1
+        ],
+        [
+          5,
+          6,
+          1
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "scale": "Yes",
+      "copy": true,
+      "postselected": true,
+      "group": true
+    }
+  ]
+}

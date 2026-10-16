@@ -1,0 +1,84 @@
+{
+  "cases": 13,
+  "matched_cases": 13,
+  "results": [
+    {
+      "id": "Orient-scale-after-cancel",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-scale-after-cancel",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-0",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-1",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-2",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-3",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-4",
+      "metadata_match": true,
+      "max_coordinate_error": 8.881784197001252e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-5",
+      "metadata_match": true,
+      "max_coordinate_error": 8.881784197001252e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-6",
+      "metadata_match": true,
+      "max_coordinate_error": 2.220446049250313e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-7",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "opposite-8",
+      "metadata_match": true,
+      "max_coordinate_error": 2.220446049250313e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "nearly-opposite-0",
+      "metadata_match": true,
+      "max_coordinate_error": 1.8151323136596578e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "nearly-opposite-1",
+      "metadata_match": true,
+      "max_coordinate_error": 1.0002113652622558e-12,
+      "within_1e_minus_6": true
+    }
+  ]
+}

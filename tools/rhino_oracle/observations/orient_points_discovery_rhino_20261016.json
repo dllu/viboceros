@@ -1,0 +1,428 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "Orient-0",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Python Script ( ResetEngine ): _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_3D\nReference point 1 ( Copy=No  Scale=3D ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=3D ): w2.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=3D ): w5.0,2.0,1.0\nTarget point 2 ( Copy=No  Scale=3D ): w5.0,6.0,1.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_3D w0.0,0.0,0.0 w2.0,0.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient-1",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=3D ): _Copy=_Yes\nReference point 1 ( Copy=Yes  Scale=3D ): _Scale=_3D\nReference point 1 ( Copy=Yes  Scale=3D ): w0.0,0.0,0.0\nReference point 2 ( Copy=Yes  Scale=3D ): w2.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=Yes  Scale=3D ): w5.0,2.0,1.0\nTarget point 2 ( Copy=Yes  Scale=3D ): w5.0,6.0,1.0\nTarget point 1 <Reference point 1> ( Copy=Yes  Scale=3D ): _Cancel\nTarget point 1 <Reference point 1> ( Copy=Yes  Scale=3D )",
+        "macro": "_Orient _Copy=_Yes _Scale=_3D w0.0,0.0,0.0 w2.0,0.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient-2",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "history": "Command: _Orient\nSelect objects to orient: _SelID\nObject ID to select: 91d11e0e-0c86-467c-88fd-8e6b399af175\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nReference point 1 ( Copy=Yes  Scale=3D ): _Copy=_No\nReference point 1 ( Copy=No  Scale=3D ): _Scale=_3D\nReference point 1 ( Copy=No  Scale=3D ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=3D ): w2.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=3D ): w5.0,2.0,1.0\nTarget point 2 ( Copy=No  Scale=3D ): w5.0,6.0,1.0\nCommand: _Cancel",
+        "macro": "_Orient _SelID 91d11e0e-0c86-467c-88fd-8e6b399af175 _Enter _Copy=_No _Scale=_3D w0.0,0.0,0.0 w2.0,0.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient-3",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "history": "Command: _Orient\nSelect objects to orient: _SelID\nObject ID to select: 4fcce6cf-5fda-4ab2-a42b-8f077514dffa\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nReference point 1 ( Copy=No  Scale=3D ): _Copy=_Yes\nReference point 1 ( Copy=Yes  Scale=3D ): _Scale=_3D\nReference point 1 ( Copy=Yes  Scale=3D ): w0.0,0.0,0.0\nReference point 2 ( Copy=Yes  Scale=3D ): w2.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=Yes  Scale=3D ): w5.0,2.0,1.0\nTarget point 2 ( Copy=Yes  Scale=3D ): w5.0,6.0,1.0\nTarget point 1 <Reference point 1> ( Copy=Yes  Scale=3D ): _Cancel\nTarget point 1 <Reference point 1> ( Copy=Yes  Scale=3D )",
+        "macro": "_Orient _SelID 4fcce6cf-5fda-4ab2-a42b-8f077514dffa _Enter _Copy=_Yes _Scale=_3D w0.0,0.0,0.0 w2.0,0.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient3Pt-4",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient3Pt\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_Yes\nReference point 1 ( Copy=No  Scale=Yes ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=Yes ): w2.0,0.0,0.0\nReference point 3 ( Copy=No  Scale=Yes ): w0.0,1.0,0.0\nTarget point 1 ( Copy=No  Scale=Yes ): w5.0,2.0,1.0\nTarget point 2 ( Copy=No  Scale=Yes ): w5.0,6.0,1.0\nTarget point 3 ( Copy=No  Scale=Yes ): w5.0,2.0,4.0\nCommand: _Cancel",
+        "macro": "_Orient3Pt _Copy=_No _Scale=_Yes w0.0,0.0,0.0 w2.0,0.0,0.0 w0.0,1.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 w5.0,2.0,4.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient3Pt-5",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "history": "Command: _Orient3Pt\nReference point 1 ( Copy=No  Scale=Yes ): _Copy=_Yes\nReference point 1 ( Copy=Yes  Scale=Yes ): _Scale=_Yes\nReference point 1 ( Copy=Yes  Scale=Yes ): w0.0,0.0,0.0\nReference point 2 ( Copy=Yes  Scale=Yes ): w2.0,0.0,0.0\nReference point 3 ( Copy=Yes  Scale=Yes ): w0.0,1.0,0.0\nTarget point 1 ( Copy=Yes  Scale=Yes ): w5.0,2.0,1.0\nTarget point 2 ( Copy=Yes  Scale=Yes ): w5.0,6.0,1.0\nTarget point 3 ( Copy=Yes  Scale=Yes ): w5.0,2.0,4.0\nTarget point 1. Press Enter when done ( Copy=Yes  Scale=Yes ): _Cancel\nTarget point 1. Press Enter when done ( Copy=Yes  Scale=Yes )",
+        "macro": "_Orient3Pt _Copy=_Yes _Scale=_Yes w0.0,0.0,0.0 w2.0,0.0,0.0 w0.0,1.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 w5.0,2.0,4.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient3Pt-6",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "history": "Command: _Orient3Pt\nSelect objects to orient: _SelID\nObject ID to select: 28037999-3bdf-4b57-a6f0-086103779397\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nReference point 1 ( Copy=Yes  Scale=Yes ): _Copy=_No\nReference point 1 ( Copy=No  Scale=Yes ): _Scale=_Yes\nReference point 1 ( Copy=No  Scale=Yes ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=Yes ): w2.0,0.0,0.0\nReference point 3 ( Copy=No  Scale=Yes ): w0.0,1.0,0.0\nTarget point 1 ( Copy=No  Scale=Yes ): w5.0,2.0,1.0\nTarget point 2 ( Copy=No  Scale=Yes ): w5.0,6.0,1.0\nTarget point 3 ( Copy=No  Scale=Yes ): w5.0,2.0,4.0\nCommand: _Cancel",
+        "macro": "_Orient3Pt _SelID 28037999-3bdf-4b57-a6f0-086103779397 _Enter _Copy=_No _Scale=_Yes w0.0,0.0,0.0 w2.0,0.0,0.0 w0.0,1.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 w5.0,2.0,4.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient3Pt-7",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "history": "Command: _Orient3Pt\nSelect objects to orient: _SelID\nObject ID to select: e049e9c7-d4f5-4b37-99e8-8bab723ad7e3\n1 point cloud added to selection.\nSelect objects to orient. Press Enter when done: _Enter\nSelect objects to orient. Press Enter when done\nReference point 1 ( Copy=No  Scale=Yes ): _Copy=_Yes\nReference point 1 ( Copy=Yes  Scale=Yes ): _Scale=_Yes\nReference point 1 ( Copy=Yes  Scale=Yes ): w0.0,0.0,0.0\nReference point 2 ( Copy=Yes  Scale=Yes ): w2.0,0.0,0.0\nReference point 3 ( Copy=Yes  Scale=Yes ): w0.0,1.0,0.0\nTarget point 1 ( Copy=Yes  Scale=Yes ): w5.0,2.0,1.0\nTarget point 2 ( Copy=Yes  Scale=Yes ): w5.0,6.0,1.0\nTarget point 3 ( Copy=Yes  Scale=Yes ): w5.0,2.0,4.0\nTarget point 1. Press Enter when done ( Copy=Yes  Scale=Yes ): _Cancel\nTarget point 1. Press Enter when done ( Copy=Yes  Scale=Yes )",
+        "macro": "_Orient3Pt _SelID e049e9c7-d4f5-4b37-99e8-8bab723ad7e3 _Enter _Copy=_Yes _Scale=_Yes w0.0,0.0,0.0 w2.0,0.0,0.0 w0.0,1.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 w5.0,2.0,4.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    }
+  ]
+}

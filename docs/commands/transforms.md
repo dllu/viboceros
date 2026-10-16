@@ -93,12 +93,14 @@ spacing; `Spacing=Automatic|distance` pins both endpoints or uses a signed fixed
 step. See [distribution](distribute.md) for group rules, tight bounds, interactive
 input, and retained compatibility differences.
 
-`Orient` maps two reference points to two target points with Rhino's shortest
+[`Orient` and `Orient3Pt`](orient.md) accept interactive reference/target points,
+live previews, grip sources, and repeated copy placements. `Orient` maps two reference points to two target points with Rhino's shortest
 3D rotation. `Scale=No` preserves size, `Scale=1D` changes only the reference
 axis, and `Scale=3D` scales uniformly. `Orient3Pt` maps right-handed frames
 defined by three reference and target points; its `Scale=Yes` factor comes from
-the first point pair. Both commands default to in-place, unscaled transforms;
-`Copy=Yes` preserves the original selection, attributes, and group topology.
+the first point pair. Both commands initially use in-place, unscaled transforms. Scale choices are
+remembered independently. `Copy=Yes` retains preselection and uses the shared
+transform group policy; command-first source selection is released on completion.
 
 `OrientOnSrf` uses a source base/reference pair and a point nearest the target
 NURBS surface. Name that surface with `SurfaceName=`, or make it the last

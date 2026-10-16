@@ -1,0 +1,502 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "Orient-scale-after-cancel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                4.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 981894
+    },
+    {
+      "id": "Orient3Pt-scale-after-cancel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 899478
+    },
+    {
+      "id": "opposite-0",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                5.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 942982
+    },
+    {
+      "id": "opposite-1",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                5.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 874966
+    },
+    {
+      "id": "opposite-2",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                6.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 937974
+    },
+    {
+      "id": "opposite-3",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                4.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 886741
+    },
+    {
+      "id": "opposite-4",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                1.9999999999999996,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.384615384615385,
+                4.076923076923077
+              ],
+              [
+                3.0,
+                3.0769230769230766,
+                4.615384615384615
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 928086
+    },
+    {
+      "id": "opposite-5",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.6153846153846154,
+                3.0769230769230766,
+                5.0
+              ],
+              [
+                2.0769230769230766,
+                4.384615384615385,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 869350
+    },
+    {
+      "id": "opposite-6",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 878917
+    },
+    {
+      "id": "opposite-7",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 916662
+    },
+    {
+      "id": "opposite-8",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                1.9999999999999998,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 875733
+    },
+    {
+      "id": "nearly-opposite-0",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -0.9999999999995,
+                9.999999998179868e-7,
+                0.0
+              ],
+              [
+                -9.999999998179868e-7,
+                -0.9999999999995,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 876854
+    },
+    {
+      "id": "nearly-opposite-1",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                1.0002113652622558e-12,
+                0.0
+              ],
+              [
+                -1.0002113652622558e-12,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 911878
+    }
+  ]
+}

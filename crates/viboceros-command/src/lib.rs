@@ -15,6 +15,7 @@ pub mod divide;
 pub mod edge_analysis;
 mod iplane;
 pub mod orient_curve;
+pub mod orient_points;
 pub mod point_deviation;
 pub mod replace_block;
 pub mod section;
@@ -439,6 +440,13 @@ pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
 
+    /// Point-orientation scale preferences belong to their command instance.
+    fn orient_point_scale(&self) -> Option<orient_points::Scale> {
+        None
+    }
+    fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
+        false
+    }
     /// Built-in Copy default for commands governed by RememberCopyOptions.
     fn copy_option_default(&self) -> Option<bool> {
         None
@@ -1568,10 +1576,12 @@ impl CommandRegistry {
             .register(CopyCommand)
             .expect("unique built-in command");
         registry
-            .register(OrientCommand)
+            .register(orient_points::OrientCommand::new(orient_points::Kind::Two))
             .expect("unique built-in command");
         registry
-            .register(OrientThreePointCommand)
+            .register(orient_points::OrientCommand::new(
+                orient_points::Kind::Three,
+            ))
             .expect("unique built-in command");
         registry
             .register(OrientOnSurfaceCommand)
@@ -1925,6 +1935,22 @@ impl CommandRegistry {
                 .lookup
                 .get(&normalize_command_name(name))
                 .is_some_and(|index| self.commands[*index].remember_axis_scale(axis, value))
+    }
+
+    pub fn orient_point_scale(&self, kind: orient_points::Kind) -> orient_points::Scale {
+        self.lookup
+            .get(&normalize_command_name(kind.name()))
+            .and_then(|i| self.commands[*i].orient_point_scale())
+            .unwrap_or_default()
+    }
+    pub fn remember_orient_point_scale(
+        &self,
+        kind: orient_points::Kind,
+        value: orient_points::Scale,
+    ) -> bool {
+        self.lookup
+            .get(&normalize_command_name(kind.name()))
+            .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
     /// Start an interactive command, including the reset when remembering is off.
@@ -15401,206 +15427,6 @@ fn replace_selection(
     Ok(())
 }
 
-const ORIENT_USAGE: &str = "Orient reference-start reference-end target-start target-end \
-    [Scale=No|1D|3D] [Copy=Yes|No]";
-const ORIENT_THREE_POINT_USAGE: &str = "Orient3Pt reference-1 reference-2 reference-3 \
-    target-1 target-2 target-3 [Scale=Yes|No] [Copy=Yes|No]";
-
-struct OrientCommand;
-
-impl Command for OrientCommand {
-    fn copy_option_default(&self) -> Option<bool> {
-        Some(false)
-    }
-
-    fn name(&self) -> &'static str {
-        "Orient"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let (reference_start, consumed_1) = parse_point(arguments)?;
-        let (reference_end, consumed_2) = parse_point(&arguments[consumed_1..])?;
-        let (target_start, consumed_3) = parse_point(&arguments[consumed_1 + consumed_2..])?;
-        let (target_end, consumed_4) =
-            parse_point(&arguments[consumed_1 + consumed_2 + consumed_3..])?;
-        let consumed = consumed_1 + consumed_2 + consumed_3 + consumed_4;
-        let options = parse_orient_options(&arguments[consumed..])?;
-        let tolerance = document.tolerance();
-        let reference_vector = reference_start.vector_to(reference_end)?;
-        let target_vector = target_start.vector_to(target_end)?;
-        let reference_direction = reference_vector.normalized(tolerance)?;
-        let target_direction = target_vector.normalized(tolerance)?;
-        let scale_factor = match options.scale {
-            OrientScale::No => 1.0,
-            OrientScale::OneDimensional | OrientScale::ThreeDimensional => {
-                orient_scale_factor(reference_vector, target_vector)?
-            }
-        };
-        let perpendicular_scale = match options.scale {
-            OrientScale::ThreeDimensional => scale_factor,
-            OrientScale::No | OrientScale::OneDimensional => 1.0,
-        };
-        let transform = AffineTransform3::try_direction_mapping(
-            reference_start,
-            reference_direction,
-            target_start,
-            target_direction,
-            scale_factor,
-            perpendicular_scale,
-            tolerance,
-        )?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, options.copy)?;
-        Ok(format!(
-            "Oriented {transformed} object(s) with {} scaling, creating {copied} copy object(s)",
-            options.scale.name()
-        ))
-    }
-}
-
-struct OrientThreePointCommand;
-
-impl Command for OrientThreePointCommand {
-    fn copy_option_default(&self) -> Option<bool> {
-        Some(false)
-    }
-
-    fn name(&self) -> &'static str {
-        "Orient3Pt"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Orient3Point"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let (reference_1, consumed_1) = parse_point(arguments)?;
-        let (reference_2, consumed_2) = parse_point(&arguments[consumed_1..])?;
-        let (reference_3, consumed_3) = parse_point(&arguments[consumed_1 + consumed_2..])?;
-        let (target_1, consumed_4) =
-            parse_point(&arguments[consumed_1 + consumed_2 + consumed_3..])?;
-        let (target_2, consumed_5) =
-            parse_point(&arguments[consumed_1 + consumed_2 + consumed_3 + consumed_4..])?;
-        let (target_3, consumed_6) = parse_point(
-            &arguments[consumed_1 + consumed_2 + consumed_3 + consumed_4 + consumed_5..],
-        )?;
-        let consumed = consumed_1 + consumed_2 + consumed_3 + consumed_4 + consumed_5 + consumed_6;
-        let options = parse_orient_three_point_options(&arguments[consumed..])?;
-        let tolerance = document.tolerance();
-        let source_frame =
-            Frame3::try_from_points(reference_1, reference_2, reference_3, tolerance)?;
-        let target_frame = Frame3::try_from_points(target_1, target_2, target_3, tolerance)?;
-        let scale_factor = if options.scale {
-            orient_scale_factor(
-                reference_1.vector_to(reference_2)?,
-                target_1.vector_to(target_2)?,
-            )?
-        } else {
-            1.0
-        };
-        let transform =
-            AffineTransform3::try_frame_mapping(source_frame, target_frame, [scale_factor; 3])?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, options.copy)?;
-        let scale_name = if options.scale { "3D" } else { "No" };
-        Ok(format!(
-            "Oriented {transformed} object(s) through three-point frames with {scale_name} scaling, creating {copied} copy object(s)"
-        ))
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum OrientScale {
-    No,
-    OneDimensional,
-    ThreeDimensional,
-}
-
-impl OrientScale {
-    const fn name(self) -> &'static str {
-        match self {
-            Self::No => "No",
-            Self::OneDimensional => "1D",
-            Self::ThreeDimensional => "3D",
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct OrientOptions {
-    scale: OrientScale,
-    copy: bool,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct OrientThreePointOptions {
-    scale: bool,
-    copy: bool,
-}
-
-fn parse_orient_options(arguments: &[&str]) -> Result<OrientOptions, CommandError> {
-    let mut options = OrientOptions {
-        scale: OrientScale::No,
-        copy: false,
-    };
-    let mut scale_seen = false;
-    let mut copy_seen = false;
-    let mut index = 0;
-    while index < arguments.len() {
-        let (name, value, consumed) = orient_option(arguments, index, ORIENT_USAGE)?;
-        if option_name_eq(name, "Scale") && !scale_seen {
-            let value = value.trim_start_matches(['_', '-']);
-            options.scale = if value.eq_ignore_ascii_case("No") {
-                OrientScale::No
-            } else if value.eq_ignore_ascii_case("1D") {
-                OrientScale::OneDimensional
-            } else if value.eq_ignore_ascii_case("3D") {
-                OrientScale::ThreeDimensional
-            } else {
-                return Err(CommandError::Usage(ORIENT_USAGE));
-            };
-            scale_seen = true;
-        } else if option_name_eq(name, "Copy") && !copy_seen {
-            options.copy = parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_USAGE))?;
-            copy_seen = true;
-        } else {
-            return Err(CommandError::Usage(ORIENT_USAGE));
-        }
-        index += consumed;
-    }
-    Ok(options)
-}
-
-fn parse_orient_three_point_options(
-    arguments: &[&str],
-) -> Result<OrientThreePointOptions, CommandError> {
-    let mut options = OrientThreePointOptions {
-        scale: false,
-        copy: false,
-    };
-    let mut scale_seen = false;
-    let mut copy_seen = false;
-    let mut index = 0;
-    while index < arguments.len() {
-        let (name, value, consumed) = orient_option(arguments, index, ORIENT_THREE_POINT_USAGE)?;
-        if option_name_eq(name, "Scale") && !scale_seen {
-            options.scale =
-                parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_THREE_POINT_USAGE))?;
-            scale_seen = true;
-        } else if option_name_eq(name, "Copy") && !copy_seen {
-            options.copy =
-                parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_THREE_POINT_USAGE))?;
-            copy_seen = true;
-        } else {
-            return Err(CommandError::Usage(ORIENT_THREE_POINT_USAGE));
-        }
-        index += consumed;
-    }
-    Ok(options)
-}
-
 fn orient_option<'a>(
     arguments: &'a [&str],
     index: usize,
@@ -15612,17 +15438,6 @@ fn orient_option<'a>(
     } else {
         let value = arguments.get(index + 1).ok_or(CommandError::Usage(usage))?;
         Ok((argument, *value, 2))
-    }
-}
-
-fn orient_scale_factor(reference: Vector3, target: Vector3) -> Result<Real, GeometryError> {
-    let factor = target.length()? / reference.length()?;
-    if factor.is_finite() && factor > 0.0 {
-        Ok(factor)
-    } else {
-        Err(GeometryError::NonFinite {
-            context: "orient scale factor",
-        })
     }
 }
 

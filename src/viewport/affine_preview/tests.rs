@@ -377,3 +377,111 @@ fn affine_preview_zero_numeric_factor_keeps_the_collapsed_directional_map() {
         point(0., 2., 3.)
     );
 }
+
+#[test]
+fn orient_points_real_pointer_preview_matches_committed_maps_in_every_view() {
+    use viboceros_command::orient_points::{Preview, Scale};
+    for kind in [
+        ViewKind::Top,
+        ViewKind::Front,
+        ViewKind::Right,
+        ViewKind::Perspective,
+    ] {
+        for three in [false, true] {
+            let mut doc = Document::default();
+            let start = point(1., 2., 3.);
+            let source = doc.add_geometry(Geometry::Point(start)).unwrap();
+            doc.select_objects_direct([source], SelectionMode::Replace)
+                .unwrap();
+            let mut view = Viewport::new(kind);
+            let plane = view.construction_plane();
+            let references = [point(0., 0., 0.), point(1., 0., 0.)];
+            let first = plane.origin();
+            let second = plane.point_at([1., 0., 0.]).unwrap();
+            let definition = Preview {
+                references,
+                third: three.then_some(point(0., 1., 0.)),
+                targets: [Some(first), three.then_some(second)],
+                scale: Scale::Uniform,
+            };
+            let sources = [source];
+            let input = ViewportInput {
+                drafting: DraftingInput {
+                    active: true,
+                    ..Default::default()
+                },
+                affine_preview: Some(AffinePreview {
+                    sources: &sources,
+                    grips: &[],
+                    definition: Mapping::Orient(definition),
+                    frame: None,
+                    copy: false,
+                    last_transform: None,
+                    rigid_layout: None,
+                }),
+                ..Default::default()
+            };
+            let context = egui::Context::default();
+            frame(&context, &mut view, &doc, input, vec![]);
+            let aim = plane
+                .point_at(if three { [0.3, 2., 0.] } else { [2., 1., 0.] })
+                .unwrap();
+            let pointer = view.project(aim, view.last_rect.unwrap()).unwrap();
+            let before = format!("{doc:?}");
+            let output = frame(
+                &context,
+                &mut view,
+                &doc,
+                input,
+                vec![
+                    egui::Event::PointerMoved(pointer),
+                    egui::Event::PointerButton {
+                        pos: pointer,
+                        button: PointerButton::Primary,
+                        pressed: true,
+                        modifiers: Default::default(),
+                    },
+                    egui::Event::PointerButton {
+                        pos: pointer,
+                        button: PointerButton::Primary,
+                        pressed: false,
+                        modifiers: Default::default(),
+                    },
+                ],
+            );
+            assert_eq!(format!("{doc:?}"), before);
+            let picked = output
+                .picked_point
+                .unwrap_or_else(|| panic!("{kind:?} {output:?}"));
+            let preview = output.affine_preview.unwrap().unwrap();
+            let token = |p: Point3| p.to_array().map(|v| v.to_string()).join(",");
+            let command = if three {
+                format!(
+                    "Orient3Pt 0,0,0 1,0,0 0,1,0 {} {} {} Scale=Yes",
+                    token(first),
+                    token(second),
+                    token(picked)
+                )
+            } else {
+                format!(
+                    "Orient 0,0,0 1,0,0 {} {} Scale=3D",
+                    token(first),
+                    token(picked)
+                )
+            };
+            viboceros_command::CommandRegistry::with_builtins()
+                .execute(&mut doc, &command)
+                .unwrap();
+            let Geometry::Point(actual) = doc.object(source).unwrap().geometry() else {
+                panic!()
+            };
+            assert!(
+                actual
+                    .distance_to(preview.transform_point(start).unwrap())
+                    .unwrap()
+                    < 1e-8,
+                "{kind:?} three={three}"
+            );
+        }
+    }
+}

@@ -1,0 +1,222 @@
+{
+  "cases": 36,
+  "matched_cases": 36,
+  "results": [
+    {
+      "id": "Orient-0",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-1",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-2",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-3",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-4",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-5",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-6",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-7",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-spatial-No",
+      "metadata_match": true,
+      "max_coordinate_error": 8.881784197001252e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-spatial-1D",
+      "metadata_match": true,
+      "max_coordinate_error": 1.7763568394002505e-15,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-spatial-3D",
+      "metadata_match": true,
+      "max_coordinate_error": 8.881784197001252e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-antiparallel",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-short-reference",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-short-target",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-copy-batch",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-copy-batch-picked",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-front-cplane",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-right-cplane",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-edit-scale",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-scale-after-cancel",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-cancel-reference",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-cancel-target",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient-default-target",
+      "metadata_match": true,
+      "max_coordinate_error": 6.123233995736766e-17,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-spatial-No",
+      "metadata_match": true,
+      "max_coordinate_error": 8.881784197001252e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-spatial-Yes",
+      "metadata_match": true,
+      "max_coordinate_error": 1.7763568394002505e-15,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-antiparallel",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-short-reference",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-short-target",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-copy-batch",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-copy-batch-picked",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-front-cplane",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-right-cplane",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-edit-scale",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-scale-after-cancel",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-cancel-reference",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "Orient3Pt-cancel-target",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    }
+  ]
+}

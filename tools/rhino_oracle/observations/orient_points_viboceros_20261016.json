@@ -1,0 +1,1700 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "Orient-0",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 1212440
+    },
+    {
+      "id": "Orient-1",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 950662
+    },
+    {
+      "id": "Orient-2",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 941510
+    },
+    {
+      "id": "Orient-3",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 931030
+    },
+    {
+      "id": "Orient3Pt-4",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 873862
+    },
+    {
+      "id": "Orient3Pt-5",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 899206
+    },
+    {
+      "id": "Orient3Pt-6",
+      "value": {
+        "command_returned": true,
+        "group_count": 1,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 874501
+    },
+    {
+      "id": "Orient3Pt-7",
+      "value": {
+        "command_returned": true,
+        "group_count": 2,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 924102
+    },
+    {
+      "id": "Orient-spatial-No",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                8.0,
+                -1.9999999999999998,
+                3.0
+              ],
+              [
+                8.34200544267445,
+                -1.2176199571687099,
+                3.5204937518936825
+              ],
+              [
+                7.334886313919798,
+                -1.407174849830167,
+                2.5459271799425536
+              ],
+              [
+                7.336180700966098,
+                -2.1908921420735386,
+                3.723121102115486
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 849110
+    },
+    {
+      "id": "Orient-spatial-1D",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                8.0,
+                -2.0,
+                3.0
+              ],
+              [
+                7.837647956821002,
+                -0.6123909741445714,
+                3.9239797405764416
+              ],
+              [
+                6.83052882806635,
+                -0.8019458668060284,
+                2.9494131686253127
+              ],
+              [
+                6.83182321511265,
+                -1.5856631590494,
+                4.126607090798245
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 871973
+    },
+    {
+      "id": "Orient-spatial-3D",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                8.0,
+                -2.0,
+                3.0
+              ],
+              [
+                8.866338783668514,
+                -0.01814214015835597,
+                4.318470023156509
+              ],
+              [
+                6.315191193174977,
+                -0.49830629737926874,
+                1.849781770870958
+              ],
+              [
+                6.318470023156509,
+                -2.483551562462375,
+                4.8317482059725325
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 870133
+    },
+    {
+      "id": "Orient-antiparallel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                -1.0,
+                2.0,
+                3.0
+              ],
+              [
+                -2.0,
+                2.0,
+                3.0
+              ],
+              [
+                -1.0,
+                3.0,
+                3.0
+              ],
+              [
+                -1.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 871094
+    },
+    {
+      "id": "Orient-short-reference",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                3.0,
+                1.0
+              ],
+              [
+                4.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 871941
+    },
+    {
+      "id": "Orient-short-target",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                3.0,
+                1.0
+              ],
+              [
+                4.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 881446
+    },
+    {
+      "id": "Orient-copy-batch",
+      "value": {
+        "command_returned": true,
+        "group_count": 3,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                1.0,
+                8.0,
+                3.0
+              ],
+              [
+                2.0,
+                8.0,
+                3.0
+              ],
+              [
+                1.0,
+                9.0,
+                3.0
+              ],
+              [
+                1.0,
+                8.0,
+                4.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 1011063
+    },
+    {
+      "id": "Orient-copy-batch-picked",
+      "value": {
+        "command_returned": true,
+        "group_count": 3,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                1.0,
+                8.0,
+                3.0
+              ],
+              [
+                2.0,
+                8.0,
+                3.0
+              ],
+              [
+                1.0,
+                9.0,
+                3.0
+              ],
+              [
+                1.0,
+                8.0,
+                4.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 999895
+    },
+    {
+      "id": "Orient-front-cplane",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 885861
+    },
+    {
+      "id": "Orient-right-cplane",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                3.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 893366
+    },
+    {
+      "id": "Orient-edit-scale",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                4.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 884918
+    },
+    {
+      "id": "Orient-scale-after-cancel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                4.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 891621
+    },
+    {
+      "id": "Orient-cancel-reference",
+      "value": {
+        "command_returned": false,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": null
+      },
+      "elapsed_ns": 794309
+    },
+    {
+      "id": "Orient-cancel-target",
+      "value": {
+        "command_returned": false,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": null
+      },
+      "elapsed_ns": 772229
+    },
+    {
+      "id": "Orient-default-target",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                6.123233995736766e-17,
+                1.0,
+                0.0
+              ],
+              [
+                -1.0,
+                6.123233995736766e-17,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient"
+      },
+      "elapsed_ns": 874421
+    },
+    {
+      "id": "Orient3Pt-spatial-No",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                8.0,
+                -2.0,
+                3.0
+              ],
+              [
+                7.2607589500729945,
+                -1.4835363641433936,
+                2.5678102466038877
+              ],
+              [
+                7.416347896273418,
+                -2.1711762191279114,
+                3.7937562118311945
+              ],
+              [
+                8.335965611213934,
+                -1.1609743658011116,
+                3.4279755755166406
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 866070
+    },
+    {
+      "id": "Orient3Pt-spatial-Yes",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                8.0,
+                -1.9999999999999998,
+                3.0
+              ],
+              [
+                6.127418128134246,
+                -0.6917387203017835,
+                1.9052140739538161
+              ],
+              [
+                6.521542669982102,
+                -2.4336088815212538,
+                5.0106749930928425
+              ],
+              [
+                8.851039201883651,
+                0.12534760182303795,
+                4.084110932953341
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 868854
+    },
+    {
+      "id": "Orient3Pt-antiparallel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                -1.0,
+                2.0,
+                3.0
+              ],
+              [
+                -2.0,
+                2.0,
+                3.0
+              ],
+              [
+                -1.0,
+                2.0,
+                4.0
+              ],
+              [
+                -1.0,
+                3.0,
+                3.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 895318
+    },
+    {
+      "id": "Orient3Pt-short-reference",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                3.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ],
+              [
+                6.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 871110
+    },
+    {
+      "id": "Orient3Pt-short-target",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                3.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ],
+              [
+                6.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 885909
+    },
+    {
+      "id": "Orient3Pt-copy-batch",
+      "value": {
+        "command_returned": true,
+        "group_count": 3,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                1.0,
+                8.0,
+                3.0
+              ],
+              [
+                2.0,
+                8.0,
+                3.0
+              ],
+              [
+                1.0,
+                8.0,
+                4.0
+              ],
+              [
+                1.0,
+                7.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 1000535
+    },
+    {
+      "id": "Orient3Pt-copy-batch-picked",
+      "value": {
+        "command_returned": true,
+        "group_count": 3,
+        "outputs": [
+          {
+            "group_count": 1,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "group_count": 0,
+            "original": false,
+            "points": [
+              [
+                1.0,
+                8.0,
+                3.0
+              ],
+              [
+                2.0,
+                8.0,
+                3.0
+              ],
+              [
+                1.0,
+                8.0,
+                4.0
+              ],
+              [
+                1.0,
+                7.0,
+                3.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 989335
+    },
+    {
+      "id": "Orient3Pt-front-cplane",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 873782
+    },
+    {
+      "id": "Orient3Pt-right-cplane",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 917526
+    },
+    {
+      "id": "Orient3Pt-edit-scale",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 871062
+    },
+    {
+      "id": "Orient3Pt-scale-after-cancel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "Orient3Pt"
+      },
+      "elapsed_ns": 880150
+    },
+    {
+      "id": "Orient3Pt-cancel-reference",
+      "value": {
+        "command_returned": false,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": null
+      },
+      "elapsed_ns": 790725
+    },
+    {
+      "id": "Orient3Pt-cancel-target",
+      "value": {
+        "command_returned": false,
+        "group_count": 0,
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": null
+      },
+      "elapsed_ns": 778709
+    }
+  ]
+}

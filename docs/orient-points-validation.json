@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "7328cac3ea1e7be903f19ab8719d2d1cc94f7221",
+  "component": "Interactive Orient and Orient3Pt with shared reference maps and remembered scale",
+  "complete_native_command_parity_qualified": false,
+  "native_undo_redo_qualified": false,
+  "native_grip_workflows_qualified": false,
+  "performance_qualified": false,
+  "gpu_appearance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "implementation": "Move point-orientation commands out of lib.rs into a shared solver. Reuse normal-frame perpendicular-axis policy for opposite directions, numerical reference validation, common source/grip transforms, affine object previews and history groups. Add command-first picking, reference/target markers, point-by-point options, repeated copy batches, separate scale preferences and the two-point first-target default.",
+  "coverage": {
+    "native_model_state_comparisons": 49,
+    "matched_native_model_states": 49,
+    "completed_native_workflows": 45,
+    "cancelled_model_workflows": 4,
+    "ui_native_workflow_replays": 49,
+    "ui_native_final_preview_placements": 49,
+    "real_pointer_scenarios": 8,
+    "existing_curve_guide_comparisons_retained": 100,
+    "total_point_and_curve_orientation_comparison_rows": 149,
+    "unique_rust_tests": 170,
+    "passed_rust_test_executions": 179,
+    "new_rust_tests": 7,
+    "python_tests": 10,
+    "new_python_tests": 4,
+    "ignored_gpu_tests": 1,
+    "coordinate_epsilon": 1e-06,
+    "maximum_coordinate_error": 1.0002113652622558e-12,
+    "portable_and_usd_brep_backends_checked": true
+  },
+  "native_version": "8.32.26160.13001",
+  "native_captures": [
+    {
+      "fixture": "orient_points_discovery",
+      "scheme": "VibocerosOracleOrientPoints20261016b",
+      "rows": 8,
+      "comparison": false,
+      "note": "Confirmed repeat targets, source selection and single-source copy-group policy. Redundant with the main matrix."
+    },
+    {
+      "fixture": "orient_points",
+      "scheme": "VibocerosOracleOrientPoints20261016c",
+      "rows": 36,
+      "comparison": true
+    },
+    {
+      "fixture": "orient_points_memory",
+      "scheme": "VibocerosOracleOrientPoints20261016d",
+      "rows": 2,
+      "comparison": false,
+      "note": "Fresh-scheme control isolates scale persistence after cancellation; redundant with rotation controls."
+    },
+    {
+      "fixture": "orient_points_rotation",
+      "scheme": "VibocerosOracleOrientPoints20261016e",
+      "rows": 13,
+      "comparison": true,
+      "note": "Two independent fresh-scheme preference controls, nine opposite-axis cases and two nearly opposite cases."
+    }
+  ],
+  "capture_notes": "Actual Orient/Orient3Pt commands transform four authored noncoplanar witnesses. The local producer runs real registered commands from original source/reference/target recipes, with no returned native matrices or geometry as inputs. Group counts include only active definitions owned by the probe. The initial worker failed because IronPython lacks math.isfinite; its diagnostic is retained and excluded. Helpers evolved during discovery, so final hashes are reproducer fingerprints rather than proof of identical staged bytes for every earlier capture.",
+  "cancellation_return_policy": "Completed workflows require successful RunScript return. The local producer explicitly marks requested cancellation false. Rhino returned true when Orient3Pt was canceled at its third target, with unchanged model geometry. Cancellation recipes compare model points, identity, selection and group counts independently of that native diagnostic boolean; no script-return parity is claimed for cancellation.",
+  "numerical_notes": "Rhino accepted 1e-8 reference/target spacing at 1e-6 model tolerance, exposing the old model-tolerance rejection. Exact opposite directions exposed the generic rotation helper's different fallback axis; point commands now reuse the existing OpenNURBS normal-frame perpendicular policy. Nearly opposite directions retain their cross-product axis. No new native ABI or proprietary implementation was used.",
+  "limitations": [
+    "Near-collinear and extreme-coordinate frames remain unqualified.",
+    "Native grip workflows, multiple whole-source group ordering, native Undo/Redo, rendered appearance and general performance are not established by these captures.",
+    "Scale state is outside model Undo. Interactive accepted option changes are remembered on cancellation; rejected complete commands preserve their previous scale state.",
+    "The native RunScript cancellation result is a diagnostic, with the recorded third-target exception described above."
+  ],
+  "checks": [
+    {
+      "name": "debug-build",
+      "command": "cargo build -p viboceros-oracle --bin viboceros-oracle",
+      "exit_code": 0,
+      "elapsed_seconds": 22.235,
+      "log_sha256": "b116aa724850f6ca9a944ee668a8dfd035a4e13e809db55ae1ccf86f60d096da",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "orient_points-producer",
+      "command": "target/debug/viboceros-oracle tools/rhino_oracle/fixtures/orient_points.json tools/rhino_oracle/observations/orient_points_viboceros_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.109,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "orient_points-comparison",
+      "command": "python3 -m tools.rhino_oracle.orient_points_comparison tools/rhino_oracle/fixtures/orient_points.json tools/rhino_oracle/observations/orient_points_viboceros_20261016.json tools/rhino_oracle/observations/orient_points_rhino_20261016.json tools/rhino_oracle/observations/orient_points_comparison_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "orient_points_rotation-producer",
+      "command": "target/debug/viboceros-oracle tools/rhino_oracle/fixtures/orient_points_rotation.json tools/rhino_oracle/observations/orient_points_rotation_viboceros_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.033,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "orient_points_rotation-comparison",
+      "command": "python3 -m tools.rhino_oracle.orient_points_comparison tools/rhino_oracle/fixtures/orient_points_rotation.json tools/rhino_oracle/observations/orient_points_rotation_viboceros_20261016.json tools/rhino_oracle/observations/orient_points_rotation_rhino_20261016.json tools/rhino_oracle/observations/orient_points_rotation_comparison_20261016.json",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "command",
+      "command": "cargo test -p viboceros-command --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 39.438,
+      "log_sha256": "bf8de63dbed9d5692426fb8a5bdf071618350d87ed61e4fa26ab42e77b69c5a3",
+      "passed_rust_tests": 12
+    },
+    {
+      "name": "oracle",
+      "command": "cargo test -p viboceros-oracle --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 48.942,
+      "log_sha256": "d4ea5c0ecfad88bbeb005a3ed707c384dca66fb5cb2f363b4a8860b95472a3a4",
+      "passed_rust_tests": 3
+    },
+    {
+      "name": "ui",
+      "command": "cargo test -p viboceros --bin viboceros orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 44.584,
+      "log_sha256": "4c254e0cf94aa69e372093212e1067ddfb7b834678e21925802194a2fb78c678",
+      "passed_rust_tests": 19
+    },
+    {
+      "name": "affine",
+      "command": "cargo test -p viboceros --bin viboceros affine",
+      "exit_code": 0,
+      "elapsed_seconds": 1.364,
+      "log_sha256": "d89ed3feb5cb35eb0ee2970630e8b7dc95833e432b4eaba4f6a709587cc86e22",
+      "passed_rust_tests": 15
+    },
+    {
+      "name": "point-input",
+      "command": "cargo test -p viboceros --bin viboceros point_input",
+      "exit_code": 0,
+      "elapsed_seconds": 0.414,
+      "log_sha256": "89376113283fc9f6394dce6c8a5480f5ade3be87e85dcb23d9a4827659c04f4e",
+      "passed_rust_tests": 62
+    },
+    {
+      "name": "copy-options",
+      "command": "cargo test -p viboceros-command --lib copy_",
+      "exit_code": 0,
+      "elapsed_seconds": 26.519,
+      "log_sha256": "b55091f92bbfd5a2955ebf53c9e821f3a019bd6c7b19b81d5b34f319fa09eaf4",
+      "passed_rust_tests": 39
+    },
+    {
+      "name": "native-oracle",
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib orient_",
+      "exit_code": 0,
+      "elapsed_seconds": 61.956,
+      "log_sha256": "42508585f80425501caacc122d6c3269e2d3872621b03fb29ce01f320ece59ca",
+      "passed_rust_tests": 3
+    },
+    {
+      "name": "python",
+      "command": "python3 -m unittest tools.rhino_oracle.test_orient_points tools.rhino_oracle.test_orient_on_curve",
+      "exit_code": 0,
+      "elapsed_seconds": 0.078,
+      "log_sha256": "811eabda5dc298da232b3c7953fbe433089645edff6f53063d91016c4136c0a2",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "elapsed_seconds": 37.78,
+      "log_sha256": "59e4c85e8226edb900ccf631949bf0ad3b8ac000a62ab85ed4a3bca683495760",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "fmt",
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "elapsed_seconds": 4.882,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_rust_tests": 0
+    },
+    {
+      "name": "source-regressions",
+      "command": "cargo test -p viboceros --bin viboceros transform_copy",
+      "exit_code": 0,
+      "elapsed_seconds": 2.777,
+      "log_sha256": "cac2c00016966c0555cff706a96e74e0efe494be09276ca3132c5b37f63a04af",
+      "passed_rust_tests": 22
+    },
+    {
+      "name": "grip-regressions",
+      "command": "cargo test -p viboceros --bin viboceros grip_transform",
+      "exit_code": 0,
+      "elapsed_seconds": 0.41,
+      "log_sha256": "ffa20c510e331d861da714abbe44ca9bbd0f42adf7c4efec9b3f1301bd26b9f0",
+      "passed_rust_tests": 4
+    }
+  ],
+  "check_notes": "The initial transform_sources filter selected no tests. Source regression evidence uses the actual transform_copy module (22 tests) and grip_transform module (4 tests); the empty filter is excluded from qualification counts.",
+  "provenance_preservation": {
+    "records": 5,
+    "preserved_entries": 15,
+    "preexisting_unverifiable_records_unchanged": 69,
+    "method": "Retain original digest values and non-hash metadata, moving only baseline-verifiable affected entries to immutable full base-revision Git references."
+  },
+  "sha256": {
+    "README.md": "fd3b2d56bca6a5af53efd87705a7b44ae7e73dd8fd8765c32c8f5637c4a162cb",
+    "crates/viboceros-command/src/lib.rs": "954fce60c1b180a2324d219ef5bc37b21b9579617078df9103dee93244878ad1",
+    "crates/viboceros-command/src/orient_points.rs": "ec422490eb48e0e7c72724be015167431145143e2895d413b666b251c5caa7a4",
+    "crates/viboceros-oracle/src/lib.rs": "377fbf4dacb5a849ff290d06ca93cdddb60ce9b73593ed7d7bd057a797722a36",
+    "crates/viboceros-oracle/src/orient_points.rs": "83cedbc329c2d64fe512c5b20d0d0ec10228855a973bd5115753e40788877b60",
+    "docs/commands/README.md": "4a2667eca522d4ce38c8da018148cb562cfec6b9ddc37cbd6d119736b318e2d9",
+    "docs/commands/orient.md": "c9faf705a8c36013971be42011161c9a755a70b309fbba991d7128bff4a15bd5",
+    "docs/commands/transforms.md": "32cff8f0db4ae0eaa0b830bb5a8ccd04472daa280332e37c3c2598b44acc3cc6",
+    "docs/orient-on-curve-edge-validation.json": "ae15249dd6de7f7419b25303d147e3170e67ff02fe9dca7b753545b04c903255",
+    "docs/orient-on-curve-subcurve-validation.json": "57d25d25c954d1e52602af37c462abb62d9fad32d341e2e63a7e6aacc735e421",
+    "docs/orient-on-curve-validation.json": "03a0b2bb485e97d51c54a7d6cdf44dface0c86315e058deb5b25ef7ce1fde44b",
+    "docs/point-selection-qualification.json": "f38f23a4250d0900ad959ffab8043a3b0de9e9e7067f9d09e625a7a77ec1f951",
+    "docs/set-point-grips-qualification.json": "1814b155e9838d0e135416136217dc70a813e4880b044966269582dc61a1f894",
+    "src/app.rs": "7e91b66ea9638c8a2bd23de16cd0a625553963d93cd90e173ce81c54055d6a7e",
+    "src/app/orient_points.rs": "4080d9029d51e06f971fd04371495df417a6b177c45390e3d0cb3cc507dcc7eb",
+    "src/app/tests/orient_points.rs": "1066c6298c21428b290c4638fe89ade3e2c12ce72f3fc17896e7cf799a12d2e2",
+    "src/app/transform_prompt.rs": "ffe30eeb47d08a94668ef01608a21b8f014f4c53e662152c7d59040ba437ce0c",
+    "src/app/transform_sources.rs": "f04a47f63117fa023361c1db8eadc9c5d722de0d0cef15c9ba45bc73ca081646",
+    "src/viewport/affine_preview.rs": "38ab653faf096cefce3da39b6a3f431fce54daf9143ebaee55a42909f042cf32",
+    "src/viewport/affine_preview/tests.rs": "cac09d1be9991bd2eaed4db4da33a45b3ff3beaf3a799885f222ab528dea5eec",
+    "tools/rhino_oracle/fixtures/orient_points.json": "1a2dd62168335447ff60280bff92503ea5da3bc26a5eda8afc75150426154f89",
+    "tools/rhino_oracle/fixtures/orient_points_discovery.json": "c81838add9de8935037bf84a76dd8e7d53dbad47762146752cdbf4f2f1592bb8",
+    "tools/rhino_oracle/fixtures/orient_points_memory.json": "65c13bc852bd1012b9a20caa2e74e48e118728d4ffeeb6c0185fdf0368471c56",
+    "tools/rhino_oracle/fixtures/orient_points_rotation.json": "8b9df3ed8399f4e5c08d113fe010b8bfec52f41923f54e17070a865283af2127",
+    "tools/rhino_oracle/observations/orient_points_comparison_20261016.json": "05b5d8e9e0e44674364a16fc46a39e7bfe1a9448d69fd476e0ff72f5b4490488",
+    "tools/rhino_oracle/observations/orient_points_discovery_failure_20261016.json": "76f2a6bb779517ea7c9f479280aa58b82f4be723da32ed76ef3dfb73a92d2a68",
+    "tools/rhino_oracle/observations/orient_points_discovery_rhino_20261016.json": "44edcdd3145fb64caefff5d4b5018e4f03a7d7fb81698471541c60e8e4ff9d68",
+    "tools/rhino_oracle/observations/orient_points_memory_rhino_20261016.json": "e6e88dd67af9a803d5afd73aab284f1fc775a177f77661a313cbe135f6aa4e5c",
+    "tools/rhino_oracle/observations/orient_points_rhino_20261016.json": "9f263a58acb51a315f6d1c73e9c73bd91374fa5db2dba8bdde829c24b69b701e",
+    "tools/rhino_oracle/observations/orient_points_rotation_comparison_20261016.json": "5922ec550b0080c9300f97e837d050a03bb4afc34e31672bb7d5d4608fe91b76",
+    "tools/rhino_oracle/observations/orient_points_rotation_rhino_20261016.json": "b560479df159a419a9f9d844a70873b097f2d07292b68f8ef0528834ba302094",
+    "tools/rhino_oracle/observations/orient_points_rotation_viboceros_20261016.json": "f0b66cea47a4a59bcbe45b72cea6aaaf4bcb2f6186f32f3235df3a4dab989409",
+    "tools/rhino_oracle/observations/orient_points_viboceros_20261016.json": "9617a95b95b4cebed4c2312f0983633099d13f280ef79dfbd9c98e519f11db45",
+    "tools/rhino_oracle/orient_points_comparison.py": "5e83f039c5ac37d3217d6af53a27de1acdc71c7b750ae523792e26764f39672f",
+    "tools/rhino_oracle/orient_points_probe.py": "6fc571938ad2620ab849a707078c58c717571a1546ff35dde7e660aee8055763",
+    "tools/rhino_oracle/rhino_worker.py": "8b23167f1bef962085ab455a57ffc8d5aab2b2303d24b969a9f80058cc8e50a4",
+    "tools/rhino_oracle/structural_sdk.py": "2fc153b693c0b0651d13dcf17592b78ba145d1ffd84cf2a376644561d6dd762b",
+    "tools/rhino_oracle/test_orient_points.py": "777faf2dc3358d32a833f7791d1dff00b7c0047716e1e66a44ee0673ee90876b"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "status": "harness_error",
+  "qualified": false,
+  "error": "AttributeError at operation Orient-0: module math has no attribute isfinite",
+  "note": "Use isnan/isinf for the IronPython runtime. No native geometry observations were obtained."
+}

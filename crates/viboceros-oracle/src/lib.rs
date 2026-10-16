@@ -147,7 +147,9 @@ mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod curvature_graph;
 mod orient_on_curve;
+mod orient_points;
 pub use orient_on_curve::Fixture as OrientOnCurveFixture;
+pub use orient_points::Fixture as OrientPointsFixture;
 mod extract_curvature_graph;
 pub use extract_curvature_graph::Fixture as ExtractCurvatureGraphFixture;
 mod geometry_validity;
@@ -1699,6 +1701,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurveDeviationFixture,
     },
+    OrientPoints {
+        id: String,
+        #[serde(flatten)]
+        fixture: OrientPointsFixture,
+    },
     OrientOnCurve {
         id: String,
         #[serde(flatten)]
@@ -2723,6 +2730,7 @@ impl Operation {
             | Self::PlaneThroughPoints { id, .. }
             | Self::LineThroughPoints { id, .. }
             | Self::CurveDeviation { id, .. }
+            | Self::OrientPoints { id, .. }
             | Self::OrientOnCurve { id, .. }
             | Self::CurvatureGraph { id, .. }
             | Self::ExtractCurvatureGraph { id, .. }
@@ -5953,6 +5961,9 @@ fn execute(
         )?,
         Operation::CurveDeviation { fixture, .. } => {
             curve_deviation::run(fixture, iterations, tolerance)?
+        }
+        Operation::OrientPoints { fixture, .. } => {
+            orient_points::run(fixture, iterations, tolerance)?
         }
         Operation::OrientOnCurve { fixture, .. } => {
             orient_on_curve::run(fixture, iterations, tolerance)?

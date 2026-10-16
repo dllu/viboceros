@@ -1,0 +1,515 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "Orient-scale-after-cancel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Python Script ( ResetEngine ): _Orient\nReference point 1 ( Copy=No  Scale=No ): _Scale=_1D\nReference point 1 ( Copy=No  Scale=1D ): _Cancel\nReference point 1 ( Copy=No  Scale=1D )\nCommand: _Orient\nReference point 1 ( Copy=No  Scale=1D ): _Copy=_No\nReference point 1 ( Copy=No  Scale=1D ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=1D ): w2.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=1D ): w5.0,2.0,1.0\nTarget point 2 ( Copy=No  Scale=1D ): w5.0,6.0,1.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No w0.0,0.0,0.0 w2.0,0.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                4.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "Orient3Pt-scale-after-cancel",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient3Pt\nReference point 1 ( Copy=No  Scale=No ): _Scale=_Yes\nReference point 1 ( Copy=No  Scale=Yes ): _Cancel\nReference point 1 ( Copy=No  Scale=Yes )\nCommand: _Orient3Pt\nReference point 1 ( Copy=No  Scale=Yes ): _Copy=_No\nReference point 1 ( Copy=No  Scale=Yes ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=Yes ): w2.0,0.0,0.0\nReference point 3 ( Copy=No  Scale=Yes ): w0.0,1.0,0.0\nTarget point 1 ( Copy=No  Scale=Yes ): w5.0,2.0,1.0\nTarget point 2 ( Copy=No  Scale=Yes ): w5.0,6.0,1.0\nTarget point 3 ( Copy=No  Scale=Yes ): w5.0,2.0,4.0\nCommand: _Cancel",
+        "macro": "_Orient3Pt _Copy=_No w0.0,0.0,0.0 w2.0,0.0,0.0 w0.0,1.0,0.0 w5.0,2.0,1.0 w5.0,6.0,1.0 w5.0,2.0,4.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                5.0,
+                2.0,
+                1.0
+              ],
+              [
+                5.0,
+                4.0,
+                1.0
+              ],
+              [
+                5.0,
+                2.0,
+                3.0
+              ],
+              [
+                7.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-0",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=1D ): _Copy=_No\nReference point 1 ( Copy=No  Scale=1D ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w2.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w1.0,4.0,5.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w2.0,0.0,0.0 w3.0,4.0,5.0 w1.0,4.0,5.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                5.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-1",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w-2.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w5.0,4.0,5.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w-2.0,0.0,0.0 w3.0,4.0,5.0 w5.0,4.0,5.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                5.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-2",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w0.0,2.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w3.0,2.0,5.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w0.0,2.0,0.0 w3.0,4.0,5.0 w3.0,2.0,5.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                6.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-3",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w0.0,0.0,2.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w3.0,4.0,3.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w0.0,0.0,2.0 w3.0,4.0,5.0 w3.0,4.0,3.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                4.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-4",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w1.0,2.0,3.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w2.0,2.0,2.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w1.0,2.0,3.0 w3.0,4.0,5.0 w2.0,2.0,2.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.384615384615384,
+                4.076923076923077
+              ],
+              [
+                3.0,
+                3.076923076923077,
+                4.615384615384615
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-5",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w3.0,2.0,1.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w0.0,2.0,4.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w3.0,2.0,1.0 w3.0,4.0,5.0 w0.0,2.0,4.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.615384615384615,
+                3.076923076923077,
+                5.0
+              ],
+              [
+                2.076923076923077,
+                4.384615384615384,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-6",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w2.0,2.0,2.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w1.0,2.0,3.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w2.0,2.0,2.0 w3.0,4.0,5.0 w1.0,2.0,3.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                1.9999999999999998,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-7",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w2.0,2.0,1.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w1.0,2.0,4.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w2.0,2.0,1.0 w3.0,4.0,5.0 w1.0,2.0,4.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "opposite-8",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w1.0,2.0,2.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w3.0,4.0,5.0\nTarget point 2 ( Copy=No  Scale=No ): w2.0,2.0,3.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w1.0,2.0,2.0 w3.0,4.0,5.0 w2.0,2.0,3.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                3.0,
+                4.0,
+                5.0
+              ],
+              [
+                2.0,
+                4.0,
+                5.0
+              ],
+              [
+                3.0,
+                4.0,
+                4.0
+              ],
+              [
+                3.0,
+                3.0,
+                5.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "nearly-opposite-0",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w1.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w0.0,0.0,0.0\nTarget point 2 ( Copy=No  Scale=No ): w-1.0,9.9999999999999995e-07,0.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w1.0,0.0,0.0 w0.0,0.0,0.0 w-1.0,9.9999999999999995e-07,0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -0.9999999999995,
+                9.999999999995e-07,
+                0.0
+              ],
+              [
+                -9.999999999995e-07,
+                -0.9999999999995,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "nearly-opposite-1",
+      "value": {
+        "command_returned": true,
+        "group_count": 0,
+        "history": "Command: _Orient\nReference point 1 ( Copy=No  Scale=No ): _Copy=_No\nReference point 1 ( Copy=No  Scale=No ): _Scale=_No\nReference point 1 ( Copy=No  Scale=No ): w0.0,0.0,0.0\nReference point 2 ( Copy=No  Scale=No ): w1.0,0.0,0.0\nTarget point 1 <Reference point 1> ( Copy=No  Scale=No ): w0.0,0.0,0.0\nTarget point 2 ( Copy=No  Scale=No ): w-1.0,9.9999999999999998e-13,0.0\nCommand: _Cancel",
+        "macro": "_Orient _Copy=_No _Scale=_No w0.0,0.0,0.0 w1.0,0.0,0.0 w0.0,0.0,0.0 w-1.0,9.9999999999999998e-13,0.0 _Cancel",
+        "outputs": [
+          {
+            "group_count": 0,
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    }
+  ]
+}

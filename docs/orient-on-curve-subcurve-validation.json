@@ -183,7 +183,6 @@
     "src/app/subcurve_direction.rs": "7e3a256fd3a4b1575ad40acb0944c9463a52f9bcdaca41e8b014a00bd129b468",
     "src/app/tests/orient_curve_subcurve.rs": "271dbda67bf84f7951c77c7c53975d26c77cf83b9c3b831ea7461918c5584c26",
     "src/viewport.rs": "c11de26e5664579ed4b25d1e0f367b1e4778145ccf6bedbc5871e0f8ddd642f0",
-    "src/viewport/affine_preview/tests.rs": "8cf68e4c820aa34f2c157a8c4d363bff3df2739f8f0d9cd5c80df7695a58c440",
     "tools/rhino_oracle/fixtures/orient_on_curve_projected_input.json": "3becae613d95e8f2712c0ef2511187faed28b372729024b45ce1f0c6e9ab97e6",
     "tools/rhino_oracle/fixtures/orient_on_curve_relative_input.json": "4cd0dcc324ff830821be43bc65de7bfb85a75e45a36d6e7f48886a9c653a5e1b",
     "tools/rhino_oracle/fixtures/orient_on_curve_subcurve.json": "63b0247cd5a7cf57c420b2684e41da524777466ee696693c325f4dc244a007e7",
@@ -213,6 +212,7 @@
     "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/orient_on_curve_probe.py": "2f36251110cfe3356daeeedc66dcd41f1252b756807947ab672125a6e745f56c",
     "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/test_orient_on_curve.py": "fec3301b31add7d8fd34fb3002a0f2cdfba6369d66d60509ee16d739516180d0",
     "daec5072e887979947ec3c92733a30423101e0f3:docs/curvature-graph-validation.json": "82ca0bb945e55216462ff50640b05a21093ebc0b12c69b8cb84e5f5b2c54e6bd",
-    "daec5072e887979947ec3c92733a30423101e0f3:docs/orient-on-curve-validation.json": "f2e7448e60961cd770a14aedeaae4da6945b46406c2221eeede3b59e5e432020"
+    "daec5072e887979947ec3c92733a30423101e0f3:docs/orient-on-curve-validation.json": "f2e7448e60961cd770a14aedeaae4da6945b46406c2221eeede3b59e5e432020",
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:src/viewport/affine_preview/tests.rs": "8cf68e4c820aa34f2c157a8c4d363bff3df2739f8f0d9cd5c80df7695a58c440"
   }
 }

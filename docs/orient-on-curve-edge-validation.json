@@ -213,7 +213,6 @@
     "preexisting_unverifiable_unchanged": 69
   },
   "sha256": {
-    "README.md": "77aa8d8cbb305052a8232163a7a3a05e79564def9b4f45a2a1400f359b3055d9",
     "crates/viboceros-command/src/curve_domain.rs": "a6a1b6d8dd9f63f4abfca584c57067481429034a3ef6512ba6b870006dd8ff9d",
     "crates/viboceros-command/src/curve_reference.rs": "01ec0902b95a76519da3f7476c6416210a1aae9416a797b598811bf87713a2d7",
     "crates/viboceros-command/src/orient_curve.rs": "46a450e2b8dd936a73196d92e4d8b11e83445e0d661bb2d306f6368203f7610a",
@@ -224,12 +223,9 @@
     "docs/curvature-graph-validation.json": "58480128c9a839aa60396ec02e7dba399d7178f06d1bb1a8da7afc3feace4ff0",
     "docs/curve-distance-validation.json": "b4aa8cfd6b984cc6db24d476d06d43dd01bf71396d54a4fd7c78e1a37a43fe0c",
     "docs/orient-on-curve-edge.md": "9524e88dc0bf4d3dcef5066dd64604a1f9807ff45467bd147793a46668414e0d",
-    "docs/orient-on-curve-subcurve-validation.json": "1fbcd98f22b6e529ca67b8d9053096dced20cea2cfef8f9dd3983261684a30cc",
     "docs/orient-on-curve-subcurve.md": "27b560038b622ae5ff3f6d1993aafbc606ad7f9518554f5efc317aeb51ef1aa4",
-    "docs/orient-on-curve-validation.json": "9a741cc248a7477326a32bc7a60be4bcb00109f0934873ce0021eb66f448961c",
     "docs/point-deviation-validation.json": "04678a3e37a9a03bf2fadfd38685ff3dbe472f5f5dccd6a2731bae28f7039475",
     "docs/selected-coplanar-faces-qualification.json": "f1c46ffc38fc4bdb18b2a611640be8874e14f7d676879fe7c252e9ee8d92cfa8",
-    "src/app.rs": "d36faa2cad3170561204862197cf303cf1cb89f56e04cf7d2bf9f2b8f5ec14df",
     "src/app/component_selection.rs": "b65d49b7d37136dcfe1ccae6803bfcfc8e5d541ab2a0c497f8e2eaab1dc8ae37",
     "src/app/orient_curve.rs": "aa327a50781c52a787903ef8a823c86fc1f51c7f5b07f0cde26a4f1e0c17bd04",
     "src/app/orient_curve/subcurve.rs": "160c45e0be7dbb763a70d1dc20ef3343bd16181e6e8778651f2261a84f1443a0",
@@ -267,8 +263,14 @@
     "tools/rhino_oracle/orient_on_curve_edge_input.py": "fd84c268e208d85eda8392085d2ee6376dce692b1e7aa1c31bd09b4fd27f8613",
     "tools/rhino_oracle/orient_on_curve_edge_picker.py": "ffe5324f04d89d75347f4e4db63265d3bfa7bb52d3f641838e7a41c1ccfe52f8",
     "tools/rhino_oracle/orient_on_curve_probe.py": "1c445e7d2833abedbd240ba5ce8402da5ef0e837e533998ab9c86279347936ff",
-    "tools/rhino_oracle/rhino_worker.py": "618e231c3307b37b10f6d67c89468838b60b8583eec26e23acd30e35095c1b85",
-    "tools/rhino_oracle/structural_sdk.py": "e3de5239e219f3e7def1b1dfb9c04ebfbcab6feb25c89be61f904cd599d40833",
     "tools/rhino_oracle/test_orient_on_curve.py": "0f001e3d5f01f654fffd9942bd9fbc79e40c4f4c0a3d49bf4a72d3bef06fbc6e"
+  },
+  "git_sha256": {
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:README.md": "77aa8d8cbb305052a8232163a7a3a05e79564def9b4f45a2a1400f359b3055d9",
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:src/app.rs": "d36faa2cad3170561204862197cf303cf1cb89f56e04cf7d2bf9f2b8f5ec14df",
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:tools/rhino_oracle/rhino_worker.py": "618e231c3307b37b10f6d67c89468838b60b8583eec26e23acd30e35095c1b85",
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:tools/rhino_oracle/structural_sdk.py": "e3de5239e219f3e7def1b1dfb9c04ebfbcab6feb25c89be61f904cd599d40833",
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:docs/orient-on-curve-subcurve-validation.json": "1fbcd98f22b6e529ca67b8d9053096dced20cea2cfef8f9dd3983261684a30cc",
+    "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:docs/orient-on-curve-validation.json": "9a741cc248a7477326a32bc7a60be4bcb00109f0934873ce0021eb66f448961c"
   }
 }

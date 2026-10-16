@@ -9,6 +9,7 @@ use viboceros_geometry::{AffineTransform3, UnitVector3};
 pub(crate) enum Mapping<'a> {
     Point(PointTransform),
     Curve(&'a viboceros_command::orient_curve::Placement),
+    Orient(viboceros_command::orient_points::Preview),
     Fixed(AffineTransform3),
     Rotation {
         prior: AffineTransform3,
@@ -38,6 +39,7 @@ impl Mapping<'_> {
         match self {
             Self::Point(p) => p.transform_at(frame, point, tolerance),
             Self::Curve(p) => p.transform_at(point),
+            Self::Orient(p) => p.transform_at(point, tolerance),
             Self::Fixed(map) => Ok(map),
             Self::Rotation {
                 prior,

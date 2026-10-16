@@ -6,7 +6,9 @@ use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSele
 pub(super) fn allows_grips(command: &str) -> bool {
     matches!(
         command,
-        "Move"
+        "Orient"
+            | "Orient3Pt"
+            | "Move"
             | "SetPt"
             | "Copy"
             | "Scale"
