@@ -1,0 +1,160 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "off-guide",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1277682
+    },
+    {
+      "id": "before-range",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1032785
+    },
+    {
+      "id": "after-range",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1004833
+    },
+    {
+      "id": "whole-off-guide",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 983713
+    }
+  ]
+}

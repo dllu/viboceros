@@ -2,6 +2,9 @@
 use super::*;
 impl VibocerosApp {
     pub(super) fn continue_subcurve_direction(&mut self, input: &str) -> bool {
+        if self.continue_orient_subcurve_direction(input) {
+            return true;
+        }
         let input = input.trim().trim_start_matches('_');
         let locked = if input.eq_ignore_ascii_case("D") {
             Some(true)
@@ -93,6 +96,9 @@ impl VibocerosApp {
         true
     }
     pub(super) fn update_subcurve_hover(&mut self, point: Point3) {
+        if self.update_orient_subcurve_hover(point) {
+            return;
+        }
         if !self.validate_subcurve_source() {
             return;
         }

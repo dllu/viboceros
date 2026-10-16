@@ -126,7 +126,6 @@
     "docs/curvature-graph-python.log": "e0883f829fddcf9db8a75611ccac72970a82439b9a23005b80db9d1fcefafc59",
     "docs/curvature-graph-ui.log": "fa3c8fad0e85cf50d300cd64a4637275ac30eb03c4d21afe7d4df1f37d691c4a",
     "docs/curve-deviation-overlap-validation.json": "b9e1e599514607457079d7cae0bba0a776768bfcbe959d3c8d93088f2ca5494d",
-    "docs/curve-deviation-subcurves-validation.json": "407747a163798034179a876cac633a542dea7c7c9b783a5d42e443fde8119e20",
     "docs/curve-distance-validation.json": "fc84ae223d3630a4b7dbc785d27eba17d78214b3743d382bf8d79bb79928e1df",
     "docs/point-deviation-validation.json": "db9fc9806e8d37e61a7779634603ea7ad8219b38d787783560ff3c4386961dca",
     "docs/sphere-fit-points-validation.json": "d603ff7926d35d67a5e1a038188b3b55ba9ba6f0d2b452d5fb402c178028e5a9",
@@ -164,6 +163,7 @@
     "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:crates/viboceros-oracle/src/curvature_graph.rs": "d4783778a91eca2ee18d1734b8785d2217a64551d97032376339cc85ad0f09d6",
     "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:src/viewport/curvature_graph.rs": "9f8fcba60092e0c8dfe58a2095bed51505f0bc09dd7ba920b2f3a36c506ac8eb",
     "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0:tools/rhino_oracle/curvature_graph_probe.py": "bf2ed70b5069b7222576cf7978abf7402a2dd2113b0c8db0f981a3fc61b6d9d8",
-    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:crates/viboceros-geometry/src/curve.rs": "585164998fc71d7ed9ab5796b2cabe8a9f5235740fa905c6a52083970e325038"
+    "f0cc3f5e2986cd2435948ada4eb2f3b334c34be0:crates/viboceros-geometry/src/curve.rs": "585164998fc71d7ed9ab5796b2cabe8a9f5235740fa905c6a52083970e325038",
+    "2348c030682b04b278c62b1d5e139d1c632c488b:docs/curve-deviation-subcurves-validation.json": "407747a163798034179a876cac633a542dea7c7c9b783a5d42e443fde8119e20"
   }
 }

@@ -188,6 +188,13 @@ impl VibocerosApp {
                 return false;
             }
         };
+        let point = match self.resolve_orient_curve_point(point) {
+            Ok(point) => point,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                return false;
+            }
+        };
         let plane = self.viewports[self.active_viewport].construction_plane();
         if self.apply_drafting_point(point) {
             self.snaps.model_override = None;

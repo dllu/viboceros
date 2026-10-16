@@ -1,0 +1,2640 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "line-False-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Python Script ( ResetEngine ): _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 5eaff2c2-7ef5-4daa-b52e-781ecd79b165\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 5eaff2c2-7ef5-4daa-b52e-781ecd79b165 w0.0,1.0,0.0 w0.0,4.0,0.0 _Copy=_No w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-False-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 8f3fe6cf-0ac1-4594-9bd2-dfde51ca2cb6\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 8f3fe6cf-0ac1-4594-9bd2-dfde51ca2cb6 w0.0,1.0,0.0 w0.0,4.0,0.0 _Copy=_No _perpendicular w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-flip-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 06a32f48-5ed3-4240-ad7b-9d4733b16f13\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _flip\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 06a32f48-5ed3-4240-ad7b-9d4733b16f13 w0.0,1.0,0.0 w0.0,4.0,0.0 _Copy=_No _flip w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-oncurve-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              -0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): _OnCurve\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 47e17a99-05ca-4809-bdbc-bb7a7f5b3127\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nBase point on curve: w0.0,2.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,3.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv _OnCurve _SubCrv _SelID 47e17a99-05ca-4809-bdbc-bb7a7f5b3127 w0.0,1.0,0.0 w0.0,4.0,0.0 w0.0,2.0,0.0 _Copy=_No w0.0,3.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-True-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: fcd6b14c-a074-4e2c-9205-7d7537c09799\n1 curve added to selection.\nStart of curve: w0.0,4.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,1.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID fcd6b14c-a074-4e2c-9205-7d7537c09799 w0.0,4.0,0.0 w0.0,1.0,0.0 _Copy=_No w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-True-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 5936f89b-7720-4fe0-bd2e-d0d5de53d919\n1 curve added to selection.\nStart of curve: w0.0,4.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,1.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 5936f89b-7720-4fe0-bd2e-d0d5de53d919 w0.0,4.0,0.0 w0.0,1.0,0.0 _Copy=_No _perpendicular w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-flip-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 6e8535ea-25e0-4756-8516-0738096becc7\n1 curve added to selection.\nStart of curve: w0.0,4.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,1.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _flip\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 6e8535ea-25e0-4756-8516-0738096becc7 w0.0,4.0,0.0 w0.0,1.0,0.0 _Copy=_No _flip w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "line-oncurve-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              3.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              -0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): _OnCurve\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 9ecd8fef-ce22-4219-ba15-fd5d073f1fe6\n1 curve added to selection.\nStart of curve: w0.0,4.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,1.0,0.0\nBase point on curve: w0.0,2.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,3.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv _OnCurve _SubCrv _SelID 9ecd8fef-ce22-4219-ba15-fd5d073f1fe6 w0.0,4.0,0.0 w0.0,1.0,0.0 w0.0,2.0,0.0 _Copy=_No w0.0,3.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "copy",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: c5f7ff08-15c0-458e-bb78-15115c757292\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_Yes\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): w0.0,2.0,0.0\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): _Enter\nNew base point on curve ( Copy=Yes  Flip  Perpendicular )\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID c5f7ff08-15c0-458e-bb78-15115c757292 w0.0,1.0,0.0 w0.0,4.0,0.0 _Copy=_Yes w0.0,2.0,0.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "clamp--2",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 220c0e7c-1de5-45d3-80fd-3de4ed4cd55e\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,-2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 220c0e7c-1de5-45d3-80fd-3de4ed4cd55e w0.0,1.0,0.0 w0.0,4.0,0.0 _Copy=_No w0.0,-2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "clamp-6",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              -0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 83a91bf9-77bb-41ea-a607-f4f7bd3c4934\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,6.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 83a91bf9-77bb-41ea-a607-f4f7bd3c4934 w0.0,1.0,0.0 w0.0,4.0,0.0 _Copy=_No w0.0,6.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "length-2",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 15f43cac-d136-4ed8-9ebe-d4107ce97c62\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): 2.0\nSelect curve: w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 15f43cac-d136-4ed8-9ebe-d4107ce97c62 w0.0,1.0,0.0 2.0 w0.0,4.0,0.0 _Copy=_No w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "length--2",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 84b58a2a-87ad-4e70-a519-1ebfdf9be607\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): -2.0\nSelect curve: w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 84b58a2a-87ad-4e70-a519-1ebfdf9be607 w0.0,1.0,0.0 -2.0 w0.0,4.0,0.0 _Copy=_No w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "length-4",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: add612d1-726e-493d-b31a-9aab7d74e298\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): 4.0\nSelect curve: w0.0,0.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w0.0,2.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID add612d1-726e-493d-b31a-9aab7d74e298 w0.0,1.0,0.0 4.0 w0.0,0.0,0.0 _Copy=_No w0.0,2.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-False-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              0.7171371656006362,
+              -0.3585685828003181,
+              0.5976143046671968
+            ],
+            "y": [
+              -0.658090196528498,
+              -0.6306697716731441,
+              0.41130637283031135
+            ],
+            "z": [
+              0.2294157338705618,
+              -0.6882472016116853,
+              -0.6882472016116854
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              -0.13297709161935323,
+              0.7713396407017273,
+              0.6223762943642603
+            ],
+            "y": [
+              -0.6841281888789145,
+              -0.5257981838221787,
+              0.5054749163613902
+            ],
+            "z": [
+              0.7171371656006362,
+              -0.35856858280031817,
+              0.5976143046671968
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w1.0,2.0,3.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: b19abae0-ea1e-4721-ad45-ad8543699dce\n1 curve added to selection.\nStart of curve: w0.90625,0.703125,0.765625\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w3.09375,-0.140625,2.671875\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w2.0,0.375,1.625\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w1.0,2.0,3.0 _SubCrv _SelID b19abae0-ea1e-4721-ad45-ad8543699dce w0.90625,0.703125,0.765625 w3.09375,-0.140625,2.671875 _Copy=_No w2.0,0.375,1.625 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0000000000000013,
+                0.37499999999999956,
+                1.6250000000000009
+              ],
+              [
+                2.7171371656006373,
+                0.016431417199681553,
+                2.222614304667198
+              ],
+              [
+                2.265541758006151,
+                1.3083920868220815,
+                1.86638514248587
+              ],
+              [
+                1.3556384086017483,
+                0.3605852961705278,
+                2.389585087380221
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-False-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              0.7171371656006362,
+              -0.3585685828003181,
+              0.5976143046671968
+            ],
+            "y": [
+              -0.658090196528498,
+              -0.6306697716731441,
+              0.41130637283031135
+            ],
+            "z": [
+              0.2294157338705618,
+              -0.6882472016116853,
+              -0.6882472016116854
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              -0.13297709161935323,
+              0.7713396407017273,
+              0.6223762943642603
+            ],
+            "y": [
+              -0.6841281888789145,
+              -0.5257981838221787,
+              0.5054749163613902
+            ],
+            "z": [
+              0.7171371656006362,
+              -0.35856858280031817,
+              0.5976143046671968
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w1.0,2.0,3.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 081191a5-5a96-439e-a1f0-9e796c695bb7\n1 curve added to selection.\nStart of curve: w0.90625,0.703125,0.765625\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w3.09375,-0.140625,2.671875\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.0,0.375,1.625\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w1.0,2.0,3.0 _SubCrv _SelID 081191a5-5a96-439e-a1f0-9e796c695bb7 w0.90625,0.703125,0.765625 w3.09375,-0.140625,2.671875 _Copy=_No _perpendicular w2.0,0.375,1.625 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0000000000000013,
+                0.37499999999999956,
+                1.6250000000000009
+              ],
+              [
+                2.265541758006151,
+                1.308392086822081,
+                1.8663851424858704
+              ],
+              [
+                1.3556384086017481,
+                0.3605852961705278,
+                2.3895850873802216
+              ],
+              [
+                2.7171371656006373,
+                0.016431417199681553,
+                2.2226143046671982
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-oncurve-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.4480000000000004,
+              0.1439999999999998,
+              2.0160000000000005
+            ],
+            "x": [
+              0.6887372317211943,
+              -0.35367587574872145,
+              0.6328936723924491
+            ],
+            "y": [
+              -0.36306500647122314,
+              0.5873522691561491,
+              0.7233264221588848
+            ],
+            "z": [
+              -0.6275546404235065,
+              -0.727963382891267,
+              0.276124041786343
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.4480000000000004,
+              0.1439999999999998,
+              2.0160000000000005
+            ],
+            "x": [
+              -0.15353241467884493,
+              0.7819963759643278,
+              0.6040773672482201
+            ],
+            "y": [
+              -0.708568150063146,
+              -0.513220267421341,
+              0.4842893079803211
+            ],
+            "z": [
+              0.6887372317211944,
+              -0.35367587574872145,
+              0.6328936723924491
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): _OnCurve\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 64412807-57d1-4d0e-8e82-7440c42c0360\n1 curve added to selection.\nStart of curve: w0.90625,0.703125,0.765625\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w3.09375,-0.140625,2.671875\nBase point on curve: w1.5520000000000003,0.57600000000000007,1.2640000000000002\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.4480000000000000,0.14400000000000002,2.0160000000000000\nCommand: _Cancel",
+        "macro": "_OrientOnCrv _OnCurve _SubCrv _SelID 64412807-57d1-4d0e-8e82-7440c42c0360 w0.90625,0.703125,0.765625 w3.09375,-0.140625,2.671875 w1.5520000000000003,0.57600000000000007,1.2640000000000002 _Copy=_No _perpendicular w2.4480000000000000,0.14400000000000002,2.0160000000000000 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.4479999999999666,
+                0.143999999999884,
+                2.0159999999999707
+              ],
+              [
+                2.0756170123483937,
+                1.07009566749041,
+                1.955355749135068
+              ],
+              [
+                1.7087393557438557,
+                -0.11248223916473443,
+                2.638664083472868
+              ],
+              [
+                3.0090923367518854,
+                0.42070141967166674,
+                2.7961357022914957
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-flip-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              0.7171371656006362,
+              -0.3585685828003181,
+              0.5976143046671968
+            ],
+            "y": [
+              -0.658090196528498,
+              -0.6306697716731441,
+              0.41130637283031135
+            ],
+            "z": [
+              0.2294157338705618,
+              -0.6882472016116853,
+              -0.6882472016116854
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              -0.13297709161935323,
+              0.7713396407017273,
+              0.6223762943642603
+            ],
+            "y": [
+              -0.6841281888789145,
+              -0.5257981838221787,
+              0.5054749163613902
+            ],
+            "z": [
+              0.7171371656006362,
+              -0.35856858280031817,
+              0.5976143046671968
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w1.0,2.0,3.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 5e7d171f-f9ea-4006-82ce-30284e93f3e3\n1 curve added to selection.\nStart of curve: w0.90625,0.703125,0.765625\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w3.09375,-0.140625,2.671875\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _flip\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.0,0.375,1.625\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w1.0,2.0,3.0 _SubCrv _SelID 5e7d171f-f9ea-4006-82ce-30284e93f3e3 w0.90625,0.703125,0.765625 w3.09375,-0.140625,2.671875 _Copy=_No _flip _perpendicular w2.0,0.375,1.625 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.000000000000001,
+                0.3749999999999995,
+                1.6250000000000009
+              ],
+              [
+                1.6136011434754716,
+                -0.5431967166089733,
+                1.5377605978640525
+              ],
+              [
+                1.419991198867793,
+                0.5433548663896381,
+                2.422023481192434
+              ],
+              [
+                1.2828628343993644,
+                0.7335685828003176,
+                1.027385695332804
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-True-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              0.7171371656006362,
+              -0.3585685828003181,
+              0.5976143046671968
+            ],
+            "y": [
+              -0.658090196528498,
+              -0.6306697716731441,
+              0.41130637283031135
+            ],
+            "z": [
+              0.2294157338705618,
+              -0.6882472016116853,
+              -0.6882472016116854
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              -0.13297709161935323,
+              0.7713396407017273,
+              0.6223762943642603
+            ],
+            "y": [
+              -0.6841281888789145,
+              -0.5257981838221787,
+              0.5054749163613902
+            ],
+            "z": [
+              0.7171371656006362,
+              -0.35856858280031817,
+              0.5976143046671968
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w1.0,2.0,3.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 990536d0-23a4-4405-acda-eb627c5c9deb\n1 curve added to selection.\nStart of curve: w3.09375,-0.140625,2.671875\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w0.90625,0.703125,0.765625\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w2.0,0.375,1.625\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w1.0,2.0,3.0 _SubCrv _SelID 990536d0-23a4-4405-acda-eb627c5c9deb w3.09375,-0.140625,2.671875 w0.90625,0.703125,0.765625 _Copy=_No w2.0,0.375,1.625 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0000000000000013,
+                0.37499999999999944,
+                1.6250000000000009
+              ],
+              [
+                1.2828628343993653,
+                0.7335685828003174,
+                1.027385695332804
+              ],
+              [
+                1.613601143475472,
+                -0.5431967166089733,
+                1.5377605978640525
+              ],
+              [
+                1.4199911988677925,
+                0.5433548663896379,
+                2.4220234811924337
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-True-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              0.7171371656006362,
+              -0.3585685828003181,
+              0.5976143046671968
+            ],
+            "y": [
+              -0.658090196528498,
+              -0.6306697716731441,
+              0.41130637283031135
+            ],
+            "z": [
+              0.2294157338705618,
+              -0.6882472016116853,
+              -0.6882472016116854
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              -0.13297709161935323,
+              0.7713396407017273,
+              0.6223762943642603
+            ],
+            "y": [
+              -0.6841281888789145,
+              -0.5257981838221787,
+              0.5054749163613902
+            ],
+            "z": [
+              0.7171371656006362,
+              -0.35856858280031817,
+              0.5976143046671968
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w1.0,2.0,3.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: f7f110c3-7827-471c-be7f-45c2910720f7\n1 curve added to selection.\nStart of curve: w3.09375,-0.140625,2.671875\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w0.90625,0.703125,0.765625\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.0,0.375,1.625\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w1.0,2.0,3.0 _SubCrv _SelID f7f110c3-7827-471c-be7f-45c2910720f7 w3.09375,-0.140625,2.671875 w0.90625,0.703125,0.765625 _Copy=_No _perpendicular w2.0,0.375,1.625 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.000000000000001,
+                0.3749999999999995,
+                1.6250000000000009
+              ],
+              [
+                1.6136011434754716,
+                -0.5431967166089733,
+                1.5377605978640525
+              ],
+              [
+                1.419991198867793,
+                0.5433548663896381,
+                2.422023481192434
+              ],
+              [
+                1.2828628343993644,
+                0.7335685828003176,
+                1.027385695332804
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-oncurve-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.4480000000000004,
+              0.1439999999999998,
+              2.0160000000000005
+            ],
+            "x": [
+              0.6887372317211943,
+              -0.35367587574872145,
+              0.6328936723924491
+            ],
+            "y": [
+              -0.36306500647122314,
+              0.5873522691561491,
+              0.7233264221588848
+            ],
+            "z": [
+              -0.6275546404235065,
+              -0.727963382891267,
+              0.276124041786343
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.4480000000000004,
+              0.1439999999999998,
+              2.0160000000000005
+            ],
+            "x": [
+              -0.15353241467884493,
+              0.7819963759643278,
+              0.6040773672482201
+            ],
+            "y": [
+              -0.708568150063146,
+              -0.513220267421341,
+              0.4842893079803211
+            ],
+            "z": [
+              0.6887372317211944,
+              -0.35367587574872145,
+              0.6328936723924491
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): _OnCurve\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 49c90627-048f-456b-8027-6bd66933ea5c\n1 curve added to selection.\nStart of curve: w3.09375,-0.140625,2.671875\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w0.90625,0.703125,0.765625\nBase point on curve: w1.5520000000000003,0.57600000000000007,1.2640000000000002\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.4480000000000000,0.14400000000000002,2.0160000000000000\nCommand: _Cancel",
+        "macro": "_OrientOnCrv _OnCurve _SubCrv _SelID 49c90627-048f-456b-8027-6bd66933ea5c w3.09375,-0.140625,2.671875 w0.90625,0.703125,0.765625 w1.5520000000000003,0.57600000000000007,1.2640000000000002 _Copy=_No _perpendicular w2.4480000000000000,0.14400000000000002,2.0160000000000000 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.447999999999952,
+                0.14399999999988644,
+                2.0159999999999885
+              ],
+              [
+                3.3334560539029017,
+                0.5738829259319735,
+                2.192545310327633
+              ],
+              [
+                2.802227622349258,
+                -0.23441968412406,
+                1.1608267226857998
+              ],
+              [
+                2.1471838299369477,
+                0.9637555810480425,
+                1.5286495930349122
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "spatial-flip-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "frame": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              0.7171371656006362,
+              -0.3585685828003181,
+              0.5976143046671968
+            ],
+            "y": [
+              -0.658090196528498,
+              -0.6306697716731441,
+              0.41130637283031135
+            ],
+            "z": [
+              0.2294157338705618,
+              -0.6882472016116853,
+              -0.6882472016116854
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.375,
+              1.625
+            ],
+            "x": [
+              -0.13297709161935323,
+              0.7713396407017273,
+              0.6223762943642603
+            ],
+            "y": [
+              -0.6841281888789145,
+              -0.5257981838221787,
+              0.5054749163613902
+            ],
+            "z": [
+              0.7171371656006362,
+              -0.35856858280031817,
+              0.5976143046671968
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w1.0,2.0,3.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 121d514a-ebc8-4247-a96e-ac610c48d20d\n1 curve added to selection.\nStart of curve: w3.09375,-0.140625,2.671875\nCurrent length is 6.12393. Select end point location or enter curve length ( Direction=Free ): w0.90625,0.703125,0.765625\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _flip\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.0,0.375,1.625\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w1.0,2.0,3.0 _SubCrv _SelID 121d514a-ebc8-4247-a96e-ac610c48d20d w3.09375,-0.140625,2.671875 w0.90625,0.703125,0.765625 _Copy=_No _flip _perpendicular w2.0,0.375,1.625 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0000000000000013,
+                0.37499999999999956,
+                1.6250000000000009
+              ],
+              [
+                2.265541758006151,
+                1.308392086822081,
+                1.8663851424858704
+              ],
+              [
+                1.3556384086017481,
+                0.3605852961705278,
+                2.3895850873802216
+              ],
+              [
+                2.7171371656006373,
+                0.016431417199681553,
+                2.2226143046671982
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-22",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 51657f16-9854-4410-9f78-d7fbf0e52a9f\n1 curve added to selection.\nStart of curve: w1.4142135623730951,1.4142135623730949,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): w-3.6739403974420594e-16,-2.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w2.0,0.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 51657f16-9854-4410-9f78-d7fbf0e52a9f w1.4142135623730951,1.4142135623730949,0.0 w-3.6739403974420594e-16,-2.0,0.0 _Copy=_No w2.0,0.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                1.4142135623730951,
+                1.414213562373095,
+                0.0
+              ],
+              [
+                0.7071067811865477,
+                2.1213203435596424,
+                0.0
+              ],
+              [
+                0.7071067811865476,
+                0.7071067811865475,
+                0.0
+              ],
+              [
+                1.4142135623730951,
+                1.414213562373095,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-oncurve-23",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): _OnCurve\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 8e318972-c195-4ba3-b430-fd1cab67a8d0\n1 curve added to selection.\nStart of curve: w1.4142135623730951,1.4142135623730949,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): w-3.6739403974420594e-16,-2.0,0.0\nBase point on curve: w1.4142135623730951,1.4142135623730949,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.0,0.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv _OnCurve _SubCrv _SelID 8e318972-c195-4ba3-b430-fd1cab67a8d0 w1.4142135623730951,1.4142135623730949,0.0 w-3.6739403974420594e-16,-2.0,0.0 w1.4142135623730951,1.4142135623730949,0.0 _Copy=_No _perpendicular w2.0,0.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                1.4142135623730951,
+                1.414213562373095,
+                0.0
+              ],
+              [
+                1.914213562373095,
+                1.9142135623730947,
+                -0.707106781186547
+              ],
+              [
+                0.914213562373095,
+                0.9142135623730949,
+                -0.7071067811865475
+              ],
+              [
+                0.7071067811865477,
+                2.1213203435596424,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-24",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 7d7a4c5e-24d7-4a3f-b150-27b682fc77ea\n1 curve added to selection.\nStart of curve: w-3.6739403974420594e-16,-2.0,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): w1.4142135623730951,1.4142135623730949,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w2.0,0.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 7d7a4c5e-24d7-4a3f-b150-27b682fc77ea w-3.6739403974420594e-16,-2.0,0.0 w1.4142135623730951,1.4142135623730949,0.0 _Copy=_No w2.0,0.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                -2.4492935982947064e-16,
+                0.0
+              ],
+              [
+                2.0,
+                0.9999999999999998,
+                0.0
+              ],
+              [
+                1.0,
+                -2.4492935982947064e-16,
+                0.0
+              ],
+              [
+                2.0,
+                -2.4492935982947064e-16,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-oncurve-25",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): _OnCurve\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 78366ad1-5701-4a23-b297-149138bf632f\n1 curve added to selection.\nStart of curve: w-3.6739403974420594e-16,-2.0,0.0\nCurrent length is 12.5664. Select end point location or enter curve length ( Direction=Free ): w1.4142135623730951,1.4142135623730949,0.0\nBase point on curve: w-3.6739403974420594e-16,-2.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _perpendicular\nNew base point on curve ( Copy=No  Flip  XFlip=No  YFlip=No  Rotate=No ): w2.0,0.0,0.0\nCommand: _Cancel",
+        "macro": "_OrientOnCrv _OnCurve _SubCrv _SelID 78366ad1-5701-4a23-b297-149138bf632f w-3.6739403974420594e-16,-2.0,0.0 w1.4142135623730951,1.4142135623730949,0.0 w-3.6739403974420594e-16,-2.0,0.0 _Copy=_No _perpendicular w2.0,0.0,0.0 _Cancel",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                -2.4492935982947064e-16,
+                0.0
+              ],
+              [
+                0.9999999999999999,
+                -2.4492935982947064e-16,
+                0.0
+              ],
+              [
+                2.0,
+                -2.4492935982947064e-16,
+                1.0
+              ],
+              [
+                2.0,
+                0.9999999999999998,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    }
+  ]
+}

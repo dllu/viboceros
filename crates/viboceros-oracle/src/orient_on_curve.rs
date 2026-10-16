@@ -35,6 +35,13 @@ impl PlacementOptions {
     }
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct Subcurve {
+    pub start: [Real; 3],
+    pub end: [Real; 3],
+    #[serde(default)]
+    pub length: Option<Real>,
+}
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
     pub source: ObjectSource,
     pub base: [Real; 3],
@@ -42,6 +49,10 @@ pub struct Fixture {
     pub options: PlacementOptions,
     #[serde(default = "top")]
     pub plane: String,
+    #[serde(default)]
+    pub subcurve: Option<Subcurve>,
+    #[serde(default)]
+    pub relative_target: Option<[Real; 3]>,
 }
 fn top() -> String {
     "top".into()
@@ -83,20 +94,90 @@ pub(super) fn run(
             _ => return Err(ProbeError::FixtureInvariant("unknown placement plane")),
         };
         let point = |p: [Real; 3]| format!("{},{},{}", p[0], p[1], p[2]);
+        let range = f
+            .subcurve
+            .as_ref()
+            .map(|sub| -> Result<String, ProbeError> {
+                let source = guide
+                    .curve_ref()
+                    .ok_or(ProbeError::FixtureInvariant("orientation curve required"))?;
+                let start = source.closest_parameter(Point3::try_from(sub.start)?, tolerance)?;
+                let end = source.closest_parameter(Point3::try_from(sub.end)?, tolerance)?;
+                let [start, end] = if let Some(length) = sub.length {
+                    viboceros_command::subcurve_input::interval(
+                        source,
+                        start,
+                        end,
+                        length.abs(),
+                        tolerance,
+                    )?
+                    .ok_or(ProbeError::FixtureInvariant("empty temporary guide"))?
+                } else {
+                    [start, end]
+                };
+                Ok(format!("SubCrv={start},{end}"))
+            })
+            .transpose()?
+            .unwrap_or_default();
         let command = format!(
-            "OrientOnCrv {} {} Curve={} {}",
+            "OrientOnCrv {} {} Curve={} {} {range}",
             point(f.base),
             point(f.target),
             curve,
             f.options.options().arguments()
         );
-        CommandRegistry::with_builtins().execute_in_context(
+        let registry = CommandRegistry::with_builtins();
+        let mut group = doc.begin_history_group("OrientOnCrv")?;
+        registry.execute_in_history_group(
             &mut doc,
-            &command,
+            &format!("{command} Sources={source}"),
             CommandContext {
                 construction_plane: plane,
             },
+            &mut group,
         )?;
+        if let Some(delta) = f.relative_target {
+            if !f.options.copy {
+                return Err(ProbeError::FixtureInvariant(
+                    "relative followup requires Copy",
+                ));
+            }
+            let (_, interval) = viboceros_command::orient_curve::range_arguments(
+                &range.split_whitespace().collect::<Vec<_>>(),
+            )?;
+            let private = viboceros_command::orient_curve::prepare_guide(
+                &guide.curve_ref().unwrap().to_owned(),
+                interval,
+            )?;
+            let placement = viboceros_command::orient_curve::Placement::try_new(
+                private,
+                Point3::try_from(f.base)?,
+                plane,
+                f.options.options(),
+                tolerance,
+            )?;
+            let anchor = placement
+                .target_frame(Point3::try_from(f.target)?)?
+                .origin()
+                .to_array();
+            let target = Point3::try_from(std::array::from_fn(|i| anchor[i] + delta[i]))?;
+            let followup = format!(
+                "OrientOnCrv {} {} Curve={} {} {range} Sources={source}",
+                point(f.base),
+                point(target.to_array()),
+                curve,
+                f.options.options().arguments()
+            );
+            registry.execute_in_history_group(
+                &mut doc,
+                &followup,
+                CommandContext {
+                    construction_plane: plane,
+                },
+                &mut group,
+            )?;
+        }
+        drop(group);
         let outputs=doc.objects().filter_map(|o|{
             let Geometry::PointCloud(cloud)=o.geometry()else{return None};
             Some(json!({"original":o.id()==source,"selected":doc.is_selected(o.id()),"points":cloud.points().iter().map(|p|p.to_array()).collect::<Vec<_>>()}))
@@ -111,7 +192,7 @@ pub(super) fn run(
 mod tests {
     use super::*;
     #[test]
-    fn orient_on_curve_native_affine_witnesses_match_all_49_placements() {
+    fn orient_on_curve_native_affine_witnesses_match_whole_and_partial_guides() {
         for (input, native, count) in [
             (
                 include_str!("../../../tools/rhino_oracle/fixtures/orient_on_curve.json"),
@@ -126,6 +207,31 @@ mod tests {
                     "../../../tools/rhino_oracle/observations/orient_on_curve_spatial_rhino_20261016.json"
                 ),
                 14,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/orient_on_curve_subcurve.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/orient_on_curve_subcurve_rhino_20261016.json"
+                ),
+                26,
+            ),
+            (
+                include_str!(
+                    "../../../tools/rhino_oracle/fixtures/orient_on_curve_projected_input.json"
+                ),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/orient_on_curve_projected_input_rhino_20261016.json"
+                ),
+                4,
+            ),
+            (
+                include_str!(
+                    "../../../tools/rhino_oracle/fixtures/orient_on_curve_relative_input.json"
+                ),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/orient_on_curve_relative_input_rhino_20261016.json"
+                ),
+                2,
             ),
         ] {
             let request: ProbeRequest = serde_json::from_str(input).unwrap();
@@ -147,7 +253,12 @@ mod tests {
                 }
                 let sorted = |v: &Value| {
                     let mut v = v.as_array().unwrap().clone();
-                    v.sort_by_key(|x| x["original"].as_bool().unwrap());
+                    v.sort_by(|a, b| {
+                        a["original"]
+                            .as_bool()
+                            .cmp(&b["original"].as_bool())
+                            .then_with(|| a["points"].to_string().cmp(&b["points"].to_string()))
+                    });
                     v
                 };
                 let aa = sorted(&a.value["outputs"]);

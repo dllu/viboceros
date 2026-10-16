@@ -3,7 +3,58 @@ use super::*;
 use std::sync::Arc;
 use viboceros_geometry::{Curve3, ParameterSide};
 
-pub const USAGE: &str = "OrientOnCrv base-point target-point Curve=object-id [OnCurve=Yes|No] [Copy=Yes|No] [Perpendicular=Yes|No] [Flip=Yes|No] [XFlip=Yes|No] [YFlip=Yes|No] [Rotation=degrees]";
+pub const USAGE: &str = "OrientOnCrv base-point target-point Curve=object-id [SubCrv=start-parameter,end-parameter] [OnCurve=Yes|No] [Copy=Yes|No] [Perpendicular=Yes|No] [Flip=Yes|No] [XFlip=Yes|No] [YFlip=Yes|No] [Rotation=degrees]";
+
+/// Extract a single temporary guide interval; parameters belong to the original curve.
+pub fn range_arguments<'a>(
+    args: &[&'a str],
+) -> Result<(Vec<&'a str>, Option<[Real; 2]>), CommandError> {
+    let mut rest = Vec::new();
+    let mut range = None;
+    let mut i = 0;
+    while i < args.len() {
+        let token = args[i];
+        let (name, value) = token
+            .split_once('=')
+            .map_or((token, None), |(k, v)| (k, Some(v)));
+        if name
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("SubCrv")
+        {
+            if range.is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+            let value = match value {
+                Some(v) => v,
+                None => {
+                    i += 1;
+                    *args.get(i).ok_or(CommandError::Usage(USAGE))?
+                }
+            };
+            let values = value.split(',').collect::<Vec<_>>();
+            let [start, end] = values.as_slice() else {
+                return Err(CommandError::Usage(USAGE));
+            };
+            let interval = [parse_finite_real(start)?, parse_finite_real(end)?];
+            if interval[0] == interval[1] {
+                return Err(CommandError::Usage(USAGE));
+            }
+            range = Some(interval);
+        } else {
+            rest.push(token);
+        }
+        i += 1;
+    }
+    Ok((rest, range))
+}
+
+/// Prepare privately with SubCrv's shared backend (usd-brep when enabled).
+pub fn prepare_guide(curve: &Curve3, range: Option<[Real; 2]>) -> Result<Curve3, CommandError> {
+    match range {
+        Some([start, end]) => curve_segments::directed(curve, start, end),
+        None => Ok(curve.clone()),
+    }
+}
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Options {
@@ -337,6 +388,7 @@ impl Command for OrientCurveCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let (args, selected) = transform_arguments(doc, args, USAGE)?;
+        let (args, range) = range_arguments(&args)?;
         let (rest, options, curve) = options(&args, Options::default())?;
         let (base, n) = parse_point(&rest)?;
         let (target, m) = parse_point(&rest[n..])?;
@@ -361,7 +413,7 @@ impl Command for OrientCurveCommand {
             ));
         }
         let placement = Placement::try_new(
-            guide,
+            prepare_guide(&guide, range)?,
             base,
             context.construction_plane,
             options,
@@ -370,6 +422,9 @@ impl Command for OrientCurveCommand {
         let transform = placement.transform_at(target)?;
         let (transformed, copied) =
             apply_transform_with_renewal(doc, &selected, transform, options.copy)?;
+        if range.is_some() {
+            doc.clear_selection();
+        }
         if args
             .iter()
             .any(|a| option_name_eq(a.split('=').next().unwrap(), "Rotation"))
@@ -415,6 +470,10 @@ mod tests {
             format!("0,0,0 0,3,0 Curve={guide} Rotation=NaN"),
             format!("0,0,0 0,3,0 Curve={source}"),
             format!("0,0,0 0,3,0 Curve={guide} Garbage=Yes"),
+            format!("0,0,0 0,3,0 Curve={guide} SubCrv=1,1"),
+            format!("0,0,0 0,3,0 Curve={guide} SubCrv=-1,2"),
+            format!("0,0,0 0,3,0 Curve={guide} SubCrv=NaN,4"),
+            format!("0,0,0 0,3,0 Curve={guide} SubCrv=1,3 SubCrv=2,4"),
         ] {
             assert!(
                 registry

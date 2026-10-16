@@ -177,7 +177,6 @@
     "src/app/iplane.rs": "cf7c9d024243ff471b83b5c9d2dc12a72974c1ea5a9feac66e5970ceece48919",
     "src/app/point_deviation.rs": "1c0165f6811e708f61e1cc2d7e13295557e2b3df472e027b335604bc3e651dcd",
     "src/app/project.rs": "d3285d11224536759a8350307b62902945f07e2713ebe71d166b564586f2f31d",
-    "src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708",
     "src/app/tests/curve_deviation.rs": "ba930cdf4af85c796be961f0cd0ba871a75d2fd78e7764f7bdd6c3e844adf370",
     "src/app/uv_subcurve_input.rs": "892a84d488bdd0014355304fe0542b8f9b19ad2e249d2d76a28cfed0ba5e881a",
     "tools/rhino_oracle/curve_deviation_comparison.py": "865c60d01d3f284bdba91efe9532077a2b99b94ea8e996aab70b5de11c356325",
@@ -201,6 +200,7 @@
     "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/curve-deviation-overlap-validation.json": "c97a6e8556fc741e71c296b34d57c4ad8d35869eb1994601da03b28c04ebc5b1",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/curve-distance-validation.json": "7481bce40f8753dec7ddaea5c745258ad5ca6a1d2eee987366da28f0267d7d8d",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/point-deviation-validation.json": "24a977983334171f1bb83e6ee65350d78efc4b2a1bbd8647d3324bd3e23fd10d",
-    "30059acfb157ee4995c538fb07b2212dc4d05b75:src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c"
+    "30059acfb157ee4995c538fb07b2212dc4d05b75:src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c",
+    "2348c030682b04b278c62b1d5e139d1c632c488b:src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708"
   }
 }

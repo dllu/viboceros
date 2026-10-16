@@ -2238,7 +2238,13 @@ impl Viewport {
                 .flatten(),
             drafting_hover: response
                 .hovered()
-                .then(|| drafting_cursor.map(|cursor| cursor.source_point))
+                .then(|| {
+                    input
+                        .edge_curve
+                        .zip(edge_cursor)
+                        .and_then(|(curve, cursor)| curve.evaluate(cursor.parameter).ok())
+                        .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
+                })
                 .flatten(),
             selection_click,
             object_double_click,

@@ -10194,6 +10194,7 @@ mod tests {
     #[cfg(feature = "native-smlib")]
     mod offset_surface;
     mod orient_curve;
+    mod orient_curve_subcurve;
     mod planar_boolean;
     mod plane_arrays;
     mod plane_through_points;

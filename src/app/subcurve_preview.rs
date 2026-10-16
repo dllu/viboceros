@@ -13,6 +13,7 @@ struct Parameters {
     length: Option<f64>,
     locked_forward: Option<bool>,
     midpoint: bool,
+    retain_orientation: bool,
 }
 
 #[derive(Debug)]
@@ -43,6 +44,32 @@ pub(super) struct Cache {
     hover: Option<HoverLookup>,
 }
 impl Cache {
+    pub(super) fn temporary(
+        &mut self,
+        source: Option<&GeometrySnapshot>,
+        range: [f64; 2],
+        length: Option<f64>,
+        locked_forward: Option<bool>,
+        tolerance: Tolerance,
+    ) -> Option<Preview> {
+        self.get(
+            source,
+            Some(Parameters {
+                edge: None,
+                start: range[0],
+                hover: range[1],
+                length,
+                locked_forward,
+                midpoint: false,
+                retain_orientation: false,
+            }),
+            tolerance,
+        )
+        .map(|geometry| Preview {
+            geometry,
+            show_curve: true,
+        })
+    }
     fn resolved<'a>(
         &'a mut self,
         source: &'a GeometrySnapshot,
@@ -162,8 +189,13 @@ fn resolve(
             subcurve_input::piece(curve, p.start, p.hover, length, tolerance)?
         }
     } else {
-        let Some([start, end]) =
-            subcurve_input::point_parameters(curve, p.start, p.hover, p.locked_forward, true)?
+        let Some([start, end]) = subcurve_input::point_parameters(
+            curve,
+            p.start,
+            p.hover,
+            p.locked_forward,
+            p.retain_orientation,
+        )?
         else {
             return Ok(None);
         };
@@ -183,6 +215,9 @@ fn resolve(
 
 impl VibocerosApp {
     pub(super) fn subcurve_preview_hover(&self) -> Option<f64> {
+        if let Some(s) = &self.orient_curve_session {
+            return s.subcurve_hover();
+        }
         self.subcurve_prompt
             .as_ref()
             .and_then(|p| p.hover_parameter)
@@ -197,6 +232,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn subcurve_draft_preview(&mut self) -> Option<Preview> {
+        if let Some(s) = &mut self.orient_curve_session {
+            return s.subcurve_preview(&self.document);
+        }
         if !self.validate_subcurve_source() {
             return None;
         }
@@ -217,6 +255,7 @@ impl VibocerosApp {
                     length: p.length,
                     locked_forward: p.locked_forward,
                     midpoint: p.from_midpoint,
+                    retain_orientation: true,
                 });
             return p
                 .preview
@@ -247,6 +286,7 @@ impl VibocerosApp {
                 length: p.length,
                 locked_forward: p.locked_forward,
                 midpoint: false,
+                retain_orientation: false,
             });
         p.preview
             .get(source, parameters, tolerance)
@@ -284,6 +324,7 @@ mod tests {
             length: None,
             locked_forward: None,
             midpoint: false,
+            retain_orientation: true,
         };
         let first = cache.get(Some(&x), Some(p), Tolerance::DEFAULT).unwrap();
         assert!(Arc::ptr_eq(
@@ -363,6 +404,7 @@ mod tests {
             length: None,
             locked_forward: None,
             midpoint: false,
+            retain_orientation: true,
         };
         let preview = cache
             .get(Some(&source), Some(p), Tolerance::DEFAULT)

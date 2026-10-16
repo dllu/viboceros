@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "orient_on_curve",
+      "id": "off-guide",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        3,
+        2,
+        5
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": false
+      },
+      "subcurve": {
+        "start": [
+          0,
+          1,
+          0
+        ],
+        "end": [
+          0,
+          4,
+          0
+        ]
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "before-range",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        -2,
+        3
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": false
+      },
+      "subcurve": {
+        "start": [
+          0,
+          1,
+          0
+        ],
+        "end": [
+          0,
+          4,
+          0
+        ]
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "after-range",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        6,
+        4
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": false
+      },
+      "subcurve": {
+        "start": [
+          0,
+          1,
+          0
+        ],
+        "end": [
+          0,
+          4,
+          0
+        ]
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "whole-off-guide",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        3,
+        2,
+        5
+      ],
+      "options": {
+        "copy": false,
+        "perpendicular": false
+      }
+    }
+  ]
+}

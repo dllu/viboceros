@@ -1,0 +1,18 @@
+{
+  "cases": 2,
+  "matched_cases": 2,
+  "results": [
+    {
+      "id": "subcurve-relative-after-clamp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "whole-relative-after-clamp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    }
+  ]
+}

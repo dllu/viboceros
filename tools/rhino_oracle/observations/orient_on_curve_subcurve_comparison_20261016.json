@@ -1,0 +1,162 @@
+{
+  "cases": 26,
+  "matched_cases": 26,
+  "results": [
+    {
+      "id": "line-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "line-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "line-flip-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.220446049250313e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "line-oncurve-False",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "line-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.220446049250313e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "line-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.220446049250313e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "line-flip-True",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "line-oncurve-True",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "copy",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "clamp--2",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "clamp-6",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "length-2",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "length--2",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "length-4",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-False-False",
+      "metadata_match": true,
+      "max_coordinate_error": 2.692023454153869e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-False-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.692023448602754e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-oncurve-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.096853059576411e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-flip-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.651516283260548e-09,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-True-False",
+      "metadata_match": true,
+      "max_coordinate_error": 4.651516061215943e-09,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-True-True",
+      "metadata_match": true,
+      "max_coordinate_error": 4.651516283260548e-09,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-oncurve-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.696063639007207e-07,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "spatial-flip-True",
+      "metadata_match": true,
+      "max_coordinate_error": 2.692023448602754e-08,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-22",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-oncurve-23",
+      "metadata_match": true,
+      "max_coordinate_error": 3.3306690738754696e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-24",
+      "metadata_match": true,
+      "max_coordinate_error": 2.4492935982947064e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "circle-oncurve-25",
+      "metadata_match": true,
+      "max_coordinate_error": 2.4492935982947064e-16,
+      "within_1e_minus_6": true
+    }
+  ]
+}

@@ -22,7 +22,7 @@ def comparison(local, native):
         metadata = all(value.get(k) is True and reference.get(k) is True
                        for k in ('command_returned', 'curve_unchanged'))
         metadata &= value.get('curve_selected') is False and reference.get('curve_selected') is False
-        clouds = lambda v: sorted(v['outputs'], key=lambda cloud: cloud['original'])
+        clouds = lambda v: sorted(v['outputs'], key=lambda c: (c['original'],tuple(round(x,8) if type(x) in (int,float) and math.isfinite(x) else 0 for p in c['points'] for x in p)))
         aa, bb = clouds(value), clouds(reference)
         metadata &= len(aa) == len(bb) and bool(aa)
         error = 0.0

@@ -1,0 +1,332 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "subcurve-relative-after-clamp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              -0.0
+            ]
+          }
+        },
+        "history": "Python Script ( ResetEngine ): _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten: _SelID\nObject ID to select: 998f0895-5bf2-4802-ad08-a6f17c4ed53a\n1 curve added to selection.\nStart of curve: w0.0,1.0,0.0\nCurrent length is 5. Select end point location or enter curve length ( Direction=Free ): w0.0,4.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_Yes\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): w0.0,7.0,0.0\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): rw0.0,-1.0,0.0\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): _Enter\nNew base point on curve ( Copy=Yes  Flip  Perpendicular )\nCommand: _Cancel",
+        "last_point": {
+          "unavailable": "'module' object has no attribute 'LastPoint'"
+        },
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SubCrv _SelID 998f0895-5bf2-4802-ad08-a6f17c4ed53a w0.0,1.0,0.0 w0.0,4.0,0.0 _Copy=_Yes w0.0,7.0,0.0 rw0.0,-1.0,0.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                -1.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "whole-relative-after-clamp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              -0.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "x": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              -0.0
+            ]
+          }
+        },
+        "history": "Command: _OrientOnCrv\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SelID\nObject ID to select: 2eee25d9-ba00-404e-9843-f92f4da1474a\n1 curve added to selection.\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): _Copy=_Yes\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): w0.0,7.0,0.0\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): rw0.0,-1.0,0.0\nNew base point on curve ( Copy=Yes  Flip  Perpendicular ): _Enter\nNew base point on curve ( Copy=Yes  Flip  Perpendicular )\nCommand: _Cancel",
+        "last_point": {
+          "unavailable": "'module' object has no attribute 'LastPoint'"
+        },
+        "macro": "_OrientOnCrv w0.0,0.0,0.0 _SelID 2eee25d9-ba00-404e-9843-f92f4da1474a _Copy=_Yes w0.0,7.0,0.0 rw0.0,-1.0,0.0 _Enter _Cancel",
+        "outputs": [
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                0.0,
+                6.0,
+                0.0
+              ],
+              [
+                -1.0,
+                5.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ]
+      }
+    }
+  ]
+}

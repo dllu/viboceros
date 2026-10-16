@@ -32,7 +32,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 ## Documentation
 
 - [Command reference and examples](docs/commands/README.md)
-- [Place objects along curves with OrientOnCrv](docs/commands/orient-on-curve.md)
+- [Place objects along curves and temporary portions with OrientOnCrv](docs/commands/orient-on-curve.md)
 - Fit [planes](docs/commands/plane-through-points.md) and [lines](docs/commands/line-through-points.md) through points, clouds and grips
 - Fit [spheres through points and grips](docs/commands/sphere-fit-points.md)
 - [Point deviation analysis and distance display](docs/commands/point-deviation.md)

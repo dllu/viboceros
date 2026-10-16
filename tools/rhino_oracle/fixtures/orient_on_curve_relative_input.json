@@ -1,0 +1,95 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "orient_on_curve",
+      "id": "subcurve-relative-after-clamp",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        7,
+        0
+      ],
+      "options": {
+        "copy": true,
+        "perpendicular": false
+      },
+      "subcurve": {
+        "start": [
+          0,
+          1,
+          0
+        ],
+        "end": [
+          0,
+          4,
+          0
+        ]
+      },
+      "relative_target": [
+        0,
+        -1,
+        0
+      ]
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "whole-relative-after-clamp",
+      "source": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          0,
+          5,
+          0
+        ]
+      },
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        7,
+        0
+      ],
+      "options": {
+        "copy": true,
+        "perpendicular": false
+      },
+      "relative_target": [
+        0,
+        -1,
+        0
+      ]
+    }
+  ]
+}

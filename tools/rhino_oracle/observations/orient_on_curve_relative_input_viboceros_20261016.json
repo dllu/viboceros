@@ -1,0 +1,188 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "subcurve-relative-after-clamp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                -1.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1640354
+    },
+    {
+      "id": "whole-relative-after-clamp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                0.0,
+                6.0,
+                0.0
+              ],
+              [
+                -1.0,
+                5.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1414018
+    }
+  ]
+}

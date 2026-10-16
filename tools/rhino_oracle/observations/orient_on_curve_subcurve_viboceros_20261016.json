@@ -1,0 +1,1022 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "line-False-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1245985
+    },
+    {
+      "id": "line-False-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 945826
+    },
+    {
+      "id": "line-flip-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.9999999999999998,
+                0.0
+              ],
+              [
+                0.0,
+                0.9999999999999998,
+                0.0
+              ],
+              [
+                1.0,
+                1.9999999999999998,
+                0.0
+              ],
+              [
+                0.0,
+                1.9999999999999998,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 919473
+    },
+    {
+      "id": "line-oncurve-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 932785
+    },
+    {
+      "id": "line-True-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.9999999999999998,
+                0.0
+              ],
+              [
+                0.0,
+                0.9999999999999998,
+                0.0
+              ],
+              [
+                1.0,
+                1.9999999999999998,
+                0.0
+              ],
+              [
+                0.0,
+                1.9999999999999998,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 932273
+    },
+    {
+      "id": "line-True-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.9999999999999998,
+                0.0
+              ],
+              [
+                1.0,
+                1.9999999999999998,
+                0.0
+              ],
+              [
+                0.0,
+                1.9999999999999998,
+                1.0
+              ],
+              [
+                0.0,
+                0.9999999999999998,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 915009
+    },
+    {
+      "id": "line-flip-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 919474
+    },
+    {
+      "id": "line-oncurve-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                1.0,
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 924578
+    },
+    {
+      "id": "copy",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 927122
+    },
+    {
+      "id": "clamp--2",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 964514
+    },
+    {
+      "id": "clamp-6",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                5.0,
+                0.0
+              ],
+              [
+                -1.0,
+                4.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 933058
+    },
+    {
+      "id": "length-2",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 924338
+    },
+    {
+      "id": "length--2",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 908721
+    },
+    {
+      "id": "length-4",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 931121
+    },
+    {
+      "id": "spatial-False-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.37500000000000006,
+                1.625
+              ],
+              [
+                2.7171371656006365,
+                0.016431417199681983,
+                2.222614304667197
+              ],
+              [
+                2.265541776590371,
+                1.3083920872378199,
+                1.866385120434247
+              ],
+              [
+                1.355638416260315,
+                0.36058532309076236,
+                2.3895850943420793
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 6211833
+    },
+    {
+      "id": "spatial-False-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.37499999999999994,
+                1.625
+              ],
+              [
+                2.2655417765903705,
+                1.3083920872378199,
+                1.8663851204342472
+              ],
+              [
+                1.3556384162603146,
+                0.3605853230907623,
+                2.3895850943420798
+              ],
+              [
+                2.717137165600636,
+                0.016431417199681837,
+                2.222614304667197
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 6237546
+    },
+    {
+      "id": "spatial-oncurve-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.4479999999999995,
+                0.14400000000000027,
+                2.016
+              ],
+              [
+                2.0756170381013805,
+                1.0700956763501008,
+                1.9553557262945493
+              ],
+              [
+                1.7087393588601658,
+                -0.11248219819620384,
+                2.638664104048053
+              ],
+              [
+                3.0090923579493243,
+                0.42070142799431526,
+                2.796135684093975
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 8219756
+    },
+    {
+      "id": "spatial-flip-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0000000000000004,
+                0.375,
+                1.625
+              ],
+              [
+                1.6136011464137527,
+                -0.5431967174618462,
+                1.5377605938263894
+              ],
+              [
+                1.4199911969103238,
+                0.5433548617381219,
+                2.422023480750485
+              ],
+              [
+                1.2828628343993644,
+                0.7335685828003181,
+                1.027385695332803
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 5785305
+    },
+    {
+      "id": "spatial-True-False",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                1.9999999999999998,
+                0.375,
+                1.625
+              ],
+              [
+                1.2828628343993635,
+                0.7335685828003181,
+                1.027385695332803
+              ],
+              [
+                1.6136011464137519,
+                -0.5431967174618462,
+                1.5377605938263896
+              ],
+              [
+                1.4199911969103232,
+                0.5433548617381219,
+                2.422023480750485
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 5934521
+    },
+    {
+      "id": "spatial-True-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0000000000000004,
+                0.375,
+                1.625
+              ],
+              [
+                1.6136011464137527,
+                -0.5431967174618462,
+                1.5377605938263894
+              ],
+              [
+                1.4199911969103238,
+                0.5433548617381219,
+                2.422023480750485
+              ],
+              [
+                1.2828628343993644,
+                0.7335685828003181,
+                1.027385695332803
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 5937017
+    },
+    {
+      "id": "spatial-oncurve-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.448,
+                0.14400000000000002,
+                2.016
+              ],
+              [
+                3.3334560842008747,
+                0.5738829552591536,
+                2.1925450869588556
+              ],
+              [
+                2.8022273527428943,
+                -0.23441949141627666,
+                1.1608265257358554
+              ],
+              [
+                2.1471836016431043,
+                0.9637556546275865,
+                1.528649857714515
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 7870316
+    },
+    {
+      "id": "spatial-flip-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.37499999999999994,
+                1.625
+              ],
+              [
+                2.2655417765903705,
+                1.3083920872378199,
+                1.8663851204342472
+              ],
+              [
+                1.3556384162603146,
+                0.3605853230907623,
+                2.3895850943420798
+              ],
+              [
+                2.717137165600636,
+                0.016431417199681837,
+                2.222614304667197
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 6179513
+    },
+    {
+      "id": "circle-22",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                1.4142135623730951,
+                1.414213562373095,
+                0.0
+              ],
+              [
+                0.7071067811865477,
+                2.1213203435596424,
+                0.0
+              ],
+              [
+                0.7071067811865476,
+                0.7071067811865475,
+                0.0
+              ],
+              [
+                1.4142135623730951,
+                1.414213562373095,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1043714
+    },
+    {
+      "id": "circle-oncurve-23",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                1.4142135623730951,
+                1.414213562373095,
+                4.058614543027808e-17
+              ],
+              [
+                1.914213562373095,
+                1.9142135623730947,
+                -0.7071067811865474
+              ],
+              [
+                0.914213562373095,
+                0.9142135623730949,
+                -0.7071067811865475
+              ],
+              [
+                0.7071067811865477,
+                2.1213203435596424,
+                4.058614543027808e-17
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 958145
+    },
+    {
+      "id": "circle-24",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 996242
+    },
+    {
+      "id": "circle-oncurve-25",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                -6.748919021978358e-32
+              ],
+              [
+                1.0,
+                0.0,
+                1.8369701987210292e-16
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ],
+              [
+                2.0,
+                1.0,
+                -6.748919021978358e-32
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      },
+      "elapsed_ns": 1018034
+    }
+  ]
+}

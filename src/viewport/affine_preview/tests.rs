@@ -209,6 +209,14 @@ fn orient_curve_preview_and_real_mouse_click_share_the_spatial_curve_parameter()
         let parameter = output
             .edge_parameter
             .unwrap_or_else(|| panic!("{kind:?}: {output:?}"));
+        assert!(
+            output
+                .drafting_hover
+                .unwrap()
+                .distance_to(curve.evaluate(parameter).unwrap())
+                .unwrap()
+                < 1e-7
+        );
         assert!((parameter - t).abs() < 1e-5, "{kind:?}: {parameter} != {t}");
         assert!(output.picked_point.is_none());
         let map = output.affine_preview.unwrap().unwrap();

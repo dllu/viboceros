@@ -2,17 +2,28 @@
 use super::*;
 use viboceros_command::orient_curve::{Options, Placement};
 use viboceros_geometry::{AffineTransform3, Curve3, NurbsCurve};
+mod subcurve;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Phase {
     Base,
     Guide,
     OnCurveBase,
+    SubcurveStart,
+    SubcurveEnd,
     Target,
     Rotation {
         target: Point3,
         reference: Option<Point3>,
     },
+}
+
+struct Guide {
+    id: ObjectId,
+    original: Curve3,
+    working: Curve3,
+    cursor: NurbsCurve,
+    range: Option<[f64; 2]>,
 }
 
 pub(super) struct Session {
@@ -24,7 +35,8 @@ pub(super) struct Session {
     phase: Phase,
     base: Option<Point3>,
     plane: Frame3,
-    guide: Option<(ObjectId, Curve3, NurbsCurve)>,
+    guide: Option<Guide>,
+    subcurve: Option<super::uv_subcurve_input::PendingSubcurve>,
     placement: Option<Placement>,
     preview: Option<AffineTransform3>,
     rotation_pose: Option<(AffineTransform3, Frame3)>,
@@ -44,8 +56,11 @@ impl Session {
         self.phase == Phase::Guide
     }
     pub(super) fn cursor_curve(&self) -> Option<&NurbsCurve> {
-        if matches!(self.phase, Phase::OnCurveBase | Phase::Target) {
-            self.guide.as_ref().map(|g| &g.2)
+        if matches!(
+            self.phase,
+            Phase::OnCurveBase | Phase::Target | Phase::SubcurveStart | Phase::SubcurveEnd
+        ) {
+            self.guide.as_ref().map(|g| &g.cursor)
         } else {
             None
         }
@@ -82,6 +97,25 @@ impl Session {
 }
 
 impl VibocerosApp {
+    /// Point history follows the curve-constrained getter result, including clamped ends.
+    pub(super) fn resolve_orient_curve_point(
+        &self,
+        point: Point3,
+    ) -> Result<Point3, viboceros_command::CommandError> {
+        let Some(s) = &self.orient_curve_session else {
+            return Ok(point);
+        };
+        let curve = match s.phase {
+            Phase::SubcurveStart | Phase::SubcurveEnd => {
+                s.guide.as_ref().map(|g| g.original.as_ref())
+            }
+            Phase::OnCurveBase => s.guide.as_ref().map(|g| g.working.as_ref()),
+            Phase::Target => s.placement.as_ref().map(Placement::curve),
+            _ => None,
+        };
+        let Some(curve) = curve else { return Ok(point) };
+        Ok(curve.evaluate(curve.closest_parameter(point, self.document.tolerance())?)?)
+    }
     pub(super) fn picking_orient_curve(&self) -> bool {
         self.orient_curve_session
             .as_ref()
@@ -150,6 +184,7 @@ impl VibocerosApp {
                     base: None,
                     plane: self.viewports[self.active_viewport].construction_plane(),
                     guide: None,
+                    subcurve: None,
                     placement: None,
                     preview: None,
                     rotation_pose: None,
@@ -169,7 +204,14 @@ impl VibocerosApp {
         };
         let prompt = match s.phase {
             Phase::Base => "base point (OnCurve chooses the guide first)",
-            Phase::Guide => "select an orientation curve",
+            Phase::Guide if s.subcurve.is_some() => {
+                "select a curve to temporarily shorten; Enter returns"
+            }
+            Phase::Guide => "select an orientation curve (SubCrv selects a portion)",
+            Phase::SubcurveStart => "start of temporary guide",
+            Phase::SubcurveEnd => {
+                "directed end or curve length; Direction=Free|Locked; Enter returns"
+            }
             Phase::OnCurveBase => "base point on the orientation curve",
             Phase::Target => {
                 if s.options.perpendicular {
@@ -216,13 +258,22 @@ impl VibocerosApp {
                     "The orientation curve must be separate from the source objects".into(),
                 );
             }
-            Ok((id, curve, nurbs))
+            Ok(Guide {
+                id,
+                original: curve.clone(),
+                working: curve,
+                cursor: nurbs,
+                range: None,
+            })
         })();
         match result {
             Ok(guide) => {
                 let s = self.orient_curve_session.as_mut().unwrap();
                 s.guide = Some(guide);
-                if s.options.on_curve {
+                if let Some(pending) = &mut s.subcurve {
+                    pending.object = s.guide.as_ref().map(|g| g.id);
+                    s.phase = Phase::SubcurveStart;
+                } else if s.options.on_curve {
                     s.phase = Phase::OnCurveBase;
                 } else if !self.prepare_orient_curve() {
                     return true;
@@ -237,7 +288,7 @@ impl VibocerosApp {
     fn prepare_orient_curve(&mut self) -> bool {
         let s = self.orient_curve_session.as_mut().unwrap();
         match Placement::try_new(
-            s.guide.as_ref().unwrap().1.clone(),
+            s.guide.as_ref().unwrap().working.clone(),
             s.base.unwrap(),
             s.plane,
             s.options,
@@ -271,6 +322,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_orient_curve_point(&mut self, point: Point3) -> Option<bool> {
+        if let Some(accepted) = self.accept_orient_subcurve_point(point) {
+            return Some(accepted);
+        }
         let s = self.orient_curve_session.as_mut()?;
         let result = match s.phase {
             Phase::Base => {
@@ -279,9 +333,9 @@ impl VibocerosApp {
                 s.phase = Phase::Guide;
                 true
             }
-            Phase::Guide => false,
+            Phase::Guide | Phase::SubcurveStart | Phase::SubcurveEnd => false,
             Phase::OnCurveBase => {
-                let curve = &s.guide.as_ref().unwrap().1;
+                let curve = &s.guide.as_ref().unwrap().working;
                 let projected = curve
                     .as_ref()
                     .closest_parameter(point, self.document.tolerance())
@@ -396,7 +450,12 @@ impl VibocerosApp {
 
     fn commit_orient_curve(&mut self, target: Point3) -> bool {
         let s = self.orient_curve_session.as_mut().unwrap();
-        let (id, original, _) = s.guide.as_ref().unwrap();
+        let guide = s.guide.as_ref().unwrap();
+        let id = &guide.id;
+        let original = &guide.original;
+        let range = guide
+            .range
+            .map_or_else(String::new, |[a, b]| format!(" SubCrv={a},{b}"));
         if self
             .document
             .object(*id)
@@ -413,7 +472,7 @@ impl VibocerosApp {
             .collect::<Vec<_>>()
             .join(" ");
         let input = format!(
-            "OrientOnCrv {} {} Curve={} {} {}={}",
+            "OrientOnCrv {} {} Curve={} {} {}={}{range}",
             format_model_point(s.base.unwrap()),
             format_model_point(target),
             id,
@@ -457,6 +516,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_orient_curve(&mut self, input: &str) -> bool {
+        if self.continue_orient_subcurve(input) {
+            return true;
+        }
         let Some(s) = self.orient_curve_session.as_ref() else {
             return false;
         };
