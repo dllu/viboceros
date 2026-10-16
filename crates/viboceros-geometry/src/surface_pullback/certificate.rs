@@ -23,6 +23,36 @@ const MAX_DEPTH: usize = 48;
 const MAX_WORK: usize = 2_000_000;
 const MAX_BITS: u64 = 8192;
 
+impl NurbsCurve {
+    /// Certify distances at specified parameters against the complete stored
+    /// rational curve, using exact one-sided evaluation and the existing work
+    /// budget. `false` means outside or unsupported; it is never an equality
+    /// proof. This certifies discrete positions, not the curve between them.
+    pub fn positions_within_distance(
+        &self,
+        points: &[(Real, crate::ParameterSide, Point3)],
+        limit: Real,
+    ) -> Result<bool, GeometryError> {
+        if !limit.is_finite() || limit < 0. {
+            return Err(GeometryError::InvalidTolerance);
+        }
+        if points.is_empty() {
+            return Ok(true);
+        }
+        let domain = self.domain();
+        for &(t, _, _) in points {
+            if !t.is_finite() || !domain.contains(&t) {
+                return Err(GeometryError::ParameterOutOfDomain {
+                    parameter: t,
+                    domain_start: *domain.start(),
+                    domain_end: *domain.end(),
+                });
+            }
+        }
+        edit_point_bounds(self, points, limit)
+    }
+}
+
 pub(crate) fn edit_point_bounds(
     curve: &NurbsCurve,
     points: &[(Real, crate::ParameterSide, Point3)],

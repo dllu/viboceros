@@ -113,6 +113,11 @@ retains shared stations and simple cubic knots, including the common-station
 auto-sorted case. The extended diagnostics retain fresh public Fit references
 and isolate Gordon construction from the unfinished family-fitting policy.
 
+[Shared cubic curve-family fitting](shared-gordon-curve-fit.md) now fits related
+sources to one simple-knot basis using native constrained and geometric fits.
+Its smooth arc-length clock retains prescribed contacts; complete pre-fit
+original-image proofs remain a separate downstream requirement.
+
 ## Rhino comparison and remaining work
 
 The experimental `network_surface` oracle operation directly exercises this

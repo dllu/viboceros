@@ -194,7 +194,7 @@ target_include_directories(SM_API SYSTEM PUBLIC "${USD_BREP_ROOT}/source/SM_API/
 target_compile_definitions(SM_API PRIVATE SM_API_EXPORTS)
 target_compile_options(SM_API PRIVATE -Wno-write-strings)
 target_link_libraries(SM_API PUBLIC SMLib)
-add_library(viboceros_smlib STATIC bridge.cpp basis_preservation.cpp brep_export.cpp brep_import.cpp boundary_validation.cpp coplanar_merge.cpp face_creases.cpp knot_refinement.cpp)
+add_library(viboceros_smlib STATIC bridge.cpp basis_preservation.cpp brep_export.cpp brep_import.cpp boundary_validation.cpp coplanar_merge.cpp face_creases.cpp knot_refinement.cpp network_fit.cpp)
 target_link_libraries(viboceros_smlib PUBLIC SM_API)
 target_compile_options(viboceros_smlib PRIVATE -Wall -Wextra -Werror)
 add_executable(viboceros_smlib_surface_blend_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_blend_probe.cpp")

@@ -23,6 +23,8 @@ fn failure(message: &str) -> Error {
 
 mod prepared;
 pub use prepared::prepared_gordon_surface;
+mod fitting;
+pub use fitting::{GordonCurveFamilyFit, GordonCurveFitInput, fit_gordon_curve_family};
 
 /// Build a position-matched open curve network. Families, order and direction
 /// are inferred from intersections; original curves and their domains survive.

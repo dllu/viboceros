@@ -83,7 +83,6 @@
     "crates/viboceros-command/src/remembered.rs": "15b833247616e15af01130abbcde742ba210aeac08acb398f6268de88d0d2e53",
     "crates/viboceros-oracle/src/divide_creases.rs": "28d7d821bc5676ba841585b1cedf9ab5eac7cb026f91e69fc974d52cb8a9cab4",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
     "crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
     "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
@@ -125,6 +124,7 @@
     "df63f892789a42f612a6a153fd810c788b6b7dfb:tools/rhino_oracle/rhino_worker.py": "2691b938937931406c3f2bcdf42e4a6be171143a4c3fceef5374ed8df2b98a35",
     "df63f892789a42f612a6a153fd810c788b6b7dfb:tools/rhino_oracle/structural_sdk.py": "8a7cbfc25f90a41a80324aa9ada9198a0a5ee92399f55bb31e3bb4bae497a065",
     "df63f892789a42f612a6a153fd810c788b6b7dfb:tools/rhino_oracle/test_structural_sdk.py": "d290410f601bb313ed305c3ccdfa9d2dc03cd0d3e7cf88de712304872e29a504",
-    "f3e115163c130c4ae2fd071a8a81b3699712605e:src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2"
+    "f3e115163c130c4ae2fd071a8a81b3699712605e:src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2",
+    "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1"
   }
 }

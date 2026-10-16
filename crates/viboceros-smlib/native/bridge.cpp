@@ -1,6 +1,7 @@
 #include "bridge.h"
 #include "basis_preservation.h"
 #include "knot_refinement.h"
+#include "network_fit.h"
 #include <SmApiBrep.h>
 #include <SmApiCurves.h>
 #include <SmApiGeneral.h>
@@ -1642,6 +1643,17 @@ extern "C" int vb_curves_swung_surface(const VbCurve *profile, const VbCurve *ra
     });
 }
 
+extern "C" int vb_network_curve_fit(const double *points,const double *parameters,size_t point_count,
+    const size_t *fixed,size_t fixed_count,const double *knots,size_t knot_count,
+    const double *end_derivatives,double tolerance,double *maximum_error,VbSurfaceData **out,
+    char *error,size_t capacity) {
+    if(out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(out,"Missing network fit output");
+        *out=vb_fit_network_curve(points,parameters,point_count,fixed,fixed_count,
+            knots,knot_count,end_derivatives,tolerance,maximum_error);
+    });
+}
 extern "C" int vb_curves_network_surface(const VbCurve *const *u, size_t nu,
                                          const VbCurve *const *v, size_t nv,
                                          const double *u_parameters, const double *v_parameters,

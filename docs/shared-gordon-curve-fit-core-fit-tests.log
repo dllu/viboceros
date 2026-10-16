@@ -1,0 +1,50 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on artifact directory
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.51s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-f7a44ebfd2db35f0)
+
+running 39 tests
+test curve_fit::constraints_tests::constrained_fit_can_move_an_interior_target_within_the_fit_budget ... ok
+test curve_fit::station_tests::common_station_fit_rejects_incomplete_invalid_and_unprovably_monotone_maps ... ok
+test curve_fit::tests::cubic_fit_preserves_polyline_kinks_exactly ... ok
+test curve_fit::constraints_tests::constrained_fit_rejects_an_inaccurate_external_solution_even_if_sampled_fit_passes ... ok
+test curve_fit::tests::external_fit_solver_observes_fixed_rows_and_direct_paths_bypass_it ... ok
+test curve_fit::tests::line_fit_matches_rhino_arc_length_bezier ... ok
+test curve_fit::tests::validates_fit_options ... ok
+test morph::curve_fit::tests::caller_stations_detect_a_narrow_excursion_between_ordinary_fit_checks ... ok
+test morph::curve_fit::tests::constant_morph_at_a_large_world_offset_retains_exact_controls ... ok
+test morph::curve_fit::tests::exhausted_refinement_returns_the_measured_error_instead_of_a_bad_curve ... ok
+test morph::curve_fit::tests::identity_morph_keeps_full_order_positional_jumps_and_one_sided_values ... ok
+test curve_fit::tests::cubic_quarter_arc_refit_reaches_a_tight_geometric_tolerance ... ok
+test morph::curve_fit::tests::morph_backend_rejects_invalid_layout_and_nonfinite_results_before_returning_geometry ... ok
+test morph::curve_fit::tests::nonuniform_error_samples_detect_aliasing_of_the_old_uniform_grid ... ok
+test morph::curve_fit::tests::rational::candidate_source_mapping_errors_propagate_without_retry ... ok
+test curve_fit::station_tests::common_station_fit_declines_an_oversized_source_span_list_before_map_inversion ... ok
+test curve_fit::constraints_tests::constrained_fit_preserves_source_kinks_and_accepts_pins_on_both_sides ... ok
+test curve_fit::station_tests::common_station_fit_preserves_a_retimed_source_kink_and_one_sided_speeds ... ok
+test morph::curve_fit::tests::rational::invalid_or_oversized_candidate_spaces_do_not_sample_the_map ... ok
+test morph::curve_fit::tests::rational::rational_interpolation_keeps_constant_large_coordinate_targets_exact ... ok
+test morph::curve_fit::tests::rational::composition_keeps_both_full_order_limits_and_their_derivatives ... ok
+test morph::curve_fit::tests::rational::off_curve_control_map_errors_do_not_reject_a_valid_image ... ok
+test morph::curve_fit::tests::cubic_lift_of_a_rational_circle_fits_without_spending_the_control_budget ... ok
+test curve_fit::constraints_tests::constrained_fit_rejects_ambiguous_stations_and_invalid_targets ... ok
+test curve_fit::station_tests::common_station_fit_recovers_a_quadratic_clock_and_its_endpoint_derivatives ... ok
+test morph::curve_fit::tests::rational::an_unclamped_rational_source_retains_its_active_domain_and_seam ... ok
+test morph::curve_fit::tests::rational::composition_preserves_cubed_denominator_under_common_sign_and_scale_changes ... ok
+test morph::curve_fit::tests::nonlinear_line_morph_meets_sampled_tolerance_in_its_native_domain ... ok
+test morph::curve_fit::tests::nonlinear_polyline_morph_preserves_native_vertices_and_refines_each_segment ... ok
+test morph::curve_fit::tests::closed_polyline_morph_keeps_its_exact_seam_and_vertex_limits ... ok
+test curve_fit::tests::cubic_banded_fit_matches_dense_elimination_with_fixed_kink_handles ... ok
+test morph::curve_fit::tests::rational::a_noncubic_map_rejects_the_candidate_and_refines_to_tolerance ... ok
+test curve_fit::station_tests::common_station_fit_keeps_spatial_constraints_in_an_independent_source_domain ... ok
+test curve_fit::tests::rational_circle_fit_is_closed_non_rational_and_within_tolerance ... ok
+test curve_fit::tests::cubic_full_circle_refit_reaches_default_sweep_tolerance ... ok
+test curve_fit::tests::cubic_spatial_refit_reaches_a_tight_geometric_tolerance ... ok
+test curve_fit::constraints_tests::constrained_cubic_fits_interpolate_unsorted_adjacent_stations_and_remain_c2 ... ok
+test morph::curve_fit::tests::rational::affine_map_retains_the_original_rational_control_net ... ok
+test curve_fit::tests::adaptive_fit_resolves_a_multispan_spatial_curve ... ok
+
+test result: ok. 39 passed; 0 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 11.85s

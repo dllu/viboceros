@@ -1,6 +1,66 @@
 use super::*;
 use crate::{WeightedPoint2, WeightedPoint3};
 
+#[test]
+fn discrete_position_certificates_keep_exact_limits_and_one_sided_values() {
+    let source = NurbsCurve::try_new_rational(
+        1,
+        vec![
+            WeightedPoint3::try_new(p(0., 0., 0.), -1.).unwrap(),
+            WeightedPoint3::try_new(p(1., 0., 0.), -3.).unwrap(),
+        ],
+        vec![-3., -3., 7., 7.],
+    )
+    .unwrap();
+    let before = source.clone();
+    let side = crate::ParameterSide::Right;
+    assert!(
+        source
+            .positions_within_distance(&[(2., side, p(0.75, 0., 0.))], 0.)
+            .unwrap()
+    );
+    let distance = 1_f64 / 1_048_576.;
+    let point = p(0.75 + distance, 0., 0.);
+    assert!(
+        source
+            .positions_within_distance(&[(2., side, point)], distance)
+            .unwrap()
+    );
+    assert!(
+        !source
+            .positions_within_distance(&[(2., side, point)], distance.next_down())
+            .unwrap()
+    );
+    assert!(source.positions_within_distance(&[], 0.).unwrap());
+    for parameter in [-4., 8., f64::NAN] {
+        assert!(matches!(
+            source.positions_within_distance(&[(parameter, side, point)], 1.),
+            Err(GeometryError::ParameterOutOfDomain { .. })
+        ));
+    }
+    assert!(matches!(
+        source.positions_within_distance(&[], f64::NAN),
+        Err(GeometryError::InvalidTolerance)
+    ));
+    assert_eq!(source, before);
+    let jump = NurbsCurve::try_new(
+        1,
+        vec![p(0., 0., 0.), p(1., 0., 0.), p(5., 0., 0.), p(6., 0., 0.)],
+        vec![0., 0., 0.5, 0.5, 1., 1.],
+    )
+    .unwrap();
+    let points = [
+        (0.5, crate::ParameterSide::Left, p(1., 0., 0.)),
+        (0.5, side, p(5., 0., 0.)),
+    ];
+    assert!(jump.positions_within_distance(&points, 0.).unwrap());
+    assert!(
+        !jump
+            .positions_within_distance(&[(0.5, side, p(1., 0., 0.))], 0.)
+            .unwrap()
+    );
+}
+
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

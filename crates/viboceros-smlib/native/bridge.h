@@ -167,6 +167,10 @@ int vb_curve_translational_sweep(const VbCurve *profile, const VbCurve *path, Vb
                                  char *error, size_t capacity);
 int vb_curves_swung_surface(const VbCurve *profile, const VbCurve *rail, double scale,
                             VbSurfaceData **out, char *error, size_t capacity);
+int vb_network_curve_fit(const double *points,const double *parameters,size_t point_count,
+    const size_t *fixed,size_t fixed_count,const double *knots,size_t knot_count,
+    const double *end_derivatives,double tolerance,double *maximum_error,VbSurfaceData **out,
+    char *error,size_t capacity);
 int vb_curves_network_surface(const VbCurve *const *u, size_t nu,
                               const VbCurve *const *v, size_t nv,
                               const double *u_parameters, const double *v_parameters, double tolerance,

@@ -37,7 +37,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Divide surfaces and polysurfaces along creases](docs/commands/divide-along-creases.md)
 - [Sweep cross sections along two rails](docs/commands/sweep2.md)
 - [Revolve a profile along a rail](docs/commands/rail-revolve.md)
-- [Gordon network foundation and NetworkSrf progress](docs/smlib-gordon-network.md)
+- [Gordon networks](docs/smlib-gordon-network.md) and [shared curve-family fitting](docs/shared-gordon-curve-fit.md)
 - [Directional projection, custom points and subcurves](docs/commands/project.md)
 - [Infinite-plane projection and input](docs/commands/project-infinite-plane.md)
 - [IPlane intersections and shared plane picking](docs/commands/iplane.md)
