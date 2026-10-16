@@ -17,7 +17,7 @@ class StructuralStagingTests(TestCase):
 
     def test_mixed_structural_sdk_helpers_import_from_the_actual_standalone_job(self):
         operations=[]
-        for fixture in ('divide_along_creases','cull_degenerate_mesh_faces','geometry_validity','coplanar_faces','coplanar_mesh','selected_coplanar_faces'):
+        for fixture in ('two_rail_sweep','divide_along_creases','cull_degenerate_mesh_faces','geometry_validity','coplanar_faces','coplanar_mesh','selected_coplanar_faces'):
             operation=self.request(fixture)['operations'][0]
             operation['id']='case-'+str(len(operations))
             operations.append(operation)
@@ -28,15 +28,15 @@ class StructuralStagingTests(TestCase):
             job=Path(directory)
             stage_helpers(request,Path(__file__).parent,job)
             self.assertEqual({p.name for p in job.iterdir()},
-                {'divide_creases_probe.py','cull_degenerate_probe.py','geometry_validity_probe.py','coplanar_faces_probe.py','coplanar_mesh_probe.py','selected_coplanar_faces_probe.py'})
+                {'two_rail_sweep_probe.py','divide_creases_probe.py','cull_degenerate_probe.py','geometry_validity_probe.py','coplanar_faces_probe.py','coplanar_mesh_probe.py','selected_coplanar_faces_probe.py'})
             subprocess.run([sys.executable,'-I','-c',
-                'import sys; sys.path.insert(0,sys.argv[1]); import divide_creases_probe, cull_degenerate_probe, geometry_validity_probe, coplanar_faces_probe, coplanar_mesh_probe, selected_coplanar_faces_probe',
+                'import sys; sys.path.insert(0,sys.argv[1]); import two_rail_sweep_probe, divide_creases_probe, cull_degenerate_probe, geometry_validity_probe, coplanar_faces_probe, coplanar_mesh_probe, selected_coplanar_faces_probe',
                 str(job)],check=True,capture_output=True,text=True)
         self.assertEqual(request,before)
 
     @skipUnless(sys.platform.startswith("linux"), "Wine launcher host paths require Linux")
     def test_actual_client_stages_each_registered_probe_before_launch_and_cleans_up(self):
-        for fixture in ('divide_along_creases','cull_degenerate_mesh_faces','geometry_validity','coplanar_faces','coplanar_mesh','selected_coplanar_faces'):
+        for fixture in ('two_rail_sweep','divide_along_creases','cull_degenerate_mesh_faces','geometry_validity','coplanar_faces','coplanar_mesh','selected_coplanar_faces'):
             request=self.request(fixture)
             paths=[]
             def stop_before_launch(command,cwd,timeout,log_path):
@@ -59,7 +59,7 @@ class StructuralStagingTests(TestCase):
     @skipUnless(sys.platform.startswith("linux"), "Wine launcher host paths require Linux")
     def test_invalid_operations_and_local_mesh_subset_requests_fail_before_launch(self):
         cases=[]
-        for fixture in ('divide_along_creases','cull_degenerate_mesh_faces','geometry_validity','coplanar_faces','selected_coplanar_faces'):
+        for fixture in ('two_rail_sweep','divide_along_creases','cull_degenerate_mesh_faces','geometry_validity','coplanar_faces','selected_coplanar_faces'):
             request=self.request(fixture);request['operations'][0]['extra']=True;cases.append(request)
         cases.append(self.request('selected_coplanar_mesh_local'))
         for request in cases:

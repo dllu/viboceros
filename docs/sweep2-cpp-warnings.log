@@ -1,0 +1,2 @@
+bridge.cpp: -Wall -Wextra -Werror -fsyntax-only
+exit=0

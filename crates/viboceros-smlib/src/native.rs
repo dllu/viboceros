@@ -76,6 +76,8 @@ mod face_creases;
 mod shape;
 mod silhouette;
 mod surface_extrusion;
+mod two_rail_sweep;
+pub use two_rail_sweep::two_rail_sweep_surface;
 mod tapered;
 pub use shape::StitchResult;
 

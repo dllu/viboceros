@@ -122,7 +122,9 @@ mod chamfer_edge;
 mod coplanar_faces;
 mod coplanar_mesh;
 mod divide_creases;
+mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
+pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod geometry_validity;
@@ -1648,6 +1650,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: DivideCreasesFixture,
     },
+    TwoRailSweep {
+        id: String,
+        #[serde(flatten)]
+        fixture: TwoRailSweepFixture,
+    },
     CullDegenerateMeshFaces {
         id: String,
         #[serde(flatten)]
@@ -2637,6 +2644,7 @@ impl Operation {
             | Self::SurfaceApexExtrusion { id, .. }
             | Self::SelectedCoplanarFaces { id, .. }
             | Self::DivideAlongCreases { id, .. }
+            | Self::TwoRailSweep { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
             | Self::MergeCoplanarFaces { id, .. }
@@ -5843,6 +5851,9 @@ fn execute(
         }
         Operation::DivideAlongCreases { fixture, .. } => {
             divide_creases::run(fixture, iterations, tolerance)?
+        }
+        Operation::TwoRailSweep { fixture, .. } => {
+            two_rail_sweep::run(fixture, iterations, tolerance)?
         }
         Operation::CullDegenerateMeshFaces { fixture, .. } => {
             cull_degenerate::run(fixture, iterations, tolerance)?

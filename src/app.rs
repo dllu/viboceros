@@ -10080,6 +10080,7 @@ mod tests {
     mod subcurve_midpoint;
     mod subcurve_preferences;
     mod subcurve_preview;
+    mod sweep_two_rails;
     mod taper;
     mod transform_copy;
     mod translation_preview;

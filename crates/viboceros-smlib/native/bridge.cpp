@@ -1619,6 +1619,63 @@ extern "C" int vb_curve_apex_surface(const VbCurve *curve, const double apex[3],
     });
 }
 
+extern "C" int vb_curves_two_rail_sweep(const VbCurve *first, const VbCurve *second,
+                                        const VbCurve *const *sections, size_t count,
+                                        const double *parameters, VbSurfaceData **out,
+                                        char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(first && second && sections && parameters && out && count >= 2 && count <= 32,
+                "Two-rail sweep requires two rails and 2 to 32 sections");
+        std::vector<std::unique_ptr<SmBSplineCurve>> owners;
+        SmTArray<SmBSplineCurve*> profiles;
+        SmTArray<double> stations;
+        size_t controls = 0;
+        auto append = [&](const VbCurve *curve) {
+            require(curve && curve->value && curve->degree <= 16 && curve->points.size()/4 <= 128,
+                    "Two-rail sweep curve resource limit");
+            controls += curve->points.size()/4;
+            require(controls <= 1024, "Two-rail sweep total control limit");
+            owners.push_back(copy_curve(*curve));
+            return owners.back().get();
+        };
+        auto *a = append(first);
+        auto *b = append(second);
+        for (size_t i = 0; i < count; ++i) {
+            require(std::isfinite(parameters[i]) && parameters[i] >= 0 && parameters[i] <= 1 &&
+                    (i == 0 || parameters[i] > parameters[i-1]), "Invalid two-rail stations");
+            profiles.Add(append(sections[i]));
+        }
+        require(parameters[0] == 0 && parameters[count-1] == 1,
+                "Two-rail sweep sections must span the rails");
+        // The constructor accepts one station array for each rail. It may
+        // synchronize/reparameterize rails, despite its const rail arguments.
+        // Every curve here is privately owned; caller handles remain untouched.
+        for (size_t rail = 0; rail < 2; ++rail)
+            for (size_t i = 0; i < count; ++i) stations.Add(parameters[i]);
+        SmBSplineSurface *raw = nullptr;
+        require(first->degree < count && second->degree < count,
+                "Two-rail sweep needs at least rail degree plus one sections");
+        size_t section_controls = 0, section_degree = 1;
+        for (size_t i = 0; i < count; ++i) {
+            section_controls += sections[i]->points.size()/4;
+            section_degree = std::max(section_degree, sections[i]->degree);
+        }
+        const size_t rail_bound = (first->points.size()/4 + second->points.size()/4 + count) *
+                                  (std::max({size_t(3), first->degree, second->degree}) + 1);
+        const size_t section_bound = section_controls * (section_degree + 1);
+        require(rail_bound <= limit / section_bound,
+                "Two-rail sweep compatibility control-net resource limit");
+        const auto status = SmBSplineSurface::CreateSkinnedSurface(
+            *SmApiGetOrCreateContext(), profiles, FALSE, SM_SP_U, 0., a, b,
+            FALSE, &stations, nullptr, raw, 3);
+        std::unique_ptr<SmBSplineSurface> surface(raw);
+        check(status, "construct two-rail sweep");
+        require(raw, "Missing two-rail sweep surface");
+        *out = vb_export_surface(*surface);
+    });
+}
+
 extern "C" int vb_curve_translational_sweep(const VbCurve *profile, const VbCurve *path,
                                            VbSurfaceData **out, char *error, size_t capacity) {
     if (out) *out = nullptr;

@@ -35,5 +35,5 @@ pub use native::{
     surface_brep_intersection_events, surface_face_intersection_events,
     surface_intersection_events, surface_isocurve, surface_single_span_patches, surface_tweens,
     surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_surface, trim_blend_parent,
-    trim_curve, trim_surface, trim_surface_direction,
+    trim_curve, trim_surface, trim_surface_direction, two_rail_sweep_surface,
 };

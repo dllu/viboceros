@@ -1,0 +1,13 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 2m 02s
+     Running tests/two_rail_sweep.rs (target/release/deps/two_rail_sweep-daa1af8fc3f4505a)
+
+running 6 tests
+test native_two_rail_sweep_declines_unmatched_missing_duplicate_and_disconnected_sections ... ok
+test native_two_rail_sweep_weight_gauges_and_resource_failures_are_explicit ... ok
+test native_two_rail_sweep_blends_different_cross_section_shapes ... ok
+test native_two_rail_sweep_certifies_remote_geometry ... ok
+test native_two_rail_sweep_orients_and_orders_independent_curve_domains ... ok
+test native_two_rail_sweep_interpolates_rails_sections_and_preserves_inputs ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s

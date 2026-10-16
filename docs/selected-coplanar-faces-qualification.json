@@ -110,7 +110,6 @@
     "crates/viboceros-command/src/merge_coplanar_face/tests.rs": "b24fb044a54079a1d22887bf9d695d89a4c1f3fd1a87ed9ff37c64c292e20aa5",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "ee50bd69a2d7ea1e9e5e173afb9ec704704fa60aa1995ce09cc15fa9d7efe303",
     "crates/viboceros-oracle/src/selected_coplanar_faces.rs": "3c88573afdb216b423f21022455ed4091e1d1cbeb984771f9bc7ce29395e6592",
-    "crates/viboceros-smlib/native/bridge.h": "7b2a4cbe45f699a7169e2505f7dc95014ae47e36026cd656b3694063437c091d",
     "crates/viboceros-smlib/native/coplanar_merge.cpp": "4f012e8f98b9a2c5711b3115ff547e207c908ec9e0a2426c15ed42b203eb8f9a",
     "crates/viboceros-smlib/src/native/coplanar_merge.rs": "65bb7c051e97b5a3b451df274711bc6104e2471a385a4ecea68689da7c611596",
     "crates/viboceros-smlib/tests/coplanar_merge.rs": "1ad501413d8eaf1a1c5a73432bd4c629d69b220472b658dcc69a859ccec9b7e0",
@@ -157,6 +156,7 @@
     "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:crates/viboceros-opennurbs/native/mesh_modeling.h": "1dba5ee4e0820f908ea7cc41ee62979ad1fa6947f43d07c2b41041fa87e372f1",
     "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:crates/viboceros-opennurbs/src/mesh.rs": "26abdb7267413cfb504292d161aa2245a4ca28fc82a233c3780cb1444c674ae4",
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/native/brep_data.h": "cb26b4a63a481eb70b824c402cf219e9aa9fefc9027b2d6d0965b245baf5e176",
-    "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/native/bridge.cpp": "b873864a9829b519c6d54fac27bc52930afab8fd879c6c2955dc636d23a832f3"
+    "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/native/bridge.cpp": "b873864a9829b519c6d54fac27bc52930afab8fd879c6c2955dc636d23a832f3",
+    "df63f892789a42f612a6a153fd810c788b6b7dfb:crates/viboceros-smlib/native/bridge.h": "7b2a4cbe45f699a7169e2505f7dc95014ae47e36026cd656b3694063437c091d"
   }
 }

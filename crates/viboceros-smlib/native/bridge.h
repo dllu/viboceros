@@ -165,6 +165,10 @@ int vb_curves_plane_normal(const VbCurve *const *curves, size_t count, double to
                            char *error, size_t capacity);
 int vb_curve_translational_sweep(const VbCurve *profile, const VbCurve *path, VbSurfaceData **out,
                                  char *error, size_t capacity);
+int vb_curves_two_rail_sweep(const VbCurve *first, const VbCurve *second,
+                            const VbCurve *const *sections, size_t count,
+                            const double *parameters, VbSurfaceData **out,
+                            char *error, size_t capacity);
 int vb_shape_translational_sweep(const VbCurve *profile, const VbCurve *path, double tolerance,
                                  VbSolid **out, char *error, size_t capacity);
 int vb_curve_apex_surface(const VbCurve *curve, const double apex[3], VbSurfaceData **out,

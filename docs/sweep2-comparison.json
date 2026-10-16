@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "point_distance_epsilon": 1e-06,
+  "area_absolute_epsilon": 1e-05,
+  "note": "Point distances use Euclidean model units; areas use square model units. No relative coordinate tolerance is used at remote origins. This is finite fixture coverage, not a continuous interior-shape certificate.",
+  "passed": true,
+  "case_count": 8,
+  "query_count": 160,
+  "cases": [
+    {
+      "id": "rectangle",
+      "query_count": 20,
+      "maximum_point_distance": 4.965068306494546e-16,
+      "absolute_area_difference": 0.0,
+      "topology_and_validity_match": true
+    },
+    {
+      "id": "extruded_arch",
+      "query_count": 20,
+      "maximum_point_distance": 3.4849293616531514e-12,
+      "absolute_area_difference": 2.2291857249001623e-08,
+      "topology_and_validity_match": true
+    },
+    {
+      "id": "tapered_rectangle",
+      "query_count": 20,
+      "maximum_point_distance": 3.784584844885574e-13,
+      "absolute_area_difference": 0.0,
+      "topology_and_validity_match": true
+    },
+    {
+      "id": "bent_rails",
+      "query_count": 20,
+      "maximum_point_distance": 1.2442481180916216e-09,
+      "absolute_area_difference": 7.971495286085428e-08,
+      "topology_and_validity_match": true
+    },
+    {
+      "id": "bent_arch",
+      "query_count": 20,
+      "maximum_point_distance": 3.484929354579291e-12,
+      "absolute_area_difference": 1.915113934103374e-08,
+      "topology_and_validity_match": true
+    },
+    {
+      "id": "reversed_sections_and_rail",
+      "query_count": 20,
+      "maximum_point_distance": 3.4850331637010133e-12,
+      "absolute_area_difference": 1.9151149999174777e-08,
+      "topology_and_validity_match": true
+    },
+    {
+      "id": "remote_arch",
+      "query_count": 20,
+      "maximum_point_distance": 9.310543150790517e-07,
+      "absolute_area_difference": 4.185776667497976e-06,
+      "topology_and_validity_match": true
+    },
+    {
+      "id": "changing_arch",
+      "query_count": 20,
+      "maximum_point_distance": 2.1744676381589104e-11,
+      "absolute_area_difference": 6.327242019210644e-08,
+      "topology_and_validity_match": true
+    }
+  ]
+}

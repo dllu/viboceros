@@ -18,6 +18,9 @@ regions, plus [native surface joining](smlib-joining.md) and
 [curve extrusion](smlib-extrusion.md), [revolution](smlib-revolution.md) and
 [planar surfaces](smlib-planar-surfaces.md), [apex extrusion](smlib-apex.md) and
 [exact curve-path extrusion](smlib-translational-sweep.md).
+
+[Sweep2](commands/sweep2.md) uses native rail-constrained skin construction on
+private curves, with continuous world-space rail/section deviation checks.
 Broader arbitrary-input qualification remains open. The kernel can be
 built without the USD scene-format layer.
 Standalone [modeling curve import](smlib-curve-import.md) now uses native
