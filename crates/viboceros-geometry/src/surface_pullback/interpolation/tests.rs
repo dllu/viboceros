@@ -1,5 +1,99 @@
 use super::*;
 
+#[test]
+fn isocurve_proposals_preserve_source_domains_and_decline_misleading_hints() {
+    let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let surface = NurbsSurface::try_new(
+        2,
+        2,
+        3,
+        3,
+        (0..3)
+            .flat_map(|j| {
+                (0..3).map(move |i| {
+                    p(
+                        [0., 0.5, 1.25][i],
+                        [0., 0.5, 1.25][j],
+                        i as Real * j as Real / 4.,
+                    )
+                })
+            })
+            .collect(),
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let tolerance = Tolerance::try_new(1e-6, 1e-14, 1e-10).unwrap();
+    for along_u in [true, false] {
+        let endpoints = if along_u {
+            [[0., 0.2], [1., 0.2]]
+        } else {
+            [[0.2, 0.], [0.2, 1.]]
+        }
+        .map(|p| Point2::try_new(p[0], p[1]).unwrap());
+        let source = if along_u {
+            surface.isocurve_u(0.2)
+        } else {
+            surface.isocurve_v(0.2)
+        }
+        .unwrap()
+        .try_reparameterized(-3. ..=7.)
+        .unwrap();
+        let (uv, bound) = fit_on_isocurve(&surface, &source, endpoints, tolerance)
+            .unwrap()
+            .unwrap();
+        assert_eq!(uv.domain(), source.domain());
+        assert!(bound <= tolerance.absolute());
+        assert!(uv.control_points().iter().all(|p| if along_u {
+            p.point().y() == 0.2
+        } else {
+            p.point().x() == 0.2
+        }));
+        let middle = if along_u {
+            Point2::try_new(0.5, 0.45)
+        } else {
+            Point2::try_new(0.45, 0.5)
+        }
+        .unwrap();
+        let curved = NurbsCurve2::try_new(
+            2,
+            vec![endpoints[0], middle, endpoints[1]],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let source = surface
+            .try_pushup_curve_certified(&curved, tolerance)
+            .unwrap();
+        assert!(fit_on_isocurve(&surface, &source, endpoints, tolerance).is_err());
+        let (actual, bound) = surface
+            .try_pullback_curve_certified_with_bound(&source, Some(endpoints), tolerance)
+            .unwrap();
+        let middle = actual.evaluate(actual.parameter_at(0.5).unwrap()).unwrap();
+        assert!(if along_u {
+            middle.y() > 0.3
+        } else {
+            middle.x() > 0.3
+        });
+        assert!(bound <= tolerance.absolute());
+        let mut controls = source.control_points().to_vec();
+        let i = controls.len() / 2;
+        let point = controls[i].point();
+        controls[i] = crate::WeightedPoint3::try_new(
+            p(point.x(), point.y(), point.z() + 0.01),
+            controls[i].weight(),
+        )
+        .unwrap();
+        let wrong =
+            NurbsCurve::try_new_rational(source.degree(), controls, source.knots().to_vec())
+                .unwrap();
+        assert!(
+            surface
+                .try_pullback_curve_certified_with_bound(&wrong, Some(endpoints), tolerance)
+                .is_err()
+        );
+    }
+}
+
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

@@ -260,7 +260,7 @@ fn native_network_aligns_asymmetric_families_without_rounding_away_the_endpoint(
 }
 
 #[test]
-fn common_station_curve_fits_preserve_network_contacts_and_complete_fitted_images() {
+fn common_station_curve_fits_preserve_network_contacts_and_complete_original_images() {
     use viboceros_geometry::{CurveFitConstraint, CurveFitStation, CurveRef};
     let original = network();
     let before = original.clone();
@@ -333,6 +333,24 @@ fn common_station_curve_fits_preserve_network_contacts_and_complete_fitted_image
         .collect::<Vec<_>>();
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
     let surface = gordon_network_surface(&fitted, tolerance, tolerance).unwrap();
+    for (index, source) in original.iter().enumerate() {
+        let fixed = if index < 3 {
+            [0., mid[1], 1.][index]
+        } else {
+            [0., mid[0], 1.][index - 3]
+        };
+        let endpoints = if index < 3 {
+            [[0., fixed], [1., fixed]]
+        } else {
+            [[fixed, 0.], [fixed, 1.]]
+        };
+        let endpoints = endpoints.map(|p| viboceros_geometry::Point2::try_new(p[0], p[1]).unwrap());
+        let result =
+            surface.try_pullback_curve_certified_with_bound(source, Some(endpoints), tolerance);
+        let (uv, bound) = result.unwrap_or_else(|e| panic!("original curve {index}: {e}"));
+        assert_eq!(uv.domain(), source.domain());
+        assert!(bound <= tolerance.absolute());
+    }
     for (i, u) in [0., mid[0], 1.].into_iter().enumerate() {
         for (j, v) in [0., mid[1], 1.].into_iter().enumerate() {
             assert!(

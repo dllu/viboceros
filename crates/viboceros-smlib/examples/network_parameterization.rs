@@ -130,12 +130,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let expected = reference["value"]["closest_points"].as_array().unwrap();
     assert_eq!(queries.len(), expected.len());
     let mut candidates = vec![];
-    for (name, curves, original_images) in [
-        ("raw_gordon", &original, true),
-        ("crossing_constrained_arc_length", &arc_curves, false),
-        ("global_smooth_station_map", &smooth_curves, false),
+    for (name, curves, mids) in [
+        ("raw_gordon", &original, [0.5, 0.5]),
+        ("crossing_constrained_arc_length", &arc_curves, common),
+        ("global_smooth_station_map", &smooth_curves, common),
     ] {
         let surface = gordon_network_surface(curves, tolerance, tolerance)?;
+        let mut original_bounds = vec![];
+        for (index, source) in original.iter().enumerate() {
+            let fixed = if index < 3 {
+                [0., mids[1], 1.][index]
+            } else {
+                [0., mids[0], 1.][index - 3]
+            };
+            let endpoints = if index < 3 {
+                [[0., fixed], [1., fixed]]
+            } else {
+                [[fixed, 0.], [fixed, 1.]]
+            };
+            let endpoints =
+                endpoints.map(|p| viboceros_geometry::Point2::try_new(p[0], p[1]).unwrap());
+            let result =
+                surface.try_pullback_curve_certified_with_bound(source, Some(endpoints), tolerance);
+            original_bounds.push(match result {
+                Ok((uv,bound))=>json!({"source_curve_index":index,"certified":true,"complete_distance_bound":bound,"uv_control_count":uv.control_points().len()}),
+                Err(error)=>json!({"source_curve_index":index,"certified":false,"error":error.to_string()}),
+            });
+        }
+        let original_images = original_bounds.iter().all(|r| r["certified"] == true);
         let mut maximum = 0_f64;
         let mut rows = vec![];
         for (index, (query, reference)) in queries.iter().zip(expected).enumerate() {
@@ -151,6 +173,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "curve_control_counts":curves.iter().map(|c|c.control_points().len()).collect::<Vec<_>>(),
             "surface_control_counts":[surface.control_point_count_u(),surface.control_point_count_v()],
             "supplied_curve_images_certified":true,"pre_fit_original_curve_images_certified":original_images,
+            "original_source_curve_bounds":original_bounds,
             "maximum_rhino_query_output_distance":maximum,"query_outputs_within_1e_minus_6":maximum<=1e-6,
             "queries":rows}));
     }
@@ -178,7 +201,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         traces.push(json!({"source_curve_index":index,"samples":rows}));
     }
     assert_eq!(original, before);
-    let output = json!({"schema_version":1,"engine":"viboceros","engine_version":env!("CARGO_PKG_VERSION"),"fixture":"biquadratic_network",
+    let output = json!({"schema_version":2,"engine":"viboceros","engine_version":env!("CARGO_PKG_VERSION"),"fixture":"biquadratic_network",
         "qualification":"Diagnostic only; none of the candidates qualifies Rhino NetworkSrf interior fitting.",
         "comparison":"World-space returned closest-point outputs; not continuous surface separation or Hausdorff bounds.",
         "source_fit_error_policy":"Adaptive sampled fitting at 1e-7; exact stored-curve position constraints at 1e-9.",

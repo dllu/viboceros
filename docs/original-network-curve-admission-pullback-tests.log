@@ -1,0 +1,69 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 21.79s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-f7a44ebfd2db35f0)
+
+running 62 tests
+test surface_pullback::certificate::interval::tests::zero_identities_overflow_and_subnormal_boundaries_are_conservative ... ok
+test surface_pullback::certificate::polyline::tests::unsupported_degree_declines_before_subdivision ... ok
+test surface_pullback::certificate::polyline::tests::unsplittable_native_parameter_interval_declines_instead_of_accepting_a_chord ... ok
+test surface_pullback::certificate::polyline::tests::mixed_weights_constant_spans_and_discontinuous_knots_decline ... ok
+test surface_pullback::certificate::polyline::tests::straight_spans_keep_native_parameters_and_kinks ... ok
+test surface_pullback::certificate::pushup::tests::constant_image_is_a_valid_nonzero_degree_curve ... ok
+test surface_pullback::certificate::polyline::tests::a_rounded_native_midpoint_restricts_at_its_actual_parameter ... ok
+test surface_pullback::certificate::pushup::tests::exact_diagonal_and_nonlinear_warped_images_retain_original_speed ... ok
+test surface_pullback::certificate::pushup::tests::unsupported_weights_and_outside_uv_images_are_never_returned ... ok
+test surface_pullback::certificate::pushup::tests::adjacent_and_subnormal_native_domains_do_not_collapse_exact_images ... ok
+test surface_pullback::certificate::pushup::tests::rational_and_negative_gauges_preserve_normalized_parameter_correspondence ... ok
+test surface_pullback::certificate::tests::exact_isocurve_restrictions_handle_unequal_uv_weights_and_reversed_axes ... ok
+test surface_pullback::certificate::tests::exact_knot_alignment_and_nonrepresentable_crossings_keep_continuous_bounds ... ok
+test surface_pullback::certificate::interval::tests::zero_and_subnormal_limits_never_take_the_interval_proof ... ok
+test surface_pullback::certificate::tests::certified_pullback_accepts_exact_and_fitted_regular_parameterizations ... ok
+test surface_pullback::certificate::tests::explicit_dense_proof_budget_remains_bounded_and_does_not_weaken_tolerance ... ok
+test surface_pullback::certificate::interval::tests::cubic_sampling_nodes_cannot_hide_a_curved_surface_excursion ... ok
+test surface_pullback::certificate::tests::exact_warped_images_ignore_weight_gauges_and_curve_domain_scales ... ok
+test surface_pullback::certificate::pushup::tests::original_uv_knots_and_discontinuous_one_sided_limits_are_retained ... ok
+test surface_pullback::certificate::tests::rational_surface_and_rational_parameter_speed_cancel_exactly ... ok
+test surface_pullback::certificate::tests::uncertified_domains_signs_limits_and_resource_exhaustion_remain_explicit ... ok
+test surface_pullback::certificate::tests::unclamped_source_knots_and_extreme_binary64_distances_do_not_change_proofs ... ok
+test surface_pullback::certificate::tests::whole_span_hulls_refine_an_interior_gap_instead_of_checking_only_endpoints ... ok
+test surface_pullback::certificate::polyline::tests::a_rational_line_retains_its_nonuniform_parameter_speed ... ok
+test surface_pullback::certified_tests::fixed_endpoints_preserve_unclamped_sources_and_reject_invalid_constraints ... ok
+test surface_pullback::certificate::interval::tests::crossing_box_decisions_agree_with_exact_restriction_on_both_knot_sides ... ok
+test surface_pullback::certificate::polyline::tests::large_coordinates_account_for_endpoint_rounding ... ok
+test surface_pullback::certificate::polyline::tests::collinear_reversal_is_not_replaced_by_the_endpoint_chord ... ok
+test surface_pullback::certified_tests::a_sample_accepted_pullback_is_refined_until_its_complete_image_is_certified ... ok
+test surface_pullback::certificate::pushup::tests::exact_rational_linear_tensor_crossings_keep_orientation_and_domain ... ok
+test surface_pullback::certificate::tests::a_polynomial_excursion_between_every_sample_station_is_rejected ... ok
+test surface_pullback::certificate::affine::tests::many_span_planar_circle_has_a_continuous_affine_bound_and_rejects_warped_image ... ok
+test surface_pullback::certificate::polyline::tests::closed_curve_with_coincident_endpoint_and_midpoint_is_retained ... ok
+test surface_pullback::certificate::tests::prepared_surface_bounds_match_independent_proofs_and_recover_after_rejection ... ok
+test surface_pullback::certificate::pushup::tests::composed_spatial_degrees_above_sixteen_are_certified ... ok
+test surface_pullback::linear::tests::discovers_a_nonisocurve_with_a_singular_endpoint_without_primitive_recognition ... ok
+test surface_pullback::linear::tests::discovered_paths_certify_signed_extreme_weight_gauges_without_changing_the_inputs ... ok
+test surface_pullback::linear::tests::fractional_witnesses_preserve_adjacent_subnormal_and_wide_source_domains ... ok
+test surface_pullback::linear::tests::lossless_uv_frames_preserve_a_certified_diagonal_on_an_adjacent_float_surface_domain ... ok
+test surface_pullback::certificate::pushup::tests::nonlinear_nondyadic_tensor_crossings_require_certified_adaptive_fitting ... ok
+test surface_pullback::tests::fitted_pullback_handles_a_rational_nonprojective_surface ... ok
+test surface_pullback::tests::fitted_pullback_recovers_curved_parameters_on_a_nonaffine_plane ... ok
+test surface_pullback::linear::tests::interior_witness_recovers_the_branch_when_both_endpoints_are_singular ... ok
+test surface_pullback::certificate::tests::exact_rational_linear_crossings_split_both_axes_at_non_binary_fractions ... ok
+test surface_pullback::certificate::interval::tests::linear_and_quadratic_rational_sources_agree_with_independent_exact_proofs ... ok
+test surface_pullback::interpolation::tests::fractional_fitting_retains_adjacent_and_subnormal_source_domains ... ok
+test surface_pullback::linear::tests::reported_bounds_cover_exact_inverse_proposals_and_all_assembled_fit_spans ... ok
+test surface_pullback::certified_tests::fixed_seam_endpoints_unwrap_closed_isocurves_in_both_directions ... ok
+test surface_pullback::interpolation::tests::nonlinear_paths_with_singular_endpoints_fit_in_both_directions ... ok
+test surface_pullback::tests::fitted_pullback_subdivides_and_rejects_off_surface_curves ... ok
+test surface_pullback::certificate::interval::tests::rounded_arithmetic_encloses_independent_exact_binary64_results ... ok
+test surface_pullback::interpolation::tests::isocurve_proposals_preserve_source_domains_and_decline_misleading_hints ... ok
+test surface_pullback::certificate::polyline::tests::rational_quarter_circle_supports_both_weight_gauges ... ok
+test surface_pullback::certificate::interval::tests::interval_decisions_agree_with_exact_curved_surface_certificates ... ok
+test surface_pullback::interpolation::tests::nonlinear_cubic_uv_paths_do_not_require_jacobian_inversion_at_the_start ... ok
+test surface_pullback::interpolation::tests::nonpolynomial_uv_paths_refine_until_the_entire_image_is_certified ... ok
+test surface_pullback::certificate::polyline::tests::unclamped_multi_span_curve_keeps_internal_knots ... ok
+test surface_pullback::interpolation::tests::two_singular_endpoints_recover_a_nonlinear_missing_coordinate ... ok
+test surface_pullback::linear::tests::automatic_discovery_does_not_override_fixed_endpoints_or_use_relative_acceptance ... ok
+test surface_pullback::certificate::tests::maximum_image_degree_uses_exact_products_beyond_machine_integer_binomials ... ok
+test surface_pullback::linear::tests::discovers_unconstrained_isocurves_in_both_directions_on_relocated_reversed_and_swapped_charts ... ok
+test surface_pullback::certified_tests::certified_fitting_rejects_a_surface_excursion_hidden_at_every_sample_station ... ok
+
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 2233 filtered out; finished in 49.36s

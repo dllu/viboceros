@@ -102,6 +102,10 @@ Its reproducible network comparison retains both the improved arc-length
 candidate and the worse global smooth-map candidate. Neither qualifies Rhino
 interior fitting; the application command remains unregistered.
 
+[Original-curve admission](original-network-curve-admission.md) now certifies
+the six pre-fit originals for the smooth common-station fixture. The closer
+arc-length candidate still has one inconclusive original-image proof.
+
 ## Rhino comparison and remaining work
 
 The experimental `network_surface` oracle operation directly exercises this

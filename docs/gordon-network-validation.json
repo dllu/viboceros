@@ -93,8 +93,6 @@
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
     "README.md": "1ba43d470f02fbfb9405c71d78de9f9d44fe9b445608f31b9d0a76155e7228ad",
-    "crates/viboceros-geometry/src/surface_pullback.rs": "b73c1eb4d833f5d1af7ee00d07578c5c340df5279e3e7f6b4fd60e07eac8ff8f",
-    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "cb7e27d51a059bde5f1255f13adb4df35f6f9887588c721c371511722a96f7cb",
     "crates/viboceros-geometry/src/surface_pullback/certificate/affine.rs": "ef63b64d1422bbb98bc67ccd2f1cd397da47e322ec60891345ffbdbc4a49df5d",
     "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
@@ -150,6 +148,8 @@
     "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/native.rs": "c172aec12cc19ab9fef3d9656de6d965e92fd26158ca13d124cf45ef6b10ffba",
     "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/native/network_surface.rs": "3294dba1ae4c4b71f9010b94fda0efdca2d8d91e69bef0e937d5e5a64b876b02",
     "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/tests/network_surface.rs": "afdd89836c3f1f313fdba719692322c99755d85a64ca1fe8b0f5a363613e21bf",
-    "d9984b57bb49b755beea6e0d8e3c18072754509b:docs/smlib-gordon-network.md": "36cabd23ae53757052086b8fd45661ebb1b53a262619022462e9fb00c9ff6c5f"
+    "d9984b57bb49b755beea6e0d8e3c18072754509b:docs/smlib-gordon-network.md": "36cabd23ae53757052086b8fd45661ebb1b53a262619022462e9fb00c9ff6c5f",
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-geometry/src/surface_pullback.rs": "b73c1eb4d833f5d1af7ee00d07578c5c340df5279e3e7f6b4fd60e07eac8ff8f",
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "cb7e27d51a059bde5f1255f13adb4df35f6f9887588c721c371511722a96f7cb"
   }
 }

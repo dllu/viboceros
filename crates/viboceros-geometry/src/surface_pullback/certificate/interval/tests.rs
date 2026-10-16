@@ -200,6 +200,106 @@ fn zero_and_subnormal_limits_never_take_the_interval_proof() {
 }
 
 #[test]
+fn linear_and_quadratic_rational_sources_agree_with_independent_exact_proofs() {
+    let net = [[0., 0.], [1., 0.], [0., 1.], [1., 1.]]
+        .map(|p| {
+            [
+                rational(p[0]),
+                rational(p[1]),
+                Rational::zero(),
+                Rational::one(),
+            ]
+        })
+        .to_vec();
+    let surface = NurbsSurface::try_bilinear([
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Point3::try_new(1., 0., 0.).unwrap(),
+        Point3::try_new(1., 1., 0.).unwrap(),
+        Point3::try_new(0., 1., 0.).unwrap(),
+    ])
+    .unwrap();
+    let domains = [
+        [Rational::zero(), Rational::one()],
+        [Rational::zero(), Rational::one()],
+    ];
+    for degree in [1, 2] {
+        let mut accepted = 0;
+        let mut rejected = 0;
+        for offset in [0., 1e-7, 9e-7, 1.1e-6, -2e-6] {
+            let spatial = [([0.1, 0.2], 1.), ([0.3, 0.6], 0.7), ([0.8, 0.7], 1.3)]
+                .into_iter()
+                .take(degree + 1)
+                .map(|(p, w)| {
+                    [
+                        rational(p[0]) * rational(w),
+                        rational(p[1]) * rational(w),
+                        rational(offset) * rational(w),
+                        rational(w),
+                    ]
+                })
+                .collect::<Vec<_>>();
+            let mut uv = spatial
+                .iter()
+                .map(|p| [p[0].clone(), p[1].clone(), p[3].clone()])
+                .collect::<Vec<_>>();
+            // Independent exact degree elevation retains the rational path.
+            while uv.len() < 4 {
+                let p = uv.len() - 1;
+                let mut next = vec![uv[0].clone()];
+                for i in 1..=p {
+                    let alpha = Rational::new(i.into(), (p + 1).into());
+                    next.push(std::array::from_fn(|k| {
+                        &alpha * &uv[i - 1][k] + (Rational::one() - &alpha) * &uv[i][k]
+                    }));
+                }
+                next.push(uv.last().unwrap().clone());
+                uv = next;
+            }
+            let mut budget = Budget(MAX_WORK);
+            let mut exact = surface::Surface::new(&surface, &mut budget)
+                .unwrap()
+                .unwrap();
+            match bound(&net, [1, 1], &domains, &uv, &spatial, 1e-6) {
+                Outcome::Within(upper) => {
+                    assert!(upper <= 1e-6 && upper >= offset.abs());
+                    assert!(
+                        piece_bound_with_interval(
+                            &mut exact,
+                            uv,
+                            spatial,
+                            upper,
+                            &mut budget,
+                            false
+                        )
+                        .unwrap()
+                        .is_some()
+                    );
+                    accepted += 1;
+                }
+                Outcome::Outside => {
+                    assert!(
+                        piece_bound_with_interval(
+                            &mut exact,
+                            uv,
+                            spatial,
+                            1e-6,
+                            &mut budget,
+                            false
+                        )
+                        .unwrap()
+                        .is_none()
+                    );
+                    rejected += 1;
+                }
+                Outcome::Inconclusive => {}
+            }
+        }
+        assert_eq!(accepted, 3);
+        assert_eq!(rejected, 2);
+    }
+}
+
+#[test]
 fn crossing_box_decisions_agree_with_exact_restriction_on_both_knot_sides() {
     let tolerance = Tolerance::DEFAULT;
     let frame = crate::Frame3::try_from_normal(
@@ -282,31 +382,32 @@ fn cubic_sampling_nodes_cannot_hide_a_curved_surface_excursion() {
         .map(|x| Point2::try_new(x, 0.5).unwrap())
         .to_vec();
     let uv = NurbsCurve2::try_new(3, points.clone(), vec![0., 0., 0., 0., 1., 1., 1., 1.]).unwrap();
-    let spatial = NurbsCurve::try_new(
-        3,
-        points
-            .into_iter()
-            .map(|p| Point3::try_new(p.x(), p.y(), 0.).unwrap())
-            .collect(),
-        vec![0., 0., 0., 0., 1., 1., 1., 1.],
-    )
-    .unwrap();
-    for t in [0., 1. / 3., 2. / 3., 1.] {
-        let p = uv.evaluate(t).unwrap();
+    for degree in [1, 2, 3] {
+        let spatial = NurbsCurve::try_new(
+            degree,
+            (0..=degree)
+                .map(|i| Point3::try_new(i as Real / degree as Real, 0.5, 0.).unwrap())
+                .collect(),
+            [vec![0.; degree + 1], vec![1.; degree + 1]].concat(),
+        )
+        .unwrap();
+        for t in [0., 1. / 3., 2. / 3., 1.] {
+            let p = uv.evaluate(t).unwrap();
+            assert!(
+                source
+                    .evaluate(p.x(), p.y())
+                    .unwrap()
+                    .distance_to(spatial.evaluate(t).unwrap())
+                    .unwrap()
+                    < 1e-6
+            );
+        }
+        assert!(source.evaluate(0.5, 0.5).unwrap().z().abs() > 0.006);
         assert!(
             source
-                .evaluate(p.x(), p.y())
+                .parameter_curve_deviation_bound(&uv, &spatial, 1e-6)
                 .unwrap()
-                .distance_to(spatial.evaluate(t).unwrap())
-                .unwrap()
-                < 1e-6
+                .is_none()
         );
     }
-    assert!(source.evaluate(0.5, 0.5).unwrap().z().abs() > 0.006);
-    assert!(
-        source
-            .parameter_curve_deviation_bound(&uv, &spatial, 1e-6)
-            .unwrap()
-            .is_none()
-    );
 }

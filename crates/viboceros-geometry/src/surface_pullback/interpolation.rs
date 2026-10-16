@@ -15,6 +15,7 @@ struct Fitter<'a> {
     tolerance: Tolerance,
     certificate: certificate::PullbackCertificate,
     segments: Vec<PullbackSegment>,
+    isocurve: Option<(NurbsCurve, bool, Real)>,
 }
 
 fn blend(points: &[Point2], weights: &[Real]) -> Result<Point2, GeometryError> {
@@ -34,6 +35,20 @@ fn blend(points: &[Point2], weights: &[Real]) -> Result<Point2, GeometryError> {
 
 impl Fitter<'_> {
     fn node(&self, fraction: Real) -> Result<Point2, GeometryError> {
+        if let Some((curve, along_u, fixed)) = &self.isocurve {
+            let target = self.sampler.evaluate(fraction)?;
+            let parameter = curve.closest_parameter(target, self.numerical)?;
+            if curve.evaluate(parameter)?.distance_to(target)? > self.tolerance.absolute() {
+                return Err(GeometryError::SurfacePullbackDidNotConverge {
+                    tolerance: self.tolerance.absolute(),
+                });
+            }
+            return if *along_u {
+                Point2::try_new(parameter, *fixed)
+            } else {
+                Point2::try_new(*fixed, parameter)
+            };
+        }
         pullback_parameters(
             self.surface,
             self.sampler.evaluate(fraction)?,
@@ -161,6 +176,35 @@ pub(super) fn fit(
     endpoints: Option<[Point2; 2]>,
     tolerance: Tolerance,
 ) -> Result<(NurbsCurve2, Real), GeometryError> {
+    fit_with_isocurve(surface, source, endpoints, tolerance, None)
+}
+
+/// Axis-aligned endpoints propose a constant-coordinate path. Numerical
+/// isocurve extraction/search only proposes UV data; the complete original
+/// surface and spatial curve still supply every acceptance certificate.
+pub(super) fn fit_on_isocurve(
+    surface: &NurbsSurface,
+    source: &NurbsCurve,
+    endpoints: [Point2; 2],
+    tolerance: Tolerance,
+) -> Result<Option<(NurbsCurve2, Real)>, GeometryError> {
+    let along_u = if endpoints[0].y() == endpoints[1].y() && endpoints[0].x() != endpoints[1].x() {
+        true
+    } else if endpoints[0].x() == endpoints[1].x() && endpoints[0].y() != endpoints[1].y() {
+        false
+    } else {
+        return Ok(None);
+    };
+    fit_with_isocurve(surface, source, Some(endpoints), tolerance, Some(along_u)).map(Some)
+}
+
+fn fit_with_isocurve(
+    surface: &NurbsSurface,
+    source: &NurbsCurve,
+    endpoints: Option<[Point2; 2]>,
+    tolerance: Tolerance,
+    along_u: Option<bool>,
+) -> Result<(NurbsCurve2, Real), GeometryError> {
     let frame =
         surface.local_parameter_frame(endpoints.into_iter().flatten().map(|p| [p.x(), p.y()]))?;
     let endpoints = endpoints
@@ -176,6 +220,17 @@ pub(super) fn fit(
             tolerance: tolerance.absolute(),
         },
     )?;
+    let isocurve = along_u
+        .map(|along_u| {
+            let point = endpoints.unwrap()[0];
+            let (curve, fixed) = if along_u {
+                (frame.surface.isocurve_u(point.y())?, point.y())
+            } else {
+                (frame.surface.isocurve_v(point.x())?, point.x())
+            };
+            Ok::<_, GeometryError>((curve, along_u, fixed))
+        })
+        .transpose()?;
     let mut fitter = Fitter {
         surface: &frame.surface,
         original: surface,
@@ -186,6 +241,7 @@ pub(super) fn fit(
         tolerance,
         certificate,
         segments: Vec::new(),
+        isocurve,
     };
     fitter.append([0., 1.], endpoints.map_or([None; 2], |p| p.map(Some)), 0)?;
     // Restoring native knot times and controls can round the assembled spline.

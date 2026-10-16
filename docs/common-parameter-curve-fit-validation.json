@@ -101,15 +101,12 @@
     "crates/viboceros-geometry/src/lib.rs": "2bb0f1ecf0f59792d69bbbb1ea6dfb97459fae79dbc65142f725c3152b9e9912",
     "crates/viboceros-geometry/src/spline_collocation.rs": "8abe7a91ffbdea3c146a0102c277a94549f0c837148124c9af93a8f26aa7c45e",
     "crates/viboceros-geometry/src/spline_collocation/banded.rs": "a205d028f0c14499ebe80fe6cf33fa7394586e29b164a21d8acd7f801a0e6d18",
-    "crates/viboceros-geometry/src/surface_pullback.rs": "b73c1eb4d833f5d1af7ee00d07578c5c340df5279e3e7f6b4fd60e07eac8ff8f",
-    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "cb7e27d51a059bde5f1255f13adb4df35f6f9887588c721c371511722a96f7cb",
     "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
     "crates/viboceros-geometry/src/surface_rebuild.rs": "d367ce6574f2c6e944da1df1c95d0dcdf504a0e05392e71c1764e780c125f2b8",
     "crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
     "crates/viboceros-smlib/Cargo.toml": "7defb09a995e54b6936a637fb297a8590ba91129c3a2e24beec60bb15b09392e",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "crates/viboceros-smlib/examples/network_parameterization.rs": "e7d931f3407c1d79cc5236959b006af5f1de85cf2c160773184bbae007981374",
     "crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
     "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
@@ -120,10 +117,7 @@
     "crates/viboceros-smlib/src/native.rs": "f2abff3b978ee846c60ba5b119fbd6f7aff1bf3fccd665b6870c2fdb72f96868",
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "0fb7e43039ac67b80a3329d7bd5afe59b449b6d344a5807bd394e4e29c887d8f",
     "crates/viboceros-smlib/src/native/network_surface.rs": "9ac9a6a89914dfbc5bea9accbec38d133a5e3f14a26e39f9a28529e5fc82974e",
-    "crates/viboceros-smlib/tests/curve_fit.rs": "1831fa7523c7ee2c6e107341ce3523ab178e5d8f4dc11f430ba14bafbee4c8b1",
-    "crates/viboceros-smlib/tests/network_surface.rs": "a70214286364e5295af7f1272c8874de6a57b26288da72be1f2683726a09000a",
-    "docs/common-parameter-curve-fit.md": "4f7cf03b2cbe5d0e892d0a7e13c0c101d080b764d73bac896b9ca180f2d8628f",
-    "docs/smlib-gordon-network.md": "57d51992f7eca4333b27e107ef3a5a5d999ce82a491d579749e87690c269a408"
+    "crates/viboceros-smlib/tests/curve_fit.rs": "1831fa7523c7ee2c6e107341ce3523ab178e5d8f4dc11f430ba14bafbee4c8b1"
   },
   "input_sha256": {
     "tools/rhino_oracle/fixtures/network_surface.json": "8c5eb7601fd8e8172bc3580b2451e73644c242a680b410a2c1bb459139be4605",
@@ -138,5 +132,13 @@
     "docs/common-parameter-curve-fit-asan-instrumentation.log": "9651016c564535a92919d432a522e492b345ad64863a651c66e4494bb76add59",
     "docs/common-parameter-curve-fit-probe.log": "dd4ddc4b949c0bed86b16a48dc804309939b46148322b040a8a7086e597826b1",
     "tools/rhino_oracle/observations/network_parameterization_viboceros_20261016.json": "eb663d6aaee8eab0be6e47e4a09c6ccdb637a1b3607034c3acf70df307732eec"
+  },
+  "source_git_sha256": {
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-geometry/src/surface_pullback.rs": "b73c1eb4d833f5d1af7ee00d07578c5c340df5279e3e7f6b4fd60e07eac8ff8f",
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "cb7e27d51a059bde5f1255f13adb4df35f6f9887588c721c371511722a96f7cb",
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-smlib/examples/network_parameterization.rs": "e7d931f3407c1d79cc5236959b006af5f1de85cf2c160773184bbae007981374",
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:crates/viboceros-smlib/tests/network_surface.rs": "a70214286364e5295af7f1272c8874de6a57b26288da72be1f2683726a09000a",
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:docs/common-parameter-curve-fit.md": "4f7cf03b2cbe5d0e892d0a7e13c0c101d080b764d73bac896b9ca180f2d8628f",
+    "f15df87ce6955dc48ff97b41af516a8861ece87a:docs/smlib-gordon-network.md": "57d51992f7eca4333b27e107ef3a5a5d999ce82a491d579749e87690c269a408"
   }
 }

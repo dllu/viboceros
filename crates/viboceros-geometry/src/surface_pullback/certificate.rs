@@ -406,7 +406,7 @@ fn piece_bound_with_interval(
                 return Ok(None);
             }
         } else if let Some(patch) = surface.containing_patch(&bounds, budget)? {
-            if use_interval && limit > 0. && uv.len() > 2 && spatial.len() == 4 {
+            if use_interval && limit > 0. && uv.len() > 2 && spatial.len() <= 4 {
                 match surface.interval_bound(patch, &uv, &spatial, limit, budget)? {
                     interval::Outcome::Within(upper) => {
                         bound = bound.max(upper);
@@ -424,7 +424,7 @@ fn piece_bound_with_interval(
             bound = bound.max(upper);
             continue;
         } else {
-            let crossing = if use_interval && limit > 0. && uv.len() > 2 && spatial.len() == 4 {
+            let crossing = if use_interval && limit > 0. && uv.len() > 2 && spatial.len() <= 4 {
                 surface.interval_crossing_bound(&bounds, &spatial, limit, budget)?
             } else {
                 interval::Crossing::Inconclusive

@@ -467,6 +467,12 @@ impl NurbsSurface {
             fitting_endpoints = discovery.endpoints;
         }
 
+        if certified
+            && let Some(points) = fitting_endpoints
+            && let Ok(Some(result)) = interpolation::fit_on_isocurve(self, curve, points, tolerance)
+        {
+            return Ok((result.0, Some(result.1)));
+        }
         match self.hermite_pullback(curve, fitting_endpoints, tolerance, certified) {
             Ok(result) => Ok(result),
             Err(

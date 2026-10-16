@@ -73,6 +73,12 @@ passes the constructor's complete surface-image bound at `1e-6`. For refitted
 inputs that proves the fitted images; their pre-fit originals still need a
 separate continuous certificate.
 
+The probe now also performs [original-curve admission](original-network-curve-admission.md)
+and emits schema two with per-curve bounds or errors. All six originals certify
+for the smooth candidate; the arc-length candidate certifies five, with one
+proof reaching the unchanged work limit. The linked schema-one capture above
+is retained as historical evidence.
+
 The arc-length candidate improves this fixture's interior comparison. The
 tested global smooth map worsens it. Neither passes the `1e-6` query comparison
 or qualifies NetworkSrf. Saved-tensor traces keep each source curve close to a
