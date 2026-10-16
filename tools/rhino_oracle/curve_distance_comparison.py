@@ -15,6 +15,8 @@ def bezier_point(curve,parameter):
 
 def comparison(request,local,native):
     eps=F(1e-6);rows=[];counts=dict(status_matches=0,maximum_scalar_matches=0,minimum_scalar_matches=0,scalar_pair_matches=0,source_pair_counterexamples=0)
+    registrations={row['value']['command_registered']for row in local['results']}
+    if len(registrations)!=1:raise ValueError('inconsistent local command registration')
     if not len(request['operations'])==len(local['results'])==len(native['results']):raise ValueError('recipe/result count mismatch')
     for op,a,b in zip(request['operations'],local['results'],native['results']):
         if op['id']!=a['id'] or a['id']!=b['id']:raise ValueError('recipe/result identity mismatch')
@@ -36,7 +38,7 @@ def comparison(request,local,native):
                 counts['source_pair_counterexamples']+=1
         row['matches_recorded_scalars_and_status']=x['created']==y['created']and (not x['created']or all(row['scalars_within_1e_minus_6'].values()))
         rows.append(row)
-    return dict(schema_version=1,absolute_epsilon=1e-6,reference_derived_inputs=False,command_registered=False,
+    return dict(schema_version=1,absolute_epsilon=1e-6,reference_derived_inputs=False,command_registered=registrations.pop(),
         complete_native_command_parity_qualified=False,continuous_global_extrema_qualified=False,performance_qualified=False,
         method='Exact binary-rational scalar differences at 1e-6, preserving all statuses and raw witnesses. Two closer source pairs are evaluated independently with exact polynomial Bernstein arithmetic. No tied-witness position/direction equivalence or native overlap correspondence is inferred.',
         cases=len(rows),counts=counts,recorded_scalar_and_status_comparison_passed=all(row['matches_recorded_scalars_and_status']for row in rows),results=rows,

@@ -62,6 +62,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "CrvDeviation" {
+            return "Select exactly two curves; Enter measures deviation, Esc cancels";
+        }
         if self.description.command == "RailRevolve" {
             return "Select the profile first, then the rail; Enter picks the axis; Esc cancels";
         }
@@ -516,7 +519,9 @@ impl VibocerosApp {
                 }
             }
             "Circle FitPoints" | "PlaneThroughPt" | "Sphere FitPoints" => 3,
-            "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" | "LineThroughPt" => 2,
+            "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" => {
+                2
+            }
             _ => 1,
         };
         let selected_objects = self

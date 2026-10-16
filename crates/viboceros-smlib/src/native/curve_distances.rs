@@ -2,6 +2,7 @@
 use super::working_curve::normalized;
 use super::*;
 use viboceros_geometry::CurveRef;
+pub use viboceros_geometry::{CurveDistanceExtrema, CurveDistanceWitness};
 unsafe extern "C" {
     fn vb_curve_distance_extrema(
         first: *const NativeCurve,
@@ -12,20 +13,6 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
-}
-#[derive(Clone, Debug)]
-pub struct CurveDistanceWitness {
-    /// Fractions in each source's NURBS chart, preserving the requested visit.
-    pub normalized_parameters: [f64; 2],
-    pub parameters: [f64; 2],
-    pub points: [Point3; 2],
-    pub distance: f64,
-}
-#[derive(Clone, Debug)]
-pub struct CurveDistanceExtrema {
-    pub intervals: [[f64; 2]; 2],
-    pub maximum: CurveDistanceWitness,
-    pub minimum: CurveDistanceWitness,
 }
 /// Numerical distance extrema on explicit normalized source intervals. The
 /// caller owns interval/overlap policy. Upstream maximum candidates and native

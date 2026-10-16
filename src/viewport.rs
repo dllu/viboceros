@@ -348,6 +348,7 @@ pub struct ViewportInput<'a> {
     pub component_highlights: &'a [ComponentPick],
     pub component_highlight_segments: &'a [[Point3; 2]],
     pub point_deviation: Option<&'a viboceros_command::point_deviation::View>,
+    pub curve_deviation: Option<&'a viboceros_command::curve_deviation::View>,
     pub edge_analysis: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_zoom: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_highlights: &'a [EdgePick],
@@ -425,6 +426,7 @@ impl Default for ViewportInput<'_> {
             component_highlights: &[],
             component_highlight_segments: &[],
             point_deviation: None,
+            curve_deviation: None,
             edge_analysis: None,
             edge_zoom: None,
             edge_highlights: &[],
@@ -1857,6 +1859,30 @@ impl Viewport {
                 }
             }
         }
+        if let Some(view) = input.curve_deviation {
+            for (w, rgb) in view.markers() {
+                let color = Color32::from_rgb(rgb[0], rgb[1], rgb[2]);
+                if w.distance > view.marker_tolerance
+                    && let Some(ends) =
+                        self.project_selection_segment(w.points[0], w.points[1], rect)
+                {
+                    painter.line_segment(ends, Stroke::new(1.5, color));
+                }
+                for point in w
+                    .points
+                    .into_iter()
+                    .take(if w.distance > view.marker_tolerance {
+                        2
+                    } else {
+                        1
+                    })
+                {
+                    if let Some(p) = self.project_selection_point(point, rect) {
+                        painter.circle_filled(p, 3., color);
+                    }
+                }
+            }
+        }
         if let Some(view) = input.edge_analysis {
             self.paint_edge_analysis(&painter, rect, document, view);
         }
@@ -2460,6 +2486,76 @@ mod tests {
             assert_eq!(document.objects().len(), 0);
             assert!(!document.can_undo());
         }
+    }
+
+    #[test]
+    fn crv_deviation_markers_paint_in_all_viewport_modes_without_model_edits() {
+        let document = Document::default();
+        let a = viboceros_geometry::LineSegment::try_new(
+            point(0., 0., 0.),
+            point(5., 0., 0.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let b = viboceros_geometry::LineSegment::try_new(
+            point(0., 2., 3.),
+            point(5., 2., 3.),
+            document.tolerance(),
+        )
+        .unwrap();
+        let view = viboceros_command::curve_deviation::analyze(
+            viboceros_geometry::CurveRef::Line(&a),
+            viboceros_geometry::CurveRef::Line(&b),
+            document.tolerance(),
+        )
+        .unwrap()
+        .unwrap();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            for mode in [
+                DisplayMode::Wireframe,
+                DisplayMode::Shaded,
+                DisplayMode::Ghosted,
+            ] {
+                let mut counts = Vec::new();
+                for overlay in [None, Some(&view)] {
+                    let context = egui::Context::default();
+                    let mut viewport = Viewport::new(kind);
+                    viewport.display_mode = mode;
+                    let output = context.run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(Rect::from_min_size(
+                                Pos2::ZERO,
+                                Vec2::new(800., 600.),
+                            )),
+                            ..Default::default()
+                        },
+                        |ui| {
+                            viewport.show(
+                                ui,
+                                &document,
+                                ViewportInput {
+                                    curve_deviation: overlay,
+                                    ..Default::default()
+                                },
+                                &[],
+                                0,
+                                true,
+                            );
+                        },
+                    );
+                    counts.push(output.shapes.iter().filter(|s|matches!(&s.shape,egui::Shape::LineSegment{stroke,..} if stroke.width==1.5 && [Color32::RED,Color32::GREEN].contains(&stroke.color))).count());
+                    output.drop_without_applying_deltas();
+                }
+                assert_eq!(counts[1], counts[0] + 2, "{kind:?} {mode:?}");
+            }
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert!(!document.can_undo());
     }
 
     #[test]

@@ -151,6 +151,7 @@ mod boolean_solids;
 mod boolean_two;
 mod construction_plane;
 mod contour;
+mod curve_deviation;
 mod curve_preview;
 mod curve_prompt;
 mod distance;
@@ -2310,6 +2311,9 @@ impl VibocerosApp {
     fn run_command_input(&mut self) {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
+        if self.continue_curve_deviation(&input) {
+            return;
+        }
         if self.try_continue_remember_copy_options(&input) {
             return;
         }
@@ -2949,6 +2953,7 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
+        self.dismiss_curve_deviation_for_command(input);
         let input = match self.silhouette_input(input) {
             Ok(input) => input,
             Err(error) => {
@@ -3029,7 +3034,14 @@ impl VibocerosApp {
         } else {
             std::borrow::Cow::Borrowed(input)
         };
-        self.cancel_interactive_command(false);
+        let continuing_curve_deviation =
+            command_input.split_whitespace().next().is_some_and(|name| {
+                name.trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("CrvDeviation")
+            }) && self.commands.curve_deviation_view(&self.document).is_some();
+        if !continuing_curve_deviation {
+            self.cancel_interactive_command(false);
+        }
         self.push_log(format!("> {command_input}"));
         let previous_unit_scale = self.document.units().meters_per_unit();
         let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
@@ -5415,6 +5427,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.commands.clear_curve_deviation();
         self.set_point_sources = None;
         self.surface_extrusion_sources = None;
         self.surface_path_prompt = None;
@@ -9155,6 +9168,9 @@ impl VibocerosApp {
             self.cancel_planar_boolean();
         } else if self.boolean_two_prompt.is_some() {
             self.cancel_boolean_two();
+        } else if self.commands.curve_deviation_view(&self.document).is_some() {
+            self.commands.clear_curve_deviation();
+            self.push_log("CrvDeviation canceled".into());
         } else if self.remember_copy_prompt || self.edge_zoom_prompt.is_some() {
             self.cancel_interactive_command(true);
         } else if self.end_analysis_pick.is_some() && self.set_view_prompt.is_none() {
@@ -9230,6 +9246,7 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.show_edge_analysis(ui);
         self.show_point_deviation(ui);
+        self.show_curve_deviation(ui);
         self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9554,6 +9571,7 @@ impl eframe::App for VibocerosApp {
             .point_deviation_view(&self.document)
             .ok()
             .flatten();
+        let curve_deviation_view = self.commands.curve_deviation_view(&self.document);
         let edge_zoom_view = self.commands.edge_zoom_view(&self.document).ok().flatten();
         let mut edge_highlights = self
             .edge_prompt
@@ -9882,6 +9900,7 @@ impl eframe::App for VibocerosApp {
                             edge_pick,
                             curve_or_edge_pick,
                             point_deviation: deviation_view.as_ref(),
+                            curve_deviation: curve_deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),
                             edge_zoom: edge_zoom_view.as_ref(),
                             edge_highlights: &edge_highlights,
@@ -10091,6 +10110,7 @@ mod tests {
     mod copy_options;
     mod create_uv_curves;
     mod cull_degenerate;
+    mod curve_deviation;
     mod curve_rebuild_preview;
     mod distance;
     mod distribute;

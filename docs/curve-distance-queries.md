@@ -1,9 +1,11 @@
 # Curve distance queries
 
 The native usd-brep adapter now exposes `curve_distance_extrema` for two curves
-and explicit normalized source intervals. `CrvDeviation` remains unregistered:
-its overlap policy and reported minima still need compatibility work. The new
-backend is a prerequisite for that command, rather than a completed command.
+and explicit normalized source intervals. The registered
+[`CrvDeviation` command](commands/crv-deviation.md) now uses this backend for
+curved inputs; its overlap policy and reported minima still need compatibility
+work. The backend and its earlier diagnostic capture remain separate from
+command behavior.
 
 Enable `native-smlib` in the application/oracle or `native` in
 `viboceros-smlib`. The producer accepts the existing `CurveRef` families through
@@ -65,8 +67,11 @@ the distances agree; no directed witness or complete interval parity is claimed.
 
 The `curve_deviation` oracle operation retains the original two curve recipes
 and `postselect` flag. Its Rhino side captures the actual command and SDK. Its
-local side runs the backend only and reports `command_registered=false`.
-It requires `native-smlib` locally and a private settings scheme with one
+local side runs the backend only when `keep_marks` is omitted. The original
+committed response records `command_registered=false` at its capture revision;
+replaying now reports the command's current registration. An explicit
+`keep_marks` boolean selects the new command workflow instead.
+The backend diagnostic requires `native-smlib` locally and a private settings scheme with one
 iteration on Rhino. The initial capture used command echo off and retained
 empty histories; its raw SDK observations remain in a separate initial capture.
 The final capture enables echo and requires a nonempty history.

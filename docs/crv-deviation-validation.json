@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Registered CrvDeviation command, analytic line correspondence, curved backend integration, and transient/permanent viewport marks",
+  "base_repository_revision": "9e820ecc73876b45801fbbfdf18bd5710c46bfcd",
+  "command_registered": true,
+  "native_command_parity_qualified": false,
+  "native_curved_overlap_qualified": false,
+  "native_minimum_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "directed_witness_parity_qualified": false,
+  "performance_qualified": false,
+  "reference_derived_inputs": false,
+  "implementation": "Shared geometry witness data types retain the public native adapter aliases. Line pairs use aligned numerical direction bisectors, exact rational projected overlap/clipping and quadratic minimization, and attained original-source witnesses. Curved pairs reuse the existing native nearest-distance producer and projected endpoint ranges; parallel-plane circles require nonsingular mutual angular coverage. Command sessions retain source snapshots and tolerance. Picking/display/options preserve model history; End with KeepMarks prepares and inserts colored markers as one transaction. Escape/window close/new commands discard transient reports. Geometry/tolerance edits invalidate stale reports.",
+  "coverage": {
+    "rust_runtime_test_executions": 54,
+    "unique_rust_tests": 48,
+    "new_rust_tests": 16,
+    "python_tests": 32,
+    "new_python_tests": 2,
+    "viewport_projection_modes": 12,
+    "retained_native_workflow_cases": 22,
+    "native_successful_reports": 16,
+    "native_no_overlap_cases": 6,
+    "status_matches": 22,
+    "sdk_maximum_scalar_matches": 16,
+    "sdk_minimum_scalar_matches": 5,
+    "command_minimum_display_matches": 15,
+    "command_maximum_display_matches": 16,
+    "permanent_mark_sets_matching": 2,
+    "permanent_mark_cases": 5
+  },
+  "native_capture_command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_deviation_workflows.json --scheme VibocerosOracleCurveDeviationWorkflow20261016 --timeout 240 --output tools/rhino_oracle/observations/curve_deviation_workflows_rhino_20261016.json",
+  "native_capture_note": "Final retained capture explicitly sets KeepMarks=Yes or No before Enter/Cancel. An earlier capture of the same 22 recipes used implicit No. Both used the existing private headless launcher; no Wine/FEX/license configuration changes.",
+  "limits": [
+    "Curved inputs retain the endpoint-projection diagnostic policy, not a complete native correspondence implementation. The report exposes approximate_overlap and tells the user this limit. The command does not implement SubCrv. Numeric linear NURBS/polyline inputs still follow the curved producer rather than the explicit Line variant correspondence.",
+    "All 22 captured workflow report/no-overlap statuses and all 16 successful SDK maximum values match at 1e-6. Only 15 of 16 local minima agree with native printed command values at the recorded display precision; the retained offset cubic differs. SDK minima disagree with native command output in several crossing cases and remain separately compared in the artifact.",
+    "Only two of five kept-marker sets match the retained native geometry within 1e-6. Curved interval boundaries and tied extrema can produce different witness marks despite matching scalar values. All mismatches and raw responses remain; no complete command or directed witness qualification.",
+    "Native queries remain bounded numerical searches with inherited canonical working-frame, degree/weight and 4096-control limits. No continuous Hausdorff/global-extremum, benchmark, full-kernel sanitizer or performance qualification is added.",
+    "Reports and options preserve Redo; kept markers form one undo step. Coincident witness pairs collapse to one point at model tolerance. Escape/replacement discard the analysis; native Escape-only persistence behavior is not qualified by the Enter/Cancel capture.",
+    "Historical records retain their original nonhash metadata and digest values using immutable Git source references where current files changed. The existing 69 unverifiable historical records remain untouched."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-geometry crv_deviation --lib",
+      "passed": true,
+      "log": "docs/crv-deviation-geometry.log",
+      "tests": 4
+    },
+    {
+      "command": "cargo test -p viboceros-command crv_deviation --lib",
+      "passed": true,
+      "log": "docs/crv-deviation-command.log",
+      "tests": 6
+    },
+    {
+      "command": "cargo test -p viboceros-command reports_sorted_help --lib",
+      "passed": true,
+      "log": "docs/crv-deviation-help.log",
+      "tests": 1
+    },
+    {
+      "command": "cargo test -p viboceros crv_deviation --bin viboceros",
+      "passed": true,
+      "log": "docs/crv-deviation-ui.log",
+      "tests": 3
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib crv_deviation --lib",
+      "passed": true,
+      "log": "docs/crv-deviation-native-command.log",
+      "tests": 7
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib curve_deviation",
+      "passed": true,
+      "log": "docs/crv-deviation-oracle.log",
+      "tests": 3
+    },
+    {
+      "command": "cargo test -p viboceros-smlib --features native --lib",
+      "passed": true,
+      "log": "docs/crv-deviation-native-library.log",
+      "tests": 30
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_curve_deviation tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "log": "docs/crv-deviation-python.log",
+      "tests": 32
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "log": "docs/crv-deviation-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "log": "docs/crv-deviation-fmt.log"
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/curve_deviation_workflows.json tools/rhino_oracle/observations/curve_deviation_workflows_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/crv-deviation-export.log"
+    }
+  ],
+  "preserved_historical_records": [
+    "docs/curve-distance-validation.json",
+    "docs/point-deviation-validation.json",
+    "docs/sphere-fit-points-validation.json"
+  ],
+  "sha256": {
+    "README.md": "6e9e0bfcc0129d5beb3a2f343c61f4dfddf7e94e4c7259260c734f9cda1ad46a",
+    "crates/viboceros-command/src/curve_deviation.rs": "12ae0f222a00c7f41b5c70c38ff6227df12bd75f61fa40797332e00327a70486",
+    "crates/viboceros-command/src/curve_deviation/tests.rs": "a78caf31d09fb4310605611a7cee281a61cd39f07e2ae0f2e28d881a75fccb7a",
+    "crates/viboceros-command/src/lib.rs": "51145ee1da326caeab0f3a03c24b759d29c8828c704a8001884abe7e8cee0d57",
+    "crates/viboceros-geometry/src/curve_distance.rs": "f10f518eea2cb3ecbe2a3332eda3886b84fd643ef0588aee8cca810e23085521",
+    "crates/viboceros-geometry/src/curve_distance/tests.rs": "0eed8b2a450a948a9ed363b62de539b33b799fb9a114f4ecda526b5a4d9ac5c4",
+    "crates/viboceros-geometry/src/lib.rs": "6c255d2cb67bde792353095bd99b2f08f4a13e7ab65e1159a5a1195159ef5afe",
+    "crates/viboceros-oracle/src/curve_deviation.rs": "bfc956d2ad0c00504684da3b39fc3327e815061baf70c009cf14fccc5a205d95",
+    "crates/viboceros-smlib/src/native/curve_distances.rs": "ee4005b35ec0a05dc7081f6140311d3f1287bba7ffd78f607e005182680cfbb1",
+    "docs/commands/crv-deviation.md": "d6186a480379541ea5917db73a7fae0db59d3159765ca3866cd081715ac538b2",
+    "docs/crv-deviation-clippy.log": "96d1c8385aeb2641dba5d313cd3de3becf9df9add5cd5d9be6c74665cd3cce9f",
+    "docs/crv-deviation-command.log": "8830d55d1a3e4abfd2b0797cee779826cd1ef06da2d8ffc81ed9eb62aed89c23",
+    "docs/crv-deviation-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/crv-deviation-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/crv-deviation-geometry.log": "d03da8228be3fc0ff421715c3406753373bfbe7807816d756f2eb7fe52fb4213",
+    "docs/crv-deviation-help.log": "07d623d562f1a775c259a4dcb5fbff11c6019735b5fdd9e6532a826abce4e462",
+    "docs/crv-deviation-native-command.log": "6aacb0464f8df1c691130a87e33afb3df1e7f3c472bbe5f10f25ef0d0089e4bf",
+    "docs/crv-deviation-native-library.log": "52489f5a45508dabfecc5d595ddd1b69f4e84170fa953338caf5d5fbf0043b0a",
+    "docs/crv-deviation-oracle.log": "5e0161193d1daa7d4547a60b0606a1fc5b1e00c7944e2c84cb964e2963326361",
+    "docs/crv-deviation-python.log": "9794693c9d6cc226416d5cb0daf6e591be87d306edd03202a2a70872123d3311",
+    "docs/crv-deviation-ui.log": "52dc3343584cf357ececb47447161f0905c6b8fabab0774703d9775f9beae7d7",
+    "docs/curve-distance-queries.md": "b87ef76c7c1869964e6b0f3991b73d5c1adde1020b8b707aa96a8d2ff174cebd",
+    "docs/curve-distance-validation.json": "3e991949613f822a638f1b0f32d0c0f8df8d919e5d2a8c28cb5880d8afb55280",
+    "docs/point-deviation-validation.json": "80231d5db348d29dfc8ee468250df02a6e308b601544059edcd4dc0c2f0c705a",
+    "docs/sphere-fit-points-validation.json": "1d2af691404c3f5619824bad03d0591e0b97734cfaffc38e9d85d83e7c510631",
+    "src/app.rs": "e4aa1fc037db24fc4affa533fe9f232b96ca1a7f98b8ec8005d1d7c9e47b7f1a",
+    "src/app/curve_deviation.rs": "310a1dac9123a3c7cc1c5ce32a428170caac845b48962655f97e2053deea73bd",
+    "src/app/object_selection.rs": "a993ef3812a5000d9e23e3fc7b7e40a10e0811a0315e2247c487ba4b98787a1b",
+    "src/app/tests/curve_deviation.rs": "652e9325405d500d90b3fc1ace2f61c1d2db99c9321d825b989d3e9e30ce6155",
+    "src/viewport.rs": "ba3c1ae83e863cbbc0c34b9c4e20bcb899c25fcfeab9876360bcbec2a676d1c3",
+    "tools/rhino_oracle/curve_deviation_comparison.py": "2c203d73f79f728dcc4bd2b3d4878454d1d5921aca6f6c4a6c565696e49fa0ea",
+    "tools/rhino_oracle/curve_deviation_probe.py": "349bb64d2dc926464a32468ed8a3dd66329ce61e7a82c3de187f2ce750f7ce32",
+    "tools/rhino_oracle/curve_distance_comparison.py": "35a319ecc9885f0f7642c8019141554df07d82921a0b77eb69d742d6dd324fbf",
+    "tools/rhino_oracle/fixtures/curve_deviation_workflows.json": "c236207d6edda479c5ef17a90eaa433d4da21479f58a892f4c1ac296396875e4",
+    "tools/rhino_oracle/observations/curve_deviation_workflows_comparison_20261016.json": "3b25300da18c49bc431257a1bb93d567f77ba6d8f1d6580548ff7c9fafb28056",
+    "tools/rhino_oracle/observations/curve_deviation_workflows_rhino_20261016.json": "1544b42888df8b65360329362af4f305d413206753024018db639e093a8a7dbf",
+    "tools/rhino_oracle/observations/curve_deviation_workflows_viboceros_20261016.json": "95f685589c8b45fc81ecfedbe897ef3bc39ae51bdc8fd8cb896db7d9459861fd",
+    "tools/rhino_oracle/test_curve_deviation.py": "b0730a09e268976ca6ddae457c09a7caa77e3b90dff53e6d7712b1ca0b2f98a5"
+  }
+}

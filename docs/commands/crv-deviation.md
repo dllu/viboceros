@@ -1,0 +1,73 @@
+# CrvDeviation
+
+Select two curves and run `CrvDeviation`, or run the command first, pick two
+curves, and press Enter. The report shows minimum and maximum distances.
+Viewport marks show the minimum in green, maximum in red, and overlap ends in
+white in wireframe, shaded, and ghosted views. Enter or **Done** dismisses the
+report. Escape, closing the window, or starting another command discards its
+transient display.
+
+Set `KeepMarks=Yes` in the report window or command line before finishing with
+Enter. This adds colored points and connecting lines on the current layer as
+one undoable edit. A pair within model tolerance produces a single point.
+Source curves remain intact. Measuring and changing display options preserve
+Undo/Redo. Source geometry or tolerance changes invalidate the report so its
+marks cannot be committed against changed sources.
+
+```text
+CrvDeviation
+KeepMarks=Yes
+<Enter>
+
+CrvDeviation End
+CrvDeviation Cancel
+```
+
+Line pairs work in the portable build. They use an analytic correspondence in
+planes perpendicular to the aligned direction bisector, with exact rational
+clipping and minimization after computing that direction. This reproduces the
+captured parallel, partial, reversed, and angled line behavior: the maximum for
+crossing finite lines can exceed their nearest-point distance. Perpendicular
+lines and intervals touching at only one projected position have no report.
+Native parameter domains are preserved. Directions within 64 machine epsilons
+of perpendicular are treated as ambiguous.
+
+Curved inputs require `native-smlib`. They reuse the usd-brep/SMLib
+[distance backend](../curve-distance-queries.md) with projected endpoint ranges.
+For circle pairs on parallel planes, an angular overlap requires both projected
+centers to be strictly inside the other circle. General curved correspondence
+is still approximate and the report states that limitation. In particular:
+
+- The two captured offset cubic minima differ from Rhino's reported values.
+- Projected endpoints do not reproduce all native interval boundaries or
+  mixed open/closed correspondences.
+- Tied extrema can choose different points and parameters, including different
+  permanent marks even when the minimum/maximum distances agree.
+- `SubCrv` selection is not implemented for this command.
+
+The retained 22-case workflow capture includes circle overlap boundaries,
+crossing lines from 5 to 175 degrees, and five permanent-mark cases. Its
+[comparison](../../tools/rhino_oracle/observations/curve_deviation_workflows_comparison_20261016.json)
+keeps SDK scalar values, printed native command values, and unordered marker
+geometry separate. All 22 report decisions and 16 maximum SDK distances agree
+within `1e-6`. Fifteen of 16 minima agree with the printed command output at its
+observed six-significant-digit precision plus `1e-6`; only two of five permanent
+marker sets match. Rhino's SDK and command output themselves have different
+minimum values in several crossing cases. No complete command, continuous
+global-extremum, or performance parity is claimed.
+
+To reproduce the command-side local observations:
+
+```sh
+cargo run --quiet -p viboceros-oracle --features native-smlib -- \
+  tools/rhino_oracle/fixtures/curve_deviation_workflows.json /tmp/crv-deviation.json
+python3 -m tools.rhino_oracle.curve_deviation_comparison \
+  tools/rhino_oracle/fixtures/curve_deviation_workflows.json /tmp/crv-deviation.json \
+  tools/rhino_oracle/observations/curve_deviation_workflows_rhino_20261016.json \
+  /tmp/crv-deviation-comparison.json
+```
+
+For `curve_deviation` oracle recipes, an explicit `keep_marks` boolean selects
+actual local command execution followed by `End`. Omitting it retains the
+earlier backend-only diagnostic. Native captures always use an owned private
+headless instance. See the [validation record](../crv-deviation-validation.json).

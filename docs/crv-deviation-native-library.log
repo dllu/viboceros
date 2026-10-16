@@ -1,0 +1,37 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.71s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_smlib-71f6eaa93a23ffa7)
+
+running 30 tests
+test native::brep::plan_tests::invalid_plan_buffers_clear_handles_without_writing_parent_storage ... ok
+test native::network_surface::fitting::clock::tests::local_clock_declines_collapsed_transition_charts ... ok
+test native::network_surface::fitting::clock::tests::half_windows_share_the_same_nonbinary_midpoint_and_endpoints ... ok
+test native::knot_refinement::interpolation_tests::equal_station_rows_require_independent_fixed_constraints ... ok
+test native::knot_refinement::interpolation_tests::nonuniform_periodic_band_retries_pivoting_and_accepts_a_final_endpoint_site ... ok
+test native::knot_refinement::interpolation_tests::closed_grid_band_retries_native_pivoting_for_an_invertible_zero_diagonal ... ok
+test native::network_surface::fitting::clock::tests::nonbinary_windows_keep_literal_contacts_without_rounding_extrapolation ... ok
+test native::surface_pull::tests::a_miss_returns_no_curves ... ok
+test native::brep::plan_tests::gaps_beyond_native_zone_sum_are_rejected_with_indexed_diagnostics ... ok
+test native::surface_pull::tests::unsupported_preparation_declines_without_mutating_either_input ... ok
+test native::curve_distances::tests::curve_distance_closed_polyline_portion_preserves_the_requested_parameter_visit ... ok
+test native::curve_fillet_contacts::tests::far_origin_small_corner_contacts_are_accurate_but_retained_tangency_loses_precision ... ok
+test native::network_surface::fitting::clock::tests::local_clocks_keep_affine_centers_and_match_arc_length_jets_at_contacts ... ok
+test native::network_surface::nearby::tests::sweep_proposals_preserve_distinct_curve_parameters_and_reject_separated_hulls ... ok
+test native::brep::plan_tests::a_certified_vertex_bound_does_not_mask_another_edges_smaller_native_zone ... ok
+test native::tests::c_boundary_clears_failed_outputs_and_terminates_small_error_buffers ... ok
+test native::surface_pull::tests::normalized_preparation_restores_translated_geometry_and_unequal_uv_domains ... ok
+test native::surface_pull::tests::pulls_only_the_interval_over_the_finite_surface ... ok
+test native::curve_distances::tests::curve_distance_rational_arc_translation_keeps_constant_normal_gap ... ok
+test native::surface_pull::tests::normal_pull_preserves_inputs_and_certifies_the_complete_lifted_image ... ok
+test native::curve_distances::tests::curve_distance_explicit_intervals_and_reversal_preserve_line_extrema ... ok
+test native::surface_pull::tests::already_on_surface_curves_keep_their_interiors_and_boundary_crossings ... ok
+test native::curve_distances::tests::curve_distance_localized_peak_is_sampled_inside_every_nonempty_span ... ok
+test native::brep::plan_tests::native_additive_endpoint_zones_transfer_as_local_portable_bounds ... ok
+test native::surface_pull::tests::cylinder_normal_pull_uses_the_near_side_and_keeps_height ... ok
+test native::network_surface::fitting::attempt_tests::seed_trials_separate_geometric_refinement_from_invalid_targets ... ok
+test native::knot_refinement::interpolation_tests::native_blend_hermite_rows_reproduce_independent_monomials_and_tiny_channels ... ok
+test native::curve_distances::tests::curve_distance_corpus_retains_native_overlap_and_minimum_disagreements ... ok
+test native::curve_edit_point_tests::native_edit_point_solver_reuses_original_open_and_periodic_bases ... ok
+test native::surface_pull::tests::a_closed_curve_can_pull_around_the_cylinder ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.96s

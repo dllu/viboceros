@@ -1,0 +1,957 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-0.2",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0.2,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-1.0",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1.0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-1.5",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1.5,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-1.99",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            1.99,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-2.0",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            2.0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-2.01",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            2.01,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-2.5",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            2.5,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "circles-offset-4.0",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            4.0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-5",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.9809734904587275,
+            -0.4357787137382908,
+            0
+          ],
+          "end": [
+            4.9809734904587275,
+            0.4357787137382908,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-30",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -4.330127018922194,
+            -2.4999999999999996,
+            0
+          ],
+          "end": [
+            4.330127018922194,
+            2.4999999999999996,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-45",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -3.5355339059327378,
+            -3.5355339059327373,
+            0
+          ],
+          "end": [
+            3.5355339059327378,
+            3.5355339059327373,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-80",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -0.8682408883346521,
+            -4.92403876506104,
+            0
+          ],
+          "end": [
+            0.8682408883346521,
+            4.92403876506104,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-89",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -0.087262032186418,
+            -4.999238475781956,
+            0
+          ],
+          "end": [
+            0.087262032186418,
+            4.999238475781956,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-90",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -3.061616997868383e-16,
+            -5.0,
+            0
+          ],
+          "end": [
+            3.061616997868383e-16,
+            5.0,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-100",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0.8682408883346515,
+            -4.92403876506104,
+            0
+          ],
+          "end": [
+            -0.8682408883346515,
+            4.92403876506104,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "crossing-lines-175",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -5,
+            0,
+            0
+          ],
+          "end": [
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            4.9809734904587275,
+            -0.43577871373829097,
+            0
+          ],
+          "end": [
+            -4.9809734904587275,
+            0.43577871373829097,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "nested-circles",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            3,
+            0,
+            0
+          ],
+          "radius": 10,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": false
+    },
+    {
+      "op": "curve_deviation",
+      "id": "keep-parallel-lines",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": true,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "keep-partial-reversed",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            2,
+            0
+          ],
+          "end": [
+            7,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "keep-curved-offset",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                4,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "keep-polyline-offset",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              2,
+              0
+            ],
+            [
+              8,
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              8,
+              1,
+              0
+            ]
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "keep-line-circle",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -4,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    }
+  ]
+}

@@ -22,6 +22,10 @@ pub use circle_fit::MAX_CIRCLE_FIT_POINTS;
 pub use sphere_fit::{MAX_SPHERE_FIT_POINTS, SphereFit};
 mod circular;
 mod curve;
+mod curve_distance;
+pub use curve_distance::{
+    CurveDistanceExtrema, CurveDistanceWitness, LineDeviation, line_deviation,
+};
 mod curve_blend_pair;
 mod curve_chamfer_pair;
 mod curve_connect_pair;

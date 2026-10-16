@@ -1,0 +1,11 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 29.71s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-f7a44ebfd2db35f0)
+
+running 4 tests
+test curve_distance::tests::crv_deviation_line_no_overlap_and_skew_correspondence ... ok
+test curve_distance::tests::crv_deviation_parallel_line_clipping_keeps_native_domains_and_visit ... ok
+test curve_distance::tests::crv_deviation_line_extreme_scales_and_translation_do_not_overflow_intermediates ... ok
+test curve_distance::tests::crv_deviation_crossing_lines_follow_bisector_correspondence_under_swap_and_reversal ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 2312 filtered out; finished in 0.04s

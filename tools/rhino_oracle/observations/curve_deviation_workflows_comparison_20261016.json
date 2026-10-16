@@ -1,0 +1,457 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "command_registered": true,
+  "reference_derived_inputs": false,
+  "cases": 22,
+  "counts": {
+    "status_matches": 22,
+    "sdk_maximum_scalar_matches": 16,
+    "sdk_minimum_scalar_matches": 5,
+    "command_minimum_display_matches": 15,
+    "command_maximum_display_matches": 16,
+    "permanent_mark_sets_matching": 2,
+    "permanent_mark_cases": 5
+  },
+  "complete_native_command_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "performance_qualified": false,
+  "method": "Exact binary-rational SDK scalar differences; native command text compared separately with its observed six-significant-digit rounding interval plus 1e-6 (or finer when printed). Unordered permanent marker matching preserves occurrences and admits point distances at 1e-6. SDK and command minima are not assumed identical. All cases and all mismatches are retained.",
+  "results": [
+    {
+      "id": "circles-offset-0.2",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "109576405369586661/1267650600228229401496703205376",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/4503599627370496",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "0.2",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "circles-offset-1.0",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "4568221516969401/144115188075855872",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "circles-offset-1.5",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "2977780640104147/288230376151711744",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1.5",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "circles-offset-1.99",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "68607497537884987854954742835/10141204801825835211973625643008",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1.99",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "circles-offset-2.0",
+      "local_report": false,
+      "native_report": false,
+      "status_matches": true,
+      "local_approximate_overlap": false
+    },
+    {
+      "id": "circles-offset-2.01",
+      "local_report": false,
+      "native_report": false,
+      "status_matches": true,
+      "local_approximate_overlap": false
+    },
+    {
+      "id": "circles-offset-2.5",
+      "local_report": false,
+      "native_report": false,
+      "status_matches": true,
+      "local_approximate_overlap": false
+    },
+    {
+      "id": "circles-offset-4.0",
+      "local_report": false,
+      "native_report": false,
+      "status_matches": true,
+      "local_approximate_overlap": false
+    },
+    {
+      "id": "crossing-lines-5",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "186911700267405/9007199254740992",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "0.436194",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "crossing-lines-30",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "67017851597775/562949953421312",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2.58819",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "crossing-lines-45",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "3032881748821783/18014398509481984",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "3.82683",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "crossing-lines-80",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "2111990394998733/9007199254740992",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "6.42788",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "crossing-lines-89",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "2144244622539789/9007199254740992",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/1125899906842624",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "7.00909",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "crossing-lines-90",
+      "local_report": false,
+      "native_report": false,
+      "status_matches": true,
+      "local_approximate_overlap": false
+    },
+    {
+      "id": "crossing-lines-100",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "8447961579994931/36028797018963968",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "6.42788",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "crossing-lines-175",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "186911700267405/9007199254740992",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "0.436194",
+        "within_display_rounding_and_1e_minus_6": true
+      }
+    },
+    {
+      "id": "nested-circles",
+      "local_report": false,
+      "native_report": false,
+      "status_matches": true,
+      "local_approximate_overlap": false
+    },
+    {
+      "id": "keep-parallel-lines",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "keep-partial-reversed",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "keep-curved-offset",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "223267317883357/9007199254740992",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0.682468",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/4503599627370496",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "keep-polyline-offset",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "3/9007199254740992",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0.894427",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "keep-line-circle",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "4967757600021511/20282409603651670423947251286016",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        10,
+        6
+      ]
+    }
+  ]
+}

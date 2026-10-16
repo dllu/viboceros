@@ -127,13 +127,11 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "README.md": "db7cfb76e98b5a291ed7a67e5b413d3298aef6d3983976e0434010518e78adf0",
     "crates/viboceros-geometry/src/curve_trim.rs": "978eb43b305e6024bdf65151d2e07eaffb51256e99d677f08d4d766acd3af249",
     "crates/viboceros-geometry/src/nurbs/closest_point.rs": "850055bc2d61df856fb2b691111f422d0951f00bebbc14fb5ada85603ca58136",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
     "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
-    "crates/viboceros-oracle/src/curve_deviation.rs": "1851325cb0cf674c042a0a4d9fa45f2130733c7cf39b78a574eea85d205f64a4",
     "crates/viboceros-oracle/src/lib.rs": "48779dcd2a43799b48f88e9aee3d57b0af16ae24152a978d72b4976200d304bb",
     "crates/viboceros-smlib/Cargo.toml": "9f807997ed9ea93a81d24c28956dd2fb609007d050b150c0c46ef9f47db0a5f3",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
@@ -144,17 +142,12 @@
     "crates/viboceros-smlib/native/bridge.h": "4cad5ac98c5926157732afd7b9557c9b7a4df0f334ff69b5a619691bccfd18bb",
     "crates/viboceros-smlib/src/lib.rs": "44d87c302af42393ec269563ebb2fd366923732638353189d74b995b8c5a8706",
     "crates/viboceros-smlib/src/native.rs": "0f2390f800625ce7e730ae2973150a635154778c29380e35f6bde975219ddcba",
-    "crates/viboceros-smlib/src/native/curve_distances.rs": "da3482d1154eba3a118f169feefa0227ce428514c1a1d9dcaddf67e073f8d67e",
     "crates/viboceros-smlib/src/native/curve_distances/tests.rs": "8f5344add41ba239e6635e83e2bf8b6c842040c54e0912801e35d22bfe96864b",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
-    "docs/curve-distance-queries.md": "ced788f3206a1b5e928331add4f15094465ab30fde46a12e37e601620f06288d",
     "tools/rhino_oracle/client.py": "d165a599dfd15baed8a6c8e8c0a74118002c1b8731a8585913582bab3290550c",
-    "tools/rhino_oracle/curve_deviation_probe.py": "3df51b4215837dbe44f9f26009228d26fad73b6dfef72bbbda890b1bdb81b5ab",
-    "tools/rhino_oracle/curve_distance_comparison.py": "34d1415d2ae8ca69e0ea1e192843f6a4ec93d7b95dced4490db43ee6ca1629ee",
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
     "tools/rhino_oracle/rhino_worker.py": "86d9d7fb67604d1eec53d7518464664328d739b6f8a2a1ccfe875a58988bbabf",
     "tools/rhino_oracle/structural_sdk.py": "f788c6e804cacdd53efe6e21180264f283ca7a379ffc09e2fd9d496b492cb8dc",
-    "tools/rhino_oracle/test_curve_deviation.py": "c9288c8569320dfa29db3bdad7b7d7b884a59d884d7e57c8676da2e50c8a37e3",
     "tools/usd_brep/curve_distance_probe.cpp": "fe89606ce2089dfeb76e53a29b22c1e35e82092d49efe66d678d7af84fe67f0e",
     "tools/usd_brep/run_curve_distance_probe.py": "424d54b6ee9781751cfd2f8356fea63a636fe97daaa60bf642c7a6c5429ee395",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
@@ -182,5 +175,14 @@
     "tools/rhino_oracle/observations/curve_deviation_initial_rhino_20261016.json": "809b97114151baa907af7aa258d3aed8298bb708ea2e112555c1fd5402b0516d",
     "tools/rhino_oracle/observations/curve_deviation_viboceros_20261016.json": "6e0b5c2154a6c3b2a2407cd635e8b54e32169f1ded0ff8028944b335472c3ff3",
     "tools/rhino_oracle/observations/curve_deviation_comparison_20261016.json": "b9cb5e6888e473cd9e3c8ff1b910f66419ffcd7d2eef02ab85f94d9364e6a45e"
+  },
+  "source_git_sha256": {
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:README.md": "db7cfb76e98b5a291ed7a67e5b413d3298aef6d3983976e0434010518e78adf0",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:crates/viboceros-oracle/src/curve_deviation.rs": "1851325cb0cf674c042a0a4d9fa45f2130733c7cf39b78a574eea85d205f64a4",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:crates/viboceros-smlib/src/native/curve_distances.rs": "da3482d1154eba3a118f169feefa0227ce428514c1a1d9dcaddf67e073f8d67e",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:docs/curve-distance-queries.md": "ced788f3206a1b5e928331add4f15094465ab30fde46a12e37e601620f06288d",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:tools/rhino_oracle/curve_deviation_probe.py": "3df51b4215837dbe44f9f26009228d26fad73b6dfef72bbbda890b1bdb81b5ab",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:tools/rhino_oracle/test_curve_deviation.py": "c9288c8569320dfa29db3bdad7b7d7b884a59d884d7e57c8676da2e50c8a37e3",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:tools/rhino_oracle/curve_distance_comparison.py": "34d1415d2ae8ca69e0ea1e192843f6a4ec93d7b95dced4490db43ee6ca1629ee"
   }
 }

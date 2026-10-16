@@ -120,7 +120,6 @@
     "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
     "crates/viboceros-geometry/src/finite_sum.rs": "d56fa845aa7e65cfffb75453280012a7f8447bd1da1102cdc8cd15f497d061d0",
     "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
-    "crates/viboceros-geometry/src/lib.rs": "0134736e414d62f655480d31996b977184986c8fe492e72af38d2aef4829053c",
     "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
@@ -135,7 +134,6 @@
     "docs/commands/sphere-fit-points.md": "70294bd877ad879b5cde8efdd9003fa7c06035e2d2a943532c0182c88be7ec0b",
     "docs/commands/surfaces.md": "b0ba2013574ac84e7536f5a9bbc9a3c12621bd8d1a0447dcd4d3d0bd7a3c2d04",
     "src/app/circle.rs": "068c2ca364ef50305ce8823c851016c96275a5ae2bea183935e8d8c5d557eee2",
-    "src/app/object_selection.rs": "1765954136aa1cc5bd5fcec9a67f818ff9936994df8ba03b1fce4764aaed4250",
     "src/app/tests/sphere_fit_points.rs": "39619dc277e6acb4aa8f2df96f4668b17c6537368b8d6268d011d49e985168d8",
     "tools/rhino_oracle/line_through_points_probe.py": "a7c3f9054f725b270e3c9a490b39cf21be5f06c3da2d26e66fd2b0fede91fc32",
     "tools/rhino_oracle/plane_through_points_probe.py": "5194c3fc159ca82f9f4ae13ec644980ce4ff7d2aba4b2cf6525334822b9a0878",
@@ -167,6 +165,8 @@
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app.rs": "5329ec8905aceccc609eaa17df165391c6bf56eda56f050ac87ab6c7167b5fac",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:tools/rhino_oracle/rhino_worker.py": "8c53817dfa089d139e7f9d52d30a102935fee3e8b87ae27ed1cca16273f3848b",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:tools/rhino_oracle/structural_sdk.py": "0ebae210c113a753c5738de03685f632d740399404dfdc2b6b588f059fb9f724",
-    "5c5cc31a1c7a3b24e0d3bc0797fde9d28aa3a8dd:tools/rhino_oracle/client.py": "8007ee7be364e59d9ae5995f918bd4a73dcc0ed4fca14d272319d7a4196f3420"
+    "5c5cc31a1c7a3b24e0d3bc0797fde9d28aa3a8dd:tools/rhino_oracle/client.py": "8007ee7be364e59d9ae5995f918bd4a73dcc0ed4fca14d272319d7a4196f3420",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:crates/viboceros-geometry/src/lib.rs": "0134736e414d62f655480d31996b977184986c8fe492e72af38d2aef4829053c",
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:src/app/object_selection.rs": "1765954136aa1cc5bd5fcec9a67f818ff9936994df8ba03b1fce4764aaed4250"
   }
 }

@@ -6,8 +6,9 @@ else:
 
 
 def validate(op):
-    if (not isinstance(op,dict) or set(op)!={'op','id','curves','postselect'} or op['op']!='curve_deviation'
+    if (not isinstance(op,dict) or not {'op','id','curves','postselect'}<=set(op) or set(op)-{'op','id','curves','postselect','keep_marks'} or op['op']!='curve_deviation'
         or not isinstance(op['curves'],list)or len(op['curves'])!=2 or type(op['postselect'])is not bool):raise ValueError('invalid curve deviation recipe')
+    if 'keep_marks'in op and type(op['keep_marks'])is not bool:raise ValueError('invalid keep marks')
     for source in op['curves']:
         validate_source(dict(op='geometry_validity',id=op['id'],source=source))
         if source['type']not in ('line','arc','circle','ellipse','polyline','polycurve','nurbs'):raise ValueError('curve targets required')
@@ -16,7 +17,7 @@ def validate(op):
 def run(op,host,iterations,tolerance):
     validate(op)
     if iterations!=1:raise ValueError('curve deviation command capture requires one iteration')
-    R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;curves=[];ids=[]
+    R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;curves=[];ids=[];created=[]
     try:
         for source in op['curves']:curves.append(host['_object_source'](source,tolerance))
         values=G.Curve.GetDistancesBetweenCurves(curves[0],curves[1],tolerance['absolute'])
@@ -32,14 +33,25 @@ def run(op,host,iterations,tolerance):
         marker='Viboceros deviation '+str(host['System'].Guid.NewGuid());R.RhinoApp.WriteLine(marker)
         macro='_-CrvDeviation'
         if op['postselect']:macro+=' '+' '.join('_SelID '+str(i)for i in ids)
-        macro+=' _Enter _Cancel'
+        macro+=(' _KeepMarks='+('Yes'if op['keep_marks']else'No')if 'keep_marks'in op else'')+' _Enter _Cancel'
         before=set(o.Id for o in doc.Objects)
         ran=R.RhinoApp.RunScript(macro,True)
         history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip()
         if not history:raise ValueError('empty native deviation history')
         if 'Unknown command:'in history:raise ValueError('unknown command in deviation capture')
-        return dict(sdk=sdk,command_returned=bool(ran),command_history=history,inputs_retained=all(doc.Objects.FindId(i)is not None for i in ids),created_object_count=len([o for o in doc.Objects if o.Id not in before])),0
+        created=[o.Id for o in doc.Objects if o.Id not in before]
+        outputs=[]
+        for i in created:
+            obj=doc.Objects.FindId(i);g=obj.Geometry
+            value=dict(type=str(g.GetType().Name),layer=doc.Layers[obj.Attributes.LayerIndex].Name,selected=bool(obj.IsSelected(False)),name=obj.Attributes.Name or None,color_source=str(obj.Attributes.ColorSource),color=[int(obj.Attributes.ObjectColor.R),int(obj.Attributes.ObjectColor.G),int(obj.Attributes.ObjectColor.B)])
+            if isinstance(g,G.Point):value['point']=host['_xyz'](g.Location)
+            elif isinstance(g,G.Curve):value.update(start=host['_xyz'](g.PointAtStart),end=host['_xyz'](g.PointAtEnd))
+            elif isinstance(g,G.TextDot):value.update(point=host['_xyz'](g.Point),text=str(g.Text))
+            outputs.append(value)
+        result=dict(sdk=sdk,command_returned=bool(ran),command_history=history,inputs_retained=all(doc.Objects.FindId(i)is not None for i in ids),created_object_count=len(created))
+        if 'keep_marks'in op:result['outputs']=outputs
+        return result,0
     finally:
         R.RhinoApp.RunScript('!',False);doc.Objects.UnselectAll()
-        for i in ids:doc.Objects.Delete(i,True)
+        for i in created+ids:doc.Objects.Delete(i,True)
         for c in curves:c.Dispose()

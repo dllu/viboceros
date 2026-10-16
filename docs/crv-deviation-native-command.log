@@ -1,0 +1,16 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 53.65s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-e02609ba8ddec502)
+
+running 7 tests
+test curve_deviation::tests::crv_deviation_postselection_and_wrong_counts ... ok
+test curve_deviation::tests::crv_deviation_cancel_and_invalid_arguments_do_not_keep_marks ... ok
+test curve_deviation::tests::crv_deviation_coincident_witnesses_keep_one_point_per_mark ... ok
+test curve_deviation::tests::crv_deviation_report_and_options_preserve_model_and_redo ... ok
+test curve_deviation::tests::crv_deviation_kept_marks_have_native_colors_and_one_undo_step ... ok
+test curve_deviation::tests::crv_deviation_geometry_and_tolerance_changes_expire_display_and_keep_request ... ok
+test curve_deviation::tests::crv_deviation_curved_backend_is_usable_and_exposes_overlap_limit ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1481 filtered out; finished in 0.03s
