@@ -44,13 +44,24 @@ pub(super) fn run(
             .curvature_graph_view(&doc)?
             .ok_or(ProbeError::FixtureInvariant("missing graph"))?;
         let mut offsets = Vec::new();
+        let mut outputs = Vec::new();
+        let mut outline_samples = 0;
         for graph in view.graphs.iter() {
+            outline_samples += graph.comb.hairs.len();
+            for poly in graph
+                .comb
+                .envelope_polylines(view.options.factor(), tolerance)?
+            {
+                outputs.push(json!({"points":poly.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>() }));
+            }
             for h in &graph.comb.hairs {
-                offsets.push(view.tip(h)?.distance_to(h.point)?);
+                if h.display_hair {
+                    offsets.push(view.tip(h)?.distance_to(h.point)?);
+                }
             }
         }
         Ok(
-            json!({"settings":{"scale":view.options.scale,"density":view.options.density},"samples":samples,"inputs_unchanged":doc.object(id).unwrap().geometry()==&source,"graph_count":view.graphs.len(),"hair_count":offsets.len(),"maximum_hair_length":offsets.into_iter().reduce(f64::max),"singular_samples":view.singular_samples,"undo_label":doc.undo_label()}),
+            json!({"settings":{"scale":view.options.scale,"density":view.options.density},"samples":samples,"inputs_unchanged":doc.object(id).unwrap().geometry()==&source,"graph_count":view.graphs.len(),"hair_count":offsets.len(),"outline_sample_count":outline_samples,"outputs":outputs,"maximum_hair_length":offsets.into_iter().reduce(f64::max),"singular_samples":view.singular_samples,"undo_label":doc.undo_label()}),
         )
     })
 }

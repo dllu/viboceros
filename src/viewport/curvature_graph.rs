@@ -35,7 +35,9 @@ impl Viewport {
                         previous = None;
                         continue;
                     };
-                    if let Some(segment) = self.project_selection_segment(hair.point, tip, rect) {
+                    if hair.display_hair
+                        && let Some(segment) = self.project_selection_segment(hair.point, tip, rect)
+                    {
                         painter.line_segment(segment, stroke);
                     }
                     if let Some(p) = previous

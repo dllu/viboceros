@@ -1,0 +1,167 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curvature_sampling",
+      "id": "sampling-2",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1,
+      "sample_density": 2
+    },
+    {
+      "op": "curvature_sampling",
+      "id": "sampling-1",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1,
+      "sample_density": 1
+    },
+    {
+      "op": "curvature_sampling",
+      "id": "sampling-3",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1,
+      "sample_density": 3
+    },
+    {
+      "op": "curvature_sampling",
+      "id": "sampling-4",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1,
+      "sample_density": 4
+    },
+    {
+      "op": "curvature_sampling",
+      "id": "sampling-5",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1,
+      "sample_density": 5
+    },
+    {
+      "op": "curvature_sampling",
+      "id": "sampling-6",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1,
+      "sample_density": 6
+    }
+  ]
+}

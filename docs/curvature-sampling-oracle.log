@@ -1,0 +1,9 @@
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 45.72s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-cab8caa67c164a6a)
+
+running 2 tests
+test curvature_graph::tests::curvature_graph_replays_public_curve_samples_and_preserves_sources ... ok
+test extract_curvature_graph::tests::extract_curvature_graph_workflows_match_native_piece_counts_attributes_and_selection ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 534 filtered out; finished in 0.14s

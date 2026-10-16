@@ -26,7 +26,7 @@ fn extract_curvature_graph_uses_displayed_outline_current_layer_and_one_undo_edi
     let Geometry::Polyline(poly) = output.geometry() else {
         panic!("expected outline polyline")
     };
-    assert_eq!(poly.vertices().len(), 65);
+    assert_eq!(poly.vertices().len(), 281);
     assert_eq!(poly.vertices().first(), poly.vertices().last());
     for point in poly.vertices() {
         assert!(

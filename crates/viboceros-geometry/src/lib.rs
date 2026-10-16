@@ -23,7 +23,9 @@ pub use sphere_fit::{MAX_SPHERE_FIT_POINTS, SphereFit};
 mod circular;
 mod curvature_comb;
 mod curve;
-pub use curvature_comb::{CurvatureComb, CurvatureHair, curvature_comb};
+pub use curvature_comb::{
+    CurvatureComb, CurvatureHair, curvature_comb, curvature_comb_with_subdivision,
+};
 mod curve_distance;
 pub use curve_distance::{
     CurveDistanceExtrema, CurveDistanceWitness, LineDeviation, line_deviation,

@@ -172,14 +172,14 @@ fn curvature_graph_repeated_view_queries_cannot_resurrect_stale_graphs_after_bud
         sources: ids.clone(),
         ..State::default()
     };
-    Session::resolve_with_budget(&mut state, &d, 100).unwrap();
+    Session::resolve_with_budget(&mut state, &d, 200).unwrap();
     let (_, circle_doc, _) = scene();
     let circle = circle_doc.objects().next().unwrap().geometry().clone();
     d.replace_object_geometries(ids.into_iter().map(|id| (id, circle.clone())))
         .unwrap();
     for _ in 0..2 {
         assert!(matches!(
-            Session::resolve_with_budget(&mut state, &d, 100),
+            Session::resolve_with_budget(&mut state, &d, 200),
             Err(CommandError::Geometry(GeometryError::CurvatureCombLimit))
         ));
     }

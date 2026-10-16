@@ -1,7 +1,9 @@
-//! Bounded, one-sided curvature samples; no document or display policy.
+//! Bounded, one-sided curvature samples and display outline subdivision.
 use crate::{GeometryError, NurbsCurve, ParameterSide, Point3, Real, UnitVector3, Vector3};
 use std::ops::Range;
+mod adaptive;
 mod envelopes;
+pub use adaptive::curvature_comb_with_subdivision;
 #[cfg(test)]
 mod tests;
 
@@ -11,6 +13,8 @@ pub struct CurvatureHair {
     pub point: Point3,
     pub curvature: Vector3,
     pub tangent: UnitVector3,
+    /// Draw a hair at this station; all stations contribute to the outline.
+    pub display_hair: bool,
 }
 impl CurvatureHair {
     pub fn tip(self, factor: Real) -> Result<Point3, GeometryError> {
@@ -80,6 +84,7 @@ pub fn curvature_comb(
                 point,
                 curvature: crate::curve::curvature_from_derivatives(first, second)?,
                 tangent: first.normalized_nonzero()?,
+                display_hair: true,
             });
         }
         if start < out.hairs.len() {

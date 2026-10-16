@@ -2,7 +2,7 @@
 use super::*;
 use std::sync::{Arc, Mutex};
 use viboceros_document::GeometrySnapshot;
-use viboceros_geometry::{CurvatureComb, curvature_comb};
+use viboceros_geometry::{CurvatureComb, curvature_comb_with_subdivision};
 
 mod extract;
 #[cfg(test)]
@@ -108,7 +108,12 @@ fn gather(
     let mut graphs = Vec::new();
     let mut remaining = MAX_SAMPLES;
     let mut append = |curve: &NurbsCurve, kind| -> Result<(), CommandError> {
-        let comb = curvature_comb(curve, 8usize << options.density, remaining)?;
+        let comb = curvature_comb_with_subdivision(
+            curve,
+            options.density,
+            remaining,
+            &mut curve_segments::trim,
+        )?;
         remaining -= comb.hairs.len() + comb.singular_samples;
         graphs.push(Graph {
             object,

@@ -28,12 +28,15 @@ singular samples remain separate. Closed curves may join across their original
 seam; discontinuous components stay open. Consecutive exact duplicate vertices
 are removed, while short representable segments retain their geometry.
 
-The command extracts Viboceros's current sampled display. Rhino's graph
-tessellation differs, so matching native output counts and endpoints does not
-establish matching polyline geometry. Native command, attribute, selection and
-geometry comparisons are retained in the [comparison](../../tools/rhino_oracle/observations/extract_curvature_graph_comparison_20261016.json).
-The bidirectional vertex-to-polyline distance diagnostic exposes that remaining
-sampling gap; it is not a continuous Hausdorff certificate.
+The command extracts Viboceros's current sampled display. The
+[updated extraction comparison](../../tools/rhino_oracle/observations/extract_curvature_graph_sampling_comparison_20261016.json)
+agrees with Rhino in all ten retained cases, including output counts, attributes,
+selection and outline geometry within 1e-6. Native object order and orientation
+can differ. A regression test compares the actual vertex sequences while allowing
+those differences. The broader [sampling checks](../curvature-sampling-validation.json)
+still contain curves with different subdivision patterns; complete native
+polyline parity remains open. The retained vertex-to-polyline distances are
+sampled diagnostics, not continuous source-curvature certificates.
 
 Native nested-script `_Undo` reports “Nothing to undo.” Those observations do
 not qualify native history parity. Local tests independently verify one-step

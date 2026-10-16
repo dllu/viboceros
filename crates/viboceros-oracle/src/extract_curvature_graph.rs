@@ -137,6 +137,38 @@ mod tests {
                 y["outputs"].as_array().unwrap(),
             );
             assert_eq!(ours.len(), theirs.len(), "{}", a.id);
+            // Native object order and orientation may differ. Require a unique
+            // matching vertex sequence for every actual extracted polyline.
+            let mut matched = BTreeSet::new();
+            for poly in ours {
+                let points = poly["points"].as_array().unwrap();
+                let partner = theirs
+                    .iter()
+                    .enumerate()
+                    .find(|(i, other)| {
+                        if matched.contains(i) {
+                            return false;
+                        }
+                        let other = other["points"].as_array().unwrap();
+                        points.len() == other.len()
+                            && [false, true].into_iter().any(|reverse| {
+                                points.iter().enumerate().all(|(j, p)| {
+                                    let q = &other[if reverse { other.len() - 1 - j } else { j }];
+                                    (0..3)
+                                        .map(|axis| {
+                                            (p[axis].as_f64().unwrap() - q[axis].as_f64().unwrap())
+                                                .powi(2)
+                                        })
+                                        .sum::<f64>()
+                                        .sqrt()
+                                        <= 1e-6
+                                })
+                            })
+                    })
+                    .map(|(i, _)| i)
+                    .unwrap_or_else(|| panic!("{}: no matching native outline", a.id));
+                matched.insert(partner);
+            }
             for (a, b) in ours.iter().zip(theirs) {
                 for key in [
                     "type",

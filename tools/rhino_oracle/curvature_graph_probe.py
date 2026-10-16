@@ -5,9 +5,10 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 def validate(op):
-    if set(op)!={'op','id','source','scale','density'} or op['op']!='curvature_graph':raise ValueError('invalid curvature graph recipe')
+    if not {'op','id','source','scale','density'}<=set(op)or set(op)-{'op','id','source','scale','density','sample_density'}or op['op']!='curvature_graph':raise ValueError('invalid curvature graph recipe')
     if type(op['scale'])is not int or not 0<=op['scale']<=300:raise ValueError('invalid graph scale')
     if type(op['density'])is not int or not 0<=op['density']<=10:raise ValueError('invalid graph density')
+    if 'sample_density'in op and(type(op['sample_density'])is not int or not 1<=op['sample_density']<=10):raise ValueError('invalid sampling density')
     validate_source(dict(op='geometry_validity',id=op['id'],source=op['source']))
     if op['source']['type']not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('curve source required')
 
@@ -16,10 +17,12 @@ def run(op,host,iterations,tolerance):
     if iterations!=1:raise ValueError('owned graph capture requires one iteration')
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc
     settings=R.ApplicationSettings.CurvatureGraphSettings
-    old=(settings.HairScale,settings.HairDensity)
+    old=(settings.HairScale,settings.HairDensity,settings.SampleDensity)
     source=host['_object_source'](op['source'],tolerance);ids=[];outputs=[]
     try:
         settings.HairScale=op['scale'];settings.HairDensity=op['density']
+        if 'sample_density'in op:settings.SampleDensity=op['sample_density']
+        setup_sampling=int(settings.SampleDensity)
         key=doc.Objects.AddCurve(source);ids.append(key)
         before=host['_nurbs_curve_definition'](doc.Objects.FindId(key).Geometry)
         doc.Objects.UnselectAll();doc.Objects.Select(key,True)
@@ -46,8 +49,10 @@ def run(op,host,iterations,tolerance):
             f=i/16.;t=source.Domain.ParameterAt(f)
             samples.append(dict(fraction=f,point=host['_xyz'](source.PointAt(t)),curvature=host['_xyz'](source.CurvatureAt(t))))
         after=host['_nurbs_curve_definition'](doc.Objects.FindId(key).Geometry)
-        return dict(command_returned=bool(ran),command_history=history,extraction_returned=bool(extracted),extraction_history=extraction_history,outputs=records,samples=samples,inputs_unchanged=before==after,settings=dict(scale=settings.HairScale,density=settings.HairDensity)),0
+        result=dict(command_returned=bool(ran),command_history=history,extraction_returned=bool(extracted),extraction_history=extraction_history,outputs=records,samples=samples,inputs_unchanged=before==after,settings=dict(scale=settings.HairScale,density=settings.HairDensity))
+        if 'sample_density'in op:result['settings']['sample_density']=int(settings.SampleDensity);result['sampling_after_setup']=setup_sampling
+        return result,0
     finally:
         R.RhinoApp.RunScript('_CurvatureGraphOff',False)
         for key in outputs+ids:doc.Objects.Delete(key,True)
-        source.Dispose();settings.HairScale,settings.HairDensity=old
+        source.Dispose();settings.HairScale,settings.HairDensity,settings.SampleDensity=old

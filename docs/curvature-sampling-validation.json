@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Adaptive curvature graph outlines with sparse display hairs",
+  "base_repository_revision": "7484cdfde1dfdc4d0279fb156b1fb69bea40b2b0",
+  "complete_native_graph_parity_qualified": false,
+  "native_hair_placement_qualified": false,
+  "native_surface_display_parity_qualified": false,
+  "native_undo_redo_qualified": false,
+  "continuous_source_curvature_qualified": false,
+  "performance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "diagnostic_recipes_chosen_adaptively": true,
+  "implementation": "Subdivide original active control polygons when two nonzero control edges have a dot product below -64*machine-epsilon after normalization. Recursively trim halves with existing exact producers, reusing usd-brep in native command builds. Evaluate each clamped single-span leaf on [0,1], avoiding unrepresentable source-chart derivatives, and map sample tags to the original source chart. Default outline intervals are 64+2*order, rounded up to a multiple of density+1. Draw density+1 hair intervals per leaf while all differential stations contribute to the outline and extraction. Reuse the existing curvature evaluator, singular-gap behavior, seam welding, immutable cache and display-scale checks. Bound aggregate stations to 200000 and subdivision depth to 32. Keep the uniform geometry API for other clients.",
+  "inference": "The default-density outline count follows degree and rounds to a multiple of hair-density+1 in the tested curves. The control-cone heuristic reproduces many observed adaptive grids, but three additional source curves disprove complete native subdivision equivalence. The setting SampleDensity is documented publicly; requests to change it continued to report 2 in these native captures. No alternative outline-density control is exposed locally based on those unsuccessful requests.",
+  "coverage": {
+    "unique_rust_tests": 52,
+    "passed_rust_test_executions": 61,
+    "rust_count_note": "35 geometry + 9 portable command + 6 UI + 9 native command + 2 oracle. Native command tests repeat the portable nine. Four new kernel tests cover analytic outline geometry, all hair densities, bounded subdivision, source preservation, singular gaps, one-sided jumps and extreme parameter domains. The existing extraction oracle test now compares actual native vertex sequences, allowing object reordering and orientation reversal.",
+    "python_tests": 49,
+    "new_python_tests": 5,
+    "private_native_launches": 5,
+    "retained_native_observation_rows": 65,
+    "comparison_cases": 44,
+    "requested_settings_applied_cases": 41,
+    "matched_vertex_sequence_cases": 38,
+    "unchanged_source_cases": 44,
+    "extraction_policy_and_vertex_probe_counts": {
+      "command_status_matches": 10,
+      "piece_count_matches": 10,
+      "attributes_match": 10,
+      "source_selection_matches": 10,
+      "sources_unchanged": 10,
+      "outline_endpoint_sets_match": 10,
+      "vertex_probes_within_1e_minus_6": 10
+    },
+    "maximum_extraction_vertex_to_polyline_distance": 1.7847016213730495e-14
+  },
+  "native_capture_runs": [
+    {
+      "request": "tools/rhino_oracle/fixtures/curvature_sampling.json",
+      "response": "tools/rhino_oracle/observations/curvature_sampling_rhino_20261016.json",
+      "scheme": "VibocerosOracleCurvatureSampling20261016",
+      "cases": 15,
+      "succeeded": true,
+      "note": "Initial sparse station recovery. Does not include full outline vertices. Retained as discovery evidence."
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/curvature_sampling_controls.json",
+      "response": "tools/rhino_oracle/observations/curvature_sampling_controls_rhino_20261016.json",
+      "scheme": "VibocerosOracleCurvatureSampling20261016b",
+      "cases": 20,
+      "succeeded": true,
+      "note": "All hair densities, degree elevations, and three ineffective requested outline settings. Full native polylines retained."
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/curvature_sampling_quality.json",
+      "response": "tools/rhino_oracle/observations/curvature_sampling_quality_rhino_20261016.json",
+      "scheme": "VibocerosOracleCurvatureSampling20261016c",
+      "cases": 6,
+      "succeeded": true,
+      "note": "Explicit setting echoes show all setup and observed outline densities stayed at 2, including five requested alternatives. These are unsuccessful setting-application diagnostics."
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/curvature_sampling_holdout.json",
+      "response": "tools/rhino_oracle/observations/curvature_sampling_holdout_rhino_20261016.json",
+      "scheme": "VibocerosOracleCurvatureSampling20261016d",
+      "cases": 9,
+      "succeeded": true,
+      "note": "Additional inflection, looping, spatial, quartic and weighted curves. Three subdivision mismatches retained."
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/curvature_sampling.json",
+      "response": "tools/rhino_oracle/observations/curvature_sampling_outlines_rhino_20261016.json",
+      "scheme": "VibocerosOracleCurvatureSampling20261016e",
+      "cases": 15,
+      "succeeded": true,
+      "note": "Full outlines for the original discovery recipe, with explicit default-density request and echo. Used by the final comparison in place of station-only discovery."
+    }
+  ],
+  "native_command_template": "tools/rhino_oracle/run_headless.sh rhino REQUEST --scheme SCHEME --timeout 300 --output RESPONSE",
+  "prepare_command": "python3 tools/rhino_oracle/curvature_sampling_comparison.py --prepare tools/rhino_oracle/fixtures/curvature_sampling_validation.json",
+  "comparison_command": "python3 tools/rhino_oracle/curvature_sampling_comparison.py --local tools/rhino_oracle/observations/curvature_sampling_viboceros_20261016.json --output tools/rhino_oracle/observations/curvature_sampling_comparison_20261016.json",
+  "extraction_comparison_command": "python3 tools/rhino_oracle/extract_curvature_graph_comparison.py tools/rhino_oracle/fixtures/extract_curvature_graph.json tools/rhino_oracle/observations/extract_curvature_graph_sampling_viboceros_20261016.json tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json tools/rhino_oracle/observations/extract_curvature_graph_sampling_comparison_20261016.json",
+  "remaining_subdivision_cases": [
+    {
+      "id": "curvature_sampling_holdout/cubic-space",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          145
+        ],
+        [
+          217
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": null,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        1.472948724987685e-14,
+        0.0006488090807010884
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 146,
+      "maximum_native_station_recovery_residual": 3.7471670175149906e-13
+    },
+    {
+      "id": "curvature_sampling_holdout/quartic-wave",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          297
+        ],
+        [
+          149
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": null,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        0.003468257585975113,
+        4.25566526668886e-15
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 300,
+      "maximum_native_station_recovery_residual": 1.8604139499850033e-12
+    },
+    {
+      "id": "curvature_sampling_holdout/quadratic-tight",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          211
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": null,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        6.6547469995037766e-15,
+        0.003801645931162705
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 6.696505771163867e-12
+    }
+  ],
+  "limits": [
+    "All ten existing extraction cases agree in command status, piece counts, attributes, selection, source retention, endpoints and both vertex-to-polyline probes at 1e-6. The strengthened Rust regression additionally compares actual vertex sequences. Seven nonempty cases previously differed; the worst diagnostic distance decreased from about 0.118 to about 1.8e-14 model units. These checks qualify only the retained cases.",
+    "The broader comparison has 44 rows: 38 matching vertex-sequence cases, three genuine subdivision differences (cubic-space, quartic-wave, quadratic-tight), and three requested outline settings that native Rhino did not apply. Of the 41 settings-applied rows, 38 match. Native output ordering and orientation may differ. Hair rendering, general native subdivision, surface display and performance remain unqualified.",
+    "The initial sampler hypothesis was checked on additional curves; all three counterexamples remain. The final sampler is an independently written bounded source-control heuristic, not a claim to reproduce proprietary native algorithms. Rational control cones are a display heuristic, not a denominator or curvature certificate. Singularities between sampled stations can remain unresolved.",
+    "Native ClosestPoint-based station recovery can choose the wrong branch on looping curves (observed residual about 0.182). Actual native polylines, not recovered parameters, determine geometry comparisons. Recovered stations, returned NURBS and native output vertices never enter local producer inputs. Local fixtures copy only original source recipes and requested scale/hair density.",
+    "The native diagnostic probe evolved during discovery to retain full polylines, span tangents and setup-density echoes. The final 15-case outline capture uses the final probe. Current source hashes do not assert byte-identical producer provenance for earlier intermediate captures; their raw settings, residuals, recipes and observed outputs remain available.",
+    "Native nested-script Undo remains unqualified from the prior extraction capture. Local model undo/redo, source preservation, trimmed-face hole clipping and graph cache behavior pass portable and native checks. Transient transform/grip previews, SubDs and saved analysis metadata remain outside this change.",
+    "Only the existing owned private headless launcher and public Rhino SDK/commands were used. No Wine/FEX/license configuration, vendor sources, new C ABI, sanitizer or benchmark qualification changed. Existing analytic and differential operations are reused.",
+    "Historical metadata and hash values remain intact using immutable Git references. 16 affected entries in 2 baseline-valid records were preserved. The pre-existing 69 unverifiable historical records remain untouched."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-geometry --lib curvature",
+      "passed": true,
+      "log": "docs/curvature-sampling-geometry.log",
+      "tests": 35
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-sampling-command.log",
+      "tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-sampling-ui.log",
+      "tests": 6
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --lib curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-sampling-native-command.log",
+      "tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-sampling-oracle.log",
+      "tests": 2
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/curvature_sampling_validation.json tools/rhino_oracle/observations/curvature_sampling_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/curvature-sampling-export.log"
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/extract_curvature_graph.json tools/rhino_oracle/observations/extract_curvature_graph_sampling_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/curvature-sampling-extraction-export.log"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "log": "docs/curvature-sampling-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "log": "docs/curvature-sampling-fmt.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_curvature_sampling tools.rhino_oracle.test_extract_curvature_graph tools.rhino_oracle.test_curvature_graph tools.rhino_oracle.test_curve_deviation tools.rhino_oracle.test_curve_deviation_subcurves tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "log": "docs/curvature-sampling-python.log",
+      "tests": 49
+    }
+  ],
+  "preserved_historical_records": [
+    "docs/curvature-graph-validation.json",
+    "docs/extract-curvature-graph-validation.json"
+  ],
+  "public_references": [
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.display.displaypipeline/drawcurvaturegraph",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.applicationsettings.curvaturegraphsettings"
+  ],
+  "sha256": {
+    "README.md": "70ca8bb7df1534298b619b269761adfb752b65722a1a4c4d21092f9359148463",
+    "crates/viboceros-command/src/curvature_graph.rs": "8905884dffbde4aa05ab1fafa9337724539af203694a3facf2a9c957110a8993",
+    "crates/viboceros-command/src/curvature_graph/extract/tests.rs": "7048572e94f9e2075af837ac78dc4a83d41c31b529e5c4b2d1ac76936f44665d",
+    "crates/viboceros-command/src/curvature_graph/tests.rs": "3e5e20bc957b5fcf04cbda8e7d87b8cfcbcc73e80eb4cabdbca322d9e0909bde",
+    "crates/viboceros-command/src/curve_segments.rs": "8ebc02ab7410317e3354cc633301bc4b7c41c9235d9e89bb2edbff03a10bb7a9",
+    "crates/viboceros-geometry/src/curvature_comb.rs": "b3e4ee6b74d30d12597e8e2c4821ff2ce60fbc3de7129663f02c2d8287d0c80c",
+    "crates/viboceros-geometry/src/curvature_comb/adaptive.rs": "3178a6f647faf54d2ce2ac05b6aa77bd8863832bc831ce98b3713c0d16a18848",
+    "crates/viboceros-geometry/src/curvature_comb/envelopes.rs": "7a21491995e6b9acf95892c9246a0035f78d5ed04591bf07a9731b8bcee1af15",
+    "crates/viboceros-geometry/src/curvature_comb/tests.rs": "c473a6971ee4d9810fa05559258ed3f97f50fbed76f0f434fc1474b014e20635",
+    "crates/viboceros-geometry/src/curvature_comb/tests/adaptive.rs": "9ea17c62a0913c4d5929b8267cb582bf0465982f71f41eadc42498cfc5860413",
+    "crates/viboceros-geometry/src/curve.rs": "585164998fc71d7ed9ab5796b2cabe8a9f5235740fa905c6a52083970e325038",
+    "crates/viboceros-geometry/src/lib.rs": "2b223cf216ab4dd0f2cea4a3fe6b5f953174356742a3ad72dfc577fc95d1a826",
+    "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
+    "crates/viboceros-geometry/src/parameter.rs": "66eff84b5540d40dd2396bcc14d81fcc97f1595926b22e8d048807448f657253",
+    "crates/viboceros-oracle/src/curvature_graph.rs": "563fbcabd1a077f6d7a9fb7ffc105ab88817a0f0e5694baceeff23ce9d6da487",
+    "crates/viboceros-oracle/src/extract_curvature_graph.rs": "21f72c379e584307247e7bf6a28d9f15b57053d7a439d6533a5a212424406f9d",
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": "0fb7e43039ac67b80a3329d7bd5afe59b449b6d344a5807bd394e4e29c887d8f",
+    "docs/commands/curvature-graph.md": "e16e50295a177b20a947a3850ec204f475f259f569d6e571e3ddd5def2fa1775",
+    "docs/commands/extract-curvature-graph.md": "58208f6696fd8839d766b7efe5488886f27b8dbe8ee7011d3caf3c08f1faccf3",
+    "docs/curvature-graph-validation.json": "b7c9a8c9c8827aace5a9f9dabe708a330ec6abef6d4afb0f4f9e6cc06a59ba9a",
+    "docs/curvature-sampling-clippy.log": "711f8000e1c165bda31c865df39afb1f9f6edb688ae652e56d641a3a492af0fb",
+    "docs/curvature-sampling-command.log": "6c2323f529c77e81e649da426f5602afcf82238a34145cfc6833bcc0679a43a7",
+    "docs/curvature-sampling-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curvature-sampling-extraction-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curvature-sampling-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curvature-sampling-geometry.log": "e76b32143481ba758e715acf620dd7c5889baaeff4a5f2e4640f2cd8829dea61",
+    "docs/curvature-sampling-native-command.log": "7713944e3729ce001b5f0ca61f7298d8db312e628471673d2780372134a46965",
+    "docs/curvature-sampling-oracle.log": "1b6fdaa88007f8d5d6fe83f5bf7038e4f333adcde10fe230f1d2a37c26f403e6",
+    "docs/curvature-sampling-python.log": "97258fb2e7884323bf441120037d073160b42cb836da7000f996015c7522fbf2",
+    "docs/curvature-sampling-ui.log": "40f7fcef959b6c70ff03ebb2a0e620ece75f20e3637b6dff4360ce20b278b7a0",
+    "docs/extract-curvature-graph-validation.json": "9b4c2d68dc477b423cfac891f93818001b4f26e7f463a6d623b9d95ec6f30cee",
+    "src/app/tests/curvature_graph.rs": "4bd8d4d2b7273d3cb92bc3fa178bbfc9ec8d094ad635d0023e0fa5e446ae205e",
+    "src/viewport/curvature_graph.rs": "6c657b06ee0e01efc920d18a86aef1de78b0d47f923b1d7b0e8621740f37ccd9",
+    "src/viewport/curvature_graph/tests.rs": "55577301afb77dc2b66a602a8efd9381c3b1669291b25caf2efe748bfa9064a3",
+    "tools/rhino_oracle/curvature_graph_probe.py": "0cac4228b47a40572b84d1d0758c35c2432165ae5456aabea1a02becacd7f118",
+    "tools/rhino_oracle/curvature_sampling_comparison.py": "3a22c06965ae4ad2b7dba53d8d9bd3f5770c70346fd467286a791352373fd739",
+    "tools/rhino_oracle/curvature_sampling_probe.py": "2997d2ed4705d3bae382f240359bf71c62654ce36204d320d73963b9f7a81a77",
+    "tools/rhino_oracle/fixtures/curvature_graph.json": "b3d53af2df6c3f40de8674f4ac3e9261e21327451c5ab1907a26f8b0c55ceb06",
+    "tools/rhino_oracle/fixtures/curvature_sampling.json": "a9a9c3eb533a6b80bd41a9ad08d2c1e2faea1780e0d8ff8afa25351f3eb4abe0",
+    "tools/rhino_oracle/fixtures/curvature_sampling_controls.json": "d7c3bb24dbc29da1d2e163f65de878bd4162e1e0fd3846421aad2cda94699c9b",
+    "tools/rhino_oracle/fixtures/curvature_sampling_holdout.json": "b97ae03f5ffbb91a07d9661dd83b9ae324becdb12519f41dc34322a4b945c757",
+    "tools/rhino_oracle/fixtures/curvature_sampling_quality.json": "307aa12973f0e68eb053f333660bccc6ba36ca8ea5237eacf3f8898a8d80984e",
+    "tools/rhino_oracle/fixtures/curvature_sampling_validation.json": "bd4bce8877103fd8a1300d526ea38539d707e6547e1f73f3536ee1b0acdcd3b6",
+    "tools/rhino_oracle/fixtures/extract_curvature_graph.json": "b70e1a37d06366dbcabac661fe4842e37351241a1d1ea9cb04c5d1c2dd4b227e",
+    "tools/rhino_oracle/observations/curvature_graph_rhino_20261016.json": "fcd8ac031eceb05370bc484a40bd784493aed39326b06434a090f4731ff9aab0",
+    "tools/rhino_oracle/observations/curvature_sampling_comparison_20261016.json": "2a95a06cdb342a89bfe006abe67dc93866747a8e096a670a10800738ad5174f5",
+    "tools/rhino_oracle/observations/curvature_sampling_controls_rhino_20261016.json": "130115a90d8c7fd0a9e51a0b32e41991771b316bd88d814f4485526ce43ccfa3",
+    "tools/rhino_oracle/observations/curvature_sampling_holdout_rhino_20261016.json": "b4ef08d3b9ba1029193910154dd9874adb7b42a3265603ba6c7b294c42ce549c",
+    "tools/rhino_oracle/observations/curvature_sampling_outlines_rhino_20261016.json": "587afd7f290b100c76d82a1d19c480f415b9dc93f07550948bbf565402e3ee8d",
+    "tools/rhino_oracle/observations/curvature_sampling_quality_rhino_20261016.json": "e345b66491d2fea6c46fc10d72e551ca533e1bf7a2adbbc761aaf2f44d6490f2",
+    "tools/rhino_oracle/observations/curvature_sampling_rhino_20261016.json": "778f2a13fa9252943f9163902fe5d86853517d7508c6694728c065cd7e40d98c",
+    "tools/rhino_oracle/observations/curvature_sampling_viboceros_20261016.json": "a69bc5236bab24d1343970a61b6fe5ae7a2c832465832830ff20cbafc1e9e676",
+    "tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json": "2536b2493b43e68c3fa5c2b07ac036c2cf0308bae79d74b2fa466a06377968fe",
+    "tools/rhino_oracle/observations/extract_curvature_graph_sampling_comparison_20261016.json": "7e60734d5e432498b7bc8c1ee931495f01a303b4b0ed512be3ab8a37778f1b29",
+    "tools/rhino_oracle/observations/extract_curvature_graph_sampling_viboceros_20261016.json": "f295100d82e0d173b4ee3479b80a95d8fb27c09eac597cf9fffbcc33dd0f32f3",
+    "tools/rhino_oracle/rhino_worker.py": "2dd01b8fe3f1a4aba79eb4d7a717453e4f7df4838eb80ae395c9db6fd9cfe4ba",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/structural_sdk.py": "a2bc494ba20edd9b571e0719ff7a77a4dd40e5ff34e36fbea79fae4d65f5568e",
+    "tools/rhino_oracle/test_curvature_sampling.py": "67ee496b5d24c802cbc45b666cdbbb849d63cd64bef6b5ce5a105a1ef11d83ba",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

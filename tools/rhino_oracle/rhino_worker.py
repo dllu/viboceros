@@ -13429,6 +13429,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'curvature_graph':
         from curvature_graph_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'curvature_sampling':
+        from curvature_sampling_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'extract_curvature_graph':
         from extract_curvature_graph_probe import run
         return run(operation, globals(), iterations, tolerance)

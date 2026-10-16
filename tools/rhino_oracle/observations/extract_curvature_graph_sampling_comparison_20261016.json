@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "cases": 10,
+  "counts": {
+    "command_status_matches": 10,
+    "piece_count_matches": 10,
+    "attributes_match": 10,
+    "source_selection_matches": 10,
+    "sources_unchanged": 10,
+    "outline_endpoint_sets_match": 10,
+    "vertex_probes_within_1e_minus_6": 10
+  },
+  "complete_native_command_parity_qualified": false,
+  "native_polyline_geometry_qualified": false,
+  "native_undo_redo_qualified": false,
+  "continuous_geometry_distance_qualified": false,
+  "performance_qualified": false,
+  "method": "Actual command status, attributes, selection and piece counts; endpoint sets are orientation independent at 1e-6. Bidirectional vertex-to-other-polyline distances expose sampling differences and are not continuous Hausdorff certificates. All mismatches remain. Native nested-script Undo reports Nothing to undo despite a true command return; local model undo is tested separately.",
+  "results": [
+    {
+      "id": "circle-pre",
+      "command_status_matches": true,
+      "piece_counts": [
+        1,
+        1
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "vertex_probes_within_1e_minus_6": true,
+      "local_undo_removes_outputs": true,
+      "local_redo_restores_outputs": true,
+      "native_undo_removes_outputs": false,
+      "native_undo_returned": true,
+      "native_undo_history": "Command: _ExtractCurvatureGraph\nCommand: _Undo\nNothing to undo."
+    },
+    {
+      "id": "circle-post",
+      "command_status_matches": true,
+      "piece_counts": [
+        1,
+        1
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "vertex_probes_within_1e_minus_6": true,
+      "local_undo_removes_outputs": true,
+      "local_redo_restores_outputs": true,
+      "native_undo_removes_outputs": false,
+      "native_undo_returned": true,
+      "native_undo_history": "Command: _ExtractCurvatureGraph\nSelect curves with curvature graphs: _SelID\nObject ID to select: ca3a9b6f-1d0c-4730-b9ed-f8eb09609666\n1 curve added to selection.\nSelect curves with curvature graphs. Press Enter when done: _Enter\nSelect curves with curvature graphs. Press Enter when done\nCommand: _Undo\nNothing to undo."
+    },
+    {
+      "id": "line",
+      "command_status_matches": true,
+      "piece_counts": [
+        0,
+        0
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [],
+        []
+      ],
+      "vertex_to_polyline_distances": [
+        0.0,
+        0.0
+      ],
+      "vertex_probes_within_1e_minus_6": true
+    },
+    {
+      "id": "no-graph",
+      "command_status_matches": true,
+      "piece_counts": [
+        0,
+        0
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [],
+        []
+      ],
+      "vertex_to_polyline_distances": [
+        0.0,
+        0.0
+      ],
+      "vertex_probes_within_1e_minus_6": true
+    },
+    {
+      "id": "ungraphed-selected",
+      "command_status_matches": true,
+      "piece_counts": [
+        0,
+        0
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [],
+        []
+      ],
+      "vertex_to_polyline_distances": [
+        0.0,
+        0.0
+      ],
+      "vertex_probes_within_1e_minus_6": true
+    },
+    {
+      "id": "mixed-selection",
+      "command_status_matches": true,
+      "piece_counts": [
+        1,
+        1
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "vertex_probes_within_1e_minus_6": true,
+      "local_undo_removes_outputs": true,
+      "local_redo_restores_outputs": true,
+      "native_undo_removes_outputs": false,
+      "native_undo_returned": true,
+      "native_undo_history": "Command: _ExtractCurvatureGraph\nSelect curves with curvature graphs: _SelID\nObject ID to select: 921273ae-b44b-40c9-868f-17216cc405f8\n1 curve added to selection.\nSelect curves with curvature graphs. Press Enter when done: _SelID\nObject ID to select: 47865d77-a6e7-434a-815a-f4cb362b78a8\nNo objects added to selection.\nSelect curves with curvature graphs. Press Enter when done: _Enter\nSelect curves with curvature graphs. Press Enter when done\nCommand: _Undo\nNothing to undo."
+    },
+    {
+      "id": "g2",
+      "command_status_matches": true,
+      "piece_counts": [
+        1,
+        1
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [
+          217
+        ],
+        [
+          217
+        ]
+      ],
+      "vertex_to_polyline_distances": [
+        1.7311041575477148e-14,
+        1.7847016213730495e-14
+      ],
+      "vertex_probes_within_1e_minus_6": true,
+      "local_undo_removes_outputs": true,
+      "local_redo_restores_outputs": true,
+      "native_undo_removes_outputs": false,
+      "native_undo_returned": true,
+      "native_undo_history": "Command: _ExtractCurvatureGraph\nCommand: _Undo\nNothing to undo."
+    },
+    {
+      "id": "g1",
+      "command_status_matches": true,
+      "piece_counts": [
+        2,
+        2
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [
+          71,
+          211
+        ],
+        [
+          211,
+          71
+        ]
+      ],
+      "vertex_to_polyline_distances": [
+        1.3291443575124944e-14,
+        1.3105770602248698e-14
+      ],
+      "vertex_probes_within_1e_minus_6": true,
+      "local_undo_removes_outputs": true,
+      "local_redo_restores_outputs": true,
+      "native_undo_removes_outputs": false,
+      "native_undo_returned": true,
+      "native_undo_history": "Command: _ExtractCurvatureGraph\nCommand: _Undo\nNothing to undo."
+    },
+    {
+      "id": "g0",
+      "command_status_matches": true,
+      "piece_counts": [
+        2,
+        2
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [
+          71,
+          71
+        ],
+        [
+          71,
+          71
+        ]
+      ],
+      "vertex_to_polyline_distances": [
+        2.020410024073667e-15,
+        1.9963063798177283e-15
+      ],
+      "vertex_probes_within_1e_minus_6": true,
+      "local_undo_removes_outputs": true,
+      "local_redo_restores_outputs": true,
+      "native_undo_removes_outputs": false,
+      "native_undo_returned": true,
+      "native_undo_history": "Command: _ExtractCurvatureGraph\nCommand: _Undo\nNothing to undo."
+    },
+    {
+      "id": "mixed-pre",
+      "command_status_matches": true,
+      "piece_counts": [
+        1,
+        1
+      ],
+      "piece_count_matches": true,
+      "attributes_match": true,
+      "source_selection_matches": true,
+      "sources_unchanged": true,
+      "outline_endpoint_sets_match": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "vertex_probes_within_1e_minus_6": true,
+      "local_undo_removes_outputs": true,
+      "local_redo_restores_outputs": true,
+      "native_undo_removes_outputs": false,
+      "native_undo_returned": true,
+      "native_undo_history": "Command: _ExtractCurvatureGraph\nCommand: _Undo\nNothing to undo."
+    }
+  ]
+}
