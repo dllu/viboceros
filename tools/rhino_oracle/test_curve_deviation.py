@@ -62,3 +62,34 @@ class CurveDeviationTests(TestCase):
         self.assertEqual(json.loads(json.dumps(backend_comparison(old_q,old_local,old_native))),old_expected)
         for row in old_local['results']:row['value']['command_registered']=True
         self.assertTrue(backend_comparison(old_q,old_local,old_native)['command_registered'])
+    def test_overlap_capture_retains_all_curved_asymmetric_and_boundary_counterexamples(self):
+        base=Path(__file__).parent;total=0
+        for family,count,reports in [('overlap',25,21),('endpoint_cones',17,17),('endpoint_boundary',10,10)]:
+            request=json.loads((base/'fixtures'/('curve_deviation_'+family+'.json')).read_text())
+            native=json.loads((base/'observations'/('curve_deviation_'+family+'_rhino_20261016.json')).read_text())
+            self.assertEqual(len(request['operations']),count);self.assertEqual(len(native['results']),count)
+            self.assertEqual(sum(r['value']['sdk']['created']for r in native['results']),reports);total+=count
+            for op,row in zip(request['operations'],native['results']):
+                validate(op);self.assertEqual(op['id'],row['id']);v=row['value']
+                self.assertTrue(op['keep_marks']);self.assertTrue(v['inputs_retained']);self.assertTrue(v['command_history'])
+                self.assertEqual(v['created_object_count'],len(v['outputs']))
+                for o in v['outputs']:
+                    self.assertFalse(o['selected']);self.assertEqual(o['color_source'],'ColorFromObject')
+        self.assertEqual(total,52)
+        boundary=json.loads((base/'observations/curve_deviation_endpoint_boundary_rhino_20261016.json').read_text())['results']
+        self.assertGreater(boundary[1]['value']['sdk']['maximum']['distance'],2.9)
+        self.assertEqual(boundary[2]['value']['sdk']['maximum']['distance'],2.)
+    def test_overlap_interval_end_comparison_keeps_baseline_and_remaining_failures(self):
+        from .curve_deviation_comparison import comparison
+        base=Path(__file__).parent
+        q=json.loads((base/'fixtures/curve_deviation_overlap.json').read_text())
+        native=json.loads((base/'observations/curve_deviation_overlap_rhino_20261016.json').read_text())
+        counts=[]
+        for stage in ('initial_',''):
+            local=json.loads((base/'observations'/('curve_deviation_overlap_'+stage+'viboceros_20261016.json')).read_text())
+            expected=json.loads((base/'observations'/('curve_deviation_overlap_'+stage+'comparison_20261016.json')).read_text())
+            r=comparison(q,local,native,interval_ends=True);self.assertEqual(r,expected)
+            self.assertFalse(r['complete_native_command_parity_qualified']);self.assertEqual(r['cases'],25)
+            counts.append(r['counts']['interval_end_sets_matching'])
+            self.assertLess(r['counts']['status_matches'],25)
+        self.assertEqual(counts,[9,16])

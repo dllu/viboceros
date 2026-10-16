@@ -88,10 +88,7 @@ pub fn curve_distance_extrema(
             }
             let t = sources[i].parameter_at(parameters[i])?;
             points[i] = sources[i].evaluate(t)?;
-            native[i] = match refs[i] {
-                CurveRef::Line(_) | CurveRef::Polyline(_) | CurveRef::NurbsCurve(_) => t,
-                _ => refs[i].closest_parameter(points[i], tolerance)?,
-            };
+            native[i] = refs[i].parameter_from_nurbs(t)?;
             if refs[i]
                 .evaluate(native[i])?
                 .distance_bound_to(points[i], tolerance.absolute())?

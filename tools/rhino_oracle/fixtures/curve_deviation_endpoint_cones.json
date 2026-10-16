@@ -1,0 +1,589 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(1, 2)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1,
+            2,
+            0
+          ],
+          "end": [
+            9,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(2, 2)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2,
+            2,
+            0
+          ],
+          "end": [
+            8,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(2.001, 2)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.001,
+            2,
+            0
+          ],
+          "end": [
+            7.9990000000000006,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(2.5, 2)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.5,
+            2,
+            0
+          ],
+          "end": [
+            7.5,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(3, 2)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            2,
+            0
+          ],
+          "end": [
+            7,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(3, 2.99)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            2.99,
+            0
+          ],
+          "end": [
+            7,
+            2.99,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(3, 3)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            3,
+            0
+          ],
+          "end": [
+            7,
+            3,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(3, 3.01)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            3.01,
+            0
+          ],
+          "end": [
+            7,
+            3.01,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(3, 4)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            4,
+            0
+          ],
+          "end": [
+            7,
+            4,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-cone-(4, 2)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            4,
+            2,
+            0
+          ],
+          "end": [
+            6,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-shift-(1, 0.1)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1,
+            0.1,
+            0
+          ],
+          "end": [
+            11,
+            0.1,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-shift-(1, 1)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1,
+            1,
+            0
+          ],
+          "end": [
+            11,
+            1,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-shift-(2, 0.1)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2,
+            0.1,
+            0
+          ],
+          "end": [
+            12,
+            0.1,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-shift-(2, 2)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2,
+            2,
+            0
+          ],
+          "end": [
+            12,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-shift-(3, 1)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            1,
+            0
+          ],
+          "end": [
+            13,
+            1,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-shift-(3, 3)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            3,
+            0
+          ],
+          "end": [
+            13,
+            3,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "partial-shift-(4, 4)",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            4,
+            4,
+            0
+          ],
+          "end": [
+            14,
+            4,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    }
+  ]
+}

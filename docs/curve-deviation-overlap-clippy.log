@@ -1,0 +1,5 @@
+    Checking viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Checking viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Checking viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Checking viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.71s

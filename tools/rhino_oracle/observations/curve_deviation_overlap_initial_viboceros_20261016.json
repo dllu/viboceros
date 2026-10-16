@@ -1,0 +1,7421 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "cubic-shift-(0, 1, 1)",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.6576801469055051\nMaximum deviation = 1.0000000000000002\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 0.6576801469055051,
+            "parameters": [
+              0.0503693051159258,
+              0.0
+            ],
+            "points": [
+              [
+                0.46067936614356014,
+                0.5306198797954749,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.8766846040582978,
+            "parameters": [
+              1.0,
+              0.9603184439849103
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                9.638267085411597,
+                0.798576980319514,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.46067936614356014,
+              0.5306198797954749,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.46067936614356014,
+              0.5306198797954749,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              9.638267085411597,
+              0.798576980319514,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.638267085411597,
+              0.798576980319514,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.5237279221686815,
+              1.40840786061492,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              2.5237279221705755,
+              2.40840786061492,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.5237279221686815,
+              1.40840786061492,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.5237279221705755,
+              2.40840786061492,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.46067936614356014,
+              0.5306198797954749,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.46067936614356014,
+              0.5306198797954749,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0000000000000002,
+            "parameters": [
+              0.2615831876594767,
+              0.26158318765966315
+            ],
+            "points": [
+              [
+                2.5237279221686815,
+                1.40840786061492,
+                0.0
+              ],
+              [
+                2.5237279221705755,
+                2.40840786061492,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.6576801469055051,
+            "parameters": [
+              0.0503693051159258,
+              0.0
+            ],
+            "points": [
+              [
+                0.46067936614356014,
+                0.5306198797954749,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 17296595
+    },
+    {
+      "id": "cubic-shift-(3, 1, 1)",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.0000000000000004440892098500626\nMaximum deviation = 2.097862916995507\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 0.3721829996241708,
+            "parameters": [
+              0.31339909632580304,
+              0.0
+            ],
+            "points": [
+              [
+                3.0536853600070732,
+                1.3682907375025286,
+                0.0
+              ],
+              [
+                3.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.855987111634131,
+            "parameters": [
+              1.0,
+              0.717181068281779
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.25991339031387,
+                0.8155727832752221,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              10.25991339031387,
+              0.8155727832752221,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.25991339031387,
+              0.8155727832752221,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              6.725244426777246,
+              0.006011134451548165,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              7.485309933168921,
+              1.9613446723673855,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              6.725244426777246,
+              0.006011134451548165,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.485309933168921,
+              1.9613446723673855,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.2705431296722183,
+              1.33113530586474,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.097862916995507,
+            "parameters": [
+              0.665167240302828,
+              0.4509594333601859
+            ],
+            "points": [
+              [
+                6.725244426777246,
+                0.006011134451548165,
+                0.0
+              ],
+              [
+                7.485309933168921,
+                1.9613446723673855,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 4.440892098500626e-16,
+            "parameters": [
+              0.334425205671835,
+              0.029770778178653638
+            ],
+            "points": [
+              [
+                3.2705431296722183,
+                1.33113530586474,
+                0.0
+              ],
+              [
+                3.270543129672218,
+                1.33113530586474,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 20910155
+    },
+    {
+      "id": "cubic-shift-(3, 1, 0.5)",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0\nMaximum deviation = 1.3415755833746217\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 0.3721829996241708,
+            "parameters": [
+              0.31339909632580304,
+              0.0
+            ],
+            "points": [
+              [
+                3.0536853600070732,
+                1.3682907375025286,
+                0.0
+              ],
+              [
+                3.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 1.3415755833746217,
+            "parameters": [
+              0.7591540799535161,
+              1.0
+            ],
+            "points": [
+              [
+                7.686307829587492,
+                -0.30438578194062144,
+                0.0
+              ],
+              [
+                8.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.295324687936228,
+              1.3262099517826997,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.3415755833746217,
+            "parameters": [
+              0.7591540799535161,
+              1.0
+            ],
+            "points": [
+              [
+                7.686307829587492,
+                -0.30438578194062144,
+                0.0
+              ],
+              [
+                8.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.0,
+            "parameters": [
+              0.3368223662629425,
+              0.06430828983701925
+            ],
+            "points": [
+              [
+                3.295324687936228,
+                1.3262099517826997,
+                0.0
+              ],
+              [
+                3.295324687936228,
+                1.3262099517826997,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 20433930
+    },
+    {
+      "id": "cubic-reversed-1",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.0000000000000004440892098500626\nMaximum deviation = 1.3415755833746217\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 0.3721829996241708,
+            "parameters": [
+              0.31339909632580304,
+              1.0
+            ],
+            "points": [
+              [
+                3.0536853600070732,
+                1.3682907375025286,
+                0.0
+              ],
+              [
+                3.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 1.3415755833746217,
+            "parameters": [
+              0.7591540799535161,
+              0.0
+            ],
+            "points": [
+              [
+                7.686307829587492,
+                -0.30438578194062144,
+                0.0
+              ],
+              [
+                8.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              7.686307829587492,
+              -0.30438578194062144,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.2953246879362283,
+              1.3262099517826995,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.3415755833746217,
+            "parameters": [
+              0.7591540799535161,
+              0.0
+            ],
+            "points": [
+              [
+                7.686307829587492,
+                -0.30438578194062144,
+                0.0
+              ],
+              [
+                8.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 4.440892098500626e-16,
+            "parameters": [
+              0.33682236626294254,
+              0.9356917101629808
+            ],
+            "points": [
+              [
+                3.2953246879362283,
+                1.3262099517826995,
+                0.0
+              ],
+              [
+                3.295324687936228,
+                1.3262099517826995,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 23965378
+    },
+    {
+      "id": "cubic-shift-(3, -1, 0.5)",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.6234029544523739\nMaximum deviation = 2.3336789282771595\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 2.3336789282771595,
+            "parameters": [
+              0.3651086560993199,
+              0.0
+            ],
+            "points": [
+              [
+                3.588549767058812,
+                1.2582441214314832,
+                0.0
+              ],
+              [
+                3.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.6234029544523739,
+            "parameters": [
+              0.799410430649373,
+              1.0
+            ],
+            "points": [
+              [
+                8.090127264011977,
+                -0.38314643560917655,
+                0.0
+              ],
+              [
+                8.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.3336789282771595,
+            "parameters": [
+              0.3651086560993199,
+              0.0
+            ],
+            "points": [
+              [
+                3.588549767058812,
+                1.2582441214314832,
+                0.0
+              ],
+              [
+                3.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.6234029544523739,
+            "parameters": [
+              0.799410430649373,
+              1.0
+            ],
+            "points": [
+              [
+                8.090127264011977,
+                -0.38314643560917655,
+                0.0
+              ],
+              [
+                8.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 23668129
+    },
+    {
+      "id": "cubic-reversed--1",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.6234029544523739\nMaximum deviation = 2.3336789282771595\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 2.3336789282771595,
+            "parameters": [
+              0.3651086560993199,
+              1.0
+            ],
+            "points": [
+              [
+                3.588549767058812,
+                1.2582441214314832,
+                0.0
+              ],
+              [
+                3.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.6234029544523739,
+            "parameters": [
+              0.799410430649373,
+              0.0
+            ],
+            "points": [
+              [
+                8.090127264011977,
+                -0.38314643560917655,
+                0.0
+              ],
+              [
+                8.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.588549767058812,
+              1.2582441214314832,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.090127264011977,
+              -0.38314643560917655,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              -1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.3336789282771595,
+            "parameters": [
+              0.3651086560993199,
+              1.0
+            ],
+            "points": [
+              [
+                3.588549767058812,
+                1.2582441214314832,
+                0.0
+              ],
+              [
+                3.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.6234029544523739,
+            "parameters": [
+              0.799410430649373,
+              0.0
+            ],
+            "points": [
+              [
+                8.090127264011977,
+                -0.38314643560917655,
+                0.0
+              ],
+              [
+                8.0,
+                -1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 26153478
+    },
+    {
+      "id": "cubic-shift-(-3, 1, 1)",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.0000000000000009930136612989092\nMaximum deviation = 2.3336789282771595\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 2.3336789282771595,
+            "parameters": [
+              0.0,
+              0.3651086560993199
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.588549767058812,
+                2.258244121431483,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 1.0255255804117287,
+            "parameters": [
+              0.6549838484106277,
+              1.0
+            ],
+            "points": [
+              [
+                6.619884986320597,
+                0.047521500266635985,
+                0.0
+              ],
+              [
+                7.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.588549767058812,
+              2.258244121431483,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.588549767058812,
+              2.258244121431483,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              6.619884986320597,
+              0.047521500266635985,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              6.619884986320597,
+              0.047521500266635985,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.588549767058812,
+              2.258244121431483,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.588549767058812,
+              2.258244121431483,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.8005093383355657,
+              1.3970705207161669,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 2.3336789282771595,
+            "parameters": [
+              0.0,
+              0.3651086560993199
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.588549767058812,
+                2.258244121431483,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 9.930136612989092e-16,
+            "parameters": [
+              0.2887284617155937,
+              0.576323671938118
+            ],
+            "points": [
+              [
+                2.8005093383355657,
+                1.3970705207161669,
+                0.0
+              ],
+              [
+                2.8005093383355666,
+                1.3970705207161664,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 23018544
+    },
+    {
+      "id": "cubic-partial-line",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.0000000000003558807913067511\nMaximum deviation = 1.0255255804117287\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 0.3721829996241708,
+            "parameters": [
+              0.31339909632580304,
+              0.0
+            ],
+            "points": [
+              [
+                3.0536853600070732,
+                1.3682907375025286,
+                0.0
+              ],
+              [
+                3.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 1.0255255804117287,
+            "parameters": [
+              0.6549838484106277,
+              4.0
+            ],
+            "points": [
+              [
+                6.619884986320597,
+                0.047521500266635985,
+                0.0
+              ],
+              [
+                7.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0536853600070732,
+              1.3682907375025286,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              6.619884986320597,
+              0.047521500266635985,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              6.619884986320597,
+              0.047521500266635985,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              6.619884986320597,
+              0.047521500266635985,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              6.619884986320597,
+              0.047521500266635985,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.38451002332304,
+              0.9999999999996442,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0255255804117287,
+            "parameters": [
+              0.6549838484106277,
+              4.0
+            ],
+            "points": [
+              [
+                6.619884986320597,
+                0.047521500266635985,
+                0.0
+              ],
+              [
+                7.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 3.558807913067511e-13,
+            "parameters": [
+              0.4413434664078461,
+              1.3845100233230336
+            ],
+            "points": [
+              [
+                4.38451002332304,
+                0.9999999999996442,
+                0.0
+              ],
+              [
+                4.384510023323034,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 16333985
+    },
+    {
+      "id": "cubic-full-line",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.0000000000000002482534153247273\nMaximum deviation = 1.420753539627266\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 0.6576801469055051,
+            "parameters": [
+              0.0503693051159258,
+              0.0
+            ],
+            "points": [
+              [
+                0.46067936614356014,
+                0.5306198797954749,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 1.0,
+            "parameters": [
+              1.0,
+              10.0
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.46067936614356014,
+              0.5306198797954749,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.46067936614356014,
+              0.5306198797954749,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              10.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.584639704717329,
+              -0.4207535396272659,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.584639704717329,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.584639704717329,
+              -0.4207535396272659,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.584639704717329,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              1.0542063448118226,
+              0.9999999999999999,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.420753539627266,
+            "parameters": [
+              0.8495279234516212,
+              8.584639704717329
+            ],
+            "points": [
+              [
+                8.584639704717329,
+                -0.4207535396272659,
+                0.0
+              ],
+              [
+                8.584639704717329,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.482534153247273e-16,
+            "parameters": [
+              0.11318591675875228,
+              1.0542063448118228
+            ],
+            "points": [
+              [
+                1.0542063448118226,
+                0.9999999999999999,
+                0.0
+              ],
+              [
+                1.0542063448118228,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 10567302
+    },
+    {
+      "id": "cubic-fold-8",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.08580643866942858\nMaximum deviation = 1\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 0.8952378018676637,
+            "parameters": [
+              0.017213126297435977,
+              0.0
+            ],
+            "points": [
+              [
+                0.39731928269394046,
+                0.19776056598268693,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.9866525382515742,
+            "parameters": [
+              1.0,
+              0.99554362794787
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                9.840877776737944,
+                0.9737367967281582,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.39731928269394046,
+              0.19776056598268693,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.39731928269394046,
+              0.19776056598268693,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              9.840877776737944,
+              0.9737367967281582,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.840877776737944,
+              0.9737367967281582,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.941088446128266,
+              -0.42075353962726586,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              5.941088446128269,
+              0.5792464603727341,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              5.941088446128266,
+              -0.42075353962726586,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.941088446128269,
+              0.5792464603727341,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.4961891735753112,
+              1.3061486521029368,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.57487323124742,
+              1.3403767689863217,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.4961891735753112,
+              1.3061486521029368,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.57487323124742,
+              1.3403767689863217,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "parameters": [
+              0.8495279234516208,
+              0.849527923451621
+            ],
+            "points": [
+              [
+                5.941088446128266,
+                -0.42075353962726586,
+                0.0
+              ],
+              [
+                5.941088446128269,
+                0.5792464603727341,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.08580643866942858,
+            "parameters": [
+              0.3459837029923029,
+              0.5885766625960249
+            ],
+            "points": [
+              [
+                3.4961891735753112,
+                1.3061486521029368,
+                0.0
+              ],
+              [
+                3.57487323124742,
+                1.3403767689863217,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 37515566
+    },
+    {
+      "id": "cubic-fold--5",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.2865429929830424\nMaximum deviation = 1.2695447091103118\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 0.39813059085009234,
+            "parameters": [
+              0.23525819627044714,
+              0.0
+            ],
+            "points": [
+              [
+                -0.028926459793164192,
+                1.3970783641732172,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.6758415068546222,
+            "parameters": [
+              1.0,
+              0.7729024303902361
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.124074208806679,
+                0.6643548246957517,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              -0.028926459793164192,
+              1.3970783641732172,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              -0.028926459793164192,
+              1.3970783641732172,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              10.124074208806679,
+              0.6643548246957517,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.124074208806679,
+              0.6643548246957517,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.797323038117959,
+              -0.4119721619867236,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              10.124074208806679,
+              0.6643548246957517,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.797323038117959,
+              -0.4119721619867236,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.124074208806679,
+              0.6643548246957517,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              -0.028926459793164192,
+              1.3970783641732172,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              -0.2173802590227396,
+              1.1812264418199085,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              -0.028926459793164192,
+              1.3970783641732172,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              -0.2173802590227396,
+              1.1812264418199085,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.2695447091103118,
+            "parameters": [
+              0.8727440002520962,
+              0.7729024303902361
+            ],
+            "points": [
+              [
+                10.797323038117959,
+                -0.4119721619867236,
+                0.0
+              ],
+              [
+                10.124074208806679,
+                0.6643548246957517,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.2865429929830424,
+            "parameters": [
+              0.23525819627044714,
+              0.015713683041808726
+            ],
+            "points": [
+              [
+                -0.028926459793164192,
+                1.3970783641732172,
+                0.0
+              ],
+              [
+                -0.2173802590227396,
+                1.1812264418199085,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 24683203
+    },
+    {
+      "id": "angled-lines-0",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": false,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 3.1710768029174004\nMaximum deviation = 5.088383774835922\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 3.1710768029174004,
+            "parameters": [
+              2.23606797749979,
+              0.0
+            ],
+            "points": [
+              [
+                2.23606797749979,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                3.0
+              ]
+            ]
+          },
+          {
+            "distance": 5.088383774835922,
+            "parameters": [
+              8.94427190999916,
+              6.708203932499369
+            ],
+            "points": [
+              [
+                8.94427190999916,
+                0.0,
+                0.0
+              ],
+              [
+                8.0,
+                4.0,
+                3.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.23606797749979,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.23606797749979,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.94427190999916,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.94427190999916,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.94427190999916,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.94427190999916,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.23606797749979,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.23606797749979,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 5.088383774835922,
+            "parameters": [
+              8.94427190999916,
+              6.708203932499369
+            ],
+            "points": [
+              [
+                8.94427190999916,
+                0.0,
+                0.0
+              ],
+              [
+                8.0,
+                4.0,
+                3.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 3.1710768029174004,
+            "parameters": [
+              2.23606797749979,
+              0.0
+            ],
+            "points": [
+              [
+                2.23606797749979,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                3.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 1813988
+    },
+    {
+      "id": "angled-linear-nurbs-0",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 3.1622776601683795\nMaximum deviation = 5\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 3.1622776601683795,
+            "parameters": [
+              0.2,
+              0.0
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                3.0
+              ]
+            ]
+          },
+          {
+            "distance": 5.0,
+            "parameters": [
+              0.8,
+              1.0
+            ],
+            "points": [
+              [
+                8.0,
+                0.0,
+                0.0
+              ],
+              [
+                8.0,
+                4.0,
+                3.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              4.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              1.0,
+              3.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 5.0,
+            "parameters": [
+              0.8,
+              1.0
+            ],
+            "points": [
+              [
+                8.0,
+                0.0,
+                0.0
+              ],
+              [
+                8.0,
+                4.0,
+                3.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 3.1622776601683795,
+            "parameters": [
+              0.2,
+              0.0
+            ],
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                3.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 4366905
+    },
+    {
+      "id": "angled-lines-1",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": false,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 1\nMaximum deviation = 1.7030298182948866\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 1.7030298182948866,
+            "parameters": [
+              0.0,
+              1.4721359549995794
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.3167184270002524,
+                -1.3416407864998738,
+                1.0
+              ]
+            ]
+          },
+          {
+            "distance": 1.4337810467434842,
+            "parameters": [
+              5.23606797749979,
+              6.708203932499369
+            ],
+            "points": [
+              [
+                5.23606797749979,
+                0.0,
+                0.0
+              ],
+              [
+                5.0,
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.3167184270002524,
+              -1.3416407864998738,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.3167184270002524,
+              -1.3416407864998738,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.23606797749979,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              5.23606797749979,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.3167184270002524,
+              -1.3416407864998738,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.3167184270002524,
+              -1.3416407864998738,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0000000000000004,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              -1.1102230246251565e-16,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0000000000000004,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              -1.1102230246251565e-16,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.7030298182948866,
+            "parameters": [
+              0.0,
+              1.4721359549995794
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.3167184270002524,
+                -1.3416407864998738,
+                1.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 1.0,
+            "parameters": [
+              3.0000000000000004,
+              4.47213595499958
+            ],
+            "points": [
+              [
+                3.0000000000000004,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                -1.1102230246251565e-16,
+                1.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 2015461
+    },
+    {
+      "id": "angled-linear-nurbs-1",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 1\nMaximum deviation = 1.6733200530681511\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 1.6733200530681511,
+            "parameters": [
+              0.0,
+              0.2666666666666667
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.6000000000000003,
+                -1.1999999999999997,
+                1.0
+              ]
+            ]
+          },
+          {
+            "distance": 1.4142135623730951,
+            "parameters": [
+              0.5,
+              1.0
+            ],
+            "points": [
+              [
+                5.0,
+                0.0,
+                0.0
+              ],
+              [
+                5.0,
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.6000000000000003,
+              -1.1999999999999997,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.6000000000000003,
+              -1.1999999999999997,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.0,
+              1.0,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.6000000000000003,
+              -1.1999999999999997,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.6000000000000003,
+              -1.1999999999999997,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.6733200530681511,
+            "parameters": [
+              0.0,
+              0.2666666666666667
+            ],
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.6000000000000003,
+                -1.1999999999999997,
+                1.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 1.0,
+            "parameters": [
+              0.3,
+              0.6666666666666666
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 4513033
+    },
+    {
+      "id": "angled-lines-2",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": false,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 2.1647844005847876\nMaximum deviation = 3.0614674589207187\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 2.1647844005847876,
+            "parameters": [
+              8.82842712474619,
+              0.0
+            ],
+            "points": [
+              [
+                8.82842712474619,
+                0.0,
+                0.0
+              ],
+              [
+                8.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 3.0614674589207187,
+            "parameters": [
+              10.0,
+              1.1715728752538102
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                8.82842712474619,
+                2.8284271247461903,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.82842712474619,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              2.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.82842712474619,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.82842712474619,
+              2.8284271247461903,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.82842712474619,
+              2.8284271247461903,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.82842712474619,
+              2.8284271247461903,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.82842712474619,
+              2.8284271247461903,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.82842712474619,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              2.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              8.82842712474619,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 3.0614674589207187,
+            "parameters": [
+              10.0,
+              1.1715728752538102
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                8.82842712474619,
+                2.8284271247461903,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.1647844005847876,
+            "parameters": [
+              8.82842712474619,
+              0.0
+            ],
+            "points": [
+              [
+                8.82842712474619,
+                0.0,
+                0.0
+              ],
+              [
+                8.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 1867860
+    },
+    {
+      "id": "angled-linear-nurbs-2",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": false,
+        "backend_only": false,
+        "command_history": "Curves do not overlap.",
+        "command_registered": true,
+        "created_object_count": 0,
+        "ends": null,
+        "inputs_retained": true,
+        "outputs": [],
+        "sdk": {
+          "created": false,
+          "maximum": null,
+          "minimum": null
+        },
+        "undo_label": null
+      },
+      "elapsed_ns": 2386309
+    },
+    {
+      "id": "angled-lines-3",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": false,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 2.1647844005847876\nMaximum deviation = 6.494353201754364\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 2.1647844005847876,
+            "parameters": [
+              3.82842712474619,
+              0.0
+            ],
+            "points": [
+              [
+                3.82842712474619,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 6.494353201754364,
+            "parameters": [
+              9.48528137423857,
+              5.656854249492381
+            ],
+            "points": [
+              [
+                9.48528137423857,
+                0.0,
+                0.0
+              ],
+              [
+                7.0,
+                6.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.82842712474619,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.82842712474619,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.48528137423857,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              7.0,
+              6.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              9.48528137423857,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.0,
+              6.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.48528137423857,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              7.0,
+              6.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              9.48528137423857,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.0,
+              6.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.82842712474619,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.82842712474619,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 6.494353201754364,
+            "parameters": [
+              9.48528137423857,
+              5.656854249492381
+            ],
+            "points": [
+              [
+                9.48528137423857,
+                0.0,
+                0.0
+              ],
+              [
+                7.0,
+                6.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.1647844005847876,
+            "parameters": [
+              3.82842712474619,
+              0.0
+            ],
+            "points": [
+              [
+                3.82842712474619,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 1711300
+    },
+    {
+      "id": "angled-linear-nurbs-3",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 2\nMaximum deviation = 4.5\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 2.0,
+            "parameters": [
+              0.3,
+              0.0
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 4.743416490252569,
+            "parameters": [
+              0.7,
+              0.6249999999999999
+            ],
+            "points": [
+              [
+                7.0,
+                0.0,
+                0.0
+              ],
+              [
+                5.5,
+                4.5,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              5.5,
+              4.5,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              7.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.5,
+              4.5,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.499999999999999,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              5.5,
+              4.5,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              5.499999999999999,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.5,
+              4.5,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 4.5,
+            "parameters": [
+              0.5499999999999999,
+              0.6249999999999999
+            ],
+            "points": [
+              [
+                5.499999999999999,
+                0.0,
+                0.0
+              ],
+              [
+                5.5,
+                4.5,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 2.0,
+            "parameters": [
+              0.3,
+              0.0
+            ],
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 4803066
+    },
+    {
+      "id": "polyline-0",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.8944271909999159\nMaximum deviation = 1\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 0.894427190999916,
+            "parameters": [
+              0.1,
+              0.0
+            ],
+            "points": [
+              [
+                0.4,
+                0.2,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.8944271909999159,
+            "parameters": [
+              1.9,
+              2.0
+            ],
+            "points": [
+              [
+                7.6,
+                0.20000000000000018,
+                0.0
+              ],
+              [
+                8.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.4,
+              0.2,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.4,
+              0.2,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.6,
+              0.20000000000000018,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              7.6,
+              0.20000000000000018,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              4.0,
+              2.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.0,
+              3.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.4,
+              0.2,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              4.163336342344337e-17,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.4,
+              0.2,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.163336342344337e-17,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "parameters": [
+              1.0,
+              1.0
+            ],
+            "points": [
+              [
+                4.0,
+                2.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.8944271909999159,
+            "parameters": [
+              0.1,
+              1.0408340855860843e-17
+            ],
+            "points": [
+              [
+                0.4,
+                0.2,
+                0.0
+              ],
+              [
+                4.163336342344337e-17,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 7757152
+    },
+    {
+      "id": "polyline-1",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.000000000000001831026719408895\nMaximum deviation = 1\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 0.9701425001453319,
+            "parameters": [
+              0.029411764705882353,
+              0.0
+            ],
+            "points": [
+              [
+                0.23529411764705882,
+                0.058823529411764705,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.9363291775690444,
+            "parameters": [
+              2.958904109589041,
+              3.0
+            ],
+            "points": [
+              [
+                9.671232876712327,
+                0.1232876712328772,
+                0.0
+              ],
+              [
+                10.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.23529411764705882,
+              0.058823529411764705,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.23529411764705882,
+              0.058823529411764705,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.671232876712327,
+              0.1232876712328772,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              10.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              9.671232876712327,
+              0.1232876712328772,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.0,
+              4.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.6,
+              1.9,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "parameters": [
+              2.0,
+              2.0
+            ],
+            "points": [
+              [
+                2.0,
+                3.0,
+                0.0
+              ],
+              [
+                2.0,
+                4.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 1.831026719408895e-15,
+            "parameters": [
+              0.95,
+              2.7
+            ],
+            "points": [
+              [
+                7.6,
+                1.9,
+                0.0
+              ],
+              [
+                7.600000000000001,
+                1.8999999999999995,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 39083873
+    },
+    {
+      "id": "polyline-2",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.22840596315156486\nMaximum deviation = 3.531372004659682\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 0.24253562503633297,
+            "parameters": [
+              1.1911764705882353,
+              0.0
+            ],
+            "points": [
+              [
+                0.0588235294117645,
+                1.2352941176470589,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.24253562503633297,
+            "parameters": [
+              3.0,
+              1.8088235294117645
+            ],
+            "points": [
+              [
+                10.0,
+                0.0,
+                0.0
+              ],
+              [
+                9.941176470588232,
+                -0.235294117647058,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0588235294117645,
+              1.2352941176470589,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0588235294117645,
+              1.2352941176470589,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              9.941176470588232,
+              -0.235294117647058,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.941176470588232,
+              -0.235294117647058,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              13.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              9.941176470588232,
+              -0.235294117647058,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              13.0,
+              -2.0,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.941176470588232,
+              -0.235294117647058,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.0588235294117645,
+              1.2352941176470589,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              -0.0678733031674216,
+              1.045248868778281,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.0588235294117645,
+              1.2352941176470589,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              -0.0678733031674216,
+              1.045248868778281,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 3.531372004659682,
+            "parameters": [
+              2.0,
+              1.8088235294117645
+            ],
+            "points": [
+              [
+                13.0,
+                -2.0,
+                0.0
+              ],
+              [
+                9.941176470588232,
+                -0.235294117647058,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.22840596315156486,
+            "parameters": [
+              1.1911764705882353,
+              0.022624434389140535
+            ],
+            "points": [
+              [
+                0.0588235294117645,
+                1.2352941176470589,
+                0.0
+              ],
+              [
+                -0.0678733031674216,
+                1.045248868778281,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 4909210
+    },
+    {
+      "id": "arc-shift",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.7539052967910608\nMaximum deviation = 1\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 0.7539052967910608,
+            "parameters": [
+              0.6254706377624344,
+              0.0
+            ],
+            "points": [
+              [
+                0.47096090581912153,
+                0.4112988689329271,
+                0.0
+              ],
+              [
+                1.962032069380664e-16,
+                0.9999999999999993,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.7539052967910583,
+            "parameters": [
+              10.409214292561451,
+              11.03468493625858
+            ],
+            "points": [
+              [
+                9.52903908954666,
+                0.41129887264030224,
+                0.0
+              ],
+              [
+                9.999999999999998,
+                0.9999999999999986,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.47096090581912153,
+              0.4112988689329271,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              1.962032069380664e-16,
+              0.9999999999999993,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.47096090581912153,
+              0.4112988689329271,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              1.962032069380664e-16,
+              0.9999999999999993,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.52903908954666,
+              0.41129887264030224,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              9.999999999999998,
+              0.9999999999999986,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              9.52903908954666,
+              0.41129887264030224,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.999999999999998,
+              0.9999999999999986,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.999999999999997,
+              1.9999999999999991,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              4.999999999999997,
+              2.999999999999999,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              4.999999999999997,
+              1.9999999999999991,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.999999999999997,
+              2.999999999999999,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.47096090581912153,
+              0.4112988689329271,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              1.962032069380664e-16,
+              0.9999999999999993,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.47096090581912153,
+              0.4112988689329271,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              1.962032069380664e-16,
+              0.9999999999999993,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 1.0,
+            "parameters": [
+              5.517342468129288,
+              5.517342468129288
+            ],
+            "points": [
+              [
+                4.999999999999997,
+                1.9999999999999991,
+                0.0
+              ],
+              [
+                4.999999999999997,
+                2.999999999999999,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.7539052967910608,
+            "parameters": [
+              0.6254706377624344,
+              0.0
+            ],
+            "points": [
+              [
+                0.47096090581912153,
+                0.4112988689329271,
+                0.0
+              ],
+              [
+                1.962032069380664e-16,
+                0.9999999999999993,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 17156980
+    },
+    {
+      "id": "arc-line",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.000000000000009485749680535095\nMaximum deviation = 0.9999999999999991\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 10,
+        "ends": [
+          {
+            "distance": 0.7539052967910612,
+            "parameters": [
+              0.6254706370093136,
+              2.220446049250313e-16
+            ],
+            "points": [
+              [
+                0.47096090523103273,
+                0.41129886846245606,
+                0.0
+              ],
+              [
+                2.220446049250313e-16,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.7539052967910597,
+            "parameters": [
+              10.409214298944008,
+              9.999999999999998
+            ],
+            "points": [
+              [
+                9.5290390945306,
+                0.4112988686531512,
+                0.0
+              ],
+              [
+                9.999999999999998,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              0.47096090523103273,
+              0.41129886846245606,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              2.220446049250313e-16,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              0.47096090523103273,
+              0.41129886846245606,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.220446049250313e-16,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.5290390945306,
+              0.4112988686531512,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              9.999999999999998,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              9.5290390945306,
+              0.4112988686531512,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              9.999999999999998,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.0,
+              1.9999999999999991,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              5.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              5.0,
+              1.9999999999999991,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              5.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              1.3257653858252185,
+              0.9999999999999909,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 0.9999999999999991,
+            "parameters": [
+              5.51734246812929,
+              5.0
+            ],
+            "points": [
+              [
+                5.0,
+                1.9999999999999991,
+                0.0
+              ],
+              [
+                5.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 9.485749680535095e-15,
+            "parameters": [
+              1.6642702430726055,
+              1.3257653858252159
+            ],
+            "points": [
+              [
+                1.3257653858252185,
+                0.9999999999999909,
+                0.0
+              ],
+              [
+                1.3257653858252159,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 9880004
+    },
+    {
+      "id": "arc-partial-line",
+      "value": {
+        "analysis_dismissed": true,
+        "approximate_overlap": true,
+        "backend_only": false,
+        "command_history": "Minimum deviation = 0.6877976257966552\nMaximum deviation = 0.9999999999999991\nCurved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\nPress Enter when done (KeepMarks=Yes)",
+        "command_registered": true,
+        "created_object_count": 12,
+        "ends": [
+          {
+            "distance": 0.6877976257966552,
+            "parameters": [
+              3.2719961201967935,
+              0.0
+            ],
+            "points": [
+              [
+                2.7903759784978637,
+                1.6550750671951937,
+                0.0
+              ],
+              [
+                3.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "distance": 0.6877976257966539,
+            "parameters": [
+              7.762688816061015,
+              4.0
+            ],
+            "points": [
+              [
+                7.2096240215014005,
+                1.655075067195428,
+                0.0
+              ],
+              [
+                7.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "inputs_retained": true,
+        "outputs": [
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.7903759784978637,
+              1.6550750671951937,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.7903759784978637,
+              1.6550750671951937,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.2096240215014005,
+              1.655075067195428,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              7.2096240215014005,
+              1.655075067195428,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              7.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.999999999999845,
+              1.9999999999999991,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              4.9999999999998455,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              4.999999999999845,
+              1.9999999999999991,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              4.9999999999998455,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              2.7903759784978637,
+              1.6550750671951937,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "end": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "layer": "Default",
+            "name": null,
+            "selected": false,
+            "start": [
+              2.7903759784978637,
+              1.6550750671951937,
+              0.0
+            ],
+            "type": "LineCurve"
+          },
+          {
+            "color": [
+              0,
+              255,
+              0
+            ],
+            "color_source": "ColorFromObject",
+            "layer": "Default",
+            "name": null,
+            "point": [
+              3.0,
+              1.0,
+              0.0
+            ],
+            "selected": false,
+            "type": "Point"
+          }
+        ],
+        "sdk": {
+          "created": true,
+          "maximum": {
+            "distance": 0.9999999999999991,
+            "parameters": [
+              5.517342468129136,
+              1.9999999999998452
+            ],
+            "points": [
+              [
+                4.999999999999845,
+                1.9999999999999991,
+                0.0
+              ],
+              [
+                4.9999999999998455,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "minimum": {
+            "distance": 0.6877976257966552,
+            "parameters": [
+              3.2719961201967935,
+              0.0
+            ],
+            "points": [
+              [
+                2.7903759784978637,
+                1.6550750671951937,
+                0.0
+              ],
+              [
+                3.0,
+                1.0,
+                0.0
+              ]
+            ]
+          }
+        },
+        "undo_label": "CrvDeviation"
+      },
+      "elapsed_ns": 11977368
+    }
+  ]
+}

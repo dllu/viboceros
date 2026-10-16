@@ -1,0 +1,15 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 32.33s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-f7a44ebfd2db35f0)
+
+running 8 tests
+test curve_distance::overlap::tests::crv_overlap_closed_inputs_and_invalid_windows_keep_distinct_outcomes ... ok
+test curve_distance::tests::crv_deviation_line_no_overlap_and_skew_correspondence ... ok
+test curve_distance::tests::crv_deviation_parallel_line_clipping_keeps_native_domains_and_visit ... ok
+test curve_distance::overlap::tests::crv_overlap_only_transverse_boundary_expands_and_longitudinal_offsets_stay_projected ... ok
+test curve_distance::overlap::tests::crv_overlap_rotated_transverse_profiles_use_model_tolerance_without_changing_curves ... ok
+test curve_distance::overlap::tests::crv_overlap_transverse_ends_survive_curve_shape_parameter_domain_and_reversal ... ok
+test curve_distance::tests::crv_deviation_line_extreme_scales_and_translation_do_not_overflow_intermediates ... ok
+test curve_distance::tests::crv_deviation_crossing_lines_follow_bisector_correspondence_under_swap_and_reversal ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 2312 filtered out; finished in 0.05s

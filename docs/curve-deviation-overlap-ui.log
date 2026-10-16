@@ -1,0 +1,12 @@
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 53.72s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 3 tests
+test app::tests::curve_deviation::crv_deviation_preselection_escape_and_replacement_dismiss_without_edits ... ok
+test app::tests::curve_deviation::crv_deviation_command_first_picker_requires_two_curves_and_enter_finishes ... ok
+test viewport::tests::crv_deviation_markers_paint_in_all_viewport_modes_without_model_edits ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1240 filtered out; finished in 0.27s

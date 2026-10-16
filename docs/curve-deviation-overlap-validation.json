@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Preserved transverse profile endpoints and original curve parameter visits, with broader native overlap counterexamples",
+  "base_repository_revision": "5b4a6edb65678c07c2598ade44d501fe034df923",
+  "command_registered": true,
+  "native_command_parity_qualified": false,
+  "native_overlap_policy_qualified": false,
+  "native_line_correspondence_qualified": false,
+  "native_minimum_parity_qualified": false,
+  "directed_witness_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "performance_qualified": false,
+  "source_parameter_maps_reused": true,
+  "reference_returned_geometry_used_as_input": false,
+  "diagnostic_recipes_chosen_adaptively": true,
+  "implementation": "Preserve corresponding natural open-curve ends when their displacement is transverse to the aligned endpoint chords within absolute model tolerance. Keep other projected boundaries and closed-curve windows. Recover all native witness parameters through the existing parameter_from_nurbs map, preserving circular seam visits and composite arc branches without closest-point recovery. Report interval-end distances, native parameters and world coordinates. Retain the existing line bisector approximation, and expose its newly captured limitations in both console and window.",
+  "coverage": {
+    "rust_tests": 58,
+    "new_rust_tests": 5,
+    "python_tests": 34,
+    "new_python_tests": 2,
+    "private_native_captures": 3,
+    "native_cases": 52,
+    "native_successful_reports": 48,
+    "native_captures": {
+      "overlap": {
+        "cases": 25,
+        "reports": 21,
+        "created_mark_objects": 236
+      },
+      "endpoint_cones": {
+        "cases": 17,
+        "reports": 17,
+        "created_mark_objects": 204
+      },
+      "endpoint_boundary": {
+        "cases": 10,
+        "reports": 10,
+        "created_mark_objects": 120
+      }
+    },
+    "main_corpus_cases": 25,
+    "initial_comparison_counts": {
+      "status_matches": 22,
+      "sdk_maximum_scalar_matches": 15,
+      "sdk_minimum_scalar_matches": 8,
+      "command_minimum_display_matches": 16,
+      "command_maximum_display_matches": 15,
+      "permanent_mark_sets_matching": 8,
+      "permanent_mark_cases": 25,
+      "interval_end_sets_matching": 9,
+      "interval_end_cases": 25,
+      "interval_end_report_sets_matching": 8,
+      "interval_end_joint_report_cases": 21
+    },
+    "final_comparison_counts": {
+      "status_matches": 22,
+      "sdk_maximum_scalar_matches": 15,
+      "sdk_minimum_scalar_matches": 8,
+      "command_minimum_display_matches": 16,
+      "command_maximum_display_matches": 15,
+      "permanent_mark_sets_matching": 10,
+      "permanent_mark_cases": 25,
+      "interval_end_sets_matching": 16,
+      "interval_end_cases": 25,
+      "interval_end_report_sets_matching": 15,
+      "interval_end_joint_report_cases": 21
+    }
+  },
+  "native_capture_commands": [
+    "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_deviation_overlap.json --scheme VibocerosOracleCurveDeviationOverlap20261016 --timeout 240 --output tools/rhino_oracle/observations/curve_deviation_overlap_rhino_20261016.json",
+    "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_deviation_endpoint_cones.json --scheme VibocerosOracleCurveDeviationEndpointCones20261016 --timeout 240 --output tools/rhino_oracle/observations/curve_deviation_endpoint_cones_rhino_20261016.json",
+    "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_deviation_endpoint_boundary.json --scheme VibocerosOracleCurveDeviationEndpointBoundary20261016 --timeout 240 --output tools/rhino_oracle/observations/curve_deviation_endpoint_boundary_rhino_20261016.json"
+  ],
+  "limits": [
+    "The producer still does not implement complete native overlap or correspondence. The main corpus retains 3 status mismatches and 6 successful maximum scalar mismatches. Matching interval-end mark sets increase from 9 to 16 of 25, including one joint no-report case; among 21 joint reports they increase from 8 to 15. Full permanent mark sets increase from 8 to 10 of 25. Every failure and both local responses remain.",
+    "The original line bisector interpretation is not universal: the asymmetric and nearby-endpoint captures expose failures even for parallel lines. The console and window now state the overlap/correspondence limitation for all families. No new endpoint distance-ratio threshold was fitted or inserted in the producer. Endpoint-boundary recipes were chosen adaptively to disprove a hypothesis.",
+    "Curved profiles retain source endpoints under a defined transverse-chord condition. This is an independent geometric policy, not a claim to reproduce all native endpoint retention, folded profiles, open/closed matches or multiple overlap components. SubCrv remains unimplemented for this command.",
+    "Native SDK and command minima remain separate evidence. The new main corpus matches 8 SDK minima and 16 printed command minima among 21 joint reports. Tied witness positions and some native extrema differ. Numerical extrema remain bounded searches with the inherited kernel limits; no global or continuous Hausdorff certificate.",
+    "Parameter recovery reuses the existing shared chart map instead of numerical closest-point inversion. Five existing map tests cover circular spans, adjacent quarter parameters, identity families, composite coincident visits and invalid inputs. A new native distance regression verifies a final-quarter circle maximum retains its final seam visit. Original source image checks remain enabled.",
+    "All native captures used the existing owned private headless launcher and KeepMarks/Enter/Cancel workflow, retaining input objects. No Wine/FEX/license configuration or vendor source changed. No additional sanitizer, leak or performance qualification is claimed.",
+    "Historical digest values and nonhash metadata are preserved using immutable Git references when shared files changed. The pre-existing 69 unverifiable historical records remain untouched."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve_distance",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-geometry.log",
+      "tests": 8
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve_parameter_map",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-parameter-map.log",
+      "tests": 6
+    },
+    {
+      "command": "cargo test -p viboceros-smlib --features native --lib",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-native-library.log",
+      "tests": 31
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --lib crv_deviation",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-command.log",
+      "tests": 7
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros crv_deviation",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-ui.log",
+      "tests": 3
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib curve_deviation",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-oracle.log",
+      "tests": 3
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_curve_deviation tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-python.log",
+      "tests": 34
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-fmt.log"
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/curve_deviation_overlap.json tools/rhino_oracle/observations/curve_deviation_overlap_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/curve-deviation-overlap-export.log"
+    }
+  ],
+  "preserved_historical_records": [
+    "docs/crv-deviation-validation.json",
+    "docs/curve-distance-validation.json"
+  ],
+  "sha256": {
+    "crates/viboceros-command/src/curve_deviation.rs": "a15357f3ed96d447989fd7d738d99e1443bf123b02368489c101ed26a2843358",
+    "crates/viboceros-command/src/curve_deviation/tests.rs": "542fb65a1d25bfd0246ee6eaf5a58009ba4c3b526334a81478b4eb19e4123fc7",
+    "crates/viboceros-geometry/src/curve_distance.rs": "97e30e864cda0120fcfddfbf0d9a7ebce26e07ff2c0f94b39f763aceff325215",
+    "crates/viboceros-geometry/src/curve_distance/overlap.rs": "f6a4aa0e53c4ce8a5d2ad9f3cfb4c6a4dd95c5b3eb5957d102376a4d3286f975",
+    "crates/viboceros-geometry/src/curve_distance/overlap/tests.rs": "de8f0f9e479db4db74c91c6022c4a265483d2e9beadb0b0b846f4f8fab54721e",
+    "crates/viboceros-geometry/src/curve_parameter_map.rs": "7bddcd8cc607d9636a6337f3436841f10a20874af2d1c4d90b28f2d43f0564d8",
+    "crates/viboceros-geometry/src/curve_parameter_map/tests.rs": "e17bccac145691c781f1bb169f1c614b3daf29085f59648faf6e5fc9d70a7a74",
+    "crates/viboceros-geometry/src/lib.rs": "b9fe7f6bd2c2f7ebb6a16b6fcf9fc23b5b0fc8645fb3d9cdfc217a275e44dd0d",
+    "crates/viboceros-smlib/src/native/curve_distances.rs": "1afe28e963bcd0382cfdf4a28a992f777376c1744ebf8aaaba937137a16dd000",
+    "crates/viboceros-smlib/src/native/curve_distances/tests.rs": "5a679533502cce88df179888e49ba4b42baa1a039826df30037daab3cb3cfa8b",
+    "docs/commands/crv-deviation.md": "759c870d85b48108ed78b13bf0214ea838e8425b3e10833bce5b9987f6a7c7d8",
+    "docs/crv-deviation-validation.json": "e16c9f15a35142674aba788ce1c4c37345dec64ed1faa993b58988817881d614",
+    "docs/curve-deviation-overlap-clippy.log": "d81fc3944433e8a0d48e90482b3fd08a7cca2799598e10fa1792e22601286876",
+    "docs/curve-deviation-overlap-command.log": "85d9df4ab918f409be23f95ddb0113293f694e9338dc4964c7c342375961123e",
+    "docs/curve-deviation-overlap-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curve-deviation-overlap-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curve-deviation-overlap-geometry.log": "6353dc8275c738d3f1e4ace162d0d63996974c135a613146e850c177c1ee804e",
+    "docs/curve-deviation-overlap-native-library.log": "7bf901a35c9e8188d64b9354e1533dedab5fbe494aa717373d6a03ead446275f",
+    "docs/curve-deviation-overlap-oracle.log": "21488ae1a429d010f207452a3c47dfc4de2855225cdf200d3d9a47e670eb0bb3",
+    "docs/curve-deviation-overlap-parameter-map.log": "604c6b1f002ab56626d93ae754320dc6ccbec96053f750b62d6472187d4c1769",
+    "docs/curve-deviation-overlap-python.log": "57d818678727dcaf9bf4dbb9a6ab9b2d466043436c8bd1cb0c7046cbd3f66f7b",
+    "docs/curve-deviation-overlap-ui.log": "77782856735a7f66dd7f53f1ecaed5698157c83433fa1e52d3f93ec07d1f55c8",
+    "docs/curve-deviation-overlap.md": "f5573d8aeb3931b9d8288bb91c911d37f252f5657d0acb3b5564a389946d2e52",
+    "docs/curve-distance-queries.md": "18854396cad9eeeb47ffe5259bcf173a09b9de27d33ad729ddc6542705ef2c72",
+    "docs/curve-distance-validation.json": "79083eddff74477b86901be9cbceaed2efe900fdd186e01eebac7c9efed2a2e0",
+    "src/app/curve_deviation.rs": "92e2ff098d5e2ac607ed0cbf4fafcb54ffa9b3713bc257ee67ba54f68ecc486a",
+    "tools/rhino_oracle/curve_deviation_comparison.py": "33b8ba3930d02f774af3ac68ef1536dccff9571994cf00872d963fcac2c4fe5d",
+    "tools/rhino_oracle/curve_deviation_probe.py": "349bb64d2dc926464a32468ed8a3dd66329ce61e7a82c3de187f2ce750f7ce32",
+    "tools/rhino_oracle/fixtures/curve_deviation_endpoint_boundary.json": "8d8f288b1d82e013ea3a3304960c90e8d1d96d353cc3a7d687c2056846619938",
+    "tools/rhino_oracle/fixtures/curve_deviation_endpoint_cones.json": "1b7077cc6772c5c1c14f413e0a1c1c930e1c602e929394461b64e1b1f9144ee9",
+    "tools/rhino_oracle/fixtures/curve_deviation_overlap.json": "a367f55109020cfd7ac31674ad462e2716f3e971727af8b37480ab9094cb6cc2",
+    "tools/rhino_oracle/observations/curve_deviation_endpoint_boundary_rhino_20261016.json": "acc7eb2f7fee0f31ea1c0c512b109a2890517d5ef48aa3c530445d33ec1ae4ae",
+    "tools/rhino_oracle/observations/curve_deviation_endpoint_cones_rhino_20261016.json": "785c0fa9bae048109246caa2fc07a21808ab7f436e5eef76f4f6c4c46cd478bb",
+    "tools/rhino_oracle/observations/curve_deviation_overlap_comparison_20261016.json": "fd94cff441f03c835d8dc939c7a3f0de92043e0bd1c2f377eaab52c7ca4f3971",
+    "tools/rhino_oracle/observations/curve_deviation_overlap_initial_comparison_20261016.json": "c2742131f655c49052d1812a7e167f436a14a68defdacf243d2649ada3a0ed86",
+    "tools/rhino_oracle/observations/curve_deviation_overlap_initial_viboceros_20261016.json": "6be9088bab4701bfddf9ae0dcdf226de502e2242fcd48fe4f8c40d9222f7f735",
+    "tools/rhino_oracle/observations/curve_deviation_overlap_rhino_20261016.json": "4e6411b712393fde1f8b6eff1afd5c603c1c9c69b932cad31faeebaa83e36abe",
+    "tools/rhino_oracle/observations/curve_deviation_overlap_viboceros_20261016.json": "65a859dd82e2633cc08bf991018fec5c5cb47bcac9959f118cd38d968c2bcfc6",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/test_curve_deviation.py": "316f1ac8cd2e7d9f6f55a0849f523267b023f1b5775089d31f44a9191e9693c6"
+  }
+}

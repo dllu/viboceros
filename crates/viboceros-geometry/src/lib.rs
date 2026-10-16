@@ -25,6 +25,7 @@ mod curve;
 mod curve_distance;
 pub use curve_distance::{
     CurveDistanceExtrema, CurveDistanceWitness, LineDeviation, line_deviation,
+    preserve_transverse_curve_ends,
 };
 mod curve_blend_pair;
 mod curve_chamfer_pair;

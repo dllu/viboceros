@@ -14,18 +14,39 @@ pub struct View {
     pub ends: [CurveDistanceWitness; 2],
     pub keep_marks: bool,
     pub marker_tolerance: Real,
-    /// Curved inputs currently use nearest-point interval projection. This is
-    /// deliberately exposed: their Rhino overlap/correspondence parity is open.
+    /// Overlap and correspondence are independent policies, and complete Rhino
+    /// parity is open, including asymmetric line pairs.
     pub approximate_overlap: bool,
 }
 impl View {
     pub fn report(&self) -> String {
+        let end = |label: &str, w: &CurveDistanceWitness| {
+            let points = w
+                .points
+                .iter()
+                .enumerate()
+                .map(|(i, p)| {
+                    format!(
+                        "  crv{}({}) = ({}, {}, {})",
+                        ['A', 'B'][i],
+                        w.parameters[i],
+                        p.x(),
+                        p.y(),
+                        p.z()
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join("\n");
+            format!("{label}: distance = {}\n{points}\n", w.distance)
+        };
         format!(
-            "Minimum deviation = {}\nMaximum deviation = {}\n{}Press Enter when done (KeepMarks={})",
+            "Overlap interval 1 of 1:\n{}{}Minimum deviation = {}\nMaximum deviation = {}\n{}Press Enter when done (KeepMarks={})",
+            end("start", &self.ends[0]),
+            end("end", &self.ends[1]),
             self.extrema.minimum.distance,
             self.extrema.maximum.distance,
             if self.approximate_overlap {
-                "Curved overlap uses endpoint projection; Rhino correspondence parity is incomplete.\n"
+                "Overlap and correspondence can differ from Rhino.\n"
             } else {
                 ""
             },
@@ -55,7 +76,7 @@ pub fn analyze(
             ends: r.ends,
             keep_marks: false,
             marker_tolerance: tolerance.absolute(),
-            approximate_overlap: false,
+            approximate_overlap: true,
         }));
     }
     if let (CurveRef::Circle(a), CurveRef::Circle(b)) = (first, second) {
@@ -80,6 +101,9 @@ pub fn analyze(
         else {
             return Ok(None);
         };
+        let intervals = viboceros_geometry::preserve_transverse_curve_ends(
+            first, second, intervals, tolerance,
+        )?;
         let Some(extrema) =
             viboceros_smlib::curve_distance_extrema(first, second, intervals, tolerance)?
         else {
@@ -94,12 +118,7 @@ pub fn analyze(
             ];
             let mut parameters = [0.; 2];
             for i in 0..2 {
-                parameters[i] = match curves[i] {
-                    CurveRef::Line(_) | CurveRef::Polyline(_) | CurveRef::NurbsCurve(_) => {
-                        sources[i].parameter_at(f[i])?
-                    }
-                    _ => curves[i].closest_parameter(points[i], tolerance)?,
-                };
+                parameters[i] = curves[i].parameter_from_nurbs(sources[i].parameter_at(f[i])?)?;
             }
             Ok(CurveDistanceWitness {
                 normalized_parameters: f,

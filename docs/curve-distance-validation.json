@@ -142,7 +142,6 @@
     "crates/viboceros-smlib/native/bridge.h": "4cad5ac98c5926157732afd7b9557c9b7a4df0f334ff69b5a619691bccfd18bb",
     "crates/viboceros-smlib/src/lib.rs": "44d87c302af42393ec269563ebb2fd366923732638353189d74b995b8c5a8706",
     "crates/viboceros-smlib/src/native.rs": "0f2390f800625ce7e730ae2973150a635154778c29380e35f6bde975219ddcba",
-    "crates/viboceros-smlib/src/native/curve_distances/tests.rs": "8f5344add41ba239e6635e83e2bf8b6c842040c54e0912801e35d22bfe96864b",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "tools/rhino_oracle/client.py": "d165a599dfd15baed8a6c8e8c0a74118002c1b8731a8585913582bab3290550c",
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
@@ -183,6 +182,7 @@
     "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:docs/curve-distance-queries.md": "ced788f3206a1b5e928331add4f15094465ab30fde46a12e37e601620f06288d",
     "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:tools/rhino_oracle/curve_deviation_probe.py": "3df51b4215837dbe44f9f26009228d26fad73b6dfef72bbbda890b1bdb81b5ab",
     "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:tools/rhino_oracle/test_curve_deviation.py": "c9288c8569320dfa29db3bdad7b7d7b884a59d884d7e57c8676da2e50c8a37e3",
-    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:tools/rhino_oracle/curve_distance_comparison.py": "34d1415d2ae8ca69e0ea1e192843f6a4ec93d7b95dced4490db43ee6ca1629ee"
+    "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:tools/rhino_oracle/curve_distance_comparison.py": "34d1415d2ae8ca69e0ea1e192843f6a4ec93d7b95dced4490db43ee6ca1629ee",
+    "5b4a6edb65678c07c2598ade44d501fe034df923:crates/viboceros-smlib/src/native/curve_distances/tests.rs": "8f5344add41ba239e6635e83e2bf8b6c842040c54e0912801e35d22bfe96864b"
   }
 }

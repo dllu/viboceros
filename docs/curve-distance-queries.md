@@ -11,8 +11,10 @@ Enable `native-smlib` in the application/oracle or `native` in
 `viboceros-smlib`. The producer accepts the existing `CurveRef` families through
 the shared canonical NURBS importer and normalized working frame. Every returned
 witness contains normalized NURBS fractions, original source parameters, two
-source points and their actual distance. NURBS, line and polyline witnesses
-retain their requested parameter visit even at a repeated point or closed seam. Original source images validate the recovered parameters. The maximum
+source points and their actual distance. The shared `parameter_from_nurbs` map
+recovers native parameters for every curve family, preserving the requested
+visit through circular seams and composite arc branches without an additional
+closest-point query. Original source images validate the mapped parameters. The maximum
 witness also passes an independent closest-point check on the requested source
 portions in at least one direction; the minimum must pass in both directions.
 Numerical roundoff within the requested tolerance that reverses minimum/
@@ -31,7 +33,9 @@ continuous Hausdorff bound. Source intervals are explicit because selecting
 corresponding/overlapping portions is separate from measuring their distances.
 The diagnostic `projected_curve_intervals` helper projects endpoints of open
 curves and retains full closed domains; it does not implement Rhino's complete
-overlap policy. Empty projected intervals return no report. Canonical working
+overlap policy. The command separately preserves corresponding transverse
+natural ends; the diagnostic helper's original policy is unchanged. Empty
+projected intervals return no report. Canonical working
 frame limitations remain, including degree/weight and discontinuity restrictions.
 Queries allow at most 4096 controls per source. Invalid, reversed, nonfinite or
 out-of-domain interval values reject; equal interval ends return no report.

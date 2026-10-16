@@ -178,6 +178,45 @@ fn curve_distance_explicit_intervals_and_reversal_preserve_line_extrema() {
     }
 }
 #[test]
+fn crv_overlap_circle_seam_witness_retains_requested_final_visit() {
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let circle = Circle3::try_from_center_point(
+        p(0., 0.),
+        p(2., 0.),
+        Vector3::try_new(0., 0., 1.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let line = LineSegment::try_new(p(0., -2.), p(0., -1.), Tolerance::DEFAULT).unwrap();
+    let r = curve_distance_extrema(
+        CurveRef::Circle(&circle),
+        CurveRef::Line(&line),
+        [[0.75, 1.], [0., 1.]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .unwrap();
+    assert_eq!(r.maximum.normalized_parameters[0], 1.);
+    assert_eq!(r.maximum.parameters[0], *circle.domain().end());
+    assert!((r.maximum.distance - 5_f64.sqrt()).abs() < 1e-12);
+    assert!(r.minimum.distance < 1e-12);
+    assert_eq!(
+        CurveRef::Circle(&circle)
+            .parameter_from_nurbs(
+                circle
+                    .to_nurbs()
+                    .unwrap()
+                    .parameter_at(r.maximum.normalized_parameters[0])
+                    .unwrap()
+            )
+            .unwrap(),
+        r.maximum.parameters[0]
+    );
+}
+#[test]
 fn curve_distance_rational_arc_translation_keeps_constant_normal_gap() {
     use viboceros_geometry::{AffineTransform3, CircularArc3};
     let arc = CircularArc3::try_from_three_points(

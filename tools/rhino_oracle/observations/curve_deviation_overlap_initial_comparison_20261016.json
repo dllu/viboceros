@@ -1,0 +1,788 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "command_registered": true,
+  "reference_derived_inputs": false,
+  "cases": 25,
+  "counts": {
+    "status_matches": 22,
+    "sdk_maximum_scalar_matches": 15,
+    "sdk_minimum_scalar_matches": 8,
+    "command_minimum_display_matches": 16,
+    "command_maximum_display_matches": 15,
+    "permanent_mark_sets_matching": 8,
+    "permanent_mark_cases": 25,
+    "interval_end_sets_matching": 9,
+    "interval_end_cases": 25,
+    "interval_end_report_sets_matching": 8,
+    "interval_end_joint_report_cases": 21
+  },
+  "complete_native_command_parity_qualified": false,
+  "continuous_global_extrema_qualified": false,
+  "performance_qualified": false,
+  "method": "Exact binary-rational SDK scalar differences; native command text compared separately with its observed six-significant-digit rounding interval plus 1e-6 (or finer when printed). Unordered permanent marker matching preserves occurrences and admits point distances at 1e-6. SDK and command minima are not assumed identical. All cases and all mismatches are retained.",
+  "results": [
+    {
+      "id": "cubic-shift-(0, 1, 1)",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "223267317883357/9007199254740992",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0.682468",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/4503599627370496",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-shift-(3, 1, 1)",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "4535065884456103/144115188075855872",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/1125899906842624",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2.09786",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-shift-(3, 1, 0.5)",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "4845498760354699/576460752303423488",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/4503599627370496",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1.34158",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-reversed-1",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "4845498760354595/576460752303423488",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/4503599627370496",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1.34158",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-shift-(3, -1, 0.5)",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "1/9007199254740992",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0.623403",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/1125899906842624",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2.33368",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-reversed--1",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "1/9007199254740992",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0.623403",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/1125899906842624",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2.33368",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-shift-(-3, 1, 1)",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "13884391992647430421036728683/633825300114114700748351602688",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/2251799813685248",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "2.33368",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-partial-line",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "356423412840936855732951173/19807040628566084398385987584",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "1/2251799813685248",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1.02553",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-full-line",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "87581524851082576994077835627/2535301200456458802993406410752",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1.42075",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-fold-8",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "107/72057594037927936",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0.0858064",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "cubic-fold--5",
+      "local_report": true,
+      "native_report": false,
+      "status_matches": false,
+      "local_approximate_overlap": true,
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        0
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        0
+      ]
+    },
+    {
+      "id": "angled-lines-0",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "8292622418583/1125899906842624",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "3.16371",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "334145736617631/1125899906842624",
+        "within_1e_minus_6": false
+      },
+      "command_maximum": {
+        "text": "5.38516",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "angled-linear-nurbs-0",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "3228663165669/2251799813685248",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "3.16371",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "433657020471795/1125899906842624",
+        "within_1e_minus_6": false
+      },
+      "command_maximum": {
+        "text": "5.38516",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "angled-lines-1",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "3361756637772477/4503599627370496",
+        "within_1e_minus_6": false
+      },
+      "command_maximum": {
+        "text": "2.44949",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "angled-linear-nurbs-1",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "873889381344217/1125899906842624",
+        "within_1e_minus_6": false
+      },
+      "command_maximum": {
+        "text": "2.44949",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "angled-lines-2",
+      "local_report": true,
+      "native_report": false,
+      "status_matches": false,
+      "local_approximate_overlap": false,
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        0
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        0
+      ]
+    },
+    {
+      "id": "angled-linear-nurbs-2",
+      "local_report": false,
+      "native_report": false,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "permanent_mark_sets_match": true,
+      "permanent_mark_counts": [
+        0,
+        0
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "angled-lines-3",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": false,
+      "sdk_minimum": {
+        "exact_scalar_difference": "92765370633765/562949953421312",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "240774517824029/1125899906842624",
+        "within_1e_minus_6": false
+      },
+      "command_maximum": {
+        "text": "6.7082",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "angled-linear-nurbs-3",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "2",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "621554150472639/281474976710656",
+        "within_1e_minus_6": false
+      },
+      "command_maximum": {
+        "text": "6.7082",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "polyline-0",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "3/9007199254740992",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0.894427",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "polyline-1",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "73190526926567028926993928953/2535301200456458802993406410752",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "polyline-2",
+      "local_report": true,
+      "native_report": false,
+      "status_matches": false,
+      "local_approximate_overlap": true,
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        0
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        0
+      ]
+    },
+    {
+      "id": "arc-shift",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "67125401254427/9007199254740992",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0.761358",
+        "within_display_rounding_and_1e_minus_6": false
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "0",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "arc-line",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "8169308038823514917837576589/158456325028528675187087900672",
+        "within_1e_minus_6": false
+      },
+      "command_minimum": {
+        "text": "0",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "3/2251799813685248",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        10,
+        10
+      ],
+      "interval_end_sets_match": false,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "arc-partial-line",
+      "local_report": true,
+      "native_report": true,
+      "status_matches": true,
+      "local_approximate_overlap": true,
+      "sdk_minimum": {
+        "exact_scalar_difference": "5/9007199254740992",
+        "within_1e_minus_6": true
+      },
+      "command_minimum": {
+        "text": "0.687798",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "sdk_maximum": {
+        "exact_scalar_difference": "3/2251799813685248",
+        "within_1e_minus_6": true
+      },
+      "command_maximum": {
+        "text": "1",
+        "within_display_rounding_and_1e_minus_6": true
+      },
+      "permanent_mark_sets_match": false,
+      "permanent_mark_counts": [
+        12,
+        12
+      ],
+      "interval_end_sets_match": true,
+      "interval_end_mark_counts": [
+        6,
+        6
+      ]
+    }
+  ],
+  "interval_end_comparison_enabled": true
+}

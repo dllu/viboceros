@@ -28,7 +28,7 @@ fn crv_deviation_report_and_options_preserve_model_and_redo() {
     let v = r.curve_deviation_view(&d).unwrap();
     assert_eq!(v.ends[0].points[0].to_array(), [3., 0., 0.]);
     assert_eq!(v.ends[1].points[0].to_array(), [7., 0., 0.]);
-    assert!(!v.approximate_overlap);
+    assert!(v.approximate_overlap);
     r.execute(&mut d, "CrvDeviation KeepMarks=Yes").unwrap();
     assert!(r.curve_deviation_view(&d).unwrap().keep_marks);
     r.execute(&mut d, "CrvDeviation End KeepMarks=No").unwrap();
@@ -151,4 +151,6 @@ fn crv_deviation_curved_backend_is_usable_and_exposes_overlap_limit() {
     assert!(v.approximate_overlap);
     assert!((v.extrema.maximum.distance - 1.).abs() < 1e-6);
     assert!((v.extrema.minimum.distance - 1.).abs() < 1e-6);
+    assert_eq!(v.ends[0].parameters, [0., 0.]);
+    assert!(v.ends[1].parameters[0] > 0. && v.ends[1].parameters[1] > 0.);
 }

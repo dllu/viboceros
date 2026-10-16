@@ -1,0 +1,351 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.1",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.1,
+            2,
+            0
+          ],
+          "end": [
+            7.9,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.2",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.2,
+            2,
+            0
+          ],
+          "end": [
+            7.8,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.23",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.23,
+            2,
+            0
+          ],
+          "end": [
+            7.77,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.2360579774997897",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.2360579774997897,
+            2,
+            0
+          ],
+          "end": [
+            7.76394202250021,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.23607797749979",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.23607797749979,
+            2,
+            0
+          ],
+          "end": [
+            7.763922022500211,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.3",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.3,
+            2,
+            0
+          ],
+          "end": [
+            7.7,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.35",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.35,
+            2,
+            0
+          ],
+          "end": [
+            7.65,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.4",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.4,
+            2,
+            0
+          ],
+          "end": [
+            7.6,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.45",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.45,
+            2,
+            0
+          ],
+          "end": [
+            7.55,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    },
+    {
+      "op": "curve_deviation",
+      "id": "parallel-boundary-2.49",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.49,
+            2,
+            0
+          ],
+          "end": [
+            7.51,
+            2,
+            0
+          ]
+        }
+      ],
+      "postselect": false,
+      "keep_marks": true
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 use crate::exact_scalar::{Rational, rational, scalar};
 use crate::{CurveRef, GeometryError, LineSegment, Point3};
 use num_traits::Zero;
+mod overlap;
+pub use overlap::preserve_transverse_curve_ends;
 #[cfg(test)]
 mod tests;
 

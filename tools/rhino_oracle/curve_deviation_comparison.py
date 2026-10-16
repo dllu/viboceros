@@ -37,8 +37,9 @@ def displayed(value,history,key):
     rounding=F(Decimal(10)**exponent)/2 if number else F(0)
     return dict(text=m[1],within_display_rounding_and_1e_minus_6=abs(F(value)-F(number))<=rounding+EPS)
 
-def comparison(request,local,native):
+def comparison(request,local,native,interval_ends=False):
     rows=[];counts=dict(status_matches=0,sdk_maximum_scalar_matches=0,sdk_minimum_scalar_matches=0,command_minimum_display_matches=0,command_maximum_display_matches=0,permanent_mark_sets_matching=0,permanent_mark_cases=0)
+    if interval_ends:counts.update(interval_end_sets_matching=0,interval_end_cases=0,interval_end_report_sets_matching=0,interval_end_joint_report_cases=0)
     if not len(request['operations'])==len(local['results'])==len(native['results']):raise ValueError('case count mismatch')
     for op,a,b in zip(request['operations'],local['results'],native['results']):
         if not op['id']==a['id']==b['id']:raise ValueError('case identity mismatch')
@@ -57,14 +58,27 @@ def comparison(request,local,native):
             row['permanent_mark_sets_match']=marks_equal(x['outputs'],y['outputs'])
             row['permanent_mark_counts']=[len(x['outputs']),len(y['outputs'])]
             counts['permanent_mark_sets_matching']+=row['permanent_mark_sets_match']
+            if interval_ends:
+                first=[o for o in x['outputs']if o['color']==[255,255,255]]
+                second=[o for o in y['outputs']if o['color']==[255,255,255]]
+                row['interval_end_sets_match']=marks_equal(first,second)
+                row['interval_end_mark_counts']=[len(first),len(second)]
+                counts['interval_end_cases']+=1
+                counts['interval_end_sets_matching']+=row['interval_end_sets_match']
+                if sa['created']and sb['created']:
+                    counts['interval_end_joint_report_cases']+=1
+                    counts['interval_end_report_sets_matching']+=row['interval_end_sets_match']
         rows.append(row)
-    return dict(schema_version=1,absolute_epsilon=1e-6,command_registered=True,reference_derived_inputs=False,cases=len(rows),counts=counts,
+    result=dict(schema_version=1,absolute_epsilon=1e-6,command_registered=True,reference_derived_inputs=False,cases=len(rows),counts=counts,
         complete_native_command_parity_qualified=False,continuous_global_extrema_qualified=False,performance_qualified=False,
         method='Exact binary-rational SDK scalar differences; native command text compared separately with its observed six-significant-digit rounding interval plus 1e-6 (or finer when printed). Unordered permanent marker matching preserves occurrences and admits point distances at 1e-6. SDK and command minima are not assumed identical. All cases and all mismatches are retained.',results=rows)
+    if interval_ends:result['interval_end_comparison_enabled']=True
+    return result
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('request','local','native','output'):p.add_argument(key,type=Path)
-    a=p.parse_args();r=comparison(*[json.loads(path.read_text())for path in (a.request,a.local,a.native)])
+    p.add_argument('--interval-ends',action='store_true')
+    a=p.parse_args();r=comparison(*[json.loads(path.read_text())for path in (a.request,a.local,a.native)],interval_ends=a.interval_ends)
     a.output.write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r['counts']))
 if __name__=='__main__':main()

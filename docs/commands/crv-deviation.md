@@ -1,7 +1,8 @@
 # CrvDeviation
 
 Select two curves and run `CrvDeviation`, or run the command first, pick two
-curves, and press Enter. The report shows minimum and maximum distances.
+curves, and press Enter. The report shows minimum and maximum distances plus
+the overlap endpoints' distances, native parameters and world coordinates.
 Viewport marks show the minimum in green, maximum in red, and overlap ends in
 white in wireframe, shaded, and ghosted views. Enter or **Done** dismisses the
 report. Escape, closing the window, or starting another command discards its
@@ -26,19 +27,25 @@ CrvDeviation Cancel
 Line pairs work in the portable build. They use an analytic correspondence in
 planes perpendicular to the aligned direction bisector, with exact rational
 clipping and minimization after computing that direction. This reproduces the
-captured parallel, partial, reversed, and angled line behavior: the maximum for
+original parallel, partial, reversed, and centered angled fixtures: the maximum for
 crossing finite lines can exceed their nearest-point distance. Perpendicular
 lines and intervals touching at only one projected position have no report.
 Native parameter domains are preserved. Directions within 64 machine epsilons
-of perpendicular are treated as ambiguous.
+of perpendicular are treated as ambiguous. The broader asymmetric and nearby
+endpoint captures expose additional line interval and distance differences;
+the report therefore identifies line correspondence as approximate too.
 
 Curved inputs require `native-smlib`. They reuse the usd-brep/SMLib
 [distance backend](../curve-distance-queries.md) with projected endpoint ranges.
+Corresponding natural ends perpendicular to the aligned endpoint chords are
+preserved within model tolerance, so translated profiles retain their ends.
+Witness parameters use the existing representation map, preserving
+circular seam visits and composite arc branches without closest-point recovery.
 For circle pairs on parallel planes, an angular overlap requires both projected
 centers to be strictly inside the other circle. General curved correspondence
 is still approximate and the report states that limitation. In particular:
 
-- The two captured offset cubic minima differ from Rhino's reported values.
+- Captured offset cubic and arc minima differ from Rhino's reported values.
 - Projected endpoints do not reproduce all native interval boundaries or
   mixed open/closed correspondences.
 - Tied extrema can choose different points and parameters, including different
@@ -54,7 +61,14 @@ within `1e-6`. Fifteen of 16 minima agree with the printed command output at its
 observed six-significant-digit precision plus `1e-6`; only two of five permanent
 marker sets match. Rhino's SDK and command output themselves have different
 minimum values in several crossing cases. No complete command, continuous
-global-extremum, or performance parity is claimed.
+global-extremum, or performance parity is claimed. These numbers describe the
+initial committed workflow capture at its recorded revision.
+
+The [broader overlap study](../curve-deviation-overlap.md) retains 52 additional
+native cases, including asymmetric lines and near-endpoint transitions. On its
+25-case main corpus, preserving transverse natural ends improves matching
+interval-end marker sets from 9 to 16. The remaining interval, minimum and
+maximum differences remain explicit failing comparisons.
 
 To reproduce the command-side local observations:
 

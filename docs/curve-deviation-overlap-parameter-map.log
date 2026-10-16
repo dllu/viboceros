@@ -1,0 +1,13 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.08s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-f7a44ebfd2db35f0)
+
+running 6 tests
+test curve_parameter_map::tests::quarter_knots_and_their_neighbors_do_not_change_spans ... ok
+test curve_parameter_map::tests::invalid_parameters_are_rejected_even_for_identity_maps ... ok
+test curve::arc_length::rational_line_tests::projective_line_spans_keep_world_geometry_inside_polycurve_parameter_maps ... ok
+test curve_parameter_map::tests::composite_mapping_preserves_coincident_branches_and_leaf_domains ... ok
+test curve_parameter_map::tests::parameter_equivalent_families_are_exact_identities ... ok
+test curve_parameter_map::tests::circular_mapping_matches_rational_locus_in_both_directions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 2314 filtered out; finished in 0.21s

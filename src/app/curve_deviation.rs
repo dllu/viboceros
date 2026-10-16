@@ -49,7 +49,7 @@ impl VibocerosApp {
                     view.extrema.maximum.distance
                 ));
                 if view.approximate_overlap {
-                    ui.label("Curved overlap and correspondence can differ from Rhino.");
+                    ui.label("Overlap and correspondence can differ from Rhino.");
                 }
                 ui.checkbox(&mut keep, "Keep marks");
                 end = ui.button("Done (Enter)").clicked();
