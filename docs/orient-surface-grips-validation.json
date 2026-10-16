@@ -220,7 +220,6 @@
     "docs/edit-points-qualification.json": "42c67c74abc8bc872cf26c4b4d54db1621f6cb8305daaf677dde97acfd5afbe5",
     "docs/line-through-points-validation.json": "0d175866fb3fe7c882d438a4197ea21c90bb8014771e28a444d141c4ee4df76d",
     "docs/orient-on-curve-edge-validation.json": "37ba40e33f8d0555aec109654d04d6c621db68a78dea1d05d3a0908581f6c6a9",
-    "docs/orient-on-curve-validation.json": "b285412c2287c3a160f5498495658ea4be0a7aff877b1b392c8aca7219457c05",
     "docs/orient-points-validation.json": "43ce2695092cda27fab6772fc9e3988d503bf9632edaeed1949a101d770a3ef8",
     "docs/plane-through-points-validation.json": "2cdd76a9153edcc872ae61100fa47e7db1fce4fec3cfcb3f580ce67356382892",
     "docs/point-selection-qualification.json": "64caa03bbce227928e635c069f1c7e8f6c7686468dcfd9069d4ed1ab6ebe689c",
@@ -250,6 +249,7 @@
     "588c04e3c44165e5d150a089674a53f1e689b1f7:src/app/tests/orient_surface_grips.rs": "1435ec4fdf1c5e8de4a48708df68b7e3c11e566e37cd85cc3d29554107437c49",
     "588c04e3c44165e5d150a089674a53f1e689b1f7:tools/rhino_oracle/rhino_worker.py": "825432997f314d1a2f77b910e9cde6abb68cba39dba45d15c7a9fc2278c32ea0",
     "588c04e3c44165e5d150a089674a53f1e689b1f7:tools/rhino_oracle/structural_sdk.py": "3e26c2b3cf2a9d4cf17ad025a1b082f45e8933693e85934933862402278a9c03",
-    "588c04e3c44165e5d150a089674a53f1e689b1f7:docs/orient-surface-validation.json": "8a9bda740cbeb9932287a28e18a52d3c870fde75693cfd8d7bc448764e47262a"
+    "588c04e3c44165e5d150a089674a53f1e689b1f7:docs/orient-surface-validation.json": "8a9bda740cbeb9932287a28e18a52d3c870fde75693cfd8d7bc448764e47262a",
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:docs/orient-on-curve-validation.json": "b285412c2287c3a160f5498495658ea4be0a7aff877b1b392c8aca7219457c05"
   }
 }

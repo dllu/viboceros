@@ -26,6 +26,7 @@ mod curve;
 pub use curvature_comb::{
     CurvatureComb, CurvatureHair, curvature_comb, curvature_comb_with_subdivision,
 };
+pub use curve::ArcLengthSampler;
 mod curve_distance;
 pub use curve_distance::{
     CurveDistanceExtrema, CurveDistanceWitness, LineDeviation, line_deviation,

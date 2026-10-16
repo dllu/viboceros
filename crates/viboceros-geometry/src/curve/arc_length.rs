@@ -59,8 +59,42 @@ struct ParameterSpan {
     linear: Option<LinearSpan>,
 }
 
-pub(crate) struct ArcLengthSampler<'a> {
-    source: CurveRef<'a>,
+#[derive(Debug)]
+enum SamplerSource<'a> {
+    Borrowed(CurveRef<'a>),
+    Owned(std::sync::Arc<Curve3>),
+}
+impl SamplerSource<'_> {
+    fn curve(&self) -> CurveRef<'_> {
+        match self {
+            Self::Borrowed(curve) => *curve,
+            Self::Owned(curve) => curve.as_ref().as_ref(),
+        }
+    }
+}
+
+/// Prepared arc-length integration and inversion for repeated curve queries.
+/// Borrow a native curve, or retain an immutable shared curve with
+/// [`Self::try_new_owned`]. Returned parameters always use the source domain.
+/// Optional lookup brackets accelerate queries without changing their accuracy
+/// or error policy. Samples retain exact source endpoints where possible.
+///
+/// ```
+/// use std::sync::Arc;
+/// use viboceros_geometry::{ArcLengthSampler, Curve3, LineSegment, Point3, Tolerance};
+/// let tolerance = Tolerance::DEFAULT;
+/// let curve = Curve3::Line(LineSegment::try_new(
+///     Point3::try_new(0., 0., 0.)?, Point3::try_new(4., 0., 0.)?, tolerance,
+/// )?);
+/// let mut lengths = ArcLengthSampler::try_new_owned(Arc::new(curve), tolerance)?;
+/// lengths.prepare_budgeted_repeated_sampling(64)?;
+/// let sample = lengths.sample_at_distance(0.5 * lengths.total_length())?;
+/// assert_eq!(sample.point().to_array(), [2., 0., 0.]);
+/// # Ok::<(), viboceros_geometry::GeometryError>(())
+/// ```
+#[derive(Debug)]
+pub struct ArcLengthSampler<'a> {
+    source: SamplerSource<'a>,
     // All internal spans and lookup nodes belong to this frame when present.
     // Only public parameter inputs/outputs are mapped to/from the source.
     normalized: Option<Curve3>,
@@ -84,10 +118,16 @@ pub(crate) struct ArcLengthKink {
 }
 
 impl<'a> ArcLengthSampler<'a> {
-    pub(crate) fn try_new(
-        curve: CurveRef<'a>,
+    /// Prepare a borrowed curve; no geometry ownership is transferred.
+    pub fn try_new(curve: CurveRef<'a>, tolerance: Tolerance) -> Result<Self, GeometryError> {
+        Self::try_with_source(SamplerSource::Borrowed(curve), tolerance)
+    }
+
+    fn try_with_source(
+        source: SamplerSource<'a>,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        let curve = source.curve();
         let normalized = match curve {
             CurveRef::NurbsCurve(c) if c.degree() != 1 && c.domain() != (0.0..=1.0) => {
                 Some(Curve3::NurbsCurve(c.for_integration()?.into_owned()))
@@ -143,7 +183,7 @@ impl<'a> ArcLengthSampler<'a> {
             });
         }
         Ok(Self {
-            source: curve,
+            source,
             normalized,
             lookup_tables: vec![Vec::new(); spans.len()],
             spans,
@@ -152,7 +192,13 @@ impl<'a> ArcLengthSampler<'a> {
         })
     }
 
-    pub(crate) fn total_length(&self) -> Real {
+    /// The original native curve and domain, including for normalized integrals.
+    pub fn source_curve(&self) -> CurveRef<'_> {
+        self.source.curve()
+    }
+
+    /// Integrated positive model-space length of the complete active curve.
+    pub fn total_length(&self) -> Real {
         self.total_length
     }
 
@@ -160,12 +206,12 @@ impl<'a> ArcLengthSampler<'a> {
         self.normalized
             .as_ref()
             .map(Curve3::as_ref)
-            .unwrap_or(self.source)
+            .unwrap_or_else(|| self.source.curve())
     }
 
     fn source_parameter(&self, parameter: Real) -> Result<Real, GeometryError> {
         if self.normalized.is_some() {
-            self.source.parameter_at(parameter)
+            self.source.curve().parameter_at(parameter)
         } else {
             Ok(parameter)
         }
@@ -176,7 +222,7 @@ impl<'a> ArcLengthSampler<'a> {
         if self.normalized.is_none() {
             return parameter;
         }
-        let domain = self.source.domain();
+        let domain = self.source.curve().domain();
         let (start, end) = (*domain.start(), *domain.end());
         if parameter == start {
             return 0.0;
@@ -193,8 +239,9 @@ impl<'a> ArcLengthSampler<'a> {
         }
     }
 
-    pub(crate) fn distance_at_parameter(&self, parameter: Real) -> Result<Real, GeometryError> {
-        let domain = self.source.domain();
+    /// Distance from the active start to a finite source-domain parameter.
+    pub fn distance_at_parameter(&self, parameter: Real) -> Result<Real, GeometryError> {
+        let domain = self.source.curve().domain();
         if !parameter.is_finite() || !domain.contains(&parameter) {
             return Err(GeometryError::ParameterOutOfDomain {
                 parameter,
@@ -333,7 +380,7 @@ impl<'a> ArcLengthSampler<'a> {
     /// depend on caching. Reduce density to fit the aggregate node budget;
     /// retain uncached integration if even two nodes per span cannot fit.
     /// Numerical errors still propagate and existing tables remain intact.
-    pub(crate) fn prepare_budgeted_repeated_sampling(
+    pub fn prepare_budgeted_repeated_sampling(
         &mut self,
         preferred_subdivisions: usize,
     ) -> Result<(), GeometryError> {
@@ -390,7 +437,8 @@ impl<'a> ArcLengthSampler<'a> {
         self.spans[0].start
     }
 
-    pub(crate) fn point_at_distance(&self, distance: Real) -> Result<Point3, GeometryError> {
+    /// Evaluate a finite distance in `[0, total_length]`.
+    pub fn point_at_distance(&self, distance: Real) -> Result<Point3, GeometryError> {
         self.point_at_distance_impl(distance, None)
     }
 
@@ -412,7 +460,7 @@ impl<'a> ArcLengthSampler<'a> {
         // Its rounded cumulative endpoints may coincide, but the exact end
         // query must still return the stored geometric endpoint.
         if distance == self.total_length {
-            return self.source.end_point();
+            return self.source.curve().end_point();
         }
         if let Some((line, fraction)) = self.linear_distance_location(distance) {
             return line.point_at(fraction);
@@ -420,7 +468,8 @@ impl<'a> ArcLengthSampler<'a> {
         self.evaluate(parameter)
     }
 
-    pub(crate) fn parameter_at_distance(&self, distance: Real) -> Result<Real, GeometryError> {
+    /// Invert a finite distance in `[0, total_length]` to the source domain.
+    pub fn parameter_at_distance(&self, distance: Real) -> Result<Real, GeometryError> {
         self.source_parameter(self.parameter_at_distance_impl(distance, None)?)
     }
 
@@ -484,7 +533,8 @@ impl<'a> ArcLengthSampler<'a> {
         self.parameter_at_span_distance(span_index, span, local_distance, distance_tolerance)
     }
 
-    pub(crate) fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {
+    /// Return the native parameter, stable point and oriented unit tangent.
+    pub fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {
         let parameter = self.parameter_at_distance_impl(distance, None)?;
         let mut sample = if let Some((line, fraction)) = self.linear_distance_location(distance) {
             CurveRef::Line(&line).evaluate_with_tangent(fraction)?
@@ -493,7 +543,7 @@ impl<'a> ArcLengthSampler<'a> {
         };
         sample.parameter = self.source_parameter(parameter)?;
         if distance == self.total_length {
-            sample.point = self.source.end_point()?;
+            sample.point = self.source.curve().end_point()?;
         }
         Ok(sample)
     }
@@ -675,4 +725,15 @@ fn neumaier_add(sum: &mut Real, correction: &mut Real, value: Real) {
         *correction += (value - next) + *sum;
     }
     *sum = next;
+}
+
+impl ArcLengthSampler<'static> {
+    /// Share an immutable native curve and its prepared length tables without
+    /// a self-reference or repeated geometry copies in display point maps.
+    pub fn try_new_owned(
+        curve: std::sync::Arc<Curve3>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::try_with_source(SamplerSource::Owned(curve), tolerance)
+    }
 }

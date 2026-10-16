@@ -161,14 +161,12 @@
     "method": "Keep original digests and all non-hash metadata; move baseline-verifiable affected paths to immutable full base-revision Git references."
   },
   "sha256": {
-    "README.md": "94cb990162993c6c18f7ea279ee8d8f5798b02b530d36a4d778e4127bebf6072",
     "crates/viboceros-command/src/lib.rs": "0aa51da6d428ed17d0e6ffa21dbe4602626abbab41e66ab58813ae7bf542ee89",
     "crates/viboceros-command/src/orient_surface.rs": "429defbef089762a2f4a538568329b23b12e0b6c042955992f77428522c9a664",
     "crates/viboceros-geometry/src/morph.rs": "46c5742635a2c127b4f663ec09544d031d13d624c58504ad8e95a9387b4d2230",
     "crates/viboceros-oracle/src/lib.rs": "a3884657feac1cd57d68e85ec79ac90419a5e45cdcf3d2b6dcbc35f846c23700",
     "crates/viboceros-oracle/src/orient_surface.rs": "9dcb0f237ea62ea7a2340d10562e4ad420c2c7a1261089546b6ced3256de7a05",
     "docs/commands/orient-on-surface.md": "cd4b663a7d34af9148ed4f42129e5954fe998cd7df2cee6c05f3f4f21dbd555c",
-    "docs/orient-surface-grips-validation.json": "62050bf1b57746e534f7c4cc35daee0aebe14402bab5f89c4329847dcd7755df",
     "docs/orient-surface-validation.json": "ba75e21eb59b5c9cf7623a0b39dd3612a06d375bc10f0d944d5b8b5269c59bf7",
     "src/app/orient_surface.rs": "b0549800f972369bd45b692b2a160bc66a148572edd26c0499a8318d51e7cc0a",
     "src/app/orient_surface/option_input.rs": "c50a3cfa8602268f8c8ee6781411c0992ef4588c7d5950a5faa9b8c7ee8561ff",
@@ -182,8 +180,12 @@
     "tools/rhino_oracle/orient_surface_options_comparison.py": "dfff4c67226205e777dfcaa943bcf50d72f29863ed0cc81b225208f876bb296a",
     "tools/rhino_oracle/orient_surface_options_probe.py": "24ad711d186a1ba9319b278212655722c76ae0159d0a77d4007e6b8c6ae8c633",
     "tools/rhino_oracle/orient_surface_probe.py": "f6061ff679bb74b568908c75d8617e5044b7ca7a227795aab16bec0e0da32034",
-    "tools/rhino_oracle/rhino_worker.py": "ca88238f2befd6dc5654023ef449a6ad07e0c60929e8a3cbf9904a9eb8a82f00",
-    "tools/rhino_oracle/structural_sdk.py": "9ac8ed25c998bb0dc64a67b893b679fe5c5bd05ae9218d45eb4d646e14021de1",
     "tools/rhino_oracle/test_orient_surface_options.py": "6f4e07915cd11d2ed3fa7a0ca48ba99d4cbdd42f76f2fac41c375bc52c6ae920"
+  },
+  "git_sha256": {
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:README.md": "94cb990162993c6c18f7ea279ee8d8f5798b02b530d36a4d778e4127bebf6072",
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:docs/orient-surface-grips-validation.json": "62050bf1b57746e534f7c4cc35daee0aebe14402bab5f89c4329847dcd7755df",
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:tools/rhino_oracle/rhino_worker.py": "ca88238f2befd6dc5654023ef449a6ad07e0c60929e8a3cbf9904a9eb8a82f00",
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:tools/rhino_oracle/structural_sdk.py": "9ac8ed25c998bb0dc64a67b893b679fe5c5bd05ae9218d45eb4d646e14021de1"
   }
 }

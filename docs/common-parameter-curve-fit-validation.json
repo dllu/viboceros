@@ -90,10 +90,8 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "crates/viboceros-geometry/src/curve/arc_length.rs": "2022499da072f43e57dd5a071b3f5d35a59f9ae7f8c6aa8088ab220e5fcff6c8",
     "crates/viboceros-geometry/src/curve/arc_length/rational_line_tests.rs": "84fd36c88c78594b4ff5b03d3ba08a3cfe11fa32efb768c8f9bc507ac139b2d0",
     "crates/viboceros-geometry/src/curve/arc_length/spans.rs": "32546d55b61a1921d019ffcfc97c9d18699693b4df862fc24658ff13be388fd5",
-    "crates/viboceros-geometry/src/curve/arc_length/tests.rs": "4af9bdc370c22e5b9f23f86af9bc34e9cf514a242dd7a7884abe820458da6ec6",
     "crates/viboceros-geometry/src/curve_fit.rs": "1b378776573c404f25a187255abd66efe602f1e3fa2c7753cb0bbb8531266a2a",
     "crates/viboceros-geometry/src/curve_fit/sampler.rs": "cb6cf09b98fb1f35996872b9d3be5fdc216f46f2cf2cca4d1d2ab36f5167ed93",
     "crates/viboceros-geometry/src/curve_fit/station_tests.rs": "7b2cd78fc436e38d059421906f617aa0818805413cc61dea31e6feda7989382c",
@@ -139,6 +137,8 @@
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/native/bridge.h": "c57dcdcc47c84678066089f2233c4259118301e35c5f76b4a8d66cf02f223e35",
     "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
-    "c1ad337e5dfd11c3bcdf389c322834f0ed64cf13:crates/viboceros-geometry/src/lib.rs": "2bb0f1ecf0f59792d69bbbb1ea6dfb97459fae79dbc65142f725c3152b9e9912"
+    "c1ad337e5dfd11c3bcdf389c322834f0ed64cf13:crates/viboceros-geometry/src/lib.rs": "2bb0f1ecf0f59792d69bbbb1ea6dfb97459fae79dbc65142f725c3152b9e9912",
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:crates/viboceros-geometry/src/curve/arc_length.rs": "2022499da072f43e57dd5a071b3f5d35a59f9ae7f8c6aa8088ab220e5fcff6c8",
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:crates/viboceros-geometry/src/curve/arc_length/tests.rs": "4af9bdc370c22e5b9f23f86af9bc34e9cf514a242dd7a7884abe820458da6ec6"
   }
 }

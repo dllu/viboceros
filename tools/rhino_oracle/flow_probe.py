@@ -1,0 +1,74 @@
+"""Authored curve-to-curve Flow SDK witnesses and actual command diagnostics."""
+import math,re
+if globals().get('__package__'):
+    from .geometry_validity_probe import validate as validate_source
+else:
+    from geometry_validity_probe import validate as validate_source
+
+def validate(op):
+    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics'}:raise ValueError('invalid Flow recipe')
+    if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid Flow id')
+    for key in ('base','target'):
+        if not isinstance(op[key],dict)or op[key].get('type')not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('Flow requires curve guides')
+        validate_source(dict(op='geometry_validity',id=op['id'],source=op[key]))
+    if not isinstance(op['points'],list)or not 4<=len(op['points'])<=2048:raise ValueError('invalid Flow witness count')
+    for p in op['points']:
+        if not isinstance(p,list)or len(p)!=3 or any(type(x)not in(int,float)or math.isnan(x)or math.isinf(x)for x in p):raise ValueError('invalid Flow witness')
+    o=op.get('options',{})
+    if not isinstance(o,dict)or set(o)-{'reverse_base','reverse_target','stretch','copy','rigid','rigid_groups','preserve_structure'}or any(type(v)is not bool for v in o.values()):raise ValueError('invalid Flow options')
+    for k in ('command','group','diagnostics'):
+        if type(op.get(k,False))is not bool:raise ValueError('invalid Flow capture flag')
+
+def run(op,host,iterations,tolerance):
+    validate(op)
+    if iterations!=1:raise ValueError('Flow capture requires one iteration')
+    R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;o=op.get('options',{})
+    base=host['_object_source'](op['base'],tolerance);target=host['_object_source'](op['target'],tolerance)
+    morph=G.Morphs.FlowSpaceMorph(base,target,o.get('reverse_base',False),o.get('reverse_target',False),not o.get('stretch',True))
+    before=set(obj.Id for obj in doc.Objects);groups=set(g.Index for g in doc.Groups if not g.IsDeleted)
+    try:
+        points=[G.Point3d(*p)for p in op['points']]
+        result=dict(sdk_points=[host['_xyz'](morph.MorphPoint(p))for p in points],base_length=base.GetLength(),target_length=target.GetLength(),command=None)
+        if op.get('diagnostics'):
+            def plane(p):return dict(origin=host['_xyz'](p.Origin),x=host['_xyz'](p.XAxis),y=host['_xyz'](p.YAxis),z=host['_xyz'](p.ZAxis))
+            def frames(c):
+                parameters=[c.Domain.ParameterAt(f)for f in(0,.25,.5,.75,1)]
+                out=[]
+                for t in parameters:
+                    row=dict(t=t,point=host['_xyz'](c.PointAt(t)),tangent=host['_xyz'](c.TangentAt(t)))
+                    for name,method in [('frame',c.FrameAt),('perp',c.PerpendicularFrameAt)]:
+                        ok,p=method(t)
+                        if ok:row[name]=plane(p)
+                    out.append(row)
+                ok,p=c.TryGetPlane();batch=c.GetPerpendicularFrames(host['System'].Array[host['System'].Double](parameters))
+                return dict(rows=out,plane=plane(p)if ok else None,batch=[plane(p)for p in batch]if batch is not None else None)
+            result['diagnostics']=dict(base=frames(base),target=frames(target))
+        if not op.get('command'):return result,0
+        # Reverse copies of the authored guide definitions; the SDK constructor
+        # received the same explicit direction choices on the original curves.
+        if o.get('reverse_base'):base.Reverse()
+        if o.get('reverse_target'):target.Reverse()
+        a=doc.Objects.AddCurve(base);b=doc.Objects.AddCurve(target);cloud=G.PointCloud(points)
+        try:source=doc.Objects.AddPointCloud(cloud)
+        finally:cloud.Dispose()
+        if op.get('group'):doc.Groups.Add('Owned Flow source',[source])
+        definition=lambda key:host['_nurbs_curve_definition'](doc.Objects.FindId(key).Geometry)
+        guides=[definition(a),definition(b)];doc.Objects.UnselectAll();doc.Objects.Select(source,True)
+        flags=' '.join('_'+key+'=_'+('Yes'if o.get(field,default)else'No')for key,field,default in [('Copy','copy',False),('Rigid','rigid',False),('Stretch','stretch',True),('PreserveStructure','preserve_structure',False)])
+        flags+=' _Roadlike=_No'
+        if o.get('rigid'):flags+=' _RigidGroups=_'+('Yes'if o.get('rigid_groups',True)else'No')
+        marker='Owned Flow '+str(host['System'].Guid.NewGuid());R.RhinoApp.WriteLine(marker)
+        macro='_Flow '+flags+" '_-SelID "+str(a)+" '_-SelID "+str(b)+' _Cancel'
+        returned=R.RhinoApp.RunScript(macro,True);outputs=[]
+        for obj in doc.Objects:
+            if obj.Id in before or obj.Id in(a,b)or not isinstance(obj.Geometry,G.PointCloud):continue
+            outputs.append(dict(original=obj.Id==source,selected=bool(obj.IsSelected(False)),group_count=obj.GroupCount,points=[host['_xyz'](p.Location)for p in obj.Geometry]))
+        result['command']=dict(returned=bool(returned),macro=macro,history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip(),outputs=outputs,guides_unchanged=guides==[definition(a),definition(b)],guides_selected=[bool(doc.Objects.FindId(key).IsSelected(False))for key in(a,b)],group_count=sum(not g.IsDeleted and g.Index not in groups for g in doc.Groups))
+        return result,0
+    finally:
+        for obj in list(doc.Objects):
+            if obj.Id not in before:doc.Objects.Delete(obj.Id,True)
+        for g in list(doc.Groups):
+            if not g.IsDeleted and g.Index not in groups:doc.Groups.Delete(g.Index)
+        if hasattr(morph,'Dispose'):morph.Dispose()
+        base.Dispose();target.Dispose()

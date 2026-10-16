@@ -619,3 +619,45 @@ fn nurbs_division_points_survive_extreme_parameter_domains() {
         );
     }
 }
+
+#[test]
+fn owned_arc_length_sampler_shares_curve_and_matches_borrowed_nonunit_tables() {
+    use crate::{Curve3, WeightedPoint3};
+    use std::sync::Arc;
+    let controls = [
+        [0., 0., 0., 1.],
+        [1., 2., 1., 0.5],
+        [3., -1., 2., 2.],
+        [4., 0., 4., 1.],
+    ]
+    .into_iter()
+    .map(|[x, y, z, w]| WeightedPoint3::try_new(Point3::try_new(x, y, z).unwrap(), w).unwrap())
+    .collect();
+    let curve = Curve3::NurbsCurve(
+        NurbsCurve::try_new_rational(2, controls, vec![10., 10., 10., 11., 12., 12., 12.]).unwrap(),
+    );
+    let shared = Arc::new(curve.clone());
+    let weak = Arc::downgrade(&shared);
+    let mut owned = ArcLengthSampler::try_new_owned(shared.clone(), Tolerance::DEFAULT).unwrap();
+    let mut borrowed = ArcLengthSampler::try_new(curve.as_ref(), Tolerance::DEFAULT).unwrap();
+    owned.prepare_budgeted_repeated_sampling(32).unwrap();
+    borrowed.prepare_budgeted_repeated_sampling(32).unwrap();
+    drop(shared);
+    assert!(weak.upgrade().is_some());
+    assert_eq!(owned.source_curve().domain(), 10. ..=12.);
+    assert_eq!(owned.total_length(), borrowed.total_length());
+    for i in 0..=128 {
+        let t = curve.as_ref().parameter_at(i as Real / 128.).unwrap();
+        assert_eq!(
+            owned.distance_at_parameter(t).unwrap(),
+            borrowed.distance_at_parameter(t).unwrap()
+        );
+        let d = owned.total_length() * i as Real / 128.;
+        assert_eq!(
+            owned.sample_at_distance(d).unwrap(),
+            borrowed.sample_at_distance(d).unwrap()
+        );
+    }
+    drop(owned);
+    assert!(weak.upgrade().is_none());
+}
