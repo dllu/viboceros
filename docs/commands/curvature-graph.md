@@ -32,9 +32,11 @@ by two doubles hair length. This rule is checked against actual Rhino graph
 extraction at scales 50, 98, 100, 102 and 200.
 
 The outline is sampled more densely than its hairs. Each active NURBS span is
-subdivided where its control polygon turns beyond a right angle. Each resulting
-piece has at least `64 + 2*(degree+1)` outline intervals, rounded up to a multiple
-of `Density+1`. Hairs occupy `Density+1` intervals on each piece. Density defaults
+subdivided when two sampled source tangents turn beyond a right angle, or a
+sampled tangent turns more than 60° from the piece's endpoint chord. Interior
+stations participate, so turns hidden by aligned endpoint tangents are considered.
+Each resulting piece has at least `64 + 2*(degree+1)` outline intervals, rounded
+up to a multiple of `Density+1`. Hairs occupy `Density+1` intervals on each piece. Density defaults
 to 1, with range 0–10. This is an empirical default display policy; native hair
 placement and all native subdivision patterns are not yet reproduced.
 
@@ -62,12 +64,15 @@ and saved analysis metadata are not fully reproduced. Transient transform or gri
 previews keep the previous comb until the source edit is accepted.
 
 The [original comparison](../../tools/rhino_oracle/observations/curvature_graph_comparison_20261016.json)
-checks 153 point/curvature pairs and circle graph envelopes. The newer
-[sampling comparison](../../tools/rhino_oracle/observations/curvature_sampling_comparison_20261016.json)
-retains additional degrees, weights, parameter changes and curves with inflections.
-It matches vertex sequences in 38 of 41 cases whose requested settings were
-applied, and retains three subdivision differences plus three setting failures. Neither qualifies complete graph or native surface display
-parity. See the [sampling validation](../curvature-sampling-validation.json) for
+checks 153 point/curvature pairs and circle graph envelopes. The
+[initial sampling comparison](../../tools/rhino_oracle/observations/curvature_sampling_comparison_20261016.json)
+retains the earlier three subdivision differences. The newer
+[chord and tangent comparison](../../tools/rhino_oracle/observations/curvature_chord_comparison_20261016.json)
+adds angle-boundary and randomized curves, including weighted curves and interior
+wiggles. All 41 original cases with applied settings now agree within 1e-6;
+67 of 69 such cases agree in the expanded comparison. Two weighted-curve
+differences and three unsuccessful native setting requests stay visible. These
+checks do not qualify complete graph or native surface display parity. See the [current sampling validation](../curvature-chord-validation.json) for
 commands, hashes and the scope of these checks; the
 [original validation](../curvature-graph-validation.json) retains the initial
 implementation's evidence.

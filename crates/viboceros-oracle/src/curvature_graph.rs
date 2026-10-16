@@ -70,6 +70,71 @@ pub(super) fn run(
 mod tests {
     use super::*;
     #[test]
+    fn curvature_graph_chord_subdivision_replays_native_outlines_and_interior_wiggles() {
+        let mut q: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curvature_chord_validation.json"
+        ))
+        .unwrap();
+        let mut reference = BTreeMap::new();
+        for (capture, text) in [
+            (
+                "curvature_sampling_holdout",
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/curvature_sampling_holdout_rhino_20261016.json"
+                ),
+            ),
+            (
+                "curvature_sampling_angles",
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/curvature_sampling_angles_rhino_20261016.json"
+                ),
+            ),
+            (
+                "curvature_sampling_stress",
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/curvature_sampling_stress_rhino_20261016.json"
+                ),
+            ),
+        ] {
+            let native: Value = serde_json::from_str(text).unwrap();
+            for row in native["results"].as_array().unwrap() {
+                let id = row["id"].as_str().unwrap();
+                if capture == "curvature_sampling_stress" && !id.starts_with("hidden-") {
+                    continue;
+                }
+                reference.insert(format!("{capture}/{id}"), row["value"]["outputs"].clone());
+            }
+        }
+        q.operations.retain(|op| reference.contains_key(op.id()));
+        let actual = run_request(&q).unwrap();
+        assert_eq!(actual.results.len(), 21);
+        for row in actual.results {
+            assert_eq!(row.value["inputs_unchanged"], true);
+            assert_eq!(row.value["undo_label"], Value::Null);
+            // These single-span recipes each emit a single native polyline.
+            let ours = row.value["outputs"].as_array().unwrap();
+            let native = reference[&row.id].as_array().unwrap();
+            assert_eq!(ours.len(), 1, "{}", row.id);
+            assert_eq!(native.len(), 1, "{}", row.id);
+            let (a, b) = (
+                ours[0]["points"].as_array().unwrap(),
+                native[0]["points"].as_array().unwrap(),
+            );
+            assert_eq!(a.len(), b.len(), "{}", row.id);
+            let matches = [false, true].into_iter().any(|reverse| {
+                a.iter().enumerate().all(|(i, p)| {
+                    let q = &b[if reverse { b.len() - 1 - i } else { i }];
+                    (0..3)
+                        .map(|axis| (p[axis].as_f64().unwrap() - q[axis].as_f64().unwrap()).powi(2))
+                        .sum::<f64>()
+                        .sqrt()
+                        <= 1e-6
+                })
+            });
+            assert!(matches, "{}", row.id);
+        }
+    }
+    #[test]
     fn curvature_graph_replays_public_curve_samples_and_preserves_sources() {
         let q: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/curvature_graph.json"

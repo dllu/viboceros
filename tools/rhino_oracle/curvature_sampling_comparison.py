@@ -8,9 +8,9 @@ else:
 BASE=Path(__file__).parent
 CAPTURES=('curvature_sampling','curvature_sampling_controls','curvature_sampling_holdout')
 def read(path):return json.loads(path.read_text())
-def cases():
+def cases(captures=CAPTURES):
     result=[]
-    for capture in CAPTURES:
+    for capture in captures:
         request=read(BASE/'fixtures'/(capture+'.json'))
         native_name='curvature_sampling_outlines'if capture=='curvature_sampling'else capture
         native=read(BASE/'observations'/(native_name+'_rhino_20261016.json'))
@@ -19,11 +19,11 @@ def cases():
             if op['id']!=row['id']:raise ValueError('capture identity mismatch')
             result.append((capture+'/'+op['id'],op,row['value']))
     return result
-def local_request():
+def local_request(captures=CAPTURES):
     # Only original recipe geometry enters the local producer. Native graph
     # vertices, recovered parameters and returned NURBS definitions never do.
     operations=[]
-    for id,op,_ in cases():
+    for id,op,_ in cases(captures):
         operations.append(dict(op='curvature_graph',id=id,source=copy.deepcopy(op['source']),scale=op['scale'],density=op['density']))
     return dict(protocol_version=1,iterations=1,tolerance=dict(absolute=1e-6,relative=1e-12,angular=1e-8),operations=operations)
 def sequence_error(first,second):
@@ -44,8 +44,8 @@ def sequence_error(first,second):
             return False
         if all(visit(i,set())for i in range(len(first))):return threshold
     return None
-def comparison(local):
-    expected=cases()
+def comparison(local,captures=CAPTURES):
+    expected=cases(captures)
     if len(local['results'])!=len(expected):raise ValueError('local case length mismatch')
     rows=[]
     for (id,op,native),row in zip(expected,local['results']):
@@ -59,9 +59,9 @@ def comparison(local):
         rows.append(dict(id=id,requested_settings_applied=applied,requested_sample_density=op.get('sample_density',2),observed_sample_density=native['settings'].get('sample_density',2),sources_unchanged=value['inputs_unchanged']and native['inputs_unchanged'],vertex_counts=[[len(obj['points'])for obj in outputs]for outputs in (first,second)],unordered_reversible_vertex_sequence_error=error,vertex_sequences_within_1e_minus_6=applied and error is not None and error<=1e-6,vertex_to_polyline_distances=[vertex_probe(first,second),vertex_probe(second,first)],displayed_hairs=value['hair_count'],outline_samples=value['outline_sample_count'],maximum_native_station_recovery_residual=max((s['residual']for g in native['graphs']for s in g['stations']),default=0.)))
     return dict(schema_version=1,cases=len(rows),settings_applied_cases=sum(r['requested_settings_applied']for r in rows),matched_vertex_sequence_cases=sum(r['vertex_sequences_within_1e_minus_6']for r in rows),unchanged_source_cases=sum(r['sources_unchanged']for r in rows),complete_native_graph_parity_qualified=False,native_hair_placement_qualified=False,continuous_source_curvature_qualified=False,performance_qualified=False,method='Compare actual output polylines at 1e-6 with a bottleneck assignment of corresponding vertex sequences, allowing object reordering and orientation reversal. Retain bidirectional vertex-to-polyline diagnostics for different grids. Native station recovery is diagnostic and may select a wrong branch on looping curves; no recovered station is used as a producer input. Requested settings that Rhino did not apply cannot qualify a match.',results=rows)
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--prepare',type=Path);p.add_argument('--local',type=Path);p.add_argument('--output',type=Path);a=p.parse_args()
-    if a.prepare:a.prepare.write_text(json.dumps(local_request(),indent=2)+'\n')
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--prepare',type=Path);p.add_argument('--local',type=Path);p.add_argument('--output',type=Path);p.add_argument('--include',action='append',default=[]);a=p.parse_args();captures=CAPTURES+tuple(a.include)
+    if a.prepare:a.prepare.write_text(json.dumps(local_request(captures),indent=2)+'\n')
     if a.local:
         if not a.output:p.error('--local requires --output')
-        result=comparison(read(a.local));a.output.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k]for k in ('cases','settings_applied_cases','matched_vertex_sequence_cases','unchanged_source_cases')}))
+        result=comparison(read(a.local),captures);a.output.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k]for k in ('cases','settings_applied_cases','matched_vertex_sequence_cases','unchanged_source_cases')}))
 if __name__=='__main__':main()

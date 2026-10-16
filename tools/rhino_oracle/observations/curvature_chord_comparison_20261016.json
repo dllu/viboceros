@@ -1,0 +1,1746 @@
+{
+  "schema_version": 1,
+  "cases": 72,
+  "settings_applied_cases": 69,
+  "matched_vertex_sequence_cases": 67,
+  "unchanged_source_cases": 72,
+  "complete_native_graph_parity_qualified": false,
+  "native_hair_placement_qualified": false,
+  "continuous_source_curvature_qualified": false,
+  "performance_qualified": false,
+  "method": "Compare actual output polylines at 1e-6 with a bottleneck assignment of corresponding vertex sequences, allowing object reordering and orientation reversal. Retain bidirectional vertex-to-polyline diagnostics for different grids. Native station recovery is diagnostic and may select a wrong branch on looping curves; no recovered station is used as a producer input. Requested settings that Rhino did not apply cannot qualify a match.",
+  "results": [
+    {
+      "id": "curvature_sampling/circle-r-0.5",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.6852712547870858e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        2.647722398238632e-15,
+        2.6536998602945853e-15
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 6.727851338182671e-13
+    },
+    {
+      "id": "curvature_sampling/circle-r-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling/circle-r-8",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 3.66205343881779e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        3.549361658645712e-15,
+        3.5510597961016732e-15
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 1.4291671196183614e-13
+    },
+    {
+      "id": "curvature_sampling/circle-density-0",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 8,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling/circle-density-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0329400704738531e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.48471359015832e-16,
+        9.485749680535094e-16
+      ],
+      "displayed_hairs": 16,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 3.5788508892204166e-13
+    },
+    {
+      "id": "curvature_sampling/circle-density-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0329400704738531e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.48471359015832e-16,
+        9.485749680535094e-16
+      ],
+      "displayed_hairs": 20,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 3.5788508892204166e-13
+    },
+    {
+      "id": "curvature_sampling/circle-density-4",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 24,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling/g1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71,
+          211
+        ],
+        [
+          211,
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.3586517280808823e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.3291443575124944e-14,
+        1.3105770602248698e-14
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 5.873751474072407e-12
+    },
+    {
+      "id": "curvature_sampling/g2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          217
+        ],
+        [
+          217
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.9384125203838402e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.7311041575477148e-14,
+        1.7847016213730495e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 219,
+      "maximum_native_station_recovery_residual": 1.3995178168922204e-12
+    },
+    {
+      "id": "curvature_sampling/weak",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 9.155133597044475e-16,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        8.351356013312798e-16,
+        8.589947089146473e-16
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 1.3573891675522256e-12
+    },
+    {
+      "id": "curvature_sampling/weak-scaled",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 9.485749680535094e-16,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        3.908900211052836e-16,
+        4.1309736156850666e-16
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 1.49820813975657e-12
+    },
+    {
+      "id": "curvature_sampling/strong",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          211
+        ],
+        [
+          211
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.3586517280808823e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.3291443575124944e-14,
+        1.3105770602248698e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 213,
+      "maximum_native_station_recovery_residual": 5.873283439762211e-12
+    },
+    {
+      "id": "curvature_sampling/strong-scaled",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          211
+        ],
+        [
+          211
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 6.89411847443645e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        6.8795889668995025e-15,
+        6.854016672452935e-15
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 213,
+      "maximum_native_station_recovery_residual": 2.635854085859831e-12
+    },
+    {
+      "id": "curvature_sampling/g2-reparam",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71,
+          211
+        ],
+        [
+          211,
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.3586517280808823e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.3291443575124944e-14,
+        1.3105770602248698e-14
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 5.872237205422844e-12
+    },
+    {
+      "id": "curvature_sampling/g3-reparam",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          217
+        ],
+        [
+          217
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.9384125203838402e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.7311041575477148e-14,
+        1.7847016213730495e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 219,
+      "maximum_native_station_recovery_residual": 1.4051869320210533e-12
+    },
+    {
+      "id": "curvature_sampling_controls/density-0",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 8,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0329400704738531e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.48471359015832e-16,
+        9.485749680535094e-16
+      ],
+      "displayed_hairs": 16,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 3.5788508892204166e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0329400704738531e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.48471359015832e-16,
+        9.485749680535094e-16
+      ],
+      "displayed_hairs": 20,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 3.5788508892204166e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-4",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 24,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-5",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0329400704738531e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.48471359015832e-16,
+        9.485749680535094e-16
+      ],
+      "displayed_hairs": 28,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 3.5788508892204166e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-6",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 32,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-7",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0329400704738531e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.48471359015832e-16,
+        9.485749680535094e-16
+      ],
+      "displayed_hairs": 36,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 3.5788508892204166e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-8",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0329400704738531e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.48471359015832e-16,
+        9.485749680535094e-16
+      ],
+      "displayed_hairs": 40,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 3.5788508892204166e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-9",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 44,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/density-10",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          309
+        ],
+        [
+          309
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.1102230246251565e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.0663626139719012e-15,
+        1.0598133825244818e-15
+      ],
+      "displayed_hairs": 48,
+      "outline_samples": 312,
+      "maximum_native_station_recovery_residual": 4.702619567233393e-13
+    },
+    {
+      "id": "curvature_sampling_controls/sampling-1",
+      "requested_settings_applied": false,
+      "requested_sample_density": 1,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/sampling-3",
+      "requested_settings_applied": false,
+      "requested_sample_density": 3,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/sampling-4",
+      "requested_settings_applied": false,
+      "requested_sample_density": 4,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.047382306668854e-15,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        9.930136612989092e-16,
+        9.926237573216713e-16
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.3932375293818593e-13
+    },
+    {
+      "id": "curvature_sampling_controls/weak-degree-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 9.155133597044475e-16,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        8.351356013312798e-16,
+        8.589947089146473e-16
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 1.3573891675522256e-12
+    },
+    {
+      "id": "curvature_sampling_controls/weak-degree-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          73
+        ],
+        [
+          73
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.5543122344752192e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.5533764047645628e-15,
+        1.5462537277162705e-15
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 73,
+      "maximum_native_station_recovery_residual": 4.4714430447387996e-13
+    },
+    {
+      "id": "curvature_sampling_controls/weak-degree-4",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          75
+        ],
+        [
+          75
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.1065000811460206e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.9206501178351863e-15,
+        1.8591354140710635e-15
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 75,
+      "maximum_native_station_recovery_residual": 1.8908733058844893e-12
+    },
+    {
+      "id": "curvature_sampling_controls/weak-degree-5",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          77
+        ],
+        [
+          77
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 4.071658748137585e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        4.019392851382718e-15,
+        4.052139961410946e-15
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 77,
+      "maximum_native_station_recovery_residual": 1.699145687455292e-12
+    },
+    {
+      "id": "curvature_sampling_controls/g2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          217
+        ],
+        [
+          217
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.9384125203838402e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.7311041575477148e-14,
+        1.7847016213730495e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 219,
+      "maximum_native_station_recovery_residual": 1.3995178168922204e-12
+    },
+    {
+      "id": "curvature_sampling_controls/strong",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          211
+        ],
+        [
+          211
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.3586517280808823e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.3291443575124944e-14,
+        1.3105770602248698e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 213,
+      "maximum_native_station_recovery_residual": 5.873283439762211e-12
+    },
+    {
+      "id": "curvature_sampling_holdout/cubic-inflection",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          433
+        ],
+        [
+          433
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 4.5542425660611723e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        3.1940556984841926e-14,
+        3.2984997191471894e-14
+      ],
+      "displayed_hairs": 18,
+      "outline_samples": 438,
+      "maximum_native_station_recovery_residual": 4.698294029687721e-12
+    },
+    {
+      "id": "curvature_sampling_holdout/cubic-loop",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          289
+        ],
+        [
+          289
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.7412393475024943e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        2.2836831751622603e-14,
+        2.351290347883169e-14
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 292,
+      "maximum_native_station_recovery_residual": 0.18182752299580268
+    },
+    {
+      "id": "curvature_sampling_holdout/cubic-space",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          217
+        ],
+        [
+          217
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.557649234102301e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.4619356585858416e-14,
+        1.479953233148004e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 219,
+      "maximum_native_station_recovery_residual": 3.7471670175149906e-13
+    },
+    {
+      "id": "curvature_sampling_holdout/cubic-mild",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          73
+        ],
+        [
+          73
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.1801832636420706e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.106885210113024e-16,
+        9.147766663431186e-16
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 73,
+      "maximum_native_station_recovery_residual": 5.589210825245236e-13
+    },
+    {
+      "id": "curvature_sampling_holdout/quartic-wave",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          149
+        ],
+        [
+          149
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 4.869818370658876e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        4.279637828393119e-15,
+        4.549888343078117e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 150,
+      "maximum_native_station_recovery_residual": 1.8604139499850033e-12
+    },
+    {
+      "id": "curvature_sampling_holdout/quadratic-tight",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          211
+        ],
+        [
+          211
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.1546319456101628e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        7.832520654985726e-15,
+        7.438730520217548e-15
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 213,
+      "maximum_native_station_recovery_residual": 6.696505771163867e-12
+    },
+    {
+      "id": "curvature_sampling_holdout/weighted-0.1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.542467014281528e-13,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.8264458105077003e-14,
+        1.2809491335957507e-14
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 7.336944654587605e-12
+    },
+    {
+      "id": "curvature_sampling_holdout/weighted-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 5.773159728050814e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        4.514698416000674e-15,
+        4.3692997807129775e-15
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 4.590639810484585e-12
+    },
+    {
+      "id": "curvature_sampling_holdout/weighted-20",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.2353345381515273e-13,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.0344514575040737e-13,
+        8.973187772654613e-14
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 1.739649443616186e-11
+    },
+    {
+      "id": "curvature_sampling_angles/right-angle-ratio-1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 9.155133597044475e-16,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        8.880943605830296e-16,
+        9.04301880706312e-16
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 1.806478078131455e-12
+    },
+    {
+      "id": "curvature_sampling_angles/right-angle-ratio-1.5",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 7.447602459741819e-16,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        7.372880894218333e-16,
+        7.302018155942923e-16
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 3.8211951228512145e-12
+    },
+    {
+      "id": "curvature_sampling_angles/right-angle-ratio-1.7320508075688772",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          71
+        ],
+        [
+          71
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 8.005932084973442e-16,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        5.804085947581078e-16,
+        6.095276231102658e-16
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 71,
+      "maximum_native_station_recovery_residual": 1.3789719256637947e-12
+    },
+    {
+      "id": "curvature_sampling_angles/right-angle-ratio-1.75",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          141
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.2560739669470201e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.2542806500927208e-15,
+        1.2556893266831263e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 2.643311083789195e-12
+    },
+    {
+      "id": "curvature_sampling_angles/right-angle-ratio-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          141
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.1157603309187458e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.1113566542717435e-15,
+        1.113451370930979e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 2.6472884285041285e-12
+    },
+    {
+      "id": "curvature_sampling_angles/right-angle-ratio-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          141
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 9.485749680535094e-16,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        8.648044551539807e-16,
+        8.671119018262734e-16
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 2.1178396515862933e-12
+    },
+    {
+      "id": "curvature_sampling_angles/right-angle-ratio-5",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          141
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.7798229048217483e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.7272271512758356e-15,
+        1.7677989802943992e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 7.3938936363414e-13
+    },
+    {
+      "id": "curvature_sampling_angles/angle-100-ratio-1.5",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          141
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.286089127109703e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        2.1730401218587743e-15,
+        2.210629292361756e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 4.5632524191996595e-12
+    },
+    {
+      "id": "curvature_sampling_angles/angle-100-ratio-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          141
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.5543122344752192e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.5184330969737625e-15,
+        1.532187150083645e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 4.172156931252334e-12
+    },
+    {
+      "id": "curvature_sampling_angles/angle-100-ratio-5",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          211
+        ],
+        [
+          211
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.094764613337708e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.8001047556827143e-15,
+        1.7400946137078932e-15
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 213,
+      "maximum_native_station_recovery_residual": 6.259514695736512e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-2-0",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          211
+        ],
+        [
+          211
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.8225250201427202e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.672359148660204e-14,
+        1.7495668961118414e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 213,
+      "maximum_native_station_recovery_residual": 6.5600110711014076e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-2-1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 4.185997235692079e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        3.3428166750010955e-14,
+        3.360542226210555e-14
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 3.486790442995145e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-2-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          281
+        ],
+        [
+          281
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.3557455178480058e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.2536009555656442e-14,
+        1.2807668660684551e-14
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 284,
+      "maximum_native_station_recovery_residual": 1.9285034128320553e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-2-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          141
+        ],
+        [
+          141
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.496792603222992e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.5680943793022228e-14,
+        1.635357826012308e-14
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 142,
+      "maximum_native_station_recovery_residual": 5.728949735783285e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-3-0",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          433
+        ],
+        [
+          433
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.1184702157408933e-13,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        7.3998660168721e-14,
+        6.890610142330682e-14
+      ],
+      "displayed_hairs": 18,
+      "outline_samples": 438,
+      "maximum_native_station_recovery_residual": 2.8859267213803173
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-3-1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          217
+        ],
+        [
+          217
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.0242973220427484e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        8.845982700111853e-15,
+        9.116181813246927e-15
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 219,
+      "maximum_native_station_recovery_residual": 1.929399137251325e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-3-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          73
+        ],
+        [
+          145
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": null,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        1.0962454445035556e-14,
+        0.0022554681144354083
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 73,
+      "maximum_native_station_recovery_residual": 6.505112668497046e-13
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-3-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          73
+        ],
+        [
+          73
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.912087692897636e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.5800917233063506e-15,
+        1.5284636635492277e-15
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 73,
+      "maximum_native_station_recovery_residual": 1.3148122068687454e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-4-0",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          149
+        ],
+        [
+          149
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 5.7742271515097e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        3.643850229464338e-15,
+        3.993934747136873e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 150,
+      "maximum_native_station_recovery_residual": 2.5567243691655823e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-4-1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          223
+        ],
+        [
+          223
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 9.641058103133418e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        9.555742808172634e-15,
+        9.559876469068893e-15
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 225,
+      "maximum_native_station_recovery_residual": 8.516149672087708e-13
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-4-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          297
+        ],
+        [
+          297
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.200355965281207e-13,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.1642898755596082e-13,
+        1.197348994562058e-13
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 300,
+      "maximum_native_station_recovery_residual": 1.2443226710186213e-11
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-4-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          519
+        ],
+        [
+          519
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 4.550311682465609e-12,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        4.474336332027234e-12,
+        4.431470158459725e-12
+      ],
+      "displayed_hairs": 21,
+      "outline_samples": 525,
+      "maximum_native_station_recovery_residual": 2.9768660257553695e-11
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-5-0",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          229
+        ],
+        [
+          229
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.7696829641852286e-14,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.5844606892258364e-14,
+        1.619832988116961e-14
+      ],
+      "displayed_hairs": 9,
+      "outline_samples": 231,
+      "maximum_native_station_recovery_residual": 4.1318346529111536e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-5-1",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          153
+        ],
+        [
+          153
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 3.233018248352212e-15,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        3.1036917917188347e-15,
+        3.1156508224016475e-15
+      ],
+      "displayed_hairs": 6,
+      "outline_samples": 154,
+      "maximum_native_station_recovery_residual": 1.827479708587325e-13
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-5-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          77
+        ],
+        [
+          153
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": null,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        7.167466170793318e-15,
+        0.006656072947065821
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 77,
+      "maximum_native_station_recovery_residual": 1.864771978014175e-12
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-5-3",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          305
+        ],
+        [
+          305
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 6.143896779029458e-13,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        6.099316474329155e-13,
+        6.142226300127778e-13
+      ],
+      "displayed_hairs": 12,
+      "outline_samples": 308,
+      "maximum_native_station_recovery_residual": 6.789583275170265
+    },
+    {
+      "id": "curvature_sampling_stress/hidden-quartic-bump",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          593
+        ],
+        [
+          593
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 2.481422722166311e-13,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        2.2509743443256706e-13,
+        2.1115562284057605e-13
+      ],
+      "displayed_hairs": 24,
+      "outline_samples": 600,
+      "maximum_native_station_recovery_residual": 2.2443822306448165
+    },
+    {
+      "id": "curvature_sampling_stress/hidden-quintic-wave",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          457
+        ],
+        [
+          457
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": 1.8516975791265506e-13,
+      "vertex_sequences_within_1e_minus_6": true,
+      "vertex_to_polyline_distances": [
+        1.668832347650451e-13,
+        1.6791678879971432e-13
+      ],
+      "displayed_hairs": 18,
+      "outline_samples": 462,
+      "maximum_native_station_recovery_residual": 1.6548922292675348
+    }
+  ]
+}

@@ -8,8 +8,9 @@ use std::ops::RangeInclusive;
 const OUTLINE_BASE: usize = 64;
 const MAX_DEPTH: usize = 32;
 
-/// Subdivide active control polygons that turn beyond a right angle, then
-/// sample each leaf uniformly. The default outline minimum is 64 + 2*order,
+/// Subdivide spans whose sampled tangents turn beyond a right angle or make
+/// an angle above 60 degrees with their chord, then sample each leaf uniformly.
+/// The default outline minimum is 64 + 2*order,
 /// rounded upward to a multiple of the number of hair intervals (density+1).
 /// Both sides of knots and every subdivision boundary remain explicit.
 ///
@@ -46,11 +47,11 @@ pub fn curvature_comb_with_subdivision<E: From<GeometryError>>(
         if a == b {
             continue;
         }
-        let split = wide_cone(&curve.control_points()[i - curve.degree()..=i])?;
         let span = unit_span(&trim(curve, a..=b)?)?;
-        let mut stack = vec![(span, 0., 1., split, 0)];
-        while let Some((leaf, first, last, split, depth)) = stack.pop() {
-            if split {
+        let mut stack = vec![(span, 0., 1., 0)];
+        while let Some((leaf, first, last, depth)) = stack.pop() {
+            let sampled = curvature_comb(&leaf, intervals, leaf_samples)?;
+            if wide_turn(leaf.control_points(), &sampled)? {
                 reserved = reserved
                     .checked_add(leaf_samples)
                     .filter(|n| *n <= maximum_samples)
@@ -61,13 +62,10 @@ pub fn curvature_comb_with_subdivision<E: From<GeometryError>>(
                 let mid = (first + last) * 0.5;
                 let left = unit_span(&trim(&leaf, 0. ..=0.5)?)?;
                 let right = unit_span(&trim(&leaf, 0.5..=1.)?)?;
-                let left_split = wide_cone(left.control_points())?;
-                let right_split = wide_cone(right.control_points())?;
-                stack.push((right, mid, last, right_split, depth + 1));
-                stack.push((left, first, mid, left_split, depth + 1));
+                stack.push((right, mid, last, depth + 1));
+                stack.push((left, first, mid, depth + 1));
                 continue;
             }
-            let sampled = curvature_comb(&leaf, intervals, leaf_samples)?;
             let offset = out.hairs.len();
             let stride = intervals / hair_intervals;
             for mut hair in sampled.hairs {
@@ -91,24 +89,56 @@ pub fn curvature_comb_with_subdivision<E: From<GeometryError>>(
     Ok(out)
 }
 
-fn wide_cone(controls: &[WeightedPoint3]) -> Result<bool, GeometryError> {
-    let mut directions = Vec::with_capacity(controls.len().saturating_sub(1));
-    for edge in controls.windows(2) {
-        let delta = edge[0].point().vector_to(edge[1].point())?;
-        if delta.length()? != 0. {
-            directions.push(delta.normalized_nonzero()?.as_vector());
+fn wide_turn(controls: &[WeightedPoint3], sampled: &CurvatureComb) -> Result<bool, GeometryError> {
+    let first = controls[0];
+    let last = controls[controls.len() - 1];
+    let Some(start_neighbor) = controls.iter().find(|p| p.point() != first.point()) else {
+        return Ok(false); // Constant span: sampling will count its zero speeds.
+    };
+    let end_neighbor = controls
+        .iter()
+        .rev()
+        .find(|p| p.point() != last.point())
+        .unwrap();
+    if first.point() == last.point() {
+        return Ok(true);
+    }
+    let chord = first.point().direction_to(last.point())?.as_vector();
+    // For clamped rational Bezier spans, the first/last nonzero control
+    // differences give the limiting tangent directions, with the weight sign.
+    // Repeated endpoint controls still produce omitted zero-speed samples in
+    // the evaluator; these limiting directions only guide subdivision.
+    let start = weighted_direction(first, *start_neighbor)?.as_vector();
+    let end = weighted_direction(*end_neighbor, last)?.as_vector();
+    let slack = 64. * Real::EPSILON;
+    let mut directions = vec![start, end];
+    for tangent in sampled.hairs.iter().map(|h| h.tangent.as_vector()) {
+        if !directions.contains(&tangent) {
+            directions.push(tangent);
         }
     }
-    for (i, a) in directions.iter().enumerate() {
-        for b in &directions[i + 1..] {
-            // A right angle can acquire a few ulps of negative dot product
-            // after rotation, trimming or degree elevation.
-            if a.dot(*b)? < -64. * Real::EPSILON {
+    for (i, tangent) in directions.iter().enumerate() {
+        if tangent.dot(chord)? < 0.5 - slack {
+            return Ok(true);
+        }
+        for other in &directions[..i] {
+            if tangent.dot(*other)? < -slack {
                 return Ok(true);
             }
         }
     }
     Ok(false)
+}
+
+fn weighted_direction(a: WeightedPoint3, b: WeightedPoint3) -> Result<UnitVector3, GeometryError> {
+    let direction = a.point().direction_to(b.point())?;
+    Ok(
+        if a.weight().is_sign_positive() == b.weight().is_sign_positive() {
+            direction
+        } else {
+            direction.opposite()
+        },
+    )
 }
 
 fn unit_span(curve: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {

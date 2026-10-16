@@ -1,0 +1,3283 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/circle-r-0.5",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 0.5,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/circle-r-2",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/circle-r-8",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 8,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/circle-density-0",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 0
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/circle-density-2",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 2
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/circle-density-3",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 3
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/circle-density-4",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 4
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/g1",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              -1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              3,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/g2",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/weak",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/weak-scaled",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/strong",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              -1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              3,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/strong-scaled",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              6,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              8,
+              6,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/g2-reparam",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              -1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              3,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          100,
+          100,
+          100,
+          107,
+          107,
+          114,
+          114,
+          114
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling/g3-reparam",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          100,
+          100,
+          100,
+          100,
+          107,
+          114,
+          114,
+          114,
+          114
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-0",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 0
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-1",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-2",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 2
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-3",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 3
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-4",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 4
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-5",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 5
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-6",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 6
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-7",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 7
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-8",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 8
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-9",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 9
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/density-10",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 10
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/sampling-1",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/sampling-3",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/sampling-4",
+      "source": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/weak-degree-2",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/weak-degree-3",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.6666666666666666,
+              0.6666666666666666,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.3333333333333333,
+              0.6666666666666666,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/weak-degree-4",
+      "source": {
+        "type": "nurbs",
+        "degree": 4,
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              0.5,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              0.6666666666666666,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.5,
+              0.5,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/weak-degree-5",
+      "source": {
+        "type": "nurbs",
+        "degree": 5,
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.4,
+              0.4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.8,
+              0.6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.2,
+              0.6,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.6,
+              0.4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/g2",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_controls/strong",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              -1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              3,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/cubic-inflection",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              -3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/cubic-loop",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/cubic-space",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              -1,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              1,
+              1
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/cubic-mild",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/quartic-wave",
+      "source": {
+        "type": "nurbs",
+        "degree": 4,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/quadratic-tight",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.1,
+              3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/weighted-0.1",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 0.1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/weighted-3",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_holdout/weighted-20",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 20
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/right-angle-ratio-1",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/right-angle-ratio-1.5",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1.5,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/right-angle-ratio-1.7320508075688772",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1.7320508075688772,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/right-angle-ratio-1.75",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1.75,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/right-angle-ratio-2",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/right-angle-ratio-3",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              3,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/right-angle-ratio-5",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              5,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/angle-100-ratio-1.5",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.7395277334996045,
+              1.477211629518312,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/angle-100-ratio-2",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.6527036446661394,
+              1.969615506024416,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_angles/angle-100-ratio-5",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.13175911166534848,
+              4.92403876506104,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-2-0",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              3.239956476019084,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              -3.196459596504032,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              -0.5616561288386288,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-2-1",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -3.262142388884146,
+              1.4560569063178868
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              3.899089426096231,
+              0.5866602868427653
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              -0.8405668237300947,
+              1.8379310335287484
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-2-2",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              3.512724756219918,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              1.0,
+              -1.6573030451562962,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              -0.3362015010951218,
+              0
+            ],
+            "weight": 0.3
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-2-3",
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -2.279329335362992,
+              -0.06802966619126405
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              1.0,
+              3.2973382453646156,
+              -1.371250700068443
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              2.0,
+              2.7522794117194467,
+              -0.024463295453752476
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-3-0",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -3.5052127424538018,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              3.300661995737305,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              -3.909360673615315,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              -2.5286590794318027,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-3-1",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              2.683461853556885,
+              0.9463583083262384
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              -3.830093249589435,
+              -1.8030656923831856
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              0.6019527087207974,
+              -0.25110656694146405
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              -0.04160929426804216,
+              -1.751995133061993
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-3-2",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -2.4567958417176428,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              -0.6383092481558279,
+              0
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              2.0,
+              -1.237174085367787,
+              0
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              3.0,
+              2.8557495865079394,
+              0
+            ],
+            "weight": 3
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-3-3",
+      "source": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              2.6769756826516264,
+              -0.5689538726122461
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              1.0,
+              0.6284562160525455,
+              -1.0527424286940468
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              2.0,
+              0.126966194885064,
+              -1.3002429733087002
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              0.18658962647602806,
+              -1.0296107439061895
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-4-0",
+      "source": {
+        "type": "nurbs",
+        "degree": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -2.1514916392073262,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              -2.3860479414613236,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              -0.29404242405964354,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              0.8131814029775395,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4.0,
+              2.5033416031765423,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-4-1",
+      "source": {
+        "type": "nurbs",
+        "degree": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -0.6086742645085899,
+              1.1522643372657684
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              3.384651006074299,
+              -0.19552956350633632
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              -1.7838119468410785,
+              -1.7967163211847166
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              2.6727690173243603,
+              0.8035326192861643
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4.0,
+              -3.49397993176526,
+              0.7043276327268821
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-4-2",
+      "source": {
+        "type": "nurbs",
+        "degree": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -1.9045253262097637,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              1.0,
+              0.8228207962533594,
+              0
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              2.0,
+              0.30538899470076153,
+              0
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              3.0,
+              -3.178329997259829,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              4.0,
+              3.332364468713953,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-4-3",
+      "source": {
+        "type": "nurbs",
+        "degree": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -3.0894327419574683,
+              -0.43975438074002327
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              1.0,
+              3.7109358314907785,
+              0.4013324753808867
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              2.0,
+              -0.3729040752766881,
+              0.5475846768886439
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              -1.3212862796879774,
+              0.09637112855276442
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              4.0,
+              -0.5132463165253469,
+              -0.3820581708493016
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-5-0",
+      "source": {
+        "type": "nurbs",
+        "degree": 5,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -3.447901630275653,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              -3.1785298452407,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.5361117913328473,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              0.4526611642691787,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4.0,
+              -0.15766804220931352,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5.0,
+              -3.306092118580147,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-5-1",
+      "source": {
+        "type": "nurbs",
+        "degree": 5,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -3.697753583719365,
+              0.600686245784078
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              -1.2331825597486121,
+              -0.1776535341649903
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              0.001715680686160681,
+              -1.8358027872407536
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              0.15451874858561698,
+              -0.9770534073858168
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4.0,
+              2.386578301751345,
+              -1.971957486660206
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5.0,
+              2.4428630351567104,
+              0.9148248632776066
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-5-2",
+      "source": {
+        "type": "nurbs",
+        "degree": 5,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.7206441072362599,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              1.0,
+              -1.427429669605556,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              -1.8157562795739128,
+              0
+            ],
+            "weight": 0.3
+          },
+          {
+            "point": [
+              3.0,
+              0.887055231582349,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              4.0,
+              -1.4482950592092987,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              5.0,
+              -3.009728662296494,
+              0
+            ],
+            "weight": 3
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/random-degree-5-3",
+      "source": {
+        "type": "nurbs",
+        "degree": 5,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              -1.654526633212205,
+              -1.6414639343930437
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              1.0,
+              -1.2033990639659384,
+              -1.6570939672272642
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              3.5369147843694364,
+              0.24768476299253273
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3.0,
+              -0.02395845241779604,
+              -0.925493709455095
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              4.0,
+              -2.8866257313382633,
+              -1.9250519775578163
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5.0,
+              -1.5526848204409944,
+              -1.2056252752581709
+            ],
+            "weight": 3
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/hidden-quartic-bump",
+      "source": {
+        "type": "nurbs",
+        "degree": 4,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              12,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    },
+    {
+      "op": "curvature_graph",
+      "id": "curvature_sampling_stress/hidden-quintic-wave",
+      "source": {
+        "type": "nurbs",
+        "degree": 5,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              -4,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "scale": 100,
+      "density": 1
+    }
+  ]
+}

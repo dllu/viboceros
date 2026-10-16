@@ -1,0 +1,19 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-document v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-document)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-drafting v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-drafting)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 13s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 6 tests
+test app::tests::curvature_graph::curvature_graph_add_remove_getters_and_cancel_preserve_prior_display ... ok
+test app::tests::curvature_graph::curvature_graph_picker_options_persist_and_display_controls_leave_active_drawing_intact ... ok
+test app::tests::extract_curvature_graph::extract_curvature_graph_picker_accepts_only_graphed_curves_and_clears_postselection ... ok
+test app::tests::extract_curvature_graph::extract_curvature_graph_ignores_ungraphed_preselection_and_empty_enter_cancels ... ok
+test viewport::curvature_graph::tests::extract_curvature_graph_viewport_click_filters_coincident_ungraphed_candidates ... ok
+test viewport::curvature_graph::tests::curvature_graph_overlay_is_visible_in_every_mode_and_respects_hidden_sources ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1247 filtered out; finished in 0.34s

@@ -1,0 +1,45 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 39.47s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-f7a44ebfd2db35f0)
+
+running 38 tests
+test curve_continuity::tests::curvature_vector_rejects_opposite_bends_at_a_tangent_join ... ok
+test curve_blend_pair::tests::cubic_position_to_curvature_matches_the_curved_end ... ok
+test curve_blend_pair::tests::quartic_matches_curvature_at_a_second_curves_start ... ok
+test curvature_comb::tests::curvature_comb_singular_samples_break_strips_and_budget_is_strict ... ok
+test curvature_comb::tests::curvature_comb_preserves_curvature_jumps_at_tangent_continuous_knots ... ok
+test curvature_comb::tests::curvature_comb_circle_has_analytic_curvature_and_two_sides_of_each_span ... ok
+test curvature_comb::tests::curvature_envelopes_join_smooth_circle_spans_and_close_the_source_seam ... ok
+test curvature_comb::tests::curvature_envelopes_omit_flat_strips_and_reject_invalid_scales_or_indices ... ok
+test curvature_comb::tests::curvature_envelopes_join_across_a_closed_seam_without_closing_discontinuous_pieces ... ok
+test nurbs_surface::closest_point::refine::tests::curvature_step_rejects_indefinite_singular_and_unrepresentable_metrics ... ok
+test nurbs::tests::circular_extension_elevates_a_zero_curvature_line_fallback ... ok
+test nurbs_surface::closest_point::refine::tests::curvature_step_solves_the_full_mixed_hessian_in_scaled_coordinates ... ok
+test nurbs_surface::closest_point::refine::tests::curvature_step_uses_the_skew_metric_and_solves_only_free_boundary_directions ... ok
+test curvature_comb::tests::curvature_envelopes_separate_kinks_and_g1_jumps_but_join_c2_spans ... ok
+test surface_curvature::tests::curvature_is_scale_covariant_and_independent_of_parameter_units ... ok
+test curve_blend_pair::tests::quintic_matches_circular_curvature_and_a_straight_end ... ok
+test curve_match::tests::multispan_g2_preserves_disjoint_far_curvature_controls ... ok
+test surface_curvature::tests::arbitrary_graphs_obey_shape_operator_and_eigenframe_invariants ... ok
+test surface_curvature::tests::gaussian_overflow_does_not_hide_representable_principal_curvatures ... ok
+test surface_curvature::tests::metric_scaling_does_not_round_a_subnormal_tangent_product ... ok
+test surface_curvature::tests::small_eigenvalue_survives_large_curvature_ratio ... ok
+test surface_curvature::tests::native_surface_curvature_respects_domain_maps_reversal_and_large_translation ... ok
+test surface_curvature::tests::stationary_and_parallel_tangents_are_errors_not_flat_surface_results ... ok
+test curvature_comb::tests::chord::curvature_chord_subdivision_matches_native_angle_boundary ... ok
+test surface_curvature::tests::exact_rational_spheres_cylinders_and_tori_have_analytic_curvatures ... ok
+test curve_match::tests::cubic_g2_preserving_far_curvature_matches_live_rhino_controls ... ok
+test curve_match::tests::average_five_control_multispan_g2_preserves_both_far_curvatures ... ok
+test curvature_comb::tests::adaptive::curvature_subdivision_retains_jumps_and_singular_gaps ... ok
+test nurbs_surface::closest_point::refine::tests::closest_point_curvature_retains_multistart_search_past_a_saddle ... ok
+test curvature_comb::tests::adaptive::curvature_subdivision_is_independent_of_extreme_source_parameter_charts ... ok
+test curve_match::tests::five_control_multispan_g2_prepares_and_preserves_far_curvature ... ok
+test curvature_comb::tests::chord::curvature_chord_subdivision_preserves_rotation_reversal_and_weight_scale ... ok
+test curvature_comb::tests::adaptive::curvature_subdivision_follows_source_turns_without_changing_geometry ... ok
+test curvature_comb::tests::adaptive::curvature_subdivision_keeps_hairs_sparse_and_outline_smooth ... ok
+test nurbs::tests::boundary_extension_respects_curvature_and_brep_trim_holes ... ok
+test nurbs_surface::closest_point::refine::tests::closest_point_curvature_handles_mixed_partials_edges_and_corners ... ok
+test curvature_comb::tests::chord::curvature_chord_subdivision_uses_signed_rational_endpoint_directions ... ok
+test nurbs_surface::closest_point::refine::tests::closest_point_curvature_falls_back_when_only_second_derivatives_overflow ... ok
+
+test result: ok. 38 passed; 0 failed; 0 ignored; 0 measured; 2296 filtered out; finished in 24.57s

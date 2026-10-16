@@ -1,0 +1,398 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Curvature graph subdivision from chord and sampled source tangents",
+  "base_repository_revision": "65df6541d94f22dfb64cbb6f46d0f66a71693ab7",
+  "complete_native_graph_parity_qualified": false,
+  "native_hair_placement_qualified": false,
+  "native_surface_display_parity_qualified": false,
+  "native_undo_redo_qualified": false,
+  "continuous_source_curvature_qualified": false,
+  "performance_qualified": false,
+  "reference_returned_geometry_used_as_input": false,
+  "diagnostic_recipes_chosen_adaptively": true,
+  "implementation": "Use clamped unit-domain spans and the existing bounded curvature sampler to obtain point/curvature/tangent stations. Subdivide when two sampled source tangents turn beyond 90 degrees or a tangent turns more than 60 degrees from the endpoint chord, with 64*machine-epsilon arithmetic slack. Include limiting endpoint directions from the first/last noncoincident control points, honoring rational weight signs; actual zero-speed endpoint samples still remain omitted. Reuse accepted jets as the displayed and extracted comb. Constant spans stop, nonconstant coincident endpoints split, output stations remain bounded by 200000 and tree depth by 32. Existing native builds continue to reuse usd-brep trimming. Density, cache, source-domain tags, one-sided jumps, singular gaps, scale and seam policies remain.",
+  "inference": "Ten new angle-family cases test the tangent-to-chord boundary around 60 degrees, unequal endpoint edge lengths and 100-degree endpoint turns. An endpoint-only hypothesis matches those cases and the original three failures, but new interior-wiggle and randomized curves disprove it. Interior sampled tangent checks reproduce 16 of the 18 new stress cases. Two weighted curves still use a denser native grid. The implemented sampler is an independently written source-only display heuristic, not a recovered proprietary algorithm or a continuous angular/curvature certificate.",
+  "coverage": {
+    "unique_rust_tests": 56,
+    "passed_rust_test_executions": 65,
+    "rust_count_note": "38 geometry + 9 portable command + 6 UI + 9 native command + 3 native oracle executions. Native command tests repeat the portable nine. Three new geometry tests cover the native angle boundary, 3D rotation/reversal/common negative weight scaling, and mixed-sign endpoint directions/pole rejection. One new command-backed oracle test compares full native vertex sequences for 21 curves (all nine original additional curves, ten angle-family cases and two interior wiggles).",
+    "python_tests": 52,
+    "new_python_tests": 3,
+    "private_native_launches": 2,
+    "new_native_rows": 28,
+    "comparison_cases": 72,
+    "requested_settings_applied_cases": 69,
+    "matched_vertex_sequence_cases": 67,
+    "unchanged_source_cases": 72,
+    "original_settings_applied_cases_matched": 41,
+    "maximum_matched_vertex_sequence_error": 4.550311682465609e-12,
+    "extraction_counts": {
+      "command_status_matches": 10,
+      "piece_count_matches": 10,
+      "attributes_match": 10,
+      "source_selection_matches": 10,
+      "sources_unchanged": 10,
+      "outline_endpoint_sets_match": 10,
+      "vertex_probes_within_1e_minus_6": 10
+    }
+  },
+  "native_capture_runs": [
+    {
+      "request": "tools/rhino_oracle/fixtures/curvature_sampling_angles.json",
+      "response": "tools/rhino_oracle/observations/curvature_sampling_angles_rhino_20261016.json",
+      "scheme": "VibocerosOracleCurvatureAngles20261016",
+      "cases": 10,
+      "succeeded": true,
+      "producer_revision": "65df6541d94f22dfb64cbb6f46d0f66a71693ab7"
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/curvature_sampling_stress.json",
+      "response": "tools/rhino_oracle/observations/curvature_sampling_stress_rhino_20261016.json",
+      "scheme": "VibocerosOracleCurvatureAngles20261016b",
+      "cases": 18,
+      "succeeded": true,
+      "producer_revision": "65df6541d94f22dfb64cbb6f46d0f66a71693ab7"
+    }
+  ],
+  "random_fixture_seed": 1792168717,
+  "native_command_template": "tools/rhino_oracle/run_headless.sh rhino REQUEST --scheme SCHEME --timeout 300 --output RESPONSE",
+  "prepare_command": "python3 tools/rhino_oracle/curvature_sampling_comparison.py --include curvature_sampling_angles --include curvature_sampling_stress --prepare tools/rhino_oracle/fixtures/curvature_chord_validation.json",
+  "comparison_command": "python3 tools/rhino_oracle/curvature_sampling_comparison.py --include curvature_sampling_angles --include curvature_sampling_stress --local tools/rhino_oracle/observations/curvature_chord_viboceros_20261016.json --output tools/rhino_oracle/observations/curvature_chord_comparison_20261016.json",
+  "extraction_comparison_command": "python3 tools/rhino_oracle/extract_curvature_graph_comparison.py tools/rhino_oracle/fixtures/extract_curvature_graph.json tools/rhino_oracle/observations/extract_curvature_graph_chord_viboceros_20261016.json tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json tools/rhino_oracle/observations/extract_curvature_graph_chord_comparison_20261016.json",
+  "resolved_prior_counterexamples": [
+    {
+      "id": "curvature_sampling_holdout/cubic-space",
+      "before": {
+        "id": "curvature_sampling_holdout/cubic-space",
+        "requested_settings_applied": true,
+        "requested_sample_density": 2,
+        "observed_sample_density": 2,
+        "sources_unchanged": true,
+        "vertex_counts": [
+          [
+            145
+          ],
+          [
+            217
+          ]
+        ],
+        "unordered_reversible_vertex_sequence_error": null,
+        "vertex_sequences_within_1e_minus_6": false,
+        "vertex_to_polyline_distances": [
+          1.472948724987685e-14,
+          0.0006488090807010884
+        ],
+        "displayed_hairs": 6,
+        "outline_samples": 146,
+        "maximum_native_station_recovery_residual": 3.7471670175149906e-13
+      },
+      "after": {
+        "id": "curvature_sampling_holdout/cubic-space",
+        "requested_settings_applied": true,
+        "requested_sample_density": 2,
+        "observed_sample_density": 2,
+        "sources_unchanged": true,
+        "vertex_counts": [
+          [
+            217
+          ],
+          [
+            217
+          ]
+        ],
+        "unordered_reversible_vertex_sequence_error": 1.557649234102301e-14,
+        "vertex_sequences_within_1e_minus_6": true,
+        "vertex_to_polyline_distances": [
+          1.4619356585858416e-14,
+          1.479953233148004e-14
+        ],
+        "displayed_hairs": 9,
+        "outline_samples": 219,
+        "maximum_native_station_recovery_residual": 3.7471670175149906e-13
+      }
+    },
+    {
+      "id": "curvature_sampling_holdout/quartic-wave",
+      "before": {
+        "id": "curvature_sampling_holdout/quartic-wave",
+        "requested_settings_applied": true,
+        "requested_sample_density": 2,
+        "observed_sample_density": 2,
+        "sources_unchanged": true,
+        "vertex_counts": [
+          [
+            297
+          ],
+          [
+            149
+          ]
+        ],
+        "unordered_reversible_vertex_sequence_error": null,
+        "vertex_sequences_within_1e_minus_6": false,
+        "vertex_to_polyline_distances": [
+          0.003468257585975113,
+          4.25566526668886e-15
+        ],
+        "displayed_hairs": 12,
+        "outline_samples": 300,
+        "maximum_native_station_recovery_residual": 1.8604139499850033e-12
+      },
+      "after": {
+        "id": "curvature_sampling_holdout/quartic-wave",
+        "requested_settings_applied": true,
+        "requested_sample_density": 2,
+        "observed_sample_density": 2,
+        "sources_unchanged": true,
+        "vertex_counts": [
+          [
+            149
+          ],
+          [
+            149
+          ]
+        ],
+        "unordered_reversible_vertex_sequence_error": 4.869818370658876e-15,
+        "vertex_sequences_within_1e_minus_6": true,
+        "vertex_to_polyline_distances": [
+          4.279637828393119e-15,
+          4.549888343078117e-15
+        ],
+        "displayed_hairs": 6,
+        "outline_samples": 150,
+        "maximum_native_station_recovery_residual": 1.8604139499850033e-12
+      }
+    },
+    {
+      "id": "curvature_sampling_holdout/quadratic-tight",
+      "before": {
+        "id": "curvature_sampling_holdout/quadratic-tight",
+        "requested_settings_applied": true,
+        "requested_sample_density": 2,
+        "observed_sample_density": 2,
+        "sources_unchanged": true,
+        "vertex_counts": [
+          [
+            141
+          ],
+          [
+            211
+          ]
+        ],
+        "unordered_reversible_vertex_sequence_error": null,
+        "vertex_sequences_within_1e_minus_6": false,
+        "vertex_to_polyline_distances": [
+          6.6547469995037766e-15,
+          0.003801645931162705
+        ],
+        "displayed_hairs": 6,
+        "outline_samples": 142,
+        "maximum_native_station_recovery_residual": 6.696505771163867e-12
+      },
+      "after": {
+        "id": "curvature_sampling_holdout/quadratic-tight",
+        "requested_settings_applied": true,
+        "requested_sample_density": 2,
+        "observed_sample_density": 2,
+        "sources_unchanged": true,
+        "vertex_counts": [
+          [
+            211
+          ],
+          [
+            211
+          ]
+        ],
+        "unordered_reversible_vertex_sequence_error": 1.1546319456101628e-14,
+        "vertex_sequences_within_1e_minus_6": true,
+        "vertex_to_polyline_distances": [
+          7.832520654985726e-15,
+          7.438730520217548e-15
+        ],
+        "displayed_hairs": 9,
+        "outline_samples": 213,
+        "maximum_native_station_recovery_residual": 6.696505771163867e-12
+      }
+    }
+  ],
+  "remaining_subdivision_cases": [
+    {
+      "id": "curvature_sampling_stress/random-degree-3-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          73
+        ],
+        [
+          145
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": null,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        1.0962454445035556e-14,
+        0.0022554681144354083
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 73,
+      "maximum_native_station_recovery_residual": 6.505112668497046e-13
+    },
+    {
+      "id": "curvature_sampling_stress/random-degree-5-2",
+      "requested_settings_applied": true,
+      "requested_sample_density": 2,
+      "observed_sample_density": 2,
+      "sources_unchanged": true,
+      "vertex_counts": [
+        [
+          77
+        ],
+        [
+          153
+        ]
+      ],
+      "unordered_reversible_vertex_sequence_error": null,
+      "vertex_sequences_within_1e_minus_6": false,
+      "vertex_to_polyline_distances": [
+        7.167466170793318e-15,
+        0.006656072947065821
+      ],
+      "displayed_hairs": 3,
+      "outline_samples": 77,
+      "maximum_native_station_recovery_residual": 1.864771978014175e-12
+    }
+  ],
+  "limits": [
+    "All 41 original settings-applied rows now match unordered reversible vertex sequences within 1e-6. The prior spatial cubic, quartic wave and tight quadratic differences are resolved. The expanded comparison matches 67 of 69 settings-applied rows. Three original ineffective SampleDensity requests remain separate failed-application rows and cannot qualify a match.",
+    "Two new randomized weighted curves remain mismatched: degree 3 has 73 local vertices versus 145 native, and degree 5 has 77 versus 153. Their worst bidirectional vertex-to-polyline diagnostic distances are about 0.00226 and 0.00666 model units. These fresh counterexamples are retained. Neither full native subdivision nor native hair placement is qualified.",
+    "The ten existing extraction cases still agree in status, counts, attributes, selection, source retention, endpoint sets and both vertex-distance probes within 1e-6. The existing extraction Rust oracle test compares actual vertex sequences. Native nested-script undo remains unqualified; local undo/redo and flat no-result behavior remain covered.",
+    "The new stress fixtures intentionally include nonplanar and rational curves and two curves whose interior turns are hidden by endpoint/midpoint tangents. The endpoint-only hypothesis was rejected by those captures. The final implementation tests all outline tangent stations, but unobserved turns or singularities between stations can remain. No continuous source-curvature, denominator, global-distance, sanitizer or performance certificate is claimed.",
+    "The new 21-case Rust regression compares actual native output vertices, allowing reversal. Broader Python comparison permits component reordering and reversal, retaining both strict vertex-sequence errors and bidirectional vertex-to-other-polyline diagnostics. Native ClosestPoint station recovery can choose a wrong branch; recovered parameters and returned NURBS/outline geometry never enter local producer recipes.",
+    "The new native captures use unchanged producer sources from the base commit, pinned below. Prior captures retain their original provenance limits. The comparator adds optional capture groups and preserves its default three-group behavior and all old response artifacts. Source recipes are the sole local geometry inputs.",
+    "Existing usd-brep exact trimming and robust point-direction/curvature APIs are reused. No vendor source, new C ABI, Wine/FEX/license configuration or launch configuration changed. Source model geometry, graph caches and current-layer extraction policies remain covered by existing portable/native command and viewport regressions.",
+    "Historical nonhash metadata and original hash values are preserved; 6 affected entries in 1 baseline-valid record were moved to immutable Git references. The pre-existing 69 unverifiable historical records remain untouched."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-geometry --lib curvature",
+      "passed": true,
+      "log": "docs/curvature-chord-geometry.log",
+      "tests": 38
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-chord-command.log",
+      "tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-chord-ui.log",
+      "tests": 6
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --lib curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-chord-native-command.log",
+      "tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib curvature_graph",
+      "passed": true,
+      "log": "docs/curvature-chord-oracle.log",
+      "tests": 3
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/curvature_chord_validation.json tools/rhino_oracle/observations/curvature_chord_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/curvature-chord-export.log"
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/extract_curvature_graph.json tools/rhino_oracle/observations/extract_curvature_graph_chord_viboceros_20261016.json",
+      "passed": true,
+      "log": "docs/curvature-chord-extraction-export.log"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "log": "docs/curvature-chord-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "log": "docs/curvature-chord-fmt.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_curvature_chord tools.rhino_oracle.test_curvature_sampling tools.rhino_oracle.test_extract_curvature_graph tools.rhino_oracle.test_curvature_graph tools.rhino_oracle.test_curve_deviation tools.rhino_oracle.test_curve_deviation_subcurves tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "log": "docs/curvature-chord-python.log",
+      "tests": 52
+    }
+  ],
+  "preserved_historical_records": [
+    "docs/curvature-sampling-validation.json"
+  ],
+  "native_producer_git_sha256": {
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/client.py": "d165a599dfd15baed8a6c8e8c0a74118002c1b8731a8585913582bab3290550c",
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/rhino_worker.py": "2dd01b8fe3f1a4aba79eb4d7a717453e4f7df4838eb80ae395c9db6fd9cfe4ba",
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/structural_sdk.py": "a2bc494ba20edd9b571e0719ff7a77a4dd40e5ff34e36fbea79fae4d65f5568e",
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/curvature_sampling_probe.py": "2997d2ed4705d3bae382f240359bf71c62654ce36204d320d73963b9f7a81a77",
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/curvature_graph_probe.py": "0cac4228b47a40572b84d1d0758c35c2432165ae5456aabea1a02becacd7f118",
+    "65df6541d94f22dfb64cbb6f46d0f66a71693ab7:tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea"
+  },
+  "sha256": {
+    "crates/viboceros-command/src/curvature_graph.rs": "8905884dffbde4aa05ab1fafa9337724539af203694a3facf2a9c957110a8993",
+    "crates/viboceros-command/src/curvature_graph/extract/tests.rs": "7048572e94f9e2075af837ac78dc4a83d41c31b529e5c4b2d1ac76936f44665d",
+    "crates/viboceros-command/src/curvature_graph/tests.rs": "3e5e20bc957b5fcf04cbda8e7d87b8cfcbcc73e80eb4cabdbca322d9e0909bde",
+    "crates/viboceros-command/src/curve_segments.rs": "8ebc02ab7410317e3354cc633301bc4b7c41c9235d9e89bb2edbff03a10bb7a9",
+    "crates/viboceros-geometry/src/curvature_comb.rs": "b3e4ee6b74d30d12597e8e2c4821ff2ce60fbc3de7129663f02c2d8287d0c80c",
+    "crates/viboceros-geometry/src/curvature_comb/adaptive.rs": "00ba611d65faee65e6459f6c2af30d16b802c9bb4f72a38271968f5b68332abc",
+    "crates/viboceros-geometry/src/curvature_comb/envelopes.rs": "7a21491995e6b9acf95892c9246a0035f78d5ed04591bf07a9731b8bcee1af15",
+    "crates/viboceros-geometry/src/curvature_comb/tests.rs": "be321654354229ac12604f1c437264799b08c39e78aeed5e2e36cb1e77bc0c6e",
+    "crates/viboceros-geometry/src/curvature_comb/tests/chord.rs": "7269bfa717c3be0fd5e411e84dc63fc0c4c01f061de680f09422da3627353e5a",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-oracle/src/curvature_graph.rs": "48ed3b3e5f5146039f885d6dc24643d89703bc3f7271c1f4753f04ebff836d4d",
+    "crates/viboceros-oracle/src/extract_curvature_graph.rs": "21f72c379e584307247e7bf6a28d9f15b57053d7a439d6533a5a212424406f9d",
+    "docs/commands/curvature-graph.md": "f617f4312ddb23b7f648bf07aa47d4e749006cb501c8616e188d7843ad75510c",
+    "docs/commands/extract-curvature-graph.md": "492813ea2ffa97a4b63f271aa094e8a159f08d93c487ee03163bd38625bbce4b",
+    "docs/curvature-chord-clippy.log": "4ee079d5124c1d58c6173398d5a5b974767d3fe4096ab22bddd8094ddb35f1b4",
+    "docs/curvature-chord-command.log": "f9afb4a65c3c947f6153bdfa22b1a930ec51a828e31540309b5a36397048da01",
+    "docs/curvature-chord-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curvature-chord-extraction-export.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curvature-chord-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/curvature-chord-geometry.log": "1eb41516ad098dce865d7dedc6a64b636aa3ddd2c0a95e8edec33bcf4a020cbb",
+    "docs/curvature-chord-native-command.log": "e0359317f9eb7c1cc2fa85e56a96d2c53be11bbda3bb018f2993f41728a260b6",
+    "docs/curvature-chord-oracle.log": "4a739b9e235e3bdbd296dd45ddfbed96e45a962d88767af8e645bca74ba252c0",
+    "docs/curvature-chord-python.log": "38c369ace800e2504e15c4efeef2823c8ede750801d50c7df23d7273f4d6ebcf",
+    "docs/curvature-chord-ui.log": "bfd246a5f9c9688eedd3caf35d3118edec60c9b7c35b7418183f77b5fcef126a",
+    "docs/curvature-sampling-validation.json": "9c1da527c00678cfd6d76b339bd2af8c5d44073bd22ce4ba0904b69f17a410b3",
+    "src/app/tests/curvature_graph.rs": "4bd8d4d2b7273d3cb92bc3fa178bbfc9ec8d094ad635d0023e0fa5e446ae205e",
+    "src/viewport/curvature_graph/tests.rs": "55577301afb77dc2b66a602a8efd9381c3b1669291b25caf2efe748bfa9064a3",
+    "tools/rhino_oracle/curvature_sampling_comparison.py": "3f66b225f87cc75a808c296c7f3b83d5498349a54282957383acd64cd542dc68",
+    "tools/rhino_oracle/fixtures/curvature_chord_validation.json": "ea74ef494662665a279dbd3fe20ea24ca1cc770f4d017da37fe0d80887df1d28",
+    "tools/rhino_oracle/fixtures/curvature_sampling.json": "a9a9c3eb533a6b80bd41a9ad08d2c1e2faea1780e0d8ff8afa25351f3eb4abe0",
+    "tools/rhino_oracle/fixtures/curvature_sampling_angles.json": "acd9a5fb4af65e7d7711617335ed60d01c10306713c9c7c653d75b7442821772",
+    "tools/rhino_oracle/fixtures/curvature_sampling_controls.json": "d7c3bb24dbc29da1d2e163f65de878bd4162e1e0fd3846421aad2cda94699c9b",
+    "tools/rhino_oracle/fixtures/curvature_sampling_holdout.json": "b97ae03f5ffbb91a07d9661dd83b9ae324becdb12519f41dc34322a4b945c757",
+    "tools/rhino_oracle/fixtures/curvature_sampling_stress.json": "ab90e8f304eaf27fec35cea1bab1941afb92d2452f3c14ddf89f75f4048a0a4c",
+    "tools/rhino_oracle/fixtures/extract_curvature_graph.json": "b70e1a37d06366dbcabac661fe4842e37351241a1d1ea9cb04c5d1c2dd4b227e",
+    "tools/rhino_oracle/observations/curvature_chord_comparison_20261016.json": "a32350b2a848d0ec9984336db7dd119183009831a9d83ff2676be56df5451ab4",
+    "tools/rhino_oracle/observations/curvature_chord_viboceros_20261016.json": "a81cafa46e18266e478acaa2695a0a681e986861697483949133ef9c7086a960",
+    "tools/rhino_oracle/observations/curvature_sampling_angles_rhino_20261016.json": "d142d497ad9e745506dd99b490307234508cc8c5e2e59f174b607755d3bcf3d5",
+    "tools/rhino_oracle/observations/curvature_sampling_comparison_20261016.json": "2a95a06cdb342a89bfe006abe67dc93866747a8e096a670a10800738ad5174f5",
+    "tools/rhino_oracle/observations/curvature_sampling_controls_rhino_20261016.json": "130115a90d8c7fd0a9e51a0b32e41991771b316bd88d814f4485526ce43ccfa3",
+    "tools/rhino_oracle/observations/curvature_sampling_holdout_rhino_20261016.json": "b4ef08d3b9ba1029193910154dd9874adb7b42a3265603ba6c7b294c42ce549c",
+    "tools/rhino_oracle/observations/curvature_sampling_outlines_rhino_20261016.json": "587afd7f290b100c76d82a1d19c480f415b9dc93f07550948bbf565402e3ee8d",
+    "tools/rhino_oracle/observations/curvature_sampling_stress_rhino_20261016.json": "54aae510cc50eb66caf5dc20b1060eae51cfb37cffeb158b18ffd57b66aa8af9",
+    "tools/rhino_oracle/observations/extract_curvature_graph_chord_comparison_20261016.json": "7e60734d5e432498b7bc8c1ee931495f01a303b4b0ed512be3ab8a37778f1b29",
+    "tools/rhino_oracle/observations/extract_curvature_graph_chord_viboceros_20261016.json": "10af2d1c7640298dc2178dd6353cc7a2e906a17016927ea63986cea465aa713f",
+    "tools/rhino_oracle/observations/extract_curvature_graph_rhino_20261016.json": "2536b2493b43e68c3fa5c2b07ac036c2cf0308bae79d74b2fa466a06377968fe",
+    "tools/rhino_oracle/test_curvature_chord.py": "4301dcbe0aa0c1bb2b7ecc375d6dbdc17eff682ecfc8b4dbd4319d936c98e86c",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

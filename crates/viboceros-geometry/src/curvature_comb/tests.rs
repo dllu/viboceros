@@ -1,6 +1,7 @@
 use super::*;
 use crate::{Circle3, CurveRef, Tolerance};
 mod adaptive;
+mod chord;
 fn p(x: Real, y: Real) -> Point3 {
     Point3::try_new(x, y, 0.).unwrap()
 }

@@ -29,11 +29,11 @@ seam; discontinuous components stay open. Consecutive exact duplicate vertices
 are removed, while short representable segments retain their geometry.
 
 The command extracts Viboceros's current sampled display. The
-[updated extraction comparison](../../tools/rhino_oracle/observations/extract_curvature_graph_sampling_comparison_20261016.json)
+[updated extraction comparison](../../tools/rhino_oracle/observations/extract_curvature_graph_chord_comparison_20261016.json)
 agrees with Rhino in all ten retained cases, including output counts, attributes,
 selection and outline geometry within 1e-6. Native object order and orientation
 can differ. A regression test compares the actual vertex sequences while allowing
-those differences. The broader [sampling checks](../curvature-sampling-validation.json)
+those differences. The broader [sampling checks](../curvature-chord-validation.json)
 still contain curves with different subdivision patterns; complete native
 polyline parity remains open. The retained vertex-to-polyline distances are
 sampled diagnostics, not continuous source-curvature certificates.
