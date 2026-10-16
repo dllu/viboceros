@@ -1,0 +1,9 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 13.20s
+     Running tests/network_family_fit.rs (target/release/deps/network_family_fit-3ea76a207786a9a6)
+
+running 2 tests
+test family_fits_lines_in_shared_c2_basis_and_preserves_independent_domains ... ok
+test local_clock_lines_keep_fixed_contacts_and_shared_nonbinary_knots ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.02s

@@ -85,3 +85,9 @@ The [validation record](shared-gordon-curve-fit-validation.json) retains 143
 distinct Rust tests, native sanitizer/compiler checks, complete original-image
 evidence and the failed Rhino interior comparison. No new licensed capture was
 needed for this milestone.
+
+[Local transitions](local-gordon-curve-clock.md) add an explicit clock policy
+that keeps affine arc-length behavior between contact transition windows. The
+existing entry point retains its whole-interval default. The local fixture
+retains C2 continuity and all original-image proofs, with a smaller but still
+failing Rhino query-output difference at the same 123×123 control count.

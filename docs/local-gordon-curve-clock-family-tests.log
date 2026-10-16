@@ -1,0 +1,18 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 13.99s
+     Running tests/network_family_fit.rs (target/release/deps/network_family_fit-3ea76a207786a9a6)
+
+running 6 tests
+test family_fit_rejects_invalid_layouts_before_native_fitting ... ok
+test family_fits_lines_in_shared_c2_basis_and_preserves_independent_domains ... ok
+test family_fit_rejects_a_geometrically_inadequate_shared_basis ... ok
+test family_fit_handles_a_remote_negative_weight_arc_without_mutating_its_domain ... ok
+test geometric_family_fits_feed_a_c2_surface_with_complete_original_images has been running for over 60 seconds
+test local_clock_family_fits_feed_a_c2_surface_with_complete_original_images has been running for over 60 seconds
+test geometric_family_fits_feed_a_c2_surface_with_complete_original_images ... ok
+test local_clock_family_fits_feed_a_c2_surface_with_complete_original_images ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 161.79s

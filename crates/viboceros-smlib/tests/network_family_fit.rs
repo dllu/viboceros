@@ -1,6 +1,9 @@
 #![cfg(feature = "native")]
 use viboceros_geometry::{CurveFitStation, NurbsCurve, Point3, Tolerance};
-use viboceros_smlib::{GordonCurveFitInput, fit_gordon_curve_family};
+use viboceros_smlib::{
+    GordonCurveFitClock, GordonCurveFitInput, fit_gordon_curve_family,
+    fit_gordon_curve_family_with_clock,
+};
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
@@ -20,6 +23,17 @@ fn pins(source: &NurbsCurve, middle: f64) -> Vec<CurveFitStation> {
 }
 #[test]
 fn family_fits_lines_in_shared_c2_basis_and_preserves_independent_domains() {
+    verify_line_family(None);
+}
+#[test]
+fn local_clock_lines_keep_fixed_contacts_and_shared_nonbinary_knots() {
+    for transition_fraction in [0.1, 0.25, 0.5] {
+        verify_line_family(Some(GordonCurveFitClock::Local {
+            transition_fraction,
+        }));
+    }
+}
+fn verify_line_family(policy: Option<GordonCurveFitClock>) {
     let sources = [
         NurbsCurve::try_new(
             1,
@@ -41,7 +55,13 @@ fn family_fits_lines_in_shared_c2_basis_and_preserves_independent_domains() {
         .zip(&stations)
         .map(|(curve, stations)| GordonCurveFitInput { curve, stations })
         .collect::<Vec<_>>();
-    let result = fit_gordon_curve_family(&requests, &[4, 4], 1e-7, Tolerance::DEFAULT).unwrap();
+    let result = match policy {
+        None => fit_gordon_curve_family(&requests, &[4, 4], 1e-7, Tolerance::DEFAULT),
+        Some(policy) => {
+            fit_gordon_curve_family_with_clock(&requests, &[4, 4], 1e-7, Tolerance::DEFAULT, policy)
+        }
+    }
+    .unwrap();
     assert_eq!(result.curves.len(), 2);
     assert!(result.maximum_sampled_point_distance <= 1e-7);
     assert_eq!(result.curves[0].knots(), result.curves[1].knots());
@@ -79,6 +99,27 @@ fn family_fit_rejects_invalid_layouts_before_native_fitting() {
     }
     for tolerance in [0., -1., f64::NAN] {
         assert!(fit_gordon_curve_family(&request, &[4, 4], tolerance, Tolerance::DEFAULT).is_err());
+    }
+    for transition_fraction in [
+        0.,
+        -1.,
+        0.5_f64.next_up(),
+        f64::NAN,
+        f64::INFINITY,
+        f64::from_bits(1),
+    ] {
+        assert!(
+            fit_gordon_curve_family_with_clock(
+                &request,
+                &[4, 4],
+                1e-7,
+                Tolerance::DEFAULT,
+                GordonCurveFitClock::Local {
+                    transition_fraction
+                }
+            )
+            .is_err()
+        );
     }
     let mut bad = stations.clone();
     bad[1].point = p(50., 1., 0.);
@@ -157,6 +198,15 @@ fn network() -> [Vec<NurbsCurve>; 2] {
 }
 #[test]
 fn geometric_family_fits_feed_a_c2_surface_with_complete_original_images() {
+    verify_complete_original_images(GordonCurveFitClock::WholeInterval);
+}
+#[test]
+fn local_clock_family_fits_feed_a_c2_surface_with_complete_original_images() {
+    verify_complete_original_images(GordonCurveFitClock::Local {
+        transition_fraction: 0.5,
+    });
+}
+fn verify_complete_original_images(policy: GordonCurveFitClock) {
     let original = network();
     let before = original.clone();
     let mut fitted = vec![];
@@ -167,8 +217,14 @@ fn geometric_family_fits_feed_a_c2_surface_with_complete_original_images() {
             .zip(&stations)
             .map(|(curve, stations)| GordonCurveFitInput { curve, stations })
             .collect::<Vec<_>>();
-        let result =
-            fit_gordon_curve_family(&requests, &[60, 60], 1e-7, Tolerance::DEFAULT).unwrap();
+        let result = fit_gordon_curve_family_with_clock(
+            &requests,
+            &[60, 60],
+            1e-7,
+            Tolerance::DEFAULT,
+            policy,
+        )
+        .unwrap();
         assert!(
             result
                 .curves

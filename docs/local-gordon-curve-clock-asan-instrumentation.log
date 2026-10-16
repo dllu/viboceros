@@ -1,0 +1,3 @@
+SMLib: AddressSanitizer and frame pointers enabled (target/release/build/viboceros-smlib-d4f77638f5302455/out/build/CMakeFiles/SMLib.dir/flags.make)
+SM_API: AddressSanitizer and frame pointers enabled (target/release/build/viboceros-smlib-d4f77638f5302455/out/build/CMakeFiles/SM_API.dir/flags.make)
+viboceros_smlib: AddressSanitizer and frame pointers enabled (target/release/build/viboceros-smlib-d4f77638f5302455/out/build/CMakeFiles/viboceros_smlib.dir/flags.make)

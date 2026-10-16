@@ -117,6 +117,9 @@ and isolate Gordon construction from the unfinished family-fitting policy.
 sources to one simple-knot basis using native constrained and geometric fits.
 Its smooth arc-length clock retains prescribed contacts; complete pre-fit
 original-image proofs remain a separate downstream requirement.
+The [local transition policy](local-gordon-curve-clock.md) now reduces the C2
+candidate's interior query mismatch while retaining those complete proofs and
+the same control count. It remains experimental.
 
 ## Rhino comparison and remaining work
 

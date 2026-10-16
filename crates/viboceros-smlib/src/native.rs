@@ -81,8 +81,8 @@ mod two_rail_sweep;
 pub use two_rail_sweep::two_rail_sweep_surface;
 mod network_surface;
 pub use network_surface::{
-    GordonCurveFamilyFit, GordonCurveFitInput, fit_gordon_curve_family, gordon_network_surface,
-    prepared_gordon_surface,
+    GordonCurveFamilyFit, GordonCurveFitClock, GordonCurveFitInput, fit_gordon_curve_family,
+    fit_gordon_curve_family_with_clock, gordon_network_surface, prepared_gordon_surface,
 };
 mod rail_revolve;
 pub use rail_revolve::{rail_revolved_brep, rail_revolved_surface};

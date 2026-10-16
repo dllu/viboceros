@@ -1,7 +1,10 @@
 //! Independent shared-basis family fitting on one retained network fixture.
 use serde_json::{Value, json};
 use viboceros_geometry::{CurveFitStation, NurbsCurve, Point2, Point3, Tolerance, WeightedPoint3};
-use viboceros_smlib::{GordonCurveFitInput, fit_gordon_curve_family, prepared_gordon_surface};
+use viboceros_smlib::{
+    GordonCurveFitClock, GordonCurveFitInput, fit_gordon_curve_family_with_clock,
+    prepared_gordon_surface,
+};
 fn numbers(value: &Value) -> Vec<f64> {
     value
         .as_array()
@@ -19,6 +22,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map(|s| s.parse::<usize>())
         .transpose()?
         .unwrap_or(60);
+    let transition = std::env::args()
+        .nth(2)
+        .map(|s| s.parse::<f64>())
+        .transpose()?;
+    let policy = transition.map_or(GordonCurveFitClock::WholeInterval, |transition_fraction| {
+        GordonCurveFitClock::Local {
+            transition_fraction,
+        }
+    });
     let request: Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/network_surface.json"
     ))?;
@@ -97,7 +109,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .zip(&stations)
             .map(|(curve, stations)| GordonCurveFitInput { curve, stations })
             .collect::<Vec<_>>();
-        let result = fit_gordon_curve_family(&inputs, &[spans, spans], 1e-7, numerical)?;
+        let result =
+            fit_gordon_curve_family_with_clock(&inputs, &[spans, spans], 1e-7, numerical, policy)?;
         fit_distances.push(result.maximum_sampled_point_distance);
         fitted.push(result.curves);
     }
@@ -149,11 +162,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "control_points":c.control_points().iter().map(|p|json!({"point":p.point().to_array(),"weight":p.weight()})).collect::<Vec<_>>()
     })).collect::<Vec<_>>()).collect::<Vec<_>>();
     assert_eq!(original, before);
-    let output = json!({"schema_version":1,"engine":"viboceros","fixture":"biquadratic_network",
+    let output = json!({"schema_version":2,"engine":"viboceros","fixture":"biquadratic_network",
         "reference_derived_inputs":false,"new_licensed_rhino_captures":0,
         "qualification":"Experimental shared-basis family fitting; not a qualified NetworkSrf command.",
         "comparison":"Returned closest-point outputs, not continuous surface separation.",
         "uniform_spans_per_network_interval":spans,"common_stations":common,
+        "clock_transition_fraction":transition,"clock_policy":if transition.is_some(){"local"}else{"whole_interval"},
         "curve_fit_tolerance":1e-7,"maximum_sampled_point_distances":fit_distances,
         "fitted_curves":definitions,"surface_degree":[surface.degree_u(),surface.degree_v()],
         "surface_control_counts":[surface.control_point_count_u(),surface.control_point_count_v()],

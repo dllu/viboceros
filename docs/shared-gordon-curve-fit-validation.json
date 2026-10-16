@@ -150,7 +150,6 @@
     "crates/viboceros-geometry/src/surface_pullback/linear/tests.rs": "ce4c594d91cac8ec51738f719c51adfcda27a340739332d44789d080dc021421",
     "crates/viboceros-smlib/Cargo.toml": "925acc648ea65f50b1417b4c55e1189b730f0aa9f53b958c17cf534e0242d5b5",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "crates/viboceros-smlib/examples/network_family_parameterization.rs": "9244e08f0406b8916f4a991f1a10df08236b4b65d1ead4b21c00e53aa6e79191",
     "crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
     "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
@@ -159,17 +158,10 @@
     "crates/viboceros-smlib/native/bridge.h": "62988da3caef22c53ea90b84aafb58ba977339491cf464bd306d45e2739646f8",
     "crates/viboceros-smlib/native/network_fit.cpp": "6ade0159a18a4040809bdda6e9ea1b46fd4cf2af7d496a71fd53513426dadbe5",
     "crates/viboceros-smlib/native/network_fit.h": "77e7d77bc252a3cfee06696ebec046f751ba9b10bc15515f2f6bd4c9a698cb50",
-    "crates/viboceros-smlib/src/lib.rs": "0fb10541ddc3b495ea65945d2ab144c0119abdf07047eacc2a40f766054419a9",
-    "crates/viboceros-smlib/src/native.rs": "9f19822ab5b2019b54fbaa8d3e7afb4b0235f4011cce1af295088ef393d50235",
-    "crates/viboceros-smlib/src/native/network_surface.rs": "add1be50303519ea15c6a4356582bd86fba76771e2df181a3172a5f590c007f8",
-    "crates/viboceros-smlib/src/native/network_surface/fitting.rs": "5709924db47c848f226cb0ca50706857bbc767fbaa2633ed5e2a5725c230a113",
-    "crates/viboceros-smlib/src/native/network_surface/fitting/clock.rs": "3703adc365f8426e24932ae23bc46aed2fc48fb8eebdf7f371aa5c68593bdcd7",
     "crates/viboceros-smlib/src/native/network_surface/prepared.rs": "7ab5baf29004873e3b6ad9d4de91c783dcfc302499ca3c5dea927f51cca10ce0",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
-    "crates/viboceros-smlib/tests/network_family_fit.rs": "6d935050496d210fbcd2aac35d110f3c19d0189793c65bb9520a727a943b6760",
     "docs/common-parameter-curve-fit.md": "c3d07843edbb84d2fc9ad4a6a8098500ea26e3039a9d62acdc68dc18f4ff3a57",
-    "docs/prepared-gordon-families.md": "1d6b7e512a900286135e415c04125dba64d7ad8d00ff3080769341bcc400154f",
-    "docs/shared-gordon-curve-fit.md": "246d152dd5df7444438319f359cb126d114f92b1853ff0b4b469ba9f8d1e396a"
+    "docs/prepared-gordon-families.md": "1d6b7e512a900286135e415c04125dba64d7ad8d00ff3080769341bcc400154f"
   },
   "input_sha256": {
     "tools/rhino_oracle/fixtures/network_surface.json": "8c5eb7601fd8e8172bc3580b2451e73644c242a680b410a2c1bb459139be4605",
@@ -189,6 +181,14 @@
   },
   "source_git_sha256": {
     "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
-    "23a970097bf8c88b7db94af4ae1e8837173edd3e:docs/smlib-gordon-network.md": "fdc376f54b94219d0177bb57839a4fa9c1a23e65d2f71ba871ac07593f02e3da"
+    "23a970097bf8c88b7db94af4ae1e8837173edd3e:docs/smlib-gordon-network.md": "fdc376f54b94219d0177bb57839a4fa9c1a23e65d2f71ba871ac07593f02e3da",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/examples/network_family_parameterization.rs": "9244e08f0406b8916f4a991f1a10df08236b4b65d1ead4b21c00e53aa6e79191",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/lib.rs": "0fb10541ddc3b495ea65945d2ab144c0119abdf07047eacc2a40f766054419a9",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native.rs": "9f19822ab5b2019b54fbaa8d3e7afb4b0235f4011cce1af295088ef393d50235",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native/network_surface.rs": "add1be50303519ea15c6a4356582bd86fba76771e2df181a3172a5f590c007f8",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native/network_surface/fitting.rs": "5709924db47c848f226cb0ca50706857bbc767fbaa2633ed5e2a5725c230a113",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/src/native/network_surface/fitting/clock.rs": "3703adc365f8426e24932ae23bc46aed2fc48fb8eebdf7f371aa5c68593bdcd7",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:crates/viboceros-smlib/tests/network_family_fit.rs": "6d935050496d210fbcd2aac35d110f3c19d0189793c65bb9520a727a943b6760",
+    "1ca118e095bf593e7cf772eb93faf8ecae7a948f:docs/shared-gordon-curve-fit.md": "246d152dd5df7444438319f359cb126d114f92b1853ff0b4b469ba9f8d1e396a"
   }
 }

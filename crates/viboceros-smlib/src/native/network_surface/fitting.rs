@@ -20,6 +20,19 @@ pub struct GordonCurveFamilyFit {
     pub maximum_sampled_point_distance: f64,
 }
 
+/// Arc-length parameter proposals for fitting a common cubic basis. Neither
+/// policy qualifies Rhino NetworkSrf interior fitting or continuous distance.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum GordonCurveFitClock {
+    /// One smooth quintic over each complete contact interval.
+    WholeInterval,
+    /// Keep the affine arc-length clock outside endpoint transition windows.
+    /// Each window occupies this fraction of source arc length between contacts,
+    /// in (0, 0.5].
+    /// Windows that collapse in the stored chart are declined.
+    Local { transition_fraction: f64 },
+}
+
 unsafe extern "C" {
     fn vb_network_curve_fit(
         points: *const f64,
@@ -60,6 +73,33 @@ pub fn fit_gordon_curve_family(
     fit_tolerance: f64,
     numerical: Tolerance,
 ) -> Result<GordonCurveFamilyFit, Error> {
+    fit_gordon_curve_family_with_clock(
+        inputs,
+        interval_spans,
+        fit_tolerance,
+        numerical,
+        GordonCurveFitClock::WholeInterval,
+    )
+}
+
+/// Fit the same shared simple cubic basis with an explicit arc-length clock.
+/// Source, control, sample, constraint and tolerance limits are identical to
+/// [`fit_gordon_curve_family`]. Local transitions change only the parameter
+/// proposals; all existing admission checks and native fits still run.
+pub fn fit_gordon_curve_family_with_clock(
+    inputs: &[GordonCurveFitInput<'_>],
+    interval_spans: &[usize],
+    fit_tolerance: f64,
+    numerical: Tolerance,
+    policy: GordonCurveFitClock,
+) -> Result<GordonCurveFamilyFit, Error> {
+    if let GordonCurveFitClock::Local {
+        transition_fraction: w,
+    } = policy
+        && (!w.is_finite() || w <= 0. || w > 0.5 || 1. - w == 1.)
+    {
+        return Err(invalid("invalid local clock transition fraction"));
+    }
     if !(1..=32).contains(&inputs.len())
         || !fit_tolerance.is_finite()
         || fit_tolerance <= 0.
@@ -141,7 +181,7 @@ pub fn fit_gordon_curve_family(
             lengths.push(piece.length(local_numerical)?);
             pieces.push(piece);
         }
-        let clock = clock::Clock::new(stations, &lengths)?;
+        let clock = clock::Clock::new(stations, &lengths, policy)?;
         for (j, &spans) in interval_spans.iter().enumerate() {
             let count = spans * 8;
             let samples = CurveRef::NurbsCurve(&pieces[j]).sample_equal_length_points(
@@ -154,7 +194,7 @@ pub fn fit_gordon_curve_family(
                 let parameter = if i == 0 {
                     stations[j].fit_parameter
                 } else {
-                    clock.pieces[j].evaluate(i as f64 / count as f64)?.x()
+                    clock.value(j, i as f64 / count as f64)?
                 };
                 parameters.push(parameter);
                 let p = if i == 0 {
