@@ -1,0 +1,774 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "reference_derived_inputs": false,
+  "public_sdk_recipes": 14,
+  "paired_query_locations_certified": 65,
+  "all_recorded_distances_and_derived_statistics_within_1e_minus_6": true,
+  "method": "Exact binary-rational squared Euclidean differences admit every paired closest location at 1e-6. Exact binary-rational scalar differences admit distances and independently derived population statistics. Target indices and point counts match. This is a finite SDK closest-point corpus, not native command/panel or continuous geometry qualification.",
+  "native_command_captured": false,
+  "native_panel_statistics_captured": false,
+  "performance_qualified": false,
+  "maximum_paired_location_distance_diagnostic": 5.967981396497829e-10,
+  "cases": [
+    {
+      "id": "line",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "0"
+      }
+    },
+    {
+      "id": "arc",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "5/81129638414606681695789005144064",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "1/81129638414606681695789005144064",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "5/40564819207303340847894502572032",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "0"
+      }
+    },
+    {
+      "id": "circle",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "5/81129638414606681695789005144064",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/4503599627370496",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "1/2251799813685248",
+        "median": "1/2251799813685248",
+        "standard_deviation": "3/9007199254740992",
+        "minimum": "0",
+        "maximum": "1/2251799813685248"
+      }
+    },
+    {
+      "id": "ellipse",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "153549593/20282409603651670423947251286016",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "1/158456325028528675187087900672",
+          "exact_distance_difference": "1/1125899906842624",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "25/81129638414606681695789005144064",
+          "exact_distance_difference": "5/18014398509481984",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "1/20282409603651670423947251286016",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "445/81129638414606681695789005144064",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "1/2251799813685248",
+        "minimum": "5/18014398509481984",
+        "maximum": "1/1125899906842624"
+      }
+    },
+    {
+      "id": "polyline",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "1/2251799813685248",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "1/2251799813685248"
+      }
+    },
+    {
+      "id": "polycurve",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "1/2251799813685248",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "1/2251799813685248"
+      }
+    },
+    {
+      "id": "rational_curve",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "28415025277/324518553658426726783156020576256",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "28895782636025/81129638414606681695789005144064",
+          "exact_distance_difference": "1/1125899906842624",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "31925/20282409603651670423947251286016",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "1/2251799813685248",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "1/1125899906842624"
+      }
+    },
+    {
+      "id": "surface",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "9/324518553658426726783156020576256",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "1/5070602400912917605986812821504",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "9/20282409603651670423947251286016",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "9/1298074214633706907132624082305024",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "1/2251799813685248"
+      }
+    },
+    {
+      "id": "box_brep",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "1/1298074214633706907132624082305024",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "0",
+        "minimum": "0",
+        "maximum": "0"
+      }
+    },
+    {
+      "id": "mesh_brep",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "6260002964090022291786142664881/411376139330301510538742295639337626245683966408394965837152256",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "1/2251799813685248"
+      }
+    },
+    {
+      "id": "mesh",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "1/324518553658426726783156020576256",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "1/2251799813685248",
+        "minimum": "0",
+        "maximum": "0"
+      }
+    },
+    {
+      "id": "multiple-targets",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "1/81129638414606681695789005144064",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "1/2251799813685248",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 3,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 4,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "1/2251799813685248",
+        "median": "0",
+        "standard_deviation": "1/4503599627370496",
+        "minimum": "0",
+        "maximum": "1/2251799813685248"
+      }
+    },
+    {
+      "id": "duplicates-and-zero",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 2,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "0",
+        "minimum": "0",
+        "maximum": "0"
+      }
+    },
+    {
+      "id": "remote-line",
+      "samples": [
+        {
+          "index": 0,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        },
+        {
+          "index": 1,
+          "target_index": 0,
+          "exact_squared_location_difference": "0",
+          "exact_distance_difference": "0",
+          "paired_location_within_1e_minus_6": true
+        }
+      ],
+      "exact_derived_statistics_differences": {
+        "mean": "0",
+        "median": "0",
+        "standard_deviation": "0",
+        "minimum": "0",
+        "maximum": "0"
+      }
+    }
+  ],
+  "raw_protocol_comparison": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 0,
+    "passed": true,
+    "operations": [
+      {
+        "id": "line",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-16,
+        "viboceros_ns_per_iteration": 1377988.0,
+        "rhino_ns_per_iteration": 26473999.0,
+        "rhino_to_viboceros_ratio": 19.212067884480852,
+        "differences": []
+      },
+      {
+        "id": "arc",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 1075235.0,
+        "rhino_ns_per_iteration": 2525330.0,
+        "rhino_to_viboceros_ratio": 2.3486307644375417,
+        "differences": []
+      },
+      {
+        "id": "circle",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 1087955.0,
+        "rhino_ns_per_iteration": 5691528.0,
+        "rhino_to_viboceros_ratio": 5.231400195780156,
+        "differences": []
+      },
+      {
+        "id": "ellipse",
+        "passed": true,
+        "max_absolute_error": 2.658318010162475e-12,
+        "viboceros_ns_per_iteration": 1912102.0,
+        "rhino_ns_per_iteration": 2433777.0,
+        "rhino_to_viboceros_ratio": 1.2728280185889664,
+        "differences": []
+      },
+      {
+        "id": "polyline",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 1161219.0,
+        "rhino_ns_per_iteration": 946045.0,
+        "rhino_to_viboceros_ratio": 0.8146998972631347,
+        "differences": []
+      },
+      {
+        "id": "polycurve",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 1229556.0,
+        "rhino_ns_per_iteration": 495911.0,
+        "rhino_to_viboceros_ratio": 0.4033252653803487,
+        "differences": []
+      },
+      {
+        "id": "rational_curve",
+        "passed": true,
+        "max_absolute_error": 5.169745742605869e-10,
+        "viboceros_ns_per_iteration": 17145621.0,
+        "rhino_ns_per_iteration": 366211.0,
+        "rhino_to_viboceros_ratio": 0.021358864750363957,
+        "differences": []
+      },
+      {
+        "id": "surface",
+        "passed": true,
+        "max_absolute_error": 6.661338147750939e-16,
+        "viboceros_ns_per_iteration": 1311556.0,
+        "rhino_ns_per_iteration": 526428.0,
+        "rhino_to_viboceros_ratio": 0.401376685402682,
+        "differences": []
+      },
+      {
+        "id": "box_brep",
+        "passed": true,
+        "max_absolute_error": 2.7755575615628914e-17,
+        "viboceros_ns_per_iteration": 12925623.0,
+        "rhino_ns_per_iteration": 701904.0,
+        "rhino_to_viboceros_ratio": 0.054303301279946044,
+        "differences": []
+      },
+      {
+        "id": "mesh_brep",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 6487492.0,
+        "rhino_ns_per_iteration": 518799.0,
+        "rhino_to_viboceros_ratio": 0.0799691159542085,
+        "differences": []
+      },
+      {
+        "id": "mesh",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 1163172.0,
+        "rhino_ns_per_iteration": 411987.0,
+        "rhino_to_viboceros_ratio": 0.3541926731386244,
+        "differences": []
+      },
+      {
+        "id": "multiple-targets",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 1132275.0,
+        "rhino_ns_per_iteration": 312805.0,
+        "rhino_to_viboceros_ratio": 0.27626239208672804,
+        "differences": []
+      },
+      {
+        "id": "duplicates-and-zero",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 957379.0,
+        "rhino_ns_per_iteration": 175476.0,
+        "rhino_to_viboceros_ratio": 0.1832879141907228,
+        "differences": []
+      },
+      {
+        "id": "remote-line",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 972035.0,
+        "rhino_ns_per_iteration": 267029.0,
+        "rhino_to_viboceros_ratio": 0.2747113015477838,
+        "differences": []
+      }
+    ],
+    "max_absolute_error": 5.169745742605869e-10,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+  }
+}

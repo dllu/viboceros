@@ -1,0 +1,831 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 26473999,
+      "id": "line",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0223748416156684,
+            "point": [
+              0.7,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 4.123105625617661,
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.168595903550972,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.23606797749979,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9219544457292886,
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 4.123105625617661,
+          "mean": 2.494419758802676,
+          "median": 2.23606797749979,
+          "minimum": 0.9219544457292886,
+          "standard_deviation": 1.0834528447951948
+        }
+      }
+    },
+    {
+      "elapsed_ns": 2525330,
+      "id": "arc",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0141612097414687,
+            "point": [
+              0.9191450300180579,
+              0.3939192985791677,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 4.588652099473313,
+            "point": [
+              0.894427190999916,
+              0.44721359549995787,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.1715074670982,
+            "point": [
+              -0.9486832980505138,
+              0.316227766016838,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.0424428695201757,
+            "point": [
+              0.7071067811865476,
+              0.7071067811865475,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 1.2206555615733703,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 4.588652099473313,
+          "mean": 2.4074838414813056,
+          "median": 2.0424428695201757,
+          "minimum": 1.2206555615733703,
+          "standard_deviation": 1.1410257480685693
+        }
+      }
+    },
+    {
+      "elapsed_ns": 5691528,
+      "id": "circle",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.352379807270594,
+            "point": [
+              1.8382900600361158,
+              0.7878385971583354,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.8873456470967023,
+            "point": [
+              1.788854381999832,
+              0.8944271909999157,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 1.1793597243108154,
+            "point": [
+              -1.8973665961010275,
+              0.632455532033676,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.0840215331199485,
+            "point": [
+              1.4142135623730951,
+              1.414213562373095,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 1.536287040844027,
+            "point": [
+              0.6324555320336754,
+              -1.8973665961010278,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.8873456470967023,
+          "mean": 2.2078787505284176,
+          "median": 2.0840215331199485,
+          "minimum": 1.1793597243108154,
+          "standard_deviation": 0.9344214289260374
+        }
+      }
+    },
+    {
+      "elapsed_ns": 2433777,
+      "id": "ellipse",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.56819794571286,
+            "point": [
+              1.1157616044369858,
+              1.856529144166513,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.457076642689726,
+            "point": [
+              2.6530953061302918,
+              0.9335917015220577,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.37677297082076394,
+            "point": [
+              -2.735406075550358,
+              0.8212601703999877,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.175274277850517,
+            "point": [
+              1.2499875374924525,
+              1.8181224938702936,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 1.5594748705605104,
+            "point": [
+              0.2900583208669299,
+              -1.9906298467789156,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.457076642689726,
+          "mean": 2.027359341526876,
+          "median": 2.175274277850517,
+          "minimum": 0.37677297082076394,
+          "standard_deviation": 1.0297405528328099
+        }
+      }
+    },
+    {
+      "elapsed_ns": 946045,
+      "id": "polyline",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0223748416156684,
+            "point": [
+              0.7,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.741657386773941,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.168595903550972,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.1213203435596424,
+            "point": [
+              1.5,
+              0.5,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9219544457292886,
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.741657386773941,
+          "mean": 2.395180584245902,
+          "median": 2.1213203435596424,
+          "minimum": 0.9219544457292886,
+          "standard_deviation": 0.9793415996737076
+        }
+      }
+    },
+    {
+      "elapsed_ns": 495911,
+      "id": "polycurve",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0223748416156684,
+            "point": [
+              0.7,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.741657386773941,
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.168595903550972,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.1213203435596424,
+            "point": [
+              1.5,
+              0.5,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9219544457292886,
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.741657386773941,
+          "mean": 2.395180584245902,
+          "median": 2.1213203435596424,
+          "minimum": 0.9219544457292886,
+          "standard_deviation": 0.9793415996737076
+        }
+      }
+    },
+    {
+      "elapsed_ns": 366211,
+      "id": "rational_curve",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.057128639190823,
+            "point": [
+              0.27900476964054793,
+              0.5335406906594201,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 4.039904129351512,
+            "point": [
+              1.6561924700117898,
+              0.6481894967407748,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.168595903550972,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.0261449005179113,
+            "point": [
+              0.8102341433962792,
+              1.2631578947365878,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9433981132056604,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 4.039904129351512,
+          "mean": 2.447034337163376,
+          "median": 2.057128639190823,
+          "minimum": 0.9433981132056604,
+          "standard_deviation": 1.0628246830161796
+        }
+      }
+    },
+    {
+      "elapsed_ns": 526428,
+      "id": "surface",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0,
+            "point": [
+              0.7,
+              0.30000000000000016,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.6055512754639896,
+            "point": [
+              2.0,
+              2.0000000000000004,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.006659275674582,
+            "point": [
+              0.0,
+              0.9999999999999993,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.0,
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9219544457292886,
+            "point": [
+              0.2000000000000001,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.6055512754639896,
+          "mean": 2.306832999373572,
+          "median": 2.0,
+          "minimum": 0.9219544457292886,
+          "standard_deviation": 0.9254844747488367
+        }
+      }
+    },
+    {
+      "elapsed_ns": 701904,
+      "id": "box_brep",
+      "value": {
+        "samples": [
+          {
+            "distance": 0.3,
+            "point": [
+              0.7,
+              0.0,
+              2.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.0,
+            "point": [
+              2.0,
+              2.0,
+              3.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.0,
+            "point": [
+              0.0,
+              1.0,
+              0.2
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.0,
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.6,
+            "point": [
+              0.2,
+              0.0,
+              0.7
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.0,
+          "mean": 1.58,
+          "median": 2.0,
+          "minimum": 0.3,
+          "standard_deviation": 0.996794863550169
+        }
+      }
+    },
+    {
+      "elapsed_ns": 518799,
+      "id": "mesh_brep",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0,
+            "point": [
+              0.7,
+              0.3,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.6055512754639896,
+            "point": [
+              2.0,
+              2.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.006659275674582,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.0,
+            "point": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9219544457292886,
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.6055512754639896,
+          "mean": 2.306832999373572,
+          "median": 2.0,
+          "minimum": 0.9219544457292886,
+          "standard_deviation": 0.9254844747488367
+        }
+      }
+    },
+    {
+      "elapsed_ns": 411987,
+      "id": "mesh",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0,
+            "point": [
+              0.7,
+              0.30000000000000004,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 4.69041575982343,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.006659275674582,
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.1213203435596424,
+            "point": [
+              0.5,
+              0.5,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9219544457292886,
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 4.69041575982343,
+          "mean": 2.5480699649573886,
+          "median": 2.1213203435596424,
+          "minimum": 0.9219544457292886,
+          "standard_deviation": 1.2591026382634791
+        }
+      }
+    },
+    {
+      "elapsed_ns": 312805,
+      "id": "multiple-targets",
+      "value": {
+        "samples": [
+          {
+            "distance": 2.0223748416156684,
+            "point": [
+              0.7000000000000001,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.6055512754639896,
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 3.168595903550972,
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 2.23606797749979,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.9219544457292886,
+            "point": [
+              0.2,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 5,
+          "maximum": 3.6055512754639896,
+          "mean": 2.390908888771942,
+          "median": 2.23606797749979,
+          "minimum": 0.9219544457292886,
+          "standard_deviation": 0.9378457685522282
+        }
+      }
+    },
+    {
+      "elapsed_ns": 175476,
+      "id": "duplicates-and-zero",
+      "value": {
+        "samples": [
+          {
+            "distance": 0.0,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 0.0,
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 4.0,
+            "point": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 3,
+          "maximum": 4.0,
+          "mean": 1.3333333333333333,
+          "median": 0.0,
+          "minimum": 0.0,
+          "standard_deviation": 1.8856180831641267
+        }
+      }
+    },
+    {
+      "elapsed_ns": 267029,
+      "id": "remote-line",
+      "value": {
+        "samples": [
+          {
+            "distance": 5.0,
+            "point": [
+              1000002.0,
+              -2000000.0,
+              3000000.0
+            ],
+            "target_index": 0
+          },
+          {
+            "distance": 4.123105625617661,
+            "point": [
+              1000000.0,
+              -2000000.0,
+              3000000.0
+            ],
+            "target_index": 0
+          }
+        ],
+        "sdk_only": true,
+        "statistics": {
+          "count": 2,
+          "maximum": 5.0,
+          "mean": 4.561552812808831,
+          "median": 4.561552812808831,
+          "minimum": 4.123105625617661,
+          "standard_deviation": 0.4384471871911697
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,278 @@
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 54.10s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 51 tests
+test app::tests::point_deviation::point_deviation_cancel_restores_preselection_and_viewport_window_filters_targets ... ok
+test app::tests::intersect_two_sets::preselection_starts_second_set_and_cancel_restores_sources ... ok
+test app::tests::point_deviation::point_deviation_two_sets_accepts_points_and_mesh_targets_without_model_edits ... ok
+test app::tests::project::custom_project_getter_can_be_replaced_without_consuming_the_next_commands_points ... ok
+test app::tests::project::infinite::project_axis_planes_are_baked_at_selection_and_leave_cplanes_unchanged ... ok
+test app::tests::edge_analysis::complete_edge_zoom_arguments_survive_command_first_selection ... ok
+test app::tests::project::custom_project_typed_world_relative_units_and_cplane_changes_share_point_routing ... ok
+test app::tests::edge_analysis::command_first_edge_zoom_options_collect_sources_and_group_all_marks ... ok
+test app::tests::project::custom_project_direction_persists_but_an_incomplete_replacement_does_not ... ok
+test app::tests::project::custom_project_getter_keeps_options_and_can_switch_back_to_cplane_direction ... ok
+test app::tests::project::custom_project_point_filters_constraints_undo_and_cancel_are_transient ... ok
+test app::tests::project::custom_project_two_point_getter_defers_mixed_preselection_and_preserves_history ... ok
+test app::tests::project::infinite::project_object_and_curve_plane_references_use_filtered_picking ... ok
+test app::tests::project::infinite::project_three_point_plane_keeps_invalid_points_active_and_undo_is_local ... ok
+test app::tests::project::iplane::iplane_incomplete_enter_restarts_plane_choice_and_rejects_project_options ... ok
+test app::tests::project::project_cplane_direction_uses_finishing_view_despite_previous_drawing_plane ... ok
+test app::tests::edge_analysis::edge_analysis_command_first_picking_and_modes_do_not_change_geometry_or_history ... ok
+test app::tests::edge_analysis::edge_analysis_marks_selected_edge_ends_and_undo_preserves_analysis_session ... ok
+test app::tests::project::iplane::iplane_command_first_filters_sources_then_enters_shared_plane_getter ... ok
+test app::tests::project::infinite::project_rectangle_vertical_and_through_point_modes_use_shared_drafting ... ok
+test app::tests::edge_analysis::show_edges_options_and_source_addition_survive_object_prompts ... ok
+test app::tests::edge_analysis::zoom_escape_keeps_accepted_marks_and_preserves_the_analysis_panel ... ok
+test app::tests::project::project_prompt_can_be_replaced_by_a_command_with_options ... ok
+test app::tests::project::project_view_is_resolved_at_completion_and_options_persist_in_session ... ok
+test app::tests::project::project_mixed_preselection_executes_immediately_and_cancel_restores_selection ... ok
+test app::tests::project::infinite::project_plane_cancel_enter_and_direction_switch_preserve_transient_state ... ok
+test app::tests::project::pull::pull_infinite_plane_uses_the_shared_point_getter ... ok
+test app::tests::project::project_mesh_target_is_pickable_and_mixed_preselection_completes ... ok
+test app::tests::project::pull::pull_command_first_selects_sources_and_targets_then_replays_one_step ... ok
+test app::tests::project::pull::pull_pending_plane_cancel_restores_selection_without_a_model_edit ... ok
+test app::tests::project::pull::pull_mixed_preselection_executes_and_preserves_its_source ... ok
+test app::tests::project::subcurve::project_nested_numeric_length_uses_the_existing_direction_lock_and_clear_path ... ok
+test app::tests::project::project_picks_filtered_sources_and_targets_then_creates_one_history_edit ... ok
+test app::tests::project::pull::pull_options_persist_independently_from_project_and_reject_direction ... ok
+test app::tests::project::pull::pull_temporary_ranges_keep_the_original_despite_delete_input ... ok
+test app::tests::project::pull::pull_mesh_target_completes_shared_picker_and_undo ... ok
+test app::tests::project::iplane::iplane_invalid_points_local_undo_and_cancel_restore_selection ... ok
+test app::tests::project::infinite::project_saved_cplanes_and_repeated_planes_do_not_restore_view_settings ... ok
+test app::tests::edge_analysis::empty_naked_set_and_invalid_options_do_not_start_or_mutate_a_model ... ok
+test app::tests::project::subcurve::temporary_project_range_uses_filtered_picking_preview_and_one_history_edit ... ok
+test app::tests::project::iplane::iplane_named_cplane_and_default_enter_use_read_only_plane_definitions ... ok
+test app::tests::project::pull::loose_preferences_are_independent_and_execute_through_the_shared_picker ... ok
+test viewport::display_cache::edge_analysis_tests::persistent_panel_and_transient_zoom_reuse_both_sample_buffers ... ok
+test app::tests::project::iplane::iplane_object_and_curve_references_finish_using_the_shared_picker ... ok
+test app::tests::project::subcurve::project_nested_range_cancellation_and_invalid_end_preserve_model_and_redo ... ok
+test app::tests::project::iplane::iplane_preselection_and_aliases_finish_without_a_second_enter ... ok
+test app::tests::project::infinite::project_through_point_plane_uses_a_real_viewport_endpoint_snap ... ok
+test app::tests::project::custom_project_real_viewport_clicks_snap_reference_endpoints_and_resume_selection ... ok
+test app::tests::project::subcurve::project_ranges_and_whole_points_survive_custom_direction_input ... ok
+test app::tests::intersect_two_sets::viewport_picks_two_sets_and_ignores_within_set_intersections ... ok
+test viewport::tests::point_deviation_hairs_paint_in_all_viewport_modes_without_model_edits ... ok
+
+test result: ok. 51 passed; 0 failed; 0 ignored; 0 measured; 1189 filtered out; finished in 0.34s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-7d1b644388fcdd03)
+
+running 61 tests
+test point_deviation::tests::point_deviation_statistics_keep_large_and_subnormal_distances ... ok
+test point_deviation::tests::point_deviation_samples_curve_endpoints_and_every_stored_mesh_vertex ... ok
+test point_deviation::tests::point_deviation_nearest_targets_and_normal_filters_retain_endpoint_cases ... ok
+test project::tests::infinite::infinite_plane_point_targets_have_no_finite_footprint_and_keep_one_history_edit ... ok
+test project::tests::infinite::cplane_axes_resolve_in_the_supplied_frame_and_parallel_queries_are_misses ... ok
+test project::tests::infinite::infinite_object_planes_extend_surfaces_and_use_reference_layers ... ok
+test project::tests::infinite::explicit_plane_origins_preserve_cancellation_and_subnormal_normal_scales ... ok
+test point_deviation::tests::point_deviation_hair_filters_scale_and_permanent_lines_are_one_edit ... ok
+test point_deviation::tests::point_deviation_reports_exact_known_statistics_without_consuming_redo ... ok
+test point_deviation::tests::point_deviation_invalid_options_do_not_replace_accepted_analysis_or_history ... ok
+test project::tests::infinite::infinite_plane_subcurves_retain_rational_shape_outside_the_original_target ... ok
+test point_deviation::tests::point_deviation_cache_tracks_geometry_undo_and_manual_apply ... ok
+test project::tests::infinite::infinite_plane_declines_an_unrepresentable_image_instead_of_losing_the_plane_offset ... ok
+test project::tests::infinite::invalid_plane_definitions_and_collapsed_curves_preserve_model_and_redo ... ok
+test edge_analysis::tests::canceled_zoom_commits_accepted_marks_but_invalid_arguments_do_not ... ok
+test edge_analysis::tests::mesh_modes_distinguish_welded_unwelded_and_non_manifold_sides ... ok
+test project::tests::infinite::infinite_and_finite_targets_can_share_a_bidirectional_projection ... ok
+test project::tests::project_invalid_later_subcurve_is_read_only_and_preserves_redo ... ok
+test project::tests::project_custom_point_validation_preserves_document_and_redo ... ok
+test project::tests::infinite::perpendicular_curve_planes_use_the_requested_tangent_and_extend_mesh_faces ... ok
+test project::tests::project_mesh_points_are_bidirectional_and_shared_faces_deduplicate ... ok
+test project::tests::project_miss_and_invalid_later_target_preserve_history_selection_and_inputs ... ok
+test edge_analysis::tests::repeated_mark_and_navigation_preserve_action_order_and_pending_zoom ... ok
+test project::tests::project_closed_subcurve_wraps_the_seam_and_preserves_its_kink ... ok
+test project::tests::project_collapsed_curve_and_parallel_miss_leave_document_unchanged ... ok
+test edge_analysis::tests::surface_boundaries_and_periodic_sphere_seams_have_distinct_diagnostic_valence ... ok
+test project::tests::project_custom_direction_is_bidirectional_and_uses_input_layer ... ok
+test project::tests::project_mesh_curve_vertex_touch_produces_no_zero_dimensional_object ... ok
+test project::tests::project_rejects_mixed_weight_extent_bounds_atomically ... ok
+test edge_analysis::tests::marking_closed_trim_keeps_both_coincident_endpoint_objects ... ok
+test point_deviation::tests::point_deviation_accepts_surface_brep_and_curve_sources_and_retains_polyline_corners ... ok
+test project::tests::project_mesh_shared_diagonal_does_not_duplicate_the_same_curve ... ok
+test project::tests::project_polylines_remain_connected_on_planar_targets ... ok
+test pull::tests::invalid_options_and_later_unsupported_targets_roll_back ... ok
+test project::tests::project_temporary_range_preserves_source_attributes_and_undo_redo ... ok
+test project::tests::project_two_point_custom_direction_matches_world_vector_and_handles_overflow ... ok
+test edge_analysis::tests::cache_survives_options_and_rebuilds_after_geometry_edits_and_undo ... ok
+test edge_analysis::tests::marking_all_edges_retains_coincident_endpoints_and_one_undo_step ... ok
+test project::tests::project_view_direction_requires_camera_data_and_cplane_uses_context ... ok
+test pull::tests::mesh_curve_collapsed_image_preserves_whole_input_and_temporary_range ... ok
+test pull::tests::mesh_curve_pull_follows_fold_and_replays_delete_input_as_one_edit ... ok
+test tests::intersect_two_sets_rejects_invalid_inputs_before_editing ... ok
+test project::tests::project_rational_subcurve_uses_the_existing_mesh_producer ... ok
+test pull::tests::point_pull_uses_closest_surface_and_mesh_boundaries ... ok
+test edge_analysis::tests::adding_removing_navigating_and_invalid_options_preserve_session_atomically ... ok
+test project::tests::project_repeated_ranges_signed_lengths_and_whole_points_share_atomic_admission ... ok
+test edge_analysis::tests::show_edges_is_non_destructive_and_marking_uses_one_undo_step ... ok
+test pull::tests::infinite_planes_use_their_own_normal_and_a_miss_preserves_input ... ok
+test project::tests::project_points_keep_multiple_solid_hits ... ok
+test pull::tests::output_layers_delete_input_and_temporary_ranges_use_shared_admission ... ok
+test project::tests::project_nearly_parallel_direction_keeps_finite_planar_image ... ok
+test project::tests::project_mesh_rational_curve_keeps_exact_planar_source_image ... ok
+test pull::tests::mesh_branch_failure_rolls_back_already_staged_surface_output ... ok
+test project::tests::project_mesh_miss_and_ambiguous_later_target_preserve_redo_and_inputs ... ok
+test pull::tests::planar_pull_ignores_cplane_direction_preserves_sources_and_replays_one_edit ... ok
+test project::tests::project_clips_to_finite_target_and_undoes_as_one_edit ... ok
+test project::tests::project_mesh_line_clips_and_stitches_a_shared_triangle_crossing ... ok
+test tests::intersect_two_sets_ignores_within_set_pairs_and_assigns_output_layers ... ok
+test project::tests::project_mesh_warped_quad_uses_triangles_and_not_a_bilinear_patch ... ok
+test project::tests::project_respects_hole_and_target_output_layer ... ok
+test pull::tests::trimmed_planar_pull_retains_hole_intervals ... ok
+
+test result: ok. 61 passed; 0 failed; 0 ignored; 0 measured; 1345 filtered out; finished in 0.39s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-6395428b209ddfc7)
+
+running 7 tests
+test surface_pull::tests::surface_pull_protocol_keeps_its_native_requirement_explicit ... ok
+test project::tests::project_curve_surface_zero_direction_rejects_request ... ok
+test project::tests::infinite_plane_protocol_retains_source_structure_and_rejects_parallel_sdk_inputs ... ok
+test mesh_pull::tests::mesh_pull_recipes_admit_boundary_paths_and_folded_faces ... ok
+line paired closest-point distance diagnostic 0
+line paired closest-point distance diagnostic 0
+line paired closest-point distance diagnostic 0
+line paired closest-point distance diagnostic 0
+line paired closest-point distance diagnostic 0
+arc paired closest-point distance diagnostic 0
+arc paired closest-point distance diagnostic 0.0000000000000002482534153247273
+arc paired closest-point distance diagnostic 0.00000000000000011102230246251565
+arc paired closest-point distance diagnostic 0.0000000000000003510833468576701
+arc paired closest-point distance diagnostic 0
+circle paired closest-point distance diagnostic 0
+circle paired closest-point distance diagnostic 0.0000000000000002482534153247273
+circle paired closest-point distance diagnostic 0
+circle paired closest-point distance diagnostic 0
+circle paired closest-point distance diagnostic 0
+ellipse paired closest-point distance diagnostic 0.0000000000027514685957036875
+ellipse paired closest-point distance diagnostic 0.0000000000000025121479338940403
+ellipse paired closest-point distance diagnostic 0.0000000000000005551115123125783
+ellipse paired closest-point distance diagnostic 0.0000000000000002220446049250313
+ellipse paired closest-point distance diagnostic 0.0000000000000023420180361420893
+polyline paired closest-point distance diagnostic 0
+polyline paired closest-point distance diagnostic 0
+polyline paired closest-point distance diagnostic 0
+polyline paired closest-point distance diagnostic 0
+polyline paired closest-point distance diagnostic 0
+polycurve paired closest-point distance diagnostic 0
+polycurve paired closest-point distance diagnostic 0
+polycurve paired closest-point distance diagnostic 0
+polycurve paired closest-point distance diagnostic 0
+polycurve paired closest-point distance diagnostic 0
+rational_curve paired closest-point distance diagnostic 0.0000000000093573798085998
+rational_curve paired closest-point distance diagnostic 0.0000000005967981396497829
+rational_curve paired closest-point distance diagnostic 0
+rational_curve paired closest-point distance diagnostic 0.000000000000039673971630639655
+rational_curve paired closest-point distance diagnostic 0
+surface paired closest-point distance diagnostic 0.00000000000000016653345369377348
+surface paired closest-point distance diagnostic 0.0000000000000004440892098500626
+surface paired closest-point distance diagnostic 0.0000000000000006661338147750939
+surface paired closest-point distance diagnostic 0
+surface paired closest-point distance diagnostic 0.00000000000000008326672684688674
+box_brep paired closest-point distance diagnostic 0
+box_brep paired closest-point distance diagnostic 0
+box_brep paired closest-point distance diagnostic 0
+box_brep paired closest-point distance diagnostic 0
+box_brep paired closest-point distance diagnostic 0.000000000000000027755575615628914
+mesh_brep paired closest-point distance diagnostic 0
+mesh_brep paired closest-point distance diagnostic 0
+mesh_brep paired closest-point distance diagnostic 0.00000000000000012335811384723962
+mesh_brep paired closest-point distance diagnostic 0
+mesh_brep paired closest-point distance diagnostic 0
+mesh paired closest-point distance diagnostic 0.00000000000000005551115123125783
+mesh paired closest-point distance diagnostic 0
+mesh paired closest-point distance diagnostic 0
+mesh paired closest-point distance diagnostic 0
+mesh paired closest-point distance diagnostic 0
+multiple-targets paired closest-point distance diagnostic 0.00000000000000011102230246251565
+multiple-targets paired closest-point distance diagnostic 0
+multiple-targets paired closest-point distance diagnostic 0
+multiple-targets paired closest-point distance diagnostic 0
+multiple-targets paired closest-point distance diagnostic 0
+duplicates-and-zero paired closest-point distance diagnostic 0
+duplicates-and-zero paired closest-point distance diagnostic 0
+duplicates-and-zero paired closest-point distance diagnostic 0
+remote-line paired closest-point distance diagnostic 0
+remote-line paired closest-point distance diagnostic 0
+test point_deviation::tests::point_deviation_public_sdk_corpus_preserves_every_nearest_location_and_distance ... ok
+test surface_pull::command_tests::command_recipe_admission_removes_the_duplicate_cylinder_seam ... ok
+test project::mesh_tests::mesh_projection_protocol_checks_points_curves_warped_quads_and_misses ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 506 filtered out; finished in 0.90s
+
+     Running unittests src/main.rs (target/debug/deps/viboceros_oracle-43d02528d4446e57)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/block_workflow.rs (target/debug/deps/block_workflow-5fd840de7e9f2347)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/contour_brep.rs (target/debug/deps/contour_brep-b1391081ff5b53a0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/contour_command.rs (target/debug/deps/contour_command-1385d7ed2c83b60f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide.rs (target/debug/deps/divide-1b220b9cdc72b805)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_curved.rs (target/debug/deps/divide_curved-d186ab8e60c6753d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/divide_rational_line.rs (target/debug/deps/divide_rational_line-a9c18014d851cf2d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_turnaround.rs (target/debug/deps/divide_turnaround-2c5e987f1eb428c7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/edge_analysis.rs (target/debug/deps/edge_analysis-496fbf27ea00cb0b)
+
+running 1 test
+test edge_analysis_replays_native_order_domains_samples_and_classifications ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.07s
+
+     Running tests/section_command.rs (target/debug/deps/section_command-a523a09e4f3a01ba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+   Doc-tests viboceros_command
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viboceros_oracle
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

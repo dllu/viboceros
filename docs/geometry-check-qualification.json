@@ -96,7 +96,6 @@
     "crates/viboceros-oracle/src/object_source.rs": "7a1c48fc3d32b9ddc16c96902cd927f951e1f6ce3b6bf385849dbe3345f3b8c1",
     "src/app/tests/geometry_check.rs": "8ec23e46af845e1e90d762cc406193b25f80c6d6a18d79f9cbcaea8180eff197",
     "tools/rhino_oracle/fixtures/geometry_validity.json": "f19f51b06d3f67ddf873fb5d28b478b4b39c6442fbb769cc6205efc0cab43756",
-    "tools/rhino_oracle/geometry_validity_probe.py": "057d9220939f40b131c8777ee8ebefce8236cedca2604bca0b625c3c49c14cff",
     "tools/rhino_oracle/test_geometry_validity.py": "aa3c4b57150563d52affa67b28f7780d8b2e8d27adb0216554ea25f0f7a84cee"
   },
   "evidence_sha256": {
@@ -120,6 +119,7 @@
     "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:tools/rhino_oracle/rhino_worker.py": "8a2b10523201fbfabdb2e1d02e3b652dbc63ae0338dbcec12d2a46bb663b166b",
     "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:tools/rhino_oracle/structural_sdk.py": "e394663125104d111f1655494d203c9c1f70832542ebc6131849c92cd5e69e43",
     "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:tools/rhino_oracle/test_structural_sdk.py": "dba3af77698ba3de841969733778635f453dfaddc32349aaac768a2098f505bd",
-    "9ca745f433bda8557d5f9019e5f875e36fe726ed:tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d"
+    "9ca745f433bda8557d5f9019e5f875e36fe726ed:tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:tools/rhino_oracle/geometry_validity_probe.py": "057d9220939f40b131c8777ee8ebefce8236cedca2604bca0b625c3c49c14cff"
   }
 }

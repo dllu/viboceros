@@ -43,9 +43,7 @@
   "source_sha256": {
     "tools/rhino_oracle/test_project.py": "751a811a225692860b60deee1c4d6494cd79b3688d527c01c7bbadb13235dfb7",
     "tools/rhino_oracle/fixtures/project_curve_surface.json": "903dda36dd3288d4b3332d2ea8aee460325dedd0a01f820fc809e43582a7abfe",
-    "tools/rhino_oracle/observations/project_curve_surface_viboceros_native.json": "d338a5ff11b9c00203ed3a008133defe0eb98144ead97c6d426f27cb9fd42a1b",
-    "src/app/apply_curves.rs": "449a4f30e98e5a48bed8f7a37e75b3575762b3cc80f0f516167be578799cc9f0",
-    "src/app/boolean_solids.rs": "694f39791209c8d9ae1a2c9cc3517be9ed80eb1dc1a28a0b623c0829dc85ea30"
+    "tools/rhino_oracle/observations/project_curve_surface_viboceros_native.json": "d338a5ff11b9c00203ed3a008133defe0eb98144ead97c6d426f27cb9fd42a1b"
   },
   "source_git_sha256": {
     "9aa3afd396872d873c2aad1f58d7cfe7321c3de0:crates/viboceros-command/src/project.rs": "cd79847dab71533ac80f0013516028a995fc3c5764e4f58e94132581b190606f",
@@ -62,6 +60,8 @@
     "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/src/native/surface_intersections.rs": "f633598897f6ebc62dacc00e54564d243a44dc933d850e2e004893692db3af01",
     "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/src/lib.rs": "3c7fa8dd8d944799b6eb94f842ab01eee66b02e6349ae927730f037efef0034b",
     "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/src/native.rs": "109ec5d8f59ccbbf047123941eb86fe52ad9d8df9b4ff9bb94d75a274cef5483",
-    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-geometry/src/nurbs.rs": "5b29a91339332eebcb35a46c651dea48b7ea3f631be4ff31b378eccb147d9374"
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-geometry/src/nurbs.rs": "5b29a91339332eebcb35a46c651dea48b7ea3f631be4ff31b378eccb147d9374",
+    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/apply_curves.rs": "449a4f30e98e5a48bed8f7a37e75b3575762b3cc80f0f516167be578799cc9f0",
+    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/boolean_solids.rs": "694f39791209c8d9ae1a2c9cc3517be9ed80eb1dc1a28a0b623c0829dc85ea30"
   }
 }

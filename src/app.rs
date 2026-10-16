@@ -179,6 +179,7 @@ mod named_view;
 mod object_selection;
 mod planar_boolean;
 mod plane_primitives;
+mod point_deviation;
 mod point_grid;
 mod point_input;
 mod points;
@@ -9228,6 +9229,7 @@ impl eframe::App for VibocerosApp {
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.show_edge_analysis(ui);
+        self.show_point_deviation(ui);
         self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9545,6 +9547,11 @@ impl eframe::App for VibocerosApp {
         let edge_analysis_view = self
             .commands
             .edge_analysis_view(&self.document)
+            .ok()
+            .flatten();
+        let deviation_view = self
+            .commands
+            .point_deviation_view(&self.document)
             .ok()
             .flatten();
         let edge_zoom_view = self.commands.edge_zoom_view(&self.document).ok().flatten();
@@ -9874,6 +9881,7 @@ impl eframe::App for VibocerosApp {
                             component_highlight_segments: &component_highlight_segments,
                             edge_pick,
                             curve_or_edge_pick,
+                            point_deviation: deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),
                             edge_zoom: edge_zoom_view.as_ref(),
                             edge_highlights: &edge_highlights,
@@ -10120,6 +10128,7 @@ mod tests {
     mod planar_boolean;
     mod plane_arrays;
     mod plane_through_points;
+    mod point_deviation;
     mod point_grid;
     mod point_input;
     mod point_selection;

@@ -347,6 +347,7 @@ pub struct ViewportInput<'a> {
     pub component_pick: Option<ComponentPickFilter>,
     pub component_highlights: &'a [ComponentPick],
     pub component_highlight_segments: &'a [[Point3; 2]],
+    pub point_deviation: Option<&'a viboceros_command::point_deviation::View>,
     pub edge_analysis: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_zoom: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_highlights: &'a [EdgePick],
@@ -423,6 +424,7 @@ impl Default for ViewportInput<'_> {
             component_pick: None,
             component_highlights: &[],
             component_highlight_segments: &[],
+            point_deviation: None,
             edge_analysis: None,
             edge_zoom: None,
             edge_highlights: &[],
@@ -1842,6 +1844,19 @@ impl Viewport {
             }
         }
         self.paint_edge_highlights(&painter, rect, document, input.edge_highlights);
+        if let Some(view) = input.point_deviation {
+            for sample in view.samples.iter() {
+                if let Ok(Some((ends, rgb))) = sample.hair(&view.options) {
+                    let color = Color32::from_rgb(rgb[0], rgb[1], rgb[2]);
+                    if let Some(p) = self.project_selection_point(sample.point, rect) {
+                        painter.circle_filled(p, 3., color);
+                    }
+                    if let Some(ends) = self.project_selection_segment(ends[0], ends[1], rect) {
+                        painter.line_segment(ends, Stroke::new(1.5, color));
+                    }
+                }
+            }
+        }
         if let Some(view) = input.edge_analysis {
             self.paint_edge_analysis(&painter, rect, document, view);
         }
@@ -2445,6 +2460,83 @@ mod tests {
             assert_eq!(document.objects().len(), 0);
             assert!(!document.can_undo());
         }
+    }
+
+    #[test]
+    fn point_deviation_hairs_paint_in_all_viewport_modes_without_model_edits() {
+        use std::sync::Arc;
+        use viboceros_command::point_deviation::{Options, Sample, View};
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Point(point(2., 3., 1.)))
+            .unwrap();
+        document.clear_history().unwrap();
+        let rgb = [31, 127, 203];
+        let mut view = View {
+            samples: Arc::from([Sample {
+                source: id,
+                target: id,
+                point: point(2., 3., 1.),
+                closest: point(1., 1., 0.),
+                distance: 3.,
+                normal_angle: Some(0.),
+            }]),
+            options: Options {
+                good: 10.,
+                bad: 20.,
+                ignore: 30.,
+                good_color: rgb,
+                ..Default::default()
+            },
+            visible: true,
+            statistics: None,
+        };
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            for mode in [
+                DisplayMode::Wireframe,
+                DisplayMode::Shaded,
+                DisplayMode::Ghosted,
+            ] {
+                for display in [true, false] {
+                    view.options.display_hair = display;
+                    let context = egui::Context::default();
+                    let mut viewport = Viewport::new(kind);
+                    viewport.display_mode = mode;
+                    let output = context.run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(Rect::from_min_size(
+                                Pos2::ZERO,
+                                Vec2::new(800., 600.),
+                            )),
+                            ..Default::default()
+                        },
+                        |ui| {
+                            viewport.show(
+                                ui,
+                                &document,
+                                ViewportInput {
+                                    point_deviation: Some(&view),
+                                    ..Default::default()
+                                },
+                                &[],
+                                0,
+                                true,
+                            );
+                        },
+                    );
+                    let count=output.shapes.iter().filter(|s|matches!(&s.shape,egui::Shape::LineSegment{stroke,..}if stroke.color==Color32::from_rgb(rgb[0],rgb[1],rgb[2]))).count();
+                    assert_eq!(count > 0, display, "{kind:?} {mode:?}");
+                    output.drop_without_applying_deltas();
+                }
+            }
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert!(!document.can_undo());
     }
 
     #[test]

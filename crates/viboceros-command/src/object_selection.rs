@@ -31,6 +31,8 @@ pub enum ObjectSelectionFilter {
     SurfaceComponents,
     Surfaces,
     Points,
+    DeviationSources,
+    DeviationTargets,
     PlaneFitPoints,
     LineFitPoints,
     ControlPoints,
@@ -50,6 +52,14 @@ impl ObjectSelectionFilter {
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
         let geometry = object.geometry();
         match self {
+            Self::DeviationSources => !matches!(geometry, Geometry::BlockInstance(_)),
+            Self::DeviationTargets => {
+                geometry.curve_ref().is_some()
+                    || matches!(
+                        geometry,
+                        Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                    )
+            }
             Self::EdgeAnalysis => matches!(
                 geometry,
                 Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)

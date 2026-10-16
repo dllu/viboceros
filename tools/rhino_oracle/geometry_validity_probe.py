@@ -1,17 +1,22 @@
 """Owned structural SDK validity probes; native command/getter capture is separate."""
 import json
 import math
-from pathlib import Path
+import os
+try:
+    string_types=(basestring,)
+except NameError:
+    string_types=(str,)
 
 
 def request():
-    return json.loads(Path(__file__).with_name('fixtures').joinpath('geometry_validity.json').read_text())
+    with open(os.path.join(os.path.dirname(__file__),'fixtures','geometry_validity.json')) as stream:
+        return json.load(stream)
 
 
 def validate(operation):
     if (not isinstance(operation, dict) or set(operation) != {'op', 'id', 'source'}
-            or operation['op'] != 'geometry_validity' or not isinstance(operation['id'], str)
-            or not isinstance(operation['source'], dict) or not isinstance(operation['source'].get('type'), str)):
+            or operation['op'] != 'geometry_validity' or not isinstance(operation['id'], string_types)
+            or not isinstance(operation['source'], dict) or not isinstance(operation['source'].get('type'), string_types)):
         raise ValueError('invalid geometry validity operation')
     source = operation['source']
     # The host's shared source constructors validate the remaining family-specific
@@ -27,7 +32,7 @@ def validate(operation):
             raise ValueError('geometry source nesting limit')
         if numeric and type(value) not in (int, float, list):
             raise ValueError('geometry coordinates must be numeric')
-        if type(value) in (int, float) and not math.isfinite(value):
+        if type(value) in (int, float) and (math.isnan(value) or math.isinf(value)):
             raise ValueError('nonfinite geometry source')
         if isinstance(value, dict):
             for key, child in value.items():

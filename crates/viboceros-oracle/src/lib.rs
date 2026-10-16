@@ -124,6 +124,7 @@ mod coplanar_mesh;
 mod divide_creases;
 mod network_surface;
 mod plane_through_points;
+mod point_deviation;
 pub use network_surface::Fixture as NetworkSurfaceFixture;
 pub use plane_through_points::{
     Fixture as PlaneThroughPointsFixture, Source as PlaneThroughPointsSource,
@@ -134,6 +135,7 @@ pub use plane_through_points::{
 pub use plane_through_points::{
     Fixture as SphereFitPointsFixture, Source as SphereFitPointsSource,
 };
+pub use point_deviation::Fixture as PointDeviationFixture;
 mod rail_revolve;
 mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
@@ -1684,6 +1686,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: LineThroughPointsFixture,
     },
+    PointDeviation {
+        id: String,
+        #[serde(flatten)]
+        fixture: PointDeviationFixture,
+    },
     SphereFitPoints {
         id: String,
         #[serde(flatten)]
@@ -2687,6 +2694,7 @@ impl Operation {
             | Self::NetworkSurface { id, .. }
             | Self::PlaneThroughPoints { id, .. }
             | Self::LineThroughPoints { id, .. }
+            | Self::PointDeviation { id, .. }
             | Self::SphereFitPoints { id, .. }
             | Self::RailRevolve { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
@@ -5911,6 +5919,9 @@ fn execute(
             tolerance,
             viboceros_command::point_fitting::PointFitKind::Line,
         )?,
+        Operation::PointDeviation { fixture, .. } => {
+            point_deviation::run(fixture, iterations, tolerance)?
+        }
         Operation::SphereFitPoints { fixture, .. } => plane_through_points::run_kind(
             fixture,
             iterations,

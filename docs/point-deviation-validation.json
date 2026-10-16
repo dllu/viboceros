@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "PointDeviation command, batch closest-point engine, source/target picking and live viewport analysis",
+  "base_repository_revision": "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9",
+  "command_registered": true,
+  "public_sdk_distance_corpus_qualified": true,
+  "native_command_parity_qualified": false,
+  "native_panel_and_sampling_parity_qualified": false,
+  "performance_qualified": false,
+  "implementation": "Reuse existing curve closest-parameter, surface/trimmed-face closest-parameter and indexed mesh closest-location queries. Preserve all stored point/cloud/mesh occurrences and sample other sources through existing arc-length or display tessellation paths. Use exact finite-value means and scaled population variance, deterministic target ties and bounded batch sizes. Cache samples by immutable source/target snapshots, tolerance and sampling; cache statistics by sample storage and Ignore. Share the existing two-set viewport picker and add a non-destructive analysis panel, colored/exaggerated distance hairs and atomic permanent-line creation.",
+  "coverage": {
+    "rust_tests": 121,
+    "rust_by_target": {
+      "application": 51,
+      "commands": 62,
+      "oracle": 7,
+      "oracle_integration": 1
+    },
+    "python_tests": 27,
+    "new_rust_tests": 12,
+    "new_python_tests": 3,
+    "retained_sdk_recipes": 14,
+    "retained_closest_queries": 65,
+    "licensed_capture_launches": 2,
+    "failed_capture_completed_queries": 0,
+    "geometry_source_kinds": [
+      "point",
+      "point_cloud",
+      "mesh",
+      "curve",
+      "surface",
+      "brep"
+    ],
+    "target_kinds": [
+      "line",
+      "arc",
+      "circle",
+      "ellipse",
+      "polyline",
+      "polycurve",
+      "rational_curve",
+      "surface",
+      "box_brep",
+      "mesh_brep",
+      "mesh"
+    ],
+    "viewport_modes": [
+      "Wireframe",
+      "Shaded",
+      "Ghosted"
+    ],
+    "viewport_views": [
+      "Top",
+      "Perspective",
+      "Front",
+      "Right"
+    ],
+    "viewport_paint_combinations": 24,
+    "source_preselection_and_postselection": true,
+    "filtered_window_selection_and_cancellation": true,
+    "duplicate_and_zero_distances": true,
+    "remote_line_coordinates": true,
+    "readonly_measurements_preserve_redo": true,
+    "automatic_and_manual_geometry_updates": true,
+    "deleted_targets_reject_stale_display": true,
+    "permanent_lines_one_undo_edit": true,
+    "invalid_options_preserve_analysis": true,
+    "very_large_and_subnormal_statistics": true,
+    "maximum_samples": 1000000,
+    "maximum_point_target_pairs": 4000000,
+    "reference_derived_inputs": false
+  },
+  "native_capture_commands": [
+    "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/point_deviation.json --scheme VibocerosOraclePointDeviation20261016 --timeout 240 --output tools/rhino_oracle/observations/point_deviation_rhino_20261016.json (failed during worker import before any SDK query: pathlib unavailable)",
+    "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/point_deviation.json --scheme VibocerosOraclePointDeviation20261016b --timeout 240 --output tools/rhino_oracle/observations/point_deviation_rhino_20261016.json"
+  ],
+  "raw_protocol_comparison_passed": true,
+  "maximum_paired_location_distance_diagnostic": 5.967981396497829e-10,
+  "limits": [
+    "The native capture calls public SDK closest-point queries only. It does not execute PointDeviation or capture the native panel, analysis mesh sampling, defaults, color/proximity policies, population-vs-sample statistics policy or permanent-layer behavior. The captured statistics are independently derived from SDK distances. Local behavior is documented explicitly; full native command/panel parity is unqualified.",
+    "All 65 recorded paired closest locations pass exact squared-distance admission at 1e-6. Distances, target indices and five derived scalar statistics agree. This finite corpus does not establish a continuous nearest-point or ambiguous/tied-location equivalence proof for arbitrary geometry. Underlying query failures reject the analysis rather than substituting a mesh approximation for a target surface.",
+    "Source curves use equal arc-length divisions, adding missing polyline vertices; surface/B-rep sources use the existing display tessellator. Every stored mesh/cloud vertex contributes, including orphan vertices and duplicates. Source sampling can differ from Rhino. Block/SubD/instance expansion is not implemented by this command.",
+    "The statistics population excludes distances greater than Ignore. IgnoreBad and proximity filter only display hairs. Proximity uses the curve normal plane or either surface/mesh normal; an undefined normal hides a nonzero hair below 180 degrees. Singular-normal and native boundary-color policies remain unqualified.",
+    "MakePermanent uses displayed exaggerated nonzero segments and Point Test RGB layers. Existing line construction can reject short segments, and nonrepresentable exaggeration rejects atomically. Read-only reports preserve model history and Redo. Closing the panel hides it while retaining the analysis; End releases the samples and caches.",
+    "Runtime tests and the local export use default debug builds. Clippy checks every workspace target with native-smlib enabled. No native C++ was changed and no sanitizer or benchmark is claimed. Raw timing fields include different wrappers and are not a performance qualification.",
+    "The first capture failed before SDK execution because a shared probe imported pathlib in Rhino IronPython. The helper now uses portable os/open, finite-value checks and string types. The second capture completed all 14 recipes and 65 closest queries. An intermediate test run hit a missing rustdoc artifact while Cargo jobs shared the target directory; the final sequential regression run completed successfully. No Wine, FEX or license configuration was changed."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-oracle -- point_deviation intersect_two_sets project_plane project:: pull:: edge_analysis --nocapture",
+      "passed": true,
+      "tests": 120,
+      "log": "docs/point-deviation-regressions.log"
+    },
+    {
+      "command": "cargo test -p viboceros-command reports_sorted_help",
+      "passed": true,
+      "tests": 1,
+      "log": "docs/point-deviation-registry.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_point_deviation tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client",
+      "passed": true,
+      "tests": 27,
+      "log": "docs/point-deviation-python.log"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --features native-smlib -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/point-deviation-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/point-deviation-fmt.log"
+    },
+    {
+      "command": "cargo run --quiet -p viboceros-oracle -- tools/rhino_oracle/fixtures/point_deviation.json tools/rhino_oracle/observations/point_deviation_viboceros_20261016.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/point-deviation-api.log"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "d9f944e152036d33de7bcd135937bff40c0757998e9e6394a8b04a43052430d5",
+    "crates/viboceros-command/Cargo.toml": "81c393837c217b29527314ffef3a1bfa227ba176201a58b8a4a345cecf7f8362",
+    "crates/viboceros-command/src/lib.rs": "695f3513a8af4bd1b98e05c2b30286db70cf7c3367e0c8ae70b83f568e768337",
+    "crates/viboceros-command/src/object_selection.rs": "4945954516737135907780f9e8aecf8200f82d6ae374e25a3dd61a7f1d7d3fb8",
+    "crates/viboceros-command/src/point_deviation.rs": "54f02dfe81bcdf1bcbfe230afe23e3ac449a6d28f823323283e18cbe028fdd6d",
+    "crates/viboceros-command/src/point_deviation/query.rs": "3d326b163d4ed97f108d6e217870c8af95348f0a2ba94a2f8b73ef3e54de43b1",
+    "crates/viboceros-command/src/point_deviation/tests.rs": "ea4ec28faf92a0a6b220fc0967632d216c8d2709789f538550926856ad5d6928",
+    "crates/viboceros-document/src/geometry.rs": "9e112a5747f425f50333ab4d026c59bf11f1d0f16fe8a3c1caec782c4aedb8ad",
+    "crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
+    "crates/viboceros-geometry/src/binary_accumulator.rs": "990ae206b583200f382617b97b3a28aa00e0d8519bce52423155988e35f8481f",
+    "crates/viboceros-geometry/src/brep.rs": "d16111047e0cde91449d52eeb84ec250553e440e2c4d0f8fe3beee87bb69d614",
+    "crates/viboceros-geometry/src/brep/tessellation/independent.rs": "a0ff92521b5d39b25c84b6a0b668ff5558f25b9fc94007075ba26f894e2138c0",
+    "crates/viboceros-geometry/src/curve.rs": "86b97f191859551779d220fae7c468a342fee3e3a85b2d2004d15ccb44104b08",
+    "crates/viboceros-geometry/src/curve_trim.rs": "978eb43b305e6024bdf65151d2e07eaffb51256e99d677f08d4d766acd3af249",
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/src/finite_sum.rs": "d56fa845aa7e65cfffb75453280012a7f8447bd1da1102cdc8cd15f497d061d0",
+    "crates/viboceros-geometry/src/mesh/projection.rs": "8f4a27d1f03ba2353d78199928b45a057bcf543f427e0ae627a6142ce23df4e9",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
+    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
+    "crates/viboceros-oracle/src/lib.rs": "239d4d224f7a95596bc468f62c61917d3cbfbe622d1e854213492f8c98b08e9f",
+    "crates/viboceros-oracle/src/object_source.rs": "7a1c48fc3d32b9ddc16c96902cd927f951e1f6ce3b6bf385849dbe3345f3b8c1",
+    "crates/viboceros-oracle/src/point_deviation.rs": "3cc1904e6c9070664c740e3b57a98a52c3f63743a0e592d1272e084b61da4b1b",
+    "docs/commands/README.md": "7d13f852b53b2f895c953508ce49600de3f217ddd1117c7e69ddbb8378036547",
+    "docs/commands/point-deviation.md": "152f8d99f7e8a9ff7560f3637d969d42faa6fc671a220d7c275cea16f9e5b566",
+    "src/app.rs": "97525739629aed9afe5cea90ee9405ad64498820d35189fe56d4b2e444c6c6ad",
+    "src/app/apply_curves.rs": "c5326d51d03c0ef89f96fa95c2cb7995f10c4b26a74db5af9888a953e2098fca",
+    "src/app/boolean_solids.rs": "95e3bc8e12e086431bb2e99b5edb781a5ec0354817e4fb0a7732541d67d32a5b",
+    "src/app/intersect_two_sets.rs": "ee860410f65c8427fbc1fc9ca6771ce855036c9ce4f9c61730be0d4bbaa5ca18",
+    "src/app/iplane.rs": "6d6ad80533ba359095de5b3e2a80076084b2239b4f165a3a9fd7b68fbc55facc",
+    "src/app/point_deviation.rs": "d5430e3cb6bdf0dbdd4450cd00ef8a846dae7af9aeb99edf352b7e3542f200c8",
+    "src/app/project.rs": "ef834e9305627ac1bb8c41e61d908828ad00ae9c58f0caadd2743e569a218c14",
+    "src/app/tests/point_deviation.rs": "164a22b841b6fc52d047772bc654c2a4befad2da6a1ef03818b4de95a78a18d5",
+    "src/viewport.rs": "0c38f52c4d55d675c8d4cc3cb0e391612ea911cb318a32191cc8958086ca59d5",
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+    "tools/rhino_oracle/point_deviation_probe.py": "a004fe2348eaf0136afd184513e8e561f7d21dbee35de60e179711620fb62e7e",
+    "tools/rhino_oracle/rhino_worker.py": "dfaa9ceab750509f6dcc0c69e1a42df936b1f538546bf9b0391e6557dfc2616e",
+    "tools/rhino_oracle/structural_sdk.py": "6761bd7467deb6c1b86497a82e1dbb0b4c0a0ce00765453df1bc0f9577aaf404",
+    "tools/rhino_oracle/test_point_deviation.py": "27dd87febe76381763583db6a7ad155dd43c63f34fdcc0c4327191975a3f0231",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "input_sha256": {
+    "tools/rhino_oracle/fixtures/point_deviation.json": "e166480360fc37e94ba95bd7a0243bf8f4a4471d524c9a5dcece79952f11c92f"
+  },
+  "evidence_sha256": {
+    "docs/point-deviation-regressions.log": "fdbb98a1ce41066cf7b9d4dcad1d2da508956b573e7740779b62bc1294b75bf1",
+    "docs/point-deviation-registry.log": "8b9218cc0c0074c7c108084e8d6ce94008d4926473f1baf70e77cc9f8348871e",
+    "docs/point-deviation-python.log": "77cd8f97e62f63158c2c439a38ada52b9ead7f11c3bf8337ba845084bf3483c6",
+    "docs/point-deviation-clippy.log": "a393a0519ec62dadb87e3a3eae64355179665f562786955c4213105ec94d5190",
+    "docs/point-deviation-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/point-deviation-api.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tools/rhino_oracle/observations/point_deviation_rhino_20261016.json": "58567c228017dc2c4187424fc83cfba1e56f79d2084e724f20194f3bc11597cd",
+    "tools/rhino_oracle/observations/point_deviation_viboceros_20261016.json": "fb9369afedebf5e80c8502e14e4764aaab22b7b476b7f373f85d07a5b62f0ef4",
+    "tools/rhino_oracle/observations/point_deviation_comparison_20261016.json": "4db3d647680dc334f0bad2910bce3886b16413c27b3ed226d2d23ed556c1b062"
+  }
+}

@@ -6,6 +6,7 @@ use viboceros_document::{ObjectId, SelectionMode};
 
 #[derive(Clone, Debug)]
 pub(super) struct TwoSetsPrompt {
+    pub(super) deviation: Option<String>,
     pub(super) first: Option<Vec<ObjectId>>,
     pub(super) output_layer: &'static str,
     pub(super) original_selection: Vec<ObjectId>,
@@ -57,6 +58,9 @@ impl BooleanOptions {
 
 impl TwoSetsPrompt {
     pub(super) fn name(&self) -> &'static str {
+        if self.deviation.is_some() {
+            return "PointDeviation";
+        }
         if let Some(session) = &self.projection {
             return session.name();
         }
@@ -69,6 +73,13 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
+        if self.deviation.is_some() {
+            return if self.first.is_some() {
+                ObjectSelectionFilter::DeviationTargets
+            } else {
+                ObjectSelectionFilter::DeviationSources
+            };
+        }
         if let Some(getter) = self
             .projection
             .as_ref()
@@ -98,6 +109,13 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if self.deviation.is_some() {
+            return if self.first.is_some() {
+                "Select target curves, surfaces, polysurfaces or meshes; Enter measures, Esc cancels"
+            } else {
+                "Select objects to measure; Enter continues, Esc cancels"
+            };
+        }
         if let Some(getter) = self
             .projection
             .as_ref()
@@ -179,6 +197,9 @@ fn output_layer_option(input: &str) -> Option<&'static str> {
 
 impl VibocerosApp {
     pub(super) fn try_start_intersection_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_point_deviation(input) {
+            return true;
+        }
         if self.try_start_project_prompt(input) {
             return true;
         }
@@ -216,6 +237,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.document.clear_selection();
         self.intersection_prompt = Some(TwoSetsPrompt {
+            deviation: None,
             projection: None,
             first: (!first.is_empty()).then_some(first),
             output_layer,
@@ -238,7 +260,7 @@ impl VibocerosApp {
                 self.log_project_prompt(&prompt);
                 return;
             }
-            if prompt.uv_mapping.is_some() {
+            if prompt.uv_mapping.is_some() || prompt.deviation.is_some() {
                 self.push_log(format!("{}: {}", prompt.name(), prompt.hint()));
                 return;
             }
@@ -262,6 +284,9 @@ impl VibocerosApp {
         let Some(mut prompt) = self.intersection_prompt.clone() else {
             return false;
         };
+        if prompt.deviation.is_some() {
+            return self.continue_point_deviation(prompt, input);
+        }
         if prompt.projection.is_some() {
             return self.continue_project_prompt(prompt, input);
         }
@@ -390,7 +415,13 @@ impl VibocerosApp {
             .document
             .selectable_objects()
             .filter(|object| requested.contains(&object.id()))
-            .filter(|object| ObjectSelectionFilter::Parametric.accepts_object(object))
+            .filter(|object| {
+                self.intersection_prompt
+                    .as_ref()
+                    .unwrap()
+                    .filter()
+                    .accepts_object(object)
+            })
             .map(|object| object.id())
             .collect::<Vec<_>>();
         let mode = if mode == SelectionMode::Replace {
