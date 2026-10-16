@@ -88,6 +88,18 @@ impl VibocerosApp {
         let Some(state) = self.active_command else {
             return false;
         };
+        if state == (InteractiveCommand::Sphere { center: None })
+            && input
+                .trim()
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("FitPoints")
+        {
+            self.cancel_interactive_command(false);
+            if !self.try_start_object_prompt("Sphere FitPoints") {
+                self.execute_command("Sphere FitPoints");
+            }
+            return true;
+        }
         if state == (InteractiveCommand::Circle { center: None }) {
             let option = input.trim().trim_start_matches('_');
             if option.eq_ignore_ascii_case("FitPoints") {

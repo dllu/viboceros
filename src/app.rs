@@ -1043,7 +1043,7 @@ impl InteractiveCommand {
                 radius: Some(_), ..
             } => "Circle 3Point Radius: pick the center direction (Esc cancels)",
             Self::Sphere { center: None } => {
-                "Sphere: pick the center in the viewport (Esc to cancel)"
+                "Sphere: pick the center or choose FitPoints (Esc to cancel)"
             }
             Self::Sphere { center: Some(_) } => {
                 "Sphere: pick a point on the sphere in the viewport (Esc to cancel)"
@@ -8849,7 +8849,11 @@ impl VibocerosApp {
             let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
                 matches!(
                     prompt.description.command,
-                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
+                    "Circle FitPoints"
+                        | "PlaneThroughPt"
+                        | "LineThroughPt"
+                        | "Sphere FitPoints"
+                        | "Smooth"
                 ) || (prompt.description.workflow
                     == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                     && transform_sources::allows_grips(prompt.description.command))
@@ -9015,7 +9019,11 @@ impl VibocerosApp {
                 || self.object_prompt.as_ref().is_some_and(|prompt| {
                     (matches!(
                         prompt.description.command,
-                        "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
+                        "Circle FitPoints"
+                            | "PlaneThroughPt"
+                            | "LineThroughPt"
+                            | "Sphere FitPoints"
+                            | "Smooth"
                     ) || (prompt.description.workflow
                         == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                         && transform_sources::allows_grips(prompt.description.command)))
@@ -10134,6 +10142,7 @@ mod tests {
     mod silhouette;
     mod single_span_selection;
     mod smooth;
+    mod sphere_fit_points;
     mod split_edge;
     mod standalone_subcurve;
     mod subcurve_direction;

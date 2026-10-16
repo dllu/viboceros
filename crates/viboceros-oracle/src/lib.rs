@@ -131,6 +131,9 @@ pub use plane_through_points::{
 pub use plane_through_points::{
     Fixture as LineThroughPointsFixture, Source as LineThroughPointsSource,
 };
+pub use plane_through_points::{
+    Fixture as SphereFitPointsFixture, Source as SphereFitPointsSource,
+};
 mod rail_revolve;
 mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
@@ -1681,6 +1684,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: LineThroughPointsFixture,
     },
+    SphereFitPoints {
+        id: String,
+        #[serde(flatten)]
+        fixture: SphereFitPointsFixture,
+    },
     RailRevolve {
         id: String,
         #[serde(flatten)]
@@ -2679,6 +2687,7 @@ impl Operation {
             | Self::NetworkSurface { id, .. }
             | Self::PlaneThroughPoints { id, .. }
             | Self::LineThroughPoints { id, .. }
+            | Self::SphereFitPoints { id, .. }
             | Self::RailRevolve { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
@@ -5901,6 +5910,12 @@ fn execute(
             iterations,
             tolerance,
             viboceros_command::point_fitting::PointFitKind::Line,
+        )?,
+        Operation::SphereFitPoints { fixture, .. } => plane_through_points::run_kind(
+            fixture,
+            iterations,
+            tolerance,
+            viboceros_command::point_fitting::PointFitKind::Sphere,
         )?,
         Operation::RailRevolve { fixture, .. } => {
             rail_revolve::run(fixture, iterations, tolerance)?

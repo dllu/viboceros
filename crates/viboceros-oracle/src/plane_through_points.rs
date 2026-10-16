@@ -50,10 +50,10 @@ pub(super) fn run_kind(
         .collect::<Result<Vec<_>, _>>()?;
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let mut doc = Document::new(tolerance);
-        let prefix = if kind == PointFitKind::Plane {
-            "PlaneFit"
-        } else {
-            "LineFit"
+        let prefix = match kind {
+            PointFitKind::Plane => "PlaneFit",
+            PointFitKind::Line => "LineFit",
+            PointFitKind::Sphere => "SphereFit",
         };
         let source_layer = doc.add_layer(format!("{prefix}Source"), ColorRgb::new(255, 0, 0))?;
         let current_layer = doc.add_layer(format!("{prefix}Current"), ColorRgb::new(0, 0, 255))?;
@@ -100,7 +100,14 @@ pub(super) fn run_kind(
         }
         let before = doc.objects().cloned().collect::<Vec<_>>();
         let registry = CommandRegistry::with_builtins();
-        let result = if f.postselect {
+        let incomplete_getter =
+            kind == PointFitKind::Sphere && kind.selected_point_count(&doc) < kind.minimum_points();
+        if incomplete_getter {
+            doc.clear_selection();
+        }
+        let result = if incomplete_getter {
+            Err(viboceros_command::CommandError::OperationDeclined)
+        } else if f.postselect {
             registry.execute_postselected(&mut doc, kind.name(), CommandContext::default())
         } else {
             registry.execute(&mut doc, kind.name())
@@ -136,6 +143,11 @@ pub(super) fn run_kind(
                         })
                         .collect::<Result<Vec<_>, _>>()?;
                     json!({"definition":nurbs_surface_definition_value(surface),"corners":corners})
+                }
+                (Geometry::NurbsSurface(surface), PointFitKind::Sphere) => {
+                    let fit = viboceros_geometry::SphereFit::try_fit_to_points(&points)?
+                        .ok_or(ProbeError::FixtureInvariant("missing sphere parameters"))?;
+                    json!({"center":fit.center().to_array(),"radius":fit.radius(),"definition":nurbs_surface_definition_value(surface)})
                 }
                 _ => {
                     return Err(ProbeError::FixtureInvariant(
@@ -183,6 +195,14 @@ pub(super) fn run_kind(
             };
             value["sdk"] = json!({"created":fit.is_some(),"endpoints":fit.map(|l|vec![l.start().to_array(),l.end().to_array()]).unwrap_or_default()});
         }
+        if kind == PointFitKind::Sphere {
+            let fit = if points.len() < 3 {
+                None
+            } else {
+                viboceros_geometry::SphereFit::try_fit_to_points(&points)?
+            };
+            value["sdk"] = json!({"created":fit.is_some(),"center":fit.map(|f|f.center().to_array()),"radius":fit.map(|f|f.radius())});
+        }
         Ok(value)
     })
 }
@@ -190,6 +210,61 @@ pub(super) fn run_kind(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn sphere_fit_points_protocol_retains_native_cap_difference_and_getter_cancellation() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/sphere_fit_points.json"
+        ))
+        .unwrap();
+        let native: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/sphere_fit_points_rhino_20261016.json"
+        ))
+        .unwrap();
+        let actual = run_request(&request).unwrap();
+        assert_eq!(actual.results.len(), 21);
+        let mut images = 0;
+        let mut mismatches = 0;
+        for (row, expected) in actual
+            .results
+            .iter()
+            .zip(native["results"].as_array().unwrap())
+        {
+            let expected = &expected["value"];
+            assert_eq!(
+                row.value["command_returned"], expected["command_returned"],
+                "{}",
+                row.id
+            );
+            assert_eq!(row.value["sources"], expected["sources"], "{}", row.id);
+            assert_eq!(
+                row.value["outputs"].as_array().unwrap().len(),
+                expected["outputs"].as_array().unwrap().len()
+            );
+            for (a, b) in row.value["outputs"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(expected["outputs"].as_array().unwrap())
+            {
+                for key in ["layer", "name", "groups", "selected", "color_source"] {
+                    assert_eq!(a[key], b[key]);
+                }
+                let center = point(serde_json::from_value(a["center"].clone()).unwrap()).unwrap();
+                let reference =
+                    point(serde_json::from_value(b["center"].clone()).unwrap()).unwrap();
+                let error = center.distance_to(reference).unwrap()
+                    + (a["radius"].as_f64().unwrap() - b["radius"].as_f64().unwrap()).abs();
+                if row.id == "shallow-cap" {
+                    assert!(error > 1.);
+                    mismatches += 1;
+                } else {
+                    assert!(error <= 1e-6, "{} {error}", row.id);
+                    images += 1;
+                }
+            }
+        }
+        assert_eq!((images, mismatches), (15, 1));
+    }
     #[test]
     fn point_fitting_protocol_replays_line_sdk_images_and_mixed_native_command_states() {
         let request: ProbeRequest = serde_json::from_str(include_str!(

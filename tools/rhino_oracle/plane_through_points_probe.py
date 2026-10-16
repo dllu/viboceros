@@ -39,14 +39,14 @@ def surface_value(geo, host):
     finally:n.Dispose()
 
 
-def run_owned(op, host, iterations, tolerance, command, geometry_value):
+def run_owned(op, host, iterations, tolerance, command, geometry_value, finish_macro=''):
     """Shared private source setup and command lifetime for point fitting."""
     if iterations != 1:
         raise ValueError('Point fitting commands require one iteration')
     R=host['Rhino']; G=R.Geometry; doc=R.RhinoDoc.ActiveDoc
     ids=[];created=[];owned=[]
     saved_layer=doc.Layers.CurrentLayerIndex
-    prefix='PlaneFit' if command=='PlaneThroughPt' else 'LineFit'
+    prefix={'PlaneThroughPt':'PlaneFit','LineThroughPt':'LineFit','Sphere _FitPoints':'SphereFit'}[command]
     source_layer=doc.Layers.Add(prefix+'Source', host['System'].Drawing.Color.Red)
     current_layer=doc.Layers.Add(prefix+'Current', host['System'].Drawing.Color.Blue)
     if source_layer<0 or current_layer<0: raise ValueError('private fit layers failed')
@@ -81,6 +81,7 @@ def run_owned(op, host, iterations, tolerance, command, geometry_value):
         macro='_-'+command
         if op['postselect']:
             macro+=' '+' '.join('_SelID '+str(i) for i in ids)+' _Enter'
+        macro+=finish_macro
         before=set(o.Id for o in doc.Objects)
         serial=doc.BeginUndoRecord(command+' oracle')
         try:ran=R.RhinoApp.RunScript(macro,False)

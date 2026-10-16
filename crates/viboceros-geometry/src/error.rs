@@ -99,6 +99,10 @@ pub enum GeometryError {
     LineFitNumericalRange,
     #[error("best-fit line singular-value decomposition did not resolve a finite direction")]
     LineFitDidNotConverge,
+    #[error("sphere fitting exceeds the limit of {maximum} points")]
+    SphereFitResourceLimit { maximum: usize },
+    #[error("sphere fitting did not resolve a finite solution within the iteration limit")]
+    SphereFitDidNotConverge,
     #[error("mesh decomposition exceeds the limit of {maximum} components")]
     MeshComponentLimit { maximum: usize },
     #[error("Bezier decomposition exceeded its work or output-control budget")]

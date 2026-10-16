@@ -5,25 +5,28 @@ use crate::*;
 pub enum PointFitKind {
     Line,
     Plane,
+    Sphere,
 }
 impl PointFitKind {
     pub fn from_command(command: &str) -> Option<Self> {
         match command {
             "LineThroughPt" => Some(Self::Line),
             "PlaneThroughPt" => Some(Self::Plane),
+            "Sphere FitPoints" => Some(Self::Sphere),
             _ => None,
         }
     }
     pub const fn minimum_points(self) -> usize {
         match self {
             Self::Line => 2,
-            Self::Plane => 3,
+            Self::Plane | Self::Sphere => 3,
         }
     }
     pub const fn name(self) -> &'static str {
         match self {
             Self::Line => "LineThroughPt",
             Self::Plane => "PlaneThroughPt",
+            Self::Sphere => "Sphere FitPoints",
         }
     }
     fn usage(self) -> &'static str {
@@ -32,12 +35,13 @@ impl PointFitKind {
                 "LineThroughPt (select at least two points, cloud points, mesh vertices or grips)"
             }
             Self::Plane => "PlaneThroughPt (select at least three points, cloud points or grips)",
+            Self::Sphere => "Sphere FitPoints (select at least three points or grips)",
         }
     }
     fn source_points(self, geometry: &Geometry) -> &[Point3] {
         match geometry {
             Geometry::Point(p) => std::slice::from_ref(p),
-            Geometry::PointCloud(cloud) => cloud.points(),
+            Geometry::PointCloud(cloud) if self != Self::Sphere => cloud.points(),
             Geometry::Mesh(mesh) if self == Self::Line => mesh.vertices(),
             _ => &[],
         }
@@ -68,17 +72,7 @@ impl Command for PointFitCommand {
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         require_consumed(args, 0, self.0.usage())?;
-        Ok(Some(ObjectSelectionPrompt {
-            command: self.name(),
-            filter: match self.0 {
-                PointFitKind::Line => ObjectSelectionFilter::LineFitPoints,
-                PointFitKind::Plane => ObjectSelectionFilter::PlaneFitPoints,
-            },
-            workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
-            options: vec![],
-            menus: vec![],
-            choices: vec![],
-        }))
+        Ok(Some(selection_prompt(self.0)))
     }
     fn run(&self, document: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         run(self.0, document, args, false)
@@ -92,7 +86,21 @@ impl Command for PointFitCommand {
         run(self.0, document, args, true)
     }
 }
-fn run(
+pub(super) fn selection_prompt(kind: PointFitKind) -> ObjectSelectionPrompt {
+    ObjectSelectionPrompt {
+        command: kind.name(),
+        filter: match kind {
+            PointFitKind::Line => ObjectSelectionFilter::LineFitPoints,
+            PointFitKind::Plane => ObjectSelectionFilter::PlaneFitPoints,
+            PointFitKind::Sphere => ObjectSelectionFilter::Points,
+        },
+        workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+        options: vec![],
+        menus: vec![],
+        choices: vec![],
+    }
+}
+pub(super) fn run(
     kind: PointFitKind,
     document: &mut Document,
     args: &[&str],
@@ -110,8 +118,11 @@ fn run(
     let geometry = match kind {
         PointFitKind::Line => LineSegment::try_fit_to_points(&points)?.map(Geometry::Line),
         PointFitKind::Plane => NurbsSurface::try_fit_plane(&points)?.map(Geometry::NurbsSurface),
+        PointFitKind::Sphere => viboceros_geometry::SphereFit::try_fit_to_points(&points)?
+            .map(|s| s.to_nurbs().map(Geometry::NurbsSurface))
+            .transpose()?,
     };
-    if geometry.is_none() && kind == PointFitKind::Plane {
+    if geometry.is_none() && kind != PointFitKind::Line {
         return Err(CommandError::OperationDeclined);
     }
     let selection = document.selected_object_ids().collect::<Vec<_>>();
@@ -131,5 +142,7 @@ fn run(
 #[cfg(test)]
 #[path = "plane_through_points/tests.rs"]
 mod plane_tests;
+#[cfg(test)]
+mod sphere_tests;
 #[cfg(test)]
 mod tests;

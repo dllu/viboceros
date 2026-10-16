@@ -1,0 +1,247 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-document v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-document)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-drafting v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-drafting)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 49s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 71 tests
+test app::tests::circle_fit_points::circle_fit_points_cancelled_and_insufficient_picks_preserve_geometry_and_redo ... ok
+test app::tests::line_through_points::line_through_points_cancel_and_coincident_noop_preserve_redo ... ok
+test app::tests::object_selection::area_centroid_uses_filtered_object_prompt_and_creates_one_undoable_point ... ok
+test app::tests::object_selection::divide_chord_preview_shares_distance_and_drops_on_source_change_or_new_command ... ok
+test app::tests::object_selection::divide_mixed_preselection_ignores_noncurves_and_restores_selection_on_cancel ... ok
+test app::tests::line_through_points::line_through_points_postselection_accepts_a_short_curve_and_one_history_edit ... ok
+test app::tests::object_selection::cancelling_flip_picking_never_changes_geometry_or_consumes_redo ... ok
+test app::tests::object_selection::divide_command_first_length_split_previews_remainder_policy_and_cancels_cleanly ... ok
+test app::tests::geometry_check::native_geometry_check_cancel_and_bad_object_selection_share_existing_ui_flows ... ok
+test app::tests::object_selection::divide_bare_preselection_previews_options_before_one_undoable_acceptance ... ok
+test app::tests::object_selection::divide_complete_options_are_retained_through_command_first_curve_selection ... ok
+test app::tests::align::command_first_mode_and_frame_choices_survive_object_selection ... ok
+test app::tests::object_selection::divide_preview_invalidates_when_selected_source_geometry_is_replaced ... ok
+test app::tests::cull_degenerate::bad_object_selection_can_feed_cleanup_and_empty_deletion_is_reversible ... ok
+test app::tests::align::three_point_projection_survives_selection_and_partial_typed_input ... ok
+test app::tests::line_through_points::line_through_points_pending_viewport_grip_picks_accumulate_only_selected_positions ... ok
+test app::tests::object_selection::divide_remembers_cancelled_flags_and_numbers_without_model_history ... ok
+test app::tests::object_selection::individual_join_picks_finish_on_closure_without_consuming_the_next_click ... ok
+test app::tests::object_selection::cancelled_picks_and_accepted_options_do_not_edit_geometry_or_clear_redo ... ok
+test app::tests::object_selection::point_cloud_add_accepts_explicit_unselected_target_after_picking ... ok
+test app::tests::object_selection::point_cloud_add_picks_sources_after_preselected_target_and_undoes ... ok
+test app::tests::object_selection::empty_finish_invalid_options_and_nonmesh_clicks_keep_the_prompt_usable ... ok
+test app::tests::object_selection::point_cloud_cancel_preserves_sources_and_accepts_color_option ... ok
+test app::tests::line_through_points::line_through_points_preselected_mesh_cloud_and_two_grips_execute_directly ... ok
+test app::tests::object_selection::point_cloud_command_first_keeps_use_point_colors_choice ... ok
+test app::tests::object_selection::preselected_cloud_action_cancel_preserves_geometry_and_selection ... ok
+test app::tests::object_selection::point_cloud_command_first_filters_clouds_and_curves_and_preserves_pick_order ... ok
+test app::tests::object_selection::prompt_batch_selection_filters_and_coalesces_before_applying_modes ... ok
+test app::tests::object_selection::preselected_point_cloud_offers_add_and_remove_actions ... ok
+test app::tests::object_selection::mesh_join_and_copy_command_first_filter_points_and_retain_pick_order ... ok
+test app::tests::object_selection::point_cloud_add_cancel_restores_original_selection ... ok
+test app::tests::object_selection::point_cloud_remove_picks_members_and_changes_output_at_prompt ... ok
+test app::tests::object_selection::reduce_point_cloud_accepts_command_first_cloud_pick ... ok
+test app::tests::object_selection::command_first_picking_filters_groups_adds_clicks_and_clears_sources_on_commit ... ok
+test app::tests::object_selection::unlock_selected_prompt_filters_picks_and_supports_selall_selnone ... ok
+test app::tests::object_selection::show_selected_prompt_preserves_selection_and_supports_cancel_and_undo ... ok
+test app::tests::object_selection::transparent_interface_and_cplane_prompts_preserve_mesh_picks ... ok
+test app::tests::object_selection::point_cloud_remove_cancel_and_selall_leave_model_consistent ... ok
+test app::tests::object_selection::remove_from_group_prompt_picks_individual_members_and_supports_copy ... ok
+test app::tests::plane_through_points::plane_through_points_cancel_and_insufficient_selection_preserve_redo ... ok
+test app::tests::object_selection::reduce_point_cloud_prompts_for_amount_after_cloud_selection ... ok
+test app::tests::plane_through_points::plane_through_points_viewport_grip_picks_accumulate_until_enter ... ok
+test app::tests::object_selection::volume_display_choice_does_not_answer_or_bypass_the_open_warning ... ok
+test app::tests::plane_through_points::plane_through_points_preselected_cloud_and_grips_execute_without_reselecting ... ok
+test app::tests::plane_through_points::plane_through_points_postselection_filters_sources_and_accepts_one_history_edit ... ok
+test app::tests::point_selection::circle_fit_source_selection_can_select_points_and_invert_only_grips_before_enter ... ok
+test app::tests::sphere_fit_points::sphere_fit_points_grip_picks_accumulate_without_consuming_the_parent ... ok
+test app::tests::sphere_fit_points::sphere_fit_points_rejects_whole_mesh_selection_and_cancellation_preserves_redo ... ok
+test app::tests::sphere_fit_points::sphere_fit_points_incremental_option_selects_points_and_records_one_edit ... ok
+test viewport::tests::object_selection::block_edit_source_picking_bypasses_only_the_workspace_lock_and_keeps_model_permissions ... ok
+test viewport::tests::object_selection::point_cloud_member_pick_returns_stored_index_in_all_views ... ok
+test viewport::tests::object_selection::mesh_filter_is_applied_before_point_and_curve_hit_priority ... ok
+test viewport::tests::object_selection::window_and_crossing_filters_exclude_nonmeshes_hidden_objects_and_locked_layers ... ok
+test app::tests::object_selection::flip_prompt_reverses_only_supported_group_members_and_releases_only_those_picks ... ok
+test viewport::tests::object_selection::surface_filter_precedes_coincident_point_curve_and_mesh_hits ... ok
+test app::tests::circle_fit_points::circle_fit_points_input_replays_eight_native_selection_and_history_workflows ... ok
+test app::tests::circle_fit_grips::circle_fit_grips_mouse_window_accepts_mixed_grips_and_point_objects ... ok
+test app::tests::circle_fit_grips::circle_fit_grips_mouse_clicks_fit_without_selecting_the_parent_curve ... ok
+test viewport::tests::object_selection::point_cloud_remove_viewport_click_emits_member_index ... ok
+test viewport::tests::object_selection::real_pointer_events_use_the_mesh_filter_for_clicks_and_windows ... ok
+test viewport::tests::object_selection::confirmation_disables_real_selection_events_without_enabling_point_drafting ... ok
+test app::tests::object_selection::divide_preferences_replay_native_points_groups_and_source_retention ... ok
+test viewport::tests::object_selection::viewport_double_click_reports_one_block_hit_without_triggering_title_maximization ... ok
+test app::tests::object_selection::volume_units_submenu_returns_to_picking_and_empty_enter_retains_the_choice ... ok
+test app::tests::object_selection::volume_warning_answers_and_escape_are_separate_from_cancelling_selection ... ok
+test app::tests::circle_fit_grips::circle_fit_grips_replay_sixteen_native_input_and_history_workflows ... ok
+test app::tests::object_selection::untrim_commands_prompt_only_preselection_and_stage_filtered_picks ... ok
+test app::tests::object_selection::merge_all_edges_filters_picks_waits_for_enter_and_cancels_without_edits ... ok
+test app::tests::object_selection::surface_join_picks_wait_for_enter_and_undo_restores_the_sources ... ok
+test app::tests::object_selection::volume_centroid_object_prompt_finishes_or_cancels_with_filtered_picks ... ok
+test viewport::component_picking::tests::rectangle_gesture_dispatches_once_after_release_without_object_selection ... ok
+
+test result: ok. 71 passed; 0 failed; 0 ignored; 0 measured; 1166 filtered out; finished in 0.22s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-7d1b644388fcdd03)
+
+running 14 tests
+test object_selection::tests::object_filters_cover_geometry_and_memberships_without_changing_selection_policy ... ok
+test object_selection::tests::postselection_failure_keeps_accepted_prompt_choices_but_rolls_back_document_state ... ok
+test object_selection::tests::choice_options_and_toggle_actions_are_canonical_bounded_and_atomic ... ok
+test object_selection::tests::confirmation_menus_are_selection_dependent_atomic_and_readonly_until_conversion ... ok
+test object_selection::tests::prompt_queries_and_staged_updates_are_readonly_until_explicit_acceptance ... ok
+test point_fitting::tests::line_through_points_no_result_invalid_options_and_mesh_source_filter_preserve_redo ... ok
+test point_fitting::plane_tests::plane_through_points_invalid_input_and_no_result_preserve_redo ... ok
+test point_fitting::sphere_tests::sphere_fit_points_failed_fits_and_invalid_options_leave_redo_intact ... ok
+test circle_fit_points::tests::circle_fit_points_invalid_invocations_and_degenerate_fits_preserve_redo ... ok
+test point_fitting::sphere_tests::sphere_fit_points_builds_sphere_controls_and_preserves_grips_through_history ... ok
+test object_selection::tests::postselection_clears_picks_without_adding_an_extra_history_entry ... ok
+test point_fitting::plane_tests::plane_through_points_replays_seventeen_native_geometry_and_selection_cases ... ok
+test circle_fit_points::tests::circle_fit_points_commands_replay_22_native_circle_loci_and_preserve_preselection ... ok
+test point_fitting::tests::line_through_points_replays_native_complete_line_images_sources_and_history ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1384 filtered out; finished in 0.07s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-5ac9d3fc59858bfa)
+
+running 32 tests
+test point_projection::fit::surface::tests::plane_representation_normalizes_exact_cross_products_outside_float_range ... ok
+test point_projection::fit::line::tests::full_range_exact_lines_and_subnormal_lengths_do_not_enter_the_svd ... ok
+test point_projection::fit::tests::exact_coplanarity_preserves_extreme_thin_clouds_and_degenerate_sets ... ok
+test point_projection::fit::line::tests::exact_collinear_line_fits_keep_extrema_across_coordinate_scales ... ok
+test point_projection::fit::surface::tests::plane_fit_rectangle_encloses_projected_data_and_has_physical_domains ... ok
+test point_projection::fit::tests::isotropic_scatter_accepts_any_plane_through_the_centroid_with_optimal_residual ... ok
+test point_projection::fit::surface::tests::plane_fit_symmetric_nonplanar_data_uses_the_least_squares_plane ... ok
+test point_projection::fit::line::tests::rank_two_and_three_clouds_choose_the_least_squared_orthogonal_error_axis ... ok
+test point_projection::fit::tests::duplicate_occurrences_are_weighted_and_centroid_is_not_rounded_before_projection ... ok
+test point_projection::fit::line::tests::line_fit_degeneracy_limits_and_normalized_underflow_are_explicit ... ok
+test point_projection::fit::tests::fit_rejects_empty_oversized_and_unresolved_full_range_inputs ... ok
+test point_projection::tests::supporting_line_is_unclamped_and_exactly_defined_by_its_endpoints ... ok
+test point_projection::tests::only_degenerate_definitions_and_unrepresentable_results_are_rejected ... ok
+test point_projection::tests::exact_displacements_survive_overflow_and_anisotropic_underflow ... ok
+test sphere_fit::tests::sphere_fit_tetrahedron_is_stable_under_binary_scale_and_source_permutations ... ok
+test point_projection::tests::plane_variants_agree_without_assuming_a_unit_normal ... ok
+"tetrahedron" sphere parameter/image bound diagnostic 0.0000000000000002775557561562892
+"axes-pre" sphere parameter/image bound diagnostic 0.00000000000000011102230246251565
+test point_projection::tests::coordinate_projections_preserve_extreme_tangential_coordinates ... ok
+test point_projection::fit::surface::tests::plane_fit_degenerate_sets_and_resource_limits_are_explicit ... ok
+"axes-post" sphere parameter/image bound diagnostic 0.00000000000000011102230246251565
+"axes-cloud" sphere parameter/image bound diagnostic 0.00000000000000011102230246251565
+test circle_fit::tests::permutation_translation_and_scaling_preserve_the_fitted_locus ... ok
+"axes-mesh" sphere parameter/image bound diagnostic 0.00000000000000011102230246251565
+"axes-mesh-grips" sphere parameter/image bound diagnostic 0.00000000000000011102230246251565
+"axes-curve-grips" sphere parameter/image bound diagnostic 0.00000000000000011102230246251565
+test circle_fit::tests::near_collinear_native_circle_is_recovered_within_sixteen_radius_ulps ... ok
+test sphere_fit::tests::sphere_fit_degenerate_and_resource_limits_do_not_create_invalid_parameters ... ok
+test point_projection::fit::tests::fit_is_permutation_invariant_for_a_separated_normal ... ok
+"noisy-axes" sphere parameter/image bound diagnostic 0.00000002754892276621288
+"noisy-duplicates" sphere parameter/image bound diagnostic 0.00000006118375662406234
+"noisy-reversed" sphere parameter/image bound diagnostic 0.00000002768793924955901
+test morph::curve_fit::tests::cubic_lift_of_a_rational_circle_fits_without_spending_the_control_budget ... ok
+test point_projection::fit::tests::orthogonal_scatter_axes_determine_the_least_squares_plane_across_scales ... ok
+"noisy-spatial" sphere parameter/image bound diagnostic 0.000000024003593957125274
+test point_projection::tests::cancellation_preserves_small_plane_origins ... ok
+"remote-noisy" sphere parameter/image bound diagnostic 0.000000024284514868398244
+"small-noisy" sphere parameter/image bound diagnostic 0.000000020737722673141045
+"large-noisy" sphere parameter/image bound diagnostic 0.000000115172208188693
+"equator" sphere parameter/image bound diagnostic 0
+test point_projection::fit::line::tests::repeated_point_weights_and_permutations_preserve_the_selected_objective ... ok
+"flat-noisy" sphere parameter/image bound diagnostic 0.000000025827365057372424
+"three-points" sphere parameter/image bound diagnostic 0.00000000000000005551115123125783
+"shallow-cap" sphere parameter/image bound diagnostic 3.7692543497695707
+test sphere_fit::tests::sphere_fit_sdk_corpus_retains_the_shallow_cap_reference_discrepancy ... ok
+test circle_fit::tests::regular_native_fits_match_geometric_circles_and_keep_duplicate_weights ... ok
+test circle_fit::tests::circle_fit_diagnostics_cover_center_witnesses_thin_arcs_and_large_circles ... ok
+test point_projection::fit::normalized::tests::compact_integer_entries_match_independent_rational_centering_bit_for_bit ... ok
+test morph::surface_fit::tests::cubically_lifted_sphere_fits_at_the_brep_component_tolerance ... ok
+test curve_fit::tests::rational_circle_fit_is_closed_non_rational_and_within_tolerance ... ok
+
+test result: ok. 32 passed; 0 failed; 0 ignored; 0 measured; 2280 filtered out; finished in 0.46s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-6395428b209ddfc7)
+
+running 3 tests
+test plane_through_points::tests::plane_through_points_protocol_retains_geometry_metadata_and_raw_chart_differences ... ok
+test plane_through_points::tests::point_fitting_protocol_replays_line_sdk_images_and_mixed_native_command_states ... ok
+test plane_through_points::tests::sphere_fit_points_protocol_retains_native_cap_difference_and_getter_cancellation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 509 filtered out; finished in 0.29s
+
+     Running unittests src/main.rs (target/debug/deps/viboceros_oracle-43d02528d4446e57)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/block_workflow.rs (target/debug/deps/block_workflow-5fd840de7e9f2347)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/contour_brep.rs (target/debug/deps/contour_brep-b1391081ff5b53a0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/contour_command.rs (target/debug/deps/contour_command-1385d7ed2c83b60f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide.rs (target/debug/deps/divide-1b220b9cdc72b805)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_curved.rs (target/debug/deps/divide_curved-d186ab8e60c6753d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/divide_rational_line.rs (target/debug/deps/divide_rational_line-a9c18014d851cf2d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_turnaround.rs (target/debug/deps/divide_turnaround-2c5e987f1eb428c7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/edge_analysis.rs (target/debug/deps/edge_analysis-496fbf27ea00cb0b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/section_command.rs (target/debug/deps/section_command-a523a09e4f3a01ba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+   Doc-tests viboceros_command
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viboceros_geometry
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests viboceros_oracle
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

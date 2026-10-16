@@ -4728,7 +4728,34 @@ impl Command for SphereCommand {
         &["Sph"]
     }
 
+    fn object_selection_prompt(
+        &self,
+        args: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(matches!(args,[option]if option_name_eq(option,"FitPoints"))
+            .then(|| point_fitting::selection_prompt(point_fitting::PointFitKind::Sphere)))
+    }
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        args: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        if args.first().is_some_and(|s| option_name_eq(s, "FitPoints")) {
+            require_consumed(args, 1, "Sphere FitPoints (select points or grips)")?;
+            return point_fitting::run(point_fitting::PointFitKind::Sphere, document, &[], true);
+        }
+        self.run(document, args)
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments
+            .first()
+            .is_some_and(|s| option_name_eq(s, "FitPoints"))
+        {
+            require_consumed(arguments, 1, "Sphere FitPoints (select points or grips)")?;
+            return point_fitting::run(point_fitting::PointFitKind::Sphere, document, &[], false);
+        }
         const USAGE: &str = "Sphere center radius | Sphere center point-on-sphere";
         let (center, center_consumed) = parse_point(arguments)?;
         let remaining = &arguments[center_consumed..];

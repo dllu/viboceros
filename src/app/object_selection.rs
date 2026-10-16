@@ -100,6 +100,9 @@ impl PendingObjectCommand {
                 "Edit counts, degrees or output options; Enter rebuilds, Esc cancels"
             };
         }
+        if self.description.command == "Sphere FitPoints" {
+            return "Select at least three points or grips; Enter fits a sphere, Esc cancels";
+        }
         if self.description.command == "LineThroughPt" {
             return "Select at least two points, cloud points, meshes or grips; Enter fits a line, Esc cancels";
         }
@@ -202,7 +205,11 @@ impl VibocerosApp {
             p.phase == ObjectPromptPhase::Selecting
                 && (matches!(
                     p.description.command,
-                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
+                    "Circle FitPoints"
+                        | "PlaneThroughPt"
+                        | "LineThroughPt"
+                        | "Sphere FitPoints"
+                        | "Smooth"
                 ) || (p.description.workflow
                     == ObjectSelectionWorkflow::PointInputAfterSelection
                     && super::transform_sources::allows_grips(p.description.command)))
@@ -508,7 +515,7 @@ impl VibocerosApp {
                     2
                 }
             }
-            "Circle FitPoints" | "PlaneThroughPt" => 3,
+            "Circle FitPoints" | "PlaneThroughPt" | "Sphere FitPoints" => 3,
             "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" | "LineThroughPt" => 2,
             _ => 1,
         };
@@ -520,7 +527,7 @@ impl VibocerosApp {
             .count();
         let selected_grips = if matches!(
             description.command,
-            "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
+            "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Sphere FitPoints" | "Smooth"
         ) {
             self.document
                 .selected_control_points()
@@ -834,7 +841,11 @@ impl VibocerosApp {
                             && pending.description.filter.accepts_object(o)
                     }) || (matches!(
                         pending.description.command,
-                        "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Smooth"
+                        "Circle FitPoints"
+                            | "PlaneThroughPt"
+                            | "LineThroughPt"
+                            | "Sphere FitPoints"
+                            | "Smooth"
                     ) && self.document.selected_control_points().next().is_some());
                 if !has_eligible_picks {
                     if self
@@ -1061,7 +1072,7 @@ impl VibocerosApp {
                 self.select_prompt_objects(ids, SelectionMode::Add);
                 if matches!(
                     pending.description.command,
-                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt"
+                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Sphere FitPoints"
                 ) {
                     self.document.select_all_control_points();
                 }

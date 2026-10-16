@@ -1,12 +1,11 @@
 //! Circle fitting: PCA plane, spatial radial residuals, and bounded refinement.
 use crate::{Circle3, FiniteSum, Frame3, GeometryError, Point3, Real, Tolerance, Vector3};
 use faer::Mat;
-use nalgebra::{Matrix2, Vector2};
+use nalgebra::Vector2;
 mod distant;
 mod seed;
 
 pub const MAX_CIRCLE_FIT_POINTS: usize = crate::MAX_PLANE_FIT_POINTS;
-const ITERATIONS: usize = 256;
 
 impl Circle3 {
     /// Fit a circle on the least-squares plane through the point centroid.
@@ -87,95 +86,19 @@ impl Circle3 {
     }
 }
 
-fn statistics(
-    points: &[[Real; 3]],
-    center: Vector2<Real>,
-) -> Result<(Real, Real, Vector2<Real>, Matrix2<Real>), GeometryError> {
-    let mut sum = FiniteSum::default();
-    let mut derivative = Vector2::zeros();
-    for p in points {
-        let d = Vector2::new(center.x - p[0], center.y - p[1]);
-        let distance = d.x.hypot(d.y).hypot(p[2]);
-        sum.add(distance)?;
-        if distance > 0. {
-            derivative += d / distance;
-        }
-    }
-    let radius = sum.mean()?;
-    derivative /= points.len() as Real;
-    let mut cost = FiniteSum::default();
-    let mut gradient = Vector2::zeros();
-    let mut hessian = Matrix2::zeros();
-    for p in points {
-        let d = Vector2::new(center.x - p[0], center.y - p[1]);
-        let distance = d.x.hypot(d.y).hypot(p[2]);
-        let residual = distance - radius;
-        // Choose the zero subgradient at a center witness. Native symmetric
-        // sets retain that stationary center and include the zero distance.
-        let j = if distance > 0. {
-            d / distance
-        } else {
-            Vector2::zeros()
-        } - derivative;
-        cost.add(residual * residual)?;
-        gradient += j * residual;
-        hessian += j * j.transpose();
-    }
-    Ok((
-        radius,
-        cost.mean()?,
-        gradient / points.len() as Real,
-        hessian / points.len() as Real,
-    ))
-}
-
 fn refine(
     points: &[[Real; 3]],
-    mut center: Vector2<Real>,
+    center: Vector2<Real>,
 ) -> Result<(Vector2<Real>, Real), GeometryError> {
     if center.norm() > 16. {
-        // The retained thin/noisy native cases keep the algebraic center.
-        // Cartesian refinement changes those circles and loses small radial
-        // residuals. Preserve that estimate and compute its radius stably.
         return Ok((center, distant::radius(points, center)?));
     }
-    let mut damping = 1e-6;
-    let mut current = statistics(points, center)?;
-    for _ in 0..ITERATIONS {
-        let (radius, cost, gradient, hessian) = current;
-        if gradient.norm() <= 1e-14 {
-            return Ok((center, current.0));
-        }
-        let Some(mut step) = (hessian + Matrix2::identity() * damping)
-            .lu()
-            .solve(&(-gradient))
-        else {
-            return Err(GeometryError::CircleFitDidNotConverge);
-        };
-        let bound = 2. * radius.max(1.);
-        if step.norm() > bound {
-            step *= bound / step.norm();
-        }
-        let candidate = center + step;
-        if candidate.iter().any(|v| !v.is_finite()) {
-            return Err(GeometryError::CircleFitDidNotConverge);
-        }
-        let proposed = statistics(points, candidate)?;
-        if proposed.1 < cost {
-            center = candidate;
-            current = proposed;
-            damping = (damping * 0.2).max(1e-16);
-            if step.norm() <= 1e-13 * (1. + center.norm()) {
-                return Ok((center, current.0));
-            }
-        } else {
-            damping *= 10.;
-            if damping > 1e12 {
-                return Ok((center, current.0));
-            }
-        }
-    }
-    Err(GeometryError::CircleFitDidNotConverge)
+    crate::radial_fit::refine(
+        points,
+        center,
+        |a, b| a.lu().solve(&b),
+        || GeometryError::CircleFitDidNotConverge,
+    )
 }
 
 #[cfg(test)]

@@ -22,6 +22,9 @@ a center and numeric radius or point on the sphere. Its longitude domain is
 `[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
 arguments starts the two-pick viewport workflow.
 
+`Sphere FitPoints` fits a sphere through selected point objects or grips.
+See [point fitting and its retained Rhino difference](sphere-fit-points.md).
+
 `Ellipsoid` creates the exact closed 9-by-5 rational surface obtained by
 scaling that sphere along three orthogonal semi-axes. Supply three numeric
 radii in World XY, or center and three axis-radius points for an oriented

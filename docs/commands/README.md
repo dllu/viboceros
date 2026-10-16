@@ -48,6 +48,7 @@ Rhino's complete command set is still a work in progress.
 - [Surfaces and solids](surfaces.md)
 - [Fit a rectangular plane through points, clouds and grips](plane-through-points.md)
 - [Fit a line through points, clouds, meshes and grips](line-through-points.md)
+- [Fit a sphere through points and grips](sphere-fit-points.md)
 - [Tapered curve extrusion](extrude-crv-tapered.md)
 - [Surface and face extrusion](extrude-srf.md)
 - [Surface extrusion along curves](extrude-srf-along-crv.md)

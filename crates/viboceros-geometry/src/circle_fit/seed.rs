@@ -1,4 +1,5 @@
 use super::*;
+use nalgebra::Matrix2;
 
 /// The compact Kasa solve is sufficient for ordinary data; thin data needs
 /// Taubin's gradient-normalized algebraic fit to avoid Kasa's radius bias.

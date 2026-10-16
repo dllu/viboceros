@@ -1,0 +1,1750 @@
+{
+  "schema_version": 1,
+  "absolute_epsilon": 1e-06,
+  "reference_derived_inputs": false,
+  "command_cases": 21,
+  "command_outputs": 16,
+  "complete_command_images_certified": 15,
+  "failed_command_image_cases": [
+    "shallow-cap"
+  ],
+  "sdk_successful_fits": 18,
+  "sdk_sphere_images_certified": 17,
+  "failed_sdk_image_cases": [
+    "shallow-cap"
+  ],
+  "geometry_and_metadata_comparison_passed": false,
+  "source_selection_and_command_state_comparison_passed": true,
+  "method": "Require full clamped quadratic tensor definitions with degree-multiplicity internal knots. Pair the eight Bernstein cells by stored order and their own affine unit charts. Positive identical weights make paired image differences convex combinations of paired control differences. Exact binary-rational squared distances admit the full control nets; the existing continuous_bound tool independently reports outward-rounded bounds per cell. SDK spheres use exact center-distance plus radius-difference admission. No raw chart, pole or control geometry is changed.",
+  "maximum_certified_command_control_distance_diagnostic": 1.1570326574911666e-07,
+  "shallow_cap_source_witness": {
+    "all_20_sources_on_center_zero_radius_two_within_1e_minus_12": true,
+    "native_sphere_misses_source_index_by_more_than_1e_minus_6": 10
+  },
+  "cases": [
+    {
+      "id": "tetrahedron",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            2.7206990463513265,
+            5.441398092702653,
+            8.16209713905398,
+            10.882796185405306
+          ],
+          "v_knot_breaks": [
+            -2.7206990463513265,
+            0.0,
+            2.7206990463513265
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "17/20282409603651670423947251286016",
+        "maximum_control_distance_diagnostic": 9.155133597044475e-16,
+        "patch_bounds_outward_rounded": [
+          7.021666937153402e-16,
+          7.021666937153402e-16,
+          7.021666937153402e-16,
+          9.155133597044475e-16,
+          4.965068306494546e-16,
+          4.965068306494546e-16,
+          4.965068306494546e-16,
+          9.027543087661185e-16
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "6338253001141149259283329712129/411376139330301510538742295639337626245683966408394965837152256",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.2412670766236368e-16,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "31691265005705741792817021190145/411376139330301510538742295639337626245683966408394965837152256",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 2.775557561562892e-16,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "axes-pre",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.71238898038469,
+            9.42477796076938,
+            14.137166941154069,
+            18.84955592153876
+          ],
+          "v_knot_breaks": [
+            -4.71238898038469,
+            0.0,
+            4.71238898038469
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "5/1267650600228229401496703205376",
+        "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+        "patch_bounds_outward_rounded": [
+          1.9860273225978185e-15,
+          1.6011864169946886e-15,
+          1.6011864169946886e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "axes-post",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.71238898038469,
+            9.42477796076938,
+            14.137166941154069,
+            18.84955592153876
+          ],
+          "v_knot_breaks": [
+            -4.71238898038469,
+            0.0,
+            4.71238898038469
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "5/1267650600228229401496703205376",
+        "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+        "patch_bounds_outward_rounded": [
+          1.9860273225978185e-15,
+          1.6011864169946886e-15,
+          1.6011864169946886e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "axes-cloud",
+      "operation": "sphere_fit_points",
+      "command_returned": false,
+      "output_count": 0,
+      "source_selection_and_command_state_matched": true,
+      "sdk_image": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "axes-mesh",
+      "operation": "sphere_fit_points",
+      "command_returned": false,
+      "output_count": 0,
+      "source_selection_and_command_state_matched": true,
+      "sdk_image": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "axes-mesh-grips",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.71238898038469,
+            9.42477796076938,
+            14.137166941154069,
+            18.84955592153876
+          ],
+          "v_knot_breaks": [
+            -4.71238898038469,
+            0.0,
+            4.71238898038469
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "5/1267650600228229401496703205376",
+        "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+        "patch_bounds_outward_rounded": [
+          1.9860273225978185e-15,
+          1.6011864169946886e-15,
+          1.6011864169946886e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "axes-curve-grips",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.71238898038469,
+            9.42477796076938,
+            14.137166941154069,
+            18.84955592153876
+          ],
+          "v_knot_breaks": [
+            -4.71238898038469,
+            0.0,
+            4.71238898038469
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "5/1267650600228229401496703205376",
+        "maximum_control_distance_diagnostic": 1.9860273225978185e-15,
+        "patch_bounds_outward_rounded": [
+          1.9860273225978185e-15,
+          1.6011864169946886e-15,
+          1.6011864169946886e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15,
+          1.9860273225978185e-15
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "noisy-axes",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.796084450510988,
+            9.592168901021976,
+            14.388253351532963,
+            19.184337802043952
+          ],
+          "v_knot_breaks": [
+            -4.796084450510988,
+            0.0,
+            4.796084450510988
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "16525129605793721/20282409603651670423947251286016",
+        "maximum_control_distance_diagnostic": 2.8543857373041944e-08,
+        "patch_bounds_outward_rounded": [
+          2.5551600400728737e-08,
+          2.7181884378557498e-08,
+          2.777729025221919e-08,
+          2.6723701569499183e-08,
+          2.691852855708205e-08,
+          2.7964777409565375e-08,
+          2.8543857373041947e-08,
+          2.7519632262973633e-08
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "55284433668282717/81129638414606681695789005144064",
+        "exact_radius_difference": "1626527/1125899906842624",
+        "parameter_image_bound_diagnostic": 2.754892276621288e-08,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "55284433668282717/81129638414606681695789005144064",
+        "exact_radius_difference": "1626527/1125899906842624",
+        "parameter_image_bound_diagnostic": 2.754892276621288e-08,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "noisy-duplicates",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.810910992775972,
+            9.621821985551945,
+            14.432732978327916,
+            19.24364397110389
+          ],
+          "v_knot_breaks": [
+            -4.810910992775972,
+            0.0,
+            4.810910992775972
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "78523062595891889/20282409603651670423947251286016",
+        "maximum_control_distance_diagnostic": 6.222126557703235e-08,
+        "patch_bounds_outward_rounded": [
+          5.882193883189771e-08,
+          5.879699927069083e-08,
+          6.0311838093172e-08,
+          6.033615122812276e-08,
+          6.07540554112723e-08,
+          6.072990904187632e-08,
+          6.219768906505304e-08,
+          6.222126557703235e-08
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "280114410641773373/81129638414606681695789005144064",
+        "exact_radius_difference": "2729491/1125899906842624",
+        "parameter_image_bound_diagnostic": 6.118375662406235e-08,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "280114410641773373/81129638414606681695789005144064",
+        "exact_radius_difference": "2729491/1125899906842624",
+        "parameter_image_bound_diagnostic": 6.118375662406235e-08,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "noisy-reversed",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.796084450510988,
+            9.592168901021976,
+            14.388253351532963,
+            19.184337802043952
+          ],
+          "v_knot_breaks": [
+            -4.796084450510988,
+            0.0,
+            4.796084450510988
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "260550548963457/316912650057057350374175801344",
+        "maximum_control_distance_diagnostic": 2.867320295405759e-08,
+        "patch_bounds_outward_rounded": [
+          2.571167842417318e-08,
+          2.7334956640495787e-08,
+          2.7909634169470043e-08,
+          2.6840385029266644e-08,
+          2.7052972262974886e-08,
+          2.8114137587947016e-08,
+          2.8673202954057595e-08,
+          2.7633514761331343e-08
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "13967653306303281/20282409603651670423947251286016",
+        "exact_radius_difference": "3255283/2251799813685248",
+        "parameter_image_bound_diagnostic": 2.7687939249559014e-08,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "13967653306303281/20282409603651670423947251286016",
+        "exact_radius_difference": "3255283/2251799813685248",
+        "parameter_image_bound_diagnostic": 2.7687939249559014e-08,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "noisy-spatial",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.711546377544887,
+            9.423092755089774,
+            14.13463913263466,
+            18.84618551017955
+          ],
+          "v_knot_breaks": [
+            -4.711546377544887,
+            0.0,
+            4.711546377544887
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "2961961472331225/5070602400912917605986812821504",
+        "maximum_control_distance_diagnostic": 2.4169069118880907e-08,
+        "patch_bounds_outward_rounded": [
+          2.3856991528757733e-08,
+          2.4092709905155136e-08,
+          2.416906911888091e-08,
+          2.393410232306792e-08,
+          2.364651029504532e-08,
+          2.3957994044932828e-08,
+          2.4034780926735918e-08,
+          2.3798488902911965e-08
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "1426570557738547/2535301200456458802993406410752",
+        "exact_radius_difference": "318243/1125899906842624",
+        "parameter_image_bound_diagnostic": 2.4003593957125277e-08,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "1426570557738547/2535301200456458802993406410752",
+        "exact_radius_difference": "318243/1125899906842624",
+        "parameter_image_bound_diagnostic": 2.4003593957125277e-08,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "remote-noisy",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.711546377577725,
+            9.42309275515545,
+            14.134639132733174,
+            18.8461855103109
+          ],
+          "v_knot_breaks": [
+            -4.711546377577725,
+            0.0,
+            4.711546377577725
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "10973/18446744073709551616",
+        "maximum_control_distance_diagnostic": 2.4389496139407472e-08,
+        "patch_bounds_outward_rounded": [
+          2.42289344852859e-08,
+          2.42289344852859e-08,
+          2.4389496139407475e-08,
+          2.42289344852859e-08,
+          2.3939700674315827e-08,
+          2.419422974440236e-08,
+          2.4255768569543598e-08,
+          2.4061669935963702e-08
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "10625/18446744073709551616",
+        "exact_radius_difference": "80187/281474976710656",
+        "parameter_image_bound_diagnostic": 2.4284514868398244e-08,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "10625/18446744073709551616",
+        "exact_radius_difference": "80187/281474976710656",
+        "parameter_image_bound_diagnostic": 2.4284514868398244e-08,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "small-noisy",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4.796096836665042e-05,
+            9.592193673330084e-05,
+            0.00014388290509995125,
+            0.00019184387346660167
+          ],
+          "v_knot_breaks": [
+            -4.796096836665042e-05,
+            0.0,
+            4.796096836665042e-05
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "37650727442738087743452341/87112285931760246646623899502532662132736",
+        "maximum_control_distance_diagnostic": 2.0789640555494064e-08,
+        "patch_bounds_outward_rounded": [
+          2.0721118805225937e-08,
+          2.0755892570776738e-08,
+          2.0693762758253485e-08,
+          2.062522383271889e-08,
+          2.075492333297224e-08,
+          2.0789640555494064e-08,
+          2.0727611900851995e-08,
+          2.069279061033212e-08
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "37178609411864104707838413/87112285931760246646623899502532662132736",
+        "exact_radius_difference": "11634473537/147573952589676412928",
+        "parameter_image_bound_diagnostic": 2.0737722673141045e-08,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "37178609411864104707838413/87112285931760246646623899502532662132736",
+        "exact_radius_difference": "11634473537/147573952589676412928",
+        "parameter_image_bound_diagnostic": 2.0737722673141045e-08,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "large-noisy",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            4796.084452780221,
+            9592.168905560442,
+            14388.253358340662,
+            19184.337811120884
+          ],
+          "v_knot_breaks": [
+            -4796.084452780221,
+            0.0,
+            4796.084452780221
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "258946991781/19342813113834066795298816",
+        "maximum_control_distance_diagnostic": 1.1570326574911666e-07,
+        "patch_bounds_outward_rounded": [
+          1.1482549599229156e-07,
+          1.1405021224210227e-07,
+          1.1492361705650033e-07,
+          1.155701784578301e-07,
+          1.149587611207916e-07,
+          1.143083723473414e-07,
+          1.1505678431642528e-07,
+          1.1570326574911666e-07
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "1008605347373/77371252455336267181195264",
+        "exact_radius_difference": "2193/2199023255552",
+        "parameter_image_bound_diagnostic": 1.1517220818869301e-07,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "1008605347373/77371252455336267181195264",
+        "exact_radius_difference": "2193/2199023255552",
+        "parameter_image_bound_diagnostic": 1.1517220818869301e-07,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "equator",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            3.141592653589793,
+            6.283185307179586,
+            9.42477796076938,
+            12.566370614359172
+          ],
+          "v_knot_breaks": [
+            -3.141592653589793,
+            0.0,
+            3.141592653589793
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "29/20282409603651670423947251286016",
+        "maximum_control_distance_diagnostic": 1.1957467920563633e-15,
+        "patch_bounds_outward_rounded": [
+          9.930136612989092e-16,
+          9.930136612989092e-16,
+          9.930136612989092e-16,
+          1.1957467920563635e-15,
+          6.280369834735101e-16,
+          6.280369834735101e-16,
+          6.280369834735101e-16,
+          8.005932084973443e-16
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "0",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 0.0,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "0",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 0.0,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "flat-noisy",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            2.6473114742157833,
+            5.2946229484315666,
+            7.94193442264735,
+            10.589245896863133
+          ],
+          "v_knot_breaks": [
+            -2.6473114742157833,
+            0.0,
+            2.6473114742157833
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "16349150517110993/20282409603651670423947251286016",
+        "maximum_control_distance_diagnostic": 2.839146623164559e-08,
+        "patch_bounds_outward_rounded": [
+          2.4976526083742138e-08,
+          2.839146619181313e-08,
+          2.5260581215628108e-08,
+          2.1350608565762086e-08,
+          2.497652612902073e-08,
+          2.8391466231645593e-08,
+          2.5260581260397545e-08,
+          2.1350608565762086e-08
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "139513289827659345/324518553658426726783156020576256",
+        "exact_radius_difference": "22937417/4503599627370496",
+        "parameter_image_bound_diagnostic": 2.5827365057372424e-08,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "139513289827659345/324518553658426726783156020576256",
+        "exact_radius_difference": "22937417/4503599627370496",
+        "parameter_image_bound_diagnostic": 2.5827365057372424e-08,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "collinear",
+      "operation": "sphere_fit_points",
+      "command_returned": false,
+      "output_count": 0,
+      "source_selection_and_command_state_matched": true
+    },
+    {
+      "id": "coincident",
+      "operation": "sphere_fit_points",
+      "command_returned": false,
+      "output_count": 0,
+      "source_selection_and_command_state_matched": true
+    },
+    {
+      "id": "two-points",
+      "operation": "sphere_fit_points",
+      "command_returned": false,
+      "output_count": 0,
+      "source_selection_and_command_state_matched": true
+    },
+    {
+      "id": "three-points",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": true,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": true,
+        "exact_maximum_squared_control_distance": "5/10141204801825835211973625643008",
+        "maximum_control_distance_diagnostic": 7.021666937153402e-16,
+        "patch_bounds_outward_rounded": [
+          4.965068306494546e-16,
+          4.965068306494546e-16,
+          4.965068306494546e-16,
+          7.021666937153402e-16,
+          3.1401849173675503e-16,
+          3.644498975243576e-16,
+          3.644498975243576e-16,
+          4.965068306494546e-16
+        ],
+        "positive_identical_weights": true
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "1/81129638414606681695789005144064",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 1.1102230246251565e-16,
+        "within_1e_minus_6": true
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "1/324518553658426726783156020576256",
+        "exact_radius_difference": "0",
+        "parameter_image_bound_diagnostic": 5.551115123125783e-17,
+        "within_1e_minus_6": true
+      }
+    },
+    {
+      "id": "shallow-cap",
+      "operation": "sphere_fit_points",
+      "command_returned": true,
+      "output_count": 1,
+      "source_selection_and_command_state_matched": true,
+      "command_image": {
+        "whole_image_within_1e_minus_6": false,
+        "local_chart": {
+          "u_knot_breaks": [
+            0.0,
+            1.5707963267948966,
+            3.141592653589793,
+            4.71238898038469,
+            6.283185307179586
+          ],
+          "v_knot_breaks": [
+            -1.5707963267948966,
+            0.0,
+            1.5707963267948966
+          ]
+        },
+        "reference_chart": {
+          "u_knot_breaks": [
+            0.0,
+            0.18410348192438988,
+            0.36820696384877977,
+            0.5523104457731697,
+            0.7364139276975595
+          ],
+          "v_knot_breaks": [
+            -0.18410348192438988,
+            0.0,
+            0.18410348192438988
+          ]
+        },
+        "chart_map": "Pair the eight quadratic Bernstein cells in their stored u/v order; use the affine unit chart within each corresponding knot span. Knot multiplicities equal degree at every internal break.",
+        "exact_squared_control_admission": false,
+        "exact_maximum_squared_control_distance": "55296899712408556155721599306227713/2596148429267413814265248164610048",
+        "maximum_control_distance_diagnostic": 4.61514799303133,
+        "patch_bounds_outward_rounded": [
+          4.6146644231083815,
+          4.61514799303133,
+          4.615096166258404,
+          4.614612590904475,
+          3.2629089062596437,
+          3.263592773344648,
+          3.2635194830825367,
+          3.262835600636416
+        ],
+        "positive_identical_weights": true,
+        "separation_witness": {
+          "local_south_pole": [
+            1.5505887182832697e-15,
+            -1.0855903687253914e-15,
+            -1.9999999999993507
+          ],
+          "reference_minimum_control_z": 1.76925425561137,
+          "exact_vertical_separation_lower_bound": "8487606030516549/2251799813685248",
+          "distance_to_every_reference_surface_point_exceeds_1e_minus_6": true
+        }
+      },
+      "command_parameters": {
+        "exact_center_squared_distance": "45749202050006050454830149332608529112034952854196481335234037/12855504354071922204335696738729300820177623950262342682411008",
+        "exact_radius_difference": "135669755822661139/72057594037927936",
+        "parameter_image_bound_diagnostic": 3.7692543497695707,
+        "within_1e_minus_6": false
+      },
+      "sdk_image": {
+        "exact_center_squared_distance": "45749202050006050454830149332608529112034952854196481335234037/12855504354071922204335696738729300820177623950262342682411008",
+        "exact_radius_difference": "135669755822661139/72057594037927936",
+        "parameter_image_bound_diagnostic": 3.7692543497695707,
+        "within_1e_minus_6": false
+      }
+    }
+  ],
+  "raw_protocol_comparison": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 0,
+    "passed": false,
+    "operations": [
+      {
+        "id": "tetrahedron",
+        "passed": false,
+        "max_absolute_error": 4.59961087822572,
+        "viboceros_ns_per_iteration": 4221704.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "tetrahedron.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 10.882796185405306 (error 4.6, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 5.4413980927026531 (error 2.3, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 5.4413980927026531 (error 2.3, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 8.16209713905398 (error 3.45, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 8.16209713905398 (error 3.45, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 10.882796185405306 (error 4.6, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 10.882796185405306 (error 4.6, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 10.882796185405306 (error 4.6, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 2.7206990463513265 (error 1.15, limit 1e-06)",
+          "tetrahedron.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 2.7206990463513265 (error 1.15, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "axes-pre",
+        "passed": false,
+        "max_absolute_error": 12.566370614359172,
+        "viboceros_ns_per_iteration": 2296022.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "axes-pre.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-pre.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "axes-post",
+        "passed": false,
+        "max_absolute_error": 12.566370614359172,
+        "viboceros_ns_per_iteration": 2240902.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "axes-post.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-post.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "axes-cloud",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 1222747.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "axes-mesh",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 1186635.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "axes-mesh-grips",
+        "passed": false,
+        "max_absolute_error": 12.566370614359172,
+        "viboceros_ns_per_iteration": 2229157.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "axes-mesh-grips.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-mesh-grips.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "axes-curve-grips",
+        "passed": false,
+        "max_absolute_error": 12.566370614359172,
+        "viboceros_ns_per_iteration": 2248438.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "axes-curve-grips.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.4247779607693793 (error 6.28, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.137166941154069 (error 9.42, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 18.849555921538759 (error 12.6, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)",
+          "axes-curve-grips.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7123889803846897 (error 3.14, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "noisy-axes",
+        "passed": false,
+        "max_absolute_error": 12.901152494864366,
+        "viboceros_ns_per_iteration": 12005362.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "noisy-axes.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.5921689010219762 (error 6.45, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.5921689010219762 (error 6.45, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.388253351532963 (error 9.68, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.388253351532963 (error 9.68, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-axes.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "noisy-duplicates",
+        "passed": false,
+        "max_absolute_error": 12.960458663924303,
+        "viboceros_ns_per_iteration": 12958763.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "noisy-duplicates.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 19.243643971103889 (error 13, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.6218219855519447 (error 6.48, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.6218219855519447 (error 6.48, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.432732978327916 (error 9.72, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.432732978327916 (error 9.72, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 19.243643971103889 (error 13, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 19.243643971103889 (error 13, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 19.243643971103889 (error 13, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.8109109927759723 (error 3.24, limit 1e-06)",
+          "noisy-duplicates.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.8109109927759723 (error 3.24, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "noisy-reversed",
+        "passed": false,
+        "max_absolute_error": 12.901152494864366,
+        "viboceros_ns_per_iteration": 12465366.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "noisy-reversed.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.5921689010219762 (error 6.45, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.5921689010219762 (error 6.45, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.388253351532963 (error 9.68, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.388253351532963 (error 9.68, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 19.184337802043952 (error 12.9, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)",
+          "noisy-reversed.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7960844505109881 (error 3.23, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "noisy-spatial",
+        "passed": false,
+        "max_absolute_error": 12.563000202999962,
+        "viboceros_ns_per_iteration": 19180630.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "noisy-spatial.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 18.846185510179549 (error 12.6, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.4230927550897743 (error 6.28, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.4230927550897743 (error 6.28, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.134639132634661 (error 9.42, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.134639132634661 (error 9.42, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 18.846185510179549 (error 12.6, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 18.846185510179549 (error 12.6, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 18.846185510179549 (error 12.6, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7115463775448871 (error 3.14, limit 1e-06)",
+          "noisy-spatial.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7115463775448871 (error 3.14, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "remote-noisy",
+        "passed": false,
+        "max_absolute_error": 12.563000203131313,
+        "viboceros_ns_per_iteration": 6617039.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "remote-noisy.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 18.8461855103109 (error 12.6, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.4230927551554498 (error 6.28, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.4230927551554498 (error 6.28, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14.134639132733174 (error 9.42, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14.134639132733174 (error 9.42, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 18.8461855103109 (error 12.6, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 18.8461855103109 (error 12.6, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 18.8461855103109 (error 12.6, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7115463775777249 (error 3.14, limit 1e-06)",
+          "remote-noisy.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7115463775777249 (error 3.14, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "small-noisy",
+        "passed": false,
+        "max_absolute_error": 6.28299346330612,
+        "viboceros_ns_per_iteration": 12172867.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "small-noisy.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 0.00019184387346660167 (error 6.28, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9.5921936733300836e-05 (error 3.14, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9.5921936733300836e-05 (error 3.14, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 0.00014388290509995125 (error 4.71, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 0.00014388290509995125 (error 4.71, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 0.00019184387346660167 (error 6.28, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 0.00019184387346660167 (error 6.28, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 0.00019184387346660167 (error 6.28, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4.7960968366650418e-05 (error 1.57, limit 1e-06)",
+          "small-noisy.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4.7960968366650418e-05 (error 1.57, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "large-noisy",
+        "passed": false,
+        "max_absolute_error": 19178.054625813704,
+        "viboceros_ns_per_iteration": 12487591.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "large-noisy.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 19184.337811120884 (error 1.92e+04, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 9592.168905560442 (error 9.59e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 9592.168905560442 (error 9.59e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 14388.253358340662 (error 1.44e+04, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 14388.253358340662 (error 1.44e+04, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 19184.337811120884 (error 1.92e+04, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 19184.337811120884 (error 1.92e+04, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 19184.337811120884 (error 1.92e+04, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 4796.084452780221 (error 4.79e+03, limit 1e-06)",
+          "large-noisy.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 4796.084452780221 (error 4.79e+03, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "equator",
+        "passed": false,
+        "max_absolute_error": 6.283185307179586,
+        "viboceros_ns_per_iteration": 2001459.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "equator.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 12.566370614359172 (error 6.28, limit 1e-06)",
+          "equator.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 6.2831853071795862 (error 3.14, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 6.2831853071795862 (error 3.14, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 9.4247779607693793 (error 4.71, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 9.4247779607693793 (error 4.71, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 12.566370614359172 (error 6.28, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 12.566370614359172 (error 6.28, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 12.566370614359172 (error 6.28, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 3.1415926535897931 (error 1.57, limit 1e-06)",
+          "equator.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 3.1415926535897931 (error 1.57, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "flat-noisy",
+        "passed": false,
+        "max_absolute_error": 4.306060589683547,
+        "viboceros_ns_per_iteration": 13595616.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "flat-noisy.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 10.589245896863133 (error 4.31, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 5.2946229484315666 (error 2.15, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 5.2946229484315666 (error 2.15, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 7.9419344226473498 (error 3.23, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 7.9419344226473498 (error 3.23, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 10.589245896863133 (error 4.31, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 10.589245896863133 (error 4.31, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 10.589245896863133 (error 4.31, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 2.6473114742157833 (error 1.08, limit 1e-06)",
+          "flat-noisy.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 2.6473114742157833 (error 1.08, limit 1e-06)"
+        ]
+      },
+      {
+        "id": "collinear",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1136090.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "coincident",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 884952.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "two-points",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 760167.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "three-points",
+        "passed": true,
+        "max_absolute_error": 6.661338147750939e-16,
+        "viboceros_ns_per_iteration": 1921266.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": []
+      },
+      {
+        "id": "shallow-cap",
+        "passed": false,
+        "max_absolute_error": 5.546771379482027,
+        "viboceros_ns_per_iteration": 3646771.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": 0.0,
+        "differences": [
+          "shallow-cap.value.outputs[0].center[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].center[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].center[2]: 3.2465988560508359e-13 != 1.8864581723661544 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[0].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[0].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[0].point[2]: -1.9999999999993507 != 1.7692542556113702 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[1].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[1].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[1].point[2]: -1.9999999999993507 != 1.76925425561137 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[2].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[2].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[2].point[2]: -1.9999999999993507 != 1.7692542556113702 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[3].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[3].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[3].point[2]: -1.9999999999993507 != 1.76925425561137 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[4].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[4].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[4].point[2]: -1.9999999999993507 != 1.7692542556113702 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[5].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[5].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[5].point[2]: -1.9999999999993507 != 1.76925425561137 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[6].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[6].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[6].point[2]: -1.9999999999993507 != 1.7692542556113702 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[7].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[7].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[7].point[2]: -1.9999999999993507 != 1.76925425561137 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[8].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[8].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[8].point[2]: -1.9999999999993507 != 1.7692542556113702 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[9].point[0]: 1.9999999999996769 != 0.11779655391271064 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[9].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[9].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[10].point[0]: 1.9999999999996769 != 0.11779655391271064 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[10].point[1]: 1.9999999999996743 != 0.11714039769231545 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[10].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[11].point[0]: 1.5505887182832697e-15 != 0.00059263715792645102 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[11].point[1]: 1.9999999999996743 != 0.11714039769231548 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[11].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[12].point[0]: -1.9999999999996738 != -0.11661127959685773 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[12].point[1]: 1.9999999999996743 != 0.11714039769231548 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[12].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[13].point[0]: -1.9999999999996738 != -0.11661127959685777 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[13].point[1]: -1.0855903687253914e-15 != -6.3519062468713266e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[13].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[14].point[0]: -1.9999999999996738 != -0.11661127959685776 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[14].point[1]: -1.9999999999996765 != -0.11726743581725289 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[14].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[15].point[0]: 1.5505887182832697e-15 != 0.00059263715792642229 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[15].point[1]: -1.9999999999996765 != -0.11726743581725292 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[15].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[16].point[0]: 1.9999999999996769 != 0.1177965539127106 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[16].point[1]: -1.9999999999996765 != -0.11726743581725292 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[16].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[17].point[0]: 1.9999999999996769 != 0.11779655391271064 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[17].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[17].point[2]: -1.9999999999993507 != 1.7692542556113704 (error 3.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[18].point[0]: 1.9999999999996769 != 0.11779655391271066 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[18].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[18].point[2]: 3.2465988560508359e-13 != 1.8864581723661544 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[19].point[0]: 1.9999999999996769 != 0.11779655391271067 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[19].point[1]: 1.9999999999996743 != 0.11714039769231546 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[19].point[2]: 3.2465988560508359e-13 != 1.8864581723661542 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[20].point[0]: 1.5505887182832697e-15 != 0.00059263715792645102 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[20].point[1]: 1.9999999999996743 != 0.11714039769231549 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[20].point[2]: 3.2465988560508359e-13 != 1.8864581723661544 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[21].point[0]: -1.9999999999996738 != -0.11661127959685774 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[21].point[1]: 1.9999999999996743 != 0.11714039769231548 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[21].point[2]: 3.2465988560508359e-13 != 1.8864581723661542 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[22].point[0]: -1.9999999999996738 != -0.11661127959685777 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[22].point[1]: -1.0855903687253914e-15 != -6.3519062468713266e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[22].point[2]: 3.2465988560508359e-13 != 1.8864581723661544 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[23].point[0]: -1.9999999999996738 != -0.11661127959685777 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[23].point[1]: -1.9999999999996765 != -0.11726743581725291 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[23].point[2]: 3.2465988560508359e-13 != 1.8864581723661542 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[24].point[0]: 1.5505887182832697e-15 != 0.00059263715792642229 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[24].point[1]: -1.9999999999996765 != -0.11726743581725294 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[24].point[2]: 3.2465988560508359e-13 != 1.8864581723661544 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[25].point[0]: 1.9999999999996769 != 0.1177965539127106 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[25].point[1]: -1.9999999999996765 != -0.11726743581725292 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[25].point[2]: 3.2465988560508359e-13 != 1.8864581723661542 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[26].point[0]: 1.9999999999996769 != 0.11779655391271066 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[26].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[26].point[2]: 3.2465988560508359e-13 != 1.8864581723661544 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[27].point[0]: 1.9999999999996769 != 0.11779655391271067 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[27].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[27].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[28].point[0]: 1.9999999999996769 != 0.11779655391271067 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[28].point[1]: 1.9999999999996743 != 0.11714039769231548 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[28].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[29].point[0]: 1.5505887182832697e-15 != 0.00059263715792645102 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[29].point[1]: 1.9999999999996743 != 0.1171403976923155 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[29].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[30].point[0]: -1.9999999999996738 != -0.11661127959685776 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[30].point[1]: 1.9999999999996743 != 0.1171403976923155 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[30].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[31].point[0]: -1.9999999999996738 != -0.11661127959685778 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[31].point[1]: -1.0855903687253914e-15 != -6.3519062468713266e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[31].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[32].point[0]: -1.9999999999996738 != -0.11661127959685778 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[32].point[1]: -1.9999999999996765 != -0.11726743581725292 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[32].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[33].point[0]: 1.5505887182832697e-15 != 0.00059263715792642229 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[33].point[1]: -1.9999999999996765 != -0.11726743581725295 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[33].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[34].point[0]: 1.9999999999996769 != 0.11779655391271063 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[34].point[1]: -1.9999999999996765 != -0.11726743581725295 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[34].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[35].point[0]: 1.9999999999996769 != 0.11779655391271067 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[35].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[35].point[2]: 2 != 2.0036620891209389 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[36].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[36].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[36].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[37].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[37].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[37].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[38].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[38].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[38].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[39].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[39].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[39].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[40].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[40].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[40].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[41].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[41].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[41].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[42].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[42].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[42].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[43].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[43].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[43].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[44].point[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[44].point[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.control_points[44].point[2]: 2 != 2.0036620891209385 (error 0.00366, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.domain_u[1]: 6.2831853071795862 != 0.73641392769755953 (error 5.55, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.domain_v[0]: -1.5707963267948966 != -0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.domain_v[1]: 1.5707963267948966 != 0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[3]: 1.5707963267948966 != 0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[4]: 1.5707963267948966 != 0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[5]: 3.1415926535897931 != 0.36820696384877977 (error 2.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[6]: 3.1415926535897931 != 0.36820696384877977 (error 2.77, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[7]: 4.7123889803846897 != 0.55231044577316968 (error 4.16, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[8]: 4.7123889803846897 != 0.55231044577316968 (error 4.16, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[9]: 6.2831853071795862 != 0.73641392769755953 (error 5.55, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[10]: 6.2831853071795862 != 0.73641392769755953 (error 5.55, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_u[11]: 6.2831853071795862 != 0.73641392769755953 (error 5.55, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_v[0]: -1.5707963267948966 != -0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_v[1]: -1.5707963267948966 != -0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_v[2]: -1.5707963267948966 != -0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_v[5]: 1.5707963267948966 != 0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_v[6]: 1.5707963267948966 != 0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].definition.knots_v[7]: 1.5707963267948966 != 0.18410348192438988 (error 1.39, limit 1e-06)",
+          "shallow-cap.value.outputs[0].radius: 1.9999999999996754 != 0.11720391675478421 (error 1.88, limit 1e-06)",
+          "shallow-cap.value.sdk.center[0]: 1.5505887182832697e-15 != 0.00059263715792644387 (error 0.000593, limit 1e-06)",
+          "shallow-cap.value.sdk.center[1]: -1.0855903687253914e-15 != -6.3519062468727619e-05 (error 6.35e-05, limit 1e-06)",
+          "shallow-cap.value.sdk.center[2]: 3.2465988560508359e-13 != 1.8864581723661544 (error 1.89, limit 1e-06)",
+          "shallow-cap.value.sdk.radius: 1.9999999999996754 != 0.11720391675478421 (error 1.88, limit 1e-06)"
+        ]
+      }
+    ],
+    "max_absolute_error": 19178.054625813704,
+    "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+  }
+}
