@@ -148,7 +148,6 @@
     "crates/viboceros-geometry/src/surface_pullback/interpolation/tests.rs": "f002bc0a15d1648904b4686df1867daa9c9f8f8ae5bb721db612986bd745e414",
     "crates/viboceros-geometry/src/surface_pullback/linear.rs": "c845a929f9a3a697915080dc61a926d2131a4525d1283aaa327f73f674c28b50",
     "crates/viboceros-geometry/src/surface_pullback/linear/tests.rs": "ce4c594d91cac8ec51738f719c51adfcda27a340739332d44789d080dc021421",
-    "crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
     "crates/viboceros-smlib/Cargo.toml": "925acc648ea65f50b1417b4c55e1189b730f0aa9f53b958c17cf534e0242d5b5",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
     "crates/viboceros-smlib/examples/network_family_parameterization.rs": "9244e08f0406b8916f4a991f1a10df08236b4b65d1ead4b21c00e53aa6e79191",
@@ -170,8 +169,7 @@
     "crates/viboceros-smlib/tests/network_family_fit.rs": "6d935050496d210fbcd2aac35d110f3c19d0189793c65bb9520a727a943b6760",
     "docs/common-parameter-curve-fit.md": "c3d07843edbb84d2fc9ad4a6a8098500ea26e3039a9d62acdc68dc18f4ff3a57",
     "docs/prepared-gordon-families.md": "1d6b7e512a900286135e415c04125dba64d7ad8d00ff3080769341bcc400154f",
-    "docs/shared-gordon-curve-fit.md": "246d152dd5df7444438319f359cb126d114f92b1853ff0b4b469ba9f8d1e396a",
-    "docs/smlib-gordon-network.md": "fdc376f54b94219d0177bb57839a4fa9c1a23e65d2f71ba871ac07593f02e3da"
+    "docs/shared-gordon-curve-fit.md": "246d152dd5df7444438319f359cb126d114f92b1853ff0b4b469ba9f8d1e396a"
   },
   "input_sha256": {
     "tools/rhino_oracle/fixtures/network_surface.json": "8c5eb7601fd8e8172bc3580b2451e73644c242a680b410a2c1bb459139be4605",
@@ -188,5 +186,9 @@
     "docs/shared-gordon-curve-fit-asan-instrumentation.log": "3bf6d26a216c6759063feb9e66a9512de869080ffeadc3830be68dadb93f1aaf",
     "docs/shared-gordon-curve-fit-probe.log": "009f063c1c953169dd22305987ad46b7414843cadc16c221d6f2ca3373fc1c0c",
     "tools/rhino_oracle/observations/network_family_parameterization_viboceros_20261016.json": "270b5a7c3669fefcc1f512d430fc3be3c5acbb186c3b9aecab34278b92051d17"
+  },
+  "source_git_sha256": {
+    "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
+    "23a970097bf8c88b7db94af4ae1e8837173edd3e:docs/smlib-gordon-network.md": "fdc376f54b94219d0177bb57839a4fa9c1a23e65d2f71ba871ac07593f02e3da"
   }
 }

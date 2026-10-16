@@ -1,0 +1,3 @@
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 39.94s
+     Running `target/debug/viboceros-oracle tools/rhino_oracle/fixtures/network_source_fit.json /tmp/viboceros-network-source-fit-viboceros.json`

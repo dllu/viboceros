@@ -1,0 +1,14 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.95s
+     Running unittests examples/network_source_audit.rs (target/debug/examples/network_source_audit-c5e9f0c0d5044885)
+
+running 2 tests
+test tests::incompatibility_uses_exact_distances_and_outward_triangle_sums ... ok
+test tests::source_membership_keeps_exact_domains_and_rejects_forged_sample_points ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

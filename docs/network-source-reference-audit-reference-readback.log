@@ -1,0 +1,4 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 56.95s
+     Running `target/debug/viboceros-oracle /tmp/viboceros-network-source-readback-request.json /tmp/viboceros-network-source-readback-viboceros.json`

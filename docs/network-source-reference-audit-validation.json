@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "component": "Network source sampling and exact reference-output incompatibility audit",
+  "base_repository_revision": "23a970097bf8c88b7db94af4ae1e8837173edd3e",
+  "native_kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "source_diagnostic_implementation_validated": true,
+  "reference_output_incompatibility_proved": true,
+  "rhino_networksrf_fitting_qualified": false,
+  "application_networksrf_command_registered": false,
+  "source_preservation_limits_changed": false,
+  "reference_comparison_limits_changed": false,
+  "performance_qualified": false,
+  "coverage": {
+    "distinct_rust_tests": 6,
+    "rust_test_executions": 8,
+    "python_tests": 11,
+    "new_rust_tests": 4,
+    "new_python_tests": 4,
+    "existing_analytic_native_network_fixtures": 9,
+    "licensed_sdk_operations": 2,
+    "original_queries_per_operation": 25,
+    "source_queries_per_operation": 390,
+    "exact_original_source_sample_memberships": 780,
+    "source_sample_incompatibility_witnesses": 55,
+    "original_query_incompatibility_witnesses": 1,
+    "reference_derived_readback_queries": 12,
+    "independent_source_domains": true,
+    "optional_default_response_preserved": true,
+    "bounded_fraction_validation": true,
+    "ownership_cleanup_on_source_query_failures": true,
+    "exact_one_ulp_threshold_and_forged_source_point_rejection": true
+  },
+  "observations": [
+    {
+      "id": "biquadratic-source-fit-1e-06",
+      "requested_source_tolerance": 1e-06,
+      "reference_tensor_control_counts": [
+        47,
+        61
+      ],
+      "reference_maximum_sampled_returned_point_distance": 4.4041054277554315e-05,
+      "native_maximum_sampled_returned_point_distance": 4.965068306494546e-16,
+      "incompatible_source_sample_outputs": 46,
+      "incompatible_original_query_outputs": 1
+    },
+    {
+      "id": "biquadratic-source-fit-1e-07",
+      "requested_source_tolerance": 1e-07,
+      "reference_tensor_control_counts": [
+        113,
+        172
+      ],
+      "reference_maximum_sampled_returned_point_distance": 5.731531714673203e-06,
+      "native_maximum_sampled_returned_point_distance": 4.965068306494546e-16,
+      "incompatible_source_sample_outputs": 9,
+      "incompatible_original_query_outputs": 0
+    }
+  ],
+  "original_query_witness": {
+    "incompatibility_proved": true,
+    "joint_distance_budget_upper": 2.0000010000000006e-06,
+    "query_index": 10,
+    "reference_output_distance": 1.5817317916184265e-05,
+    "source_curve_index": 0,
+    "source_parameter": 0.53,
+    "source_position_bound": 1e-12
+  },
+  "saved_reference_reproduced": {
+    "canonical_tensor_definition_identical": true,
+    "all_25_closest_query_outputs_identical": true
+  },
+  "reference_derived_readback": {
+    "reference_derived_inputs": true,
+    "qualifies_independent_networksrf": false,
+    "queries": 12,
+    "maximum_point_difference": 8.62867291197409e-12,
+    "maximum_distance_difference": 8.491530707212779e-16,
+    "generated_request_bytes_sha256": "f6105a3aed2c6b24e443d05ddd74ceac7a18c98bc22414940d9e674e2b660de5"
+  },
+  "limits": [
+    "Source samples measure distances to returned closest points. They do not certify global closest minima or continuous source-surface separation. The readback compares two closest-point implementations on saved SDK tensors and never feeds an independent candidate.",
+    "Each positive incompatibility witness combines an exact original-source position certificate, outward addition of source-image and comparison budgets, and an exact point-distance predicate. By the triangle inequality, a correct globally closest candidate output preserving that source cannot also satisfy the reference returned-point comparison. A missing witness does not establish compatibility.",
+    "All 780 dyadic source samples certify exactly on their original stored quadratic curves. Original query 10 uses the separately certified 1e-12 membership bound at parameter 0.53; the reference output lies strictly outside the outward 2e-6 + 1e-12 joint budget.",
+    "Native construction and all requested geometry/proof/comparison tolerances remain unchanged. Default requests omit source samples and retain their previous response shape. Optional requests admit at most 65 increasing finite unit fractions per source.",
+    "The raw Gordon candidate retains its independent interior mismatch. Neither the source audit nor the reference-derived readback qualifies NetworkSrf, topology, boundary continuity or performance. No proprietary implementation was inspected."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-oracle --features native-smlib --lib network_surface -- --nocapture",
+      "passed": true,
+      "tests": 3,
+      "log": "docs/network-source-reference-audit-native-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib network_surface -- --nocapture",
+      "passed": true,
+      "tests": 2,
+      "log": "docs/network-source-reference-audit-portable-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --example network_source_audit -- --nocapture",
+      "passed": true,
+      "tests": 2,
+      "log": "docs/network-source-reference-audit-exact-tests.log"
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib source_sample_limits_reject_before_native_construction -- --nocapture",
+      "passed": true,
+      "tests": 1,
+      "log": "docs/network-source-reference-audit-cap-tests.log"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_network_surface tools.rhino_oracle.test_network_surface_readback tools.rhino_oracle.test_structural_sdk",
+      "passed": true,
+      "tests": 11,
+      "log": "docs/network-source-reference-audit-python-tests.log"
+    },
+    {
+      "command": "cargo clippy -p viboceros-oracle --features native-smlib --all-targets -- -D warnings",
+      "passed": true,
+      "tests": null,
+      "log": "docs/network-source-reference-audit-clippy.log"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "passed": true,
+      "tests": null,
+      "log": "docs/network-source-reference-audit-fmt.log"
+    },
+    {
+      "command": "cargo run -p viboceros-oracle --example network_source_audit -- tools/rhino_oracle/fixtures/network_source_fit.json tools/rhino_oracle/observations/network_source_fit_rhino_20261016.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/network-source-reference-audit-exact-audit.log"
+    },
+    {
+      "command": "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/network_source_fit.json /tmp/viboceros-network-source-fit-viboceros.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/network-source-reference-audit-native-probe.log"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.network_surface_readback tools/rhino_oracle/fixtures/network_source_fit.json tools/rhino_oracle/observations/network_source_fit_rhino_20261016.json /tmp/viboceros-network-source-readback-request.json --source-distances; cargo run -p viboceros-oracle -- /tmp/viboceros-network-source-readback-request.json /tmp/viboceros-network-source-readback-viboceros.json",
+      "passed": true,
+      "tests": null,
+      "log": "docs/network-source-reference-audit-reference-readback.log"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/network_source_fit.json --output /tmp/viboceros-network-source-fit-rhino.json --timeout 300",
+      "passed": true,
+      "licensed_sdk_operations": 2,
+      "source_sample_queries": 780,
+      "original_queries": 50,
+      "observation": "tools/rhino_oracle/observations/network_source_fit_rhino_20261016.json"
+    }
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "7cc09bd38630999262e1042137b5cdc01ef43733bb717ce97451ec443b8b7618",
+    "crates/viboceros-geometry/src/binary_accumulator.rs": "990ae206b583200f382617b97b3a28aa00e0d8519bce52423155988e35f8481f",
+    "crates/viboceros-geometry/src/binary_accumulator/pair_products.rs": "6c759ec87f2b9ab2b43e6f2984afbd8a9922a626b14bc787776ae011542baa3d",
+    "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
+    "crates/viboceros-geometry/src/nurbs/closest_point.rs": "850055bc2d61df856fb2b691111f422d0951f00bebbc14fb5ada85603ca58136",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
+    "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
+    "crates/viboceros-geometry/src/surface_pullback.rs": "393e7424dde66b72cda6290f50b13239644aeeef3f30f354f08aa7adba4f505b",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/affine.rs": "ef63b64d1422bbb98bc67ccd2f1cd397da47e322ec60891345ffbdbc4a49df5d",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": "668772986f52ddb6a8c729c6457e026eddadbe21c43e180a5e90c91942aee103",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/crossing.rs": "01fcb7072c9811002684c9250affb68ba6b7940e67764a13aaddc423da09a466",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tests.rs": "c79aeadaa62891181264a066b9d98fa34fd8d8970911acbb878000e1ca9d44d5",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "9ff46c78989c9a7d5f9c4d269842d9fea9ddd6ad6da83d32d338d45e0c787046",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline/tests.rs": "136b91932e3467602788560ae092172c2df0793fcd1612655c9ee544b45b4363",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/pushup.rs": "e45cf6d503cf0faf95ef8ec4e3b47bc4c721e42a97c534838d13e60ee8f2568a",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/pushup/tests.rs": "e775f1249f3967a8ba7c806496e646a9ced9239f84e0f93c72a2d9d6ccb54698",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": "770bec42526a9615deeb888f20fc9b9883854403b25e9c3948f9fdd36bb139c2",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface/linear.rs": "3b7296f20cc5dcabeb7406ef69e4d74674522628d4e91dc092766282a1a28aef",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface/tests.rs": "1ae314f79b719957a2b4f0d9faa61c41cce1b067726efac21853773f2ea5218a",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs": "07a4c0aced5f93815a4ba2423989791777d44bc579a6c8fa506ac5f08d1d9a4f",
+    "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
+    "crates/viboceros-oracle/examples/network_source_audit.rs": "3bf0d34b197fc069278e3f6507c5166d583a96358e26e688c0dab856185fad44",
+    "crates/viboceros-oracle/src/lib.rs": "90e62f66f337847c9110af90b4c5afeb8a1d06377e1e145a6e24cb2a491c5785",
+    "crates/viboceros-oracle/src/network_surface.rs": "39f47ecc7d8dba3a68179d179de2e7f612c9f56f0aed6d74e5da56886665cc5e",
+    "crates/viboceros-smlib/src/native/network_surface.rs": "add1be50303519ea15c6a4356582bd86fba76771e2df181a3172a5f590c007f8",
+    "crates/viboceros-smlib/src/native/network_surface/prepared.rs": "7ab5baf29004873e3b6ad9d4de91c783dcfc302499ca3c5dea927f51cca10ce0",
+    "docs/network-source-reference-audit.md": "dbeb5ba2f09cf746fd514f159bbf1390e6068e74c9acc1cce1acd6fee4af0762",
+    "docs/smlib-gordon-network.md": "a35a936b183c8302147a535ee37a3b7be2d12406a6d65ad02b31c29be07bed58",
+    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "tools/rhino_oracle/curve_recipe.py": "f24004acd2951d5c63d2bd71b9c69c63c83ad40eb2b5838402fa43ff619bea26",
+    "tools/rhino_oracle/network_surface_probe.py": "950f3902fc009de8981b6636f7eff5e54fcbf0a740aa5e0f5986ad31d035242f",
+    "tools/rhino_oracle/network_surface_readback.py": "c19bab7515ff9a8f0c3923ab373be9ae6ee85b94e7e759db37679b0a48714402",
+    "tools/rhino_oracle/rhino_worker.py": "8ecb446ed6610cd787600a352f27e53e926d1e0ec5faf61f9c69e4e51d618afc",
+    "tools/rhino_oracle/structural_sdk.py": "1eaaf4c99c223a394a55104ae64830da7bfe6ba5b7dbc836ab2f816c7acb6c98",
+    "tools/rhino_oracle/test_network_surface.py": "e5282901fc237786fbceff3a34a0db6158ff51d1fefbb5413d50f9ea9bfc6124",
+    "tools/rhino_oracle/test_network_surface_readback.py": "091b7b75eebfae87ce101237fca47799fee1e3ca1bf5c9fa3164d73c81316e6f"
+  },
+  "input_sha256": {
+    "tools/rhino_oracle/fixtures/network_source_fit.json": "95fdfbfde14811762a2413f1662b0757475131c27d61a14309f5e046c0b881a3",
+    "tools/rhino_oracle/fixtures/network_surface.json": "8c5eb7601fd8e8172bc3580b2451e73644c242a680b410a2c1bb459139be4605",
+    "tools/rhino_oracle/observations/gordon_network_rhino_20261015.json": "e6f81ec26557ad8715a0150ff6518be89edda8561408150b1a79c3f0688697d5"
+  },
+  "evidence_sha256": {
+    "docs/network-source-reference-audit-native-tests.log": "f2a488eea6f17ec125d7d8fa1d5cbbf47b4bec7a98a6260c0953d003451d0a49",
+    "docs/network-source-reference-audit-portable-tests.log": "0d1d57971d7be9cc29ddb0aa96eb9124e6a42cc6beb53d346e647a5121b33089",
+    "docs/network-source-reference-audit-exact-tests.log": "2125ece99285e3243b9c7621449e126da949ff0236b2754d01754a244239db4a",
+    "docs/network-source-reference-audit-cap-tests.log": "83fbbf712464255a0d661a6005d4fee7dfb1da2ec329539f6aa1be5935096046",
+    "docs/network-source-reference-audit-python-tests.log": "538169511e82a43540758ce1d7e503a61ec88d801a570a484a66519c7ee7c516",
+    "docs/network-source-reference-audit-clippy.log": "754ce1dea53c666ac50d67cd95fa6f2dd212c07e56f22404f8e6cc9cbe2482a1",
+    "docs/network-source-reference-audit-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/network-source-reference-audit-exact-audit.log": "addec6da52e97f5261e67677e030fd99cb891c3662d53ca8edd868e0a54d9f86",
+    "docs/network-source-reference-audit-native-probe.log": "1c1daa18ac846cb784c3ff654dcbccbb46fd1d3f5979cdfe000812da5647181b",
+    "docs/network-source-reference-audit-reference-readback.log": "2331400b6a5c862e10490d38c0e081eb8c0dd3b1193d8cc9c04e917890a741b4",
+    "tools/rhino_oracle/observations/network_source_fit_rhino_20261016.json": "4ec43118981fc642e6b9000a827be9a1c6490fd9f66cb7e3bfd132a2ead034ae",
+    "tools/rhino_oracle/observations/network_source_fit_viboceros_20261016.json": "f424dff69f68922a1bd33bbeec350f8317c7e5a081a45c439e268bd84e14a69c",
+    "tools/rhino_oracle/observations/network_source_audit_viboceros_20261016.json": "3149d3469a88e71e75702433cc82fb479c539cc222aca063a1a75c8278843d37",
+    "tools/rhino_oracle/observations/network_source_reference_readback_viboceros_20261016.json": "10de46fe03b617064a1975f33c840bf3262763e9cce629695dda168ea87027c5"
+  }
+}

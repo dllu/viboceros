@@ -238,7 +238,6 @@
     "crates/viboceros-geometry/src/surface_pullback/linear.rs": "c845a929f9a3a697915080dc61a926d2131a4525d1283aaa327f73f674c28b50",
     "crates/viboceros-geometry/src/surface_pullback/linear/tests.rs": "ce4c594d91cac8ec51738f719c51adfcda27a340739332d44789d080dc021421",
     "crates/viboceros-geometry/src/surface_rebuild.rs": "d367ce6574f2c6e944da1df1c95d0dcdf504a0e05392e71c1764e780c125f2b8",
-    "crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
     "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
     "crates/viboceros-smlib/examples/network_parameterization.rs": "e5b727e52205d850288b670af0241aa1fe554c734403710ad07c7ee927b34bea",
     "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
@@ -250,7 +249,6 @@
     "docs/common-parameter-curve-fit.md": "c3d07843edbb84d2fc9ad4a6a8098500ea26e3039a9d62acdc68dc18f4ff3a57",
     "docs/prepared-gordon-families.md": "1d6b7e512a900286135e415c04125dba64d7ad8d00ff3080769341bcc400154f",
     "docs/smlib-curve-fit.md": "b0112828971bdd39f604846e112660dabed8f6d8ebee95b3338a13e5872471a4",
-    "tools/rhino_oracle/network_surface_probe.py": "22f1a99934b59aa61b2cd61f09e2188c0e35a9bf4d13e70b6e599c36215a6132",
     "tools/rhino_oracle/rhino_worker.py": "8ecb446ed6610cd787600a352f27e53e926d1e0ec5faf61f9c69e4e51d618afc"
   },
   "input_sha256": {
@@ -282,6 +280,8 @@
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/src/lib.rs": "13ebfaef648de076fcdee35001ada5b24750b59d0db601567ef1b87e4a6578b1",
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/src/native.rs": "6d5a34d10f3bfdee6f3747ecafacc0daa9be788b401705c4a4a0fef91cf5e9bf",
     "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:crates/viboceros-smlib/src/native/network_surface.rs": "efe9fe9dcd5bfe9893326c3d9d98ee62e1bc74821e8884413e2fe88ae15688ed",
-    "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:docs/smlib-gordon-network.md": "0919ce24c5a1919a38a7e75d3750a952d23a147dde8781d6a8881a12b36a792e"
+    "310a3bb45a94b05b76d2bbe80758a6f49628f3c9:docs/smlib-gordon-network.md": "0919ce24c5a1919a38a7e75d3750a952d23a147dde8781d6a8881a12b36a792e",
+    "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
+    "23a970097bf8c88b7db94af4ae1e8837173edd3e:tools/rhino_oracle/network_surface_probe.py": "22f1a99934b59aa61b2cd61f09e2188c0e35a9bf4d13e70b6e599c36215a6132"
   }
 }

@@ -120,6 +120,13 @@ original-image proofs remain a separate downstream requirement.
 
 ## Rhino comparison and remaining work
 
+The [source/reference audit](network-source-reference-audit.md) now proves that
+one saved original query cannot simultaneously match the reference returned
+point within `1e-6` and come from a globally closest query on a surface
+preserving the whole original source within `1e-6`. Fresh SDK captures reproduce
+that reference exactly. Both limits and the failed comparison remain explicit;
+this conflict must be accounted for before qualifying NetworkSrf.
+
 The experimental `network_surface` oracle operation directly exercises this
 native producer. Its reference uses the public auto-sorted
 `NurbsSurface.CreateNetworkSurface` API with position continuity and the

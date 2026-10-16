@@ -1,0 +1,7 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 31.56s
+     Running `target/debug/examples/network_source_audit tools/rhino_oracle/fixtures/network_source_fit.json tools/rhino_oracle/observations/network_source_fit_rhino_20261016.json`

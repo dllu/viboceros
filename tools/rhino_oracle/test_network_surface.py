@@ -37,11 +37,56 @@ class NetworkSurfaceTests(TestCase):
         host,sources,copies,surface,mass,create=self.host();op=request()['operations'][0]
         value,_=run(op,host,2,request()['tolerance'])
         self.assertTrue(value['created']);self.assertEqual(value['area'],12.)
+        self.assertNotIn('source_samples',value)
         self.assertEqual(create.call_args.args,(copies,1,op['edge_tolerance'],op['interior_tolerance'],request()['tolerance']['angular']))
         for a,b in zip(sources,copies):a.Dispose.assert_called_once();self.assertEqual(a.DuplicateCurve.call_count,2);self.assertEqual(b.Dispose.call_count,2)
         self.assertEqual(surface.Dispose.call_count,2);self.assertEqual(mass.Dispose.call_count,2)
         self.assertEqual(surface.Duplicate.return_value.Dispose.call_count,2)
         host['Rhino'].Geometry.Transform.Translation.assert_called_with(-1.,-2.,-3.)
+
+    def test_source_sample_fractions_reject_invalid_or_unbounded_layouts(self):
+        op=request()['operations'][0]
+        for samples in [None,True,[True],[-.1],[1.1],[float('nan')],[.5,.5],[1.,0.],[i/65. for i in range(66)]]:
+            changed=copy.deepcopy(op);changed['source_sample_fractions']=samples
+            with self.subTest(samples=samples),self.assertRaisesRegex(ValueError,'source sample fractions'):
+                validate(changed)
+        for samples in [[],[.5],[0.,.25,.5,1.]]:
+            changed=copy.deepcopy(op);changed['source_sample_fractions']=samples;validate(changed)
+
+    def source_host(self):
+        host,sources,copies,surface,mass,create=self.host()
+        for source in sources:
+            source.Domain=NS(ParameterAt=lambda s:-3.+10.*s)
+            source.PointAt.return_value=NS(IsValid=True)
+        surface.Domain.return_value=NS(T0=0.,NormalizedParameterAt=lambda t:t)
+        surface.PointAt.return_value=mock.Mock(IsValid=True)
+        surface.PointAt.return_value.X=1.;surface.PointAt.return_value.Y=2.;surface.PointAt.return_value.Z=3.
+        surface.PointAt.return_value.DistanceTo.return_value=2e-5
+        host['_checked_closest_parameter']=lambda domain,t:t
+        return host,sources,copies,surface,mass,create
+
+    def test_source_distances_use_original_domains_and_keep_failures_out_of_output(self):
+        op=copy.deepcopy(request()['operations'][0]);op['source_sample_fractions']=[0.,.25,1.]
+        host,sources,copies,surface,mass,create=self.source_host()
+        before=copy.deepcopy(op);value,_=run(op,host,1,request()['tolerance'])
+        rows=value['source_samples'];self.assertEqual(len(rows),len(sources)*3)
+        self.assertEqual([r['source_parameter']for r in rows[:3]],[-3.,-.5,7.])
+        self.assertEqual([r['source_curve_index']for r in rows],[i for i in range(len(sources))for _ in range(3)])
+        self.assertTrue(all(r['distance']==2e-5 and r['normalized_parameters']==[.3,.4]for r in rows))
+        self.assertEqual(op,before)
+        for source in sources:
+            source.Dispose.assert_called_once()
+            self.assertEqual(source.PointAt.call_args_list,[mock.call(-3.),mock.call(-.5),mock.call(7.)])
+        surface.Dispose.assert_called_once()
+        for failure in ['search','distance','source','closest']:
+            host,sources,copies,surface,mass,create=self.source_host()
+            if failure=='search':surface.ClosestPoint.side_effect=[(True,.3,.4)]*len(op['queries'])+[(False,0,0)]
+            elif failure=='distance':surface.PointAt.return_value.DistanceTo.return_value=float('nan')
+            elif failure=='source':sources[0].PointAt.return_value.IsValid=False
+            else:surface.PointAt.return_value.IsValid=False
+            with self.subTest(failure=failure),self.assertRaises(ValueError):run(op,host,1,request()['tolerance'])
+            surface.Dispose.assert_called_once()
+            for source in sources:source.Dispose.assert_called_once()
 
     def test_failure_cleanup_includes_partial_input_copies_queries_and_definitions(self):
         for stage in ['source','copy','alias','create','null','error','closest','area_copy','area_alias','area_transform','area','area_nan','definition']:
