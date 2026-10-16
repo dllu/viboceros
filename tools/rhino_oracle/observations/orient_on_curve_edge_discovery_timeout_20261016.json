@@ -1,0 +1,13 @@
+{
+  "status": "timeout",
+  "qualified": false,
+  "timeout_seconds": 240,
+  "operation": "box-edge-False",
+  "fixture_sha256": "756935a70540f2e97231dabffae5f1db3388b368319974d73d5f4523ef80bf2f",
+  "progress": [
+    "worker: started",
+    "worker: request loaded",
+    "operation box-edge-False: start"
+  ],
+  "note": "First component getter driver ran inside RunPythonScript; no placement results were obtained. The revised driver schedules edge operations on idle and logs its prompts."
+}

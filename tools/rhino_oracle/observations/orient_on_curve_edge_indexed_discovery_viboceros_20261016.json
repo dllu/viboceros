@@ -1,0 +1,808 @@
+{
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 471297,
+      "id": "box-full",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 376882,
+      "id": "box-full-copy",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 362065,
+      "id": "box-full-flip",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 386961,
+      "id": "box-full-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 349281,
+      "id": "box-full-rotate",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                -0.8660254037844387,
+                0.4999999999999999
+              ],
+              [
+                2.0,
+                0.4999999999999999,
+                0.8660254037844387
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 370002,
+      "id": "box-partial",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 374866,
+      "id": "box-partial-copy",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          },
+          {
+            "original": false,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 372721,
+      "id": "box-partial-reversed",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 370561,
+      "id": "box-partial-flip",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 364306,
+      "id": "box-partial-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 372066,
+      "id": "box-partial-clamp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                1.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 367745,
+      "id": "box-partial-oncurve",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 140753,
+      "id": "surface-curved-full",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                1.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 247233,
+      "id": "surface-curved-partial",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                1.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 134273,
+      "id": "surface-curved-perp",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                1.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                1.0
+              ],
+              [
+                3.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 140641,
+      "id": "surface-top-full",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                6.0,
+                2.0
+              ],
+              [
+                1.1055728090000843,
+                6.0,
+                1.5527864045000421
+              ],
+              [
+                2.447213595499958,
+                6.0,
+                1.1055728090000843
+              ],
+              [
+                2.0,
+                5.0,
+                2.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 407217,
+      "id": "cylinder-edge-0",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -1.0,
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                1.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 404849,
+      "id": "cylinder-edge-1",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                2.0,
+                3.0
+              ],
+              [
+                -1.0,
+                2.0,
+                3.0
+              ],
+              [
+                0.0,
+                1.0,
+                3.0
+              ],
+              [
+                0.0,
+                2.0,
+                4.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    },
+    {
+      "elapsed_ns": 364401,
+      "id": "cylinder-edge-2",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ],
+              [
+                2.0,
+                -1.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "selected": true
+          }
+        ],
+        "undo_label": "OrientOnCrv"
+      }
+    }
+  ]
+}

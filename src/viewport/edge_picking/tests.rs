@@ -231,6 +231,7 @@ fn diagnostic_edges_and_endpoint_markers_paint_without_model_changes_and_hide_wi
     let color = Color32::from_rgb(10, 20, 30);
     let lines=output.shapes.iter().filter(|s|matches!(&s.shape,egui::epaint::Shape::LineSegment {stroke,..} if stroke.color==color)).count();
     assert_eq!(lines, 4);
+    output.drop_without_applying_deltas();
     assert_eq!(doc.objects().len(), 1);
     doc.set_objects_visibility([id], false).unwrap();
     let output = context.run_ui(
@@ -243,4 +244,5 @@ fn diagnostic_edges_and_endpoint_markers_paint_without_model_changes_and_hide_wi
     assert!(!output.shapes.iter().any(
         |s| matches!(&s.shape,egui::epaint::Shape::LineSegment {stroke,..} if stroke.color==color)
     ));
+    output.drop_without_applying_deltas();
 }

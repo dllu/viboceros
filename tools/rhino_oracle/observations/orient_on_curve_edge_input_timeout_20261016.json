@@ -1,0 +1,14 @@
+{
+  "status": "timeout",
+  "qualified": false,
+  "timeout_seconds": 240,
+  "operation": "box-edge-False",
+  "progress": [
+    "worker: started",
+    "worker: started",
+    "worker: request loaded",
+    "operation box-edge-False: start",
+    "edge-guide: parent snapshot complete"
+  ],
+  "note": "The idle-scheduled WinForms driver produced no prompt trace. The next experiment uses a threading timer and public UI-thread dispatch; no placement data were obtained here."
+}

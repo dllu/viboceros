@@ -17454,6 +17454,10 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
+        if not at_idle and any(op.get('op')=='orient_on_curve' and 'edge'in op for op in request.get('operations',[])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino,lambda:_main(True))
+            return
         _record_progress("worker: request loaded")
         response = _response(request)
         _record_progress("worker: response computed")

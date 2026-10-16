@@ -2430,7 +2430,8 @@ impl Brep {
         ];
         let edges = vec![
             BrepEdge::try_new([0, 0], surface_u_control_curve(&wall, 0)?, 0.0)?,
-            BrepEdge::try_new([1, 1], surface_u_control_curve(&wall, 1)?, 0.0)?,
+            // Rhino directs the upper circular edge clockwise; keep both trims consistent.
+            BrepEdge::try_new([1, 1], surface_u_control_curve(&wall, 1)?.reversed()?, 0.0)?,
             BrepEdge::try_new(
                 [0, 1],
                 LineSegment::try_new(low_seam, high_seam, tolerance)?.to_nurbs()?,
@@ -2453,7 +2454,7 @@ impl Brep {
             [
                 RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
                 RectangularTrimSpec::edge([0, 1], 2, false, BrepTrimType::Seam),
-                RectangularTrimSpec::edge([1, 1], 1, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 1], 1, false, BrepTrimType::Mated),
                 RectangularTrimSpec::edge([1, 0], 2, true, BrepTrimType::Seam),
             ],
         )?;
@@ -2473,7 +2474,7 @@ impl Brep {
             [
                 RectangularTrimSpec::singular(3),
                 RectangularTrimSpec::edge([3, 1], 4, false, BrepTrimType::Seam),
-                RectangularTrimSpec::edge([1, 1], 1, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 1], 1, false, BrepTrimType::Mated),
                 RectangularTrimSpec::edge([1, 3], 4, true, BrepTrimType::Seam),
             ],
         )?;
@@ -13277,6 +13278,13 @@ mod tests {
         )
         .unwrap();
         let brep = Brep::try_cylinder(frame, 2.5, 3.0, -4.0, Tolerance::DEFAULT).unwrap();
+
+        // Opposite rim winding controls edge-guided command frames.
+        for (index, direction) in [(0, -1.0), (1, 1.0)] {
+            let curve = brep.edges()[index].curve();
+            let tangent = curve.derivative_at(*curve.domain().start()).unwrap();
+            assert!(tangent.x() * direction > 0.0);
+        }
 
         assert_eq!(brep.vertices().len(), 4);
         assert_eq!(brep.edges().len(), 5);

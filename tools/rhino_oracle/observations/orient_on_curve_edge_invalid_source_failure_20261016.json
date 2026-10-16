@@ -1,0 +1,6 @@
+{
+  "status": "harness_error",
+  "qualified": false,
+  "error": "KeyError at operation surface-curved-full: control_points",
+  "note": "The expanded source recipe used points instead of weighted control_points. No completed batch response was retained. The rotation driver also needed a capitalized Angle prompt."
+}

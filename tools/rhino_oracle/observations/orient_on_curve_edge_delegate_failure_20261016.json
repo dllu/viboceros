@@ -1,0 +1,7 @@
+{
+  "status": "harness_error",
+  "qualified": false,
+  "error": "Expression must be writeable (Parameter 'left')",
+  "operation": "box-edge-False",
+  "note": "The CLR expression driver used ArrayIndex for assignment. It now uses writable ArrayAccess nodes. No placement results were obtained."
+}

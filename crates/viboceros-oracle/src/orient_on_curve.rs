@@ -53,6 +53,11 @@ pub struct Fixture {
     pub subcurve: Option<Subcurve>,
     #[serde(default)]
     pub relative_target: Option<[Real; 3]>,
+    #[serde(default)]
+    pub edge: Option<usize>,
+    /// Select the physical edge from the source recipe when topology ordering differs.
+    #[serde(default)]
+    pub edge_anchor: Option<[Real; 3]>,
 }
 fn top() -> String {
     "top".into()
@@ -66,6 +71,24 @@ pub(super) fn run(
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let mut doc = Document::new(tolerance);
         let guide = f.source.geometry(tolerance)?;
+        let edge = if let Some(anchor) = f.edge_anchor {
+            let Geometry::Brep(parent) = &guide else {
+                return Err(ProbeError::FixtureInvariant("edge anchor requires a B-rep"));
+            };
+            let point = Point3::try_from(anchor)?;
+            parent
+                .edges()
+                .iter()
+                .enumerate()
+                .filter_map(|(i, e)| {
+                    let t = e.curve().closest_parameter(point, tolerance).ok()?;
+                    Some((i, e.curve().evaluate(t).ok()?.distance_to(point).ok()?))
+                })
+                .min_by(|a, b| a.1.total_cmp(&b.1))
+                .map(|(i, _)| i)
+        } else {
+            f.edge
+        };
         let curve = doc.add_geometry(guide.clone())?;
         let points = (0..4)
             .map(|i| {
@@ -98,9 +121,9 @@ pub(super) fn run(
             .subcurve
             .as_ref()
             .map(|sub| -> Result<String, ProbeError> {
-                let source = guide
-                    .curve_ref()
+                let resolved = viboceros_command::curve_reference::resolve(&guide, edge, tolerance)
                     .ok_or(ProbeError::FixtureInvariant("orientation curve required"))?;
+                let source = resolved.curve();
                 let start = source.closest_parameter(Point3::try_from(sub.start)?, tolerance)?;
                 let end = source.closest_parameter(Point3::try_from(sub.end)?, tolerance)?;
                 let [start, end] = if let Some(length) = sub.length {
@@ -119,11 +142,15 @@ pub(super) fn run(
             })
             .transpose()?
             .unwrap_or_default();
+        let reference = edge.map_or_else(
+            || format!("Curve={curve}"),
+            |edge| format!("Edge={curve},{edge}"),
+        );
         let command = format!(
-            "OrientOnCrv {} {} Curve={} {} {range}",
+            "OrientOnCrv {} {} {} {} {range}",
             point(f.base),
             point(f.target),
-            curve,
+            reference,
             f.options.options().arguments()
         );
         let registry = CommandRegistry::with_builtins();
@@ -145,8 +172,10 @@ pub(super) fn run(
             let (_, interval) = viboceros_command::orient_curve::range_arguments(
                 &range.split_whitespace().collect::<Vec<_>>(),
             )?;
+            let resolved = viboceros_command::curve_reference::resolve(&guide, edge, tolerance)
+                .ok_or(ProbeError::FixtureInvariant("orientation guide missing"))?;
             let private = viboceros_command::orient_curve::prepare_guide(
-                &guide.curve_ref().unwrap().to_owned(),
+                &resolved.curve().to_owned(),
                 interval,
             )?;
             let placement = viboceros_command::orient_curve::Placement::try_new(
@@ -162,10 +191,10 @@ pub(super) fn run(
                 .to_array();
             let target = Point3::try_from(std::array::from_fn(|i| anchor[i] + delta[i]))?;
             let followup = format!(
-                "OrientOnCrv {} {} Curve={} {} {range} Sources={source}",
+                "OrientOnCrv {} {} {} {} {range} Sources={source}",
                 point(f.base),
                 point(target.to_array()),
-                curve,
+                reference,
                 f.options.options().arguments()
             );
             registry.execute_in_history_group(
@@ -194,6 +223,13 @@ mod tests {
     #[test]
     fn orient_on_curve_native_affine_witnesses_match_whole_and_partial_guides() {
         for (input, native, count) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/orient_on_curve_edge.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/orient_on_curve_edge_rhino_20261016.json"
+                ),
+                19,
+            ),
             (
                 include_str!("../../../tools/rhino_oracle/fixtures/orient_on_curve.json"),
                 include_str!(

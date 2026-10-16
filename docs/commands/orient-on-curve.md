@@ -2,7 +2,7 @@
 
 Place selected objects along a curve with a rigid transform. `OrientOnCurve` is
 an alias. Start the command, select the source objects if necessary, pick a base
-point, select an orientation curve, and pick the new base point on that curve.
+point, select a curve or surface edge, and pick the new base point on that guide.
 `OnCurve` at the first prompt selects the guide before picking the source base.
 
 At the destination prompt, `Copy=Yes` permits repeated placements. Enter or
@@ -19,6 +19,7 @@ Complete commands use an explicit guide ID and optional numeric rotation:
 ```text
 OrientOnCrv 0,0,0 0,5,0 Curve=<object-id> Copy=Yes
 OrientOnCrv 0,0,0 0,5,0 Curve=<object-id> Perpendicular=Yes XFlip=Yes Rotation=30
+OrientOnCrv 0,0,0 2,0,0 Edge=<parent-id>,0 SubCrv=0.25,0.75 Copy=Yes
 ```
 
 Options accept Yes/No values. The base construction plane is frozen when the
@@ -30,7 +31,7 @@ Mouse placement uses the existing screen-space curve picker in all four views.
 The cursor preview shares the command solver and does not edit document objects.
 
 At the guide prompt, `SubCrv` selects a temporary portion: pick the curve, then
-its start and directed end. A decreasing open interval reverses the guide; a
+its start and directed end. Surface edges are accepted here as well. A decreasing open interval reverses the guide; a
 decreasing closed interval crosses its seam. Instead of an end point, enter a
 length and confirm its direction on the curve. `D` or `Direction=Locked` uses
 the current cursor direction; `Direction=Free` unlocks it. Numeric shortening
@@ -56,11 +57,19 @@ points within `1e-6`, with matching source/copy selection and unchanged guides.
 They cover construction planes, lines, circles, a polyline corner, spatial
 cubics, OnCurve, flips, numeric rotation, and an off-curve typed target. These
 fixtures do not establish full Rhino parity or general performance. Using the
-guide itself as a source and selecting surface edges as guides remain unsupported. Native
+guide itself as a source remains unsupported. Native
 reference-point rotation and repeated-copy undo have not been captured; those
 paths currently have local tests. A further 32 captures cover temporary portions,
 clamping, and relative copy batches; all 81 command-backed comparisons agree
-within `1e-6`.
+within `1e-6`. Another 19 surface-edge placements bring the command-backed
+comparison set to 100 matching cases.
+
+Surface-edge guides reuse the existing boundary picker and ambiguity chooser.
+Their parent objects stay unchanged, and no extracted curve is added to the
+document. Full edge selection retains source selection; nested SubCrv clears it.
+If the parent changes, becomes hidden/locked, or the model tolerance changes,
+the command discards its preview and asks for the guide again.
+See [surface-edge validation](../orient-on-curve-edge.md).
 
 The initial discovery capture used an extra Enter and canceled all three cases;
 the placement capture also contains one canceled rotation with incorrect macro

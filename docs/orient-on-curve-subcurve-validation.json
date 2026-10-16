@@ -178,20 +178,9 @@
     "method": "Move only previously verifiable affected digests to immutable full base revision Git references; retain original digest values and non-hash metadata."
   },
   "sha256": {
-    "README.md": "93009bdce4495e70ce717cdd3746ede9af69ceaaeb77d5cd9cd82413a2fe5db9",
-    "crates/viboceros-command/src/orient_curve.rs": "2b515c5aea7b3c3afe1db4ba10dd23f8952a8e356ba0dba0f7c511bdee9bfdfc",
-    "crates/viboceros-oracle/src/orient_on_curve.rs": "5fae964d0e73f406b13881467e7243344903ba9043ad75279d762114c702412a",
-    "docs/commands/orient-on-curve.md": "d551909e9ee11ee3260c18810f6de5e339060e302d223e21f2adb20e7f479b29",
-    "docs/curvature-graph-validation.json": "82ca0bb945e55216462ff50640b05a21093ebc0b12c69b8cb84e5f5b2c54e6bd",
     "docs/curve-deviation-subcurves-validation.json": "ef30692fab973aab6a34fe741d2dea8458db1f3a8800e6e849483f567b7c3336",
-    "docs/orient-on-curve-subcurve.md": "44d7edb5aec613d14ff9933d49593b4f0308814714bd4da57cf51aa02ab814de",
-    "docs/orient-on-curve-validation.json": "f2e7448e60961cd770a14aedeaae4da6945b46406c2221eeede3b59e5e432020",
-    "src/app.rs": "ba66ef59330468869fab2f392c9d19e9a36736396733db73340c76296d97f36a",
-    "src/app/orient_curve.rs": "bbbc11bfa29528f672897e96c3205948a0dd6df802e2242ac62087f7efa091c9",
-    "src/app/orient_curve/subcurve.rs": "f3bb3796be00b8dbb1b6671eb780b37847f9e8b18863498f2c19bec78288dbce",
     "src/app/point_input.rs": "497c315a7bb8164c438e44de980dcc21ff2d1b93241382510e1fbef15389e647",
     "src/app/subcurve_direction.rs": "7e3a256fd3a4b1575ad40acb0944c9463a52f9bcdaca41e8b014a00bd129b468",
-    "src/app/subcurve_preview.rs": "28681cf0954e6ffad064ecfa63a18820af1b7974f5b2c2a211d68f1bb45e669e",
     "src/app/tests/orient_curve_subcurve.rs": "271dbda67bf84f7951c77c7c53975d26c77cf83b9c3b831ea7461918c5584c26",
     "src/viewport.rs": "c11de26e5664579ed4b25d1e0f367b1e4778145ccf6bedbc5871e0f8ddd642f0",
     "src/viewport/affine_preview/tests.rs": "8cf68e4c820aa34f2c157a8c4d363bff3df2739f8f0d9cd5c80df7695a58c440",
@@ -208,9 +197,22 @@
     "tools/rhino_oracle/observations/orient_on_curve_subcurve_comparison_20261016.json": "972614b86ef7fd81d379d9bfab8e247eeef7cbce81589afea9a840856efcc849",
     "tools/rhino_oracle/observations/orient_on_curve_subcurve_discovery_rhino_20261016.json": "ce4fe3739eccf022c20afe4064c6294aea735a6a0d3995736d42ea09786872b6",
     "tools/rhino_oracle/observations/orient_on_curve_subcurve_rhino_20261016.json": "ac8668c7ad7fcd3c74741680e83dac303885dda0443d554d3142ed9ba69ff1d8",
-    "tools/rhino_oracle/observations/orient_on_curve_subcurve_viboceros_20261016.json": "35f6fa9c277618201b3a6563484cd1eb126157b70a5095cbc32e3a3ce60f7aee",
-    "tools/rhino_oracle/orient_on_curve_comparison.py": "bf3a30af802b9ed25c551c8ff875e7fd280d36fa76192c2f640702fc46c30997",
-    "tools/rhino_oracle/orient_on_curve_probe.py": "2f36251110cfe3356daeeedc66dcd41f1252b756807947ab672125a6e745f56c",
-    "tools/rhino_oracle/test_orient_on_curve.py": "fec3301b31add7d8fd34fb3002a0f2cdfba6369d66d60509ee16d739516180d0"
+    "tools/rhino_oracle/observations/orient_on_curve_subcurve_viboceros_20261016.json": "35f6fa9c277618201b3a6563484cd1eb126157b70a5095cbc32e3a3ce60f7aee"
+  },
+  "git_sha256": {
+    "daec5072e887979947ec3c92733a30423101e0f3:README.md": "93009bdce4495e70ce717cdd3746ede9af69ceaaeb77d5cd9cd82413a2fe5db9",
+    "daec5072e887979947ec3c92733a30423101e0f3:crates/viboceros-command/src/orient_curve.rs": "2b515c5aea7b3c3afe1db4ba10dd23f8952a8e356ba0dba0f7c511bdee9bfdfc",
+    "daec5072e887979947ec3c92733a30423101e0f3:crates/viboceros-oracle/src/orient_on_curve.rs": "5fae964d0e73f406b13881467e7243344903ba9043ad75279d762114c702412a",
+    "daec5072e887979947ec3c92733a30423101e0f3:docs/commands/orient-on-curve.md": "d551909e9ee11ee3260c18810f6de5e339060e302d223e21f2adb20e7f479b29",
+    "daec5072e887979947ec3c92733a30423101e0f3:docs/orient-on-curve-subcurve.md": "44d7edb5aec613d14ff9933d49593b4f0308814714bd4da57cf51aa02ab814de",
+    "daec5072e887979947ec3c92733a30423101e0f3:src/app.rs": "ba66ef59330468869fab2f392c9d19e9a36736396733db73340c76296d97f36a",
+    "daec5072e887979947ec3c92733a30423101e0f3:src/app/orient_curve.rs": "bbbc11bfa29528f672897e96c3205948a0dd6df802e2242ac62087f7efa091c9",
+    "daec5072e887979947ec3c92733a30423101e0f3:src/app/orient_curve/subcurve.rs": "f3bb3796be00b8dbb1b6671eb780b37847f9e8b18863498f2c19bec78288dbce",
+    "daec5072e887979947ec3c92733a30423101e0f3:src/app/subcurve_preview.rs": "28681cf0954e6ffad064ecfa63a18820af1b7974f5b2c2a211d68f1bb45e669e",
+    "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/orient_on_curve_comparison.py": "bf3a30af802b9ed25c551c8ff875e7fd280d36fa76192c2f640702fc46c30997",
+    "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/orient_on_curve_probe.py": "2f36251110cfe3356daeeedc66dcd41f1252b756807947ab672125a6e745f56c",
+    "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/test_orient_on_curve.py": "fec3301b31add7d8fd34fb3002a0f2cdfba6369d66d60509ee16d739516180d0",
+    "daec5072e887979947ec3c92733a30423101e0f3:docs/curvature-graph-validation.json": "82ca0bb945e55216462ff50640b05a21093ebc0b12c69b8cb84e5f5b2c54e6bd",
+    "daec5072e887979947ec3c92733a30423101e0f3:docs/orient-on-curve-validation.json": "f2e7448e60961cd770a14aedeaae4da6945b46406c2221eeede3b59e5e432020"
   }
 }

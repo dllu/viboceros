@@ -1,0 +1,5 @@
+{
+  "status": "timeout",
+  "qualified": false,
+  "error": "The nested SubCrv getter cleared edge preselection. The first placement advanced, but the second did not finish. No completed response was published."
+}

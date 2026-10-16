@@ -1,0 +1,120 @@
+{
+  "cases": 19,
+  "matched_cases": 14,
+  "results": [
+    {
+      "id": "box-full",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-full-copy",
+      "metadata_match": false,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": false
+    },
+    {
+      "id": "box-full-flip",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-full-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-full-rotate",
+      "metadata_match": false,
+      "max_coordinate_error": 5.551115123125783e-17,
+      "within_1e_minus_6": false
+    },
+    {
+      "id": "box-partial",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-partial-copy",
+      "metadata_match": false,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": false
+    },
+    {
+      "id": "box-partial-reversed",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-partial-flip",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-partial-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-partial-clamp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "box-partial-oncurve",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-curved-full",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-curved-partial",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-curved-perp",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "surface-top-full",
+      "metadata_match": true,
+      "max_coordinate_error": 0.0,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "cylinder-edge-0",
+      "metadata_match": true,
+      "max_coordinate_error": 1.2246467991473532e-16,
+      "within_1e_minus_6": true
+    },
+    {
+      "id": "cylinder-edge-1",
+      "metadata_match": true,
+      "max_coordinate_error": 4.0,
+      "within_1e_minus_6": false
+    },
+    {
+      "id": "cylinder-edge-2",
+      "metadata_match": true,
+      "max_coordinate_error": 3.00000000000001,
+      "within_1e_minus_6": false
+    }
+  ]
+}

@@ -313,16 +313,10 @@ fn parse_subcurve_options(
     while index < arguments.len() {
         let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;
         if option_name_eq(name, "Edge") && edge.is_none() {
-            let Some((id, component)) = value.split_once(',') else {
-                return Err(CommandError::Usage(SUBCURVE_USAGE));
-            };
-            edge = Some((
-                id.parse()
-                    .map_err(|_| CommandError::Usage(SUBCURVE_USAGE))?,
-                component
-                    .parse()
-                    .map_err(|_| CommandError::Usage(SUBCURVE_USAGE))?,
-            ));
+            edge = Some(
+                crate::curve_reference::parse_edge(value)
+                    .ok_or(CommandError::Usage(SUBCURVE_USAGE))?,
+            );
             index += consumed;
             continue;
         }

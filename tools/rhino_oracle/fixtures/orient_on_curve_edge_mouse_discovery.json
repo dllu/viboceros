@@ -1,0 +1,85 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "orient_on_curve",
+      "id": "box-edge-False",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          4,
+          6,
+          2
+        ]
+      },
+      "edge": 0,
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        2,
+        0,
+        0
+      ],
+      "options": {
+        "copy": false
+      }
+    },
+    {
+      "op": "orient_on_curve",
+      "id": "box-edge-True",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          4,
+          6,
+          2
+        ]
+      },
+      "edge": 0,
+      "base": [
+        0,
+        0,
+        0
+      ],
+      "target": [
+        2,
+        0,
+        0
+      ],
+      "options": {
+        "copy": false
+      },
+      "subcurve": {
+        "start": [
+          1,
+          0,
+          0
+        ],
+        "end": [
+          3,
+          0,
+          0
+        ]
+      }
+    }
+  ]
+}

@@ -17,8 +17,22 @@ class OrientOnCurveTests(TestCase):
         changed=copy.deepcopy(recipe);changed['relative_target']=[0,-1,0]
         with self.assertRaises(ValueError):validate(changed)
         changed['options']['copy']=True;validate(changed)
+    def test_edge_recipe_validation_rejects_wrong_parents_and_unimplemented_driver_inputs(self):
+        recipe=json.loads((BASE/'fixtures/orient_on_curve_edge.json').read_text())['operations'][0]
+        validate(recipe)
+        for key,value in [('edge',True),('edge',-1),('edge',64),('edge_anchor',[True,0,0]),('id','bad\nPICK'),('source',dict(type='point',point=[0,0,0])),
+                          ('subcurve',dict(start=[1,0,0],end=[3,0,0],length=1)),('relative_target',[1,0,0])]:
+            changed=copy.deepcopy(recipe);changed[key]=value
+            with self.assertRaises(ValueError):validate(changed)
+
+    def test_incomplete_edge_driver_is_not_qualified(self):
+        read=lambda stem:json.loads((BASE/'observations'/(stem+'_20261016.json')).read_text())
+        local,native=read('orient_on_curve_viboceros'),read('orient_on_curve_rhino')
+        native['results'][0]['value']['edge_input']=dict(completed=1,expected=3,errors=['incomplete owned input'])
+        self.assertEqual(comparison(local,native)['matched_cases'],34)
+
     def test_native_recipes_validate(self):
-        for name in ('orient_on_curve', 'orient_on_curve_spatial', 'orient_on_curve_subcurve', 'orient_on_curve_projected_input', 'orient_on_curve_relative_input'):
+        for name in ('orient_on_curve', 'orient_on_curve_spatial', 'orient_on_curve_subcurve', 'orient_on_curve_projected_input', 'orient_on_curve_relative_input', 'orient_on_curve_edge'):
             for op in json.loads((BASE/'fixtures'/(name+'.json')).read_text())['operations']:
                 validate(op)
 
@@ -33,7 +47,7 @@ class OrientOnCurveTests(TestCase):
                 validate(changed)
 
     def test_retained_comparisons_cover_all_witnesses_and_detect_tampering(self):
-        for name, count in [('orient_on_curve',35), ('orient_on_curve_spatial',14), ('orient_on_curve_subcurve',26), ('orient_on_curve_projected_input',4), ('orient_on_curve_relative_input',2)]:
+        for name, count in [('orient_on_curve',35), ('orient_on_curve_spatial',14), ('orient_on_curve_subcurve',26), ('orient_on_curve_projected_input',4), ('orient_on_curve_relative_input',2), ('orient_on_curve_edge',19)]:
             read = lambda stem: json.loads((BASE/'observations'/(stem+'_20261016.json')).read_text())
             local, native = read(name+'_viboceros'), read(name+'_rhino')
             result = comparison(local, native)

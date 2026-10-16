@@ -1,0 +1,322 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "box-edge-False",
+      "value": {
+        "command_returned": false,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "edge_input": {
+          "completed": 1,
+          "errors": [
+            "incomplete owned input"
+          ],
+          "expected": 3,
+          "prompts": [
+            "Base point ( OnCurve )",
+            null,
+            null
+          ],
+          "selection_status": 1,
+          "sent": [
+            "w0.0,0.0,0.0"
+          ]
+        },
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "guide_definition": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            0.0,
+            4.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            4.0,
+            4.0
+          ]
+        },
+        "history": "Command: _OrientOnCrv\nCommand: _Pause\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _Cancel\nSelect orientation curve",
+        "macro": "_OrientOnCrv _Pause",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "box-edge-True",
+      "value": {
+        "command_returned": true,
+        "curve_selected": false,
+        "curve_unchanged": true,
+        "edge_input": {
+          "completed": 6,
+          "errors": [],
+          "expected": 6,
+          "prompts": [
+            "Base point ( OnCurve )",
+            "Select orientation curve",
+            "Start of curve",
+            "Current length is 4. Select end point location or enter curve length ( Direction=Free )",
+            "New base point on curve ( Copy=No  Flip  Perpendicular )",
+            "New base point on curve ( Copy=No  Flip  Perpendicular )"
+          ],
+          "selection_status": 1,
+          "sent": [
+            "w0.0,0.0,0.0",
+            "_SubCrv",
+            "w1.0,0.0,0.0",
+            "w3.0,0.0,0.0",
+            "_Copy=_No",
+            "w2.0,0.0,0.0"
+          ]
+        },
+        "frames": {
+          "curve_plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "frame": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y": [
+              -0.0,
+              1.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              -0.0,
+              1.0
+            ]
+          },
+          "perp": {
+            "origin": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "z": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "guide_definition": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            0.0,
+            4.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            4.0,
+            4.0
+          ]
+        },
+        "history": "Command: _OrientOnCrv\nCommand: _Pause\nBase point ( OnCurve ): w0.0,0.0,0.0\nSelect orientation curve: _SubCrv\nSelect curve to temporarily shorten\nStart of curve: w1.0,0.0,0.0\nCurrent length is 4. Select end point location or enter curve length ( Direction=Free ): w3.0,0.0,0.0\nNew base point on curve ( Copy=No  Flip  Perpendicular ): _Copy=_No\nNew base point on curve ( Copy=No  Flip  Perpendicular ): w2.0,0.0,0.0",
+        "macro": "_OrientOnCrv _Pause",
+        "outputs": [
+          {
+            "original": true,
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "selected": false
+          }
+        ]
+      }
+    }
+  ]
+}

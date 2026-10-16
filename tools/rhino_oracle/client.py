@@ -770,6 +770,16 @@ class OracleClient:
             validate_request(request)
             from .subcurve_direction_grid_input import DirectionGridPicker
             interaction=DirectionGridPicker(request)
+        if any(op.get('op') == 'orient_on_curve' and 'edge' in op for op in request.get('operations', [])):
+            if self.settings_scheme is None or request.get('iterations',1)!=1 or any(op.get('op')!='orient_on_curve' for op in request.get('operations',[])):
+                raise OracleProtocolError('edge orientation input requires a private dedicated one-iteration request')
+            from .orient_on_curve_probe import validate
+            operations=request['operations']
+            if not 1<=len(operations)<=128 or len({op['id']for op in operations})!=len(operations):
+                raise OracleProtocolError('edge orientation requires 1 to 128 uniquely named cases')
+            for op in operations:validate(op)
+            from .orient_on_curve_edge_picker import OrientCurveEdgePicker
+            interaction=OrientCurveEdgePicker(request)
         if any(op.get('op') == 'subcurve_edge' for op in request.get('operations', [])):
             from .subcurve_edge_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('edge SubCrv requires a private settings scheme')

@@ -8990,7 +8990,7 @@ impl VibocerosApp {
         } else if let Some(window) = output.component_window {
             self.accept_component_window(window);
         } else if let Some(picks) = output.edge_click {
-            if self.picking_subcurve_edge() {
+            if self.picking_subcurve_edge() || self.picking_orient_curve() {
                 self.accept_component_click(crate::viewport::ComponentClick {
                     picks: picks
                         .into_iter()
@@ -9270,6 +9270,7 @@ impl eframe::App for VibocerosApp {
         self.show_curvature_graph(ui);
         self.show_point_deviation(ui);
         self.show_curve_deviation(ui);
+        self.validate_orient_guide();
         self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9558,7 +9559,8 @@ impl eframe::App for VibocerosApp {
                 .blend_surface_prompt
                 .as_ref()
                 .is_some_and(blend_surface::Prompt::selecting)
-            || self.picking_subcurve_edge())
+            || self.picking_subcurve_edge()
+            || self.picking_orient_curve())
             && self.plane_prompt.is_none()
             && model_input_active
             && !end_analysis_picking;
@@ -9719,7 +9721,8 @@ impl eframe::App for VibocerosApp {
             .then(|| self.move_normal_surface())
             .flatten();
         let selecting_normal = model_input_active && self.selecting_move_normal_reference();
-        let curve_or_edge_pick = edge_pick && self.picking_subcurve_edge();
+        let curve_or_edge_pick =
+            edge_pick && (self.picking_subcurve_edge() || self.picking_orient_curve());
         let document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
@@ -10194,6 +10197,7 @@ mod tests {
     #[cfg(feature = "native-smlib")]
     mod offset_surface;
     mod orient_curve;
+    mod orient_curve_edge;
     mod orient_curve_subcurve;
     mod planar_boolean;
     mod plane_arrays;

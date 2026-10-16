@@ -1,0 +1,7 @@
+{
+  "status": "harness_error",
+  "qualified": false,
+  "error": "ImportError: Cannot import name CSharpCodeProvider",
+  "operation": "box-edge-False",
+  "note": "The callback source compiler is unavailable in this Rhino runtime. No placement results were obtained; the next driver compiles owned CLR expression delegates using the standard expression API."
+}

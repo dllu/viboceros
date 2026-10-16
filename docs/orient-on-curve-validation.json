@@ -187,7 +187,6 @@
     "crates/viboceros-opennurbs/src/lib.rs": "d3d11dbc8b8386541a31ae28978d29bcb08814f730449d93e34845c56fccbf7d",
     "crates/viboceros-oracle/src/lib.rs": "e8acf7fd8b06405a86863db2da3045cfa035a1e8c9e340aca67afe73ad1f9f72",
     "docs/commands/README.md": "56e0bdfedb143c10e21b57de890160802adb230f3ffda010c804bb8a27f1f9ed",
-    "docs/coplanar-mesh-qualification.json": "16f6e3a215c3cc56acafa0d6855e44a1c1a50855fabadb8f16735843c184be94",
     "docs/cull-degenerate-mesh-faces-qualification.json": "cd6d42da3d009690b3f06cfb0ac0698300ed4a5f60eb1afe5dd4296aa7f4f4dc",
     "docs/curvature-chord-validation.json": "6a1d2c4396bde1b8220b3781987f2f7ae7fe854c1820a93965d74821b9486c79",
     "docs/curvature-sampling-validation.json": "8d9b7d628d327ada074d3f9b37d42a5396bd4776c8656258c84e0406bc8e64a0",
@@ -204,7 +203,6 @@
     "src/viewport/scene/affine_tests.rs": "25815c4de2c903357720bd805f49d28af4df6f68e1ca42399b4b39ba93a549e8",
     "src/viewport/scene/grip_tests.rs": "a17fd47ff54ad6e69a00fbc9d80a65f20e614eebba32b36813332112ba5443da",
     "tools/rhino_oracle/__main__.py": "57ed9c767e591f9ab2833c5debf671e423412b78782a1a3b15705c94691e338a",
-    "tools/rhino_oracle/client.py": "d165a599dfd15baed8a6c8e8c0a74118002c1b8731a8585913582bab3290550c",
     "tools/rhino_oracle/fixtures/orient_on_curve.json": "6a2fbd39e45d061ae57a06833b5932886474dcde12671843c4efff7e56a43115",
     "tools/rhino_oracle/fixtures/orient_on_curve_discovery.json": "902c930763fe0e1aaf389c11b78bbfccf2965047daa213865b71ff17aa06a59a",
     "tools/rhino_oracle/fixtures/orient_on_curve_frames.json": "a6d70202fd622dd6dbc512bccdc5dd15888a05bab528d7bf8f31eba47fa43116",
@@ -219,9 +217,7 @@
     "tools/rhino_oracle/observations/orient_on_curve_spatial_rhino_20261016.json": "f13cd9cd0a112a7613d70bba6a53b82a1093496e2af6060311b4fa1ffec464e5",
     "tools/rhino_oracle/observations/orient_on_curve_spatial_viboceros_20261016.json": "9a2bc488e8579806e80afe692a95d4680cfecf19183db650de12f59890393d42",
     "tools/rhino_oracle/observations/orient_on_curve_viboceros_20261016.json": "28bd181d1a1bb2be1d6137855db71bca21d0451a98c444c01dca4bbaf7ae97fe",
-    "tools/rhino_oracle/rhino_worker.py": "6bdc52821cd2f779465272fd653e1db978749ccdfd0e2d0aa700169e2df3396d",
-    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
-    "tools/rhino_oracle/structural_sdk.py": "1f8fdfd53a9f1ce684ddd6c8ed06a7840118b821209baee895ab37ceef6c03de"
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d"
   },
   "git_sha256": {
     "2348c030682b04b278c62b1d5e139d1c632c488b:README.md": "a16e8caba1a825c02209f4cd05fe0045b6576f712f7c41623f3beedbefc303af",
@@ -235,6 +231,10 @@
     "2348c030682b04b278c62b1d5e139d1c632c488b:tools/rhino_oracle/orient_on_curve_comparison.py": "2a786edd3175c18c61152bab749331fd9ba1c633a392502bea2d18ad01b962a8",
     "2348c030682b04b278c62b1d5e139d1c632c488b:tools/rhino_oracle/orient_on_curve_probe.py": "5efd2125cb2450cdbee44855cc0e9882478affd824291056efe1241c2369b906",
     "2348c030682b04b278c62b1d5e139d1c632c488b:tools/rhino_oracle/test_orient_on_curve.py": "8a90490a903443bf47a612709f3af403ff1c70a872c3043ad8b9fa0e9b15d9e0",
-    "2348c030682b04b278c62b1d5e139d1c632c488b:docs/curvature-graph-validation.json": "23a8a63fdb58d7c87dd28a0c6ef8f3bef25d3393723b19677940d97201dc0fdc"
+    "2348c030682b04b278c62b1d5e139d1c632c488b:docs/curvature-graph-validation.json": "23a8a63fdb58d7c87dd28a0c6ef8f3bef25d3393723b19677940d97201dc0fdc",
+    "daec5072e887979947ec3c92733a30423101e0f3:docs/coplanar-mesh-qualification.json": "16f6e3a215c3cc56acafa0d6855e44a1c1a50855fabadb8f16735843c184be94",
+    "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/client.py": "d165a599dfd15baed8a6c8e8c0a74118002c1b8731a8585913582bab3290550c",
+    "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/rhino_worker.py": "6bdc52821cd2f779465272fd653e1db978749ccdfd0e2d0aa700169e2df3396d",
+    "daec5072e887979947ec3c92733a30423101e0f3:tools/rhino_oracle/structural_sdk.py": "1f8fdfd53a9f1ce684ddd6c8ed06a7840118b821209baee895ab37ceef6c03de"
   }
 }

@@ -21,6 +21,12 @@ def comparison(local, native):
         reference = expected[key]
         metadata = all(value.get(k) is True and reference.get(k) is True
                        for k in ('command_returned', 'curve_unchanged'))
+        for witness in (value,reference):
+            driver=witness.get('edge_input')
+            if driver is not None:
+                metadata &= (type(driver.get('expected'))is int and driver['expected']>0
+                             and type(driver.get('completed'))is int and driver['completed']==driver['expected']
+                             and driver.get('click_requested')is True and driver.get('errors')==[])
         metadata &= value.get('curve_selected') is False and reference.get('curve_selected') is False
         clouds = lambda v: sorted(v['outputs'], key=lambda c: (c['original'],tuple(round(x,8) if type(x) in (int,float) and math.isfinite(x) else 0 for p in c['points'] for x in p)))
         aa, bb = clouds(value), clouds(reference)

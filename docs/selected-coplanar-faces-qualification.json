@@ -116,7 +116,6 @@
     "docs/commands/merge-all-coplanar-faces.md": "8fcaf2807fb3177d711fcc69734c82a0beef5eded56c6bf4ad59df69c247f5ce",
     "docs/commands/merge-coplanar-face.md": "36b7a42adb15166febc16ad10eccc675c2a1be1119ddc5d01b8f75b1716f810a",
     "src/app/command_line.rs": "7359ef290515833388c5da4bfcca5ea8542de671045e1476ab3e752af19d29b4",
-    "src/app/component_selection.rs": "e11e7ed5ecaea62bce4126c125ffd281dffe5056848c3e5c3ed49102c83d3a27",
     "src/app/merge_coplanar_face.rs": "c5f63f7fafa6576840fc05bbeaf7e4e1ea4e415e30911327e3e1937200f291aa",
     "src/app/merge_coplanar_face/tests.rs": "83d770cb6ba4ad9d0c13fcabfba00c35714bcff25e8c9d7d5baed862e37e0a1d",
     "src/app/mesh_face_prompt.rs": "0ee73bd57af0d0635da18621d6849529f51f2bb6b2c46a4b27e562c375c05fb2",
@@ -157,6 +156,7 @@
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/native/brep_data.h": "cb26b4a63a481eb70b824c402cf219e9aa9fefc9027b2d6d0965b245baf5e176",
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/native/bridge.cpp": "b873864a9829b519c6d54fac27bc52930afab8fd879c6c2955dc636d23a832f3",
     "df63f892789a42f612a6a153fd810c788b6b7dfb:crates/viboceros-smlib/native/bridge.h": "7b2a4cbe45f699a7169e2505f7dc95014ae47e36026cd656b3694063437c091d",
-    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/viewport.rs": "e4318be4206e8ba904da0f6aa0a4d32d12c8195a3a147b0baaef92e4a01f2abe"
+    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/viewport.rs": "e4318be4206e8ba904da0f6aa0a4d32d12c8195a3a147b0baaef92e4a01f2abe",
+    "daec5072e887979947ec3c92733a30423101e0f3:src/app/component_selection.rs": "e11e7ed5ecaea62bce4126c125ffd281dffe5056848c3e5c3ed49102c83d3a27"
   }
 }

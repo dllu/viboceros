@@ -14,6 +14,7 @@ impl Session {
         let source = doc.object(p.object?)?.geometry_snapshot();
         p.preview.temporary(
             Some(source),
+            self.guide.as_ref()?.edge,
             [p.start?, p.hover_parameter?],
             p.length,
             p.locked_forward,
@@ -123,12 +124,7 @@ impl VibocerosApp {
             return None;
         }
         let guide = s.guide.as_ref().unwrap();
-        if self
-            .document
-            .object(guide.id)
-            .and_then(|o| o.geometry().curve_ref())
-            .is_none_or(|c| c.to_owned() != guide.original)
-        {
+        if !guide.current(&self.document) {
             self.push_log("Error: orientation curve changed; restart OrientOnCrv".into());
             return Some(false);
         }
@@ -217,9 +213,12 @@ impl VibocerosApp {
             .object
             .and_then(|id| self.document.object(id))
             .map(|o| o.geometry_snapshot());
-        p.hover_parameter = p
-            .preview
-            .parameter(source, None, point, self.document.tolerance());
+        p.hover_parameter = p.preview.parameter(
+            source,
+            s.guide.as_ref().and_then(|g| g.edge),
+            point,
+            self.document.tolerance(),
+        );
         true
     }
 

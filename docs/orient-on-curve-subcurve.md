@@ -40,7 +40,8 @@ not the temporary portion. Helper fingerprints describe the final reproducer;
 the helper evolved during capture, so they do not establish byte identity of
 every earlier staged helper.
 
-Surface-edge guides, using a guide among the sources, all singular and
+[Surface-edge guides](orient-on-curve-edge.md) now have separate validation.
+Using a guide among the sources, all singular and
 self-intersecting cases, native reference-point rotation, native undo/redo,
 and general performance remain unqualified. Native direction locking was not
 captured specifically for OrientOnCrv; it reuses the previously tested inline

@@ -20,10 +20,23 @@ enum Phase {
 
 struct Guide {
     id: ObjectId,
+    edge: Option<usize>,
+    parent: viboceros_document::GeometrySnapshot,
+    tolerance: Tolerance,
     original: Curve3,
     working: Curve3,
     cursor: NurbsCurve,
     range: Option<[f64; 2]>,
+}
+
+impl Guide {
+    fn current(&self, doc: &Document) -> bool {
+        self.tolerance == doc.tolerance()
+            && doc.is_object_selectable(self.id)
+            && doc
+                .object(self.id)
+                .is_some_and(|o| self.parent.shares_storage_with(o.geometry_snapshot()))
+    }
 }
 
 pub(super) struct Session {
@@ -97,6 +110,41 @@ impl Session {
 }
 
 impl VibocerosApp {
+    pub(super) fn validate_orient_guide(&mut self) -> bool {
+        let Some(s) = self.orient_curve_session.as_mut() else {
+            return true;
+        };
+        if s.guide.as_ref().is_none_or(|g| g.current(&self.document)) {
+            return true;
+        }
+        s.guide = None;
+        s.placement = None;
+        s.preview = None;
+        s.rotation_pose = None;
+        if s.options.on_curve {
+            s.base = None;
+        }
+        if let Some(p) = &mut s.subcurve {
+            *p = Default::default();
+        }
+        s.phase = Phase::Guide;
+        if !self.document.history_group_is_current(&s.group) {
+            match self.document.begin_history_group("OrientOnCrv") {
+                Ok(group) => s.group = group,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    self.cancel_interactive_command(false);
+                    return false;
+                }
+            }
+        }
+        self.component_selection.clear_choices();
+        self.point_filter = None;
+        self.point_constraint = None;
+        self.push_log("Orientation guide changed or became unavailable; select it again".into());
+        self.orient_curve_prompt();
+        false
+    }
     /// Point history follows the curve-constrained getter result, including clamped ends.
     pub(super) fn resolve_orient_curve_point(
         &self,
@@ -231,6 +279,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn pick_orient_curve(&mut self, id: Option<ObjectId>) -> bool {
+        self.pick_orient_reference(id, None)
+    }
+    pub(super) fn pick_orient_edge(&mut self, pick: crate::viewport::EdgePick) -> bool {
+        self.pick_orient_reference(Some(pick.object), Some(pick.edge))
+    }
+    fn pick_orient_reference(&mut self, id: Option<ObjectId>, edge: Option<usize>) -> bool {
         if !self.picking_orient_curve() {
             return false;
         }
@@ -241,11 +295,13 @@ impl VibocerosApp {
                 .selectable_objects()
                 .find(|o| o.id() == id)
                 .ok_or("Curve is hidden, locked, or missing")?;
-            let curve = object
-                .geometry()
-                .curve_ref()
-                .ok_or("Select an orientation curve")?
-                .to_owned();
+            let resolved = viboceros_command::curve_reference::resolve(
+                object.geometry(),
+                edge,
+                self.document.tolerance(),
+            )
+            .ok_or("Select an available curve or surface edge")?;
+            let curve = resolved.curve().to_owned();
             let nurbs = curve.as_ref().to_nurbs().map_err(|e| e.to_string())?;
             if self
                 .orient_curve_session
@@ -260,6 +316,9 @@ impl VibocerosApp {
             }
             Ok(Guide {
                 id,
+                edge,
+                parent: object.geometry_snapshot().clone(),
+                tolerance: self.document.tolerance(),
                 original: curve.clone(),
                 working: curve,
                 cursor: nurbs,
@@ -269,7 +328,14 @@ impl VibocerosApp {
         match result {
             Ok(guide) => {
                 let s = self.orient_curve_session.as_mut().unwrap();
+                let edge = guide.edge.is_some();
                 s.guide = Some(guide);
+                if edge {
+                    if s.subcurve.is_some() {
+                        self.document.clear_selection();
+                    }
+                    self.component_selection.clear();
+                }
                 if let Some(pending) = &mut s.subcurve {
                     pending.object = s.guide.as_ref().map(|g| g.id);
                     s.phase = Phase::SubcurveStart;
@@ -322,6 +388,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_orient_curve_point(&mut self, point: Point3) -> Option<bool> {
+        if !self.validate_orient_guide() {
+            return Some(false);
+        }
         if let Some(accepted) = self.accept_orient_subcurve_point(point) {
             return Some(accepted);
         }
@@ -451,18 +520,15 @@ impl VibocerosApp {
     fn commit_orient_curve(&mut self, target: Point3) -> bool {
         let s = self.orient_curve_session.as_mut().unwrap();
         let guide = s.guide.as_ref().unwrap();
-        let id = &guide.id;
-        let original = &guide.original;
+        let reference = guide.edge.map_or_else(
+            || format!("Curve={}", guide.id),
+            |edge| format!("Edge={},{}", guide.id, edge),
+        );
         let range = guide
             .range
             .map_or_else(String::new, |[a, b]| format!(" SubCrv={a},{b}"));
-        if self
-            .document
-            .object(*id)
-            .and_then(|o| o.geometry().curve_ref())
-            .is_none_or(|c| c.to_owned() != *original)
-        {
-            self.push_log("Error: orientation curve changed; restart OrientOnCrv".into());
+        if !guide.current(&self.document) {
+            self.push_log("Error: orientation guide changed; select it again".into());
             return false;
         }
         let options = s.options.arguments();
@@ -472,10 +538,10 @@ impl VibocerosApp {
             .collect::<Vec<_>>()
             .join(" ");
         let input = format!(
-            "OrientOnCrv {} {} Curve={} {} {}={}{range}",
+            "OrientOnCrv {} {} {} {} {}={}{range}",
             format_model_point(s.base.unwrap()),
             format_model_point(target),
-            id,
+            reference,
             options,
             if s.postselected {
                 "PickedSources"
@@ -516,6 +582,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_orient_curve(&mut self, input: &str) -> bool {
+        if !self.validate_orient_guide() {
+            return true;
+        }
         if self.continue_orient_subcurve(input) {
             return true;
         }
@@ -553,6 +622,17 @@ impl VibocerosApp {
             return true;
         }
         if s.selecting() {
+            if let Some((key, value)) = word.split_once('=')
+                && key.eq_ignore_ascii_case("Edge")
+            {
+                if let Some((object, edge)) = viboceros_command::curve_reference::parse_edge(value)
+                {
+                    self.pick_orient_edge(crate::viewport::EdgePick { object, edge });
+                } else {
+                    self.push_log("Error: Edge expects parent-id,index".into());
+                }
+                return true;
+            }
             let words = input.split_whitespace().collect::<Vec<_>>();
             let id = match words.as_slice() {
                 [key, id]

@@ -3,7 +3,7 @@ use super::*;
 use std::sync::Arc;
 use viboceros_geometry::{Curve3, ParameterSide};
 
-pub const USAGE: &str = "OrientOnCrv base-point target-point Curve=object-id [SubCrv=start-parameter,end-parameter] [OnCurve=Yes|No] [Copy=Yes|No] [Perpendicular=Yes|No] [Flip=Yes|No] [XFlip=Yes|No] [YFlip=Yes|No] [Rotation=degrees]";
+pub const USAGE: &str = "OrientOnCrv base-point target-point (Curve=object-id|Edge=parent-id,index) [SubCrv=start-parameter,end-parameter] [OnCurve=Yes|No] [Copy=Yes|No] [Perpendicular=Yes|No] [Flip=Yes|No] [XFlip=Yes|No] [YFlip=Yes|No] [Rotation=degrees]";
 
 /// Extract a single temporary guide interval; parameters belong to the original curve.
 pub fn range_arguments<'a>(
@@ -46,6 +46,41 @@ pub fn range_arguments<'a>(
         i += 1;
     }
     Ok((rest, range))
+}
+
+/// Extract one explicit surface-edge reference without changing the document.
+pub fn edge_arguments<'a>(
+    args: &[&'a str],
+) -> Result<(Vec<&'a str>, Option<curve_reference::EdgeReference>), CommandError> {
+    let mut rest = Vec::new();
+    let mut edge = None;
+    let mut i = 0;
+    while i < args.len() {
+        let token = args[i];
+        let (key, value) = token
+            .split_once('=')
+            .map_or((token, None), |(k, v)| (k, Some(v)));
+        if key
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("Edge")
+        {
+            if edge.is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+            let value = match value {
+                Some(v) => v,
+                None => {
+                    i += 1;
+                    *args.get(i).ok_or(CommandError::Usage(USAGE))?
+                }
+            };
+            edge = Some(curve_reference::parse_edge(value).ok_or(CommandError::Usage(USAGE))?);
+        } else {
+            rest.push(token);
+        }
+        i += 1;
+    }
+    Ok((rest, edge))
 }
 
 /// Prepare privately with SubCrv's shared backend (usd-brep when enabled).
@@ -389,19 +424,25 @@ impl Command for OrientCurveCommand {
     ) -> Result<String, CommandError> {
         let (args, selected) = transform_arguments(doc, args, USAGE)?;
         let (args, range) = range_arguments(&args)?;
+        let (args, edge) = edge_arguments(&args)?;
         let (rest, options, curve) = options(&args, Options::default())?;
         let (base, n) = parse_point(&rest)?;
         let (target, m) = parse_point(&rest[n..])?;
         require_consumed(&rest, n + m, USAGE)?;
-        let curve = curve.ok_or(CommandError::Usage(USAGE))?;
-        let geometry = doc
+        if curve.is_some() && edge.is_some() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let (curve, index) = edge
+            .map(|(id, index)| (id, Some(index)))
+            .or_else(|| curve.map(|id| (id, None)))
+            .ok_or(CommandError::Usage(USAGE))?;
+        let object = doc
             .object(curve)
-            .ok_or(DocumentError::ObjectNotFound(curve))?
-            .geometry();
-        let guide = geometry
-            .curve_ref()
-            .ok_or(CommandError::Usage(USAGE))?
-            .to_owned();
+            .filter(|_| index.is_none() || doc.is_object_selectable(curve))
+            .ok_or(DocumentError::ObjectNotFound(curve))?;
+        let resolved = curve_reference::resolve(object.geometry(), index, doc.tolerance())
+            .ok_or(CommandError::Usage(USAGE))?;
+        let guide = resolved.curve().to_owned();
         if selected.ids.contains(&curve) {
             return Err(CommandError::Usage(
                 "The orientation curve must be separate from the source objects",
@@ -413,7 +454,11 @@ impl Command for OrientCurveCommand {
             ));
         }
         let placement = Placement::try_new(
-            prepare_guide(&guide, range)?,
+            if range.is_some() {
+                prepare_guide(&guide, range)?
+            } else {
+                guide
+            },
             base,
             context.construction_plane,
             options,
@@ -474,6 +519,10 @@ mod tests {
             format!("0,0,0 0,3,0 Curve={guide} SubCrv=-1,2"),
             format!("0,0,0 0,3,0 Curve={guide} SubCrv=NaN,4"),
             format!("0,0,0 0,3,0 Curve={guide} SubCrv=1,3 SubCrv=2,4"),
+            format!("0,0,0 0,3,0 Curve={guide} Edge={guide},0"),
+            format!("0,0,0 0,3,0 Edge={guide},0 Edge={guide},1"),
+            format!("0,0,0 0,3,0 Edge={source},0"),
+            format!("0,0,0 0,3,0 Edge={guide},-1"),
         ] {
             assert!(
                 registry
@@ -482,6 +531,53 @@ mod tests {
             );
             assert_eq!(format!("{doc:?}"), before);
             assert_eq!(registry.copy_default("OrientOnCrv"), Some(false));
+        }
+    }
+    #[test]
+    fn orient_on_curve_edge_reference_retains_parent_and_metadata_with_and_without_copy() {
+        for copy in [false, true] {
+            let (registry, mut doc, source, _) = setup();
+            let parent = doc
+                .add_geometry(Geometry::Brep(
+                    viboceros_geometry::Brep::try_box(
+                        CommandContext::default().construction_plane,
+                        [[0., 4.], [0., 6.], [0., 2.]],
+                        doc.tolerance(),
+                    )
+                    .unwrap(),
+                ))
+                .unwrap();
+            doc.set_object_names([(parent, Some("edge parent".into()))])
+                .unwrap();
+            doc.add_group(Some("parent".into()), [parent]).unwrap();
+            let original = doc.object(parent).unwrap().clone();
+            doc.clear_history().unwrap();
+            registry
+                .execute(
+                    &mut doc,
+                    &format!(
+                        "OrientOnCrv 0,0,0 2,0,0 Edge={parent},0 Copy={}",
+                        if copy { "Yes" } else { "No" }
+                    ),
+                )
+                .unwrap();
+            assert_eq!(doc.object(parent).unwrap(), &original);
+            assert!(
+                doc.objects()
+                    .any(|o| o.geometry() == &Geometry::Point(point([3., 0., 0.])))
+            );
+            if copy {
+                assert_eq!(
+                    doc.object(source).unwrap().geometry(),
+                    &Geometry::Point(point([1., 0., 0.]))
+                );
+            }
+            assert_eq!(doc.undo().unwrap().as_deref(), Some("OrientOnCrv"));
+            assert_eq!(doc.object(parent).unwrap(), &original);
+            assert_eq!(
+                doc.object(source).unwrap().geometry(),
+                &Geometry::Point(point([1., 0., 0.]))
+            );
         }
     }
     #[test]

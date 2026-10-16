@@ -47,6 +47,7 @@ impl Cache {
     pub(super) fn temporary(
         &mut self,
         source: Option<&GeometrySnapshot>,
+        edge: Option<usize>,
         range: [f64; 2],
         length: Option<f64>,
         locked_forward: Option<bool>,
@@ -55,7 +56,7 @@ impl Cache {
         self.get(
             source,
             Some(Parameters {
-                edge: None,
+                edge,
                 start: range[0],
                 hover: range[1],
                 length,

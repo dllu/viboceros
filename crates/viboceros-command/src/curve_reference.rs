@@ -1,6 +1,14 @@
 //! Resolve ordinary curves or immutable surface edges without temporary objects.
-use viboceros_document::Geometry;
+use viboceros_document::{Geometry, ObjectId};
 use viboceros_geometry::{Brep, CurveRef, NurbsCurve, Tolerance};
+
+pub type EdgeReference = (ObjectId, usize);
+
+/// A component index belongs to the current topology of its named parent.
+pub fn parse_edge(value: &str) -> Option<EdgeReference> {
+    let (object, index) = value.split_once(',')?;
+    Some((object.parse().ok()?, index.parse().ok()?))
+}
 
 pub enum ResolvedCurve<'a> {
     Borrowed(CurveRef<'a>),
