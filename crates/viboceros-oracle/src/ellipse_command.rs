@@ -109,7 +109,13 @@ fn enter(
                 }
             }
             Action::Number(value) => {
-                input.number(*value)?;
+                if let Err(error) = input.number(*value) {
+                    // Native integer getters reject invalid counts and keep
+                    // waiting, allowing a later corrected count in the recipe.
+                    if !input.point_count_pending() {
+                        return Err(error.into());
+                    }
+                }
             }
             Action::Option(word) => {
                 let prior_mode = input.mode();
@@ -274,6 +280,53 @@ mod tests {
             let actual = run_request(&q).unwrap();
             assert_eq!(actual.results.len(), count);
             for (a, b) in actual.results.iter().zip(n["results"].as_array().unwrap()) {
+                assert_eq!(a.id, b["id"]);
+                for stage in ["before", "after", "undo", "redo"] {
+                    close(
+                        &a.value[stage],
+                        &b["value"][if stage == "after" {
+                            "after_script"
+                        } else {
+                            stage
+                        }],
+                        &format!("{}/{stage}", a.id),
+                    );
+                }
+                assert_eq!(a.value["undo_label"], "Ellipse");
+                assert_eq!(a.value["redo_label"], "Ellipse");
+            }
+        }
+    }
+    #[test]
+    fn ellipse_deform_native_cubic_point_counts_geometry_and_history() {
+        for (q, n, count) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/ellipse_deform_shapes.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/ellipse_deform_shapes_rhino_20261017.json"
+                ),
+                9,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/ellipse_deform_modes.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/ellipse_deform_modes_rhino_20261017.json"
+                ),
+                20,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/ellipse_deform_counts.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/ellipse_deform_counts_rhino_20261017.json"
+                ),
+                4,
+            ),
+        ] {
+            let q: ProbeRequest = serde_json::from_str(q).unwrap();
+            let n: Value = serde_json::from_str(n).unwrap();
+            let local = run_request(&q).unwrap();
+            assert_eq!(local.results.len(), count);
+            for (a, b) in local.results.iter().zip(n["results"].as_array().unwrap()) {
                 assert_eq!(a.id, b["id"]);
                 for stage in ["before", "after", "undo", "redo"] {
                     close(

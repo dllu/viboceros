@@ -92,11 +92,15 @@ impl VibocerosApp {
             s.curve = None;
             s.cursor = None;
             s.postselected = false;
+            let deformable = s.input.deformable();
             s.input = Input::new(
                 s.input.options(),
                 self.viewports[self.active_viewport].construction_plane(),
                 self.document.tolerance(),
             );
+            if deformable {
+                s.input.option("Deformable").expect("Ellipse output option");
+            }
             s.input.option("AroundCurve").expect("first Ellipse option");
             self.point_filter = None;
             self.point_constraint = None;
@@ -176,6 +180,7 @@ impl VibocerosApp {
             "center on curve"
         } else {
             match input.slot() {
+                Slot::PointCount => "number of points",
                 Slot::First => {
                     if input.mode() == Mode::FromFoci {
                         "first focus"
@@ -226,8 +231,15 @@ impl VibocerosApp {
         } else {
             ""
         };
+        let output = if input.deformable() {
+            format!("; Deformable; PointCount={}", input.options().point_count)
+        } else if input.slot() == Slot::First {
+            "; Deformable".into()
+        } else {
+            String::new()
+        };
         self.push_log(format!(
-            "Ellipse {}{vertical}: {slot}{options}{foci}{length}; Esc cancels",
+            "Ellipse {}{vertical}: {slot}{options}{foci}{length}{output}; Esc cancels",
             input.mode().name()
         ));
     }
@@ -245,7 +257,11 @@ impl VibocerosApp {
             return true;
         }
         if word.is_empty() || word.eq_ignore_ascii_case("Enter") {
-            if s.input.locked_length().is_some() {
+            if s.input.point_count_pending() {
+                s.input.accept_point_count_default();
+                self.bind_ellipse_preselection();
+                self.ellipse_prompt();
+            } else if s.input.locked_length().is_some() {
                 if let Some(cursor) = s.cursor {
                     self.accept_filtered_drafting_point(cursor, false);
                 } else {
@@ -316,6 +332,23 @@ impl VibocerosApp {
                 {
                     return false;
                 }
+                if s.input.point_count_pending() {
+                    let result = text
+                        .parse::<f64>()
+                        .map_err(|_| {
+                            "PointCount requires an integer from 4 through 1000".to_owned()
+                        })
+                        .and_then(|n| s.input.number(n).map_err(|e| e.to_string()));
+                    match result {
+                        Ok(()) => {
+                            self.bind_ellipse_preselection();
+                            self.ellipse_prompt();
+                        }
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
+                    self.command_input.clear();
+                    return true;
+                }
                 let Some(value) = viboceros_drafting::PointInput::parse_length_with_units(
                     text,
                     self.document.units(),
@@ -324,7 +357,10 @@ impl VibocerosApp {
                 };
                 match value {
                     Ok(value) => match s.input.number(value) {
-                        Ok(_) => self.ellipse_prompt(),
+                        Ok(_) => {
+                            self.bind_ellipse_preselection();
+                            self.ellipse_prompt();
+                        }
                         Err(e) => self.push_log(format!("Error: {e}")),
                     },
                     Err(e) => self.push_log(format!("Error: {e}")),

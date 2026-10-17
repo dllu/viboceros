@@ -16,7 +16,7 @@ Rhino's complete command set is still a work in progress.
 - [BlockResetScale](block-reset-scale.md)
 - [In-place BlockEdit](block-edit.md)
 
-- [Ellipse construction, AroundCurve, numeric axes and focus markers](ellipse.md)
+- [Ellipse construction, AroundCurve, deformable output and focus markers](ellipse.md)
 - [Conic curves, endpoint constraints and temporary portions](conic.md)
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)

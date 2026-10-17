@@ -50,7 +50,7 @@ fn ellipse_projected_axes_numeric_locks_preview_and_command_share_geometry() {
 fn ellipse_options_and_invalid_constructions_are_atomic_and_registry_local() {
     let mut i = input();
     let before = i;
-    assert!(i.option("Deformable=Yes").is_err());
+    assert!(i.option("Deformable=Maybe").is_err());
     assert_eq!(i, before);
     i.option("FromFoci").unwrap();
     let before = i;
@@ -127,7 +127,14 @@ fn ellipse_focal_replay_preserves_the_captured_plane_without_an_ambient_cplane()
         Tolerance::DEFAULT,
     )
     .unwrap();
-    let mut i = Input::new(Options { mark_foci: true }, plane, Tolerance::DEFAULT);
+    let mut i = Input::new(
+        Options {
+            mark_foci: true,
+            ..Options::default()
+        },
+        plane,
+        Tolerance::DEFAULT,
+    );
     i.option("FromFoci").unwrap();
     i.point(p(0., 0., 0.)).unwrap();
     i.point(p(0., 8., 0.)).unwrap();
@@ -254,4 +261,59 @@ fn ellipse_switch_from_around_curve_discards_the_pending_guide() {
     assert!(!doc.is_selected(guide));
     assert_eq!(doc.undo().unwrap().as_deref(), Some("Ellipse"));
     assert_eq!(doc.objects().len(), 1);
+}
+
+#[test]
+fn ellipse_deform_count_pending_validation_full_scripts_and_dense_periodic_seam() {
+    let mut i = input();
+    i.option("Deformable").unwrap();
+    i.option("PointCount").unwrap();
+    let before = i;
+    for number in [0., 3., 3.5, 1001., f64::NAN, f64::INFINITY] {
+        assert!(i.number(number).is_err());
+        assert_eq!(i, before);
+    }
+    assert!(i.point(p(0., 0., 0.)).is_err());
+    assert_eq!(i, before);
+    i.option("Enter").unwrap();
+    assert_eq!(i.options().point_count, 12);
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry
+        .execute(
+            &mut doc,
+            "Ellipse Deformable PointCount 8 0 0 0 6 0 0 0 3 0",
+        )
+        .unwrap();
+    let Geometry::NurbsCurve(curve) = doc.objects().next().unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(curve.degree(), 3);
+    assert_eq!(curve.control_points().len(), 11);
+    assert!(curve.is_periodic());
+    assert!(curve.is_closed().unwrap());
+    assert!(curve.control_points().iter().all(|p| p.weight() == 1.));
+    assert_eq!(doc.undo().unwrap().as_deref(), Some("Ellipse"));
+    assert_eq!(doc.objects().len(), 0);
+    let e = Ellipse3::try_from_three_points(
+        p(0., 0., 0.),
+        p(6., 0., 0.),
+        p(0., 3., 0.),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let dense = e.try_deformable(1000).unwrap();
+    assert_eq!(dense.control_points().len(), 1003);
+    for station in [0, 1, 123, 499, 999] {
+        let fraction = station as f64 / 1000.;
+        let expected = e.point_at_angle(std::f64::consts::TAU * fraction).unwrap();
+        assert!(
+            dense
+                .evaluate(6_f64.hypot(3.) * fraction)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                < 1e-12
+        );
+    }
 }

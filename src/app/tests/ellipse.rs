@@ -25,7 +25,7 @@ fn ellipse_axis_locks_preview_and_cancellation_do_not_edit_the_model() {
     assert!(app.document.undo_label().is_none());
 }
 
-fn actions(app: &mut VibocerosApp, actions: &[viboceros_oracle::EllipseCommandAction]) {
+pub(super) fn actions(app: &mut VibocerosApp, actions: &[viboceros_oracle::EllipseCommandAction]) {
     use viboceros_oracle::EllipseCommandAction as Action;
     for action in actions {
         match action {

@@ -13,7 +13,8 @@ through 11, and lowers the degree when too few controls are supplied.
 `Close=Sharp` repeats the first control to create a kinked, non-periodic seam.
 
 [Ellipse construction](ellipse.md) supports Default, Vertical, Diameter, Corner,
-FromFoci and AroundCurve input, numeric axis locks, focus markers and live previews.
+FromFoci and AroundCurve input, deformable cubic output, numeric axis locks,
+focus markers and live previews.
 
 Circle, Polygon, and Rectangle use the active [construction plane](../construction-planes.md).
 Bare `Arc` starts with the center, then the start point, then an endpoint or

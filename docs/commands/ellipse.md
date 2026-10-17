@@ -51,6 +51,27 @@ within one command registry. Other construction modes create no focus markers.
 Cancelled pending options do not save preferences. Each invocation starts in
 Default construction mode.
 
+Choose `Deformable` (or `Deformable=Yes`) before the first point to create a
+non-rational periodic cubic approximation. `PointCount=8`, or `PointCount`
+followed by an integer, sets its unique control count; three repeated seam
+controls are stored in addition. The default count is 12. Supported counts are
+4 through 1000. Enter at the count prompt accepts its current value; Escape or
+`Cancel` cancels. Counts below four leave that prompt available for correction.
+Point counts are dimensionless and accept no length-unit suffixes.
+
+Deformable output works with every construction mode, numeric axis locks and
+focus markers. Previews draw the same approximation used by the final command.
+The shape interpolates equal-angle ellipse stations using the shared periodic
+cubic solver; its parameter domain is zero through the semi-axis diagonal
+length. A successful command remembers the point count across Undo/Redo.
+Each new invocation starts with exact output and must enable Deformable again.
+As with MarkFoci, local cancelled option edits do not save preferences.
+
+Rhino 8.32's native Ellipse getter offers `PointCount` and produces cubics; it
+rejects `Degree`, despite the broader description in the public help. Captured
+degree attempts remain diagnostics. Deformable cannot be disabled after being
+enabled in the same invocation; cancel and restart for exact output.
+
 Examples of complete scripts:
 
 ```text
@@ -60,6 +81,7 @@ Ellipse Diameter -6,0,0 12 2,0,0 6 0,4,2
 Ellipse Corner -6,-3,0 6,3,0
 Ellipse 1,2,3 Corner 7,10,7
 Ellipse FromFoci 0,0,0 8,0,0 4,3,0 MarkFoci=Yes
+Ellipse Deformable PointCount=8 0,0,0 6,0,0 0,3,0
 ```
 
 The curve and optional markers use current object defaults and form one undo
@@ -90,6 +112,17 @@ Five clean cancellations and one failure are separate controls; a timed-out
 zero-axis retry remains an excluded diagnostic. Local tests additionally cover
 source freshness, point filters, parameter picks and cancellation cleanup.
 
+[Deformable validation](../ellipse-deform-validation.json) compares 33 successful
+native workflows at `1e-6` through command and frontend on both backends: 32
+periodic cubic outputs and one restart with exact output. Coverage includes
+counts 4 through 64, all construction modes, a B-rep edge route,
+remembered counts, the integer getter, Enter defaults and a corrected minimum
+count. Two clean cancellations create no output. Nine separate diagnostics
+retain six unknown-option attempts, two superseded prompt-adapter timeouts,
+and one implicit preference dependency. A local 1000-point test checks control
+count and station interpolation; native high-count and cancellation-preference
+parity remain unqualified.
+
 The earlier mode validation retains five clean native failures and three
 cancellations as separate diagnostics.
 Six additional cases have incomplete input receipts, uncontrolled cursor-based
@@ -99,8 +132,7 @@ covered by frontend tests. Native failure termination and preference updates on
 cancellation are not claimed: local invalid picks allow retries and pending
 options save only after success.
 
-Deformable output remains unimplemented. Negative numeric
-sizes are rejected. Exhaustive physical mouse/snap, extreme-range and performance
+Negative numeric sizes are rejected. Exhaustive physical mouse/snap, extreme-range and performance
 parity remain unqualified.
 
 Reference: McNeel's public

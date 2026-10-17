@@ -1,0 +1,178 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "ellipse-deform-cancel-count",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Ellipse",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Ellipse\nEllipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _Pause\nEllipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _Deformable\nEllipse center ( PointCount=8  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _PointCount\nDeformable point count <8>: _Cancel\nDeformable point count <8>",
+        "input_trace": {
+          "completed": 3,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 3,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Ellipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+            "Ellipse center ( PointCount=8  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+            "Deformable point count <8>"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Ellipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+              "token": "_Deformable"
+            },
+            {
+              "action": 1,
+              "prompt": "Ellipse center ( PointCount=8  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+              "token": "_PointCount"
+            },
+            {
+              "action": 2,
+              "prompt": "Deformable point count <8>",
+              "token": "_Cancel"
+            }
+          ]
+        },
+        "macro": "_Ellipse _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "ellipse-deform-cancel-axis",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Ellipse",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Ellipse\nEllipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _Pause\nEllipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _Deformable\nEllipse center ( PointCount=8  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _PointCount=7\nEllipse center ( PointCount=7  Vertical  Corner  Diameter  FromFoci  AroundCurve ): w0.0,0.0,0.0\nEnd of first axis ( Corner ): _Cancel\nEnd of first axis ( Corner )",
+        "input_trace": {
+          "completed": 4,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 4,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Ellipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+            "Ellipse center ( PointCount=8  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+            "Ellipse center ( PointCount=7  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+            "End of first axis ( Corner )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Ellipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+              "token": "_Deformable"
+            },
+            {
+              "action": 1,
+              "prompt": "Ellipse center ( PointCount=8  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+              "token": "_PointCount=7"
+            },
+            {
+              "action": 2,
+              "prompt": "Ellipse center ( PointCount=7  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "End of first axis ( Corner )",
+              "token": "_Cancel"
+            }
+          ]
+        },
+        "macro": "_Ellipse _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

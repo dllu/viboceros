@@ -334,6 +334,31 @@ impl Ellipse3 {
         .try_reparameterized(self.domain())
     }
 
+    /// A non-rational periodic cubic through equal-angle ellipse stations.
+    /// `point_count` counts unique controls, excluding the three seam aliases.
+    /// The command's parameter scale is the semi-axis diagonal length.
+    pub fn try_deformable(self, point_count: usize) -> Result<NurbsCurve, GeometryError> {
+        if !(4..=1_000).contains(&point_count) {
+            return Err(GeometryError::InvalidCurveRebuildPointCount {
+                actual: point_count,
+                minimum: 4,
+                maximum: 1_000,
+            });
+        }
+        let points = (0..point_count)
+            .map(|i| self.point_at_angle(std::f64::consts::TAU * i as Real / point_count as Real))
+            .collect::<Result<Vec<_>, _>>()?;
+        let curve = NurbsCurve::try_interpolate_periodic_uniform_samples(&points, 1_000)?
+            .try_reparameterized(0.0..=self.radius_x.hypot(self.radius_y))?;
+        let mut knots = curve.knots().to_vec();
+        // OpenNURBS omits the unused exterior knots; match their canonical
+        // full-vector representation without changing the active basis.
+        knots[0] = knots[1];
+        let last = knots.len() - 1;
+        knots[last] = knots[last - 1];
+        NurbsCurve::try_new_rational(3, curve.control_points().to_vec(), knots)
+    }
+
     /// Preserves the analytic representation if transformed axes remain
     /// orthogonal. Callers can promote `None` to the exact NURBS image.
     pub fn transformed_orthogonal(

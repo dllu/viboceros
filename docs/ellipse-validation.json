@@ -527,11 +527,9 @@
   },
   "sha256": {
     "crates/viboceros-command/src/lib.rs": "a920a9b8cea67a0ae3d4b3570d8d35ddaade9d76414949c1d9fcb42e80bb8ed2",
-    "crates/viboceros-geometry/src/ellipse.rs": "f4b00164c128f4a1261355a251d0f47418c95e5fbc507506f64aff17c1793d50",
     "crates/viboceros-oracle/src/lib.rs": "f067356242750c74a4313e1f2177302a7ebd81a6d149ae134150f6f8ab6072f0",
     "docs/catenary-validation.json": "f2564f50b5030ec4b4c80a1f197d3222506cbac0ec83375146ce627bebcb480f",
     "docs/parabola-validation.json": "e8d66316163b8b1b24efed4d6910fc6c4a3ae02dcb65c956b1fc154c5ccaaec5",
-    "src/viewport.rs": "9159c1eb592b59615cc9fc7f52c5c2be903cb23f541adca9bd516dc90d6812b2",
     "tools/rhino_oracle/fixtures/ellipse_command.json": "07bf97ab7e81ad783a038c41ea02218a89af14c9a93a28e10e8e4a08f2c36741",
     "tools/rhino_oracle/fixtures/ellipse_diagnostics.json": "3f23364d6a59820a252e36334a95dc64edc2238f6a22a9b87c054c8f4b5e216d",
     "tools/rhino_oracle/fixtures/ellipse_direction_diagnostics.json": "3ddba025e7281e6b113ebe3c217ae4ece7d2e2c857fc124a7fbda9861dfdc230",
@@ -568,6 +566,8 @@
     "dbb6bf38e387d24a920d7452e338284261d24406:tools/rhino_oracle/ellipse_probe.py": "55a2fbc7bdac119a8c6c6b3aadfdf498f284151dc0ebfcc30fc05877a371fd94",
     "dbb6bf38e387d24a920d7452e338284261d24406:tools/rhino_oracle/structural_sdk.py": "109ba2135a8129d2ad399ddfcb310da6a70639a55d27732cfffacd637f1e66b4",
     "dbb6bf38e387d24a920d7452e338284261d24406:tools/rhino_oracle/test_ellipse.py": "4b60c072b2dc7a12f02ef02affc23e413f1957ae6b074debb9d618102352933d",
-    "dbb6bf38e387d24a920d7452e338284261d24406:docs/spiral-around-validation.json": "bc72e460f328ff7964e76ea08b7ab518cff425b3916462caaf6271a769777afc"
+    "dbb6bf38e387d24a920d7452e338284261d24406:docs/spiral-around-validation.json": "bc72e460f328ff7964e76ea08b7ab518cff425b3916462caaf6271a769777afc",
+    "464e326ad7f528d99f25ef510f78345535c31067:crates/viboceros-geometry/src/ellipse.rs": "f4b00164c128f4a1261355a251d0f47418c95e5fbc507506f64aff17c1793d50",
+    "464e326ad7f528d99f25ef510f78345535c31067:src/viewport.rs": "9159c1eb592b59615cc9fc7f52c5c2be903cb23f541adca9bd516dc90d6812b2"
   }
 }

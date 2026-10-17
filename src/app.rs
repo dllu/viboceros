@@ -10524,6 +10524,7 @@ mod tests {
     mod edit_points;
     mod ellipse;
     mod ellipse_around;
+    mod ellipse_deform;
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_curvature_graph;

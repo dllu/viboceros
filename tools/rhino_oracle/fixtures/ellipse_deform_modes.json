@@ -1,0 +1,607 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-fresh-default",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-spatial",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        [
+          5,
+          4,
+          2
+        ],
+        [
+          11,
+          5,
+          4
+        ],
+        [
+          4,
+          7,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-skew",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-negative",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -6,
+          0,
+          0
+        ],
+        [
+          0,
+          -3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-swapped",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-circle",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-vertical",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "Vertical",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          8,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-diameter",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "Diameter",
+        [
+          -6,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-corner",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "Corner",
+        [
+          -6,
+          -3,
+          2
+        ],
+        [
+          6,
+          3,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-centered-corner",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        [
+          1,
+          2,
+          3
+        ],
+        "Corner",
+        [
+          7,
+          10,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-foci",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "FromFoci",
+        "MarkFoci=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-numeric",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        6,
+        [
+          2,
+          0,
+          0
+        ],
+        3,
+        [
+          2,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-relative",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        {
+          "relative": [
+            0,
+            0,
+            5
+          ]
+        },
+        {
+          "relative": [
+            6,
+            0,
+            0
+          ]
+        },
+        {
+          "relative": [
+            -6,
+            3,
+            0
+          ]
+        }
+      ],
+      "prior_point": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-tilted-cplane",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "Corner",
+        [
+          -6,
+          -3,
+          2
+        ],
+        [
+          6,
+          3,
+          8
+        ]
+      ],
+      "construction_plane": [
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-line",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          2,
+          3,
+          5
+        ],
+        [
+          3,
+          0,
+          9
+        ],
+        [
+          0,
+          2,
+          8
+        ]
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-line-preselected",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "AroundCurve",
+        [
+          2,
+          3,
+          5
+        ],
+        [
+          3,
+          0,
+          9
+        ],
+        [
+          0,
+          2,
+          8
+        ]
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "preselect": true,
+      "guide_selection": true
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-box-edge",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          2
+        ],
+        [
+          2,
+          -1,
+          3
+        ]
+      ],
+      "curves": [
+        {
+          "type": "box_brep",
+          "min": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            10,
+            8,
+            6
+          ]
+        }
+      ],
+      "guide_selection": true
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-dense",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "PointCount=64",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-remember-count",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "setup": [
+        "Deformable",
+        "PointCount=9",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-reset-output",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "setup": [
+        "Deformable",
+        "PointCount=9",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    }
+  ]
+}

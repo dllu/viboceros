@@ -5,8 +5,7 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 #[test]
 fn ellipse_around_native_frontend_sources_edges_relative_points_and_history() {
-    use viboceros_oracle::EllipseCommandAction as Action;
-    for (q, n, count) in [
+    assert_native_profiles(&[
         (
             include_str!("../../../tools/rhino_oracle/fixtures/ellipse_around_command.json"),
             include_str!(
@@ -21,7 +20,11 @@ fn ellipse_around_native_frontend_sources_edges_relative_points_and_history() {
             ),
             19,
         ),
-    ] {
+    ]);
+}
+pub(super) fn assert_native_profiles(profiles: &[(&str, &str, usize)]) {
+    use viboceros_oracle::EllipseCommandAction as Action;
+    for &(q, n, count) in profiles {
         let q: viboceros_oracle::ProbeRequest = serde_json::from_str(q).unwrap();
         let n: serde_json::Value = serde_json::from_str(n).unwrap();
         assert_eq!(q.operations.len(), count);
@@ -58,6 +61,18 @@ fn ellipse_around_native_frontend_sources_edges_relative_points_and_history() {
                     )
                     .unwrap(),
                 );
+            }
+            if let Some(setup) = &f.setup {
+                enter(&mut app, "Ellipse");
+                super::ellipse::actions(&mut app, setup);
+                let output = app
+                    .document
+                    .objects()
+                    .filter(|o| !guides.contains(&o.id()))
+                    .map(|o| o.id())
+                    .collect::<Vec<_>>();
+                app.document.delete_objects(output).unwrap();
+                app.document.clear_history().unwrap();
             }
             enter(&mut app, "Ellipse");
             for action in &f.actions {
@@ -142,86 +157,95 @@ fn ellipse_around_revalidates_guides_before_and_after_center_without_creating_he
     fn p(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
     }
-    for centered in [false, true] {
-        for change in 0..5 {
-            let mut app = test_app();
-            let id = app
-                .document
-                .add_geometry(Geometry::Line(
-                    viboceros_geometry::LineSegment::try_new(
-                        p(0., 0., 0.),
-                        p(0., 0., 10.),
-                        app.document.tolerance(),
-                    )
-                    .unwrap(),
-                ))
-                .unwrap();
-            app.document.clear_history().unwrap();
-            enter(&mut app, "Ellipse AroundCurve");
-            assert!(app.picking_ellipse_curve());
-            assert!(app.pick_ellipse_curve(Some(id), None));
-            if centered {
-                enter(&mut app, "w2,3,5");
-                assert_eq!(app.last_point, Some(p(0., 0., 5.)));
+    for deformable in [false, true] {
+        for centered in [false, true] {
+            for change in 0..5 {
+                let mut app = test_app();
+                let id = app
+                    .document
+                    .add_geometry(Geometry::Line(
+                        viboceros_geometry::LineSegment::try_new(
+                            p(0., 0., 0.),
+                            p(0., 0., 10.),
+                            app.document.tolerance(),
+                        )
+                        .unwrap(),
+                    ))
+                    .unwrap();
+                app.document.clear_history().unwrap();
+                enter(&mut app, "Ellipse AroundCurve");
+                if deformable {
+                    enter(&mut app, "Deformable");
+                }
+                assert!(app.picking_ellipse_curve());
+                assert!(app.pick_ellipse_curve(Some(id), None));
+                if centered {
+                    enter(&mut app, "w2,3,5");
+                    assert_eq!(app.last_point, Some(p(0., 0., 5.)));
+                    assert!(
+                        app.ellipse_session
+                            .as_ref()
+                            .unwrap()
+                            .input
+                            .reference()
+                            .is_none()
+                    );
+                }
+                enter(&mut app, ".y");
+                assert!(app.point_filter.is_some());
+                match change {
+                    0 => {
+                        app.document
+                            .replace_object_geometries([(
+                                id,
+                                Geometry::Line(
+                                    viboceros_geometry::LineSegment::try_new(
+                                        p(0., 0., 0.),
+                                        p(10., 0., 0.),
+                                        app.document.tolerance(),
+                                    )
+                                    .unwrap(),
+                                ),
+                            )])
+                            .unwrap();
+                    }
+                    1 => {
+                        app.document.set_objects_visibility([id], false).unwrap();
+                    }
+                    2 => {
+                        app.document.set_objects_locked([id], true).unwrap();
+                    }
+                    3 => {
+                        app.document
+                            .set_tolerance(Tolerance::try_new(2e-9, 1e-12, 1e-10).unwrap());
+                    }
+                    _ => {
+                        app.document.delete_objects([id]).unwrap();
+                    }
+                }
+                app.document.clear_history().unwrap();
+                app.validate_ellipse_curve();
+                assert!(app.picking_ellipse_curve(), "{centered} {change}");
+                assert_eq!(
+                    app.ellipse_session.as_ref().unwrap().input.deformable(),
+                    deformable
+                );
+                assert!(app.point_filter.is_none());
+                assert!(app.point_constraint.is_none());
                 assert!(
                     app.ellipse_session
                         .as_ref()
                         .unwrap()
                         .input
-                        .reference()
-                        .is_none()
+                        .markers()
+                        .is_empty()
                 );
+                assert!(app.document.undo_label().is_none());
+                assert!(app.document.objects().all(|o| o.id() == id));
+                enter(&mut app, "Cancel");
+                assert!(app.ellipse_session.is_none());
+                assert!(app.document.undo_label().is_none());
             }
-            enter(&mut app, ".y");
-            assert!(app.point_filter.is_some());
-            match change {
-                0 => {
-                    app.document
-                        .replace_object_geometries([(
-                            id,
-                            Geometry::Line(
-                                viboceros_geometry::LineSegment::try_new(
-                                    p(0., 0., 0.),
-                                    p(10., 0., 0.),
-                                    app.document.tolerance(),
-                                )
-                                .unwrap(),
-                            ),
-                        )])
-                        .unwrap();
-                }
-                1 => {
-                    app.document.set_objects_visibility([id], false).unwrap();
-                }
-                2 => {
-                    app.document.set_objects_locked([id], true).unwrap();
-                }
-                3 => {
-                    app.document
-                        .set_tolerance(Tolerance::try_new(2e-9, 1e-12, 1e-10).unwrap());
-                }
-                _ => {
-                    app.document.delete_objects([id]).unwrap();
-                }
-            }
-            app.document.clear_history().unwrap();
-            app.validate_ellipse_curve();
-            assert!(app.picking_ellipse_curve(), "{centered} {change}");
-            assert!(app.point_filter.is_none());
-            assert!(app.point_constraint.is_none());
-            assert!(
-                app.ellipse_session
-                    .as_ref()
-                    .unwrap()
-                    .input
-                    .markers()
-                    .is_empty()
-            );
-            assert!(app.document.undo_label().is_none());
-            assert!(app.document.objects().all(|o| o.id() == id));
-            enter(&mut app, "Cancel");
-            assert!(app.ellipse_session.is_none());
-            assert!(app.document.undo_label().is_none());
         }
     }
 }

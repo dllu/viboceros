@@ -2221,7 +2221,7 @@ impl Viewport {
         if let Some(getter) = input.ellipse_input {
             self.paint_draft_points(&painter, rect, &getter.markers());
             if let Some(definition) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
-                if let Ok(curve) = definition.ellipse.to_nurbs() {
+                if let Ok(curve) = definition.to_nurbs() {
                     let mut projected = ProjectedPrimitives::default();
                     self.add_projected_nurbs_curve(&mut projected, rect, &curve);
                     for segment in projected.segments {

@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-cancel-count",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount",
+        "Cancel"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-cancel-axis",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=7",
+        [
+          0,
+          0,
+          0
+        ],
+        "Cancel"
+      ]
+    }
+  ]
+}

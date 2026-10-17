@@ -23,12 +23,22 @@ impl Mode {
         }
     }
 }
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Options {
     pub mark_foci: bool,
+    pub point_count: usize,
+}
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            mark_foci: false,
+            point_count: 12,
+        }
+    }
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Slot {
+    PointCount,
     First,
     FirstAxis,
     SecondAxis,
@@ -41,12 +51,23 @@ pub enum Slot {
 pub struct Definition {
     pub ellipse: Ellipse3,
     pub foci: Option<[Point3; 2]>,
+    pub deformable_point_count: Option<usize>,
+}
+impl Definition {
+    pub fn to_nurbs(self) -> Result<viboceros_geometry::NurbsCurve, GeometryError> {
+        match self.deformable_point_count {
+            Some(count) => self.ellipse.try_deformable(count),
+            None => self.ellipse.to_nurbs(),
+        }
+    }
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Input {
     mode: Mode,
     vertical: bool,
     centered_corner: bool,
+    deformable: bool,
+    point_count_pending: bool,
     options: Options,
     points: [Option<Point3>; 3],
     length: Option<Real>,
@@ -63,6 +84,8 @@ impl Input {
             mode: Mode::Default,
             vertical: false,
             centered_corner: false,
+            deformable: false,
+            point_count_pending: false,
             options,
             points: [None; 3],
             length: None,
@@ -83,8 +106,17 @@ impl Input {
     pub fn options(self) -> Options {
         self.options
     }
+    pub fn deformable(self) -> bool {
+        self.deformable
+    }
+    pub fn point_count_pending(self) -> bool {
+        self.point_count_pending
+    }
+    pub fn accept_point_count_default(&mut self) {
+        self.point_count_pending = false;
+    }
     pub fn requests_curve(self) -> bool {
-        self.mode == Mode::AroundCurve && self.points[0].is_none()
+        self.mode == Mode::AroundCurve && self.points[0].is_none() && !self.point_count_pending
     }
     /// Latch the guide center and normal before the two axis getters.
     pub fn around_curve(&mut self, plane: Frame3) {
@@ -104,6 +136,9 @@ impl Input {
         }
     }
     pub fn slot(self) -> Slot {
+        if self.point_count_pending {
+            return Slot::PointCount;
+        }
         if self.result.is_some() {
             return Slot::Complete;
         }
@@ -164,6 +199,15 @@ impl Input {
         let (key, value) = word
             .split_once('=')
             .map_or((word, None), |(k, v)| (k, Some(v.trim_start_matches('_'))));
+        if self.point_count_pending && key.eq_ignore_ascii_case("Enter") && value.is_none() {
+            self.accept_point_count_default();
+            return Ok(true);
+        }
+        if key.eq_ignore_ascii_case("Degree") {
+            return Err(invalid(
+                "deformable Ellipse output is cubic; Degree is unavailable in Rhino 8.32",
+            ));
+        }
         if key.eq_ignore_ascii_case("MarkFoci") && self.mode == Mode::FromFoci {
             self.options.mark_foci = match value {
                 None => !self.options.mark_foci,
@@ -180,10 +224,29 @@ impl Input {
             return Err(invalid("ellipse is complete"));
         }
         if key.eq_ignore_ascii_case("Deformable") {
-            if value.is_some_and(|v| v.eq_ignore_ascii_case("No")) {
-                return Ok(true);
+            if self.points[0].is_some() || self.deformable {
+                return Err(invalid(
+                    "Deformable is available before the first ellipse point",
+                ));
             }
-            return Err(invalid("deformable Ellipse output is not supported yet"));
+            self.deformable = match value {
+                None => true,
+                Some(v) if v.eq_ignore_ascii_case("Yes") => true,
+                Some(v) if v.eq_ignore_ascii_case("No") => false,
+                _ => return Err(invalid("Deformable requires Yes or No")),
+            };
+            return Ok(true);
+        }
+        if key.eq_ignore_ascii_case("PointCount") && self.deformable && self.points[0].is_none() {
+            if let Some(value) = value {
+                let count = value
+                    .parse::<usize>()
+                    .map_err(|_| invalid("PointCount requires an integer from 4 through 1000"))?;
+                self.set_point_count(count)?;
+            } else {
+                self.point_count_pending = true;
+            }
+            return Ok(true);
         }
         if value.is_none()
             && key.eq_ignore_ascii_case("Vertical")
@@ -227,6 +290,7 @@ impl Input {
     fn definition(self, ellipse: Ellipse3) -> Result<Definition, GeometryError> {
         Ok(Definition {
             ellipse,
+            deformable_point_count: self.deformable.then_some(self.options.point_count),
             foci: if self.options.mark_foci && self.mode == Mode::FromFoci {
                 let [negative, positive] = ellipse.foci()?;
                 Some([positive, negative])
@@ -246,6 +310,14 @@ impl Input {
         self.length
     }
     pub fn number(&mut self, value: Real) -> Result<(), GeometryError> {
+        if self.point_count_pending {
+            if !value.is_finite() || value.fract() != 0. || !(4.0..=1000.0).contains(&value) {
+                return Err(invalid(
+                    "PointCount requires an integer from 4 through 1000",
+                ));
+            }
+            return self.set_point_count(value as usize);
+        }
         if !value.is_finite() || value <= self.tolerance.absolute() {
             return Err(invalid(
                 "ellipse axis length must be greater than tolerance",
@@ -259,6 +331,16 @@ impl Input {
             _ => Err(invalid("pick an ellipse point")),
         }
     }
+    fn set_point_count(&mut self, count: usize) -> Result<(), GeometryError> {
+        if !(4..=1000).contains(&count) {
+            return Err(invalid(
+                "PointCount requires an integer from 4 through 1000",
+            ));
+        }
+        self.options.point_count = count;
+        self.point_count_pending = false;
+        Ok(())
+    }
     fn center(self) -> Result<Point3, GeometryError> {
         let first = self.points[0].ok_or_else(|| invalid("ellipse first point required"))?;
         if self.mode == Mode::Diameter {
@@ -268,12 +350,16 @@ impl Input {
         }
     }
     pub fn point(&mut self, point: Point3) -> Result<Option<Definition>, GeometryError> {
+        if self.point_count_pending {
+            return Err(invalid("enter the ellipse point count first"));
+        }
         if self.requests_curve() {
             return Err(invalid("select an ellipse guide and center on it"));
         }
         let point = self.resolve_point(point)?;
         let mut next = *self;
         let ellipse = match self.slot() {
+            Slot::PointCount => unreachable!("point-count getter handled before geometry"),
             Slot::First => {
                 next.points[0] = Some(point);
                 None
@@ -410,11 +496,19 @@ impl Input {
             format!("{x},{y},{z}")
         };
         Ok(format!(
-            "Ellipse AroundCurve {reference} {} {} {}",
+            "Ellipse {}AroundCurve {reference} {} {} {}",
+            self.output_options(),
             point(e.center()),
             point(q[0]),
             point(q[1])
         ))
+    }
+    fn output_options(self) -> String {
+        if self.deformable {
+            format!("Deformable=Yes PointCount={} ", self.options.point_count)
+        } else {
+            String::new()
+        }
     }
     /// Emit the completed analytic construction, so history has one command owner.
     pub fn command(self) -> Result<String, GeometryError> {
@@ -431,14 +525,21 @@ impl Input {
             // A minor-axis point preserves the completed plane even when the
             // authored point was collinear and needed the captured CPlane.
             return Ok(format!(
-                "Ellipse FromFoci {} {} {} MarkFoci={}",
+                "Ellipse {}FromFoci {} {} {} MarkFoci={}",
+                self.output_options(),
                 p(self.points[0].unwrap()),
                 p(self.points[1].unwrap()),
                 p(q[1]),
                 if self.options.mark_foci { "Yes" } else { "No" }
             ));
         }
-        Ok(format!("Ellipse {} {} {}", p(e.center()), p(q[0]), p(q[1])))
+        Ok(format!(
+            "Ellipse {}{} {} {}",
+            self.output_options(),
+            p(e.center()),
+            p(q[0]),
+            p(q[1])
+        ))
     }
 }
 
@@ -476,7 +577,15 @@ impl crate::Command for EllipseCommand {
         let mut consumed = 0;
         let triples = arguments
             .iter()
-            .filter(|w| w.parse::<Real>().is_ok())
+            .enumerate()
+            .filter(|(index, w)| {
+                w.parse::<Real>().is_ok()
+                    && !index.checked_sub(1).is_some_and(|i| {
+                        arguments[i]
+                            .trim_start_matches(['_', '-'])
+                            .eq_ignore_ascii_case("PointCount")
+                    })
+            })
             .count()
             == 9
             && !arguments.iter().any(|w| w.contains(','));
@@ -490,6 +599,15 @@ impl crate::Command for EllipseCommand {
                     guide = None;
                     source_selection = None;
                 }
+                consumed += 1;
+                continue;
+            }
+            if input.point_count_pending() {
+                input.number(
+                    word.parse().map_err(|_| {
+                        crate::CommandError::Usage("PointCount requires an integer")
+                    })?,
+                )?;
                 consumed += 1;
                 continue;
             }
@@ -565,7 +683,12 @@ impl crate::Command for EllipseCommand {
                 document.add_geometry(Geometry::Point(point))?;
             }
         }
-        let id = document.add_geometry(Geometry::Ellipse(result.ellipse))?;
+        let geometry = if result.deformable_point_count.is_some() {
+            Geometry::NurbsCurve(result.to_nurbs()?)
+        } else {
+            Geometry::Ellipse(result.ellipse)
+        };
+        let id = document.add_geometry(geometry)?;
         self.0.set(input.options());
         Ok(format!(
             "Added ellipse {id} (radii {:.6} × {:.6})",

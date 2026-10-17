@@ -25,7 +25,7 @@ def validate(op):
         return type(v) in (int, float) and abs(v) <= 1e6 and not (math.isnan(v) or math.isinf(v))
     def point(p):
         return isinstance(p, list) and len(p) == 3 and all(finite(v) for v in p)
-    options = {'Default', 'Vertical', 'Corner', 'Diameter', 'FromFoci', 'Deformable', 'Degree', 'PointCount', 'MarkFoci', 'AroundCurve', 'Enter'}
+    options = {'Default', 'Vertical', 'Corner', 'Diameter', 'FromFoci', 'Deformable', 'Degree', 'PointCount', 'MarkFoci', 'AroundCurve', 'Enter', 'Cancel'}
     options.update(k + '=' + v for k in ('Deformable', 'MarkFoci') for v in ('Yes', 'No'))
     def action(a):
         if point(a) or finite(a):
@@ -39,7 +39,7 @@ def validate(op):
             return (set(a)=={'curve','edge','pick'} and type(a['edge']) is int and 0<=a['edge']<64 and point(a['pick']) and surface) if 'edge' in a else (set(a)=={'curve'} and not surface)
         if not isinstance(a, str):
             return False
-        return a in options or re.match(r'\A(?:Degree|PointCount)=[0-9]{1,2}\Z', a) is not None
+        return a in options or re.match(r'\A(?:Degree=[0-9]{1,2}|PointCount=(?:[0-9]{1,3}|1000))\Z', a) is not None
     for field in ('actions', 'setup'):
         if field == 'setup' and field not in op:
             continue

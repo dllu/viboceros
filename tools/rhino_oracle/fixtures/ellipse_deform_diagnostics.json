@@ -1,0 +1,230 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-d3-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "Degree=3",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-d5-n12",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "Degree=5",
+        "PointCount=12",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-d2-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "Degree=2",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-d1-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "Degree=1",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-off",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=9",
+        "Deformable=No",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-min",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=3",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-default",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-pending",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "PointCount",
+        7,
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-deform-pending-default",
+      "live_getters": true,
+      "actions": [
+        "Deformable=Yes",
+        "PointCount=8",
+        "PointCount",
+        "Enter",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    }
+  ]
+}
