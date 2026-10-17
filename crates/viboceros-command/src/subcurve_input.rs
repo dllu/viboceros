@@ -61,6 +61,25 @@ impl SubcurveMode {
     }
 }
 
+/// Direction is shared by standalone and nested temporary-curve getters.
+pub fn direction_option(input: &str) -> Option<Result<bool, &'static str>> {
+    let word = input.trim().trim_start_matches(['_', '-']);
+    if word.eq_ignore_ascii_case("D") {
+        return Some(Ok(true));
+    }
+    let (key, value) = word.split_once('=')?;
+    if !key.eq_ignore_ascii_case("Direction") {
+        return None;
+    }
+    Some(
+        match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+            "locked" => Ok(true),
+            "free" => Ok(false),
+            _ => Err("Direction expects Free or Locked"),
+        },
+    )
+}
+
 /// Standalone SubCrv retains full closed traversals and source orientation.
 pub fn piece(
     curve: CurveRef<'_>,

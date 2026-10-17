@@ -178,8 +178,6 @@
     "method": "Move only previously verifiable affected digests to immutable full base revision Git references; retain original digest values and non-hash metadata."
   },
   "sha256": {
-    "docs/curve-deviation-subcurves-validation.json": "ef30692fab973aab6a34fe741d2dea8458db1f3a8800e6e849483f567b7c3336",
-    "src/app/subcurve_direction.rs": "7e3a256fd3a4b1575ad40acb0944c9463a52f9bcdaca41e8b014a00bd129b468",
     "src/app/tests/orient_curve_subcurve.rs": "271dbda67bf84f7951c77c7c53975d26c77cf83b9c3b831ea7461918c5584c26",
     "tools/rhino_oracle/fixtures/orient_on_curve_projected_input.json": "3becae613d95e8f2712c0ef2511187faed28b372729024b45ce1f0c6e9ab97e6",
     "tools/rhino_oracle/fixtures/orient_on_curve_relative_input.json": "4cd0dcc324ff830821be43bc65de7bfb85a75e45a36d6e7f48886a9c653a5e1b",
@@ -213,6 +211,8 @@
     "daec5072e887979947ec3c92733a30423101e0f3:docs/orient-on-curve-validation.json": "f2e7448e60961cd770a14aedeaae4da6945b46406c2221eeede3b59e5e432020",
     "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:src/viewport/affine_preview/tests.rs": "8cf68e4c820aa34f2c157a8c4d363bff3df2739f8f0d9cd5c80df7695a58c440",
     "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de:src/app/point_input.rs": "497c315a7bb8164c438e44de980dcc21ff2d1b93241382510e1fbef15389e647",
-    "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de:src/viewport.rs": "c11de26e5664579ed4b25d1e0f367b1e4778145ccf6bedbc5871e0f8ddd642f0"
+    "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de:src/viewport.rs": "c11de26e5664579ed4b25d1e0f367b1e4778145ccf6bedbc5871e0f8ddd642f0",
+    "04f7e1923710f12ee4228b34083f8b10048d068d:docs/curve-deviation-subcurves-validation.json": "ef30692fab973aab6a34fe741d2dea8458db1f3a8800e6e849483f567b7c3336",
+    "04f7e1923710f12ee4228b34083f8b10048d068d:src/app/subcurve_direction.rs": "7e3a256fd3a4b1575ad40acb0944c9463a52f9bcdaca41e8b014a00bd129b468"
   }
 }

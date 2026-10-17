@@ -464,6 +464,13 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='conic_command' and any(isinstance(a,dict)and('hover'in a or'edge'in a)for a in op.get('actions',[]))for op in request.get('operations',[])):
+            if self.settings_scheme is None or request.get('iterations',1)!=1 or any(op.get('op')!='conic_command'for op in request.get('operations',[])):
+                raise OracleProtocolError('Conic hover input requires a private dedicated one-iteration request')
+            operations=request['operations']
+            if not 1<=len(operations)<=128 or len({o['id']for o in operations})!=len(operations):raise OracleProtocolError('Conic hover input requires uniquely named bounded cases')
+            from .conic_getter_picker import ConicGetterPicker
+            interaction=ConicGetterPicker(request)
         if any(op.get('op')=='surface_flow' and op.get('mouse') for op in request.get('operations', [])):
             if self.settings_scheme is None:
                 raise OracleProtocolError('surface Flow mouse capture requires a private settings scheme')

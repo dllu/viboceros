@@ -147,7 +147,6 @@
     "crates/viboceros-command/src/curve_deviation/inputs.rs": "a3b4e6f6338456136231bb1853c518cb870e7ca771f52ac051afb7b4339926ae",
     "crates/viboceros-command/src/curve_deviation/tests.rs": "338b66b0e0f8127df2be3b573153cabd9b3d23c692df2efe89a9ca5bd80b7f8c",
     "crates/viboceros-command/src/curve_segments.rs": "8ebc02ab7410317e3354cc633301bc4b7c41c9235d9e89bb2edbff03a10bb7a9",
-    "crates/viboceros-command/src/subcurve_input.rs": "f0765acef3a926429066695f43181c8dc485faf52b5da8e5f01727bcb6326ed2",
     "crates/viboceros-command/src/uv_inputs.rs": "701fbf86647af7008005da458ead883e084fc9acb61b5686c4ab9bfc6dfdfb7c",
     "crates/viboceros-oracle/src/curve_deviation.rs": "711426760d6c37a1552a67a85c8e446837392a340f5d0d3aa0819097fe98bcd4",
     "crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f",
@@ -201,6 +200,7 @@
     "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/curve-distance-validation.json": "7481bce40f8753dec7ddaea5c745258ad5ca6a1d2eee987366da28f0267d7d8d",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/point-deviation-validation.json": "24a977983334171f1bb83e6ee65350d78efc4b2a1bbd8647d3324bd3e23fd10d",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c",
-    "2348c030682b04b278c62b1d5e139d1c632c488b:src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708"
+    "2348c030682b04b278c62b1d5e139d1c632c488b:src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708",
+    "04f7e1923710f12ee4228b34083f8b10048d068d:crates/viboceros-command/src/subcurve_input.rs": "f0765acef3a926429066695f43181c8dc485faf52b5da8e5f01727bcb6326ed2"
   }
 }

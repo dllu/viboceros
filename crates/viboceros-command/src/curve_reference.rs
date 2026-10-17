@@ -77,6 +77,9 @@ impl CapturedCurve {
             tolerance: doc.tolerance(),
         })
     }
+    pub fn source(&self) -> (&viboceros_document::GeometrySnapshot, Option<usize>) {
+        (&self.parent, self.edge)
+    }
     pub fn curve(&self) -> &NurbsCurve {
         &self.curve
     }

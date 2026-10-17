@@ -1,0 +1,2025 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "conic_command",
+      "id": "locked-forward-point",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-backward-point",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            2,
+            0,
+            0
+          ]
+        },
+        "D",
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-opposite-return",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        [
+          2,
+          0,
+          0
+        ],
+        {
+          "curve": 0
+        },
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-same-return",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "curve": 0
+        },
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-forward-length",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        3,
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-backward-length",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            2,
+            0,
+            0
+          ]
+        },
+        "D",
+        3,
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-length-clamp",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        8,
+        [
+          12,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-zero-return",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        0,
+        {
+          "curve": 0
+        },
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "locked-enter-return",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        "Enter",
+        {
+          "curve": 0
+        },
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "unlock-opposite-point",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        "Direction=Free",
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "free-forward-confirm",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        "Direction=Free",
+        3,
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "free-opposite-confirm",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            2,
+            0,
+            0
+          ]
+        },
+        "D",
+        "Direction=Free",
+        3,
+        [
+          9,
+          0,
+          0
+        ],
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "end-perpendicular-locked",
+      "actions": [
+        [
+          0,
+          8,
+          0
+        ],
+        "Perpendicular",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        3,
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          5,
+          3,
+          4
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "closed-short",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          4,
+          0
+        ],
+        {
+          "hover": [
+            -4,
+            0,
+            0
+          ]
+        },
+        "Direction=Locked",
+        2,
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          -2,
+          1,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "closed-long",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          4,
+          0
+        ],
+        {
+          "hover": [
+            -4,
+            0,
+            0
+          ]
+        },
+        "Direction=Locked",
+        8,
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          -2,
+          1,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "closed-long-opposite",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          4,
+          0
+        ],
+        {
+          "hover": [
+            -4,
+            0,
+            0
+          ]
+        },
+        "Direction=Locked",
+        8,
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          -2,
+          1,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "closed-seam-point",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          -4,
+          0
+        ],
+        {
+          "hover": [
+            4,
+            0,
+            0
+          ]
+        },
+        "D",
+        [
+          0,
+          4,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          4,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "nonuniform-closed-length",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          0.5,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            1,
+            0.5,
+            0
+          ]
+        },
+        "D",
+        8,
+        [
+          1,
+          0.5,
+          0
+        ],
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              0
+            ],
+            [
+              21,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-start-tangent",
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-start-perpendicular",
+      "actions": [
+        "Perpendicular",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          7
+        ],
+        [
+          5,
+          3,
+          5
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-end-tangent",
+      "actions": [
+        [
+          0,
+          0,
+          4
+        ],
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 1,
+          "pick": [
+            10,
+            5,
+            0
+          ]
+        },
+        [
+          10,
+          5,
+          0
+        ],
+        [
+          4,
+          8,
+          9
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-both-tangents",
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          2,
+          0,
+          0
+        ],
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 1,
+          "pick": [
+            10,
+            5,
+            0
+          ]
+        },
+        [
+          10,
+          5,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-locked-length",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            6,
+            0,
+            0
+          ]
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        {
+          "hover": [
+            8,
+            0,
+            0
+          ]
+        },
+        "D",
+        3,
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-reversed-point",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            6,
+            0,
+            0
+          ]
+        },
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-front-perpendicular",
+      "actions": [
+        "Perpendicular",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          7
+        ],
+        [
+          5,
+          3,
+          5
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "edge-curved-3d",
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0.96,
+            0.64
+          ]
+        },
+        [
+          2,
+          1,
+          0.6
+        ],
+        [
+          10,
+          8,
+          3
+        ],
+        [
+          5,
+          3,
+          5
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                3,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                13,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 3,
+          "control_point_count_v": 2
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "closed-short-opposite",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          4,
+          0
+        ],
+        {
+          "hover": [
+            -4,
+            0,
+            0
+          ]
+        },
+        "Direction=Locked",
+        2,
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          -2,
+          1,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "conic_command",
+      "id": "closed-backward-long",
+      "actions": [
+        "Tangent",
+        "SubCrv",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          4,
+          0
+        ],
+        {
+          "hover": [
+            4,
+            0,
+            0
+          ]
+        },
+        "Direction=Locked",
+        8,
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          10,
+          8,
+          0
+        ],
+        [
+          -2,
+          1,
+          0
+        ],
+        0.5
+      ],
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 4,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

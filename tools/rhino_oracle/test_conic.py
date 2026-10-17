@@ -15,7 +15,7 @@ class ConicTests(TestCase):
             with self.assertRaises(ValueError,msg=(key,value)):validate(op)
         with tempfile.TemporaryDirectory()as directory:
             job=Path(directory);stage_helpers(q,BASE,job)
-            self.assertEqual({p.name for p in job.iterdir()},{'conic_probe.py','curve_primitive_probe.py','geometry_validity_probe.py','join_probe.py','merge_edges_probe.py'})
+            self.assertEqual({p.name for p in job.iterdir()},{'conic_probe.py','curve_primitive_probe.py','geometry_validity_probe.py','join_probe.py','merge_edges_probe.py','conic_getter_input.py','managed_mouse_callback.py','snap_environment.py'})
             subprocess.run([sys.executable,'-I','-c','import sys;sys.path.insert(0,sys.argv[1]);import conic_probe,curve_primitive_probe;conic_probe.validate(__import__("json").loads(sys.argv[2])["operations"][0])',str(job),json.dumps(q)],check=True,capture_output=True)
     def test_native_command_events_geometry_source_preservation_and_undo_redo(self):
         q=json.loads((BASE/'fixtures/conic_command.json').read_text());n=json.loads((BASE/'observations/conic_command_rhino_20261017.json').read_text())

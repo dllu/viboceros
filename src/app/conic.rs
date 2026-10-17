@@ -6,6 +6,7 @@ pub(super) struct Session {
     pub(super) input: Input,
     pub(super) reference: Option<ReferenceInput>,
     subcurve: bool,
+    pub(super) preview: super::subcurve_preview::Cache,
 }
 impl Session {
     pub(super) fn cursor_curve(&self) -> Option<&viboceros_geometry::NurbsCurve> {
@@ -66,7 +67,7 @@ impl VibocerosApp {
             return Ok(point);
         };
         if let Some(r) = &s.reference {
-            return r.sample(point).map(|(point, _)| point);
+            return r.project(point);
         }
         s.input
             .point_constraint()
@@ -93,8 +94,16 @@ impl VibocerosApp {
             "select curve or surface edge; SubCrv".to_owned()
         } else if let Some(r) = &s.reference {
             match r.stage() {
+                ReferenceStage::SelectCurve => "select curve or surface edge".into(),
                 ReferenceStage::TrimStart => "start of temporary subcurve; FullCurve".into(),
-                ReferenceStage::TrimEnd => "end of temporary subcurve or length; FullCurve".into(),
+                ReferenceStage::TrimEnd => format!(
+                    "end of temporary subcurve or length; Direction={}; Enter returns",
+                    if r.locked_forward().is_some() {
+                        "Locked"
+                    } else {
+                        "Free"
+                    }
+                ),
                 ReferenceStage::Endpoint => "point on reference curve".into(),
             }
         } else {
@@ -164,6 +173,13 @@ impl VibocerosApp {
         } else {
             s.input.point(point).map_err(|e| e.to_string())
         };
+        if result.is_ok()
+            && s.reference
+                .as_ref()
+                .is_some_and(|r| r.stage() == ReferenceStage::SelectCurve)
+        {
+            s.reference = None;
+        }
         Some(match result {
             Ok(Some(definition)) => self.finish_conic(definition),
             Ok(None) => {
@@ -180,6 +196,47 @@ impl VibocerosApp {
                 false
             }
         })
+    }
+    pub(super) fn update_conic_subcurve_hover(&mut self, point: Point3) -> bool {
+        let Some(s) = &mut self.conic_session else {
+            return false;
+        };
+        let Some(r) = s
+            .reference
+            .as_mut()
+            .filter(|r| r.stage() == ReferenceStage::TrimEnd)
+        else {
+            return false;
+        };
+        let (source, edge) = r.source();
+        if let Some(t) = s
+            .preview
+            .parameter(Some(source), edge, point, self.document.tolerance())
+        {
+            let _ = r.set_hover_parameter(t);
+        }
+        true
+    }
+    pub(super) fn continue_conic_subcurve_direction(&mut self, input: &str) -> bool {
+        let Some(r) = self
+            .conic_session
+            .as_mut()
+            .and_then(|s| s.reference.as_mut())
+            .filter(|r| r.stage() == ReferenceStage::TrimEnd)
+        else {
+            return false;
+        };
+        let Some(locked) = viboceros_command::subcurve_input::direction_option(input) else {
+            return false;
+        };
+        let result = locked
+            .map_err(str::to_owned)
+            .and_then(|value| r.direction(value).map_err(|e| e.to_string()));
+        match result {
+            Ok(()) => self.conic_prompt(),
+            Err(e) => self.push_log(format!("Error: {e}")),
+        };
+        true
     }
     pub(super) fn try_start_conic(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
@@ -202,6 +259,7 @@ impl VibocerosApp {
             input: getter,
             reference: None,
             subcurve: false,
+            preview: Default::default(),
         });
         self.conic_prompt();
         true
@@ -225,6 +283,13 @@ impl VibocerosApp {
             return true;
         }
         if self.picking_conic_curve() {
+            if (word.is_empty() || word.eq_ignore_ascii_case("Enter"))
+                && self.conic_session.as_ref().unwrap().subcurve
+            {
+                self.conic_session.as_mut().unwrap().subcurve = false;
+                self.conic_prompt();
+                return true;
+            }
             if word.eq_ignore_ascii_case("SubCrv") {
                 self.conic_session.as_mut().unwrap().subcurve = true;
                 self.conic_prompt();
@@ -262,6 +327,13 @@ impl VibocerosApp {
         }
         let s = self.conic_session.as_mut().unwrap();
         if let Some(r) = &mut s.reference {
+            if (word.is_empty() || word.eq_ignore_ascii_case("Enter"))
+                && r.stage() != ReferenceStage::Endpoint
+            {
+                s.reference = None;
+                self.conic_prompt();
+                return true;
+            }
             if word.is_empty()
                 || word.eq_ignore_ascii_case("Enter")
                 || word.eq_ignore_ascii_case("FullCurve")
@@ -280,7 +352,12 @@ impl VibocerosApp {
                     r.length(n, self.document.tolerance())
                         .map_err(|e| e.to_string())
                 }) {
-                    Ok(()) => self.conic_prompt(),
+                    Ok(()) => {
+                        if r.stage() == ReferenceStage::SelectCurve {
+                            s.reference = None;
+                        }
+                        self.conic_prompt();
+                    }
                     Err(e) => self.push_log(format!("Error: {e}")),
                 }
                 return true;

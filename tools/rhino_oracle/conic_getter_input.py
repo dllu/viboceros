@@ -1,0 +1,82 @@
+"""Managed UI delegates drive bounded public getters while Python awaits RunScript."""
+import json,os
+
+def drive(op,host,guides):
+    R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
+    from snap_environment import environment
+    import clr
+    clr.AddReference('System.Core');clr.AddReference('System.Windows.Forms')
+    from System.Linq.Expressions import Expression as E,ParameterExpression
+    root=os.path.dirname(host['__file__']);progress=os.path.join(root,'worker-progress.log');ack=os.path.join(root,'click-ack.json')
+    actions=op['actions'];state=S.Array[S.Int32]([0,1,0]);counts=S.Array[S.Int32]([0]*len(actions));observed=S.Array[S.String]([None]*len(actions));last=S.Array[S.DateTime]([S.DateTime.UtcNow]);started=S.DateTime.UtcNow
+    def array(v):return S.Array[E](v)
+    def integer(v):return E.Constant(S.Int32(v))
+    def item(v,i):return E.ArrayAccess(E.Constant(v),array([integer(i)]))
+    def method(t,name,types):return clr.GetClrType(t).GetMethod(name,S.Array[S.Type]([clr.GetClrType(v)for v in types]))
+    def call(target,m,args):return E.Call(target,m,array(args))
+    def block(v):return E.Block(array(v+[E.Empty()]))
+    def compile_delegate(t,body,parameters=()):return E.Lambda(clr.GetClrType(t),body,S.Array[ParameterExpression](parameters)).Compile()
+    def either(v):
+        result=v[0]
+        for x in v[1:]:result=E.OrElse(result,x)
+        return result
+    stage=item(state,0);active=E.Equal(item(state,1),integer(1));now=E.Property(None,clr.GetClrType(S.DateTime).GetProperty('UtcNow'))
+    prompt=E.Property(None,clr.GetClrType(R.RhinoApp).GetProperty('CommandPrompt'))
+    starts=method(S.String,'StartsWith',[S.String]);contains=method(S.String,'Contains',[S.String]);send=method(R.RhinoApp,'SendKeystrokes',[S.String,S.Boolean])
+    write=method(S.IO.File,'WriteAllText',[S.String,S.String]);append=method(S.IO.File,'AppendAllText',[S.String,S.String]);exists=method(S.IO.File,'Exists',[S.String]);read=method(S.IO.File,'ReadAllText',[S.String]);move=method(S.IO.File,'Move',[S.String,S.String])
+    subtract=method(S.DateTime,'Subtract',[S.DateTime]);elapsed=lambda t:E.Property(call(now,subtract,[t]),'TotalSeconds')
+    def send_token(token):return call(None,send,[E.Constant(token),E.Constant(True)])
+    def log(message):return call(None,append,[E.Constant(progress),E.Constant(message)])
+    def point(p):return 'w'+','.join(repr(float(x))for x in p)
+    base=either([call(prompt,starts,[E.Constant(p)])for p in ('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')])
+    length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
+    def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
+    branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[]
+    for i,a in enumerate(actions):
+        advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
+        if isinstance(a,dict)and('hover'in a or'edge'in a):
+            hover='hover'in a;aim=a['hover']if hover else a['pick'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+            name=op['id']+'-'+str(i);marker=('@subcurve-direction:'if hover else'@conic-edge:')+name
+            request=E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1)),log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
+            if hover:
+                ready=os.path.join(root,'subcurve-direction-ready-'+name+'.json')
+                body=E.IfThen(length,request)
+                mouse_steps.append((i,marker,pixel,ready,advance))
+                hovers.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]))
+            else:
+                body=block([E.IfThen(selection,request),E.IfThen(acknowledged(marker),block(advance))]);picks.append(dict(action=i,marker=marker,pick=aim,authored_edge=a['edge']))
+            tokens.append(None)
+        else:
+            if isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=selection
+            elif isinstance(a,list):token=point(a);gate=base
+            elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
+            else:token=repr(float(a));gate=base
+            body=E.IfThen(gate,block(advance+[log('\nConic input %s %d: %s\n'%(op['id'],i,token)),send_token(token)]));tokens.append(token)
+        branches.append(body)
+    done=E.Label();body=[]
+    for i,branch in enumerate(branches):body.append(E.IfThen(E.Equal(stage,integer(i)),block([branch,E.Goto(done)])))
+    body.append(E.Label(done));ready=E.GreaterThan(elapsed(item(last,0)),E.Constant(.4))
+    action=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,ready),block(body)))
+    cancel=compile_delegate(S.Action,E.IfThen(E.AndAlso(active,E.GreaterThan(elapsed(E.Constant(started)),E.Constant(45.))),block([E.Assign(item(state,2),integer(1)),send_token('_Cancel')])))
+    invoke=method(R.RhinoApp,'InvokeOnUiThread',[S.Delegate,S.Array[S.Object]])
+    def callback(action):
+        parameter=E.Parameter(clr.GetClrType(S.Object),'state');body=call(None,invoke,[E.Constant(action,clr.GetClrType(S.Delegate)),E.Constant(S.Array[S.Object]([]))]);return compile_delegate(S.Threading.TimerCallback,block([body]),[parameter])
+    from managed_mouse_callback import create
+    def mouse_handler(argument,delegate):
+        event=E.Parameter(argument,'event');pixel=E.Property(event,'ViewportPoint');viewport=E.Property(E.Property(E.Property(event,'View'),'ActiveViewport'),'Id')
+        same_view=E.Equal(viewport,E.Constant(vp.Id,clr.GetClrType(S.Guid)))
+        handlers=[]
+        for i,marker,target,ready,advance in mouse_steps:
+            x=E.Property(pixel,'X');y=E.Property(pixel,'Y')
+            near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(x,integer(int(target.X)-1)),E.LessThanOrEqual(x,integer(int(target.X)+1))),E.AndAlso(E.GreaterThanOrEqual(y,integer(int(target.Y)-1)),E.LessThanOrEqual(y,integer(int(target.Y)+1))))
+            condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.GreaterThan(item(counts,i),integer(0)),E.AndAlso(same_view,E.AndAlso(length,near))))
+            handlers.append(E.IfThen(condition,block([E.Assign(item(counts,i),integer(7)),call(None,write,[E.Constant(ready+'.tmp'),E.Constant(json.dumps(marker))]),call(None,move,[E.Constant(ready+'.tmp'),E.Constant(ready)])]+advance)))
+        return E.Lambda(delegate,E.IfThen(active,block(handlers)),S.Array[ParameterExpression]([event])).Compile()
+    mouse=create(mouse_handler,host);mouse.Enabled=True
+    timer=S.Threading.Timer(callback(action),None,100,100);timeout=S.Threading.Timer(callback(cancel),None,1000,500)
+    try:
+        with environment(dict(persistent_snaps=[]),host):returned=R.RhinoApp.RunScript('_Conic _Pause',True)
+    finally:state[1]=0;timer.Dispose();timeout.Dispose();mouse.Enabled=False
+    errors=['owned Conic input timeout']if state[2]else[]
+    if state[0]!=len(actions):errors.append('incomplete owned Conic input')
+    return bool(returned),dict(completed=int(state[0]),expected=len(actions),errors=errors,prompts=list(observed),sent=[dict(action=i,token=tokens[i],prompt=observed[i])for i in range(state[0])if tokens[i]is not None],motion=[dict(h,acknowledged=counts[h['action']]>6)for h in hovers],edge_picks=[dict(p,acknowledged=observed[p['action']]is not None)for p in picks],motion_acknowledgement='Rhino MouseCallback.OnEndMouseMove in the owned active viewport, matching the requested source projection; the callback is a managed delegate.')

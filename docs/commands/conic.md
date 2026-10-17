@@ -35,24 +35,45 @@ Conic Tangent Curve=12 2,0,0 Tangent Curve=13 10,5,0 0.5
 ```
 
 `SubCrv` before selecting the reference opens a temporary start/end picker. The
-endpoint then stays on that portion. An entered length takes a confirmation
-point to choose its side. Enter or the local `FullCurve` alias restores the
-original captured curve. Sources and surface edges remain unchanged, and no
-helper objects are added. Hidden, deleted or replaced references must be picked
+endpoint then stays on that portion. Move along the curve and enter `D` or
+`Direction=Locked` to keep that direction; `Direction=Free` releases it. A point
+on the opposite side of a locked open curve returns to curve selection.
+
+Locked numeric lengths finish immediately on open curves and clamp at the
+source end. Free lengths and all closed-curve lengths take a confirmation point;
+on a closed curve that point can choose either direction. Zero length and Enter
+inside the temporary picker return to curve selection, preserving the conic's
+existing endpoint. The local `FullCurve` alias restores the captured whole
+curve directly.
+
+Sources and surface edges remain unchanged. Previews reuse cached geometry and
+add no helper objects. Hidden, deleted or replaced references must be picked
 again. Esc discards the unfinished construction; completion is one undoable edit.
 
 ```text
 Conic Tangent SubCrv Curve=12 2,0,0 6,0,0 9,2,0 10,8,0 5,3,0 0.5
 ```
 
-The [validation record](../conic-validation.json) covers 42 fresh Rhino 8 command
-workflows at epsilon `1e-6`: full NURBS controls, weights, knots, domain, length,
-closure, selection, source preservation and actual Undo/Redo. Native length
-queries use the request's `1e-12` fractional precision; the original default-query
-measurement on a backtracking collinear curve is retained as a separate control. It includes custom
-CPlanes, 3D constraints, circular guides and a temporary portion crossing a
-circle seam. Edge selection has local frontend regression coverage. Exhaustive
-native edge interactions, locked SubCrv direction, and performance parity remain
+For scripted pointer-direction input, supply `Hover=point` before locking:
+
+```text
+Conic Tangent SubCrv Curve=12 6,0,0 Hover=8,0,0 D 3 9,1,0 10,8,0 5,3,0 0.5
+```
+
+The original [42-workflow validation](../conic-validation.json) and the
+[28 getter workflows](../conic-getters-validation.json) check 70 Rhino 8 cases at
+epsilon `1e-6`: complete NURBS form, length, closure, selection, source preservation
+and actual Undo/Redo. The added cases use real owned-window pointer motion,
+acknowledged by Rhino's `OnEndMouseMove`, and physical surface-edge clicks. They
+cover open/closed direction locks, confirmations on either side, seam crossings,
+nonuniform polylines, custom CPlanes, both endpoint constraints and curved 3D
+surface borders.
+
+Native length queries use `1e-12` fractional precision; the original default-query
+measurement on a backtracking collinear curve remains a separate control.
+Automatic acceptance of preselected references, exhaustive snapping and
+polysurface topology cases, extreme scales, and performance parity remain
 unqualified.
 
-Public reference: [Rhino Conic](https://docs.mcneel.com/rhino/8/help/en-us/commands/conic.htm).
+Public reference: [Rhino Conic](https://docs.mcneel.com/rhino/8/help/en-us/commands/conic.htm)
+and [SubCrv](https://docs.mcneel.com/rhino/8/help/en-us/commands/subcrv.htm).

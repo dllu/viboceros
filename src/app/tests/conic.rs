@@ -146,3 +146,171 @@ fn conic_reference_picker_yields_to_a_new_command() {
     assert_eq!(app.document.objects().count(), 1);
     assert_eq!(app.document.undo_label(), Some("Point"));
 }
+
+fn conic_line_guide(app: &mut VibocerosApp) -> ObjectId {
+    let id = app
+        .document
+        .add_geometry(Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                point(0., 0., 0.),
+                point(10., 0., 0.),
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document.clear_history().unwrap();
+    id
+}
+#[test]
+fn conic_locked_subcurve_preview_is_cached_and_opposite_side_returns_to_curve_selection() {
+    let mut app = test_app();
+    let id = conic_line_guide(&mut app);
+    let original = app.document.object(id).unwrap().geometry().clone();
+    enter(&mut app, "Conic Tangent");
+    enter(&mut app, "SubCrv");
+    app.pick_conic_curve(Some(id), None);
+    enter(&mut app, "6,0,0");
+    enter(&mut app, "D");
+    assert_eq!(
+        app.conic_session
+            .as_ref()
+            .unwrap()
+            .reference
+            .as_ref()
+            .unwrap()
+            .locked_forward(),
+        None
+    );
+    app.update_subcurve_hover(point(8., 0., 0.));
+    enter(&mut app, "D");
+    let before = format!("{:?}", app.document);
+    let first = app.subcurve_draft_preview().unwrap().geometry;
+    let second = app.subcurve_draft_preview().unwrap().geometry;
+    assert!(std::sync::Arc::ptr_eq(&first, &second));
+    assert_eq!(first.endpoints, [point(6., 0., 0.), point(8., 0., 0.)]);
+    assert_eq!(format!("{:?}", app.document), before);
+    app.update_subcurve_hover(point(2., 0., 0.));
+    assert!(app.subcurve_draft_preview().is_none());
+    enter(&mut app, "2,0,0");
+    assert!(app.picking_conic_curve());
+    assert!(app.conic_session.as_ref().unwrap().reference.is_none());
+    assert!(app.subcurve_draft_preview().is_none());
+    app.pick_conic_curve(Some(id), None);
+    for text in ["9,1,0", "10,8,0", "5,3,0", "0.5"] {
+        enter(&mut app, text);
+    }
+    assert_eq!(
+        controls(&app),
+        [point(9., 0., 0.), point(5., 0., 0.), point(10., 8., 0.)]
+    );
+    assert_eq!(app.document.object(id).unwrap().geometry(), &original);
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Conic"));
+    assert!(app.document.undo().unwrap().is_none());
+}
+#[test]
+fn conic_locked_numeric_uses_live_hover_and_requires_no_extra_trim_point() {
+    let mut app = test_app();
+    let id = conic_line_guide(&mut app);
+    enter(&mut app, "Conic Tangent");
+    enter(&mut app, "SubCrv");
+    app.pick_conic_curve(Some(id), None);
+    enter(&mut app, "6,0,0");
+    app.update_subcurve_hover(point(8., 0., 0.));
+    enter(&mut app, "Direction=Locked");
+    enter(&mut app, "3mm");
+    assert_eq!(
+        app.conic_session
+            .as_ref()
+            .unwrap()
+            .reference
+            .as_ref()
+            .unwrap()
+            .stage(),
+        viboceros_command::conic::ReferenceStage::Endpoint
+    );
+    assert!(app.subcurve_draft_preview().is_none());
+    for text in ["10,0,0", "10,8,0", "5,3,0", "0.5"] {
+        enter(&mut app, text);
+    }
+    assert_eq!(
+        controls(&app),
+        [point(9., 0., 0.), point(5., 0., 0.), point(10., 8., 0.)]
+    );
+    assert_eq!(app.document.objects().count(), 2);
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Conic"));
+    assert!(app.document.undo().unwrap().is_none());
+    app.document.redo().unwrap();
+    assert_eq!(app.document.objects().count(), 2);
+}
+#[test]
+fn conic_nested_enter_and_zero_return_without_losing_the_first_endpoint() {
+    for choice in ["", "0"] {
+        let mut app = test_app();
+        let id = conic_line_guide(&mut app);
+        enter(&mut app, "Conic");
+        enter(&mut app, "0,8,0");
+        enter(&mut app, "Tangent");
+        enter(&mut app, "SubCrv");
+        app.pick_conic_curve(Some(id), None);
+        enter(&mut app, "6,0,0");
+        let before = format!("{:?}", app.document);
+        enter(&mut app, choice);
+        assert!(app.picking_conic_curve());
+        assert_eq!(format!("{:?}", app.document), before);
+        app.pick_conic_curve(Some(id), None);
+        for text in ["9,1,0", "5,3,0", "0.5"] {
+            enter(&mut app, text);
+        }
+        assert_eq!(
+            controls(&app),
+            [point(0., 8., 0.), point(5., 0., 0.), point(9., 0., 0.)]
+        );
+        assert_eq!(app.document.undo().unwrap().as_deref(), Some("Conic"));
+        assert!(app.document.undo().unwrap().is_none());
+    }
+}
+#[test]
+fn conic_closed_numeric_waits_for_confirmation_and_hides_stale_preview_immediately() {
+    let mut app = test_app();
+    let plane = app.viewports[app.active_viewport].construction_plane();
+    let id = app
+        .document
+        .add_geometry(Geometry::Circle(
+            viboceros_geometry::Circle3::try_from_frame(
+                point(0., 0., 0.),
+                4.,
+                plane.x_axis(),
+                plane.z_axis(),
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Conic Tangent");
+    enter(&mut app, "SubCrv");
+    app.pick_conic_curve(Some(id), None);
+    enter(&mut app, "0,4,0");
+    app.update_subcurve_hover(point(-4., 0., 0.));
+    enter(&mut app, "D");
+    enter(&mut app, "2");
+    assert_eq!(
+        app.conic_session
+            .as_ref()
+            .unwrap()
+            .reference
+            .as_ref()
+            .unwrap()
+            .stage(),
+        viboceros_command::conic::ReferenceStage::TrimEnd
+    );
+    let preview = app.subcurve_draft_preview().unwrap().geometry;
+    assert!((preview.curve.length(app.document.tolerance()).unwrap() - 2.).abs() < 1e-8);
+    app.document.set_objects_visibility([id], false).unwrap();
+    assert!(app.subcurve_draft_preview().is_none());
+    app.validate_conic_curve();
+    assert!(app.picking_conic_curve());
+    enter(&mut app, "Cancel");
+    assert_eq!(app.document.objects().count(), 1);
+}

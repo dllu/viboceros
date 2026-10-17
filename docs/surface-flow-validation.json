@@ -464,7 +464,6 @@
     "docs/flow-structure-validation.json": "16c61acc1a0d1bb510dd91e360c9d725b8cc9b1987477babad0d26d1632751e0",
     "src/app/mesh_face_prompt.rs": "44a9aa3a1bd2b76f42092ebc00ab7595e0da664655c080a261b7fc15505a7d62",
     "src/app/transform_sources.rs": "3251ad35896c44a4222910e4a3607d82e84fc742419276a90374ba3c346923a7",
-    "tools/rhino_oracle/client.py": "db57c26d2f45e3d412d34828fa24c643669f92b67473a9602cdaf94e90e43fa5",
     "tools/rhino_oracle/fixtures/surface_flow.json": "85d9250a297351da2b42d15e2db06583810d9321fe06ee1e413a03b6839b5321",
     "tools/rhino_oracle/fixtures/surface_flow_command.json": "edc99e530fa281a5522d475fb9b860201c5679fd7aa9534726f35977d28e6db0",
     "tools/rhino_oracle/fixtures/surface_flow_faces.json": "bb0520a89acc707ae9943259be1b1224876096cca68b6f73943f29caf4cc5271",
@@ -496,6 +495,7 @@
     "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/viewport.rs": "179a5f96a3dcbece02f15de38034436bc813f8b82ad3e8c6167c2ee970a46df3",
     "a9831c6acb1beab4f3e20dd53c5c3ca83d42f01e:crates/viboceros-oracle/src/lib.rs": "444f8165be05bb59b24d98762d3127095aba0d9a6d0b2dfc004930b2503ea1f9",
     "a9831c6acb1beab4f3e20dd53c5c3ca83d42f01e:tools/rhino_oracle/rhino_worker.py": "7770e1c1d2e9c1e2a7b458bc857f9e2a5085d4d911b8a4ffec509cca2f98ac0e",
-    "a9831c6acb1beab4f3e20dd53c5c3ca83d42f01e:tools/rhino_oracle/structural_sdk.py": "f35e2ca05ae66e6e93b9a8866c5eb2d0076bc27d306743d0cb4a54c1d767c1ad"
+    "a9831c6acb1beab4f3e20dd53c5c3ca83d42f01e:tools/rhino_oracle/structural_sdk.py": "f35e2ca05ae66e6e93b9a8866c5eb2d0076bc27d306743d0cb4a54c1d767c1ad",
+    "04f7e1923710f12ee4228b34083f8b10048d068d:tools/rhino_oracle/client.py": "db57c26d2f45e3d412d34828fa24c643669f92b67473a9602cdaf94e90e43fa5"
   }
 }

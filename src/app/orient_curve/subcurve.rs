@@ -229,24 +229,12 @@ impl VibocerosApp {
         let Some(p) = s.subcurve.as_mut().filter(|p| p.start.is_some()) else {
             return false;
         };
-        let input = input.trim().trim_start_matches('_');
-        let locked = if input.eq_ignore_ascii_case("D") {
-            Some(true)
-        } else if let Some((key, value)) = input.split_once('=') {
-            if !key.eq_ignore_ascii_case("Direction") {
-                return false;
-            }
-            match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                "locked" => Some(true),
-                "free" => Some(false),
-                _ => None,
-            }
-        } else {
+        let Some(locked) = subcurve_input::direction_option(input) else {
             return false;
         };
         match locked {
-            Some(false) => p.locked_forward = None,
-            Some(true) => {
+            Ok(false) => p.locked_forward = None,
+            Ok(true) => {
                 let Some(hover) = p.hover_parameter else {
                     self.push_log("Move along the guide before locking direction".into());
                     return true;
@@ -263,8 +251,8 @@ impl VibocerosApp {
                     }
                 }
             }
-            None => {
-                self.push_log("Direction expects Free or Locked".into());
+            Err(error) => {
+                self.push_log(error.into());
                 return true;
             }
         }

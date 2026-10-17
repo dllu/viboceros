@@ -272,7 +272,7 @@ impl Input {
             .flatten()
     }
 }
-pub const USAGE: &str = "Conic start end apex rho-or-shape-point | Conic start Apex apex [Vertical] end rho | Conic [Tangent|Perpendicular Curve=id|Edge=id,index] ...";
+pub const USAGE: &str = "Conic start end apex rho-or-shape-point | Conic start Apex apex [Vertical] end rho | Conic [Tangent|Perpendicular [SubCrv] Curve=id|Edge=id,index] ... [Hover=point Direction=Locked|Free]";
 #[derive(Default)]
 pub(super) struct ConicCommand(Remembered<Options>);
 impl Command for ConicCommand {
@@ -350,10 +350,30 @@ pub fn from_arguments(
             i += 1;
             continue;
         }
+        if let Some(r) = &mut reference {
+            if let Some((key, value)) = word.split_once('=')
+                && key.eq_ignore_ascii_case("Hover")
+            {
+                let (point, _) = crate::parse_point(&[value])?;
+                r.hover_point(point)?;
+                i += 1;
+                continue;
+            }
+            if let Some(locked) = crate::subcurve_input::direction_option(word) {
+                r.direction(locked.map_err(CommandError::Usage)?)?;
+                i += 1;
+                continue;
+            }
+        }
         if word.eq_ignore_ascii_case("FullCurve")
             && let Some(reference) = &mut reference
         {
             reference.full_curve();
+            i += 1;
+            continue;
+        }
+        if word.eq_ignore_ascii_case("Enter") && reference.is_none() && subcurve {
+            subcurve = false;
             i += 1;
             continue;
         }
@@ -374,7 +394,12 @@ pub fn from_arguments(
             continue;
         }
         if word.eq_ignore_ascii_case("Enter") {
-            if let Some(reference) = &mut reference {
+            if reference
+                .as_ref()
+                .is_some_and(|r| r.stage() != ReferenceStage::Endpoint)
+            {
+                reference = None;
+            } else if let Some(reference) = &mut reference {
                 reference.full_curve();
             } else {
                 result = input.enter()?;
@@ -391,6 +416,12 @@ pub fn from_arguments(
                 word.parse().map_err(|_| CommandError::Usage(USAGE))?,
                 doc.tolerance(),
             )?;
+            if reference
+                .as_ref()
+                .is_some_and(|r| r.stage() == ReferenceStage::SelectCurve)
+            {
+                reference = None;
+            }
             i += 1;
             continue;
         }
@@ -404,6 +435,9 @@ pub fn from_arguments(
         if let Some(r) = &mut reference {
             if r.stage() != ReferenceStage::Endpoint {
                 r.trim_point(point, doc.tolerance())?;
+                if r.stage() == ReferenceStage::SelectCurve {
+                    reference = None;
+                }
             } else {
                 let (point, tangent) = r.sample(point)?;
                 input.endpoint(point, tangent, plane.z_axis())?;

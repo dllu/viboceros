@@ -2,24 +2,12 @@
 use super::*;
 impl VibocerosApp {
     pub(super) fn continue_subcurve_direction(&mut self, input: &str) -> bool {
-        if self.continue_orient_subcurve_direction(input) {
+        if self.continue_conic_subcurve_direction(input)
+            || self.continue_orient_subcurve_direction(input)
+        {
             return true;
         }
-        let input = input.trim().trim_start_matches('_');
-        let locked = if input.eq_ignore_ascii_case("D") {
-            Some(true)
-        } else if let Some((name, value)) = input.split_once('=') {
-            if !name.eq_ignore_ascii_case("Direction") {
-                return false;
-            }
-            if value.trim_start_matches('_').eq_ignore_ascii_case("Locked") {
-                Some(true)
-            } else if value.trim_start_matches('_').eq_ignore_ascii_case("Free") {
-                Some(false)
-            } else {
-                None
-            }
-        } else {
+        let Some(locked) = viboceros_command::subcurve_input::direction_option(input) else {
             return false;
         };
         if !self.validate_subcurve_source() {
@@ -41,7 +29,7 @@ impl VibocerosApp {
         let Some((source, edge, start, hover)) = reference else {
             return false;
         };
-        let Some(locked) = locked else {
+        let Ok(locked) = locked else {
             self.push_log("Direction expects Free or Locked".into());
             return true;
         };
@@ -96,7 +84,7 @@ impl VibocerosApp {
         true
     }
     pub(super) fn update_subcurve_hover(&mut self, point: Point3) {
-        if self.update_orient_subcurve_hover(point) {
+        if self.update_conic_subcurve_hover(point) || self.update_orient_subcurve_hover(point) {
             return;
         }
         if !self.validate_subcurve_source() {

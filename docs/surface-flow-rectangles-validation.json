@@ -426,12 +426,10 @@
     }
   ],
   "sha256": {
-    "crates/viboceros-command/src/curve_reference.rs": "b004f88ad67975707602098b1d3bdb73193fdcd0403baec87544e58fc94819c5",
     "crates/viboceros-oracle/src/surface_flow.rs": "97a9b0f6893011cb82b27960a0b22bdd1a9fadee2f303197a07a977e84f1b01b",
     "docs/commands/flow-along-surface.md": "af5fda563aee7594e10c15c7e1961df218a25e7a0eb44b6b4f720fc9a68ec23c",
     "docs/flow-command-validation.json": "bc479ff498a46698b367ee46cdb50dd0e26fc7543f3da416b1a60aad76dcf8c6",
     "docs/flow-target-surface-validation.json": "66f9821709ca8f199ce37115ccada75128266839b8ea39a3bd1db48bcbcbe9c3",
-    "docs/orient-on-curve-edge-validation.json": "6dc66d94a72d9eb51312553d3729a5f0ef55138af8ca6ac3c89fd4894aa47091",
     "docs/surface-flow-group-origins-validation.json": "b1d9f7e202764e28d76f53d125853dabfe03a56e018a8491e2fdc7315e014c1e",
     "src/app/surface_flow.rs": "db708f7c163548c6fba34f6a0745b32b69207cbed04b9dbd88d031f9b5d07eab",
     "src/app/tests/surface_flow.rs": "6175e167ecdecf938fd2330cbabda3bc57e903f90cc64e6be91a5236db177f91",
@@ -455,6 +453,8 @@
     "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:docs/orient-surface-validation.json": "b4a53dac290ad04e28c1ab382424dea747957ac7ca2050cbdbafe29d16ad82d7",
     "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:src/app.rs": "8c2590272337bc1bdaa96221c8c5123c1795dfa25e1d05e406059bfca5ff7486",
     "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:src/app/component_selection.rs": "a415c68e69858297b47f3776c726ee41579cd4a7fb6fe3f1dd22c55f27fcf8d0",
-    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:src/app/object_selection.rs": "bcae57019bebb403dec013405541b739d9226134b847eb38099e11f4523a5932"
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:src/app/object_selection.rs": "bcae57019bebb403dec013405541b739d9226134b847eb38099e11f4523a5932",
+    "04f7e1923710f12ee4228b34083f8b10048d068d:crates/viboceros-command/src/curve_reference.rs": "b004f88ad67975707602098b1d3bdb73193fdcd0403baec87544e58fc94819c5",
+    "04f7e1923710f12ee4228b34083f8b10048d068d:docs/orient-on-curve-edge-validation.json": "6dc66d94a72d9eb51312553d3729a5f0ef55138af8ca6ac3c89fd4894aa47091"
   }
 }

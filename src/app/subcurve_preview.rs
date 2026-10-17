@@ -71,6 +71,33 @@ impl Cache {
             show_curve: true,
         })
     }
+    pub(super) fn temporary_retaining_orientation(
+        &mut self,
+        source: Option<&GeometrySnapshot>,
+        edge: Option<usize>,
+        range: [f64; 2],
+        length: Option<f64>,
+        locked_forward: Option<bool>,
+        tolerance: Tolerance,
+    ) -> Option<Preview> {
+        self.get(
+            source,
+            Some(Parameters {
+                edge,
+                start: range[0],
+                hover: range[1],
+                length,
+                locked_forward,
+                midpoint: false,
+                retain_orientation: true,
+            }),
+            tolerance,
+        )
+        .map(|geometry| Preview {
+            geometry,
+            show_curve: true,
+        })
+    }
     fn resolved<'a>(
         &'a mut self,
         source: &'a GeometrySnapshot,
@@ -216,6 +243,13 @@ fn resolve(
 
 impl VibocerosApp {
     pub(super) fn subcurve_preview_hover(&self) -> Option<f64> {
+        if let Some(s) = &self.conic_session {
+            return s
+                .reference
+                .as_ref()
+                .filter(|r| r.stage() == viboceros_command::conic::ReferenceStage::TrimEnd)?
+                .hover_parameter();
+        }
         if let Some(s) = &self.orient_curve_session {
             return s.subcurve_hover();
         }
@@ -233,6 +267,21 @@ impl VibocerosApp {
     }
 
     pub(super) fn subcurve_draft_preview(&mut self) -> Option<Preview> {
+        if let Some(s) = &mut self.conic_session {
+            let r = s.reference.as_ref().filter(|r| {
+                r.stage() == viboceros_command::conic::ReferenceStage::TrimEnd
+                    && r.current(&self.document)
+            })?;
+            let (source, edge) = r.source();
+            return s.preview.temporary_retaining_orientation(
+                Some(source),
+                edge,
+                r.preview_range().ok()??,
+                r.trim_length(),
+                r.locked_forward(),
+                self.document.tolerance(),
+            );
+        }
         if let Some(s) = &mut self.orient_curve_session {
             return s.subcurve_preview(&self.document);
         }
