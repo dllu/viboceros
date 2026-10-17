@@ -2,11 +2,26 @@
 use super::*;
 use std::borrow::Cow;
 #[cfg(not(feature = "native-smlib"))]
-use viboceros_geometry::{join_breps, join_breps_with_report};
+use viboceros_geometry::{BrepJoinComponent, join_breps, join_breps_with_report};
 #[cfg(feature = "native-smlib")]
 mod native;
 #[cfg(feature = "native-smlib")]
-use native::{join_breps, join_breps_with_report};
+use native::{join_breps, join_breps_for_pick};
+
+#[cfg(not(feature = "native-smlib"))]
+fn join_breps_for_pick(
+    sources: &[&Brep],
+    distance: Real,
+    tolerance: Tolerance,
+) -> Result<(Vec<BrepJoinComponent>, bool), CommandError> {
+    let report = join_breps_with_report(sources, distance, tolerance)?;
+    let latest = sources.len().saturating_sub(1);
+    let participates = report
+        .candidate_source_pairs
+        .iter()
+        .any(|pair| pair.contains(&latest));
+    Ok((report.components, participates))
+}
 
 pub(super) fn accepts(geometry: &Geometry) -> bool {
     matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))
@@ -73,18 +88,11 @@ pub(super) fn stage(
             // separate output after ambiguity resolution; unrelated picks
             // and picks that would remove every cross-source join are skipped.
             accepted.push(geometry[i].as_ref());
-            let report = join_breps_with_report(&accepted, distance, tolerance)?;
-            let latest = accepted.len() - 1;
-            if !report
-                .candidate_source_pairs
-                .iter()
-                .any(|p| p.contains(&latest))
-                || !report.components.iter().any(|p| p.joined_edge_count > 0)
-            {
+            let (parts, participates) = join_breps_for_pick(&accepted, distance, tolerance)?;
+            if !participates || !parts.iter().any(|p| p.joined_edge_count > 0) {
                 accepted.pop();
                 continue;
             }
-            let parts = report.components;
             closed = parts.iter().all(|part| part.brep.is_closed());
             consumed.push(sources[i].id());
             final_parts = parts

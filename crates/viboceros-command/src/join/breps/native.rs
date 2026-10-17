@@ -3,6 +3,9 @@ use super::*;
 use viboceros_geometry::{BrepJoinComponent, BrepJoinReport, BrepSolidOrientation};
 use viboceros_smlib::Shape;
 
+#[cfg(test)]
+mod tests;
+
 fn assemble(
     sources: &[&Brep],
     distance: Real,
@@ -148,29 +151,42 @@ pub(super) fn join_breps(
     Ok(assemble(sources, distance, tolerance)?.components)
 }
 
-pub(super) fn join_breps_with_report(
+pub(super) fn join_breps_for_pick(
     sources: &[&Brep],
     distance: Real,
     tolerance: Tolerance,
-) -> Result<BrepJoinReport, CommandError> {
-    let mut result = assemble(sources, distance, tolerance)?;
-    if sources.len() == 2 {
-        return Ok(result);
+) -> Result<(Vec<BrepJoinComponent>, bool), CommandError> {
+    assemble_pick_with(sources, |sources| assemble(sources, distance, tolerance))
+}
+
+fn assemble_pick_with(
+    sources: &[&Brep],
+    mut stitch: impl FnMut(&[&Brep]) -> Result<BrepJoinReport, CommandError>,
+) -> Result<(Vec<BrepJoinComponent>, bool), CommandError> {
+    let result = stitch(sources)?;
+    let latest = sources.len().saturating_sub(1);
+    if sources.len() <= 2 {
+        let participates = result
+            .candidate_source_pairs
+            .iter()
+            .any(|pair| pair.contains(&latest));
+        return Ok((result.components, participates));
     }
-    // Two-source kernel probes retain boundary contacts before batch ambiguity
-    // resolution, for the command-first policy's original-pick participation.
-    let mut pairs = BTreeSet::new();
-    for a in 0..sources.len() {
-        for b in a + 1..sources.len() {
-            if assemble(&[sources[a], sources[b]], distance, tolerance)?
-                .components
-                .iter()
-                .any(|c| c.joined_edge_count > 0)
-            {
-                pairs.insert([a, b]);
-            }
+    if !result.components.iter().any(|c| c.joined_edge_count > 0) {
+        return Ok((result.components, false));
+    }
+    // Only the newest pick's contacts decide participation. Compare original
+    // operands in pick order, retaining the pre-ambiguity two-source policy.
+    // Batch edge ownership alone is insufficient: other operands may alter
+    // splitting and inherited tolerances during stitching.
+    for &previous in &sources[..latest] {
+        if stitch(&[previous, sources[latest]])?
+            .components
+            .iter()
+            .any(|c| c.joined_edge_count > 0)
+        {
+            return Ok((result.components, true));
         }
     }
-    result.candidate_source_pairs = pairs.into_iter().collect();
-    Ok(result)
+    Ok((result.components, false))
 }

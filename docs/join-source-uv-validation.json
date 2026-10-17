@@ -227,7 +227,6 @@
   },
   "source_sha256": {
     "README.md": "1555e1b1695f727f40e3425154db034fe12de58d2232427cda9cf3ebdda0b8bf",
-    "crates/viboceros-command/src/join/breps/native.rs": "aec720de5e0a117fb7b08928c53daed223ff01fe149c87cde08c8ab72917fa75",
     "crates/viboceros-geometry/src/brep.rs": "3121a923320d387016db11103192922caf3fe5b47115424b9a8e6a41e503c3a1",
     "crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621",
     "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
@@ -242,7 +241,6 @@
     "crates/viboceros-oracle/src/join_command/tests/surfaces.rs": "dc3f904771bafc308cf56066b00351ddc7e651e0b028a5f88edf355dd89b4d80",
     "crates/viboceros-oracle/src/join_command/tests/boundaries.rs": "dbd90668ab2c4ee840b3c834ca58eb593bb0ced8ba988deebb149827c29df97f",
     "crates/viboceros-oracle/src/join_command/tests.rs": "a985034ea68154f731306a2ef228f8989d642f58d180a137cd36eb0c81b831ec",
-    "docs/smlib-joining.md": "57126684a2c24c5ad7015f20b53f740c4d2a4a6fa58cb858217a57caed2db8b6",
     "docs/join-source-uv.md": "ae248d6b7c38bfa691db05aec532ce5ea04bb7165485228824c51bab9eeee809",
     "docs/join-source-uv-comparison.json": "4f3663b412ab71551f3e71c85b1b06b27e44c1763430d285877f1caac6327a4b",
     "docs/join-source-uv-native-before.json": "3e77005de019ed591f125a677e4de59a6cd3234bd2cf407901a6bd65db8aec2a",
@@ -258,5 +256,9 @@
     "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63",
     "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-smlib/tests/stitching.rs": "65b92841296c73b6117ae7e11a82971181fa9df6ed06e27feda19d7b18394b74"
   },
-  "candidate_probe_sha256": "4531448efc2f8c22754c532b12ba28f977f29cb3c391da754f7c283adf1be166"
+  "candidate_probe_sha256": "4531448efc2f8c22754c532b12ba28f977f29cb3c391da754f7c283adf1be166",
+  "source_git_sha256": {
+    "63fd80a3ca38e1d367867e6f7aa6f0b6f83bb940:crates/viboceros-command/src/join/breps/native.rs": "aec720de5e0a117fb7b08928c53daed223ff01fe149c87cde08c8ab72917fa75",
+    "63fd80a3ca38e1d367867e6f7aa6f0b6f83bb940:docs/smlib-joining.md": "57126684a2c24c5ad7015f20b53f740c4d2a4a6fa58cb858217a57caed2db8b6"
+  }
 }

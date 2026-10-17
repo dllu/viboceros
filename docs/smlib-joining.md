@@ -56,7 +56,11 @@ describe the default backend; they do not qualify this native route. Broader
 raw Rhino replay, ambiguity, corner cleanup, performance and arbitrary imported
 topology remain ongoing work. Input sheet components are limited to 128 by the
 shared importer. Command-first participation probes use copied two-source
-kernel operations in addition to the growing batch assembly.
+kernel operations in addition to the growing batch assembly. They now compare
+only the newest pick against original accepted sources, stopping at its first
+confirmed contact. At most `n` native assemblies replace `1 + n(n-1)/2` for an
+attempt with `n > 2` sources. A batch with no surviving cross-source join needs
+no participation probes. See the [operation counts and unchanged replay](join-pick-probes.md).
 
 The [October 11 Rhino replay](smlib-join-comparison.json) retains all 66 original
 surface-command cases and 26 discrepancy cases. Every native operation now

@@ -1,0 +1,402 @@
+{
+  "date": "2026-10-17",
+  "baseline": "63fd80a3ca38e1d367867e6f7aa6f0b6f83bb940",
+  "scope": "Command-first native surface Join/JoinCopy participation probes. The batch assembly routine is byte-identical to the baseline.",
+  "policy": "A surviving cross-source batch join is required. For more than two sources, probe only the newest pick against original accepted sources in pick order, stopping at the first confirmed two-source native join. Batch edge ownership is not substituted for original-source contact.",
+  "operation_bound": "For n > 2 attempted sources: at most n native assemblies instead of 1+n(n-1)/2. A batch with no surviving cross-source join needs only its batch assembly. Two-source attempts reuse that batch.",
+  "tests_passed": 59,
+  "checks": [
+    {
+      "name": "Native Join commands and actual-kernel operation counts",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "join::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-pick-native-tests.log",
+      "log_sha256": "e8c339c30b9db56f5b5aa2baa50d7b1dd7175a8d949042fd3bc9188cc4d49ee2",
+      "test_summaries": [
+        "test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 1558 filtered out; finished in 6.85s"
+      ]
+    },
+    {
+      "name": "Default Join commands",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "join::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-pick-default-tests.log",
+      "log_sha256": "74104bc9d516ab4cf1daaa01b1ca429ffd2cdcf6ca83b06ea6a01eafb5f81480",
+      "test_summaries": [
+        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 1482 filtered out; finished in 4.41s"
+      ]
+    },
+    {
+      "name": "Native application Join input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "join_",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-pick-ui-tests.log",
+      "log_sha256": "18989f398bd3727a8e1a48da08fb579f5acb2d84b343219f4bc721a4a6e73aea",
+      "test_summaries": [
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 1393 filtered out; finished in 0.09s"
+      ]
+    },
+    {
+      "name": "Workspace clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-pick-clippy.log",
+      "log_sha256": "05680d4e59cd57789891b41fe036df1143dd1f6433e1cae38f9543618a276405",
+      "test_summaries": []
+    },
+    {
+      "name": "Formatting",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-pick-fmt.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_summaries": []
+    }
+  ],
+  "operation_count_comparisons": [
+    {
+      "sources": 2,
+      "participates": true,
+      "exhaustive_assemblies": 1,
+      "current_assemblies": 1
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": false,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 1
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": false,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 3
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 3,
+      "participates": true,
+      "exhaustive_assemblies": 4,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 12,
+      "participates": true,
+      "exhaustive_assemblies": 67,
+      "current_assemblies": 12
+    },
+    {
+      "sources": 13,
+      "participates": true,
+      "exhaustive_assemblies": 79,
+      "current_assemblies": 2
+    },
+    {
+      "sources": 13,
+      "participates": false,
+      "exhaustive_assemblies": 79,
+      "current_assemblies": 13
+    }
+  ],
+  "replay": {
+    "cases": 336,
+    "byte_identical_cases": 336,
+    "runs": [
+      {
+        "fixture": "tools/rhino_oracle/fixtures/join_surfaces.json",
+        "retained_response": "docs/join-pick-surfaces-reference.json.gz",
+        "cases": 66,
+        "byte_equal_to_baseline": true,
+        "raw_response_sha256": "092fd1d811371d85e98673964732a56f1f8f25fab0a911c4eae62beeb1a378fe",
+        "raw_bytes": 7718964,
+        "compressed_bytes": 214360,
+        "baseline_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_surfaces.json",
+          "/tmp/viboceros-join-pick-join_surfaces-before.json"
+        ],
+        "candidate_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_surfaces.json",
+          "/tmp/viboceros-join-pick-join_surfaces-after.json"
+        ],
+        "baseline_exit_code": 0,
+        "candidate_exit_code": 0
+      },
+      {
+        "fixture": "tools/rhino_oracle/fixtures/join_surface_differences.json",
+        "retained_response": "docs/join-pick-surface-differences-reference.json.gz",
+        "cases": 26,
+        "byte_equal_to_baseline": true,
+        "raw_response_sha256": "2ff230ac7a9d990529e91bd44a469213c12e5b163bd6876c627b44459beb1ecd",
+        "raw_bytes": 2564194,
+        "compressed_bytes": 75109,
+        "baseline_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_surface_differences.json",
+          "/tmp/viboceros-join-pick-join_surface_differences-before.json"
+        ],
+        "candidate_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_surface_differences.json",
+          "/tmp/viboceros-join-pick-join_surface_differences-after.json"
+        ],
+        "baseline_exit_code": 0,
+        "candidate_exit_code": 0
+      },
+      {
+        "fixture": "tools/rhino_oracle/fixtures/join_boundary_matching.json",
+        "retained_response": "docs/join-pick-boundary-matching-reference.json.gz",
+        "cases": 142,
+        "byte_equal_to_baseline": true,
+        "raw_response_sha256": "a86a483db0c2fd377138e606bbee5830821168d129a79bdee9ea050fffe59efb",
+        "raw_bytes": 15114307,
+        "compressed_bytes": 422861,
+        "baseline_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_boundary_matching.json",
+          "/tmp/viboceros-join-pick-join_boundary_matching-before.json"
+        ],
+        "candidate_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_boundary_matching.json",
+          "/tmp/viboceros-join-pick-join_boundary_matching-after.json"
+        ],
+        "baseline_exit_code": 0,
+        "candidate_exit_code": 0
+      },
+      {
+        "fixture": "tools/rhino_oracle/fixtures/join_boundary_differences.json",
+        "retained_response": "docs/join-pick-boundary-differences-reference.json.gz",
+        "cases": 18,
+        "byte_equal_to_baseline": true,
+        "raw_response_sha256": "595c2719de9f1a424b31ac2378b5e4934cbbcaa4a7cd482c132f5cf4f0c010e5",
+        "raw_bytes": 1740224,
+        "compressed_bytes": 50912,
+        "baseline_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_boundary_differences.json",
+          "/tmp/viboceros-join-pick-join_boundary_differences-before.json"
+        ],
+        "candidate_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_boundary_differences.json",
+          "/tmp/viboceros-join-pick-join_boundary_differences-after.json"
+        ],
+        "baseline_exit_code": 0,
+        "candidate_exit_code": 0
+      },
+      {
+        "fixture": "tools/rhino_oracle/fixtures/join_corner_clustering.json",
+        "retained_response": "docs/join-pick-corner-clustering-reference.json.gz",
+        "cases": 84,
+        "byte_equal_to_baseline": true,
+        "raw_response_sha256": "1d211582aafb4cc86fc655e63a41a266f11d295783a795297474b0668e3dc20b",
+        "raw_bytes": 8201364,
+        "compressed_bytes": 328044,
+        "baseline_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_corner_clustering.json",
+          "/tmp/viboceros-join-pick-join_corner_clustering-before.json"
+        ],
+        "candidate_command": [
+          "target/debug/viboceros-oracle",
+          "--audit",
+          "tools/rhino_oracle/fixtures/join_corner_clustering.json",
+          "/tmp/viboceros-join-pick-join_corner_clustering-after.json"
+        ],
+        "baseline_exit_code": 0,
+        "candidate_exit_code": 0
+      }
+    ],
+    "baseline_probe_sha256": "4531448efc2f8c22754c532b12ba28f977f29cb3c391da754f7c283adf1be166",
+    "candidate_probe_sha256": "3adb39138054c29cbfa20f8ddfadf494667bd0de0fb19c3cca97a88087e65525",
+    "retention": "Each gzip archive retains the complete byte-identical baseline/candidate audit response once, without JSON reformatting, geometry normalization or discarded fields. Decompression reproduces both exact original responses."
+  },
+  "known_failure": {
+    "name": "Unchanged strict Rhino archive difference",
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-oracle",
+      "--features",
+      "native-smlib",
+      "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "log": "/tmp/viboceros-join-pick-known-rhino-difference.log",
+    "log_sha256": "dcc6043cc15656ff4059d69228c398f41c6e7ade9a18f070fbe6957c18ee2c3e",
+    "test_summaries": [
+      "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 589 filtered out; finished in 1.63s"
+    ],
+    "reason": "The unchanged strict native replay still fails at triple-boundary-Join-post/objects/0/brep/edge_tolerances/0: native 1e-9 versus Rhino 0. The 26-case native before/after response is byte-identical; tests and observations have not been relaxed."
+  },
+  "limitations": [
+    "The growing native batch is still rebuilt for each attempted pick.",
+    "Operation counts establish reduced native work; audit elapsed_ns placeholders and uncontrolled process timings do not establish end-to-end speedup or Rhino performance parity.",
+    "Existing Rhino geometry, tolerance, ordering and orientation differences remain; these are native before/after equivalence replays, not 336 Rhino parity matches."
+  ],
+  "historical_provenance": {
+    "preserved_entries": 2,
+    "records": 1,
+    "preexisting_unverifiable_unchanged": 69,
+    "policy": "Only previously verifiable historical source digests are pinned to full baseline Git blob references. Non-SHA historical claims are unchanged."
+  },
+  "source_sha256": {
+    "crates/viboceros-command/src/join/breps.rs": "881357e5dc2ea7e793295a6846101079cf090c94974ef6669cd5d827bafb27a1",
+    "crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
+    "crates/viboceros-command/src/join/breps/native/tests.rs": "bf870ed3c3a4d2f2a8e034ced5d3c6ea6f8d55f8ad1bdbc067c004fd5514bde0",
+    "crates/viboceros-command/src/join/tests/breps.rs": "6d4ffe06f2d899a9f6e5d21eeb3b7142325e727b5c73a7a34ba1336f5e417e64",
+    "crates/viboceros-command/src/join/tests/breps/orientation.rs": "393bdcec465651bf166dfd53d419acc22162a0fe960a958a2a06df16f7fbb52b",
+    "crates/viboceros-command/src/join/tests/breps/thresholds.rs": "96fe271a0e64af1e707511dc615ef9c551fdd8d10ace56d1d154052ea3fe538e",
+    "src/app/tests/object_selection.rs": "73951b4cab312716d7d3d3065a4faea504978f7b914e10b530e2ba9fd389068f",
+    "docs/smlib-joining.md": "ab89750c29b7c119d2a9e433a7668ec99ba97c9097af53b8240e784913411438",
+    "docs/join-pick-probes.md": "2d812fa18e97fcd3e3e8dce8d8134f71525f5c7a88ac5520e74f5a4694fd3428",
+    "docs/join-source-uv-validation.json": "83c787e000ded90cef496a5fdef9ea73ba22f117019bb06a43ef2c11df823af7",
+    "crates/viboceros-oracle/src/join_command/tests/surfaces.rs": "dc3f904771bafc308cf56066b00351ddc7e651e0b028a5f88edf355dd89b4d80",
+    "crates/viboceros-oracle/src/join_command/tests/boundaries.rs": "dbd90668ab2c4ee840b3c834ca58eb593bb0ced8ba988deebb149827c29df97f",
+    "tools/rhino_oracle/observations/join_surface_differences.json": "4066ffa7f53dbabda14369e60ef43e4c7eedd82b8fd584a555010ad722057ec0",
+    "tools/rhino_oracle/fixtures/join_surfaces.json": "6891b698dd4f2fa0f4bfb27703e17ea57033470a972e7579da5361bb032cca9e",
+    "tools/rhino_oracle/fixtures/join_surface_differences.json": "b7342179d0c1adeb983d3023b5520618093eeabe424b10c7f775ff9dc0cfe515",
+    "tools/rhino_oracle/fixtures/join_boundary_matching.json": "ce20d37b4ef89a3c2aad3ccf1ee69c72f62ec5ab823b6c0776f858063de296cc",
+    "tools/rhino_oracle/fixtures/join_boundary_differences.json": "8d67d084a85cfeec19b358ccb52453dbf3c3fb1885942176b8d971403be03932",
+    "tools/rhino_oracle/fixtures/join_corner_clustering.json": "426e5c3d307dd4f5293af79ffbcc660988bdb9fd0c43a211f42f0a901d4b2050",
+    "docs/join-pick-surfaces-reference.json.gz": "3dabdba7deef06356b7027365f2c0f4860cd4d532cac1cbda85e51d9e062f22e",
+    "docs/join-pick-surface-differences-reference.json.gz": "400a4e72c5f0b8f4bb832326c27cfa91917d7c6674d789fe9f62755f76d6347c",
+    "docs/join-pick-boundary-matching-reference.json.gz": "36b7444dfb29d246ae258b1717d3b0057eff15346588a6f9c86ed2234caf847c",
+    "docs/join-pick-boundary-differences-reference.json.gz": "7dea5bf3fd06725aa68387a9e3b97e235cb480fce649ea9708b3c7800954db10",
+    "docs/join-pick-corner-clustering-reference.json.gz": "dc6198b17479bd431f8b5315dfb873446ac3d2ffa33383a10b0291f27f7dbc6d"
+  },
+  "baseline_git_sha256": {
+    "63fd80a3ca38e1d367867e6f7aa6f0b6f83bb940:crates/viboceros-command/src/join/breps.rs": "849cfabd1d0cf0b2250164e303ba5a19908c497020a43e1e328979e7a9c6d8b1",
+    "63fd80a3ca38e1d367867e6f7aa6f0b6f83bb940:crates/viboceros-command/src/join/breps/native.rs": "aec720de5e0a117fb7b08928c53daed223ff01fe149c87cde08c8ab72917fa75"
+  },
+  "unchanged_assembly_section_sha256": "80420a9e28c9a9b953b06a4620d6649eaf6639e289ef605cbf8edee689641cbe"
+}
