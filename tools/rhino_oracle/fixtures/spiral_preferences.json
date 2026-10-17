@@ -1,0 +1,138 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "helix_command",
+      "id": "helix-remember-turns-in-pitch",
+      "live_getters": true,
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Mode=Pitch",
+        "Pitch=2",
+        "Turns=3",
+        "ReverseTwist=No",
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          20
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "helix_command",
+      "id": "helix-remember-pitch-in-turns",
+      "live_getters": true,
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Mode=Turns",
+        "Turns=3",
+        "Pitch=2.5",
+        "ReverseTwist=No",
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          20
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "spiral-remembered-end",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ],
+        "Enter"
+      ],
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Turns=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ],
+        3.5
+      ],
+      "live_getters": true
+    }
+  ]
+}

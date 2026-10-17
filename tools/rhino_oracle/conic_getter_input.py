@@ -2,7 +2,7 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("Conic","Hyperbola"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Conic","Hyperbola","Helix","Spiral"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     from snap_environment import environment
     import clr
@@ -30,6 +30,7 @@ def drive(op,host,guides,command="Conic"):
     def log(message):return call(None,append,[E.Constant(progress),E.Constant(message)])
     def point(p):return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
+    if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch')
     base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
@@ -85,4 +86,4 @@ def drive(op,host,guides,command="Conic"):
         if mouse is not None:mouse.Enabled=False
     errors=['owned '+command+' input timeout']if state[2]else[]
     if state[0]!=len(actions):errors.append('incomplete owned '+command+' input')
-    return bool(returned),dict(completed=int(state[0]),expected=len(actions),errors=errors,prompts=list(observed),sent=[dict(action=i,token=tokens[i],prompt=observed[i])for i in range(state[0])if tokens[i]is not None],motion=[dict(h,acknowledged=counts[h['action']]>6)for h in hovers],edge_picks=[dict(p,acknowledged=observed[p['action']]is not None)for p in picks],motion_acknowledgement='No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.'if command=='Hyperbola'else'Rhino MouseCallback.OnEndMouseMove in the owned active viewport, matching the requested source projection; the callback is a managed delegate.')
+    return bool(returned),dict(completed=int(state[0]),expected=len(actions),errors=errors,prompts=list(observed),sent=[dict(action=i,token=tokens[i],prompt=observed[i])for i in range(state[0])if tokens[i]is not None],motion=[dict(h,acknowledged=counts[h['action']]>6)for h in hovers],edge_picks=[dict(p,acknowledged=observed[p['action']]is not None)for p in picks],motion_acknowledgement='No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.'if command!='Conic'else'Rhino MouseCallback.OnEndMouseMove in the owned active viewport, matching the requested source projection; the callback is a managed delegate.')

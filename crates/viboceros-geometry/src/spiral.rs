@@ -6,8 +6,7 @@ use crate::{
 };
 
 const CUBIC_DEGREE: usize = 3;
-const SHORT_SPIRAL_SPANS_PER_TURN: Real = 36.0;
-const LONG_SPIRAL_SPANS_PER_TURN: Real = 24.0;
+const MIN_AXIAL_SPIRAL_SPANS: usize = 3;
 const MIN_SPIRAL_SPANS: usize = 4;
 
 /// Resource ceiling for one spiral or helix construction.
@@ -25,10 +24,11 @@ impl NurbsCurve {
     /// Radius changes linearly from `radii[0]` to `radii[1]`, while `height`
     /// advances along the frame Z axis. Positive turns rotate from frame X
     /// toward frame Y; negative turns reverse that twist. The knot domain is
-    /// `[0, abs(turns)]`. As in Rhino's straight-axis spiral constructor,
-    /// varying-radius spirals use 36 spans per turn. Constant-radius positive
-    /// helices of at least one turn use 24; shorter or reverse helices retain
-    /// the 36-span density. Fractional span counts are rounded upward.
+    /// `[0, abs(turns)]`. The current Rhino SDK uses 120 spans per turn
+    /// below ten turns, 60 below fifty, 36 below one thousand, then 24.
+    /// The measured density is independent of radius, pitch and twist direction. Fractional counts round upward;
+    /// at least three spans are retained. The swept overload has its own
+    /// explicit density and retains its four-span minimum.
     ///
     /// Every span-boundary sample lies on the analytic spiral. Analytic end
     /// tangents close the interpolation system, and its strictly diagonally
@@ -45,10 +45,14 @@ impl NurbsCurve {
         }
 
         let turn_count = turns.abs();
-        let spans_per_turn = if radii[0] == radii[1] && turns >= 1.0 {
-            LONG_SPIRAL_SPANS_PER_TURN
+        let spans_per_turn = if turn_count < 10.0 {
+            120.0
+        } else if turn_count < 50.0 {
+            60.0
+        } else if turn_count < 1000.0 {
+            36.0
         } else {
-            SHORT_SPIRAL_SPANS_PER_TURN
+            24.0
         };
         let requested_spans = spans_per_turn * turn_count;
         let maximum_spans = MAX_SPIRAL_CONTROL_POINTS - CUBIC_DEGREE;
@@ -57,7 +61,7 @@ impl NurbsCurve {
                 maximum: MAX_SPIRAL_CONTROL_POINTS,
             });
         }
-        let span_count = (requested_spans.ceil() as usize).max(MIN_SPIRAL_SPANS);
+        let span_count = (requested_spans.ceil() as usize).max(MIN_AXIAL_SPIRAL_SPANS);
         let parameter_step = turn_count / span_count as Real;
         let angle_step = turns.signum() * TAU / span_count as Real * turn_count;
 
@@ -361,7 +365,7 @@ fn solve_uniform_cubic_controls(
     span_count: usize,
 ) -> Result<Vec<Point3>, GeometryError> {
     debug_assert_eq!(samples.len(), span_count + 1);
-    debug_assert!(span_count >= MIN_SPIRAL_SPANS);
+    debug_assert!(span_count >= MIN_AXIAL_SPIRAL_SPANS);
     let unknown_count = span_count - 1;
     let mut diagonal = vec![4.0; unknown_count];
     diagonal[0] = 7.0;
@@ -433,21 +437,21 @@ mod tests {
         let curve = NurbsCurve::try_helix(world_frame(), 2.0, 10.0, 3.0).unwrap();
         assert_eq!(curve.degree(), 3);
         assert!(!curve.is_rational());
-        assert_eq!(curve.control_points().len(), 75);
+        assert_eq!(curve.control_points().len(), 363);
         assert_eq!(curve.domain(), 0.0..=3.0);
-        assert_eq!(curve.knots().len(), 79);
+        assert_eq!(curve.knots().len(), 367);
         assert_eq!(&curve.knots()[..4], &[0.0; 4]);
-        assert_eq!(&curve.knots()[75..], &[3.0; 4]);
+        assert_eq!(&curve.knots()[363..], &[3.0; 4]);
 
-        for index in 0..=72 {
-            let parameter = index as Real / 24.0;
+        for index in 0..=360 {
+            let parameter = index as Real / 120.0;
             let angle = TAU * parameter;
             assert_point_near(
                 curve.evaluate(parameter).unwrap(),
                 Point3::try_new(
                     2.0 * angle.cos(),
                     2.0 * angle.sin(),
-                    10.0 * index as Real / 72.0,
+                    10.0 * index as Real / 360.0,
                 )
                 .unwrap(),
                 2.0e-12,
@@ -464,7 +468,7 @@ mod tests {
     #[test]
     fn fractional_and_reverse_spirals_use_the_documented_span_policy() {
         let reverse = NurbsCurve::try_spiral(world_frame(), 3.3, -1.1, [2.0, 4.0]).unwrap();
-        assert_eq!(reverse.control_points().len(), 43);
+        assert_eq!(reverse.control_points().len(), 135);
         assert_eq!(reverse.domain(), 0.0..=1.1);
         assert_point_near(
             reverse.evaluate(0.0).unwrap(),
@@ -478,12 +482,12 @@ mod tests {
         );
 
         let short = NurbsCurve::try_helix(world_frame(), 1.0, 0.3, 0.1).unwrap();
-        assert_eq!(short.control_points().len(), 7);
-        assert_eq!(short.knots().len(), 11);
+        assert_eq!(short.control_points().len(), 15);
+        assert_eq!(short.knots().len(), 19);
 
         let expanding = NurbsCurve::try_spiral(world_frame(), 6.0, 2.0, [1.0, 4.0]).unwrap();
-        assert_eq!(expanding.control_points().len(), 75);
-        assert_eq!(expanding.knots().len(), 79);
+        assert_eq!(expanding.control_points().len(), 243);
+        assert_eq!(expanding.knots().len(), 247);
     }
 
     #[test]

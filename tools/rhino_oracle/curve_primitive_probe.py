@@ -1,5 +1,5 @@
 """Public curve primitive command execution and exact history witnesses."""
-def run(op,host,iterations,tolerance,command,driver=None):
+def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
     if iterations!=1:raise ValueError('curve primitive capture needs one iteration')
     from join_probe import observe_command
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;vp=doc.Views.ActiveView.ActiveViewport
@@ -54,10 +54,15 @@ def run(op,host,iterations,tolerance,command,driver=None):
                 tokens.append('_'+action if isinstance(action,str)else'w'+','.join(repr(float(v))for v in action)if isinstance(action,list)else repr(float(action)))
                 if action=='AroundCurve'and guide and not op.get('preselect'):tokens.extend(["'_-SelID",str(guide)])
             return ' '.join(tokens)
+        setup_trace=None
         if 'setup'in op:
             setup_before=set(obj.Id for obj in doc.Objects)
             setup_macro=macro_for(op['setup'])
-            if not R.RhinoApp.RunScript(setup_macro,True):raise ValueError('curve setup failed')
+            if setup_driver is None:
+                if not R.RhinoApp.RunScript(setup_macro,True):raise ValueError('curve setup failed')
+            else:
+                setup_ok,setup_trace=setup_driver(guides)
+                if not setup_ok or setup_trace['errors'] or setup_trace['completed']!=setup_trace['expected']:raise ValueError('live curve setup failed')
             for obj in list(doc.Objects):
                 if obj.Id not in setup_before:doc.Objects.Delete(obj.Id,True)
             doc.Objects.UnselectAll()
@@ -75,6 +80,7 @@ def run(op,host,iterations,tolerance,command,driver=None):
         if op.get('curve_diagnostics'):
             result['curve_diagnostics']=[dict(valid=bool(obj.Geometry.IsValid),midpoint_valid=bool(obj.Geometry.PointAt(0.5*(obj.Geometry.Domain.T0+obj.Geometry.Domain.T1)).IsValid))for obj in doc.Objects if obj.Id not in before and obj.Id not in guides and isinstance(obj.Geometry,G.Curve)]
         if input_trace:result['input_trace']=input_trace[0]
+        if setup_trace is not None:result['setup_input_trace']=setup_trace
         result['undo_returned']=bool(R.RhinoApp.RunScript('_Undo',False));result['undo']=snapshot()
         result['redo_returned']=bool(R.RhinoApp.RunScript('_Redo',False));result['redo']=snapshot()
         return result,0

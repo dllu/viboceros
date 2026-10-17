@@ -208,6 +208,7 @@ mod set_view;
 mod silhouette;
 mod smooth;
 mod snapping;
+mod spiral;
 mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
@@ -507,6 +508,10 @@ enum InteractiveCommand {
     },
     InterpCrv {
         options: viboceros_geometry::CurveInterpolationOptions,
+    },
+    Spiral {
+        kind: viboceros_command::spiral_input::Kind,
+        anchor: Option<Point3>,
     },
     Hyperbola {
         anchor: Option<Point3>,
@@ -844,6 +849,7 @@ impl InteractiveCommand {
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
             Self::InterpCrv { .. } => "InterpCrv",
+            Self::Spiral { kind, .. } => kind.name(),
             Self::Hyperbola { .. } => "Hyperbola",
             Self::Parabola { kind, .. } => kind.name(),
             Self::Conic { .. } => "Conic",
@@ -1225,6 +1231,7 @@ impl InteractiveCommand {
             Self::InterpCrv { .. } => {
                 "InterpCrv: pick curve points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
+            Self::Spiral { .. } => "Helix/Spiral: follow the point prompts (Esc cancels)",
             Self::Hyperbola { .. } => "Hyperbola: follow the point prompts (Esc cancels)",
             Self::Parabola { .. } => "Parabola: follow the point prompts (Esc cancels)",
             Self::Conic { .. } => {
@@ -1819,6 +1826,7 @@ impl InteractiveCommand {
             | Self::Polyline
             | Self::Curve { .. }
             | Self::InterpCrv { .. }
+            | Self::Spiral { anchor: None, .. }
             | Self::Hyperbola { anchor: None }
             | Self::Parabola { anchor: None, .. }
             | Self::Conic { anchor: None }
@@ -1916,6 +1924,7 @@ impl InteractiveCommand {
             | Self::CircleTwoPoint { first: start }
             | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
+            | Self::Spiral { anchor: start, .. }
             | Self::Hyperbola { anchor: start }
             | Self::Parabola { anchor: start, .. }
             | Self::Conic { anchor: start }
@@ -2255,6 +2264,7 @@ pub struct VibocerosApp {
     orient_curve_session: Option<orient_curve::Session>,
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
+    spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
     conic_session: Option<conic::Session>,
@@ -2376,6 +2386,7 @@ impl VibocerosApp {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
             conic_session: None,
@@ -2503,7 +2514,10 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
-        if self.try_continue_hyperbola(&input) || self.try_continue_parabola(&input) {
+        if self.try_continue_spiral(&input)
+            || self.try_continue_hyperbola(&input)
+            || self.try_continue_parabola(&input)
+        {
             return;
         }
         if self.try_one_shot_snap(&input) {
@@ -3194,6 +3208,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_spiral(input) {
+            return true;
+        }
         if self.try_start_hyperbola(input) {
             return true;
         }
@@ -5594,6 +5611,7 @@ impl VibocerosApp {
         }
         self.flow_session = None;
         self.surface_flow_session = None;
+        self.spiral_session = None;
         self.hyperbola_session = None;
         self.parabola_session = None;
         self.conic_session = None;
@@ -5656,6 +5674,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_spiral_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_hyperbola_point(point) {
             return accepted;
         }
@@ -5713,6 +5734,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Spiral { .. }
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
@@ -9034,6 +9056,9 @@ impl VibocerosApp {
             return true;
         }
         if let Some(point) = output.drafting_hover.take() {
+            if let Some(s) = &mut self.spiral_session {
+                s.cursor = Some(point);
+            }
             self.update_subcurve_hover(point);
         }
         if self.picking_scale_by_plane_view() {
@@ -10049,6 +10074,11 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let viewport_positions = &self.viewport_positions;
+        let spiral_input = self
+            .spiral_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
         let hyperbola_input = self
             .hyperbola_session
             .as_ref()
@@ -10203,6 +10233,7 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
+                            spiral_input,
                             hyperbola_input,
                             parabola_input,
                             conic_input,
@@ -10529,6 +10560,7 @@ mod tests {
     mod single_span_selection;
     mod smooth;
     mod sphere_fit_points;
+    mod spiral;
     mod split_edge;
     mod standalone_subcurve;
     mod subcurve_direction;
@@ -10641,6 +10673,7 @@ mod tests {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
             conic_session: None,

@@ -1,0 +1,635 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "helix-basic",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Mode=Turns",
+        "Turns=3",
+        "ReverseTwist=No",
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-reverse",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Mode=Turns",
+        "Turns=1.25",
+        "ReverseTwist=Yes",
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-oblique",
+      "op": "helix_command",
+      "actions": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          8,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=2.3",
+        "ReverseTwist=No",
+        [
+          2,
+          0,
+          4
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-locked-radius",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        2,
+        [
+          0,
+          5,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-diameter-point",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        "Diameter",
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-diameter-number",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Radius",
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        "Diameter",
+        6,
+        [
+          0,
+          10,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-pitch",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Radius",
+        "Mode=Pitch",
+        "Pitch=2.5",
+        "ReverseTwist=No",
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-option-prompts",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        "Mode=Turns",
+        "Turns",
+        2.25,
+        "Mode",
+        "Mode",
+        "ReverseTwist=No",
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-vertical",
+      "op": "helix_command",
+      "actions": [
+        "Vertical",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          6,
+          8,
+          11
+        ],
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        [
+          3,
+          2,
+          3
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-vertical-locked-height",
+      "op": "helix_command",
+      "actions": [
+        "Vertical",
+        [
+          1,
+          2,
+          3
+        ],
+        8,
+        [
+          1,
+          2,
+          4
+        ],
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        [
+          3,
+          2,
+          3
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "helix-vertical-plane",
+      "op": "helix_command",
+      "actions": [
+        "Vertical",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          -6,
+          3
+        ],
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        [
+          3,
+          2,
+          3
+        ]
+      ],
+      "construction_plane": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-expanding",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ],
+        4
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-to-axis",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        [
+          4,
+          0,
+          0
+        ],
+        0
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-diameter-points",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        "Diameter",
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          6
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-locked-radius",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Radius",
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        2,
+        [
+          0,
+          7,
+          0
+        ],
+        4
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-remembered-end",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ],
+        "Enter"
+      ],
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Turns=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ],
+        3.5
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-flat",
+      "op": "spiral_command",
+      "actions": [
+        "Flat",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          3
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        4
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-flat-plane",
+      "op": "spiral_command",
+      "actions": [
+        "Flat",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          3
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        4
+      ],
+      "construction_plane": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-flat-reverse",
+      "op": "spiral_command",
+      "actions": [
+        "Flat",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          3
+        ],
+        "Mode=Turns",
+        "Turns=1.25",
+        "ReverseTwist=Yes",
+        4
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-projected-picks",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          7
+        ],
+        [
+          4,
+          0,
+          -3
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-pitch",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Pitch",
+        "Pitch=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ],
+        4
+      ],
+      "live_getters": true
+    },
+    {
+      "id": "spiral-final-options",
+      "op": "spiral_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          6
+        ],
+        "Mode=Turns",
+        "Turns=2",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ],
+        "Turns=1.5",
+        "ReverseTwist=Yes",
+        4
+      ],
+      "live_getters": true
+    }
+  ]
+}

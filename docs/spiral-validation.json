@@ -1,0 +1,403 @@
+{
+  "feature": "Interactive axial Helix and Spiral with measured SDK sampling policies",
+  "date": "2026-10-17",
+  "source_base_commit": "b041cf1270003f3feb1bf5942252316568c1cf5d",
+  "native_engine": "rhino",
+  "native_engine_version": "8.32.26160.13001",
+  "summary": {
+    "unique_native_command_workflows": 25,
+    "command_profile_rows": 26,
+    "live_typed_workflows": 24,
+    "default_macro_workflows": 1,
+    "full_sampling_cases": 45,
+    "full_sampling_layouts_matching": 45,
+    "sampling_control_cases_within_1e_6": 41,
+    "sampling_control_limit_cases": [
+      "dim-100-10",
+      "t100",
+      "density-99p99",
+      "density-1000"
+    ],
+    "sampling_control_distance_bound": 3e-05,
+    "additional_exact_layout_cases": 32
+  },
+  "command_absolute_epsilon": 1e-06,
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_command.json",
+      "observation": "tools/rhino_oracle/observations/spiral_command_rhino_20261017.json",
+      "rows": 22,
+      "comparison": "Full curve, selection, length and real history snapshots at absolute epsilon 1e-6"
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_preferences.json",
+      "observation": "tools/rhino_oracle/observations/spiral_preferences_rhino_20261017.json",
+      "rows": 3,
+      "comparison": "Full curve, selection, length and real history snapshots at absolute epsilon 1e-6"
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_defaults.json",
+      "observation": "tools/rhino_oracle/observations/spiral_defaults_rhino_20261017.json",
+      "rows": 1,
+      "comparison": "Full curve, selection, length and real history snapshots at absolute epsilon 1e-6"
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_sampling.json",
+      "observation": "tools/rhino_oracle/observations/spiral_sampling_rhino_20261017.json",
+      "rows": 45,
+      "comparison": "Full knots, domain, degree and control count; all control distances bounded by 3e-5, with four explicit 1e-6 limits"
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_layout.json",
+      "observation": "tools/rhino_oracle/observations/spiral_layout_rhino_20261017.json",
+      "rows": 32,
+      "comparison": "Exact degree, control count and full knot count"
+    }
+  ],
+  "qualifications": [
+    "Shared edit-free getters, live local previews and canonical commands reuse the existing geometry constructors",
+    "Numeric radius locks followed by direction picks, radius/diameter input, fractional turns, pitch, twist and bare Mode toggles",
+    "Separate successful Helix/Spiral preferences outside undo history; a new axis length retains the chosen Turns/Pitch mode",
+    "Vertical axes with numeric height locks and side picks, tilted CPlanes, Flat spirals and projected radius points",
+    "Full cubic control layouts, weights, knots, domains, selection, lengths and actual undo/redo for all 25 command workflows",
+    "SDK density transitions at 10, 50 and 1000 turns, fractional span rounding and a three-span minimum; swept spiral density remains unchanged",
+    "Invalid point/number retries, unit/fraction getters, command interruption, captured-plane preview/commit consistency and local hovered direction on Enter"
+  ],
+  "metric_policy": "The command corpus passes full geometry/history comparisons at 1e-6. The separate 45-case SDK sampling corpus verifies all layouts but retains the analytic-tangent C2 endpoint rule. Four listed cases exceed 1e-6 in control distance; all 45 are bounded by 3e-5. They are diagnostics, not 1e-6 qualifications. The 32 additional layout probes measure counts/degree only and make no shape or performance claim.",
+  "native_capture_provenance": [
+    {
+      "scheme": "VibocerosOracleHelixEndpoint20261017",
+      "purpose": "Four original Helix SDK inputs, retained in spiral_sampling"
+    },
+    {
+      "scheme": "VibocerosOracleSpiralDensity20261017",
+      "purpose": "23 SDK turn/radius/height and variable-radius inputs, retained in spiral_sampling"
+    },
+    {
+      "scheme": "VibocerosOracleSpiralDensityBoundary20261017",
+      "purpose": "Ten SDK turn-count controls, retained in spiral_sampling"
+    },
+    {
+      "scheme": "VibocerosOracleSpiralGettersRetry20261017",
+      "purpose": "First valid, deterministic point-only default Helix row retained in spiral_defaults; other exploratory rows were not qualified"
+    },
+    {
+      "scheme": "VibocerosOracleSpiralQualified20261017",
+      "purpose": "22 complete managed typed getter workflows; the remembered-end row was subsequently replaced by an identical-input capture with a managed setup receipt"
+    },
+    {
+      "scheme": "VibocerosOracleSpiralPreferences20261017",
+      "purpose": "Two new retained-mode/new-axis-length workflows and a managed setup/end-radius recapture shared with the primary profile"
+    },
+    {
+      "scheme": "VibocerosOracleSpiralSamplingFinal20261017",
+      "purpose": "Five original Spiral SDK inputs and three fractional/large-turn controls, retained in spiral_sampling"
+    },
+    {
+      "scheme": "VibocerosOracleSpiralLayout20261017",
+      "purpose": "32 bounded public SDK layout measurements through 1000 turns"
+    }
+  ],
+  "unqualified": [
+    "Interactive rail picking and Helix AroundCurve; scripted Spiral AroundCurve remains available",
+    "Full physical mouse, viewport and snap parity; native typed recipes are not mouse receipts",
+    "Deterministic native numeric/Enter start directions without pointer acknowledgement",
+    "Native preference retention on cancellation; local preferences are committed on successful completion",
+    "Full 1e-6 endpoint-control agreement in the four named diagnostic cases",
+    "Exhaustive extreme parameters, density boundaries beyond the measured range and performance parity"
+  ],
+  "tests": [
+    {
+      "name": "spiral",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros",
+        "spiral"
+      ],
+      "exit_code": 0,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 0.49s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1470 filtered out; finished in 0.06s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 2360 filtered out; finished in 0.04s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 546 filtered out; finished in 4.29s"
+      ],
+      "log_sha256": "db83119e2a5c7994b7c62e94d60d489140cb4e42cc663ffb36edaefdb8b42a02"
+    },
+    {
+      "name": "helix-script",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "helix"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 74.696,
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1475 filtered out; finished in 0.03s"
+      ],
+      "log_sha256": "047c83c84ed1e3fe45d64de2d4b648fc38d914496ce530636285e3775662241a"
+    },
+    {
+      "name": "geometry-nurbs",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "nurbs::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 94.688,
+      "test_results": [
+        "test result: ok. 225 passed; 0 failed; 0 ignored; 0 measured; 2143 filtered out; finished in 65.86s"
+      ],
+      "log_sha256": "0789d39d9e8736c204fda02f637ddda42fd8683da04fdaf6adf6e82052e50b8a"
+    },
+    {
+      "name": "viewport-sampling",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::curve_sampling"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.736,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 0.01s"
+      ],
+      "log_sha256": "24ef1ba306732310e994606f3f9a74109f081dbe0974c2f4d453cc13f078d10b"
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "app::tests::point_input"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.442,
+      "test_results": [
+        "test result: ok. 58 passed; 0 failed; 0 ignored; 0 measured; 1286 filtered out; finished in 0.18s"
+      ],
+      "log_sha256": "18620cf2df95950e278397c0d4eaaabd0b206187fdf2f4de1755bd2853133b96"
+    },
+    {
+      "name": "native-spiral",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "spiral"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 102.932,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 567 filtered out; finished in 4.26s"
+      ],
+      "log_sha256": "115558ca36b3864bbc4dc79944f3687c8d4943dadd6a7e67b7037db32f3e349e"
+    },
+    {
+      "name": "parabola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "parabol"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.802,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 0.15s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1470 filtered out; finished in 0.15s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 545 filtered out; finished in 7.05s"
+      ],
+      "log_sha256": "bf305b93efb2f1b767920753da4ded2d7bd13f97426a9b99d6e6b61ab9a965b7"
+    },
+    {
+      "name": "hyperbola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "hyperbola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.77,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1339 filtered out; finished in 0.04s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1471 filtered out; finished in 0.02s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 547 filtered out; finished in 0.28s"
+      ],
+      "log_sha256": "2df7d5263f3280f5f88a11bbdac5adcb3a1fdbc51d3b7a6234ded292933594e1"
+    },
+    {
+      "name": "conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "conic"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 10.065,
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1334 filtered out; finished in 0.14s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1462 filtered out; finished in 0.07s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 545 filtered out; finished in 9.47s"
+      ],
+      "log_sha256": "2e2dc43e46f28699caeb0b4fc941edb7f281e1a4bc6ef44f9fc9fb50918a6053"
+    },
+    {
+      "name": "rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.767,
+      "test_results": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1324 filtered out; finished in 0.17s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1466 filtered out; finished in 2.55s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 548 filtered out; finished in 5.69s"
+      ],
+      "log_sha256": "ef36cc3fb3786c068ca83df74290d75802cca4b625c963977cbceb69f5fe9bb9"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_client",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.664,
+      "test_results": [
+        "Ran 45 tests in 0.539s"
+      ],
+      "log_sha256": "b088f4968b94f5ad4b63f5010c4884df019ff9aa7f9172ccad9492d0c00135be"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 58.912,
+      "test_results": [],
+      "log_sha256": "d7de0c957b27501b8e3e0c9600ff8bba285e04cf7cea945bd64f84622c286c2a"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 6.42,
+      "test_results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "historical_provenance": {
+    "records": [
+      "docs/hyperbola-validation.json"
+    ],
+    "archived_source_entries": 11,
+    "preexisting_unverifiable_records_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "21d5b78dafc0229cbbe41356877fe0c8813f065725e16b77ca76232cfaaa5974",
+    "crates/viboceros-command/src/lib.rs": "660d6c22c7dd83cdb4fe4b74b73130420e092f18350fed91b8701f3b5c6df892",
+    "crates/viboceros-command/src/spiral_input.rs": "2c8293411ea7e5ca439126e24d58a27a84b7ad1821b64316e6d6472b8fab72a2",
+    "crates/viboceros-geometry/src/spiral.rs": "58b2ee3ceaa534382e782cde3d2177c6988d34fbd1f6df23b874aed522c348d1",
+    "crates/viboceros-oracle/src/lib.rs": "ef4c72c68a709ffbd85c6a491acca043977dd21c8f3ec3980a8d1845894db0c0",
+    "crates/viboceros-oracle/src/spiral_command.rs": "6027aa855c2894b80411076516f0b1b6f8c159a71ce98347f8af9a82bdaefa6f",
+    "docs/commands/curves.md": "a3b7658f4727c02b56a593e13f090362c304c2233f1768f4c6e496f38ef80783",
+    "docs/commands/helix-spiral.md": "f8852c48ef7d9be0529b9232216a8c8c2c505cca0c79c79b807c60df0a9f6048",
+    "docs/hyperbola-validation.json": "ff50b6d615b8c1f58cdfdda6e2ff986dd19c342bb77ec7e90beee8150806f18a",
+    "src/app.rs": "619b083b25f21eb1095cb8a3ce54af30e986068166276a97c6b7d7781a187b37",
+    "src/app/spiral.rs": "71a1023909dfbdb2f09d55f38aab452cb3ceee86d4ea1e356f0163e267753681",
+    "src/app/tests/spiral.rs": "aaaa2607fd66a9b6d9cb31d5b04cf7b40d02d7985d071c46169948d8bafc1c6a",
+    "src/viewport.rs": "8069a7c67e6888334e84de72d96ae03e00f6a3026be6edc1c21a4232f0669aa4",
+    "tools/rhino_oracle/client.py": "4680c09b57b67257183c34c5c30bab6e746024cafc02523c7df605806987ef19",
+    "tools/rhino_oracle/conic_getter_input.py": "8297e9cef1277903609142f5ffb81b7ca15568d3418f077d72950002ef6ec9d6",
+    "tools/rhino_oracle/curve_primitive_probe.py": "c70f297ac1f5d6dcce1a04eca858979da17fb4f1131b900dfcd4a553a7112a1f",
+    "tools/rhino_oracle/fixtures/spiral_command.json": "65d8d4e744afedce5b448c5885c70e54b5ad59763baa9bb58eb83909af75830f",
+    "tools/rhino_oracle/fixtures/spiral_defaults.json": "77b53a054f163f442f3f4d9bb4ebf4c4d36a1eb834ffa4d6767c47891d38a33b",
+    "tools/rhino_oracle/fixtures/spiral_layout.json": "595f13b4accef7b4617b50403ac7b35a2a32f3cc3acb925cbb59c0460e0b8745",
+    "tools/rhino_oracle/fixtures/spiral_preferences.json": "4f4943a71513bd984747de778a54732cef54e6c0de641fa1b1859d1b49a35c6f",
+    "tools/rhino_oracle/fixtures/spiral_sampling.json": "878ad580d68f7361e9068d686b7feae544767d57c3107cae0c046667d09b1534",
+    "tools/rhino_oracle/observations/spiral_command_rhino_20261017.json": "59a6bddf88d1d50ff74691f2a83e34b59a1d885c346b15c19f468bf2ab470d9e",
+    "tools/rhino_oracle/observations/spiral_defaults_rhino_20261017.json": "b59c35000e2ae293de091604e0861d17eaad6af44ad0f37347bb8721a4b8da83",
+    "tools/rhino_oracle/observations/spiral_layout_rhino_20261017.json": "a4a074a1a27c7aef9e71819bbea2e502e01b57a5df898460b9fae05cc509ef79",
+    "tools/rhino_oracle/observations/spiral_preferences_rhino_20261017.json": "10b07d6afcda340ad98418cddd2aeade13456bb6eff233a639ae9f0f8b72027e",
+    "tools/rhino_oracle/observations/spiral_sampling_rhino_20261017.json": "40d2c9daeaba0590c736458f3c832542f407243761b18c0fcf9dfef36df8b1c9",
+    "tools/rhino_oracle/rhino_worker.py": "5f69ab4c49f59805ebf7fa6ae80659619a0445ecf85a12fb4b1a019a6e3eeb74",
+    "tools/rhino_oracle/spiral_command_probe.py": "750aa14c667ceb7cb4acd4e08d5a1c785cf76f561cffdffc026e737b051f8297",
+    "tools/rhino_oracle/spiral_layout_probe.py": "f577e54e3f110eaaba0614598f3becb5bcc1f371060060aab95915ef1e676726",
+    "tools/rhino_oracle/structural_sdk.py": "4d067d0ca59f42b90af57e56ad14be53aaf40acb12ec0c07405658ecc8da3def",
+    "tools/rhino_oracle/test_spiral_command.py": "bfa8909e46f8b1a26d2d3f951bd5a0a579d0cbc136d44ff5cf5e05200e45be6b"
+  }
+}

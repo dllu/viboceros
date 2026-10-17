@@ -226,12 +226,14 @@ last-selected line, analytic curve, polyline, or NURBS rail. Its first radius
 must be a point to seed the radial direction; the end radius can be numeric or
 picked. It supports Turns/Pitch, reverse twist, and `PointsPerTurn=` values of
 at least five (12 by default).
-The axial linear-time tridiagonal constructor
-uses Rhino's 24-span density for long forward constant-radius helices and 36
-spans otherwise, interpolates every analytic sample, and has a one-million-
-control resource ceiling. Its C2 endpoint rule differs from Rhino's legacy C1
-endpoint perturbation by less than `3e-5` in the permanent `helix.json` and
-`spiral.json` NURBS-control oracle fixtures. Swept spirals use equal-arc-length
+Both commands now support [interactive axial input and previews](helix-spiral.md),
+including Vertical, Flat spirals, diameter input, numeric radius locks and
+remembered Turns/Pitch settings. The axial linear-time tridiagonal constructor
+uses the freshly measured 120/60/36/24 span policy and a three-span minimum.
+The C2 analytic endpoint rule retains small control differences from Rhino;
+the interactive corpus agrees within `1e-6`, with larger-radius/turn-count
+sampling limits recorded separately.
+Swept spirals use equal-arc-length
 rail stations and shared [adaptive frame transport](../curve-frames.md); their complete cubic
 control layout agrees with Rhino within `2e-7` across straight, planar curved,
 and spatial curved rails in `swept_spiral.json`.

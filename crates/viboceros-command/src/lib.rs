@@ -114,6 +114,7 @@ pub mod named_view;
 pub mod parabola;
 #[cfg(test)]
 mod parabola_tests;
+pub mod spiral_input;
 pub use curve_options::{parse_curve_closure, parse_curve_degree};
 mod model_units;
 use interchange::{
@@ -460,6 +461,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
+        false
+    }
+    fn spiral_options(&self) -> Option<spiral_input::Options> {
+        None
+    }
+    fn remember_spiral_options(&self, _value: spiral_input::Options) -> bool {
         false
     }
     fn hyperbola_options(&self) -> Option<hyperbola::Options> {
@@ -953,10 +960,10 @@ impl CommandRegistry {
             .register(hyperbola::HyperbolaCommand::default())
             .expect("unique built-in command");
         registry
-            .register(HelixCommand)
+            .register(HelixCommand::default())
             .expect("unique built-in command");
         registry
-            .register(SpiralCommand)
+            .register(SpiralCommand::default())
             .expect("unique built-in command");
         registry
             .register(CatenaryCommand)
@@ -2010,6 +2017,21 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn spiral_options(&self, kind: spiral_input::Kind) -> spiral_input::Options {
+        self.lookup
+            .get(&normalize_command_name(kind.name()))
+            .and_then(|i| self.commands[*i].spiral_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_spiral_options(
+        &self,
+        kind: spiral_input::Kind,
+        value: spiral_input::Options,
+    ) -> bool {
+        self.lookup
+            .get(&normalize_command_name(kind.name()))
+            .is_some_and(|i| self.commands[*i].remember_spiral_options(value))
+    }
     pub fn hyperbola_options(&self) -> hyperbola::Options {
         self.lookup
             .get(&normalize_command_name("Hyperbola"))
@@ -7146,9 +7168,20 @@ impl Command for ParaboloidCommand {
     }
 }
 
-struct HelixCommand;
+#[derive(Default)]
+struct HelixCommand {
+    options: remembered::Remembered<spiral_input::Options>,
+}
 
 impl Command for HelixCommand {
+    fn spiral_options(&self) -> Option<spiral_input::Options> {
+        Some(self.options.get())
+    }
+    fn remember_spiral_options(&self, value: spiral_input::Options) -> bool {
+        self.options.set(value);
+        true
+    }
+
     fn name(&self) -> &'static str {
         "Helix"
     }
@@ -7182,9 +7215,20 @@ impl Command for HelixCommand {
     }
 }
 
-struct SpiralCommand;
+#[derive(Default)]
+struct SpiralCommand {
+    options: remembered::Remembered<spiral_input::Options>,
+}
 
 impl Command for SpiralCommand {
+    fn spiral_options(&self) -> Option<spiral_input::Options> {
+        Some(self.options.get())
+    }
+    fn remember_spiral_options(&self, value: spiral_input::Options) -> bool {
+        self.options.set(value);
+        true
+    }
+
     fn name(&self) -> &'static str {
         "Spiral"
     }
@@ -19355,7 +19399,7 @@ mod tests {
         };
         assert_eq!(curve.degree(), 3);
         assert!(!curve.is_rational());
-        assert_eq!(curve.control_points().len(), 75);
+        assert_eq!(curve.control_points().len(), 363);
         assert_eq!(curve.domain(), 0.0..=3.0);
         assert!(
             curve
@@ -19385,16 +19429,16 @@ mod tests {
         let Geometry::NurbsCurve(reverse) = document.objects().next().unwrap().geometry() else {
             panic!("the pitch form must create a NURBS curve")
         };
-        assert_eq!(reverse.control_points().len(), 93);
+        assert_eq!(reverse.control_points().len(), 303);
         assert!(
             reverse
-                .evaluate(1.0 / 36.0)
+                .evaluate(1.0 / 120.0)
                 .unwrap()
                 .distance_to(
                     Point3::try_new(
-                        1.0 + 3.0 * (std::f64::consts::PI / 18.0).cos(),
-                        2.0 + 10.0 / 90.0,
-                        3.0 + 3.0 * (std::f64::consts::PI / 18.0).sin(),
+                        1.0 + 3.0 * (std::f64::consts::PI / 60.0).cos(),
+                        2.0 + 10.0 / 300.0,
+                        3.0 + 3.0 * (std::f64::consts::PI / 60.0).sin(),
                     )
                     .unwrap()
                 )
@@ -19418,7 +19462,7 @@ mod tests {
         else {
             panic!("Pitch without an explicit mode must select pitch mode")
         };
-        assert_eq!(inferred_pitch.control_points().len(), 75);
+        assert_eq!(inferred_pitch.control_points().len(), 363);
         registry.execute(&mut document, "Undo").unwrap();
 
         for invalid in [
@@ -19459,7 +19503,7 @@ mod tests {
         };
         assert_eq!(curve.degree(), 3);
         assert!(!curve.is_rational());
-        assert_eq!(curve.control_points().len(), 75);
+        assert_eq!(curve.control_points().len(), 243);
         assert_eq!(curve.domain(), 0.0..=2.0);
         assert!(
             curve
@@ -19483,7 +19527,7 @@ mod tests {
         let Geometry::NurbsCurve(reverse) = document.objects().next().unwrap().geometry() else {
             panic!("picked radii and inferred pitch mode must create a NURBS curve")
         };
-        assert_eq!(reverse.control_points().len(), 93);
+        assert_eq!(reverse.control_points().len(), 303);
         assert!(
             reverse
                 .evaluate(2.5)
@@ -19500,7 +19544,7 @@ mod tests {
         let Geometry::NurbsCurve(zero_start) = document.objects().next().unwrap().geometry() else {
             panic!("a numeric zero start radius must be supported")
         };
-        assert_eq!(zero_start.control_points().len(), 111);
+        assert_eq!(zero_start.control_points().len(), 363);
         assert!(
             zero_start
                 .evaluate(3.0)
@@ -19518,7 +19562,7 @@ mod tests {
         else {
             panic!("a space-separated first radius point must be accepted")
         };
-        assert_eq!(space_point.control_points().len(), 75);
+        assert_eq!(space_point.control_points().len(), 243);
         registry.execute(&mut document, "Undo").unwrap();
 
         registry
@@ -19530,7 +19574,7 @@ mod tests {
         let Geometry::NurbsCurve(flat) = document.objects().next().unwrap().geometry() else {
             panic!("Flat must create a planar NURBS spiral")
         };
-        assert_eq!(flat.control_points().len(), 39);
+        assert_eq!(flat.control_points().len(), 123);
         assert_eq!(flat.domain(), 0.0..=1.0);
         assert!(
             flat.control_points()

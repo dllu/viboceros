@@ -1,0 +1,27 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "helix-point",
+      "op": "helix_command",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    }
+  ]
+}

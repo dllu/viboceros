@@ -147,6 +147,8 @@ mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
 mod conic;
+mod spiral_command;
+pub use spiral_command::Fixture as SpiralCommandFixture;
 mod hyperbola;
 pub use hyperbola::Fixture as HyperbolaCommandFixture;
 mod parabola;
@@ -1736,6 +1738,20 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: FlowRoadlikeFixture,
     },
+    SpiralLayout {
+        id: String,
+        turns: f64,
+    },
+    HelixCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: SpiralCommandFixture,
+    },
+    SpiralCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: SpiralCommandFixture,
+    },
     HyperbolaCommand {
         id: String,
         #[serde(flatten)]
@@ -2826,6 +2842,9 @@ impl Operation {
             | Self::OrientSurface { id, .. }
             | Self::OrientSurfaceGrips { id, .. }
             | Self::FlowGrips { id, .. }
+            | Self::SpiralLayout { id, .. }
+            | Self::HelixCommand { id, .. }
+            | Self::SpiralCommand { id, .. }
             | Self::HyperbolaCommand { id, .. }
             | Self::ParabolaCommand { id, .. }
             | Self::ConicCommand { id, .. }
@@ -6071,6 +6090,27 @@ fn execute(
         Operation::FlowRoadlike { fixture, .. } => {
             flow_roadlike::run(fixture, iterations, tolerance)?
         }
+        Operation::SpiralLayout { turns, .. } => {
+            let frame = viboceros_command::CommandContext::default().construction_plane;
+            let (c, elapsed) =
+                measure(iterations, || NurbsCurve::try_helix(frame, 2., 10., *turns))?;
+            (
+                json!({"degree":c.degree(),"control_count":c.control_points().len(),"full_knot_count":c.knots().len()}),
+                elapsed,
+            )
+        }
+        Operation::HelixCommand { fixture, .. } => spiral_command::run(
+            fixture,
+            viboceros_command::spiral_input::Kind::Helix,
+            iterations,
+            tolerance,
+        )?,
+        Operation::SpiralCommand { fixture, .. } => spiral_command::run(
+            fixture,
+            viboceros_command::spiral_input::Kind::Spiral,
+            iterations,
+            tolerance,
+        )?,
         Operation::HyperbolaCommand { fixture, .. } => {
             hyperbola::run(fixture, iterations, tolerance)?
         }
@@ -13302,15 +13342,15 @@ mod tests {
         let spiral = &response.results[0].value;
         assert_eq!(spiral["degree"], 3);
         assert_eq!(spiral["domain"], json!([0.0, 2.0]));
-        assert_eq!(spiral["control_points"].as_array().unwrap().len(), 75);
-        assert_eq!(spiral["knots"].as_array().unwrap().len(), 79);
+        assert_eq!(spiral["control_points"].as_array().unwrap().len(), 243);
+        assert_eq!(spiral["knots"].as_array().unwrap().len(), 247);
         assert_eq!(
             spiral["control_points"][0],
             json!({"point": [1.0, 0.0, 0.0], "weight": 1.0})
         );
-        assert_eq!(spiral["control_points"][74]["point"][0], json!(4.0));
-        assert_eq!(spiral["control_points"][74]["point"][2], json!(6.0));
-        assert_eq!(spiral["knots"][4], json!(1.0 / 36.0));
+        assert_eq!(spiral["control_points"][242]["point"][0], json!(4.0));
+        assert_eq!(spiral["control_points"][242]["point"][2], json!(6.0));
+        assert_eq!(spiral["knots"][4], json!(1.0 / 120.0));
     }
 
     #[test]

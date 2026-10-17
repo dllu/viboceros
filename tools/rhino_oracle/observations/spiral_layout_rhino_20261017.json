@@ -1,0 +1,296 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "layout-9p99",
+      "value": {
+        "control_count": 1202,
+        "degree": 3,
+        "full_knot_count": 1206
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-10",
+      "value": {
+        "control_count": 603,
+        "degree": 3,
+        "full_knot_count": 607
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-30",
+      "value": {
+        "control_count": 1803,
+        "degree": 3,
+        "full_knot_count": 1807
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-31",
+      "value": {
+        "control_count": 1863,
+        "degree": 3,
+        "full_knot_count": 1867
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-32",
+      "value": {
+        "control_count": 1923,
+        "degree": 3,
+        "full_knot_count": 1927
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-36",
+      "value": {
+        "control_count": 2163,
+        "degree": 3,
+        "full_knot_count": 2167
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-40",
+      "value": {
+        "control_count": 2403,
+        "degree": 3,
+        "full_knot_count": 2407
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-45",
+      "value": {
+        "control_count": 2703,
+        "degree": 3,
+        "full_knot_count": 2707
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-49",
+      "value": {
+        "control_count": 2943,
+        "degree": 3,
+        "full_knot_count": 2947
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-50",
+      "value": {
+        "control_count": 1803,
+        "degree": 3,
+        "full_knot_count": 1807
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-51",
+      "value": {
+        "control_count": 1839,
+        "degree": 3,
+        "full_knot_count": 1843
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-60",
+      "value": {
+        "control_count": 2163,
+        "degree": 3,
+        "full_knot_count": 2167
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-90",
+      "value": {
+        "control_count": 3243,
+        "degree": 3,
+        "full_knot_count": 3247
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-99",
+      "value": {
+        "control_count": 3567,
+        "degree": 3,
+        "full_knot_count": 3571
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-100",
+      "value": {
+        "control_count": 3603,
+        "degree": 3,
+        "full_knot_count": 3607
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-101",
+      "value": {
+        "control_count": 3639,
+        "degree": 3,
+        "full_knot_count": 3643
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-120",
+      "value": {
+        "control_count": 4323,
+        "degree": 3,
+        "full_knot_count": 4327
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-150",
+      "value": {
+        "control_count": 5403,
+        "degree": 3,
+        "full_knot_count": 5407
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-180",
+      "value": {
+        "control_count": 6483,
+        "degree": 3,
+        "full_knot_count": 6487
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-200",
+      "value": {
+        "control_count": 7203,
+        "degree": 3,
+        "full_knot_count": 7207
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-250",
+      "value": {
+        "control_count": 9003,
+        "degree": 3,
+        "full_knot_count": 9007
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-300",
+      "value": {
+        "control_count": 10803,
+        "degree": 3,
+        "full_knot_count": 10807
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-360",
+      "value": {
+        "control_count": 12963,
+        "degree": 3,
+        "full_knot_count": 12967
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-400",
+      "value": {
+        "control_count": 14403,
+        "degree": 3,
+        "full_knot_count": 14407
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-450",
+      "value": {
+        "control_count": 16203,
+        "degree": 3,
+        "full_knot_count": 16207
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-499",
+      "value": {
+        "control_count": 17967,
+        "degree": 3,
+        "full_knot_count": 17971
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-500",
+      "value": {
+        "control_count": 18003,
+        "degree": 3,
+        "full_knot_count": 18007
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-501",
+      "value": {
+        "control_count": 18039,
+        "degree": 3,
+        "full_knot_count": 18043
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-600",
+      "value": {
+        "control_count": 21603,
+        "degree": 3,
+        "full_knot_count": 21607
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-900",
+      "value": {
+        "control_count": 32403,
+        "degree": 3,
+        "full_knot_count": 32407
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-999",
+      "value": {
+        "control_count": 35967,
+        "degree": 3,
+        "full_knot_count": 35971
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "layout-1000",
+      "value": {
+        "control_count": 24003,
+        "degree": 3,
+        "full_knot_count": 24007
+      }
+    }
+  ]
+}
