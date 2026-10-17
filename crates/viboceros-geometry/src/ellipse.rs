@@ -54,7 +54,8 @@ impl Ellipse3 {
         Ok(ellipse)
     }
 
-    /// Constructs the ellipse used by the three-point drafting workflow.
+    /// Constructs RhinoCommon's three-point ellipse. The interactive Ellipse
+    /// command instead measures the perpendicular second-axis component.
     /// `first_axis_point` fixes the X semi-axis. The component of
     /// `second_axis_point - center` perpendicular to it fixes the Y direction,
     /// while the full vector length fixes the Y radius. Consequently the
@@ -74,6 +75,100 @@ impl Ellipse3 {
         let perpendicular = perpendicular_component(second, x_axis)?;
         let y_axis = perpendicular.normalized(tolerance)?;
         Self::try_new(center, radius_x, radius_y, x_axis, y_axis, tolerance)
+    }
+
+    /// Ellipse through a point with two distinct foci. The focal line fixes X;
+    /// the point chooses the plane and positive Y side.
+    pub fn try_from_foci(
+        first: Point3,
+        second: Point3,
+        point: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::from_foci(first, second, point, None, tolerance)
+    }
+
+    /// Uses the construction plane to resolve the plane of an otherwise
+    /// ambiguous collinear pick beyond the foci. Noncollinear picks still fix
+    /// their own plane. Points between the foci cannot define a finite ellipse.
+    pub fn try_from_foci_with_plane(
+        first: Point3,
+        second: Point3,
+        point: Point3,
+        plane: crate::Frame3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::from_foci(first, second, point, Some(plane), tolerance)
+    }
+    fn from_foci(
+        first: Point3,
+        second: Point3,
+        point: Point3,
+        fallback: Option<crate::Frame3>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let center = first.midpoint(second)?;
+        let axis = first.vector_to(second)?;
+        let frame =
+            crate::Frame3::try_from_directions(center, axis, center.vector_to(point)?, tolerance)
+                .or_else(|error| {
+                let Some(plane) = fallback else {
+                    return Err(error);
+                };
+                if perpendicular_component(center.vector_to(point)?, axis.normalized(tolerance)?)?
+                    .length()?
+                    > tolerance.absolute()
+                {
+                    return Err(error);
+                }
+                let y = plane.z_axis().as_vector().cross(axis)?;
+                crate::Frame3::try_from_directions(
+                    center,
+                    axis,
+                    if y.length()? > tolerance.absolute() {
+                        y
+                    } else {
+                        plane.x_axis().as_vector().cross(axis)?
+                    },
+                    tolerance,
+                )
+            })?;
+        let c = 0.5 * first.distance_to(second)?;
+        let [x, y, _] = frame.coordinates_of(point)?;
+        let left = x + c;
+        let right = x - c;
+        let r1 = left.hypot(y);
+        let r2 = right.hypot(y);
+        let a = 0.5 * r1 + 0.5 * r2;
+        // Evaluate a-c without subtracting nearly equal focal distances. For
+        // a thin ellipse this preserves the transverse radius even when a==c
+        // after rounding. hypot(t,y)-abs(t) = y*(y/hypot)/(1+abs(t)/hypot).
+        let excess = |t: Real, r: Real| {
+            if r == 0. {
+                0.
+            } else {
+                y.abs() * (y.abs() / r) / (1. + t.abs() / r)
+            }
+        };
+        let outside = (x.abs() - c).max(0.);
+        let delta = 0.5 * excess(left, r1) + 0.5 * excess(right, r2) + outside;
+        let b = delta.sqrt() * a.sqrt() * (1. + c / a).sqrt();
+        Self::try_new(center, a, b, frame.x_axis(), frame.y_axis(), tolerance)
+    }
+
+    /// Focus locations, ordered from negative to positive along the longer axis.
+    pub fn foci(self) -> Result<[Point3; 2], GeometryError> {
+        let (major, minor, axis) = if self.radius_x >= self.radius_y {
+            (self.radius_x, self.radius_y, self.x_axis)
+        } else {
+            (self.radius_y, self.radius_x, self.y_axis)
+        };
+        let distance = (major - minor).sqrt() * major.sqrt() * (1. + minor / major).sqrt();
+        let offset = axis.as_vector().scaled(distance)?;
+        Ok([
+            self.center.translated(offset.scaled(-1.)?)?,
+            self.center.translated(offset)?,
+        ])
     }
 
     #[inline]
@@ -312,6 +407,69 @@ mod tests {
 
     fn axis(x: Real, y: Real, z: Real) -> UnitVector3 {
         UnitVector3::try_new(x, y, z, Tolerance::DEFAULT).unwrap()
+    }
+
+    #[test]
+    fn focal_construction_uses_the_picked_plane_and_reproduces_distance_sum() {
+        let first = point(1., 2., 3.);
+        let second = point(7., 10., 3.);
+        let through = point(4., 6., 7.);
+        let ellipse = Ellipse3::try_from_foci(first, second, through, Tolerance::DEFAULT).unwrap();
+        assert_eq!(ellipse.center(), point(4., 6., 3.));
+        assert!((ellipse.radius_x() - 41_f64.sqrt()).abs() < 1e-14);
+        assert!((ellipse.radius_y() - 4.).abs() < 1e-14);
+        assert!(
+            ellipse.quadrants().unwrap()[1]
+                .distance_to(through)
+                .unwrap()
+                < 1e-14
+        );
+        let foci = ellipse.foci().unwrap();
+        assert!(foci[0].distance_to(first).unwrap() < 1e-13);
+        assert!(foci[1].distance_to(second).unwrap() < 1e-13);
+        for i in 0..32 {
+            let p = ellipse
+                .point_at_angle(std::f64::consts::TAU * i as f64 / 32.)
+                .unwrap();
+            let sum = p.distance_to(first).unwrap() + p.distance_to(second).unwrap();
+            assert!((sum - 2. * ellipse.radius_x()).abs() < 1e-12);
+        }
+    }
+    #[test]
+    fn thin_focal_ellipses_do_not_lose_the_minor_radius_to_subtraction() {
+        let ellipse = Ellipse3::try_from_foci(
+            point(-1e8, 0., 0.),
+            point(1e8, 0., 0.),
+            point(0., 1e-3, 0.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(ellipse.radius_x(), 1e8);
+        assert!((ellipse.radius_y() - 1e-3).abs() < 1e-18);
+        assert!(
+            ellipse
+                .to_nurbs()
+                .unwrap()
+                .evaluate(std::f64::consts::FRAC_PI_2)
+                .unwrap()
+                .distance_to(point(0., 1e-3, 0.))
+                .unwrap()
+                < 1e-12
+        );
+        for focus_pair in [
+            (point(0., 0., 0.), point(0., 0., 0.)),
+            (point(-1., 0., 0.), point(1., 0., 0.)),
+        ] {
+            assert!(
+                Ellipse3::try_from_foci(
+                    focus_pair.0,
+                    focus_pair.1,
+                    point(2., 0., 0.),
+                    Tolerance::DEFAULT
+                )
+                .is_err()
+            );
+        }
     }
 
     #[test]

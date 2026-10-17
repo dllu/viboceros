@@ -228,7 +228,6 @@
     "crates/viboceros-command/src/parabola.rs": "92e1394f3e7b06f95439377f63daf32d2aa111d9c6130a50e0d3c2a5b81728ef",
     "crates/viboceros-command/src/parabola_tests.rs": "20418f55e6aaa7c2f45bce08400287dee2d60256d50a59d23140c636de5322cf",
     "crates/viboceros-oracle/src/parabola.rs": "619fd3d20f1c4cb238f615dfeadc15ec339070b496761698240e13bc7f198f6d",
-    "docs/commands/README.md": "fb26aa1f5d32b1c5d8030344e7c0d063150bba4081cd0834f6d3b8730bd3a5d2",
     "docs/commands/parabola.md": "64b61a771cf28b62509e96c00a112a5b00aafbd083600ec17a044d09fd112f8e",
     "src/app/parabola.rs": "2334d55d7d30bb6c1322072d137520b5db11ed4ad71b376ed9864b02834bcc2f",
     "src/app/tests/parabola.rs": "d27e4da5acd52621eaa5438fc5e6bb1d2f15183e5798ab7b6f1767afc0b54070",
@@ -251,6 +250,7 @@
     "b42e2cabaa19a7109c81e026877d1b06558800e8:tools/rhino_oracle/curve_primitive_probe.py": "2363e7fb43329be75768733bb1ba02c52b5ee131507639860553f4222919ddf0",
     "b42e2cabaa19a7109c81e026877d1b06558800e8:tools/rhino_oracle/rhino_worker.py": "f46f985d5118bb4d63680bc5d2165d21544286e3153f2ba563e701e0a931ccb8",
     "b42e2cabaa19a7109c81e026877d1b06558800e8:tools/rhino_oracle/structural_sdk.py": "1c6333ad6d356527d4eb96d7d0076c9c041a1be6891f2b002c0e1d6105f7eb73",
-    "a4402e1b94914750c780147a340edcd895806a1d:docs/conic-validation.json": "9fbf419f04ae387167a100c861549ec45820d627cfc37193b7c93bbbaba99eba"
+    "a4402e1b94914750c780147a340edcd895806a1d:docs/conic-validation.json": "9fbf419f04ae387167a100c861549ec45820d627cfc37193b7c93bbbaba99eba",
+    "2bac54482aab156bddaa5d06215f4c267019408c:docs/commands/README.md": "fb26aa1f5d32b1c5d8030344e7c0d063150bba4081cd0834f6d3b8730bd3a5d2"
   }
 }

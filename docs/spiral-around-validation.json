@@ -402,7 +402,6 @@
     "crates/viboceros-oracle/src/spiral_command.rs": "0640afa9dc8f8cc9a74d3ea189099303fd35e4a5651afbb7e308e329e329659a",
     "docs/commands/helix-spiral.md": "32007c2bd6fb525294ede74f8daa794fee378db0a6223269463bae86be26ae5d",
     "docs/conic-validation.json": "9dcdccc2406e01144f4eb3c95b89ed53f7c3106d0cff5c48893afa1e841d3112",
-    "docs/parabola-validation.json": "d059174f1938963df9c38f1293730573e3840e76da4d6804faafd31b26ffa7d3",
     "src/app/component_selection.rs": "279a8fc0815881916b199568280b84910d3847263109df96cde2019825605ec1",
     "src/app/object_selection.rs": "65ee720e2f970cb480f87770ced8a02f5e795f3f75c4af8761088b90e23998f9",
     "src/app/spiral.rs": "f808748ebd73b3f6297943970726f77c43bb282e21cd76aab2e462077ac0fe19",
@@ -437,6 +436,7 @@
     "e343832fbbfb0757da7b1092802396790c6e1670:tools/rhino_oracle/structural_sdk.py": "715153fed31b14d3e9e258e7d5cdcc09b4c8eb2369c3be07fa8c4f8c093df7d4",
     "e343832fbbfb0757da7b1092802396790c6e1670:docs/spiral-validation.json": "4325e84ce79fcbe991afab91544d24ccf6d47a76d78f1dc3ddcdd4578a842ca3",
     "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/hyperbola-validation.json": "6f73c64b3129bceafe6bc8c98ccba23eeeffe68af0d47baf4ef125b09f1f3677",
-    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/curve_primitive_probe.py": "d06e478dd4d29a96fa84db83f2cfc10c3b3586bba33eea13aa0746b969f6a531"
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/curve_primitive_probe.py": "d06e478dd4d29a96fa84db83f2cfc10c3b3586bba33eea13aa0746b969f6a531",
+    "2bac54482aab156bddaa5d06215f4c267019408c:docs/parabola-validation.json": "d059174f1938963df9c38f1293730573e3840e76da4d6804faafd31b26ffa7d3"
   }
 }

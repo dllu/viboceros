@@ -1,0 +1,169 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-collinear-rotated",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ],
+        [
+          0,
+          12,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-collinear-rotated-normal",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner-lock-offplane",
+      "live_getters": true,
+      "actions": [
+        "Corner",
+        [
+          1,
+          2,
+          3
+        ],
+        5,
+        [
+          7,
+          10,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner-center-lock-offplane",
+      "live_getters": true,
+      "actions": [
+        [
+          1,
+          2,
+          3
+        ],
+        "Corner",
+        5,
+        [
+          7,
+          10,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-relative-rotated",
+      "live_getters": true,
+      "actions": [
+        [
+          3,
+          4,
+          5
+        ],
+        {
+          "relative": [
+            6,
+            0,
+            0
+          ]
+        },
+        {
+          "relative": [
+            -6,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    }
+  ]
+}

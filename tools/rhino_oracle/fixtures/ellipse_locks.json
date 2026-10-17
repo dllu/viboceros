@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner-length-lock",
+      "live_getters": true,
+      "actions": [
+        "Corner",
+        [
+          1,
+          2,
+          0
+        ],
+        5,
+        [
+          7,
+          10,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner-center-length-lock",
+      "live_getters": true,
+      "actions": [
+        [
+          1,
+          2,
+          0
+        ],
+        "Corner",
+        5,
+        [
+          7,
+          10,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-collinear-reversed",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=No",
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-collinear-spatial",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=No",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          7,
+          10,
+          3
+        ],
+        [
+          10,
+          14,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-collinear-normal",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=No",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          8
+        ],
+        [
+          0,
+          0,
+          12
+        ]
+      ]
+    }
+  ]
+}

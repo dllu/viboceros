@@ -26,7 +26,7 @@ fn actions(app: &mut VibocerosApp, actions: &[viboceros_oracle::CatenaryCommandA
         );
     }
 }
-fn assert_model(app: &VibocerosApp, expected: &serde_json::Value, id: &str) {
+pub(super) fn assert_model(app: &VibocerosApp, expected: &serde_json::Value, id: &str) {
     assert_model_excluding(app, expected, id, &[]);
 }
 fn assert_model_excluding(

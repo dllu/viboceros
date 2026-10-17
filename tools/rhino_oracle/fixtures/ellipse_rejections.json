@@ -1,0 +1,156 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-coincident",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=No",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-default-collinear",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-vertical-zero-height",
+      "live_getters": true,
+      "actions": [
+        "Vertical",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner-zero-width",
+      "live_getters": true,
+      "actions": [
+        "Corner",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-cancel-center",
+      "live_getters": true,
+      "actions": [
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-cancel-first-axis",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-cancel-last-axis",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-between",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=No",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    }
+  ]
+}

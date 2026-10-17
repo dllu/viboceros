@@ -374,24 +374,16 @@
     "policy": "Historical outcomes are unchanged. Changed source hashes are archived against the full baseline Git commit; previously unverifiable records are left unchanged."
   },
   "sha256": {
-    "README.md": "8c2abd5a69bbab58be13d99ba680066fbad21e7f1520fdb4c10d8593144ebeb1",
     "crates/viboceros-command/src/catenary_input.rs": "85d882990ce5e86eafbbaad8f5b92c202beb579dcfc9e04d72021c4f037c5a4c",
     "crates/viboceros-command/src/catenary_input/tests.rs": "f293f93b96795f11a9066d02aeaabc796e3d9c6b54bcd2fdda7db7c26c0c42ef",
     "crates/viboceros-oracle/src/catenary_command.rs": "07f438e6959947053a0243ad7692c71aaa4629cbef0475c1809b060ef329380c",
-    "docs/catenary-validation.json": "b7f2ee989545f6615b90585338a32539c88ea8efddcab8fb5b95a0b3c8aff6f5",
     "docs/commands/catenary.md": "0440f952a9665ed93dd11c034437d80f0c00fe9c34f27453a76c735fb7200364",
     "docs/conic-getters-validation.json": "bcb7ea73cf56c1ef5a5898bfc294f8abdc4547be77ad7e908500c256f0dcd462",
     "docs/hyperbola-validation.json": "d665fc270a6a1fb8b1bc93fdec7289af3a642a9a7861f5890df06a4d5728add4",
-    "docs/spiral-around-validation.json": "168df2df17d3be3be6d09a038878477fc046d5edd46134d0db81ca21b745dedd",
-    "src/app.rs": "feba16ab732630bc4873688e8a5561e13b118e65a4fe79254d63fd2a48f4b2e9",
     "src/app/catenary.rs": "991e11b73e8f84190d5337bdc8bc07f1c1c646e7a8e4a8201b224394f094066e",
     "src/app/point_input.rs": "83bf83573bf51baedf4a97b332fcef17858ff46a61e13451b16bf1b89693a4db",
-    "src/app/tests/catenary.rs": "8c494c6dce5ed5f1d742099832c96efc88f713fd49b486e986a09c0e99fe1a4d",
-    "src/viewport.rs": "252df3f1c73a3e83183d44b543e3bbe921d47ffa23ef114ce5a310ca7a69ab46",
     "tools/rhino_oracle/catenary_command_probe.py": "26e17a22a7cfa390687c42e0115285f829002cb8b3e30f0e56d0baa362099df4",
     "tools/rhino_oracle/catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
-    "tools/rhino_oracle/client.py": "ea0eeae2c33a448fd1b8a9cb2ea071e90e74881b7e706bdbfe31097a8f40b7fb",
-    "tools/rhino_oracle/conic_getter_input.py": "c8adf6e12e7ebe64c8537f2d75b39f0c16a9e45022a07a5eefb14bbd797a7a0f",
     "tools/rhino_oracle/curve_primitive_probe.py": "47c4c1fb3085b28ccc62a9ca835ce960464ae72b82fa2adb6079e80422d8fbbe",
     "tools/rhino_oracle/fixtures/catenary_end_apex_enter.json": "09531edffa348c7c77c49b78a2bd6eb5d012ffed1da15a20f6c42223d5838dc8",
     "tools/rhino_oracle/fixtures/catenary_end_apex_snap.json": "e5ea3885c539f05de052bde76192d6c076cc4822040a7f6426efe1a182bfdf23",
@@ -405,5 +397,15 @@
     "tools/rhino_oracle/observations/catenary_snap_inputs_rhino_20261017.json": "02081cefa2de14d3d8b69b7c8f17216c52780697256fa8d6d85cd18c57658de2",
     "tools/rhino_oracle/test_catenary_command.py": "702a93be006a9600e810e8d9579a1a950cf7c6e4449327ca338aa10363fdab07",
     "tools/rhino_oracle/test_catenary_point_picker.py": "5942d1beb68f176aeb187591dd467268d22d7e73ffd8a5fef0f73dbdaedb4f30"
+  },
+  "git_sha256": {
+    "2bac54482aab156bddaa5d06215f4c267019408c:README.md": "8c2abd5a69bbab58be13d99ba680066fbad21e7f1520fdb4c10d8593144ebeb1",
+    "2bac54482aab156bddaa5d06215f4c267019408c:src/app.rs": "feba16ab732630bc4873688e8a5561e13b118e65a4fe79254d63fd2a48f4b2e9",
+    "2bac54482aab156bddaa5d06215f4c267019408c:src/app/tests/catenary.rs": "8c494c6dce5ed5f1d742099832c96efc88f713fd49b486e986a09c0e99fe1a4d",
+    "2bac54482aab156bddaa5d06215f4c267019408c:src/viewport.rs": "252df3f1c73a3e83183d44b543e3bbe921d47ffa23ef114ce5a310ca7a69ab46",
+    "2bac54482aab156bddaa5d06215f4c267019408c:tools/rhino_oracle/client.py": "ea0eeae2c33a448fd1b8a9cb2ea071e90e74881b7e706bdbfe31097a8f40b7fb",
+    "2bac54482aab156bddaa5d06215f4c267019408c:tools/rhino_oracle/conic_getter_input.py": "c8adf6e12e7ebe64c8537f2d75b39f0c16a9e45022a07a5eefb14bbd797a7a0f",
+    "2bac54482aab156bddaa5d06215f4c267019408c:docs/catenary-validation.json": "b7f2ee989545f6615b90585338a32539c88ea8efddcab8fb5b95a0b3c8aff6f5",
+    "2bac54482aab156bddaa5d06215f4c267019408c:docs/spiral-around-validation.json": "168df2df17d3be3be6d09a038878477fc046d5edd46134d0db81ca21b745dedd"
   }
 }

@@ -439,10 +439,7 @@
     "preexisting_unverifiable_records_unchanged": 69
   },
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "38c3bfb9e196a7164d541be1d0b6559949ba45a6f868fb8eb35cf9cd84b67457",
     "crates/viboceros-geometry/src/interpolation.rs": "3b0b8efeab01536f7667c9c5c3a1ff4e1d62fdb6c6eae896e364df6f342a0c81",
-    "crates/viboceros-oracle/src/lib.rs": "8f548394deb6eb22470487e9c979d9fc9f85a0e6752ee1b735aaba86aa2b6318",
-    "docs/commands/curves.md": "b3577f4080bb5ee94b6ca05a48f21d518281d2e145df42cbdbb1971f5e80673c",
     "docs/spiral-validation.json": "c2e89689564fa02c67d3e5892865b71cb5afcf5236c17a126a18a5c5123b946d",
     "tools/rhino_oracle/fixtures/catenary_command.json": "cf860f686824ced108c4d359b215a46d8e27c4ae0945ec77a0f65ae8bfd951f0",
     "tools/rhino_oracle/fixtures/catenary_count_limits.json": "d18fe6c6a14f8b8f6649bea96cd875a5971401ed2f18864010fa6ab4a1795afe",
@@ -462,9 +459,7 @@
     "tools/rhino_oracle/observations/catenary_negative_tangents_rhino_20261017.json": "d1151080944628ab8337edc8692d5d59b97750c9fd8bbd99c342bfaa736f7619",
     "tools/rhino_oracle/observations/catenary_preferences_rhino_20261017.json": "b8296c847482e2729376160517fa62428adef854ed8d556da1643f649cb04635",
     "tools/rhino_oracle/observations/catenary_rejections_rhino_20261017.json": "e8189d4965bf1371b0d4c2a335fc09da884caadd6da3f9644a6dacbb0bf29aef",
-    "tools/rhino_oracle/observations/catenary_tangent_confirm_rhino_20261017.json": "036ce03e3dbbb12d300dfe4a086bf5507ea7b53ee3895c688d2b756b46166d2f",
-    "tools/rhino_oracle/rhino_worker.py": "3c8ea64c4ec9bbeeafb8ef9a40b95b8e6cad0712ba273fe8dc88caea8e33411c",
-    "tools/rhino_oracle/structural_sdk.py": "e29e4f57c65b56f9792bc564aa8e0ff63fc9b786ca65c84088eeae35401fa7ea"
+    "tools/rhino_oracle/observations/catenary_tangent_confirm_rhino_20261017.json": "036ce03e3dbbb12d300dfe4a086bf5507ea7b53ee3895c688d2b756b46166d2f"
   },
   "reference_sha256": {
     "tools/rhino_oracle/fixtures/catenary.json": "7de488a83ac29837de3adfafc400f48f0ac10db7d5809102470b43aa82ad45fb"
@@ -484,6 +479,11 @@
     "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/client.py": "4d0717690faf794f910d1027fa763491b5e8b27a8581defa19feee637ddc13ff",
     "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/conic_getter_input.py": "e7a81e0ebd7f20a4e89a47bea2c010917270f436eb9e40bce9bf9567b184d75a",
     "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/test_catenary_command.py": "73d153ae7d09c4c3740869968fca82648e7c4fecde6115c0c1b283000e28babb",
-    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/spiral-around-validation.json": "f800962dfade6101bd2fef50ea721d806ddaa30b649d5ab23b1eee1c0fd2105b"
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/spiral-around-validation.json": "f800962dfade6101bd2fef50ea721d806ddaa30b649d5ab23b1eee1c0fd2105b",
+    "2bac54482aab156bddaa5d06215f4c267019408c:crates/viboceros-command/src/lib.rs": "38c3bfb9e196a7164d541be1d0b6559949ba45a6f868fb8eb35cf9cd84b67457",
+    "2bac54482aab156bddaa5d06215f4c267019408c:crates/viboceros-oracle/src/lib.rs": "8f548394deb6eb22470487e9c979d9fc9f85a0e6752ee1b735aaba86aa2b6318",
+    "2bac54482aab156bddaa5d06215f4c267019408c:docs/commands/curves.md": "b3577f4080bb5ee94b6ca05a48f21d518281d2e145df42cbdbb1971f5e80673c",
+    "2bac54482aab156bddaa5d06215f4c267019408c:tools/rhino_oracle/rhino_worker.py": "3c8ea64c4ec9bbeeafb8ef9a40b95b8e6cad0712ba273fe8dc88caea8e33411c",
+    "2bac54482aab156bddaa5d06215f4c267019408c:tools/rhino_oracle/structural_sdk.py": "e29e4f57c65b56f9792bc564aa8e0ff63fc9b786ca65c84088eeae35401fa7ea"
   }
 }

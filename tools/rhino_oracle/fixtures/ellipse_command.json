@@ -1,0 +1,361 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-initial",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-skew",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-spatial",
+      "live_getters": true,
+      "actions": [
+        [
+          5,
+          4,
+          2
+        ],
+        [
+          11,
+          5,
+          4
+        ],
+        [
+          4,
+          7,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-numeric-second",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        3,
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-numeric-first",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        6,
+        [
+          6,
+          0,
+          0
+        ],
+        3,
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-skew",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          1,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-foci-mark",
+      "live_getters": true,
+      "actions": [
+        "FromFoci",
+        "MarkFoci=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-diameter",
+      "live_getters": true,
+      "actions": [
+        "Diameter",
+        [
+          -6,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-diameter-numeric",
+      "live_getters": true,
+      "actions": [
+        "Diameter",
+        [
+          -6,
+          0,
+          0
+        ],
+        12,
+        [
+          6,
+          0,
+          0
+        ],
+        3,
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner",
+      "live_getters": true,
+      "actions": [
+        "Corner",
+        [
+          -6,
+          -3,
+          0
+        ],
+        [
+          6,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner-reversed",
+      "live_getters": true,
+      "actions": [
+        "Corner",
+        [
+          6,
+          3,
+          0
+        ],
+        [
+          -6,
+          -3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-corner-spatial",
+      "live_getters": true,
+      "actions": [
+        "Corner",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          7,
+          10,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-vertical",
+      "live_getters": true,
+      "actions": [
+        "Vertical",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-vertical-offplane",
+      "live_getters": true,
+      "actions": [
+        "Vertical",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          4,
+          2
+        ],
+        [
+          1,
+          2,
+          6
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-vertical-numeric",
+      "live_getters": true,
+      "actions": [
+        "Vertical",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        3,
+        [
+          0,
+          0,
+          3
+        ]
+      ]
+    }
+  ]
+}

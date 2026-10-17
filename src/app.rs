@@ -16,10 +16,10 @@ use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
-    MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES,
-    MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
-    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
+    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
+    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
+    MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -162,6 +162,7 @@ mod domain;
 mod edge_analysis;
 mod edge_commands;
 mod edge_fillet;
+mod ellipse;
 mod evaluate_point;
 mod evaluate_uv;
 mod extrude_surface;
@@ -2273,6 +2274,7 @@ pub struct VibocerosApp {
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
     catenary_session: Option<catenary::Session>,
+    ellipse_session: Option<ellipse::Session>,
     spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
@@ -2396,6 +2398,7 @@ impl VibocerosApp {
             flow_session: None,
             surface_flow_session: None,
             catenary_session: None,
+            ellipse_session: None,
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
@@ -2524,7 +2527,8 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
-        if self.try_continue_catenary(&input)
+        if self.try_continue_ellipse(&input)
+            || self.try_continue_catenary(&input)
             || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
@@ -3219,6 +3223,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_ellipse(input) {
+            return true;
+        }
         if self.try_start_catenary(input) {
             return true;
         }
@@ -5267,10 +5274,6 @@ impl VibocerosApp {
                     start: None,
                     clockwise: true,
                 },
-                "ellipse" | "ell" => InteractiveCommand::Ellipse {
-                    center: None,
-                    first_axis: None,
-                },
                 "polyline" | "pline" => InteractiveCommand::Polyline,
                 "box" => InteractiveCommand::Box {
                     base: None,
@@ -5626,6 +5629,7 @@ impl VibocerosApp {
         self.flow_session = None;
         self.surface_flow_session = None;
         self.catenary_session = None;
+        self.ellipse_session = None;
         self.spiral_session = None;
         self.hyperbola_session = None;
         self.parabola_session = None;
@@ -5696,6 +5700,9 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
+        if let Some(accepted) = self.accept_ellipse_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_catenary_point(point, snap.map(|s| s.kind())) {
             return accepted;
         }
@@ -5759,6 +5766,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Ellipse { .. }
             | InteractiveCommand::Catenary { .. }
             | InteractiveCommand::Spiral { .. }
             | InteractiveCommand::Hyperbola { .. }
@@ -6766,54 +6774,6 @@ impl VibocerosApp {
                         format_model_point(point)
                     ));
                 }
-            }
-            InteractiveCommand::Ellipse { center: None, .. } => {
-                let command = InteractiveCommand::Ellipse {
-                    center: Some(point),
-                    first_axis: None,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Ellipse {
-                center: Some(center),
-                first_axis: None,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: ellipse axis point must differ from its center".to_owned(),
-                    );
-                    return false;
-                }
-                let command = InteractiveCommand::Ellipse {
-                    center: Some(center),
-                    first_axis: Some(point),
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("First axis: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Ellipse {
-                center: Some(center),
-                first_axis: Some(first_axis),
-            } => {
-                if let Err(error) = Ellipse3::try_from_three_points(
-                    center,
-                    first_axis,
-                    point,
-                    self.document.tolerance(),
-                ) {
-                    self.push_log(format!("Error: {error}"));
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Ellipse {} {} {}",
-                    format_model_point(center),
-                    format_model_point(first_axis),
-                    format_model_point(point)
-                ));
             }
             InteractiveCommand::Polyline => {
                 if let Some(previous) = self.curve_points.last()
@@ -9085,6 +9045,9 @@ impl VibocerosApp {
             return true;
         }
         if let Some(point) = output.drafting_hover.take() {
+            if let Some(s) = &mut self.ellipse_session {
+                s.cursor = Some(point);
+            }
             if let Some(s) = &mut self.spiral_session {
                 s.cursor = Some(point);
             }
@@ -10123,6 +10086,11 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let ellipse_input = self
+            .ellipse_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
         let parabola_input = self
             .parabola_session
             .as_ref()
@@ -10276,6 +10244,7 @@ impl eframe::App for VibocerosApp {
                             spiral_input: spiral_input.as_ref(),
                             hyperbola_input,
                             parabola_input,
+                            ellipse_input,
                             conic_input,
                             conic_reference,
                             rectangle_input,
@@ -10538,6 +10507,7 @@ mod tests {
     mod edge_analysis;
     mod edge_fillet;
     mod edit_points;
+    mod ellipse;
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_curvature_graph;
@@ -10716,6 +10686,7 @@ mod tests {
             flow_session: None,
             surface_flow_session: None,
             catenary_session: None,
+            ellipse_session: None,
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,

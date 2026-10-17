@@ -464,6 +464,16 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'ellipse_command' for op in request.get('operations', [])):
+            from .ellipse_probe import validate
+            operations = request['operations']
+            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1 or any(op.get('op') != 'ellipse_command' for op in operations):
+                raise OracleProtocolError('Ellipse getters require a private, dedicated one-iteration capture')
+            names = [op.get('id') for op in operations]
+            if not 1 <= len(operations) <= 64 or any(not isinstance(name, str) for name in names) or len(set(names)) != len(names):
+                raise OracleProtocolError('Ellipse getters require 1 through 64 uniquely named cases')
+            for operation in operations:
+                validate(operation)
         if any(op.get('op') == 'catenary_command' for op in request.get('operations', [])):
             from .catenary_command_probe import validate
             operations = request['operations']

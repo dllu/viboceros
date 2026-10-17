@@ -107,6 +107,7 @@ pub use interpolation_options::{
     format_interp_curve_options, parse_interp_curve_options, update_interp_curve_options,
 };
 pub mod catenary_input;
+pub mod ellipse_input;
 pub mod hyperbola;
 #[cfg(test)]
 mod hyperbola_tests;
@@ -418,8 +419,8 @@ use viboceros_geometry::{
     CurveCurveIntersectionEvent, CurveExtensionBoundary as GeometryCurveExtensionBoundary,
     CurveExtensionSide, CurveExtensionStyle as GeometryCurveExtensionStyle, CurveJoinOptions,
     CurveKnotSpacing, CurveOffsetCornerStyle, CurveRef, CurveSample, CurveSurfaceIntersectionEvent,
-    CurveThroughConstruction, CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT, Ellipse3,
-    Frame3, GeometryError, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
+    CurveThroughConstruction, CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT, Frame3,
+    GeometryError, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
     MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
     MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
     MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
@@ -444,6 +445,8 @@ use viboceros_io::{
 use viboceros_io::{read_3dm_file, read_step_file};
 #[cfg(test)]
 mod unit_import_tests;
+#[cfg(test)]
+use viboceros_geometry::Ellipse3;
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 const MAX_ARRAY_OBJECTS: usize = 1_000_000;
 const MAX_SPAN_OUTPUT_OBJECTS: usize = 1_000_000;
@@ -461,6 +464,9 @@ pub trait Command: Send + Sync {
     }
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
         false
+    }
+    fn ellipse_options(&self) -> Option<ellipse_input::Options> {
+        None
     }
     fn catenary_options(&self) -> Option<catenary_input::Options> {
         None
@@ -782,7 +788,7 @@ impl CommandRegistry {
             .register(ArcCommand)
             .expect("unique built-in command");
         registry
-            .register(EllipseCommand)
+            .register(ellipse_input::EllipseCommand::default())
             .expect("unique built-in command");
         registry
             .register(EllipsoidCommand)
@@ -2022,6 +2028,12 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn ellipse_options(&self) -> ellipse_input::Options {
+        self.lookup
+            .get(&normalize_command_name("Ellipse"))
+            .and_then(|i| self.commands[*i].ellipse_options())
+            .unwrap_or_default()
+    }
     pub fn catenary_options(&self) -> catenary_input::Options {
         self.lookup
             .get(&normalize_command_name("Catenary"))
@@ -2628,37 +2640,6 @@ fn run_arc_midpoint(
     let sweep_degrees = arc.sweep_radians().to_degrees();
     let id = document.add_geometry(Geometry::Arc(arc))?;
     Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"))
-}
-
-struct EllipseCommand;
-
-impl Command for EllipseCommand {
-    fn name(&self) -> &'static str {
-        "Ellipse"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Ell"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (center, center_consumed) = parse_point(arguments)?;
-        let (first_axis, first_consumed) = parse_point(&arguments[center_consumed..])?;
-        let (second_axis, second_consumed) =
-            parse_point(&arguments[center_consumed + first_consumed..])?;
-        require_consumed(
-            arguments,
-            center_consumed + first_consumed + second_consumed,
-            "Ellipse center first-axis-point second-axis-point",
-        )?;
-        let ellipse =
-            Ellipse3::try_from_three_points(center, first_axis, second_axis, document.tolerance())?;
-        let (radius_x, radius_y) = (ellipse.radius_x(), ellipse.radius_y());
-        let id = document.add_geometry(Geometry::Ellipse(ellipse))?;
-        Ok(format!(
-            "Added ellipse {id} (radii {radius_x:.6} × {radius_y:.6})"
-        ))
-    }
 }
 
 const ELLIPSOID_USAGE: &str = "Ellipsoid center radius-x radius-y radius-z | Ellipsoid center first-axis-point second-axis-point third-axis-radius-point";
@@ -20055,7 +20036,7 @@ mod tests {
         };
         assert_eq!(ellipse.center(), Point3::try_new(1.0, 2.0, 3.0).unwrap());
         assert_eq!(ellipse.radius_x(), 4.0);
-        assert_eq!(ellipse.radius_y(), 40.0_f64.sqrt());
+        assert_eq!(ellipse.radius_y(), 6.0);
         let Geometry::Polyline(polygon) = objects.next().unwrap().geometry() else {
             panic!("expected a polygon polyline")
         };
