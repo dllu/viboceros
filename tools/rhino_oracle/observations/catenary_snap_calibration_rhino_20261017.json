@@ -1,0 +1,244 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-calibrate-end",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                10.0,
+                2.0,
+                0.0
+              ],
+              [
+                10.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                10.0,
+                2.0,
+                0.0
+              ],
+              [
+                10.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            10.0,
+            -2.0,
+            0.0
+          ],
+          "aim_client": [
+            354.0,
+            246.27922077922076
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            10.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            354,
+            246
+          ],
+          "perspective": false,
+          "size": [
+            708,
+            391
+          ],
+          "world_to_screen": [
+            [
+              25.389610389610386,
+              0.0,
+              0.0,
+              100.10389610389615
+            ],
+            [
+              0.0,
+              -25.389610389610386,
+              0.0,
+              195.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.9999923995657473,
+              0.500003800217125
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 412.68172580748796,
+          "requested_settle_ms": 400
+        },
+        "kind": "End",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          10.0,
+          -2.0,
+          0.0
+        ],
+        "source": 0,
+        "topology_wires": [
+          null
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-calibrate-near",
+      "value": {
+        "after": [
+          {
+            "line": [
+              [
+                10.0,
+                2.0,
+                0.0
+              ],
+              [
+                10.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "before": [
+          {
+            "line": [
+              [
+                10.0,
+                2.0,
+                0.0
+              ],
+              [
+                10.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "component": {
+          "index": -1,
+          "type": "InvalidType"
+        },
+        "frame": {
+          "aim": [
+            10.0,
+            -2.0,
+            0.0
+          ],
+          "aim_client": [
+            354.0,
+            246.27922077922076
+          ],
+          "camera_direction": [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          "camera_location": [
+            10.0,
+            0.0,
+            7.03125
+          ],
+          "click_client": [
+            354,
+            246
+          ],
+          "perspective": false,
+          "size": [
+            708,
+            391
+          ],
+          "world_to_screen": [
+            [
+              25.389610389610386,
+              0.0,
+              0.0,
+              100.10389610389615
+            ],
+            [
+              0.0,
+              -25.389610389610386,
+              0.0,
+              195.5
+            ],
+            [
+              0.0,
+              0.0,
+              -0.9999923995657473,
+              0.500003800217125
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ]
+        },
+        "input_motion": {
+          "detour_pixels": 1,
+          "motion_to_click_ms": 415.30206613242626,
+          "requested_settle_ms": 400
+        },
+        "kind": "Near",
+        "mesh_snap_setting": {
+          "before": false,
+          "requested": false,
+          "restored": false
+        },
+        "point": [
+          10.0,
+          -1.9890025575447576,
+          0.0
+        ],
+        "source": 0,
+        "topology_wires": [
+          null
+        ]
+      }
+    }
+  ]
+}

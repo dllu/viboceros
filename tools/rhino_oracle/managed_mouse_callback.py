@@ -1,5 +1,6 @@
 """Create an owned MouseCallback subclass whose handler stays entirely managed."""
-def create(handler,host):
+def create(handler,host,event_name="OnEndMouseMove"):
+    if event_name not in ("OnEndMouseMove", "OnMouseDown"):raise ValueError("unsupported owned mouse callback")
     # Emit only this small adapter, using the documented SDK virtual method.
     # No instructions from Rhino assemblies are read or copied.
     import clr
@@ -7,7 +8,7 @@ def create(handler,host):
     from System.Reflection import BindingFlags,MethodAttributes,FieldAttributes,AssemblyName
     from System.Reflection.Emit import AssemblyBuilder,AssemblyBuilderAccess,OpCodes
     base=clr.GetClrType(R.UI.MouseCallback)
-    override=base.GetMethod('OnEndMouseMove',BindingFlags.Instance|BindingFlags.NonPublic)
+    override=base.GetMethod(event_name,BindingFlags.Instance|BindingFlags.NonPublic)
     argument=override.GetParameters()[0].ParameterType
     delegate=clr.GetClrType(S.Action[S.Object]).GetGenericTypeDefinition().MakeGenericType(S.Array[S.Type]([argument]))
     name='OwnedOracleMouse'+str(S.Guid.NewGuid()).replace('-','')
@@ -17,7 +18,7 @@ def create(handler,host):
     builder=module.DefineType(name,TypeAttributes.Public|TypeAttributes.Sealed,base)
     builder.DefineDefaultConstructor(MethodAttributes.Public)
     field=builder.DefineField('Handler',delegate,FieldAttributes.Public|FieldAttributes.Static)
-    method=builder.DefineMethod('OnEndMouseMove',MethodAttributes.Family|MethodAttributes.Virtual|MethodAttributes.HideBySig,clr.GetClrType(S.Void),S.Array[S.Type]([argument]))
+    method=builder.DefineMethod(event_name,MethodAttributes.Family|MethodAttributes.Virtual|MethodAttributes.HideBySig,clr.GetClrType(S.Void),S.Array[S.Type]([argument]))
     il=method.GetILGenerator();il.Emit(OpCodes.Ldsfld,field);il.Emit(OpCodes.Ldarg_1);il.Emit(OpCodes.Callvirt,delegate.GetMethod('Invoke'));il.Emit(OpCodes.Ret)
     builder.DefineMethodOverride(method,override)
     kind=builder.CreateType();kind.GetField('Handler').SetValue(None,handler(argument,delegate))

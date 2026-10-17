@@ -14,11 +14,15 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
         else:vp.SetConstructionPlane(G.Plane.WorldXY)
         for source in ([op['curve']]if'curve'in op else[])+op.get('curves',[]):
             geometry=host['_object_source'](source,tolerance);geometries.append(geometry)
-            guides.append(doc.Objects.AddSurface(geometry)if isinstance(geometry,G.Surface)else doc.Objects.AddBrep(geometry)if isinstance(geometry,G.Brep)else doc.Objects.AddCurve(geometry))
+            guides.append(doc.Objects.AddPoint(geometry.Location)if isinstance(geometry,G.Point)else doc.Objects.AddSurface(geometry)if isinstance(geometry,G.Surface)else doc.Objects.AddBrep(geometry)if isinstance(geometry,G.Brep)else doc.Objects.AddCurve(geometry))
         if edge_input or driver:
             vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned conic edge input',False)
             bounds=G.BoundingBox.Empty
             for g in geometries:bounds.Union(g.GetBoundingBox(True))
+            if command=='Catenary'and any(isinstance(a,dict)and'click'in a for a in op['actions']):
+                for a in op['actions']:
+                    if isinstance(a,list):bounds.Union(G.Point3d(*a))
+                    elif isinstance(a,dict)and'click'in a:bounds.Union(G.Point3d(*a['click']))
             bounds.Inflate(5.);
             if edge_input:vp.SetCameraDirection(G.Vector3d(-1.,1.,-1.),True);vp.CameraUp=G.Vector3d(0.,0.,1.)
             vp.ZoomBoundingBox(bounds);vp.SetConstructionPlane(plane if'construction_plane'in op else G.Plane.WorldXY);doc.Views.Redraw()
@@ -54,7 +58,7 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
             tokens=['_'+command]
             for action in actions:
                 if isinstance(action,dict):
-                    if 'hover'in action:continue
+                    if 'hover'in action or 'click'in action:continue
                     if 'relative'in action:tokens.append('r'+','.join(repr(float(v))for v in action['relative']));continue
                     if 'edge'in action:tokens.append('w'+','.join(repr(float(v))for v in action['pick']))
                     else:tokens.extend(["'_-SelID",str(guides[action['curve']])])

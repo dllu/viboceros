@@ -463,6 +463,7 @@ class OracleClient:
             for op in request['operations']:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
+        interaction = None
         if any(op.get('op') == 'catenary_command' for op in request.get('operations', [])):
             from .catenary_command_probe import validate
             operations = request['operations']
@@ -472,7 +473,9 @@ class OracleClient:
                 raise OracleProtocolError('Catenary getters require one through 64 uniquely named cases')
             for operation in operations:
                 validate(operation)
-        interaction = None
+            if any(isinstance(a,dict) and 'click' in a for op in operations for a in op.get('actions',[])):
+                from .catenary_point_picker import CatenaryPointPicker
+                interaction = CatenaryPointPicker(request)
         if any(op.get('op')in('helix_command','spiral_command') and op.get('live_getters') for op in request.get('operations',[])):
             operations=request.get('operations',[])
             if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')not in('helix_command','spiral_command')for op in operations):

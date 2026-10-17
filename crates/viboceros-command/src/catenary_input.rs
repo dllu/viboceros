@@ -1,5 +1,6 @@
 //! Edit-free Catenary getters shared by the frontend and native oracle recipes.
 use crate::CommandError;
+use viboceros_drafting::ObjectSnapKind;
 use viboceros_geometry::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,
     DEFAULT_CATENARY_POINT_COUNT, Frame3, GeometryError, MAX_CATENARY_POINT_COUNT,
@@ -347,14 +348,41 @@ impl Input {
                     self.scalar_default()
                         .ok_or_else(|| invalid("no remembered catenary value"))?,
                 ),
-            Slot::Constraint if self.options.mode == Mode::ThroughPoint => {
-                let mut next = *self;
-                next.construction = Some(CatenaryConstruction::Apex(self.end.unwrap()));
-                next.accept_solution()?;
-                *self = next;
-                Ok(true)
-            }
+            Slot::Constraint if self.options.mode == Mode::ThroughPoint => self.end_at_apex(),
             _ => Err(invalid("pick a catenary point")),
+        }
+    }
+    fn snapped_end_is_apex(self, point: Point3, snap: Option<ObjectSnapKind>) -> bool {
+        self.slot() == Slot::Constraint
+            && self.options.mode == Mode::ThroughPoint
+            && snap == Some(ObjectSnapKind::End)
+            && !self.enter_cancels()
+            && self.end.is_some_and(|end| {
+                end.distance_to(point)
+                    .is_ok_and(|d| d <= self.tolerance.absolute())
+            })
+    }
+    fn end_at_apex(&mut self) -> Result<bool, GeometryError> {
+        let mut next = *self;
+        next.construction = Some(CatenaryConstruction::Apex(
+            self.end
+                .ok_or_else(|| invalid("catenary end is required"))?,
+        ));
+        next.accept_solution()?;
+        *self = next;
+        Ok(true)
+    }
+    /// End snaps at the second endpoint request the documented endpoint apex.
+    /// Coordinate-only input keeps the ordinary through-point interpretation.
+    pub fn snapped_point(
+        &mut self,
+        point: Point3,
+        snap: Option<ObjectSnapKind>,
+    ) -> Result<bool, GeometryError> {
+        if self.snapped_end_is_apex(point, snap) {
+            self.end_at_apex()
+        } else {
+            self.point(point)
         }
     }
     fn accept_solution(&mut self) -> Result<(), GeometryError> {
@@ -387,11 +415,18 @@ impl Input {
         )
     }
     pub fn preview(self, cursor: Point3) -> Option<Preview> {
+        self.preview_snapped(cursor, None)
+    }
+    pub fn preview_snapped(self, cursor: Point3, snap: Option<ObjectSnapKind>) -> Option<Preview> {
         if self.slot() != Slot::Constraint {
             return None;
         }
         let mut next = self;
-        next.point_impl(cursor, false).ok()?;
+        if self.snapped_end_is_apex(cursor, snap) {
+            next.construction = Some(CatenaryConstruction::Apex(self.end?));
+        } else {
+            next.point_impl(cursor, false).ok()?;
+        }
         let solution = next.solution().ok()?;
         Some(Preview {
             apex: self.options.mark_apex.then_some(solution.apex()),

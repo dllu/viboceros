@@ -1,0 +1,276 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "catenary_command",
+      "id": "catenary-end-apex-smooth8",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            1,
+            4
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-end-apex-polyline8",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            1,
+            4
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Polyline",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-end-apex-smooth4",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            1,
+            4
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=4",
+        "MarkApex=No",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-end-apex-shifted",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            15,
+            5,
+            6
+          ],
+          "end": [
+            15,
+            2,
+            2
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          5,
+          4,
+          2
+        ],
+        [
+          15,
+          2,
+          2
+        ],
+        [
+          5,
+          3,
+          2
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-end-apex-reversed",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            1,
+            4
+          ],
+          "end": [
+            0,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ],
+        [
+          10,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-end-apex-spatial",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            3,
+            2
+          ],
+          "end": [
+            10,
+            0,
+            -2
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          -2
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    }
+  ]
+}

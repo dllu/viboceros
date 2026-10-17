@@ -1,0 +1,4904 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-end-apex-smooth8",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6573187198676596,
+                      -0.26633454255604055,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9758544710045634,
+                      -0.7459416653817117,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.9815569739907133,
+                      -1.3086944362759558,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.987619387471041,
+                      -1.7082471685389642,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.993675873220662,
+                      -1.9469966233945164,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.332813324353472,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6573187198676596,
+                        -0.26633454255604055,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9758544710045634,
+                        -0.7459416653817117,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.9815569739907133,
+                        -1.3086944362759558,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.987619387471041,
+                        -1.7082471685389642,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.993675873220662,
+                        -1.9469966233945164,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.332813324353472,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6573187198676596,
+                      -0.26633454255604055,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9758544710045634,
+                      -0.7459416653817117,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.9815569739907133,
+                      -1.3086944362759558,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.987619387471041,
+                      -1.7082471685389642,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.993675873220662,
+                      -1.9469966233945164,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.332813324353472,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6573187198676596,
+                        -0.26633454255604055,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9758544710045634,
+                        -0.7459416653817117,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.9815569739907133,
+                        -1.3086944362759558,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.987619387471041,
+                        -1.7082471685389642,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.993675873220662,
+                        -1.9469966233945164,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.332813324353472,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    10.0,
+                    -2.0000000000172165,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.6573187198676596,
+                          -0.26633454255604055,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          1.9758544710045634,
+                          -0.7459416653817117,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          3.9815569739907133,
+                          -1.3086944362759558,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          5.987619387471041,
+                          -1.7082471685389642,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          7.993675873220662,
+                          -1.9469966233945164,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          9.332813324353472,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      10.259334543547011
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      2.1276789918648316,
+                      4.204597458193216,
+                      6.243719698462328,
+                      8.257774516607427,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011
+                    ]
+                  },
+                  "length": 10.261867209242185,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.6573187198676596,
+                            -0.26633454255604055,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            1.9758544710045634,
+                            -0.7459416653817117,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            3.9815569739907133,
+                            -1.3086944362759558,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            5.987619387471041,
+                            -1.7082471685389642,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            7.993675873220662,
+                            -1.9469966233945164,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            9.332813324353472,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        10.259334543547011
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        2.1276789918648316,
+                        4.204597458193216,
+                        6.243719698462328,
+                        8.257774516607427,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nApproximate achieved tolerance = 2.23077e-05",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6573187198676596,
+                      -0.26633454255604055,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9758544710045634,
+                      -0.7459416653817117,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.9815569739907133,
+                      -1.3086944362759558,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.987619387471041,
+                      -1.7082471685389642,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.993675873220662,
+                      -1.9469966233945164,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.332813324353472,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6573187198676596,
+                        -0.26633454255604055,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9758544710045634,
+                        -0.7459416653817117,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.9815569739907133,
+                        -1.3086944362759558,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.987619387471041,
+                        -1.7082471685389642,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.993675873220662,
+                        -1.9469966233945164,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.332813324353472,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-end-apex-polyline8",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.4285714285714284,
+                      -0.5356568743232231,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.8571428571428568,
+                      -0.9860517861425677,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.285714285714286,
+                      -1.3526181197020364,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.7142857142857135,
+                      -1.6365224743416888,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.142857142857142,
+                      -1.8386683772064103,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.571428571428571,
+                      -1.9596991587258827,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 1,
+                "domain": [
+                  0.0,
+                  7.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  1.0,
+                  2.0,
+                  3.0,
+                  4.0,
+                  5.0,
+                  6.0,
+                  7.0,
+                  7.0
+                ]
+              },
+              "length": 10.260575948229699,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.4285714285714284,
+                        -0.5356568743232231,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.8571428571428568,
+                        -0.9860517861425677,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.285714285714286,
+                        -1.3526181197020364,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.7142857142857135,
+                        -1.6365224743416888,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.142857142857142,
+                        -1.8386683772064103,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.571428571428571,
+                        -1.9596991587258827,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 1,
+                  "domain": [
+                    0.0,
+                    7.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0,
+                    4.0,
+                    5.0,
+                    6.0,
+                    7.0,
+                    7.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.4285714285714284,
+                      -0.5356568743232231,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.8571428571428568,
+                      -0.9860517861425677,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.285714285714286,
+                      -1.3526181197020364,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.7142857142857135,
+                      -1.6365224743416888,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.142857142857142,
+                      -1.8386683772064103,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.571428571428571,
+                      -1.9596991587258827,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 1,
+                "domain": [
+                  0.0,
+                  7.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  1.0,
+                  2.0,
+                  3.0,
+                  4.0,
+                  5.0,
+                  6.0,
+                  7.0,
+                  7.0
+                ]
+              },
+              "length": 10.260575948229699,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.4285714285714284,
+                        -0.5356568743232231,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.8571428571428568,
+                        -0.9860517861425677,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.285714285714286,
+                        -1.3526181197020364,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.7142857142857135,
+                        -1.6365224743416888,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.142857142857142,
+                        -1.8386683772064103,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.571428571428571,
+                        -1.9596991587258827,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 1,
+                  "domain": [
+                    0.0,
+                    7.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0,
+                    4.0,
+                    5.0,
+                    6.0,
+                    7.0,
+                    7.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    10.0,
+                    -2.0000000000172165,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          1.4285714285714284,
+                          -0.5356568743232231,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          2.8571428571428568,
+                          -0.9860517861425677,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          4.285714285714286,
+                          -1.3526181197020364,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          5.7142857142857135,
+                          -1.6365224743416888,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          7.142857142857142,
+                          -1.8386683772064103,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          8.571428571428571,
+                          -1.9596991587258827,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 1,
+                    "domain": [
+                      0.0,
+                      7.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      1.0,
+                      2.0,
+                      3.0,
+                      4.0,
+                      5.0,
+                      6.0,
+                      7.0,
+                      7.0
+                    ]
+                  },
+                  "length": 10.260575948229699,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            1.4285714285714284,
+                            -0.5356568743232231,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            2.8571428571428568,
+                            -0.9860517861425677,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            4.285714285714286,
+                            -1.3526181197020364,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            5.7142857142857135,
+                            -1.6365224743416888,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            7.142857142857142,
+                            -1.8386683772064103,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.571428571428571,
+                            -1.9596991587258827,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 1,
+                      "domain": [
+                        0.0,
+                        7.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        1.0,
+                        2.0,
+                        3.0,
+                        4.0,
+                        5.0,
+                        6.0,
+                        7.0,
+                        7.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Polyline\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): _Enter\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Polyline"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.4285714285714284,
+                      -0.5356568743232231,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.8571428571428568,
+                      -0.9860517861425677,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.285714285714286,
+                      -1.3526181197020364,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.7142857142857135,
+                      -1.6365224743416888,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.142857142857142,
+                      -1.8386683772064103,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.571428571428571,
+                      -1.9596991587258827,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 1,
+                "domain": [
+                  0.0,
+                  7.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  1.0,
+                  2.0,
+                  3.0,
+                  4.0,
+                  5.0,
+                  6.0,
+                  7.0,
+                  7.0
+                ]
+              },
+              "length": 10.260575948229699,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.4285714285714284,
+                        -0.5356568743232231,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.8571428571428568,
+                        -0.9860517861425677,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.285714285714286,
+                        -1.3526181197020364,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.7142857142857135,
+                        -1.6365224743416888,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.142857142857142,
+                        -1.8386683772064103,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.571428571428571,
+                        -1.9596991587258827,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 1,
+                  "domain": [
+                    0.0,
+                    7.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    2.0,
+                    3.0,
+                    4.0,
+                    5.0,
+                    6.0,
+                    7.0,
+                    7.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-end-apex-smooth4",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.260103133818391,
+                      -1.3209392195704528,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.469909567512689,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.19803902718557
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  10.19803902718557,
+                  10.19803902718557,
+                  10.19803902718557,
+                  10.19803902718557
+                ]
+              },
+              "length": 10.264069605140984,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.260103133818391,
+                        -1.3209392195704528,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.469909567512689,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.19803902718557
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    10.19803902718557,
+                    10.19803902718557,
+                    10.19803902718557,
+                    10.19803902718557
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.260103133818391,
+                      -1.3209392195704528,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.469909567512689,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.19803902718557
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  10.19803902718557,
+                  10.19803902718557,
+                  10.19803902718557,
+                  10.19803902718557
+                ]
+              },
+              "length": 10.264069605140984,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.260103133818391,
+                        -1.3209392195704528,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.469909567512689,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.19803902718557
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    10.19803902718557,
+                    10.19803902718557,
+                    10.19803902718557,
+                    10.19803902718557
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          3.260103133818391,
+                          -1.3209392195704528,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          6.469909567512689,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      10.19803902718557
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      10.19803902718557,
+                      10.19803902718557,
+                      10.19803902718557,
+                      10.19803902718557
+                    ]
+                  },
+                  "length": 10.264069605140984,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            3.260103133818391,
+                            -1.3209392195704528,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            6.469909567512689,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        10.19803902718557
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        10.19803902718557,
+                        10.19803902718557,
+                        10.19803902718557,
+                        10.19803902718557
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=4\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=Yes ): _MarkApex=No\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): _Enter\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )\nApproximate achieved tolerance = 0.0212467",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Polyline  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=4"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=Yes )",
+              "token": "_MarkApex=No"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.260103133818391,
+                      -1.3209392195704528,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.469909567512689,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.19803902718557
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  10.19803902718557,
+                  10.19803902718557,
+                  10.19803902718557,
+                  10.19803902718557
+                ]
+              },
+              "length": 10.264069605140984,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.260103133818391,
+                        -1.3209392195704528,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.469909567512689,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.19803902718557
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    10.19803902718557,
+                    10.19803902718557,
+                    10.19803902718557,
+                    10.19803902718557
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-end-apex-shifted",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                15.0,
+                1.9999999999827835,
+                2.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      4.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.65731871986766,
+                      3.7336654574439594,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.975854471004562,
+                      3.254058334618288,
+                      1.9999999999999996
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.981556973990713,
+                      2.6913055637240433,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.98761938747104,
+                      2.2917528314610367,
+                      2.0000000000000004
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      12.993675873220663,
+                      2.053003376605483,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      14.332813324353472,
+                      2.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      2.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242183,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        4.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.65731871986766,
+                        3.7336654574439594,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.975854471004562,
+                        3.254058334618288,
+                        1.9999999999999996
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.981556973990713,
+                        2.6913055637240433,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.98761938747104,
+                        2.2917528314610367,
+                        2.0000000000000004
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        12.993675873220663,
+                        2.053003376605483,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        14.332813324353472,
+                        2.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        2.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                15.0,
+                1.9999999999827835,
+                2.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      4.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.65731871986766,
+                      3.7336654574439594,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.975854471004562,
+                      3.254058334618288,
+                      1.9999999999999996
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.981556973990713,
+                      2.6913055637240433,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.98761938747104,
+                      2.2917528314610367,
+                      2.0000000000000004
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      12.993675873220663,
+                      2.053003376605483,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      14.332813324353472,
+                      2.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      2.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242183,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        4.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.65731871986766,
+                        3.7336654574439594,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.975854471004562,
+                        3.254058334618288,
+                        1.9999999999999996
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.981556973990713,
+                        2.6913055637240433,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.98761938747104,
+                        2.2917528314610367,
+                        2.0000000000000004
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        12.993675873220663,
+                        2.053003376605483,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        14.332813324353472,
+                        2.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        2.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    15.0,
+                    1.9999999999827835,
+                    2.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          5.0,
+                          4.0,
+                          2.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          5.65731871986766,
+                          3.7336654574439594,
+                          2.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          6.975854471004562,
+                          3.254058334618288,
+                          1.9999999999999996
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          8.981556973990713,
+                          2.6913055637240433,
+                          2.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.98761938747104,
+                          2.2917528314610367,
+                          2.0000000000000004
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          12.993675873220663,
+                          2.053003376605483,
+                          2.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          14.332813324353472,
+                          2.0,
+                          2.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          15.0,
+                          2.0,
+                          2.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      10.259334543547011
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      2.1276789918648316,
+                      4.204597458193216,
+                      6.243719698462328,
+                      8.257774516607427,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011
+                    ]
+                  },
+                  "length": 10.261867209242183,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            5.0,
+                            4.0,
+                            2.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            5.65731871986766,
+                            3.7336654574439594,
+                            2.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            6.975854471004562,
+                            3.254058334618288,
+                            1.9999999999999996
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.981556973990713,
+                            2.6913055637240433,
+                            2.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.98761938747104,
+                            2.2917528314610367,
+                            2.0000000000000004
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            12.993675873220663,
+                            2.053003376605483,
+                            2.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            14.332813324353472,
+                            2.0,
+                            2.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            15.0,
+                            2.0,
+                            2.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        10.259334543547011
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        2.1276789918648316,
+                        4.204597458193216,
+                        6.243719698462328,
+                        8.257774516607427,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): w5.0,4.0,2.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): w15.0,2.0,2.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): w5.0,3.0,2.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=No ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nApproximate achieved tolerance = 2.23077e-05",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+              "token": "w5.0,4.0,2.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+              "token": "w15.0,2.0,2.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+              "token": "w5.0,3.0,2.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=4  MarkApex=No )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=No )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                15.0,
+                1.9999999999827835,
+                2.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      4.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.65731871986766,
+                      3.7336654574439594,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.975854471004562,
+                      3.254058334618288,
+                      1.9999999999999996
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.981556973990713,
+                      2.6913055637240433,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.98761938747104,
+                      2.2917528314610367,
+                      2.0000000000000004
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      12.993675873220663,
+                      2.053003376605483,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      14.332813324353472,
+                      2.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      2.0,
+                      2.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242183,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        4.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.65731871986766,
+                        3.7336654574439594,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.975854471004562,
+                        3.254058334618288,
+                        1.9999999999999996
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.981556973990713,
+                        2.6913055637240433,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.98761938747104,
+                        2.2917528314610367,
+                        2.0000000000000004
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        12.993675873220663,
+                        2.053003376605483,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        14.332813324353472,
+                        2.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        2.0,
+                        2.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-end-apex-reversed",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.342681280132341,
+                      -0.26633454255604055,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.024145528995435,
+                      -0.7459416653817117,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.018443026009287,
+                      -1.3086944362759558,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.01238061252896,
+                      -1.7082471685389642,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.0063241267793384,
+                      -1.9469966233945164,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6671866756465281,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242183,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.342681280132341,
+                        -0.26633454255604055,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.024145528995435,
+                        -0.7459416653817117,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.018443026009287,
+                        -1.3086944362759558,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.01238061252896,
+                        -1.7082471685389642,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0063241267793384,
+                        -1.9469966233945164,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6671866756465281,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.342681280132341,
+                      -0.26633454255604055,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.024145528995435,
+                      -0.7459416653817117,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.018443026009287,
+                      -1.3086944362759558,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.01238061252896,
+                      -1.7082471685389642,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.0063241267793384,
+                      -1.9469966233945164,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6671866756465281,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242183,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.342681280132341,
+                        -0.26633454255604055,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.024145528995435,
+                        -0.7459416653817117,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.018443026009287,
+                        -1.3086944362759558,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.01238061252896,
+                        -1.7082471685389642,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0063241267793384,
+                        -1.9469966233945164,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6671866756465281,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    0.0,
+                    -2.0000000000172165,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          10.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          9.342681280132341,
+                          -0.26633454255604055,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          8.024145528995435,
+                          -0.7459416653817117,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          6.018443026009287,
+                          -1.3086944362759558,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          4.01238061252896,
+                          -1.7082471685389642,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          2.0063241267793384,
+                          -1.9469966233945164,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.6671866756465281,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.0,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      10.259334543547011
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      2.1276789918648316,
+                      4.204597458193216,
+                      6.243719698462328,
+                      8.257774516607427,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011
+                    ]
+                  },
+                  "length": 10.261867209242183,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            10.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            9.342681280132341,
+                            -0.26633454255604055,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.024145528995435,
+                            -0.7459416653817117,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            6.018443026009287,
+                            -1.3086944362759558,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            4.01238061252896,
+                            -1.7082471685389642,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            2.0063241267793384,
+                            -1.9469966233945164,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.6671866756465281,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.0,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        10.259334543547011
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        2.1276789918648316,
+                        4.204597458193216,
+                        6.243719698462328,
+                        8.257774516607427,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nApproximate achieved tolerance = 2.23077e-05",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                -2.0000000000172165,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.342681280132341,
+                      -0.26633454255604055,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.024145528995435,
+                      -0.7459416653817117,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.018443026009287,
+                      -1.3086944362759558,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.01238061252896,
+                      -1.7082471685389642,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.0063241267793384,
+                      -1.9469966233945164,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6671866756465281,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242183,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.342681280132341,
+                        -0.26633454255604055,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.024145528995435,
+                        -0.7459416653817117,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.018443026009287,
+                        -1.3086944362759558,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.01238061252896,
+                        -1.7082471685389642,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0063241267793384,
+                        -1.9469966233945164,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6671866756465281,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-end-apex-spatial",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                0.0,
+                -2.0000000000172165
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6573187198676596,
+                      0.0,
+                      -0.26633454255604055
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9758544710045634,
+                      0.0,
+                      -0.7459416653817117
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.9815569739907133,
+                      0.0,
+                      -1.3086944362759558
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.987619387471041,
+                      0.0,
+                      -1.7082471685389642
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.993675873220662,
+                      0.0,
+                      -1.9469966233945164
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.332813324353472,
+                      0.0,
+                      -2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      -2.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6573187198676596,
+                        0.0,
+                        -0.26633454255604055
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9758544710045634,
+                        0.0,
+                        -0.7459416653817117
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.9815569739907133,
+                        0.0,
+                        -1.3086944362759558
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.987619387471041,
+                        0.0,
+                        -1.7082471685389642
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.993675873220662,
+                        0.0,
+                        -1.9469966233945164
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.332813324353472,
+                        0.0,
+                        -2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        -2.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                0.0,
+                -2.0000000000172165
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6573187198676596,
+                      0.0,
+                      -0.26633454255604055
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9758544710045634,
+                      0.0,
+                      -0.7459416653817117
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.9815569739907133,
+                      0.0,
+                      -1.3086944362759558
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.987619387471041,
+                      0.0,
+                      -1.7082471685389642
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.993675873220662,
+                      0.0,
+                      -1.9469966233945164
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.332813324353472,
+                      0.0,
+                      -2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      -2.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6573187198676596,
+                        0.0,
+                        -0.26633454255604055
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9758544710045634,
+                        0.0,
+                        -0.7459416653817117
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.9815569739907133,
+                        0.0,
+                        -1.3086944362759558
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.987619387471041,
+                        0.0,
+                        -1.7082471685389642
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.993675873220662,
+                        0.0,
+                        -1.9469966233945164
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.332813324353472,
+                        0.0,
+                        -2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        -2.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    -2.0000000000172165
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.6573187198676596,
+                          0.0,
+                          -0.26633454255604055
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          1.9758544710045634,
+                          0.0,
+                          -0.7459416653817117
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          3.9815569739907133,
+                          0.0,
+                          -1.3086944362759558
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          5.987619387471041,
+                          0.0,
+                          -1.7082471685389642
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          7.993675873220662,
+                          0.0,
+                          -1.9469966233945164
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          9.332813324353472,
+                          0.0,
+                          -2.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          0.0,
+                          -2.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      10.259334543547011
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      2.1276789918648316,
+                      4.204597458193216,
+                      6.243719698462328,
+                      8.257774516607427,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011,
+                      10.259334543547011
+                    ]
+                  },
+                  "length": 10.261867209242185,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.6573187198676596,
+                            0.0,
+                            -0.26633454255604055
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            1.9758544710045634,
+                            0.0,
+                            -0.7459416653817117
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            3.9815569739907133,
+                            0.0,
+                            -1.3086944362759558
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            5.987619387471041,
+                            0.0,
+                            -1.7082471685389642
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            7.993675873220662,
+                            0.0,
+                            -1.9469966233945164
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            9.332813324353472,
+                            0.0,
+                            -2.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            0.0,
+                            -2.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        10.259334543547011
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        2.1276789918648316,
+                        4.204597458193216,
+                        6.243719698462328,
+                        8.257774516607427,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011,
+                        10.259334543547011
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,-2.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-1.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nApproximate achieved tolerance = 2.23077e-05",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,-2.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-1.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                10.0,
+                0.0,
+                -2.0000000000172165
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6573187198676596,
+                      0.0,
+                      -0.26633454255604055
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9758544710045634,
+                      0.0,
+                      -0.7459416653817117
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.9815569739907133,
+                      0.0,
+                      -1.3086944362759558
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      5.987619387471041,
+                      0.0,
+                      -1.7082471685389642
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      7.993675873220662,
+                      0.0,
+                      -1.9469966233945164
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.332813324353472,
+                      0.0,
+                      -2.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      -2.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.259334543547011
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.1276789918648316,
+                  4.204597458193216,
+                  6.243719698462328,
+                  8.257774516607427,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011,
+                  10.259334543547011
+                ]
+              },
+              "length": 10.261867209242185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6573187198676596,
+                        0.0,
+                        -0.26633454255604055
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9758544710045634,
+                        0.0,
+                        -0.7459416653817117
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.9815569739907133,
+                        0.0,
+                        -1.3086944362759558
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        5.987619387471041,
+                        0.0,
+                        -1.7082471685389642
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        7.993675873220662,
+                        0.0,
+                        -1.9469966233945164
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.332813324353472,
+                        0.0,
+                        -2.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        -2.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.259334543547011
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.1276789918648316,
+                    4.204597458193216,
+                    6.243719698462328,
+                    8.257774516607427,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011,
+                    10.259334543547011
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

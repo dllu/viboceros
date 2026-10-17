@@ -5689,7 +5689,14 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
-        if let Some(accepted) = self.accept_catenary_point(point) {
+        self.apply_drafting_point_with_snap(point, None)
+    }
+    fn apply_drafting_point_with_snap(
+        &mut self,
+        point: Point3,
+        snap: Option<viboceros_drafting::ObjectSnap>,
+    ) -> bool {
+        if let Some(accepted) = self.accept_catenary_point(point, snap.map(|s| s.kind())) {
             return accepted;
         }
         if let Some(accepted) = self.accept_spiral_point(point) {
@@ -9241,7 +9248,7 @@ impl VibocerosApp {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
             } else {
-                self.accept_filtered_drafting_point(point, false);
+                self.accept_filtered_drafting_snap(point, output.picked_snap);
             }
         } else if let Some(selection) = output.point_cloud_selection {
             self.select_cloud_points(&selection.indices, selection.mode);

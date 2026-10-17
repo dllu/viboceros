@@ -491,6 +491,8 @@ pub struct ViewportOutput {
     pub component_window: Option<ComponentWindow>,
     pub control_point_selection: Option<ControlPointSelection>,
     pub picked_point: Option<Point3>,
+    /// Snap attached to this accepted point, never a stale hover candidate.
+    pub picked_snap: Option<viboceros_drafting::ObjectSnap>,
     /// Resolved hovered drafting location, without accepting a point or editing
     /// the model. Commands can use it for cursor-dependent options.
     pub drafting_hover: Option<Point3>,
@@ -2151,7 +2153,14 @@ impl Viewport {
                     Stroke::new(1.5, Color32::from_gray(130)),
                 );
             }
-            if let Some(preview) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+            if let Some(preview) = drafting_cursor.and_then(|c| {
+                getter.preview_snapped(
+                    c.point,
+                    c.object_snap
+                        .filter(|s| s.point() == c.point)
+                        .map(|s| s.kind()),
+                )
+            }) {
                 let curve = match preview.curve {
                     viboceros_geometry::CatenaryCurve::Smooth(curve) => Ok(curve),
                     viboceros_geometry::CatenaryCurve::Polyline(polyline) => polyline.to_nurbs(),
@@ -2483,6 +2492,17 @@ impl Viewport {
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
+            picked_snap: (response.clicked_by(PointerButton::Primary)
+                && component_mode.is_none()
+                && (input.face_pick.is_none() || face_point_fallback))
+                .then(|| {
+                    drafting_cursor.and_then(|cursor| {
+                        cursor
+                            .object_snap
+                            .filter(|s| s.point() == cursor.source_point)
+                    })
+                })
+                .flatten(),
             drafting_hover: response
                 .hovered()
                 .then(|| {
@@ -2791,6 +2811,106 @@ mod tests {
             assert_eq!(document.objects().len(), 0);
             assert!(!document.can_undo());
         }
+    }
+
+    #[test]
+    fn drafting_click_carries_only_its_accepted_object_snap() {
+        use viboceros_drafting::{ObjectSnapKind, ObjectSnapModes};
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let mut document = Document::default();
+        let endpoint = point(3., -2., 0.);
+        let line = document
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    point(3., 2., 0.),
+                    endpoint,
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let isolated = point(-3., -2., 0.);
+        let dot = document.add_geometry(Geometry::Point(isolated)).unwrap();
+        document.clear_history().unwrap();
+        let frame = |viewport: &mut Viewport, modes, events| {
+            let mut result = ViewportOutput::default();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        result = viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                drafting: DraftingInput {
+                                    active: true,
+                                    osnap: modes,
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                )
+                .drop_without_applying_deltas();
+            result
+        };
+        frame(&mut viewport, ObjectSnapModes::NONE, vec![]);
+        for (location, modes, expected) in [
+            (
+                endpoint,
+                ObjectSnapModes::NONE.with(ObjectSnapKind::End, true),
+                Some((ObjectSnapKind::End, line)),
+            ),
+            (
+                isolated,
+                ObjectSnapModes::NONE.with(ObjectSnapKind::Point, true),
+                Some((ObjectSnapKind::Point, dot)),
+            ),
+            // Return to the prior snapped endpoint with all modes disabled.
+            (endpoint, ObjectSnapModes::NONE, None),
+        ] {
+            let pointer = viewport
+                .project(location, viewport.last_rect.unwrap())
+                .unwrap();
+            let hover = frame(
+                &mut viewport,
+                modes,
+                vec![egui::Event::PointerMoved(pointer)],
+            );
+            assert!(hover.picked_point.is_none() && hover.picked_snap.is_none());
+            let button = |pressed| egui::Event::PointerButton {
+                pos: pointer,
+                button: PointerButton::Primary,
+                pressed,
+                modifiers: egui::Modifiers::NONE,
+            };
+            let down = frame(&mut viewport, modes, vec![button(true)]);
+            assert!(down.picked_point.is_none() && down.picked_snap.is_none());
+            let click = frame(&mut viewport, modes, vec![button(false)]);
+            assert!(click.picked_point.is_some());
+            assert_eq!(
+                click.picked_snap.map(|s| (s.kind(), s.object_id())),
+                expected
+            );
+            if let Some(snap) = click.picked_snap {
+                assert_eq!(snap.point(), location);
+                assert_eq!(click.picked_point, Some(snap.point()));
+            }
+            let idle = frame(&mut viewport, modes, vec![]);
+            assert!(idle.picked_point.is_none() && idle.picked_snap.is_none());
+        }
+        assert_eq!(document.objects().len(), 2);
+        assert!(!document.can_undo());
+        assert_eq!(document.selected_object_ids().len(), 0);
     }
 
     #[test]

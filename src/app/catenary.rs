@@ -222,7 +222,11 @@ impl VibocerosApp {
         self.command_input.clear();
         true
     }
-    pub(super) fn accept_catenary_point(&mut self, point: Point3) -> Option<bool> {
+    pub(super) fn accept_catenary_point(
+        &mut self,
+        point: Point3,
+        snap: Option<viboceros_drafting::ObjectSnapKind>,
+    ) -> Option<bool> {
         let s = self.catenary_session.as_mut()?;
         if s.pending.is_some() {
             self.catenary_prompt();
@@ -230,7 +234,7 @@ impl VibocerosApp {
         }
         s.input
             .set_initial_plane(self.viewports[self.active_viewport].construction_plane());
-        Some(match s.input.point(point) {
+        Some(match s.input.snapped_point(point, snap) {
             Ok(true) => {
                 self.finish_catenary();
                 true

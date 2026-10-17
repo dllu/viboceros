@@ -439,25 +439,11 @@
     "preexisting_unverifiable_records_unchanged": 69
   },
   "sha256": {
-    "README.md": "9577547cdeb61a0f419910bf3be58e10aae9d3f93415473b3489efd3d741b7dc",
-    "crates/viboceros-command/src/catenary_input.rs": "d0dcf1e08d7f177e75ff0c20e94b7762b8d24b9624f2c861d1d9e6188c87fc4f",
-    "crates/viboceros-command/src/catenary_input/tests.rs": "535a1e50de269a283fd1594b2d10750cc184c25c8e50420a6b233af28fe410df",
     "crates/viboceros-command/src/lib.rs": "38c3bfb9e196a7164d541be1d0b6559949ba45a6f868fb8eb35cf9cd84b67457",
     "crates/viboceros-geometry/src/interpolation.rs": "3b0b8efeab01536f7667c9c5c3a1ff4e1d62fdb6c6eae896e364df6f342a0c81",
-    "crates/viboceros-oracle/src/catenary_command.rs": "3f517d0e6769fd50fff94a7a532b0f7b3749c9ed208fe0be603e95fb5f0c0678",
     "crates/viboceros-oracle/src/lib.rs": "8f548394deb6eb22470487e9c979d9fc9f85a0e6752ee1b735aaba86aa2b6318",
-    "docs/commands/catenary.md": "094e78b928bf19d41839f62789cf68031bc031751f0b76c504e8285be19b92c4",
     "docs/commands/curves.md": "b3577f4080bb5ee94b6ca05a48f21d518281d2e145df42cbdbb1971f5e80673c",
-    "docs/spiral-around-validation.json": "f800962dfade6101bd2fef50ea721d806ddaa30b649d5ab23b1eee1c0fd2105b",
     "docs/spiral-validation.json": "c2e89689564fa02c67d3e5892865b71cb5afcf5236c17a126a18a5c5123b946d",
-    "src/app.rs": "1536566403aee633f1743e04cce84d55cb163e04366a9585c14f6358ccc611f0",
-    "src/app/catenary.rs": "b8962633614da8c0449b8e979586f2f222f4ec7e94f53c2bf2d5bf49c10a6c85",
-    "src/app/point_input.rs": "2ca3d6814bf83bbbe4a1943277f68a2d9c94d3ad31c20e7631a9b2237e8f74a3",
-    "src/app/tests/catenary.rs": "d17ec22b6a8ec31baf2eed1f2bf5e7a00f4ef76b749704986eb609ad08a95e48",
-    "src/viewport.rs": "5bf6d7edae1b8eec44bdc2d1e9f2d11916e63885f6d11e878de181c1ce868d0d",
-    "tools/rhino_oracle/catenary_command_probe.py": "e7609959ad3feb5abb794d3a075a9b0c2fb700c2868a66bc9b8d04936a25b62e",
-    "tools/rhino_oracle/client.py": "4d0717690faf794f910d1027fa763491b5e8b27a8581defa19feee637ddc13ff",
-    "tools/rhino_oracle/conic_getter_input.py": "e7a81e0ebd7f20a4e89a47bea2c010917270f436eb9e40bce9bf9567b184d75a",
     "tools/rhino_oracle/fixtures/catenary_command.json": "cf860f686824ced108c4d359b215a46d8e27c4ae0945ec77a0f65ae8bfd951f0",
     "tools/rhino_oracle/fixtures/catenary_count_limits.json": "d18fe6c6a14f8b8f6649bea96cd875a5971401ed2f18864010fa6ab4a1795afe",
     "tools/rhino_oracle/fixtures/catenary_directions.json": "e68549d859f9feea041b3c253c4c83e8a722501a54775c18cac725024aa5c12a",
@@ -478,10 +464,26 @@
     "tools/rhino_oracle/observations/catenary_rejections_rhino_20261017.json": "e8189d4965bf1371b0d4c2a335fc09da884caadd6da3f9644a6dacbb0bf29aef",
     "tools/rhino_oracle/observations/catenary_tangent_confirm_rhino_20261017.json": "036ce03e3dbbb12d300dfe4a086bf5507ea7b53ee3895c688d2b756b46166d2f",
     "tools/rhino_oracle/rhino_worker.py": "3c8ea64c4ec9bbeeafb8ef9a40b95b8e6cad0712ba273fe8dc88caea8e33411c",
-    "tools/rhino_oracle/structural_sdk.py": "e29e4f57c65b56f9792bc564aa8e0ff63fc9b786ca65c84088eeae35401fa7ea",
-    "tools/rhino_oracle/test_catenary_command.py": "73d153ae7d09c4c3740869968fca82648e7c4fecde6115c0c1b283000e28babb"
+    "tools/rhino_oracle/structural_sdk.py": "e29e4f57c65b56f9792bc564aa8e0ff63fc9b786ca65c84088eeae35401fa7ea"
   },
   "reference_sha256": {
     "tools/rhino_oracle/fixtures/catenary.json": "7de488a83ac29837de3adfafc400f48f0ac10db7d5809102470b43aa82ad45fb"
+  },
+  "git_sha256": {
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:README.md": "9577547cdeb61a0f419910bf3be58e10aae9d3f93415473b3489efd3d741b7dc",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:crates/viboceros-command/src/catenary_input.rs": "d0dcf1e08d7f177e75ff0c20e94b7762b8d24b9624f2c861d1d9e6188c87fc4f",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:crates/viboceros-command/src/catenary_input/tests.rs": "535a1e50de269a283fd1594b2d10750cc184c25c8e50420a6b233af28fe410df",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:crates/viboceros-oracle/src/catenary_command.rs": "3f517d0e6769fd50fff94a7a532b0f7b3749c9ed208fe0be603e95fb5f0c0678",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/commands/catenary.md": "094e78b928bf19d41839f62789cf68031bc031751f0b76c504e8285be19b92c4",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:src/app.rs": "1536566403aee633f1743e04cce84d55cb163e04366a9585c14f6358ccc611f0",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:src/app/catenary.rs": "b8962633614da8c0449b8e979586f2f222f4ec7e94f53c2bf2d5bf49c10a6c85",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:src/app/point_input.rs": "2ca3d6814bf83bbbe4a1943277f68a2d9c94d3ad31c20e7631a9b2237e8f74a3",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:src/app/tests/catenary.rs": "d17ec22b6a8ec31baf2eed1f2bf5e7a00f4ef76b749704986eb609ad08a95e48",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:src/viewport.rs": "5bf6d7edae1b8eec44bdc2d1e9f2d11916e63885f6d11e878de181c1ce868d0d",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/catenary_command_probe.py": "e7609959ad3feb5abb794d3a075a9b0c2fb700c2868a66bc9b8d04936a25b62e",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/client.py": "4d0717690faf794f910d1027fa763491b5e8b27a8581defa19feee637ddc13ff",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/conic_getter_input.py": "e7a81e0ebd7f20a4e89a47bea2c010917270f436eb9e40bce9bf9567b184d75a",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:tools/rhino_oracle/test_catenary_command.py": "73d153ae7d09c4c3740869968fca82648e7c4fecde6115c0c1b283000e28babb",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/spiral-around-validation.json": "f800962dfade6101bd2fef50ea721d806ddaa30b649d5ab23b1eee1c0fd2105b"
   }
 }

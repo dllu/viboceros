@@ -118,6 +118,21 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_filtered_drafting_point(&mut self, point: Point3, typed: bool) -> bool {
+        self.accept_filtered_point_source(point, typed, None)
+    }
+    pub(super) fn accept_filtered_drafting_snap(
+        &mut self,
+        point: Point3,
+        snap: Option<viboceros_drafting::ObjectSnap>,
+    ) -> bool {
+        self.accept_filtered_point_source(point, false, snap)
+    }
+    fn accept_filtered_point_source(
+        &mut self,
+        point: Point3,
+        typed: bool,
+        snap: Option<viboceros_drafting::ObjectSnap>,
+    ) -> bool {
         if self.set_view_prompt.is_some() {
             return false;
         }
@@ -166,21 +181,22 @@ impl VibocerosApp {
         } else {
             point
         };
-        self.accept_drafting_point(point)
+        self.accept_drafting_point_with_translation(point, true, snap)
     }
 
     pub(super) fn accept_drafting_point(&mut self, point: Point3) -> bool {
-        self.accept_drafting_point_with_translation(point, true)
+        self.accept_drafting_point_with_translation(point, true, None)
     }
 
     pub(super) fn accept_resolved_translation_point(&mut self, point: Point3) -> bool {
-        self.accept_drafting_point_with_translation(point, false)
+        self.accept_drafting_point_with_translation(point, false, None)
     }
 
     fn accept_drafting_point_with_translation(
         &mut self,
         point: Point3,
         resolve_translation: bool,
+        snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
         if self.set_view_prompt.is_some() {
             return false;
@@ -218,7 +234,7 @@ impl VibocerosApp {
             }
         };
         let plane = self.viewports[self.active_viewport].construction_plane();
-        if self.apply_drafting_point(point) {
+        if self.apply_drafting_point_with_snap(point, snap.filter(|s| s.point() == point)) {
             self.snaps.model_override = None;
             if self.active_command.is_some() {
                 self.drafting_plane.get_or_insert(plane);

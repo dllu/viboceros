@@ -130,6 +130,73 @@ fn catenary_enter_at_oblique_end_has_a_dedicated_apex_interpretation() {
     assert_eq!(commands.catenary_options().mode, Mode::ThroughPoint);
 }
 #[test]
+fn catenary_end_snap_preview_and_commit_use_the_enter_construction_without_changing_mode() {
+    let mut i = input();
+    let end = p(10., 0., -2.);
+    for q in [p(0., 0., 0.), end, p(0., 0., -1.)] {
+        i.point(q).unwrap();
+    }
+    i.option("MarkApex=Yes").unwrap();
+    let before = i;
+    let preview = i.preview_snapped(end, Some(ObjectSnapKind::End)).unwrap();
+    assert_eq!(i, before);
+    assert!(i.preview(end).is_none());
+    for kind in [
+        None,
+        Some(ObjectSnapKind::Point),
+        Some(ObjectSnapKind::Near),
+    ] {
+        assert!(i.snapped_point(end, kind).is_err());
+        assert_eq!(i, before);
+    }
+    let mut entered = i;
+    entered.enter().unwrap();
+    assert!(i.snapped_point(end, Some(ObjectSnapKind::End)).unwrap());
+    assert_eq!(i, entered);
+    assert_eq!(i.options().mode, Mode::ThroughPoint);
+    assert_eq!(preview.curve, i.solution().unwrap().into_curve());
+    assert_eq!(preview.apex, Some(i.solution().unwrap().apex()));
+    assert!(i.command().unwrap().contains("Mode=Apex"));
+}
+#[test]
+fn catenary_end_snap_requires_the_second_endpoint_down_axis_and_through_point_mode() {
+    for end in [p(10., 0., 0.), p(10., 0., 2.)] {
+        let mut i = input();
+        for q in [p(0., 0., 0.), end, p(0., 0., -1.)] {
+            i.point(q).unwrap();
+        }
+        let before = i;
+        assert!(i.snapped_point(end, Some(ObjectSnapKind::End)).is_err());
+        assert_eq!(i, before);
+    }
+    let mut i = input();
+    for q in [p(0., 0., 0.), p(10., 0., -2.), p(0., 0., -1.)] {
+        i.point(q).unwrap();
+    }
+    let before = i;
+    assert!(
+        i.snapped_point(p(0., 0., 0.), Some(ObjectSnapKind::End))
+            .is_err()
+    );
+    assert_eq!(i, before);
+    // An ordinary interior End snap still supplies a through point.
+    let interior = p(3., 0., -2.);
+    let mut typed = i;
+    typed.point(interior).unwrap();
+    i.snapped_point(interior, Some(ObjectSnapKind::End))
+        .unwrap();
+    assert_eq!(i, typed);
+    let mut numeric = before;
+    numeric.option("Mode=Parameter").unwrap();
+    let mut plain = numeric;
+    let end = p(10., 0., -2.);
+    plain.point(end).unwrap();
+    numeric
+        .snapped_point(end, Some(ObjectSnapKind::End))
+        .unwrap();
+    assert_eq!(numeric, plain);
+}
+#[test]
 fn catenary_length_and_parameter_memory_crosses_modes_but_not_registries() {
     let commands = CommandRegistry::with_builtins();
     let other = CommandRegistry::with_builtins();

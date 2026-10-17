@@ -42,7 +42,10 @@ settings. Length and Parameter initially have no numeric default: Enter cancels
 until a successful construction has supplied a remembered value. Enter at a
 numeric option keeps that option's value. Enter at the ThroughPoint getter can
 put the apex at the second endpoint when that endpoint lies down the chosen
-axis. Otherwise Enter cancels. Apex-mode Enter also cancels.
+axis. End-snapping that endpoint requests the same construction, as specified
+by McNeel's command documentation. Typed coordinates and Point/Near snaps keep
+their ordinary through-point meaning. Otherwise Enter cancels. Apex-mode Enter
+also cancels.
 
 Previews and apex guides create no model objects. Invalid input keeps the getter
 available for a retry. Escape, Cancel or another command abandons the pending
@@ -77,11 +80,22 @@ the angle capped at 90 degrees. Longer interpolation sequences retain the
 ordinary adjacent-chord handle policy. The earlier nine catenary cases remain
 regression inputs.
 
-Endpoint-snap-specific apex completion is not implemented; Enter provides the
-verified endpoint-apex path. Full physical mouse/snap parity, native preference
-changes on cancellation, extreme parameter ranges and performance parity remain
-unqualified. Typed endpoint coordinates are a through-point request and can
-fail; they do not carry Rhino's endpoint-snap provenance.
+[The snap validation record](../catenary-snap-validation.json) adds three physical
+interior End/Point/Near constructions with full frontend and command geometry
+comparisons at `1e-6`. Six documented endpoint End-snap constructions match the
+equivalent native **Enter** geometry, including smooth/polyline output, minimum
+count, translated/reversed/spatial inputs, markers and actual Undo/Redo. Snapped
+previews match commits; point filters discard snap meaning when they change the
+accepted coordinate. Source objects remain unchanged.
+
+Rhino 8.32.26160.13001 fails actual endpoint End clicks in the captured controls,
+including when the initial endpoints were snapped. Independent public GetPoint
+calibration resolves the exact End event, and managed mouse receipts confirm
+delivery. Those native failures are retained separately; the six successful
+Enter references are **different-input geometry comparisons**, not claims that
+Rhino's endpoint clicks succeed. Viboceros follows the documented End behavior.
+Full physical mouse/snap parity, native preference changes on cancellation,
+extreme parameter ranges and performance parity remain unqualified.
 
 Reference: McNeel's public
 [Catenary command documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/catenary.htm).

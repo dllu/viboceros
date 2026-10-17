@@ -12,6 +12,79 @@ BASE = Path(__file__).parent
 
 
 class CatenaryCommandTests(TestCase):
+    def test_snap_capture_bounds(self):
+        op = json.loads((BASE / 'fixtures/catenary_snap_inputs.json').read_text())['operations'][0]
+        validate(op)
+        for field, value in [
+            ('curves', [{}]), ('curves', op['curves'] * 5),
+            ('curves', [dict(op['curves'][0], extra=True)]),
+            ('curves', [dict(type='line', start=[0, 0, 0], end=[0, 0, 0])]),
+            ('curves', [dict(type='point', point=[0, 0, 10 ** 500])]),
+            ('curves', [dict(type='point', point=[True, 0, 0])]),
+            ('persistent_snaps', ['End', 'End']), ('persistent_snaps', ['Int']),
+            ('persistent_snaps', [[1]]), ('persistent_snaps', 'End'),
+            ('actions', [{'click': [0, 0, 10 ** 500]}]),
+            ('actions', [{'click': [0, 0, 0], 'relative': [0, 0, 0]}]),
+            ('actions', [{'click': [0, 0]}]),
+            ('setup', [{'click': [0, 0, 0]}]), ('live_getters', False),
+        ]:
+            with self.assertRaises(ValueError, msg=(field, value)):
+                validate(dict(op, **{field: value}))
+
+    def test_receipted_physical_snaps_and_native_endpoint_failures_are_separate_from_enter(self):
+        for profile, count, failures in [('snap_inputs', 3, 0), ('endpoint_click_controls', 10, 8), ('end_apex_enter', 6, 0)]:
+            q = json.loads((BASE / ('fixtures/catenary_' + profile + '.json')).read_text())
+            n = json.loads((BASE / ('observations/catenary_' + profile + '_rhino_20261017.json')).read_text())
+            self.assertEqual(len(q['operations']), count)
+            self.assertEqual(len(n['results']), count)
+            failed = 0
+            for op, row in zip(q['operations'], n['results']):
+                validate(op)
+                self.assertEqual(op['id'], row['id'])
+                v = row['value']
+                trace = v['input_trace']
+                self.assertEqual(trace['errors'], [])
+                self.assertEqual(trace['completed'], len(op['actions']))
+                self.assertEqual(trace['expected'], len(op['actions']))
+                self.assertTrue(all(trace['prompts']))
+                self.assertEqual(v['after'], v['after_script'])
+                self.assertTrue(all(v[s]['guide_unchanged'] for s in ('before', 'after', 'undo', 'redo')))
+                clicks = [(i, a['click']) for i, a in enumerate(op['actions']) if isinstance(a, dict) and 'click' in a]
+                self.assertEqual(len(trace.get('clicks', [])), len(clicks))
+                for receipt, (i, aim) in zip(trace.get('clicks', []), clicks):
+                    self.assertEqual(receipt['action'], i)
+                    self.assertEqual(receipt['aim'], aim)
+                    self.assertEqual(receipt['marker'], '@catenary-click:' + op['id'] + '-' + str(i))
+                    self.assertTrue(receipt['motion_acknowledged'])
+                    self.assertTrue(receipt['click_acknowledged'])
+                result = [e['result'] for e in v['events'] if e['name'] == 'Catenary']
+                if result == ['Failure']:
+                    failed += 1
+                    self.assertEqual(v['after']['outputs'], [])
+                else:
+                    self.assertEqual(result, ['Success'])
+                    self.assertEqual(v['before'], v['undo'])
+                    self.assertEqual(v['after'], v['redo'])
+                if clicks:
+                    settings = trace['snap_settings']
+                    self.assertTrue(settings['enabled'])
+                    self.assertFalse(settings['project_to_cplane'])
+                    self.assertEqual(settings['capture_radius'], 12)
+                    masks = {'End': 131072, 'Point': 134217728, 'Near': 2}
+                    self.assertEqual(settings['modes'], sum(masks[k] for k in op['persistent_snaps']))
+            self.assertEqual(failed, failures)
+        # Keep the two input kinds explicit, even though their intended geometry agrees.
+        enter = json.loads((BASE / 'fixtures/catenary_end_apex_enter.json').read_text())
+        snap = json.loads((BASE / 'fixtures/catenary_end_apex_snap.json').read_text())
+        for a, b in zip(enter['operations'], snap['operations']):
+            self.assertEqual(a['actions'][-1], 'Enter')
+            self.assertEqual(b['actions'][-1], {'click': b['actions'][1]})
+            self.assertEqual(a['actions'][:-1], b['actions'][:-1])
+        calibration = json.loads((BASE / 'observations/catenary_snap_calibration_rhino_20261017.json').read_text())
+        end = calibration['results'][0]['value']
+        self.assertEqual((end['kind'], end['source'], end['point']), ('End', 0, [10, -2, 0]))
+        self.assertEqual(end['before'], end['after'])
+
     def test_native_getter_geometry_markers_defaults_and_real_history(self):
         total = 0
         for profile, count in [('command', 9), ('preferences', 8), ('directions', 11), ('final', 8)]:

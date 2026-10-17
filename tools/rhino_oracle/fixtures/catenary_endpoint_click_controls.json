@@ -1,0 +1,501 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "catenary_command",
+      "id": "catenary-receipted-end",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-receipted-point",
+      "curves": [
+        {
+          "type": "point",
+          "point": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "Point"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-receipted-near",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "Near"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-receipted-free",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-end-snapped-twice",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        },
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-both-ends-snapped",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        {
+          "click": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        },
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-construction-end-snap",
+      "curves": [],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            -2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-start-end-snap",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          -2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-level-end-snap",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-uphill-end-snap",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            4,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "persistent_snaps": [
+        "End"
+      ],
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          2,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "click": [
+            10,
+            2,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

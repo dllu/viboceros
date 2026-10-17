@@ -1,0 +1,2808 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-receipted-end",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=No ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-receipted-end-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                480,
+                246
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=No )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=No )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 131072,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-receipted-point",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-receipted-point-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                502,
+                225
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 134217728,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-receipted-near",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-receipted-near-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                480,
+                246
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 2,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-receipted-free",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                -5.741906227545041,
+                0.30477190492735673,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6680821547740695,
+                      -0.07098809478346912,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.0052682211940787,
+                      -0.23802094861695133,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.006574940205633,
+                      -0.562745303495317,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.007899290063419,
+                      -0.9626464061146838,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.009169851376123,
+                      -1.4382547083365442,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.3366999860998,
+                      -1.8044060562642188,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.211427820887
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.015529130565211,
+                  4.041661339468411,
+                  6.081162265179179,
+                  8.136815786458614,
+                  10.211427820887,
+                  10.211427820887,
+                  10.211427820887,
+                  10.211427820887
+                ]
+              },
+              "length": 10.211984661555483,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6680821547740695,
+                        -0.07098809478346912,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0052682211940787,
+                        -0.23802094861695133,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.006574940205633,
+                        -0.562745303495317,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.007899290063419,
+                        -0.9626464061146838,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.009169851376123,
+                        -1.4382547083365442,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.3366999860998,
+                        -1.8044060562642188,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.211427820887
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.015529130565211,
+                    4.041661339468411,
+                    6.081162265179179,
+                    8.136815786458614,
+                    10.211427820887,
+                    10.211427820887,
+                    10.211427820887,
+                    10.211427820887
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                -5.741906227545041,
+                0.30477190492735673,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6680821547740695,
+                      -0.07098809478346912,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.0052682211940787,
+                      -0.23802094861695133,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.006574940205633,
+                      -0.562745303495317,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.007899290063419,
+                      -0.9626464061146838,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.009169851376123,
+                      -1.4382547083365442,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.3366999860998,
+                      -1.8044060562642188,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.211427820887
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.015529130565211,
+                  4.041661339468411,
+                  6.081162265179179,
+                  8.136815786458614,
+                  10.211427820887,
+                  10.211427820887,
+                  10.211427820887,
+                  10.211427820887
+                ]
+              },
+              "length": 10.211984661555483,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6680821547740695,
+                        -0.07098809478346912,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0052682211940787,
+                        -0.23802094861695133,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.006574940205633,
+                        -0.562745303495317,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.007899290063419,
+                        -0.9626464061146838,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.009169851376123,
+                        -1.4382547083365442,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.3366999860998,
+                        -1.8044060562642188,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.211427820887
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.015529130565211,
+                    4.041661339468411,
+                    6.081162265179179,
+                    8.136815786458614,
+                    10.211427820887,
+                    10.211427820887,
+                    10.211427820887,
+                    10.211427820887
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    -5.741906227545041,
+                    0.30477190492735673,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.6680821547740695,
+                          -0.07098809478346912,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          2.0052682211940787,
+                          -0.23802094861695133,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          4.006574940205633,
+                          -0.562745303495317,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          6.007899290063419,
+                          -0.9626464061146838,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          8.009169851376123,
+                          -1.4382547083365442,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          9.3366999860998,
+                          -1.8044060562642188,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      10.211427820887
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      2.015529130565211,
+                      4.041661339468411,
+                      6.081162265179179,
+                      8.136815786458614,
+                      10.211427820887,
+                      10.211427820887,
+                      10.211427820887,
+                      10.211427820887
+                    ]
+                  },
+                  "length": 10.211984661555483,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.6680821547740695,
+                            -0.07098809478346912,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            2.0052682211940787,
+                            -0.23802094861695133,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            4.006574940205633,
+                            -0.562745303495317,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            6.007899290063419,
+                            -0.9626464061146838,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.009169851376123,
+                            -1.4382547083365442,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            9.3366999860998,
+                            -1.8044060562642188,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        10.211427820887
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        2.015529130565211,
+                        4.041661339468411,
+                        6.081162265179179,
+                        8.136815786458614,
+                        10.211427820887,
+                        10.211427820887,
+                        10.211427820887,
+                        10.211427820887
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nApproximate achieved tolerance = 1.10541e-06",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-receipted-free-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                480,
+                246
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 0,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                -5.741906227545041,
+                0.30477190492735673,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.6680821547740695,
+                      -0.07098809478346912,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.0052682211940787,
+                      -0.23802094861695133,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.006574940205633,
+                      -0.562745303495317,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.007899290063419,
+                      -0.9626464061146838,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.009169851376123,
+                      -1.4382547083365442,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.3366999860998,
+                      -1.8044060562642188,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  10.211427820887
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.015529130565211,
+                  4.041661339468411,
+                  6.081162265179179,
+                  8.136815786458614,
+                  10.211427820887,
+                  10.211427820887,
+                  10.211427820887,
+                  10.211427820887
+                ]
+              },
+              "length": 10.211984661555483,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.6680821547740695,
+                        -0.07098809478346912,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.0052682211940787,
+                        -0.23802094861695133,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.006574940205633,
+                        -0.562745303495317,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.007899290063419,
+                        -0.9626464061146838,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.009169851376123,
+                        -1.4382547083365442,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.3366999860998,
+                        -1.8044060562642188,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    10.211427820887
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.015529130565211,
+                    4.041661339468411,
+                    6.081162265179179,
+                    8.136815786458614,
+                    10.211427820887,
+                    10.211427820887,
+                    10.211427820887,
+                    10.211427820887
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-end-snapped-twice",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 1,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-end-snapped-twice-1",
+              "motion_acknowledged": true,
+              "pixel": [
+                480,
+                246
+              ]
+            },
+            {
+              "action": 7,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-end-snapped-twice-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                480,
+                246
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 131072,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-both-ends-snapped",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 0,
+              "aim": [
+                0,
+                0,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-both-ends-snapped-0",
+              "motion_acknowledged": true,
+              "pixel": [
+                205,
+                165
+              ]
+            },
+            {
+              "action": 1,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-both-ends-snapped-1",
+              "motion_acknowledged": true,
+              "pixel": [
+                502,
+                225
+              ]
+            },
+            {
+              "action": 7,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-both-ends-snapped-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                502,
+                225
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 131072,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-construction-end-snap",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                3.8799401264813964,
+                1.2434211075918276,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.616614984042297,
+                      0.40782886018921355,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9029153001777914,
+                      1.0464769204502469,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.006220332456431,
+                      1.3554389730000944,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.109669015200056,
+                      0.9610554828335424,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.190283080955194,
+                      -0.16499215627468566,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.404252181070152,
+                      -1.3188861938894996,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  11.24147556119397
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.2178471001713436,
+                  4.237868810070179,
+                  6.27034095035713,
+                  8.526796330473328,
+                  11.24147556119397,
+                  11.24147556119397,
+                  11.24147556119397,
+                  11.24147556119397
+                ]
+              },
+              "length": 11.279701558448185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.616614984042297,
+                        0.40782886018921355,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9029153001777914,
+                        1.0464769204502469,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.006220332456431,
+                        1.3554389730000944,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.109669015200056,
+                        0.9610554828335424,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.190283080955194,
+                        -0.16499215627468566,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.404252181070152,
+                        -1.3188861938894996,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    11.24147556119397
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.2178471001713436,
+                    4.237868810070179,
+                    6.27034095035713,
+                    8.526796330473328,
+                    11.24147556119397,
+                    11.24147556119397,
+                    11.24147556119397,
+                    11.24147556119397
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                3.8799401264813964,
+                1.2434211075918276,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.616614984042297,
+                      0.40782886018921355,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9029153001777914,
+                      1.0464769204502469,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.006220332456431,
+                      1.3554389730000944,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.109669015200056,
+                      0.9610554828335424,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.190283080955194,
+                      -0.16499215627468566,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.404252181070152,
+                      -1.3188861938894996,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  11.24147556119397
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.2178471001713436,
+                  4.237868810070179,
+                  6.27034095035713,
+                  8.526796330473328,
+                  11.24147556119397,
+                  11.24147556119397,
+                  11.24147556119397,
+                  11.24147556119397
+                ]
+              },
+              "length": 11.279701558448185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.616614984042297,
+                        0.40782886018921355,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9029153001777914,
+                        1.0464769204502469,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.006220332456431,
+                        1.3554389730000944,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.109669015200056,
+                        0.9610554828335424,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.190283080955194,
+                        -0.16499215627468566,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.404252181070152,
+                        -1.3188861938894996,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    11.24147556119397
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.2178471001713436,
+                    4.237868810070179,
+                    6.27034095035713,
+                    8.526796330473328,
+                    11.24147556119397,
+                    11.24147556119397,
+                    11.24147556119397,
+                    11.24147556119397
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    3.8799401264813964,
+                    1.2434211075918276,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.616614984042297,
+                          0.40782886018921355,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          1.9029153001777914,
+                          1.0464769204502469,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          4.006220332456431,
+                          1.3554389730000944,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          6.109669015200056,
+                          0.9610554828335424,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          8.190283080955194,
+                          -0.16499215627468566,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          9.404252181070152,
+                          -1.3188861938894996,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          -2.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      11.24147556119397
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      2.2178471001713436,
+                      4.237868810070179,
+                      6.27034095035713,
+                      8.526796330473328,
+                      11.24147556119397,
+                      11.24147556119397,
+                      11.24147556119397,
+                      11.24147556119397
+                    ]
+                  },
+                  "length": 11.279701558448185,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.616614984042297,
+                            0.40782886018921355,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            1.9029153001777914,
+                            1.0464769204502469,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            4.006220332456431,
+                            1.3554389730000944,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            6.109669015200056,
+                            0.9610554828335424,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.190283080955194,
+                            -0.16499215627468566,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            9.404252181070152,
+                            -1.3188861938894996,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            -2.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        11.24147556119397
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        2.2178471001713436,
+                        4.237868810070179,
+                        6.27034095035713,
+                        8.526796330473328,
+                        11.24147556119397,
+                        11.24147556119397,
+                        11.24147556119397,
+                        11.24147556119397
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )\nApproximate achieved tolerance = 0.000705249",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                10,
+                -2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-construction-end-snap-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                502,
+                225
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 131072,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                3.8799401264813964,
+                1.2434211075918276,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.616614984042297,
+                      0.40782886018921355,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.9029153001777914,
+                      1.0464769204502469,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.006220332456431,
+                      1.3554389730000944,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      6.109669015200056,
+                      0.9610554828335424,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.190283080955194,
+                      -0.16499215627468566,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      9.404252181070152,
+                      -1.3188861938894996,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      -2.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  11.24147556119397
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  2.2178471001713436,
+                  4.237868810070179,
+                  6.27034095035713,
+                  8.526796330473328,
+                  11.24147556119397,
+                  11.24147556119397,
+                  11.24147556119397,
+                  11.24147556119397
+                ]
+              },
+              "length": 11.279701558448185,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.616614984042297,
+                        0.40782886018921355,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.9029153001777914,
+                        1.0464769204502469,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.006220332456431,
+                        1.3554389730000944,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        6.109669015200056,
+                        0.9610554828335424,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.190283080955194,
+                        -0.16499215627468566,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        9.404252181070152,
+                        -1.3188861938894996,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        -2.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    11.24147556119397
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    2.2178471001713436,
+                    4.237868810070179,
+                    6.27034095035713,
+                    8.526796330473328,
+                    11.24147556119397,
+                    11.24147556119397,
+                    11.24147556119397,
+                    11.24147556119397
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-start-end-snap",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,-2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                0,
+                0,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-start-end-snap-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                227,
+                195
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,-2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 131072,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-level-end-snap",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                10,
+                0,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-level-end-snap-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                490,
+                209
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 131072,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-uphill-end-snap",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,2.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,-1.0,0.0\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "clicks": [
+            {
+              "action": 7,
+              "aim": [
+                10,
+                2,
+                0
+              ],
+              "click_acknowledged": true,
+              "marker": "@catenary-click:catenary-uphill-end-snap-7",
+              "motion_acknowledged": true,
+              "pixel": [
+                472,
+                183
+              ]
+            }
+          ],
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,-1.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            }
+          ],
+          "snap_settings": {
+            "capture_radius": 12,
+            "enabled": true,
+            "modes": 131072,
+            "project_to_cplane": false
+          }
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

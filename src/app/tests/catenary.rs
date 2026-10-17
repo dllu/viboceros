@@ -11,6 +11,7 @@ fn actions(app: &mut VibocerosApp, actions: &[viboceros_oracle::CatenaryCommandA
     use viboceros_oracle::CatenaryCommandAction as Action;
     for action in actions {
         match action {
+            Action::Click { .. } => panic!("physical click scenarios use the snap-event replay"),
             Action::Option(s) => enter(app, s),
             Action::Number(n) => enter(app, &n.to_string()),
             Action::Point([x, y, z]) => enter(app, &format!("w{x},{y},{z}")),
@@ -26,7 +27,19 @@ fn actions(app: &mut VibocerosApp, actions: &[viboceros_oracle::CatenaryCommandA
     }
 }
 fn assert_model(app: &VibocerosApp, expected: &serde_json::Value, id: &str) {
-    let objects = app.document.objects().collect::<Vec<_>>();
+    assert_model_excluding(app, expected, id, &[]);
+}
+fn assert_model_excluding(
+    app: &VibocerosApp,
+    expected: &serde_json::Value,
+    id: &str,
+    guides: &[ObjectId],
+) {
+    let objects = app
+        .document
+        .objects()
+        .filter(|o| !guides.contains(&o.id()))
+        .collect::<Vec<_>>();
     let outputs = expected["outputs"].as_array().unwrap();
     assert_eq!(objects.len(), outputs.len(), "{id}");
     for (object, expected) in objects.iter().zip(outputs) {
@@ -101,6 +114,168 @@ fn assert_model(app: &VibocerosApp, expected: &serde_json::Value, id: &str) {
             "{id}"
         );
     }
+}
+#[test]
+fn catenary_frontend_snap_inputs_match_native_geometry_and_preserve_sources_and_history() {
+    for (q, n, count) in [
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/catenary_snap_inputs.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/catenary_snap_inputs_rhino_20261017.json"
+            ),
+            3,
+        ),
+        // Documented End completion is compared to the equivalent native Enter
+        // construction: the captured native endpoint clicks fail on Rhino 8.32.
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/catenary_end_apex_snap.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/catenary_end_apex_enter_rhino_20261017.json"
+            ),
+            6,
+        ),
+    ] {
+        let q: viboceros_oracle::ProbeRequest = serde_json::from_str(q).unwrap();
+        let n: serde_json::Value = serde_json::from_str(n).unwrap();
+        assert_eq!(q.operations.len(), count);
+        for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
+            let viboceros_oracle::Operation::CatenaryCommand { id, fixture: f } = op else {
+                panic!()
+            };
+            assert_eq!(id, row["id"].as_str().unwrap());
+            let mut app = test_app();
+            let guides = f
+                .source_geometries(app.document.tolerance())
+                .unwrap()
+                .into_iter()
+                .map(|g| app.document.add_geometry(g).unwrap())
+                .collect::<Vec<_>>();
+            let sources = guides
+                .iter()
+                .map(|id| app.document.object(*id).unwrap().clone())
+                .collect::<Vec<_>>();
+            app.document.clear_history().unwrap();
+            enter(&mut app, "Catenary");
+            for action in &f.actions {
+                if let viboceros_oracle::CatenaryCommandAction::Click { click } = action {
+                    let snap = f
+                        .resolve_click(&app.document, Point3::try_from(*click).unwrap())
+                        .unwrap();
+                    let before = app.catenary_session.as_ref().unwrap().input;
+                    let preview = before
+                        .preview_snapped(snap.point(), Some(snap.kind()))
+                        .unwrap();
+                    assert!(app.handle_viewport_action(ViewportOutput {
+                        picked_point: Some(snap.point()),
+                        picked_snap: Some(snap),
+                        ..Default::default()
+                    }));
+                    assert!(
+                        app.catenary_session.is_none(),
+                        "{id}: {:?}",
+                        app.command_log
+                    );
+                    let output = app
+                        .document
+                        .objects()
+                        .filter(|o| !guides.contains(&o.id()))
+                        .find(|o| o.geometry().curve_ref().is_some())
+                        .unwrap();
+                    let expected = match preview.curve {
+                        viboceros_geometry::CatenaryCurve::Smooth(curve) => {
+                            Geometry::NurbsCurve(curve)
+                        }
+                        viboceros_geometry::CatenaryCurve::Polyline(polyline) => {
+                            Geometry::Polyline(polyline)
+                        }
+                    };
+                    assert_eq!(output.geometry(), &expected, "{id}");
+                } else {
+                    actions(&mut app, std::slice::from_ref(action));
+                }
+            }
+            let options = app.commands.catenary_options();
+            assert_eq!(options.mode, Mode::ThroughPoint);
+            assert_model_excluding(&app, &row["value"]["after"], id, &guides);
+            assert_eq!(app.document.undo().unwrap().as_deref(), Some("Catenary"));
+            assert_model_excluding(&app, &row["value"]["undo"], id, &guides);
+            assert!(app.document.undo().unwrap().is_none());
+            assert_eq!(app.document.redo().unwrap().as_deref(), Some("Catenary"));
+            assert_model_excluding(&app, &row["value"]["redo"], id, &guides);
+            assert_eq!(app.commands.catenary_options(), options);
+            for source in &sources {
+                let actual = app.document.object(source.id()).unwrap();
+                assert_eq!(actual, source, "{id}");
+                assert!(
+                    actual
+                        .geometry_snapshot()
+                        .shares_storage_with(source.geometry_snapshot())
+                );
+            }
+        }
+    }
+}
+fn endpoint_app() -> VibocerosApp {
+    let mut app = test_app();
+    enter(&mut app, "Catenary");
+    for word in ["w0,0,0", "w10,-2,0", "w0,-1,0", "MarkApex=Yes"] {
+        enter(&mut app, word);
+    }
+    app
+}
+fn end_snap(app: &mut VibocerosApp, endpoint: Point3) -> viboceros_drafting::ObjectSnap {
+    let line = viboceros_geometry::LineSegment::try_new(
+        p(endpoint.x(), endpoint.y() + 3., endpoint.z() + 4.),
+        endpoint,
+        app.document.tolerance(),
+    )
+    .unwrap();
+    app.document.add_geometry(Geometry::Line(line)).unwrap();
+    app.document.clear_history().unwrap();
+    viboceros_drafting::ObjectSnapCache::default()
+        .nearest_axis_aligned_with_modes(
+            &app.document,
+            viboceros_geometry::PointCloudProjection::Xy,
+            endpoint,
+            [0., 0.],
+            1.,
+            viboceros_drafting::ObjectSnapModes::NONE
+                .with(viboceros_drafting::ObjectSnapKind::End, true),
+        )
+        .unwrap()
+        .unwrap()
+}
+#[test]
+fn catenary_filtered_coordinates_and_typed_retries_do_not_inherit_end_snap_meaning() {
+    let mut app = endpoint_app();
+    let end = p(10., -2., 0.);
+    let snap = end_snap(&mut app, end);
+    let before = app.catenary_session.as_ref().unwrap().input;
+    assert!(before.preview_snapped(end, Some(snap.kind())).is_some());
+    assert_eq!(app.catenary_session.as_ref().unwrap().input, before);
+    enter(&mut app, "w10,-2,0");
+    assert_eq!(app.catenary_session.as_ref().unwrap().input, before);
+    assert!(app.document.undo_label().is_none());
+    enter(&mut app, "Cancel");
+    assert!(app.catenary_session.is_none());
+    assert_eq!(app.commands.catenary_options(), Default::default());
+    // A .y filter turns a different source End into the captured endpoint.
+    // The resulting coordinates must lose the source's End provenance.
+    let mut app = endpoint_app();
+    let snap = end_snap(&mut app, p(10., 7., 0.));
+    enter(&mut app, ".y");
+    enter(&mut app, "w0,-2,0");
+    assert!(app.handle_viewport_action(ViewportOutput {
+        picked_point: Some(snap.point()),
+        picked_snap: Some(snap),
+        ..Default::default()
+    }));
+    assert_eq!(
+        app.catenary_session.as_ref().unwrap().input.slot(),
+        Slot::Constraint
+    );
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(app.document.undo_label().is_none());
 }
 #[test]
 fn catenary_frontend_native_modes_relative_bases_outputs_and_actual_history() {

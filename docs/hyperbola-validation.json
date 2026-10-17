@@ -381,7 +381,6 @@
     "crates/viboceros-oracle/src/hyperbola.rs": "cfcdd9927b272261dd84d52c563625ed95236fff0aa09412394509d70b493eb4",
     "docs/automatic-gordon-network-fit-validation.json": "3460370b5eb342b09cfd72280fbc24800414d28854b71db1a87590bc95eaca8b",
     "docs/commands/hyperbola.md": "26ca5230daf8974edecc2463bde3c010d2a7f37def7acd150338254a9d99d2a5",
-    "docs/conic-getters-validation.json": "96a02e70e723c4838489efab7557503ca960add0121c407cb7e027fcb1604626",
     "docs/curvature-sampling-validation.json": "7f0fb20c4380e2abbe5e01d430620700b24d0d4d6a1fd14908a463114dd83b36",
     "docs/exact-isocurve-restriction-validation.json": "6f9812f5ee1aad709a4d0888ba21989043cf9ea650e5a32e9eb75e89d4ae22c9",
     "docs/flow-poles-validation.json": "ecac59fd84672a1c05f25a6b4b9b630b1dd4544d2af3520addb3c488cb737db1",
@@ -429,6 +428,7 @@
     "b041cf1270003f3feb1bf5942252316568c1cf5d:tools/rhino_oracle/curve_primitive_probe.py": "edaf791ecc92dea033eaf21b5ef0bd588c601e985869132557acb34deaa222f6",
     "b041cf1270003f3feb1bf5942252316568c1cf5d:tools/rhino_oracle/rhino_worker.py": "61da3c0b3a44bb00929db5203b5ae4d1a91297f34e9266abf130aea034727bf7",
     "b041cf1270003f3feb1bf5942252316568c1cf5d:tools/rhino_oracle/structural_sdk.py": "f637718f2bbca671bfa20cc1668d8df6f69ef4450db0738631cc802f3d24b41b",
-    "a4402e1b94914750c780147a340edcd895806a1d:docs/parabola-validation.json": "a0bad0bc00f4ec693eb12a2286e085c20efc6d8cd836b1cf9a4bfe20f0cbd282"
+    "a4402e1b94914750c780147a340edcd895806a1d:docs/parabola-validation.json": "a0bad0bc00f4ec693eb12a2286e085c20efc6d8cd836b1cf9a4bfe20f0cbd282",
+    "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/conic-getters-validation.json": "96a02e70e723c4838489efab7557503ca960add0121c407cb7e027fcb1604626"
   }
 }
