@@ -70,7 +70,7 @@ fn circle_tangent_rejects_stale_sources_and_cancels_without_history() {
                     "Circle Tangent"
                 },
             );
-            assert!(app.pick_circle_tangent_at(a, None, p(3., 0., 0.)));
+            assert!(app.pick_tangent_at(a, None, p(3., 0., 0.)));
             enter(&mut app, "FromFirstPoint");
             match change {
                 0 => {
@@ -93,21 +93,21 @@ fn circle_tangent_rejects_stale_sources_and_cancels_without_history() {
                 }
             }
             app.document.clear_history().unwrap();
-            app.validate_circle_tangent();
+            app.validate_tangent_sources();
             assert!(
-                app.circle_tangent_session
+                app.tangent_session
                     .as_ref()
                     .unwrap()
                     .input
                     .anchor()
                     .is_none()
             );
-            assert!(app.picking_circle_tangent());
-            assert!(app.pick_circle_tangent_at(b, None, p(0., 4., 0.)));
-            assert!(app.circle_tangent_session.is_some());
+            assert!(app.picking_tangent_curve());
+            assert!(app.pick_tangent_at(b, None, p(0., 4., 0.)));
+            assert!(app.tangent_session.is_some());
             assert!(app.document.objects().all(|o| [a, b].contains(&o.id())));
             enter(&mut app, "Cancel");
-            assert!(app.circle_tangent_session.is_none());
+            assert!(app.tangent_session.is_none());
             assert!(app.document.undo().unwrap().is_none());
         }
     }
@@ -119,11 +119,11 @@ fn circle_tangent_point_preview_errors_and_interrupt_are_readonly() {
     app.document.clear_history().unwrap();
     enter(&mut app, "Circle");
     enter(&mut app, "Tangent");
-    assert!(app.pick_circle_tangent_at(a, None, p(3., 0., 0.)));
+    assert!(app.pick_tangent_at(a, None, p(3., 0., 0.)));
     enter(&mut app, "Point");
     let before = format!("{:?}", app.document);
     let preview = app
-        .circle_tangent_session
+        .tangent_session
         .as_ref()
         .unwrap()
         .input
@@ -133,17 +133,17 @@ fn circle_tangent_point_preview_errors_and_interrupt_are_readonly() {
     assert_eq!(format!("{:?}", app.document), before);
     enter(&mut app, "w0,4,0");
     enter(&mut app, "Enter");
-    assert!(app.circle_tangent_session.is_none());
+    assert!(app.tangent_session.is_none());
     assert_eq!(app.commands.circle_preferences().radius, 2.);
     assert!(!app.document.is_selected(a));
     assert!(!app.document.is_selected(b));
     assert_eq!(app.document.undo().unwrap().as_deref(), Some("Circle"));
     enter(&mut app, "Circle Tangent");
-    assert!(app.pick_circle_tangent_at(a, None, p(3., 0., 0.)));
+    assert!(app.pick_tangent_at(a, None, p(3., 0., 0.)));
     enter(&mut app, "-2");
-    assert!(app.circle_tangent_session.is_some());
+    assert!(app.tangent_session.is_some());
     enter(&mut app, "Line");
-    assert!(app.circle_tangent_session.is_none());
+    assert!(app.tangent_session.is_none());
     assert!(matches!(
         app.active_command,
         Some(InteractiveCommand::Line { .. })
@@ -152,130 +152,163 @@ fn circle_tangent_point_preview_errors_and_interrupt_are_readonly() {
 
 #[test]
 fn circle_tangent_viewport_pointer_routes_object_and_surface_edge_contacts() {
-    for edge_source in [false, true] {
-        let mut app = test_app();
-        let [mut a, b] = guides(&mut app);
-        let mut edge = None;
-        if edge_source {
-            app.document.delete_objects([a]).unwrap();
-            let source: viboceros_oracle::CircleAroundFixture =
-                serde_json::from_value(serde_json::json!({
-                    "actions":[],"curves":[{"type":"box_brep","min":[0,0,0],"max":[12,6,2]}]
-                }))
-                .unwrap();
-            a = app
-                .document
-                .add_geometry(
-                    source
-                        .source_geometries(app.document.tolerance())
-                        .unwrap()
-                        .remove(0),
+    for arc_mode in [false, true] {
+        for edge_source in [false, true] {
+            let mut app = test_app();
+            let [mut a, b] = guides(&mut app);
+            let mut edge = None;
+            if edge_source {
+                app.document.delete_objects([a]).unwrap();
+                let source: viboceros_oracle::CircleAroundFixture =
+                    serde_json::from_value(serde_json::json!({
+                        "actions":[],"curves":[{"type":"box_brep","min":[0,0,0],"max":[12,6,2]}]
+                    }))
+                    .unwrap();
+                a = app
+                    .document
+                    .add_geometry(
+                        source
+                            .source_geometries(app.document.tolerance())
+                            .unwrap()
+                            .remove(0),
+                    )
+                    .unwrap();
+                edge = (0..12).find(|&i| {
+                    let c = viboceros_command::curve_reference::resolve(
+                        app.document.object(a).unwrap().geometry(),
+                        Some(i),
+                        app.document.tolerance(),
+                    )
+                    .unwrap();
+                    let a = c.curve().start_point().unwrap();
+                    let b = c.curve().end_point().unwrap();
+                    a.y().abs() < 1e-10
+                        && b.y().abs() < 1e-10
+                        && a.z().abs() < 1e-10
+                        && b.z().abs() < 1e-10
+                });
+                assert!(edge.is_some());
+            }
+            app.document.clear_history().unwrap();
+            app.active_viewport = 0;
+            app.viewports[0] = crate::viewport::Viewport::new(crate::viewport::ViewKind::Top);
+            let context = egui::Context::default();
+            let mut rect = egui::Rect::NOTHING;
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(800., 600.),
+                        )),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        rect = ui.available_rect_before_wrap();
+                        app.viewports[0].show(
+                            ui,
+                            &app.document,
+                            crate::viewport::ViewportInput::default(),
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
                 )
-                .unwrap();
-            edge = (0..12).find(|&i| {
-                let c = viboceros_command::curve_reference::resolve(
-                    app.document.object(a).unwrap().geometry(),
-                    Some(i),
+                .drop_without_applying_deltas();
+            enter(
+                &mut app,
+                if arc_mode {
+                    "Arc Tangent"
+                } else {
+                    "Circle Tangent"
+                },
+            );
+            let first = app.viewports[0].project(p(3., 0., 0.), rect).unwrap();
+            let output = if let Some(edge) = edge {
+                ViewportOutput {
+                    selection_pointer: Some(first),
+                    edge_click: Some(vec![crate::viewport::EdgePick { object: a, edge }]),
+                    ..Default::default()
+                }
+            } else {
+                ViewportOutput {
+                    selection_pointer: Some(first),
+                    selection_click: Some(crate::viewport::SelectionClick {
+                        object_id: Some(a),
+                        mode: SelectionMode::Replace,
+                    }),
+                    ..Default::default()
+                }
+            };
+            assert!(app.handle_viewport_action(output));
+            assert!(
+                app.tangent_session
+                    .as_ref()
+                    .unwrap()
+                    .input
+                    .anchor()
+                    .unwrap()
+                    .distance_to(p(3., 0., 0.))
+                    .unwrap()
+                    < 1e-5
+            );
+            let second = app.viewports[0].project(p(0., 4., 0.), rect).unwrap();
+            assert!(app.handle_viewport_action(ViewportOutput {
+                selection_pointer: Some(second),
+                selection_click: Some(crate::viewport::SelectionClick {
+                    object_id: Some(b),
+                    mode: SelectionMode::Replace
+                }),
+                ..Default::default()
+            }));
+            let input = &app.tangent_session.as_ref().unwrap().input;
+            let received = input.anchor().unwrap();
+            let preview = input.preview_current().unwrap();
+            enter(&mut app, "Enter");
+            let expected = if arc_mode {
+                let support = app
+                    .tangent_session
+                    .as_ref()
+                    .unwrap()
+                    .support
+                    .as_ref()
+                    .unwrap();
+                let arc = viboceros_geometry::try_tangent_arc(
+                    support.circle,
+                    &support.contact_points,
+                    p(1., 1., 0.),
                     app.document.tolerance(),
                 )
                 .unwrap();
-                let a = c.curve().start_point().unwrap();
-                let b = c.curve().end_point().unwrap();
-                a.y().abs() < 1e-10
-                    && b.y().abs() < 1e-10
-                    && a.z().abs() < 1e-10
-                    && b.z().abs() < 1e-10
-            });
-            assert!(edge.is_some());
-        }
-        app.document.clear_history().unwrap();
-        app.active_viewport = 0;
-        app.viewports[0] = crate::viewport::Viewport::new(crate::viewport::ViewKind::Top);
-        let context = egui::Context::default();
-        let mut rect = egui::Rect::NOTHING;
-        context
-            .run_ui(
-                egui::RawInput {
-                    screen_rect: Some(egui::Rect::from_min_size(
-                        egui::Pos2::ZERO,
-                        egui::vec2(800., 600.),
-                    )),
+                assert!(app.handle_viewport_action(ViewportOutput {
+                    picked_point: Some(p(1., 1., 0.)),
                     ..Default::default()
-                },
-                |ui| {
-                    rect = ui.available_rect_before_wrap();
-                    app.viewports[0].show(
-                        ui,
-                        &app.document,
-                        crate::viewport::ViewportInput::default(),
-                        &[],
-                        0,
-                        true,
-                    );
-                },
-            )
-            .drop_without_applying_deltas();
-        enter(&mut app, "Circle Tangent");
-        let first = app.viewports[0].project(p(3., 0., 0.), rect).unwrap();
-        let output = if let Some(edge) = edge {
-            ViewportOutput {
-                selection_pointer: Some(first),
-                edge_click: Some(vec![crate::viewport::EdgePick { object: a, edge }]),
-                ..Default::default()
-            }
-        } else {
-            ViewportOutput {
-                selection_pointer: Some(first),
-                selection_click: Some(crate::viewport::SelectionClick {
-                    object_id: Some(a),
-                    mode: SelectionMode::Replace,
-                }),
-                ..Default::default()
-            }
-        };
-        assert!(app.handle_viewport_action(output));
-        assert!(
-            app.circle_tangent_session
-                .as_ref()
+                }));
+                Geometry::Arc(arc)
+            } else {
+                Geometry::Circle(preview)
+            };
+            assert!(app.tangent_session.is_none(), "{:?}", app.command_log);
+            let actual = app
+                .document
+                .objects()
+                .find(|o| ![a, b].contains(&o.id()))
                 .unwrap()
-                .input
-                .anchor()
-                .unwrap()
-                .distance_to(p(3., 0., 0.))
-                .unwrap()
-                < 1e-5
-        );
-        let second = app.viewports[0].project(p(0., 4., 0.), rect).unwrap();
-        assert!(app.handle_viewport_action(ViewportOutput {
-            selection_pointer: Some(second),
-            selection_click: Some(crate::viewport::SelectionClick {
-                object_id: Some(b),
-                mode: SelectionMode::Replace
-            }),
-            ..Default::default()
-        }));
-        let input = &app.circle_tangent_session.as_ref().unwrap().input;
-        let received = input.anchor().unwrap();
-        let preview = input.preview_current().unwrap();
-        enter(&mut app, "Enter");
-        assert!(
-            app.circle_tangent_session.is_none(),
-            "{:?}",
-            app.command_log
-        );
-        let Geometry::Circle(circle) = app
-            .document
-            .objects()
-            .find(|o| ![a, b].contains(&o.id()))
-            .unwrap()
-            .geometry()
-        else {
-            panic!()
-        };
-        assert_eq!(*circle, preview);
-        assert!((circle.radius() - received.y()).abs() < 1e-8);
-        assert_eq!(app.document.selected_object_ids().count(), 0);
-        assert_eq!(app.document.undo().unwrap().as_deref(), Some("Circle"));
-        assert!(app.document.undo().unwrap().is_none());
+                .geometry();
+            assert_eq!(*actual, expected);
+            let radius = match actual {
+                Geometry::Arc(a) => a.radius(),
+                Geometry::Circle(c) => c.radius(),
+                _ => panic!(),
+            };
+            assert!((radius - received.y()).abs() < 1e-8);
+            assert_eq!(app.document.selected_object_ids().count(), 0);
+            assert_eq!(
+                app.document.undo().unwrap().as_deref(),
+                Some(if arc_mode { "Arc" } else { "Circle" })
+            );
+            assert!(app.document.undo().unwrap().is_none());
+        }
     }
 }

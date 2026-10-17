@@ -2,10 +2,10 @@
 import json,os
 
 def drive(op,host,guides,command="Conic"):
-    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle"):raise ValueError("unsupported managed curve getter command")
+    if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
-    if command=='Circle' and op.get('op')=='circle_tangent' and 'construction_plane'in op:
+    if command in('Circle','Arc') and op.get('op')in('circle_tangent','arc_tangent') and 'construction_plane'in op:
         origin,x,y=op['construction_plane']
         plan_view=bool(vp.SetToPlanView(R.Geometry.Point3d(*origin),R.Geometry.Vector3d(*x),R.Geometry.Vector3d(*y),True))
         if not plan_view:raise ValueError('could not align owned tangent input viewport')
@@ -40,13 +40,14 @@ def drive(op,host,guides,command="Conic"):
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
+    if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Radius','Direction','Angle')
     base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
     for i,a in enumerate(actions):
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command=='Circle'and op.get('op')=='circle_tangent'and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('Circle','Arc')and op.get('op')in('circle_tangent','arc_tangent')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name

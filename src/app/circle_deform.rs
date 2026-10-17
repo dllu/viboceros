@@ -52,7 +52,7 @@ impl VibocerosApp {
                     .trim_start_matches(['_', '-'])
                     .eq_ignore_ascii_case("Tangent")
             {
-                self.start_circle_tangent(Some(input.output()));
+                self.start_tangent_circle(Some(input.output()));
                 return true;
             }
             let key = word
@@ -157,7 +157,7 @@ impl VibocerosApp {
         }
         if s.input.at_start() && word.eq_ignore_ascii_case("Tangent") {
             let output = s.input.output();
-            self.start_circle_tangent(Some(output));
+            self.start_tangent_circle(Some(output));
             self.command_input.clear();
             return true;
         }

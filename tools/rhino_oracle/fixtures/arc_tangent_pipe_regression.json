@@ -1,0 +1,23 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-thick-flat-api",
+      "rail": "arc",
+      "radius": 0.5,
+      "thickness": 0.2,
+      "cap": "Flat"
+    },
+    {
+      "op": "pipe_round_probe",
+      "id": "arc-thick-flat-command",
+      "rail": "arc",
+      "radius": 0.5,
+      "thickness": 0.2,
+      "cap": "Flat",
+      "macro": "_-Pipe _SelID {id} _Cap=_Flat _Thick=_Yes 0.5 0.7 0.5 0.7 _Enter"
+    }
+  ]
+}

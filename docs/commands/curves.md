@@ -79,6 +79,12 @@ use `Length=distance` or `End=point` in place of the angle. An endpoint can incl
 cover all three endings and a reversed construction-plane normal. Their
 sampled curves and domains match within `1e-10` when endpoint direction is
 specified.
+
+[Arc Tangent](arc-tangent.md) constructs a supporting circle from picked curve/edge
+tangencies and free points, then previews the chosen arc interval. It shares
+contact input with Circle, supports radius locks and FromFirstPoint, and
+preserves source geometry and selection.
+
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a

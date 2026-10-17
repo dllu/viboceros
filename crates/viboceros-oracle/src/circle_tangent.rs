@@ -3,15 +3,68 @@ use super::*;
 use crate::curve_getters::{Action, Fixture};
 use viboceros_command::circle_tangent_input::Input;
 
-fn enter(
+pub(super) fn enter(
     doc: &mut Document,
     commands: &CommandRegistry,
     plane: Frame3,
     actions: &[Action],
     last: &mut Option<Point3>,
     guides: &[(ObjectId, Geometry)],
+    arc: bool,
 ) -> Result<(), ProbeError> {
-    let mut input = Input::new(plane, doc.tolerance(), commands.circle_preferences());
+    if arc && !matches!(actions.first(),Some(Action::Option(w))if w.eq_ignore_ascii_case("Tangent"))
+    {
+        let mut tokens = vec!["Arc".to_owned()];
+        for action in actions {
+            let point = match action {
+                Action::Point(p) => Some(Point3::try_from(*p)?),
+                Action::Relative {
+                    relative: [x, y, z],
+                } => Some(
+                    viboceros_drafting::PointInput::parse(&format!("r{x},{y},{z}"))
+                        .unwrap()
+                        .map_err(|_| ProbeError::FixtureInvariant("invalid arc setup point"))?
+                        .resolve(plane, *last)
+                        .map_err(|_| ProbeError::FixtureInvariant("missing arc setup base"))?,
+                ),
+                Action::Option(w) => {
+                    tokens.push(w.clone());
+                    None
+                }
+                Action::Number(n) => {
+                    tokens.push(n.to_string());
+                    None
+                }
+                _ => {
+                    return Err(ProbeError::FixtureInvariant(
+                        "unsupported arc setup reference",
+                    ));
+                }
+            };
+            if let Some(p) = point {
+                let [x, y, z] = p.to_array();
+                tokens.push(format!("{x},{y},{z}"));
+                *last = Some(p);
+            }
+        }
+        commands.execute_in_context(
+            doc,
+            &tokens.join(" "),
+            viboceros_command::CommandContext {
+                construction_plane: plane,
+            },
+        )?;
+        return Ok(());
+    }
+    let preferences = if arc {
+        viboceros_command::circle_around_input::Preferences {
+            radius: commands.arc_tangent_radius(),
+            ..Default::default()
+        }
+    } else {
+        commands.circle_preferences()
+    };
+    let mut input = Input::new(plane, doc.tolerance(), preferences);
     let mut output = viboceros_command::circle_deform_input::Input::new(
         plane,
         commands.circle_preferences(),
@@ -19,11 +72,27 @@ fn enter(
     );
     let mut tangent = false;
     let mut completed = None;
+    let mut choice = None;
     for action in actions {
         if completed.is_some() {
-            return Err(ProbeError::FixtureInvariant(
-                "trailing Circle Tangent input",
-            ));
+            if !arc || choice.is_some() {
+                return Err(ProbeError::FixtureInvariant("trailing tangent input"));
+            }
+            let point = match action {
+                Action::Point(p) => Point3::try_from(*p)?,
+                Action::Relative {
+                    relative: [x, y, z],
+                } => viboceros_drafting::PointInput::parse(&format!("r{x},{y},{z}"))
+                    .unwrap()
+                    .map_err(|_| ProbeError::FixtureInvariant("invalid arc choice"))?
+                    .resolve(plane, *last)
+                    .map_err(|_| ProbeError::FixtureInvariant("missing choice base"))?,
+                Action::Option(w) if w.eq_ignore_ascii_case("Cancel") => return Ok(()),
+                _ => return Err(ProbeError::FixtureInvariant("expected final arc choice")),
+            };
+            choice = Some(point);
+            *last = Some(point);
+            continue;
         }
         if !tangent {
             match action {
@@ -78,7 +147,14 @@ fn enter(
         };
     }
     completed.ok_or(ProbeError::FixtureInvariant("incomplete tangent circle"))?;
-    let command = input.command();
+    let command = if arc {
+        viboceros_command::arc_tangent_input::command(
+            &input,
+            choice.ok_or(ProbeError::FixtureInvariant("incomplete arc choice"))?,
+        )
+    } else {
+        input.command()
+    };
     let command = if output.output().deformable {
         output.output().wrap_command(&command)
     } else {
@@ -98,7 +174,9 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    crate::curve_getters::run(f, iterations, tolerance, enter)
+    crate::curve_getters::run(f, iterations, tolerance, |d, c, p, a, l, g| {
+        enter(d, c, p, a, l, g, false)
+    })
 }
 
 #[cfg(test)]

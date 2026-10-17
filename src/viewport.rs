@@ -89,6 +89,8 @@ mod curvature_graph;
 mod curve_sampling;
 mod edge_picking;
 pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
+mod tangent;
+pub use tangent::TangentPreview;
 mod edge_point;
 use curve_sampling::ViewportCurve;
 pub use edge_picking::EdgePick;
@@ -346,10 +348,7 @@ pub struct ViewportInput<'a> {
     pub spiral_input: Option<&'a viboceros_command::spiral_input::Input>,
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub ellipse_input: Option<viboceros_command::ellipse_input::Input>,
-    pub circle_tangent: Option<(
-        &'a viboceros_command::circle_tangent_input::Input,
-        Option<viboceros_command::circle_deform_input::Output>,
-    )>,
+    pub tangent: Option<TangentPreview<'a>>,
     pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
@@ -447,7 +446,7 @@ impl Default for ViewportInput<'_> {
             hyperbola_input: None,
             parabola_input: None,
             ellipse_input: None,
-            circle_tangent: None,
+            tangent: None,
             circle_around_input: None,
             circle_around_output: None,
             circle_deform_input: None,
@@ -2229,54 +2228,15 @@ impl Viewport {
                 self.paint_draft_points(&painter, rect, &preview.foci);
             }
         }
-        if let Some((getter, output)) = input.circle_tangent {
-            if let Some(anchor) = getter.anchor() {
-                self.paint_draft_points(&painter, rect, &[anchor]);
-            }
-            let circle = if getter.wants_point() {
-                drafting_cursor.and_then(|c| getter.preview_point(c.point))
-            } else if getter.wants_curve() {
-                response
-                    .hover_pos()
-                    .and_then(|pointer| {
-                        let reference = self
-                            .pick_edges(pointer, rect, document)
-                            .first()
-                            .map(|p| (p.object, Some(p.edge)))
-                            .or_else(|| {
-                                self.pick_object_candidates_matching_preview_excluding(
-                                    pointer,
-                                    rect,
-                                    document,
-                                    ObjectSelectionFilter::Curves,
-                                    None,
-                                    None,
-                                )
-                                .first()
-                                .map(|id| (*id, None))
-                            })?;
-                        let geometry = document.object(reference.0)?.geometry();
-                        let point = self.curve_pick_point(
-                            geometry,
-                            reference.1,
-                            pointer,
-                            document.tolerance(),
-                        )?;
-                        getter.preview_curve(document, reference.0, reference.1, point)
-                    })
-                    .or_else(|| getter.preview_current())
-            } else {
-                getter.preview_current()
-            };
-            if let Some(circle) = circle
-                && let Ok(curve) = output.map_or_else(|| circle.to_nurbs(), |o| o.curve(circle))
-            {
-                let mut projected = ProjectedPrimitives::default();
-                self.add_projected_nurbs_curve(&mut projected, rect, &curve);
-                for segment in projected.segments {
-                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
-                }
-            }
+        if let Some(input) = input.tangent {
+            self.paint_tangent_preview(
+                &painter,
+                rect,
+                document,
+                input,
+                response.hover_pos(),
+                drafting_cursor.map(|c| c.point),
+            );
         }
         if let Some(getter) = input.circle_around_input {
             self.paint_draft_points(&painter, rect, &[getter.center()]);

@@ -34,6 +34,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
         for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
             let (id, f) = match op {
                 viboceros_oracle::Operation::EllipseCommand { id, fixture }
+                | viboceros_oracle::Operation::ArcTangent { id, fixture }
                 | viboceros_oracle::Operation::CircleTangent { id, fixture }
                 | viboceros_oracle::Operation::CircleDeform { id, fixture }
                 | viboceros_oracle::Operation::CircleAround { id, fixture } => (id, fixture),
@@ -89,7 +90,11 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
             for (action_index, action) in f.actions.iter().enumerate() {
                 match action {
                     Action::Pick { curve, edge, .. } => {
-                        if matches!(op, viboceros_oracle::Operation::CircleTangent { .. }) {
+                        if matches!(
+                            op,
+                            viboceros_oracle::Operation::CircleTangent { .. }
+                                | viboceros_oracle::Operation::ArcTangent { .. }
+                        ) {
                             // Input calibration uses native click rays, never expected geometry.
                             let clicks = row["value"]["input_trace"]["clicks"].as_array().unwrap();
                             let click =
@@ -97,7 +102,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                             let point: [f64; 3] =
                                 serde_json::from_value(click["projected_point"].clone()).unwrap();
                             assert!(
-                                app.pick_circle_tangent_at(
+                                app.pick_tangent_at(
                                     guides[*curve],
                                     *edge,
                                     Point3::try_from(point).unwrap()
@@ -136,7 +141,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
             }
             assert!(
                 app.ellipse_session.is_none()
-                    && app.circle_tangent_session.is_none()
+                    && app.tangent_session.is_none()
                     && app.circle_around_session.is_none()
                     && app.circle_deform_session.is_none(),
                 "{id}: {:?}",

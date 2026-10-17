@@ -269,7 +269,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
-        if self.picking_circle_tangent()
+        if self.picking_tangent_curve()
             || self.picking_spiral_rail()
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()

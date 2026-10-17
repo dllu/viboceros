@@ -18,6 +18,8 @@ pub struct CircleTangentSolution {
     pub circle: Circle3,
     /// Contact parameters in input order; free points have no parameter.
     pub parameters: Vec<Option<Real>>,
+    /// Solved contact locations, including contacts on extended line supports.
+    pub contact_points: Vec<Point3>,
 }
 fn failure() -> GeometryError {
     GeometryError::Degenerate {
@@ -367,6 +369,7 @@ pub fn try_circle_tangent(
         return Ok(Some(CircleTangentSolution {
             circle: c,
             parameters: vec![None; constraints.len()],
+            contact_points: points,
         }));
     }
     let origin = points[0];
@@ -604,7 +607,11 @@ pub fn try_circle_tangent(
             }
         })
         .collect();
-    Ok(Some(CircleTangentSolution { circle, parameters }))
+    Ok(Some(CircleTangentSolution {
+        circle,
+        parameters,
+        contact_points: contacts,
+    }))
 }
 
 #[cfg(test)]

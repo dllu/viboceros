@@ -2,8 +2,8 @@
 use crate::{CommandError, circle_around_input::Preferences, curve_reference::CapturedCurve};
 use viboceros_document::{Document, ObjectId};
 use viboceros_geometry::{
-    Circle3, CircleTangentConstraint as Constraint, Frame3, GeometryError, Point3, Tolerance,
-    try_circle_tangent,
+    Circle3, CircleTangentConstraint as Constraint, CircleTangentSolution, Frame3, GeometryError,
+    Point3, Tolerance, try_circle_tangent,
 };
 
 #[derive(Clone, Debug)]
@@ -129,7 +129,7 @@ impl Input {
     pub fn point(&mut self, p: Point3) -> Result<Option<Circle3>, CommandError> {
         if !self.point || self.picks.len() >= 3 {
             return Err(CommandError::Usage(
-                "Choose Point before entering a tangent-circle point",
+                "Choose Point before entering a tangent point",
             ));
         }
         let mut next = self.clone();
@@ -152,7 +152,7 @@ impl Input {
     ) -> Result<Option<Circle3>, CommandError> {
         if !self.wants_curve() || self.picks.len() >= 3 {
             return Err(CommandError::Usage(
-                "Tangent Circle is not selecting a curve",
+                "Tangent construction is not selecting a curve",
             ));
         }
         let source = CapturedCurve::capture(doc, id, edge)?;
@@ -175,9 +175,7 @@ impl Input {
     }
     pub fn number(&mut self, r: f64) -> Result<Option<Circle3>, CommandError> {
         if !self.wants_number() || !r.is_finite() || r <= self.tolerance.absolute() {
-            return Err(CommandError::Usage(
-                "Enter a positive Circle tangent radius",
-            ));
+            return Err(CommandError::Usage("Enter a positive tangent radius"));
         }
         let mut next = self.clone();
         next.radius = Some(r);
@@ -206,11 +204,14 @@ impl Input {
         self.number(self.preferences.radius)
     }
     pub fn finish(&self) -> Result<Circle3, CommandError> {
+        Ok(self.solved_contacts()?.circle)
+    }
+    /// Solved contacts include the opposite diameter endpoint when the native
+    /// Point/radius/Point getter uses its final point as a center direction.
+    pub fn solved_contacts(&self) -> Result<CircleTangentSolution, CommandError> {
         if let ([Pick::Point(a), Pick::Point(b)], Some(radius)) =
             (self.picks.as_slice(), self.radius)
         {
-            // In the native radius-locked Point getter, the second point
-            // supplies the center direction rather than a second contact.
             let frame = Circle3::try_from_diameter_on_plane(*a, *b, self.plane, self.tolerance)?;
             let center = a.translated(
                 a.vector_to(*b)?
@@ -218,12 +219,13 @@ impl Input {
                     .as_vector()
                     .scaled(radius)?,
             )?;
-            return Ok(Circle3::try_from_center_point(
-                center,
-                *a,
-                frame.normal()?,
-                self.tolerance,
-            )?);
+            let circle =
+                Circle3::try_from_center_point(center, *a, frame.normal()?, self.tolerance)?;
+            return Ok(CircleTangentSolution {
+                circle,
+                parameters: vec![None, None],
+                contact_points: vec![*a, circle.point_at_angle(std::f64::consts::PI)?],
+            });
         }
         let constraints = self
             .picks
@@ -240,14 +242,74 @@ impl Input {
                 },
             })
             .collect::<Vec<_>>();
-        try_circle_tangent(&constraints, self.radius, self.plane, self.tolerance)?
-            .map(|s| s.circle)
-            .ok_or_else(|| {
+        try_circle_tangent(&constraints, self.radius, self.plane, self.tolerance)?.ok_or_else(
+            || {
                 GeometryError::Degenerate {
                     context: "No tangent circle satisfies these picks",
                 }
                 .into()
-            })
+            },
+        )
+    }
+    pub fn argument(
+        &mut self,
+        doc: &Document,
+        args: &[&str],
+    ) -> Result<(usize, Option<Circle3>), CommandError> {
+        let word = args
+            .first()
+            .ok_or(CommandError::Usage("Missing tangent contact"))?
+            .trim_start_matches(['_', '-']);
+        if word.eq_ignore_ascii_case("Enter") {
+            if !self.accepts_default() {
+                return Err(CommandError::Usage("Incomplete tangent contacts"));
+            }
+            return Ok((1, self.enter()?));
+        }
+        if self.option(word) {
+            return Ok((1, None));
+        }
+        if let Some((key, value)) = word.split_once('=') {
+            if key.eq_ignore_ascii_case("Curve") || key.eq_ignore_ascii_case("Edge") {
+                let (id, edge) = if key.eq_ignore_ascii_case("Curve") {
+                    (
+                        value.parse().map_err(|_| CommandError::Usage("Curve=id"))?,
+                        None,
+                    )
+                } else {
+                    let (id, edge) = crate::curve_reference::parse_edge(value)
+                        .ok_or(CommandError::Usage("Edge=id,index"))?;
+                    (id, Some(edge))
+                };
+                let (p, count) = crate::parse_point(&args[1..])?;
+                return Ok((1 + count, self.curve(doc, id, edge, p)?));
+            }
+            if key.eq_ignore_ascii_case("Radius") {
+                return Ok((1, self.number(crate::parse_finite_real(value)?)?));
+            }
+        }
+        if self.wants_point() && (word.contains(',') || args.len() >= 3) {
+            let (p, count) = crate::parse_point(args)?;
+            Ok((count, self.point(p)?))
+        } else {
+            Ok((1, self.number(crate::parse_finite_real(word)?)?))
+        }
+    }
+    pub(crate) fn arc_line_pair(&self) -> Result<Option<[usize; 2]>, CommandError> {
+        if self.picks.len() != 3 {
+            return Ok(None);
+        }
+        let mut linear = [false; 3];
+        for (i, pick) in self.picks.iter().enumerate() {
+            if let Pick::Curve { source, .. } = pick {
+                linear[i] = source.curve().is_linear(Tolerance::NUMERICAL_VALIDATION)?;
+            }
+        }
+        if linear.iter().filter(|&&v| v).count() != 2 {
+            return Ok(None);
+        }
+        let curved = linear.iter().position(|v| !v).unwrap();
+        Ok(Some([(curved + 1) % 3, (curved + 2) % 3]))
     }
     pub fn preview_current(&self) -> Option<Circle3> {
         self.finish().ok()
@@ -332,47 +394,9 @@ pub fn from_arguments(
         if result.is_some() {
             return Err(CommandError::Usage("Trailing Circle Tangent input"));
         }
-        let word = args[i].trim_start_matches(['_', '-']);
-        if word.eq_ignore_ascii_case("Enter") {
-            result = Some(input.finish()?);
-            i += 1;
-            continue;
-        }
-        if input.option(word) {
-            i += 1;
-            continue;
-        }
-        if let Some((key, value)) = word.split_once('=') {
-            if key.eq_ignore_ascii_case("Curve") || key.eq_ignore_ascii_case("Edge") {
-                let (id, edge) = if key.eq_ignore_ascii_case("Curve") {
-                    (
-                        value.parse().map_err(|_| CommandError::Usage("Curve=id"))?,
-                        None,
-                    )
-                } else {
-                    let (id, e) = crate::curve_reference::parse_edge(value)
-                        .ok_or(CommandError::Usage("Edge=id,index"))?;
-                    (id, Some(e))
-                };
-                let (p, count) = crate::parse_point(&args[i + 1..])?;
-                result = input.curve(doc, id, edge, p)?;
-                i += 1 + count;
-                continue;
-            }
-            if key.eq_ignore_ascii_case("Radius") {
-                result = input.number(crate::parse_finite_real(value)?)?;
-                i += 1;
-                continue;
-            }
-        }
-        if input.wants_point() && (word.contains(',') || args.len() - i >= 3) {
-            let (p, count) = crate::parse_point(&args[i..])?;
-            result = input.point(p)?;
-            i += count;
-        } else {
-            result = input.number(crate::parse_finite_real(word)?)?;
-            i += 1;
-        }
+        let (count, circle) = input.argument(doc, &args[i..])?;
+        i += count;
+        result = circle;
     }
     let circle = match result {
         Some(c) => c,

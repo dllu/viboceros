@@ -146,6 +146,7 @@ pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
+mod arc_tangent;
 mod catenary_command;
 mod circle_around;
 mod circle_tangent;
@@ -1751,6 +1752,11 @@ pub enum Operation {
         id: String,
         turns: f64,
     },
+    ArcTangent {
+        id: String,
+        #[serde(flatten)]
+        fixture: CircleDeformFixture,
+    },
     CircleTangent {
         id: String,
         #[serde(flatten)]
@@ -2878,6 +2884,7 @@ impl Operation {
             | Self::FlowGrips { id, .. }
             | Self::SpiralLayout { id, .. }
             | Self::CatenaryCommand { id, .. }
+            | Self::ArcTangent { id, .. }
             | Self::CircleTangent { id, .. }
             | Self::CircleDeform { id, .. }
             | Self::CircleAround { id, .. }
@@ -6138,6 +6145,7 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::ArcTangent { fixture, .. } => arc_tangent::run(fixture, iterations, tolerance)?,
         Operation::CircleTangent { fixture, .. } => {
             circle_tangent::run(fixture, iterations, tolerance)?
         }

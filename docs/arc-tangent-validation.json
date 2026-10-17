@@ -1,0 +1,546 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "baseline_commit": "7fd899f6a0c5b54892b256b00166a1528f578c9b",
+  "feature": "Arc Tangent contact fitting, ordered straight-guide endpoints and final arc choice",
+  "engine": {
+    "name": "rhino",
+    "version": "8.32.26160.13001"
+  },
+  "absolute_comparison_tolerance": 1e-06,
+  "successful_native_workflows": 38,
+  "clean_native_cancellations": 2,
+  "acknowledged_native_curve_clicks": 89,
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_basic.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_basic_rhino_20261017.json",
+      "rows": 7
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_modes.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_modes_rhino_20261017.json",
+      "rows": 10
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_spatial.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_spatial_rhino_20261017.json",
+      "rows": 5
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_memory.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_memory_rhino_20261017.json",
+      "rows": 3
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_curved.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_curved_rhino_20261017.json",
+      "rows": 5
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_curved_variants.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_curved_variants_rhino_20261017.json",
+      "rows": 7
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_tolerance.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_tolerance_rhino_20261017.json",
+      "rows": 2
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tangent_pair_types.json",
+      "observation": "tools/rhino_oracle/observations/arc_tangent_pair_types_rhino_20261017.json",
+      "rows": 1
+    }
+  ],
+  "claims": [
+    "Arc Tangent shares the existing Circle contact input, source capture, analytic derivative solver and canonical argument parser. The geometry kernel returns solved contact positions, including contacts on extended analytic line supports.",
+    "After constructing the supporting circle, a final point chooses the interval between contacts. When three constraints contain exactly two straight curves, those straight contacts are ordered endpoints; their cyclic input order is preserved while the final pick chooses short or long arc orientation. Circles, circular arcs, straight NURBS and a free-point constraint establish this rule.",
+    "All 38 qualified successful native workflows and two cancellations compare complete NURBS controls, weights, knots, domains, lengths, closed status, source geometry and selection, and actual Undo/Redo through command and frontend paths on default and native-smlib backends at absolute 1e-6.",
+    "Coverage includes two/three contacts, radius locks and the Radius getter, FromFirstPoint, mixed/free points, parallel and reversed-order guides, circles and circular arcs, three-circle sectors, straight NURBS, rotated/translated sources and spatial construction planes.",
+    "Fresh captures establish the independent Tangent radius default of 1: ordinary Arc Center and StartPoint constructions do not update it; a successful Tangent construction does. Registry preferences survive model Undo/Redo.",
+    "Circle and Arc share an immutable frontend picker and curve/edge pointer routing. Arc caches its supporting circle for final previews. Geometry replacement, deletion, hiding, locking or changed document tolerance resets stale input without retaining temporary objects.",
+    "Local checks cover spatial arc sectors, duplicate seam contacts, invalid choices, unchanged source selection, preview/commit equality, cancellation, interruption and failed-command rollback. Shared viewport tests exercise both Circle and Arc with object and surface-edge contacts.",
+    "Arc construction options now precede snap shortcuts, so Center is handled as an Arc option at the first prompt. Numeric Arc completion clears command text. Native preference setup workflows exercise both corrections.",
+    "A broader regression exposed a stale Pipe face-count assertion. Both Rhino CreateThickPipe and the real Pipe command return four faces for the same thick quarter-arc pipe: two walls and two planar annular ends. Only the stale test expectation changed; Pipe production code is unchanged."
+  ],
+  "input_calibration": {
+    "method": "Native ClientToWorld pixel ray, CPlane intersection and source ClosestPoint yield input_trace.clicks.projected_point and projected_parameter. Tests calibrate only authored picks using those input records; expected output geometry is never used as input.",
+    "spatial": "Owned tilted-plane captures use public SetToPlanView before computing pixels.",
+    "scope": "Physical aperture/perspective parity remains unqualified."
+  },
+  "numeric_exceptions": {
+    "fixture": "tools/rhino_oracle/fixtures/arc_tangent_numeric_diagnostics.json",
+    "observation": "tools/rhino_oracle/observations/arc_tangent_numeric_diagnostics_rhino_20261017.json",
+    "rows": 7,
+    "qualified": false,
+    "measurements": [
+      {
+        "endpoint_error": 2.6085984670133585e-06,
+        "id": "arc-tangent-tt-minor",
+        "local_controls": 3,
+        "native_controls": 5
+      },
+      {
+        "endpoint_error": 2.6085984687897153e-06,
+        "id": "arc-tangent-tt-major",
+        "local_controls": 9,
+        "native_controls": 9
+      },
+      {
+        "endpoint_error": 1.9110285665037018e-06,
+        "id": "arc-tangent-fixed",
+        "local_controls": 3,
+        "native_controls": 5
+      },
+      {
+        "endpoint_error": 1.9931358989781825e-06,
+        "id": "arc-tangent-circle-line-west",
+        "local_controls": 5,
+        "native_controls": 5
+      },
+      {
+        "endpoint_error": 1.993135900218603e-06,
+        "id": "arc-tangent-circle-line-east",
+        "local_controls": 9,
+        "native_controls": 9
+      },
+      {
+        "endpoint_error": 1.7586007468040142e-06,
+        "id": "arc-tangent-point-two-lines",
+        "local_controls": 9,
+        "native_controls": 9
+      },
+      {
+        "endpoint_error": 2.5026324097510155e-06,
+        "id": "arc-tangent-ellipse-two-lines",
+        "local_controls": 9,
+        "native_controls": 9
+      }
+    ],
+    "policy": "All seven native endpoint distances exceed the unchanged absolute 1e-6 threshold. Exact solved contacts are retained. Tests explicitly preserve these mismatches; they are not successful parity cases.",
+    "evidence": "Native supporting circles agree much more closely than their recovered arc endpoints. Public CurveCurve diagnostics reproduce comparable near-tangency offsets. This is consistent with intersection conditioning; no proprietary implementation was inspected."
+  },
+  "raw_capture_policy": [
+    "Initial capture has ten complete native input receipts. Seven rows form basic; its three orthogonal TT/FromFirstPoint endpoint mismatches remain numerical exceptions.",
+    "Spatial raw capture has seven clean receipts. Two saved-radius rows depend on the previous operation and are excluded from qualification; fresh memory captures explicitly establish the default and setup behavior.",
+    "Curved raw capture has seven clean receipts. Two circle/line TT endpoint mismatches are excluded numerically; the remaining five rows form curved unchanged.",
+    "Pair-type raw capture has three clean receipts. Straight NURBS lines qualify unchanged; free-point and ellipse endpoint differences remain numerical exceptions. Their observed straight-guide endpoint policy is implemented."
+  ],
+  "additional_native_regression": {
+    "fixture": "tools/rhino_oracle/fixtures/arc_tangent_pipe_regression.json",
+    "observation": "tools/rhino_oracle/observations/arc_tangent_pipe_regression_rhino_20261017.json",
+    "rows": 2,
+    "faces": 4,
+    "commands": [
+      "public Brep.CreateThickPipe",
+      "real Pipe command"
+    ],
+    "scope": "Confirms the corrected regression assertion; excluded from Arc Tangent workflow counts."
+  },
+  "limitations": [
+    "Seven native endpoint-recovery cases remain outside 1e-6 parity, including two different native NURBS span counts.",
+    "Arc Tilted, Deformable and Extension options remain pending.",
+    "Native surface-edge Tangent output, every multi-solution branch, exhaustive physical snapping/aperture behavior, cancellation preference changes and performance parity remain unqualified.",
+    "Other open curve representations retain their domains; analytic line supports may extend beyond their endpoints."
+  ],
+  "known_baseline_regression": {
+    "test": "join_command::tests::surfaces::original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+    "backend": "native-smlib",
+    "baseline_commit": "7fd899f6a0c5b54892b256b00166a1528f578c9b",
+    "status": "Unresolved and unchanged. Arc filter also selects archive in this test name.",
+    "assertion": "boundaries.rs:38:13: left false, right true",
+    "reproduction": [
+      "cargo",
+      "test",
+      "-p",
+      "viboceros-oracle",
+      "--features",
+      "native-smlib",
+      "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+      "--lib",
+      "--",
+      "--nocapture"
+    ],
+    "evidence": [
+      {
+        "name": "current-broad",
+        "log": "/tmp/viboceros-arc-tangent-final-native-arc.log",
+        "log_sha256": "b438080a0ff9803b1bd9516624058baccc221f22ba1a572f2b377dc9e0a448ab",
+        "exit_code": 101
+      },
+      {
+        "name": "current-isolated",
+        "log": "/tmp/viboceros-arc-tangent-join-archive-isolated.log",
+        "log_sha256": "358409c3a812022027998bdadb93b364fa8c6899721551ce7d7e0e02632c27e4",
+        "exit_code": 101
+      },
+      {
+        "name": "baseline-isolated",
+        "log": "/tmp/viboceros-arc-tangent-join-archive-baseline.log",
+        "log_sha256": "ae56463ce216067cfad02222fbca16bd8872e220c87b8a9d49fe7ddda033e5d8",
+        "exit_code": 101
+      }
+    ],
+    "scope": "Native arc-filter run has 201 passed tests and this one failure. All Arc Tangent assertions pass. The separate baseline checkout fails identically; no Join production code or assertion was changed."
+  },
+  "owned_native_jobs": [
+    {
+      "scheme": "VibocerosOracleArcTangentInitial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentModes20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentSpatial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentMemory20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentCurved20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentTolerance20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentCurvedVariants20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentPairTypes20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTangentPipeRegression20261017",
+      "exit_code": 0
+    }
+  ],
+  "checks": [
+    {
+      "name": "arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-arc.log",
+      "elapsed_seconds": 149.96,
+      "log_sha256": "d38a680e84086c4a993a97a92f4fd7e874118cc042143d28db0af4d7a4f0fc84",
+      "rust_tests_passed": 204,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-circle.log",
+      "elapsed_seconds": 19.31,
+      "log_sha256": "7956feb4ee8bd2a6cbf5737018f4b3ea4be10cb1dd6d9830774a97e92d97b84b",
+      "rust_tests_passed": 163,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-ellipse.log",
+      "elapsed_seconds": 9.52,
+      "log_sha256": "28751377b8a4a54daf1d6ebc0575cedd5b6d65b582c47a0981e900700bbd17b6",
+      "rust_tests_passed": 36,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-drafting",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-point-input.log",
+      "elapsed_seconds": 10.41,
+      "log_sha256": "0725f5dff61a2bef7a733fc9b91374b6ae7ad91bf24d01ce3bb8cb96fabe5017",
+      "rust_tests_passed": 76,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "viewport-drafting",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::tests::drafting"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-viewport-drafting.log",
+      "elapsed_seconds": 0.22,
+      "log_sha256": "5f19026e75289f28c24ae715f0ab4464f8803db13500a93ac87d83867e978f37",
+      "rust_tests_passed": 5,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "components",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "component"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-components.log",
+      "elapsed_seconds": 0.36,
+      "log_sha256": "e1a8d91cb9901c0e929fdc622dae07bdd88405edfda0f0e5b2c3fdd3280be929",
+      "rust_tests_passed": 18,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "native-arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "arc"
+      ],
+      "exit_code": 101,
+      "log": "/tmp/viboceros-arc-tangent-final-native-arc.log",
+      "elapsed_seconds": 196.36,
+      "log_sha256": "b438080a0ff9803b1bd9516624058baccc221f22ba1a572f2b377dc9e0a448ab",
+      "rust_tests_passed": 201,
+      "rust_tests_failed": 1
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-format.log",
+      "elapsed_seconds": 10.78,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rust_tests_passed": 0,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_arc_tangent",
+        "tools.rhino_oracle.test_circle_tangent",
+        "tools.rhino_oracle.test_circle_clamped",
+        "tools.rhino_oracle.test_circle_deform",
+        "tools.rhino_oracle.test_circle_around",
+        "tools.rhino_oracle.test_ellipse_deform",
+        "tools.rhino_oracle.test_ellipse_around",
+        "tools.rhino_oracle.test_ellipse",
+        "tools.rhino_oracle.test_catenary_command",
+        "tools.rhino_oracle.test_catenary_point_picker",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_point_snap_input",
+        "tools.rhino_oracle.test_client"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-python.log",
+      "elapsed_seconds": 1.37,
+      "log_sha256": "36d3ef255fc8a8388a2f6c314cc9ade8bd6541e51d413095902a4759462072b7",
+      "rust_tests_passed": 0,
+      "rust_tests_failed": 0,
+      "python_tests_passed": 86
+    },
+    {
+      "name": "native-circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-native-circle.log",
+      "elapsed_seconds": 148.24,
+      "log_sha256": "bd54b5abe1349cbf319498699736b21d0fabf4a30599b7da079ec2dc40b8c029",
+      "rust_tests_passed": 163,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "native-ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-native-ellipse.log",
+      "elapsed_seconds": 10.55,
+      "log_sha256": "2f75fa9b80a9dea1566ad6cc2919d8eff0505db86299e093cd8c319a4a4db4ab",
+      "rust_tests_passed": 36,
+      "rust_tests_failed": 0
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tangent-final-clippy.log",
+      "elapsed_seconds": 22.39,
+      "log_sha256": "e262eaf36824ae0ce440a97a26d52b027dfeba1f71665795ef23d5fe3a0464cf",
+      "rust_tests_passed": 0,
+      "rust_tests_failed": 0
+    }
+  ],
+  "historical_source_policy": "Previously verifiable SHA references to changed or moved files are pinned to full baseline Git blobs. Historical non-SHA outcomes are unchanged; 69 previously unverifiable records remain untouched.",
+  "sha256": {
+    "README.md": "836c9cc37e985d45134105c48cabbb7ff7ed2fe268583bc6d0d975b1a681609c",
+    "crates/viboceros-command/src/arc_tangent_input.rs": "0bcd78250b84ed30b5b76b7443ee564c64cb25b3d8e2c68c518b69479df0f14a",
+    "crates/viboceros-command/src/circle_tangent_input.rs": "f7d227fbb5938cb2e1a052b9d4e7dad051f40095d580f7d99677baafd33e94ee",
+    "crates/viboceros-command/src/lib.rs": "9da3bf1e7e643dc2c590c0694f706de1dcdd8c2982a306202f369889c52825e4",
+    "crates/viboceros-command/src/pipe.rs": "bdc9560b31a89481785b6f02d4af7018debe4528a77a2d4c0dd87da30e72c450",
+    "crates/viboceros-geometry/src/circle_tangent.rs": "db03351e93d9f166334dec5ca391e4cd515120ecc5519d9c6532a95165bd9184",
+    "crates/viboceros-geometry/src/lib.rs": "dd7a02f375cd699e48e9df17dd0517e9bf68177ea2149b57babcf60f7d19e364",
+    "crates/viboceros-geometry/src/tangent_arc.rs": "c45723bd6930ce8f87638f6fbe2f4aaee40fd6f9957c5d8fa2c5ce7be2f333a9",
+    "crates/viboceros-oracle/src/arc_tangent.rs": "555993dd89c24b46d758162395f844b150043480ef0b47986cf66045b35d3bed",
+    "crates/viboceros-oracle/src/circle_tangent.rs": "960b9b3cd326d12b6a769ceac283623889cd7ee61723d056fcda18c8ee41d876",
+    "crates/viboceros-oracle/src/lib.rs": "be1bb0b147d986a1c68a52f507a6e89740ac4ab2b6527f7e977332b15f815986",
+    "docs/circle-around-validation.json": "527b3110551693b409eb0a5e66f7856184e132fda20c4794c1aa9d99b2f4efdb",
+    "docs/circle-tangent-validation.json": "64fed4ad681b47755bf65dfe36cf0cfd9d8fcb9c49ed497d4e5f8552c9965f13",
+    "docs/commands/README.md": "0b2219ae640d56ca464f549049a9b8e913423e05d648ca5ebaddc417c3307fca",
+    "docs/commands/arc-tangent.md": "2e461d333824341939ee86eb37ee86f6a2471065b593721fd05ae2848fe439b9",
+    "docs/commands/curves.md": "5c3be70d709769336634087980edb7848a0d6340d2bea2ad4bfc6cdc0e89c65f",
+    "src/app.rs": "22c2aecea288c38ad7f6288413fe0e782b7e2c06e675b00a2f0d8cdc548a93f8",
+    "src/app/circle.rs": "0171cb59889ab67daccb33f56153356f16971475b67e8bf7e687ac1e1b99a82f",
+    "src/app/circle_deform.rs": "409fb7487b06a42de0bbcddeafca310003959d033aa6e40bc55048cac7699eed",
+    "src/app/component_selection.rs": "d9b5933aeaa7526ca82e188a6aea25303fb1abd202a8a59df7fa96c8ef57100c",
+    "src/app/object_selection.rs": "180289dce805cafe83346d286fbda537400b87b6f387ea496a8472d1dcaf450c",
+    "src/app/tangent.rs": "46eb55242dbcc223c4c99f4542a74a3c171fdecd7f50a35e2e9c2041a9775306",
+    "src/app/tests/arc_tangent.rs": "4309b100f6be395157cfe907648c300ed5b88a61515540635ccce4f5fea38af9",
+    "src/app/tests/circle_tangent.rs": "6fd91e995c5fcfed7e8a87fcaf90b0e389060a4cce98fde5b8b52edf50198ba4",
+    "src/app/tests/ellipse_around.rs": "8649cd564c906b6d0246597f6be287dbf1f856639649cd3afae03bb720e767ff",
+    "src/viewport.rs": "fccc3581cd4e617fa08dc575ad356f31d63769f2bd7e87b185c3d95507d6b47f",
+    "src/viewport/tangent.rs": "a5c5e65bd36b8b2c0f02522e4466396ccd963b42ce3466deb18e4fe3947b6308",
+    "tools/rhino_oracle/arc_tangent_probe.py": "a01b34ed782a0ca42b4a170e4841e6c8c4736938d69a5e591256c08bdaa6b516",
+    "tools/rhino_oracle/client.py": "ebca8a1add35dca2af716429ab9172275a11b32618c4590ec4bf4a17d0e30759",
+    "tools/rhino_oracle/conic_getter_input.py": "05117218db85ea197654c67ecd7dc02c3fb1a212992712c60081fb10339d5042",
+    "tools/rhino_oracle/fixtures/arc_tangent_basic.json": "2cbbf425fd8d457204d6580946aa4f4dffa8f0c54d0f2a76a4e9bccd0fa45764",
+    "tools/rhino_oracle/fixtures/arc_tangent_curved.json": "35d5a8bbe5ea2c52f76addc155738d327b6fec042479c4fe9aa422e30a4646ac",
+    "tools/rhino_oracle/fixtures/arc_tangent_curved_diagnostics.json": "6e6cbae977618ddc544093331fdd9bd5b3204a76fc5524d63e548842a9378585",
+    "tools/rhino_oracle/fixtures/arc_tangent_curved_variants.json": "2c85ee3c8c43e7c467a35f47baacb84b58358f8c054a8c9cf283d3f347a5864d",
+    "tools/rhino_oracle/fixtures/arc_tangent_initial.json": "f6bd53427e2778d3e5a03060306c380192db6ae4ce05f2e083742eeca0161913",
+    "tools/rhino_oracle/fixtures/arc_tangent_memory.json": "20c3ddd80142ed3d657abb2f786101c243a33939eee05aa680f9a7d04af62c8d",
+    "tools/rhino_oracle/fixtures/arc_tangent_modes.json": "6a3979a8d8a62e51480a5b49a9463c685fac6b949afca20b62d27592cbdd33fe",
+    "tools/rhino_oracle/fixtures/arc_tangent_numeric_diagnostics.json": "35ca386b62b36ca61e73e2e13d6b8f1157895a227809686a3a18edfc38985334",
+    "tools/rhino_oracle/fixtures/arc_tangent_pair_types.json": "5f27c03b5bf2eb0808134dceeee3d8990eee43ef479407de269b103e76d1fdf9",
+    "tools/rhino_oracle/fixtures/arc_tangent_pair_types_diagnostics.json": "2ed0696b698d54f8e4b4a8ec5f27536f6b9628eb8208c5050b810c66d721119b",
+    "tools/rhino_oracle/fixtures/arc_tangent_pipe_regression.json": "222d7e16353483c6e33c59790a687fabf8d5a4e107f652d2fd3526311ddd7fb4",
+    "tools/rhino_oracle/fixtures/arc_tangent_spatial.json": "a92354357d6751035fab0556dacb41b682dc99ebcacdb60c4f1c3ef07057d9f8",
+    "tools/rhino_oracle/fixtures/arc_tangent_spatial_diagnostics.json": "17f7a67bfae79e2a80a7e4535513009c9311ced967922ed06b70e627a19123f2",
+    "tools/rhino_oracle/fixtures/arc_tangent_tolerance.json": "a58decbadc0adbb085178d022c3431df631a22855e319a6097c8e69d1cda60ce",
+    "tools/rhino_oracle/observations/arc_tangent_basic_rhino_20261017.json": "870ba95532b9d15ccfcd82bb2f44fe281f34fcdf28e1b8ffb6e4fd7fa413021f",
+    "tools/rhino_oracle/observations/arc_tangent_curved_diagnostics_rhino_20261017.json": "ca7ff03c8114581bb052114f57bdca9f5ba273a02f73fe182d1db06bddd7c55b",
+    "tools/rhino_oracle/observations/arc_tangent_curved_rhino_20261017.json": "20f5eba9de4a41fb8721abc5de0a756e562dbec42d7f6308f9cdc0b6648d37b9",
+    "tools/rhino_oracle/observations/arc_tangent_curved_variants_rhino_20261017.json": "0b81cf738157ea2278d7df50513dfbc91e224a7ed59462d587e1fe0cf1b96e8f",
+    "tools/rhino_oracle/observations/arc_tangent_initial_rhino_20261017.json": "f6943336af9d6420d65aa58a16cc95887ef6a8e4f58d545966206f45690dd1bb",
+    "tools/rhino_oracle/observations/arc_tangent_memory_rhino_20261017.json": "fef9b13f948f66b97cf8ec36f67b0d422944e9294f645e5a7f54410f6fc6fb34",
+    "tools/rhino_oracle/observations/arc_tangent_modes_rhino_20261017.json": "388c96eb606df10223ea24e69e19215dc9af3c355abfa162a4741d72f0af5a15",
+    "tools/rhino_oracle/observations/arc_tangent_numeric_diagnostics_rhino_20261017.json": "4dea1d4362b20726af25b85f053ea9c05d67873a25d8ffd0fc58d123b91a21ab",
+    "tools/rhino_oracle/observations/arc_tangent_pair_types_diagnostics_rhino_20261017.json": "c949c95772e553349bf3d2243135cabd77c7d00e5154f2775f0682dc0a53d7d2",
+    "tools/rhino_oracle/observations/arc_tangent_pair_types_rhino_20261017.json": "8b18389f72d47b96d42e561bf65413d7e2e8f0df3752d650bcb95d45aefbb543",
+    "tools/rhino_oracle/observations/arc_tangent_pipe_regression_rhino_20261017.json": "de425339915b0dfc69154a5758c6155d71d8d5ac97146970c44e2356d470ecbc",
+    "tools/rhino_oracle/observations/arc_tangent_spatial_diagnostics_rhino_20261017.json": "51355a46c37e4004e065c3a199559444442a51c27542f0514bdd82bc523056ba",
+    "tools/rhino_oracle/observations/arc_tangent_spatial_rhino_20261017.json": "0529d5aeec31108402e732bdc28114172ef4a2fd50c5b2e445fbea1bfb3ea362",
+    "tools/rhino_oracle/observations/arc_tangent_tolerance_rhino_20261017.json": "c6e29aaaf05b990d912e7db1d709a68fab32e6eecb1d3d209be44306b42427f8",
+    "tools/rhino_oracle/rhino_worker.py": "d02bddde1e511201c8ec9e7da8b176125303e27ea3175ccda22653e961abea7c",
+    "tools/rhino_oracle/structural_sdk.py": "bc019b9cab8877587f19582e1bf022ecb17a2e16cc82fd71bcd15f9646c32c29",
+    "tools/rhino_oracle/test_arc_tangent.py": "ba8fb709bb06c37cafbb2305f59a39273d99e6e90c4630bed56a07079eb8add3"
+  },
+  "deleted_git_sha256": {
+    "7fd899f6a0c5b54892b256b00166a1528f578c9b:src/app/circle_tangent.rs": "ec356452dda3460d58cd06f1721b7b7bed2bd3f70265fb176d6aff4fcb7e575f"
+  }
+}

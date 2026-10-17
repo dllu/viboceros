@@ -285,6 +285,7 @@ pub mod construction_plane;
 #[cfg(test)]
 use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
+pub mod arc_tangent_input;
 pub mod circle_around_input;
 pub mod circle_deform_input;
 mod circle_fit_points;
@@ -469,6 +470,9 @@ pub trait Command: Send + Sync {
         false
     }
     fn ellipse_options(&self) -> Option<ellipse_input::Options> {
+        None
+    }
+    fn arc_tangent_radius(&self) -> Option<Real> {
         None
     }
     fn circle_preferences(&self) -> Option<circle_around_input::Preferences> {
@@ -791,7 +795,7 @@ impl CommandRegistry {
             .register(CircleCommand::default())
             .expect("unique built-in command");
         registry
-            .register(ArcCommand)
+            .register(ArcCommand::default())
             .expect("unique built-in command");
         registry
             .register(ellipse_input::EllipseCommand::default())
@@ -2040,6 +2044,12 @@ impl CommandRegistry {
             .and_then(|i| self.commands[*i].ellipse_options())
             .unwrap_or_default()
     }
+    pub fn arc_tangent_radius(&self) -> Real {
+        self.lookup
+            .get(&normalize_command_name("Arc"))
+            .and_then(|i| self.commands[*i].arc_tangent_radius())
+            .unwrap_or(1.)
+    }
     pub fn circle_preferences(&self) -> circle_around_input::Preferences {
         self.lookup
             .get(&normalize_command_name("Circle"))
@@ -2328,9 +2338,17 @@ impl Command for LineCommand {
     }
 }
 
-struct ArcCommand;
+struct ArcCommand(remembered::Remembered<Real>);
+impl Default for ArcCommand {
+    fn default() -> Self {
+        Self(remembered::Remembered::new(1.))
+    }
+}
 
 impl Command for ArcCommand {
+    fn arc_tangent_radius(&self) -> Option<Real> {
+        Some(self.0.get())
+    }
     fn name(&self) -> &'static str {
         "Arc"
     }
@@ -2349,6 +2367,23 @@ impl Command for ArcCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        if arguments
+            .first()
+            .is_some_and(|w| option_name_eq(w, "Tangent"))
+        {
+            let d = arc_tangent_input::from_arguments(
+                document,
+                &arguments[1..],
+                context.construction_plane,
+                self.0.get(),
+            )?;
+            let id = document.add_geometry(Geometry::Arc(d.arc))?;
+            self.0.set(d.arc.radius());
+            return Ok(format!(
+                "Added arc {id} (sweep {:.6}°)",
+                d.arc.sweep_radians().to_degrees()
+            ));
+        }
         if arguments
             .first()
             .is_some_and(|option| option_name_eq(option, "StartPoint"))

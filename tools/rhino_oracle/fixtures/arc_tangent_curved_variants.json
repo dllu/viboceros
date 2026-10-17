@@ -1,0 +1,625 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-circle-radius-0",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 1.5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "live_getters": true,
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.0606601717798212,
+            1.0606601717798212,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        },
+        [
+          1,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-circle-radius-1",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2.000001,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "live_getters": true,
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.4142142694798763,
+            1.4142142694798763,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        },
+        [
+          1,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-circle-radius-2",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3.0,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "live_getters": true,
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            2.1213203435596424,
+            2.1213203435596424,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        },
+        [
+          1,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-circle-rotated-seam",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            0.6,
+            0.8,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "live_getters": true,
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.4142135623730951,
+            1.4142135623730951,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        },
+        [
+          1,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-circle-translated",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0.25,
+            -0.5,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "live_getters": true,
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.6642135623730951,
+            0.9142135623730951,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        },
+        [
+          1,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-three-circles-east",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            -4,
+            0,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            4,
+            0,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            6.928203230275509,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "live_getters": true,
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            -3.1339745962155616,
+            0.5,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            3.1339745962155616,
+            0.5,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            0,
+            5.928203230275509,
+            0
+          ]
+        },
+        [
+          3,
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-three-circles-west",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            -4,
+            0,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            4,
+            0,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0,
+            6.928203230275509,
+            0
+          ],
+          "radius": 1,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "live_getters": true,
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            -3.1339745962155616,
+            0.5,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            3.1339745962155616,
+            0.5,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            0,
+            5.928203230275509,
+            0
+          ]
+        },
+        [
+          -3,
+          4,
+          0
+        ]
+      ]
+    }
+  ]
+}

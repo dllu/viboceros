@@ -1,0 +1,444 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-radius-minor",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        [
+          1,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-three-southwest",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        },
+        [
+          1,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-three-north",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        },
+        [
+          3,
+          6,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-three-east",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        },
+        [
+          6,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-points",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter",
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-three-points",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Point",
+        [
+          -3,
+          0,
+          0
+        ],
+        [
+          0,
+          -2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_tangent",
+      "id": "arc-tangent-cancel-choice",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter",
+        "Cancel"
+      ]
+    }
+  ]
+}

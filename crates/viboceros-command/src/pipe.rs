@@ -1870,7 +1870,8 @@ mod tests {
         };
         assert!(thick.is_closed());
         assert!(thick.is_solid());
-        assert_eq!(thick.faces().len(), 6);
+        // Two walls and one planar annular face at each end, as in Rhino.
+        assert_eq!(thick.faces().len(), 4);
         let expected =
             0.5 * std::f64::consts::PI.powi(2) * 5.0 * (0.7_f64.powi(2) - 0.5_f64.powi(2));
         let measured = thick.signed_volume(Tolerance::DEFAULT).unwrap();

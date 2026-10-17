@@ -1,0 +1,154 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "arc-thick-flat-api",
+      "value": {
+        "pieces": [
+          {
+            "closed": true,
+            "edge_bounds": null,
+            "face_bases": null,
+            "face_bounds": [
+              [
+                [
+                  -2.2751230848329594e-16,
+                  -1.7231967126762467e-16,
+                  -0.7000000000000003
+                ],
+                [
+                  5.70000000003863,
+                  5.7,
+                  0.7000000000000003
+                ]
+              ],
+              [
+                [
+                  -1.4396646048816675e-16,
+                  -1.2308547947687477e-16,
+                  -0.5
+                ],
+                [
+                  5.500000000037274,
+                  5.5,
+                  0.5
+                ]
+              ],
+              [
+                [
+                  4.3,
+                  -1.7231967126762472e-16,
+                  -0.7
+                ],
+                [
+                  5.7,
+                  1.7231967126762472e-16,
+                  0.7000000000000001
+                ]
+              ],
+              [
+                [
+                  -2.6340292608051206e-15,
+                  4.3,
+                  -0.7000000000000001
+                ],
+                [
+                  -2.2893899182698714e-15,
+                  5.7,
+                  0.7
+                ]
+              ]
+            ],
+            "faces": 4,
+            "valid": true,
+            "volume": 5.921762651762538,
+            "wall_bases": null,
+            "wall_basis": null,
+            "wall_grid": null,
+            "wall_samples": null
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "arc-thick-flat-command",
+      "value": {
+        "created": 1,
+        "created_types": [
+          "Brep"
+        ],
+        "history": "Command: -_RunPythonScript\nPython Script ( ResetEngine ): Z:\\tmp\\viboceros-rhino-oracle-cto5_a6x\\rhino_worker.py\nPython Script ( ResetEngine ): _-Pipe\nSelect rail ( ChainEdges  Multiple ): _SelID\nObject ID to select: 3200fb15-83a2-4359-bdbd-fa4bd4fcf07c\n1 curve added to selection.\nStart radius <1.000> ( Diameter  Output=Surface  Thick=No  Cap=Flat  ShapeBlending=Local  FitRail=No ): _Cap=_Flat\nStart radius <1.000> ( Diameter  Output=Surface  Thick=No  Cap=Flat  ShapeBlending=Local  FitRail=No ): _Thick=_Yes\nStart radius <1.000> ( Diameter  Output=Surface  Thick=Yes  Cap=Flat  ShapeBlending=Local  FitRail=No ): 0.5\nSecond start radius <2.000> ( Diameter  Output=Surface  Thick=Yes  Cap=Flat  ShapeBlending=Local  FitRail=No  WallThickness ): 0.7\nEnd radius <0.500> ( Diameter  Output=Surface  ShapeBlending=Local  FitRail=No ): 0.5\nSecond end radius <0.700> ( Diameter  Output=Surface  ShapeBlending=Local  FitRail=No  WallThickness ): 0.7\nPoint for next radius. Press Enter for none: _Enter\nPoint for next radius. Press Enter for none\n",
+        "pieces": [
+          {
+            "closed": true,
+            "edge_bounds": null,
+            "face_bases": null,
+            "face_bounds": [
+              [
+                [
+                  -2.2751230848329594e-16,
+                  -1.7231967126762467e-16,
+                  -0.7000000000000003
+                ],
+                [
+                  5.70000000003863,
+                  5.7,
+                  0.7000000000000003
+                ]
+              ],
+              [
+                [
+                  -1.4396646048816675e-16,
+                  -1.2308547947687477e-16,
+                  -0.5
+                ],
+                [
+                  5.500000000037274,
+                  5.5,
+                  0.5
+                ]
+              ],
+              [
+                [
+                  4.3,
+                  -1.7231967126762472e-16,
+                  -0.7
+                ],
+                [
+                  5.7,
+                  1.7231967126762472e-16,
+                  0.7000000000000001
+                ]
+              ],
+              [
+                [
+                  -2.6340292608051206e-15,
+                  4.3,
+                  -0.7000000000000001
+                ],
+                [
+                  -2.2893899182698714e-15,
+                  5.7,
+                  0.7
+                ]
+              ]
+            ],
+            "faces": 4,
+            "valid": true,
+            "volume": 5.921762651762538,
+            "wall_bases": null,
+            "wall_basis": null,
+            "wall_grid": null,
+            "wall_samples": null
+          }
+        ],
+        "succeeded": true
+      }
+    }
+  ]
+}

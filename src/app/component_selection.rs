@@ -197,7 +197,7 @@ impl VibocerosApp {
             && !self.picking_conic_curve()
             && !self.picking_rectangle_curve()
             && !self.picking_ellipse_curve()
-            && !self.picking_circle_tangent()
+            && !self.picking_tangent_curve()
             && !self.picking_circle_around_curve()
         {
             if self
@@ -244,7 +244,7 @@ impl VibocerosApp {
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
-            || self.picking_circle_tangent()
+            || self.picking_tangent_curve()
             || self.picking_circle_around_curve()
         {
             click
@@ -324,9 +324,9 @@ impl VibocerosApp {
             }
             return;
         }
-        if self.picking_circle_tangent() {
+        if self.picking_tangent_curve() {
             if let [pick] = picks.as_slice() {
-                self.pick_circle_tangent(Some(pick.object), Some(pick.index));
+                self.pick_tangent_curve(Some(pick.object), Some(pick.index));
             }
             return;
         }

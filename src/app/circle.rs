@@ -108,7 +108,7 @@ impl VibocerosApp {
                 return true;
             }
             if option.eq_ignore_ascii_case("Tangent") {
-                self.start_circle_tangent(None);
+                self.start_tangent_circle(None);
                 self.command_input.clear();
                 return true;
             }
