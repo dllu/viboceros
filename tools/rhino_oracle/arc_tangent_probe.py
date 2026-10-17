@@ -4,7 +4,7 @@ def validate(op):
         from .getter_recipe import validate as validate_recipe
     else:
         from getter_recipe import validate as validate_recipe
-    validate_recipe(op,'arc_tangent',{'Tangent','Point','FromFirstPoint','Radius','Enter','Cancel','Center','StartPoint','ThroughPoint','Midpoint'},allow_points=True,allow_curve_locations=True)
+    validate_recipe(op,'arc_tangent',{'Tangent','Point','FromFirstPoint','Radius','Enter','Cancel','Center','StartPoint','ThroughPoint','Midpoint','Deformable','Degree','PointCount'},numeric_pattern=r'\A(?:Degree=[0-9]{1,2}|PointCount=(?:[0-9]{1,3}|1000))\Z',allow_points=True,allow_curve_locations=True)
     if not op.get('live_getters'):raise ValueError('Arc Tangent requires owned live input')
     if any(isinstance(a,dict) and 'curve'in a and 'pick'not in a for a in op['actions']):raise ValueError('tangent curve picks require a location')
 

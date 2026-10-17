@@ -86,7 +86,7 @@ impl VibocerosApp {
     fn finish_arc_tilted(&mut self, tail: &str) -> bool {
         let s = self.arc_tilted_session.as_ref().unwrap();
         let command = format!("{} {tail}", s.tokens.join(" "));
-        self.try_execute_command_with_plane(&command, Some(s.plane))
+        self.finish_arc_command(&command, Some(s.plane))
     }
     pub(super) fn accept_arc_tilted_point(&mut self, point: Point3) -> Option<bool> {
         let s = self.arc_tilted_session.as_mut()?;

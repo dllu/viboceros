@@ -1,0 +1,1089 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "arc-deform-midpoint-negative",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.0,
+                      -0.44881431781487324,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.847404819194423,
+                      -1.3462774680378273,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.1869659712549994,
+                      -2.5415048720693054,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.168686875018297,
+                      -3.4514582882945564,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.9070563650398937,
+                      -3.9740427562312926,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -0.456409920226325,
+                      -4.050640579144037,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -1.7685641106139756,
+                      -3.672487964630382,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -2.5110674771256787,
+                      -3.1457867723667015,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -2.82842712474619,
+                      -2.8284271247461903,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  9.42477796076938
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.3463968515384828,
+                  2.6927937030769655,
+                  4.039190554615448,
+                  5.385587406153931,
+                  6.731984257692414,
+                  8.078381109230897,
+                  9.42477796076938,
+                  9.42477796076938,
+                  9.42477796076938,
+                  9.42477796076938
+                ]
+              },
+              "length": 9.424572645730448,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.0,
+                        -0.44881431781487324,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.847404819194423,
+                        -1.3462774680378273,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.1869659712549994,
+                        -2.5415048720693054,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.168686875018297,
+                        -3.4514582882945564,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.9070563650398937,
+                        -3.9740427562312926,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -0.456409920226325,
+                        -4.050640579144037,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.7685641106139756,
+                        -3.672487964630382,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.5110674771256787,
+                        -3.1457867723667015,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.82842712474619,
+                        -2.8284271247461903,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    9.42477796076938
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.3463968515384828,
+                    2.6927937030769655,
+                    4.039190554615448,
+                    5.385587406153931,
+                    6.731984257692414,
+                    8.078381109230897,
+                    9.42477796076938,
+                    9.42477796076938,
+                    9.42477796076938,
+                    9.42477796076938
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.0,
+                      -0.44881431781487324,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.847404819194423,
+                      -1.3462774680378273,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.1869659712549994,
+                      -2.5415048720693054,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.168686875018297,
+                      -3.4514582882945564,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.9070563650398937,
+                      -3.9740427562312926,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -0.456409920226325,
+                      -4.050640579144037,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -1.7685641106139756,
+                      -3.672487964630382,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -2.5110674771256787,
+                      -3.1457867723667015,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -2.82842712474619,
+                      -2.8284271247461903,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  9.42477796076938
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.3463968515384828,
+                  2.6927937030769655,
+                  4.039190554615448,
+                  5.385587406153931,
+                  6.731984257692414,
+                  8.078381109230897,
+                  9.42477796076938,
+                  9.42477796076938,
+                  9.42477796076938,
+                  9.42477796076938
+                ]
+              },
+              "length": 9.424572645730448,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.0,
+                        -0.44881431781487324,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.847404819194423,
+                        -1.3462774680378273,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.1869659712549994,
+                        -2.5415048720693054,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.168686875018297,
+                        -3.4514582882945564,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.9070563650398937,
+                        -3.9740427562312926,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -0.456409920226325,
+                        -4.050640579144037,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.7685641106139756,
+                        -3.672487964630382,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.5110674771256787,
+                        -3.1457867723667015,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.82842712474619,
+                        -2.8284271247461903,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    9.42477796076938
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.3463968515384828,
+                    2.6927937030769655,
+                    4.039190554615448,
+                    5.385587406153931,
+                    6.731984257692414,
+                    8.078381109230897,
+                    9.42477796076938,
+                    9.42477796076938,
+                    9.42477796076938,
+                    9.42477796076938
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Arc",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          4.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          4.0,
+                          -0.44881431781487324,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          3.847404819194423,
+                          -1.3462774680378273,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          3.1869659712549994,
+                          -2.5415048720693054,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          2.168686875018297,
+                          -3.4514582882945564,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.9070563650398937,
+                          -3.9740427562312926,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          -0.456409920226325,
+                          -4.050640579144037,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          -1.7685641106139756,
+                          -3.672487964630382,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          -2.5110674771256787,
+                          -3.1457867723667015,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          -2.82842712474619,
+                          -2.8284271247461903,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 3,
+                    "domain": [
+                      0.0,
+                      9.42477796076938
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.3463968515384828,
+                      2.6927937030769655,
+                      4.039190554615448,
+                      5.385587406153931,
+                      6.731984257692414,
+                      8.078381109230897,
+                      9.42477796076938,
+                      9.42477796076938,
+                      9.42477796076938,
+                      9.42477796076938
+                    ]
+                  },
+                  "length": 9.424572645730448,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            4.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            4.0,
+                            -0.44881431781487324,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            3.847404819194423,
+                            -1.3462774680378273,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            3.1869659712549994,
+                            -2.5415048720693054,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            2.168686875018297,
+                            -3.4514582882945564,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.9070563650398937,
+                            -3.9740427562312926,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            -0.456409920226325,
+                            -4.050640579144037,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            -1.7685641106139756,
+                            -3.672487964630382,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            -2.5110674771256787,
+                            -3.1457867723667015,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            -2.82842712474619,
+                            -2.8284271247461903,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 3,
+                      "domain": [
+                        0.0,
+                        9.42477796076938
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.3463968515384828,
+                        2.6927937030769655,
+                        4.039190554615448,
+                        5.385587406153931,
+                        6.731984257692414,
+                        8.078381109230897,
+                        9.42477796076938,
+                        9.42477796076938,
+                        9.42477796076938,
+                        9.42477796076938
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Arc\nCenter of arc ( Deformable  StartPoint  Tangent  Extension ): _Pause\nCenter of arc ( Deformable  StartPoint  Tangent  Extension ): _Deformable\nCenter of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension ): _Degree=3\nCenter of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension ): _PointCount=10\nCenter of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension ): w0.0,0.0,0.0\nStart of arc ( Tilted  Midpoint ): _Midpoint\nMidpoint of arc: w4.0,0.0,0.0\nEnd point or angle ( Length ): -135.0",
+        "input_trace": {
+          "completed": 7,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 7,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Center of arc ( Deformable  StartPoint  Tangent  Extension )",
+            "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+            "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+            "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+            "Start of arc ( Tilted  Midpoint )",
+            "Midpoint of arc",
+            "End point or angle ( Length )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Center of arc ( Deformable  StartPoint  Tangent  Extension )",
+              "token": "_Deformable"
+            },
+            {
+              "action": 1,
+              "prompt": "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+              "token": "_Degree=3"
+            },
+            {
+              "action": 2,
+              "prompt": "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+              "token": "_PointCount=10"
+            },
+            {
+              "action": 3,
+              "prompt": "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 4,
+              "prompt": "Start of arc ( Tilted  Midpoint )",
+              "token": "_Midpoint"
+            },
+            {
+              "action": 5,
+              "prompt": "Midpoint of arc",
+              "token": "w4.0,0.0,0.0"
+            },
+            {
+              "action": 6,
+              "prompt": "End point or angle ( Length )",
+              "token": "-135.0"
+            }
+          ]
+        },
+        "macro": "_Arc _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      4.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      4.0,
+                      -0.44881431781487324,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.847404819194423,
+                      -1.3462774680378273,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      3.1869659712549994,
+                      -2.5415048720693054,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      2.168686875018297,
+                      -3.4514582882945564,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.9070563650398937,
+                      -3.9740427562312926,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -0.456409920226325,
+                      -4.050640579144037,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -1.7685641106139756,
+                      -3.672487964630382,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -2.5110674771256787,
+                      -3.1457867723667015,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -2.82842712474619,
+                      -2.8284271247461903,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 3,
+                "domain": [
+                  0.0,
+                  9.42477796076938
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.3463968515384828,
+                  2.6927937030769655,
+                  4.039190554615448,
+                  5.385587406153931,
+                  6.731984257692414,
+                  8.078381109230897,
+                  9.42477796076938,
+                  9.42477796076938,
+                  9.42477796076938,
+                  9.42477796076938
+                ]
+              },
+              "length": 9.424572645730448,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        4.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        4.0,
+                        -0.44881431781487324,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.847404819194423,
+                        -1.3462774680378273,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        3.1869659712549994,
+                        -2.5415048720693054,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        2.168686875018297,
+                        -3.4514582882945564,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.9070563650398937,
+                        -3.9740427562312926,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -0.456409920226325,
+                        -4.050640579144037,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.7685641106139756,
+                        -3.672487964630382,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.5110674771256787,
+                        -3.1457867723667015,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -2.82842712474619,
+                        -2.8284271247461903,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 3,
+                  "domain": [
+                    0.0,
+                    9.42477796076938
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.3463968515384828,
+                    2.6927937030769655,
+                    4.039190554615448,
+                    5.385587406153931,
+                    6.731984257692414,
+                    8.078381109230897,
+                    9.42477796076938,
+                    9.42477796076938,
+                    9.42477796076938,
+                    9.42477796076938
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "arc-deform-midpoint-endpoint",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Arc",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Arc\nCenter of arc ( Deformable  StartPoint  Tangent  Extension ): _Pause\nCenter of arc ( Deformable  StartPoint  Tangent  Extension ): _Deformable\nCenter of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension ): _Degree=3\nCenter of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension ): _PointCount=10\nCenter of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension ): w0.0,0.0,0.0\nStart of arc ( Tilted  Midpoint ): _Midpoint\nMidpoint of arc: w4.0,0.0,0.0\nEnd point or angle ( Length ): w0.0,4.0,0.0\nEnd point or angle ( Length ): w0.0,4.0,0.0\nUnknown command: w0.0,4.0,0.0\nEnd point or angle ( Length ): _Cancel\nEnd point or angle ( Length ): _Cancel\nEnd point or angle ( Length )",
+        "input_trace": {
+          "completed": 7,
+          "edge_picks": [],
+          "errors": [
+            "owned Arc input timeout"
+          ],
+          "expected": 7,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Center of arc ( Deformable  StartPoint  Tangent  Extension )",
+            "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+            "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+            "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+            "Start of arc ( Tilted  Midpoint )",
+            "Midpoint of arc",
+            "End point or angle ( Length )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Center of arc ( Deformable  StartPoint  Tangent  Extension )",
+              "token": "_Deformable"
+            },
+            {
+              "action": 1,
+              "prompt": "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+              "token": "_Degree=3"
+            },
+            {
+              "action": 2,
+              "prompt": "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+              "token": "_PointCount=10"
+            },
+            {
+              "action": 3,
+              "prompt": "Center of arc ( Degree=3  PointCount=10  StartPoint  Tangent  Extension )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 4,
+              "prompt": "Start of arc ( Tilted  Midpoint )",
+              "token": "_Midpoint"
+            },
+            {
+              "action": 5,
+              "prompt": "Midpoint of arc",
+              "token": "w4.0,0.0,0.0"
+            },
+            {
+              "action": 6,
+              "prompt": "End point or angle ( Length )",
+              "token": "w0.0,4.0,0.0"
+            }
+          ]
+        },
+        "macro": "_Arc _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

@@ -355,7 +355,6 @@
     "crates/viboceros-command/src/plane_primitives/tests.rs": "557a8e34b937b91d8a934cd1e97c7d712496bc0e72adb6567fe42388ca52d036",
     "crates/viboceros-geometry/src/circle_deform.rs": "a5106d36befa35a081338d5c12303cb71c90a13a686051a1865fe8ccea4343a3",
     "crates/viboceros-geometry/src/curve_rebuild.rs": "78242f61015b5534cbed45ab52dd0d7fb9d7e60b5fb8c3756a9fb4cf59de2634",
-    "crates/viboceros-geometry/src/error.rs": "cded868ae8c84963f956b2cbe123ce4e2b5a4e901f27d31ac57e9682bbe41f18",
     "src/app/tests/circle_deform.rs": "4468296a7e60aa528a217bb760aefd26a312afef119d06e53be37833b1e613e1",
     "tools/rhino_oracle/fixtures/circle_clamped_controls.json": "8ff60a692b66bfe2ba2e9e6dfa54ff714ac5ed5b3af22471c35dde8befe6ca4e",
     "tools/rhino_oracle/fixtures/circle_clamped_grid.json": "493f1f53ed2c01d97ad156dd6a0c1807934350a9001aac396b405634cf59fba5",
@@ -377,6 +376,7 @@
     "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:tools/rhino_oracle/circle_around_probe.py": "6c183afdbeb081731700d3f762e90f64cd09a9b8fe6e1aa0900340715f5164eb",
     "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:docs/circle-deform-validation.json": "55006a9145ed7248e6d01ded3af692c5de0f94fbbaa013043d44e550e1d8de25",
     "771c31cac4aa5535a6a96aedfbeab15544a0c117:crates/viboceros-oracle/src/circle_around.rs": "9936e5c3b0280e29c1d8774b831f07aaa3c4a8f7a2096818cb5af88301df18f5",
-    "771c31cac4aa5535a6a96aedfbeab15544a0c117:tools/rhino_oracle/curve_primitive_probe.py": "e0e696bfd3da21c180ab4a5792c530e477e88d23be6baaabd75d46f78a587c66"
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:tools/rhino_oracle/curve_primitive_probe.py": "e0e696bfd3da21c180ab4a5792c530e477e88d23be6baaabd75d46f78a587c66",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:crates/viboceros-geometry/src/error.rs": "cded868ae8c84963f956b2cbe123ce4e2b5a4e901f27d31ac57e9682bbe41f18"
   }
 }

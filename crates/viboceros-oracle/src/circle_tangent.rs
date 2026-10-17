@@ -12,50 +12,15 @@ pub(super) fn enter(
     guides: &[(ObjectId, Geometry)],
     arc: bool,
 ) -> Result<(), ProbeError> {
-    if arc && !matches!(actions.first(),Some(Action::Option(w))if w.eq_ignore_ascii_case("Tangent"))
+    if arc
+        && !actions
+            .iter()
+            .any(|a| matches!(a, Action::Option(w) if w.eq_ignore_ascii_case("Tangent")))
     {
-        let mut tokens = vec!["Arc".to_owned()];
-        for action in actions {
-            let point = match action {
-                Action::Point(p) => Some(Point3::try_from(*p)?),
-                Action::Relative {
-                    relative: [x, y, z],
-                } => Some(
-                    viboceros_drafting::PointInput::parse(&format!("r{x},{y},{z}"))
-                        .unwrap()
-                        .map_err(|_| ProbeError::FixtureInvariant("invalid arc setup point"))?
-                        .resolve(plane, *last)
-                        .map_err(|_| ProbeError::FixtureInvariant("missing arc setup base"))?,
-                ),
-                Action::Option(w) => {
-                    tokens.push(w.clone());
-                    None
-                }
-                Action::Number(n) => {
-                    tokens.push(n.to_string());
-                    None
-                }
-                _ => {
-                    return Err(ProbeError::FixtureInvariant(
-                        "unsupported arc setup reference",
-                    ));
-                }
-            };
-            if let Some(p) = point {
-                let [x, y, z] = p.to_array();
-                tokens.push(format!("{x},{y},{z}"));
-                *last = Some(p);
-            }
-        }
-        commands.execute_in_context(
-            doc,
-            &tokens.join(" "),
-            viboceros_command::CommandContext {
-                construction_plane: plane,
-            },
-        )?;
-        return Ok(());
+        return crate::arc_command::enter(doc, commands, plane, actions, last, guides);
     }
+    let mut arc_output =
+        viboceros_command::arc_deform_input::Settings::new(commands.arc_deformation());
     let preferences = if arc {
         viboceros_command::circle_around_input::Preferences {
             radius: commands.arc_tangent_radius(),
@@ -95,13 +60,30 @@ pub(super) fn enter(
             continue;
         }
         if !tangent {
-            match action {
-                Action::Option(w) if w.eq_ignore_ascii_case("Tangent") => tangent = true,
-                Action::Option(w) if output.option(w)? => {}
-                Action::Number(n) if output.integer_pending() => {
-                    output.number(*n)?;
+            if let Action::Option(w) = action
+                && w.eq_ignore_ascii_case("Tangent")
+            {
+                tangent = true;
+            } else if arc {
+                match action {
+                    Action::Option(w) if w.eq_ignore_ascii_case("Cancel") => return Ok(()),
+                    Action::Option(w) if w.eq_ignore_ascii_case("Enter") => {
+                        arc_output.default_value()?
+                    }
+                    Action::Option(w) if arc_output.option(w)? => {}
+                    Action::Number(n) if arc_output.pending().is_some() => {
+                        let _ = arc_output.number(*n);
+                    }
+                    _ => return Err(ProbeError::FixtureInvariant("invalid Arc Tangent prefix")),
                 }
-                _ => return Err(ProbeError::FixtureInvariant("invalid Tangent prefix")),
+            } else {
+                match action {
+                    Action::Option(w) if output.option(w)? => {}
+                    Action::Number(n) if output.integer_pending() => {
+                        output.number(*n)?;
+                    }
+                    _ => return Err(ProbeError::FixtureInvariant("invalid Tangent prefix")),
+                }
             }
             continue;
         }
@@ -155,7 +137,9 @@ pub(super) fn enter(
     } else {
         input.command()
     };
-    let command = if output.output().deformable {
+    let command = if arc && arc_output.output().deformable {
+        arc_output.output().wrap_command(&command)
+    } else if !arc && output.output().deformable {
         output.output().wrap_command(&command)
     } else {
         command

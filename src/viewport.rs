@@ -350,6 +350,8 @@ pub struct ViewportInput<'a> {
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub ellipse_input: Option<viboceros_command::ellipse_input::Input>,
     pub tangent: Option<TangentPreview<'a>>,
+    pub arc_output: Option<viboceros_command::arc_deform_input::Output>,
+    pub arc_preview: Option<(viboceros_command::arc_input::Preview, Frame3)>,
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
@@ -450,6 +452,8 @@ impl Default for ViewportInput<'_> {
             ellipse_input: None,
             tangent: None,
             arc_tilted_input: None,
+            arc_output: None,
+            arc_preview: None,
             circle_around_input: None,
             circle_around_output: None,
             circle_deform_input: None,
@@ -2231,18 +2235,30 @@ impl Viewport {
                 self.paint_draft_points(&painter, rect, &preview.foci);
             }
         }
-        if let Some(input) = input.tangent {
+        if let Some(tangent) = input.tangent {
             self.paint_tangent_preview(
                 &painter,
                 rect,
                 document,
-                input,
+                tangent,
                 response.hover_pos(),
                 drafting_cursor.map(|c| c.point),
             );
         }
         if let Some(getter) = input.arc_tilted_input {
-            self.paint_tilted_arc(&painter, rect, getter, drafting_cursor.map(|c| c.point));
+            self.paint_tilted_arc(
+                &painter,
+                rect,
+                getter,
+                input.arc_output,
+                drafting_cursor.map(|c| c.point),
+            );
+        }
+        if let Some((preview, plane)) = input.arc_preview
+            && let Some(point) = drafting_cursor.map(|c| c.point)
+            && let Ok(arc) = preview.arc(point, plane, document.tolerance())
+        {
+            self.paint_arc_preview(&painter, rect, arc, input.arc_output);
         }
         if let Some(getter) = input.circle_around_input {
             self.paint_draft_points(&painter, rect, &[getter.center()]);

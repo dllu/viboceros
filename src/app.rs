@@ -138,6 +138,8 @@ mod shrink_trimmed;
 use command_line::command_completions;
 mod align;
 mod angle;
+mod arc_deform;
+mod arc_length;
 mod arc_tilted;
 mod circle;
 mod circle_around;
@@ -418,6 +420,9 @@ enum InteractiveCommand {
     },
     ArcTilted {
         anchor: Option<Point3>,
+    },
+    ArcDeform {
+        setting: Option<viboceros_command::arc_deform_input::Setting>,
     },
     CircleTangent {
         anchor: Option<Point3>,
@@ -851,7 +856,7 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
-            Self::ArcTangent { .. } | Self::ArcTilted { .. } => "Arc",
+            Self::ArcTangent { .. } | Self::ArcTilted { .. } | Self::ArcDeform { .. } => "Arc",
             Self::CircleTangent { .. } | Self::CircleAround { .. } | Self::CircleDeform { .. } => {
                 "Circle"
             }
@@ -1100,6 +1105,15 @@ impl InteractiveCommand {
             Self::ArcTilted { .. } => {
                 "Arc Tilted: specify start, orientation, and endpoint or angle (Esc cancels)"
             }
+            Self::ArcDeform {
+                setting: Some(viboceros_command::arc_deform_input::Setting::Degree),
+            } => "Arc Deformable: enter degree (Esc cancels)",
+            Self::ArcDeform {
+                setting: Some(viboceros_command::arc_deform_input::Setting::PointCount),
+            } => "Arc Deformable: enter point count (Esc cancels)",
+            Self::ArcDeform { setting: None } => {
+                "Arc Deformable: center or Degree/PointCount/StartPoint/Tangent (Esc cancels)"
+            }
             Self::CircleTangent { .. } => {
                 "Circle Tangent: pick contacts, Point, radius or FromFirstPoint (Esc cancels)"
             }
@@ -1227,10 +1241,10 @@ impl InteractiveCommand {
                 "Arc StartPoint Center: pick the endpoint, enter an angle, or choose Length/Direction (Esc cancels)"
             }
             Self::ArcStartCenterLength { .. } => {
-                "Arc StartPoint Center Length: enter a signed arc length (Esc to cancel)"
+                "Arc StartPoint Center Length: enter a signed length or pick two distance points; Direction reverses it (Esc cancels)"
             }
             Self::ArcCenter { center: None, .. } => {
-                "Arc: pick the center or choose StartPoint/Tangent (Esc cancels)"
+                "Arc: pick the center or choose Deformable/StartPoint/Tangent (Esc cancels)"
             }
             Self::ArcCenter { start: None, .. } => {
                 "Arc Center: pick the start point or choose Tilted/Midpoint (Esc cancels)"
@@ -1239,7 +1253,7 @@ impl InteractiveCommand {
                 "Arc Center: pick the endpoint, enter an angle, or choose Length/Direction (Esc cancels)"
             }
             Self::ArcCenterLength { .. } => {
-                "Arc Center Length: enter a signed arc length (Esc to cancel)"
+                "Arc Center Length: enter a signed length or pick two distance points; Direction reverses it (Esc cancels)"
             }
             Self::ArcCenterMidpoint { center: None, .. } => {
                 "Arc Center Midpoint: pick the center (Esc to cancel)"
@@ -1251,7 +1265,7 @@ impl InteractiveCommand {
                 "Arc Center Midpoint: pick the endpoint, enter an angle, or choose Length/Direction (Esc cancels)"
             }
             Self::ArcCenterMidpointLength { .. } => {
-                "Arc Center Midpoint Length: enter a signed arc length (Esc to cancel)"
+                "Arc Center Midpoint Length: enter a signed length or pick two distance points; Direction reverses it (Esc cancels)"
             }
             Self::Ellipse { center: None, .. } => {
                 "Ellipse: pick the center in the viewport (Esc to cancel)"
@@ -1860,6 +1874,7 @@ impl InteractiveCommand {
                 points: [None, _, _],
             }
             | Self::Arc { points: [None, _] }
+            | Self::ArcDeform { .. }
             | Self::ArcStartPoint { start: None, .. }
             | Self::ArcStartDirection { start: None, .. }
             | Self::ArcStartCenter { start: None, .. }
@@ -2319,6 +2334,8 @@ pub struct VibocerosApp {
     circle_around_session: Option<circle_around::Session>,
     tangent_session: Option<tangent::Session>,
     arc_tilted_session: Option<arc_tilted::Session>,
+    arc_length_session: Option<arc_length::Session>,
+    arc_deform_session: Option<viboceros_command::arc_deform_input::Settings>,
     circle_deform_session: Option<circle_deform::Session>,
     spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
@@ -2447,6 +2464,8 @@ impl VibocerosApp {
             circle_around_session: None,
             tangent_session: None,
             arc_tilted_session: None,
+            arc_length_session: None,
+            arc_deform_session: None,
             circle_deform_session: None,
             spiral_session: None,
             hyperbola_session: None,
@@ -2577,6 +2596,7 @@ impl VibocerosApp {
         }
         // Construction options can share names with snap modes, such as Vertex.
         if self.try_continue_circle_deform(&input)
+            || self.try_continue_arc_deform(&input)
             || self.try_continue_arc_tilted(&input)
             || self.try_continue_tangent(&input)
             || self.try_continue_arc(&input)
@@ -2882,7 +2902,7 @@ impl VibocerosApp {
                 .trim_start_matches(['_', '-'])
                 .eq_ignore_ascii_case("Tilted")
         {
-            self.start_arc_tilted(center);
+            self.start_tilted_arc_from_prompt(center);
             self.command_input.clear();
             return true;
         }
@@ -2898,7 +2918,7 @@ impl VibocerosApp {
             .trim_start_matches(['_', '-'])
             .eq_ignore_ascii_case("Tangent")
         {
-            self.start_tangent_arc();
+            self.start_arc_tangent_from_prompt();
             self.command_input.clear();
             return true;
         }
@@ -3055,7 +3075,7 @@ impl VibocerosApp {
                     .eq_ignore_ascii_case("Direction")
             })
             .map(|(_, value)| value.trim().trim_start_matches('_'));
-        if !is_length && let Some(direction) = direction_value {
+        if let Some(direction) = direction_value {
             let clockwise = if direction.eq_ignore_ascii_case("Clockwise")
                 || direction.eq_ignore_ascii_case("CW")
             {
@@ -3068,6 +3088,13 @@ impl VibocerosApp {
                 self.push_log("Error: direction must be Clockwise or Counterclockwise".into());
                 return true;
             };
+            if is_length {
+                if let Some(s) = self.arc_length_session.as_mut() {
+                    s.clockwise = clockwise;
+                }
+                self.command_input.clear();
+                return true;
+            }
             let command = if midpoint_mode {
                 InteractiveCommand::ArcCenterMidpoint {
                     center: Some(center),
@@ -3103,6 +3130,7 @@ impl VibocerosApp {
             } else {
                 InteractiveCommand::ArcCenterLength { center, start }
             };
+            self.start_arc_length();
             self.active_command = Some(command);
             self.command_input.clear();
             self.push_log(command.prompt().to_owned());
@@ -3132,13 +3160,17 @@ impl VibocerosApp {
             });
             return true;
         }
-        self.active_command = None;
+        let value = if is_length && self.arc_length_session.is_some_and(|s| s.clockwise) {
+            -value
+        } else {
+            value
+        };
         let size = if is_length {
             format!("Length={value}")
         } else {
             value.to_string()
         };
-        self.execute_command(&if midpoint_mode {
+        self.execute_arc_command(&if midpoint_mode {
             format!(
                 "Arc Center {} Midpoint {} {size}",
                 format_model_point(center),
@@ -3307,6 +3339,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_arc_deform(input) {
+            return true;
+        }
         if self.try_start_circle_deform(input) {
             return true;
         }
@@ -5731,6 +5766,8 @@ impl VibocerosApp {
         self.circle_around_session = None;
         self.tangent_session = None;
         self.arc_tilted_session = None;
+        self.arc_deform_session = None;
+        self.arc_length_session = None;
         self.circle_deform_session = None;
         self.spiral_session = None;
         self.hyperbola_session = None;
@@ -5802,6 +5839,12 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
+        if !self.prepare_arc_deform_point() {
+            return false;
+        }
+        if let Some(accepted) = self.accept_arc_length_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_arc_tilted_point(point) {
             return accepted;
         }
@@ -5883,6 +5926,7 @@ impl VibocerosApp {
             | InteractiveCommand::CircleDeform { .. }
             | InteractiveCommand::ArcTangent { .. }
             | InteractiveCommand::ArcTilted { .. }
+            | InteractiveCommand::ArcDeform { .. }
             | InteractiveCommand::CircleTangent { .. }
             | InteractiveCommand::CircleAround { .. }
             | InteractiveCommand::Ellipse { .. }
@@ -6578,8 +6622,7 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {error}"));
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
+                self.execute_arc_command(&format!(
                     "Arc Center {} {} End={} Direction={}",
                     format_model_point(center),
                     format_model_point(start),
@@ -6650,8 +6693,7 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {error}"));
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
+                self.execute_arc_command(&format!(
                     "Arc Center {} Midpoint {} End={} Direction={}",
                     format_model_point(center),
                     format_model_point(midpoint),
@@ -6723,8 +6765,7 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {error}"));
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
+                self.execute_arc_command(&format!(
                     "Arc StartPoint {} Center={} End={} Direction={}",
                     format_model_point(start),
                     format_model_point(center),
@@ -6786,8 +6827,7 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {error}"));
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
+                self.execute_arc_command(&format!(
                     "Arc StartPoint {} {} {}",
                     format_model_point(start),
                     format_model_point(end),
@@ -6841,8 +6881,7 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {error}"));
                     return false;
                 }
-                self.active_command = None;
-                self.execute_command(&format!(
+                self.execute_arc_command(&format!(
                     "Arc StartPoint {} Direction={} {}",
                     format_model_point(start),
                     format_model_point(direction),
@@ -6885,8 +6924,7 @@ impl VibocerosApp {
                         self.push_log(format!("Error: {error}"));
                         return false;
                     }
-                    self.active_command = None;
-                    self.execute_command(&format!(
+                    self.execute_arc_command(&format!(
                         "Arc StartPoint {} ThroughPoint {} {}",
                         format_model_point(start),
                         format_model_point(through),
@@ -9719,7 +9757,9 @@ impl eframe::App for VibocerosApp {
             {
                 self.curve_points.last().copied()
             } else {
-                self.maelstrom_circle_anchor()
+                self.arc_length_session
+                    .and_then(|s| s.first)
+                    .or_else(|| self.maelstrom_circle_anchor())
                     .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
             },
             reference: if self.plane_prompt.is_some() {
@@ -10272,11 +10312,27 @@ impl eframe::App for VibocerosApp {
                 contacts: &s.input,
                 output: s.output,
                 arc: s.support.as_ref(),
+                arc_output: self.arc_deform_session.map(|s| s.output()),
             });
         let circle_around_output = self
             .circle_around_session
             .as_ref()
             .and_then(|s| s.output)
+            .filter(|_| model_input_active);
+        let arc_output = self
+            .arc_deform_session
+            .map(|s| s.output())
+            .filter(|_| model_input_active);
+        let arc_preview = self
+            .arc_preview()
+            .map(|p| {
+                (
+                    p,
+                    self.drafting_plane.unwrap_or_else(|| {
+                        self.viewports[self.active_viewport].construction_plane()
+                    }),
+                )
+            })
             .filter(|_| model_input_active);
         let arc_tilted_input = self
             .arc_tilted_session
@@ -10449,6 +10505,8 @@ impl eframe::App for VibocerosApp {
                             ellipse_input,
                             tangent: tangent_input,
                             arc_tilted_input,
+                            arc_output,
+                            arc_preview,
                             circle_around_input,
                             circle_around_output,
                             circle_deform_input,
@@ -10675,6 +10733,7 @@ mod tests {
     mod align;
     mod angle;
     mod apply_curves;
+    mod arc_deform;
     mod arc_tangent;
     mod arc_tilted;
     mod area;
@@ -10904,6 +10963,8 @@ mod tests {
             circle_around_session: None,
             tangent_session: None,
             arc_tilted_session: None,
+            arc_length_session: None,
+            arc_deform_session: None,
             circle_deform_session: None,
             spiral_session: None,
             hyperbola_session: None,

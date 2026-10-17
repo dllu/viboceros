@@ -6,6 +6,7 @@ impl Viewport {
         painter: &egui::Painter,
         rect: Rect,
         getter: viboceros_command::arc_tilted_input::Input,
+        output: Option<viboceros_command::arc_deform_input::Output>,
         cursor: Option<Point3>,
     ) {
         self.paint_draft_points(painter, rect, &[getter.center(), getter.anchor()]);
@@ -22,9 +23,24 @@ impl Viewport {
                 }
             }
         }
-        if let Some(arc) = getter.preview(point)
-            && let Ok(curve) = arc.to_nurbs()
-        {
+        if let Some(arc) = getter.preview(point) {
+            self.paint_arc_preview(painter, rect, arc, output);
+        }
+    }
+    pub(super) fn paint_arc_preview(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        arc: viboceros_geometry::CircularArc3,
+        output: Option<viboceros_command::arc_deform_input::Output>,
+    ) {
+        if let Ok(curve) = output.map_or_else(
+            || {
+                arc.to_nurbs()
+                    .map_err(viboceros_command::CommandError::from)
+            },
+            |o| o.curve(arc),
+        ) {
             let mut projected = ProjectedPrimitives::default();
             self.add_projected_nurbs_curve(&mut projected, rect, &curve);
             for segment in projected.segments {

@@ -212,6 +212,8 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                 app.ellipse_session.is_none()
                     && app.tangent_session.is_none()
                     && app.arc_tilted_session.is_none()
+                    && app.arc_deform_session.is_none()
+                    && app.arc_length_session.is_none()
                     && app.circle_around_session.is_none()
                     && app.circle_deform_session.is_none(),
                 "{id}: {:?}",
@@ -262,6 +264,23 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                         "{id} {stage}"
                     );
                 }
+            }
+            if let Some(prompts) = row["value"]["preference_input_trace"]["prompts"].as_array() {
+                let prompt = prompts[1].as_str().unwrap();
+                let number = |key: &str| {
+                    prompt
+                        .split_once(key)
+                        .unwrap()
+                        .1
+                        .split_whitespace()
+                        .next()
+                        .unwrap()
+                        .parse::<usize>()
+                        .unwrap()
+                };
+                let d = app.commands.arc_deformation();
+                assert_eq!(d.degree, number("Degree="), "{id}: saved degree");
+                assert_eq!(d.point_count, number("PointCount="), "{id}: saved count");
             }
             assert_eq!(
                 app.document.undo().unwrap().is_some(),

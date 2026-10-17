@@ -37,7 +37,9 @@ impl VibocerosApp {
         {
             self.curve_points.last().copied()
         } else {
-            self.maelstrom_circle_anchor()
+            self.arc_length_session
+                .and_then(|s| s.first)
+                .or_else(|| self.maelstrom_circle_anchor())
                 .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
         };
         let Some(anchor) = anchor else {
@@ -251,6 +253,7 @@ impl VibocerosApp {
         if self.apply_drafting_point_with_snap(point, snap.filter(|s| s.point() == point)) {
             self.snaps.model_override = None;
             if self.active_command.is_some()
+                && self.arc_length_session.is_none()
                 && self
                     .arc_tilted_session
                     .as_ref()

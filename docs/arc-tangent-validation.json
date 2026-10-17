@@ -480,19 +480,13 @@
   "sha256": {
     "crates/viboceros-command/src/pipe.rs": "bdc9560b31a89481785b6f02d4af7018debe4528a77a2d4c0dd87da30e72c450",
     "crates/viboceros-geometry/src/circle_tangent.rs": "db03351e93d9f166334dec5ca391e4cd515120ecc5519d9c6532a95165bd9184",
-    "crates/viboceros-geometry/src/lib.rs": "dd7a02f375cd699e48e9df17dd0517e9bf68177ea2149b57babcf60f7d19e364",
     "crates/viboceros-geometry/src/tangent_arc.rs": "c45723bd6930ce8f87638f6fbe2f4aaee40fd6f9957c5d8fa2c5ce7be2f333a9",
-    "crates/viboceros-oracle/src/arc_tangent.rs": "555993dd89c24b46d758162395f844b150043480ef0b47986cf66045b35d3bed",
-    "crates/viboceros-oracle/src/circle_tangent.rs": "960b9b3cd326d12b6a769ceac283623889cd7ee61723d056fcda18c8ee41d876",
     "src/app/circle.rs": "0171cb59889ab67daccb33f56153356f16971475b67e8bf7e687ac1e1b99a82f",
     "src/app/circle_deform.rs": "409fb7487b06a42de0bbcddeafca310003959d033aa6e40bc55048cac7699eed",
     "src/app/component_selection.rs": "d9b5933aeaa7526ca82e188a6aea25303fb1abd202a8a59df7fa96c8ef57100c",
     "src/app/object_selection.rs": "180289dce805cafe83346d286fbda537400b87b6f387ea496a8472d1dcaf450c",
-    "src/app/tangent.rs": "46eb55242dbcc223c4c99f4542a74a3c171fdecd7f50a35e2e9c2041a9775306",
     "src/app/tests/arc_tangent.rs": "4309b100f6be395157cfe907648c300ed5b88a61515540635ccce4f5fea38af9",
     "src/app/tests/circle_tangent.rs": "6fd91e995c5fcfed7e8a87fcaf90b0e389060a4cce98fde5b8b52edf50198ba4",
-    "src/viewport/tangent.rs": "a5c5e65bd36b8b2c0f02522e4466396ccd963b42ce3466deb18e4fe3947b6308",
-    "tools/rhino_oracle/arc_tangent_probe.py": "a01b34ed782a0ca42b4a170e4841e6c8c4736938d69a5e591256c08bdaa6b516",
     "tools/rhino_oracle/fixtures/arc_tangent_basic.json": "2cbbf425fd8d457204d6580946aa4f4dffa8f0c54d0f2a76a4e9bccd0fa45764",
     "tools/rhino_oracle/fixtures/arc_tangent_curved.json": "35d5a8bbe5ea2c52f76addc155738d327b6fec042479c4fe9aa422e30a4646ac",
     "tools/rhino_oracle/fixtures/arc_tangent_curved_diagnostics.json": "6e6cbae977618ddc544093331fdd9bd5b3204a76fc5524d63e548842a9378585",
@@ -543,6 +537,12 @@
     "771c31cac4aa5535a6a96aedfbeab15544a0c117:tools/rhino_oracle/rhino_worker.py": "d02bddde1e511201c8ec9e7da8b176125303e27ea3175ccda22653e961abea7c",
     "771c31cac4aa5535a6a96aedfbeab15544a0c117:tools/rhino_oracle/structural_sdk.py": "bc019b9cab8877587f19582e1bf022ecb17a2e16cc82fd71bcd15f9646c32c29",
     "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/circle-around-validation.json": "527b3110551693b409eb0a5e66f7856184e132fda20c4794c1aa9d99b2f4efdb",
-    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/circle-tangent-validation.json": "64fed4ad681b47755bf65dfe36cf0cfd9d8fcb9c49ed497d4e5f8552c9965f13"
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/circle-tangent-validation.json": "64fed4ad681b47755bf65dfe36cf0cfd9d8fcb9c49ed497d4e5f8552c9965f13",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:crates/viboceros-geometry/src/lib.rs": "dd7a02f375cd699e48e9df17dd0517e9bf68177ea2149b57babcf60f7d19e364",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:crates/viboceros-oracle/src/arc_tangent.rs": "555993dd89c24b46d758162395f844b150043480ef0b47986cf66045b35d3bed",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:crates/viboceros-oracle/src/circle_tangent.rs": "960b9b3cd326d12b6a769ceac283623889cd7ee61723d056fcda18c8ee41d876",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:src/app/tangent.rs": "46eb55242dbcc223c4c99f4542a74a3c171fdecd7f50a35e2e9c2041a9775306",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:src/viewport/tangent.rs": "a5c5e65bd36b8b2c0f02522e4466396ccd963b42ce3466deb18e4fe3947b6308",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:tools/rhino_oracle/arc_tangent_probe.py": "a01b34ed782a0ca42b4a170e4841e6c8c4736938d69a5e591256c08bdaa6b516"
   }
 }

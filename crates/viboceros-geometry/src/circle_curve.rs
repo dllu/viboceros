@@ -18,7 +18,7 @@ pub struct Circle3 {
 }
 
 impl Circle3 {
-    fn from_frame(frame: CircleFrame3) -> Result<Self, GeometryError> {
+    pub(crate) fn from_frame(frame: CircleFrame3) -> Result<Self, GeometryError> {
         let end = frame.length()?;
         check_interval(&(0.0..=end))?;
         Ok(Self {

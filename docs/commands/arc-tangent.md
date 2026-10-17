@@ -57,7 +57,7 @@ same recovered endpoints near a tangency; these captures differ by roughly
 retains the solved tangent contacts. Original observations and failing
 comparison evidence are preserved; the threshold is unchanged.
 
-See [Arc Tilted](arc-tilted.md) for spatial orientation. Arc’s Deformable and Extension options remain pending. Exhaustive
+See [Arc Tilted](arc-tilted.md) for spatial orientation and [Arc Deformable](arc-deformable.md) for editable NURBS output. Arc Extension remains pending. Exhaustive
 branch, snap, viewport-aperture and performance parity are unqualified.
 
 Reference: McNeel’s public [Arc command documentation](https://docs.mcneel.com/rhino/8/help/en-us/commands/arc.htm).

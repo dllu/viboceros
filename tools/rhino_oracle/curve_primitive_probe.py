@@ -76,7 +76,8 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
                 if not R.RhinoApp.RunScript(setup_macro,True):raise ValueError('curve setup failed')
             else:
                 setup_ok,setup_trace=setup_driver(guides)
-                if not setup_ok or setup_trace['errors'] or setup_trace['completed']!=setup_trace['expected']:raise ValueError('live curve setup failed')
+                cancelled=op['setup'][-1]=='Cancel'
+                if (not setup_ok and not cancelled) or setup_trace['errors'] or setup_trace['completed']!=setup_trace['expected']:raise ValueError('live curve setup failed')
             for obj in list(doc.Objects):
                 if obj.Id not in setup_before:doc.Objects.Delete(obj.Id,True)
             doc.Objects.UnselectAll()

@@ -6,11 +6,14 @@ def validate(op):
         from .getter_recipe import validate as validate_recipe
     else:
         from getter_recipe import validate as validate_recipe
-    options={'Center','StartPoint','ThroughPoint','Direction','Midpoint','Tilted','Length','Enter','Cancel'}
+    options={'Center','StartPoint','ThroughPoint','Direction','Midpoint','Tilted','Length','Enter','Cancel','Deformable','Degree','PointCount'}
     options.update('Direction='+v for v in ('Clockwise','Counterclockwise'))
     actions=op.get('actions',[])if isinstance(op,dict)else[]
     normalized=dict(op,actions=[a.get('click',a.get('hover'))if isinstance(a,dict)and(set(a)=={'click'}or set(a)=={'hover'})else a for a in actions])if isinstance(op,dict)else op
-    validate_recipe(normalized,'arc_command',options,numeric_options=('Length',))
+    if isinstance(op,dict):
+        if type(op.get('record_preferences',False))is not bool:raise ValueError('invalid Arc preference witness flag')
+        normalized.pop('record_preferences',None)
+    validate_recipe(normalized,'arc_command',options,numeric_pattern=r'\A(?:Degree=[0-9]{1,2}|PointCount=(?:[0-9]{1,3}|1000))\Z',numeric_options=('Length',))
     if any(isinstance(a,dict)and('click'in a or'hover'in a)for a in op.get('setup',[])):
         raise ValueError('Arc setup clicks are not supported')
     for index,a in enumerate(actions):
@@ -35,4 +38,9 @@ def run(op,host,iterations,tolerance):
     setup_driver=None
     if 'setup'in op:
         setup_driver=lambda guides:drive(dict(op,actions=op['setup'],id=op['id']+'-setup'),host,guides,command='Arc')
-    return run_primitive(op,host,iterations,tolerance,'Arc',driver,setup_driver)
+    result,elapsed=run_primitive(op,host,iterations,tolerance,'Arc',driver,setup_driver)
+    if op.get('record_preferences'):
+        returned,trace=drive(dict(op,actions=['Deformable','Cancel'],id=op['id']+'-preferences'),host,[],command='Arc')
+        if trace['errors']or trace['completed']!=2:raise ValueError('Arc preference witness did not complete')
+        result['preference_input_trace']=trace
+    return result,elapsed

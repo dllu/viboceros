@@ -649,6 +649,10 @@ impl CircularArc3 {
     pub fn x_axis(self) -> UnitVector3 {
         self.circle.x_axis()
     }
+    /// Complete circle whose seam is the arc start, retaining its validated frame.
+    pub(crate) fn start_circle(self) -> Result<crate::Circle3, GeometryError> {
+        crate::Circle3::from_frame(self.circle)
+    }
     pub fn y_axis(self) -> UnitVector3 {
         self.circle.y_axis()
     }

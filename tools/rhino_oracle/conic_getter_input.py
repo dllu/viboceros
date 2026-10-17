@@ -40,7 +40,7 @@ def drive(op,host,guides,command="Conic"):
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
-    if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Radius','Direction','Angle','Length','Distance')
+    if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Mid','Radius','Direction','Angle','Length','Distance')
     base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))

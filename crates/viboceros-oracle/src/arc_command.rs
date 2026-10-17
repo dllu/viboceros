@@ -1,7 +1,7 @@
 //! Replay public point/numeric Arc getters through the production command.
 use super::*;
 use crate::curve_getters::{Action, Fixture};
-fn enter(
+pub(super) fn enter(
     doc: &mut Document,
     commands: &CommandRegistry,
     plane: Frame3,
@@ -13,9 +13,33 @@ fn enter(
     let mut input: Option<viboceros_command::arc_tilted_input::Input> = None;
     let mut center = None;
     let mut complete = false;
+    let mut output = viboceros_command::arc_deform_input::Settings::new(commands.arc_deformation());
     for action in actions {
         if complete {
             return Err(ProbeError::FixtureInvariant("trailing Arc input"));
+        }
+        if output.pending().is_some() {
+            match action {
+                Action::Number(n) => {
+                    let _ = output.number(*n);
+                }
+                Action::Option(w) if w.eq_ignore_ascii_case("Enter") => {
+                    let _ = output.default_value();
+                }
+                Action::Option(w) if w.eq_ignore_ascii_case("Cancel") => return Ok(()),
+                _ => {
+                    return Err(ProbeError::FixtureInvariant(
+                        "Arc setting requires an integer",
+                    ));
+                }
+            }
+            continue;
+        }
+        if center.is_none()
+            && let Action::Option(w) = action
+            && output.option(w)?
+        {
+            continue;
         }
         if let Action::Hover { hover } = action {
             input
@@ -116,7 +140,11 @@ fn enter(
     }
     commands.execute_in_context(
         doc,
-        &tokens.join(" "),
+        &if output.output().deformable {
+            output.output().wrap_command(&tokens.join(" "))
+        } else {
+            tokens.join(" ")
+        },
         viboceros_command::CommandContext {
             construction_plane: plane,
         },
@@ -135,8 +163,46 @@ pub(super) fn run(
 mod tests {
     use super::*;
     #[test]
-    fn tilted_arc_native_spatial_controls_knots_domains_and_actual_history() {
+    fn arc_deformable_and_tilted_native_controls_knots_domains_and_actual_history() {
         for (q, n) in [
+            (
+                include_str!(
+                    "../../../tools/rhino_oracle/fixtures/arc_deform_midpoint_qualified.json"
+                ),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/arc_deform_midpoint_qualified_rhino_20261017.json"
+                ),
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/arc_deform_cursor.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/arc_deform_cursor_rhino_20261017.json"
+                ),
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/arc_deform_basic.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/arc_deform_basic_rhino_20261017.json"
+                ),
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/arc_deform_ordered.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/arc_deform_ordered_rhino_20261017.json"
+                ),
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/arc_deform_constructions.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/arc_deform_constructions_rhino_20261017.json"
+                ),
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/arc_deform_settings.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/arc_deform_settings_rhino_20261017.json"
+                ),
+            ),
             (
                 include_str!("../../../tools/rhino_oracle/fixtures/arc_tilted_initial.json"),
                 include_str!(

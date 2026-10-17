@@ -285,6 +285,8 @@ pub mod construction_plane;
 #[cfg(test)]
 use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
+pub mod arc_deform_input;
+pub mod arc_input;
 pub mod arc_tangent_input;
 pub mod arc_tilted_input;
 pub mod circle_around_input;
@@ -474,6 +476,9 @@ pub trait Command: Send + Sync {
         None
     }
     fn arc_tangent_radius(&self) -> Option<Real> {
+        None
+    }
+    fn arc_deformation(&self) -> Option<arc_deform_input::Deformation> {
         None
     }
     fn circle_preferences(&self) -> Option<circle_around_input::Preferences> {
@@ -2051,6 +2056,12 @@ impl CommandRegistry {
             .and_then(|i| self.commands[*i].arc_tangent_radius())
             .unwrap_or(1.)
     }
+    pub fn arc_deformation(&self) -> arc_deform_input::Deformation {
+        self.lookup
+            .get(&normalize_command_name("Arc"))
+            .and_then(|i| self.commands[*i].arc_deformation())
+            .unwrap_or_default()
+    }
     pub fn circle_preferences(&self) -> circle_around_input::Preferences {
         self.lookup
             .get(&normalize_command_name("Circle"))
@@ -2339,16 +2350,25 @@ impl Command for LineCommand {
     }
 }
 
-struct ArcCommand(remembered::Remembered<Real>);
+struct ArcCommand {
+    radius: remembered::Remembered<Real>,
+    deformation: remembered::Remembered<arc_deform_input::Deformation>,
+}
 impl Default for ArcCommand {
     fn default() -> Self {
-        Self(remembered::Remembered::new(1.))
+        Self {
+            radius: remembered::Remembered::new(1.),
+            deformation: remembered::Remembered::new(Default::default()),
+        }
     }
 }
 
 impl Command for ArcCommand {
     fn arc_tangent_radius(&self) -> Option<Real> {
-        Some(self.0.get())
+        Some(self.radius.get())
+    }
+    fn arc_deformation(&self) -> Option<arc_deform_input::Deformation> {
+        Some(self.deformation.get())
     }
     fn name(&self) -> &'static str {
         "Arc"
@@ -2368,339 +2388,21 @@ impl Command for ArcCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        if arguments
-            .first()
-            .is_some_and(|w| option_name_eq(w, "Tangent"))
-        {
-            let d = arc_tangent_input::from_arguments(
-                document,
-                &arguments[1..],
-                context.construction_plane,
-                self.0.get(),
-            )?;
-            let id = document.add_geometry(Geometry::Arc(d.arc))?;
-            self.0.set(d.arc.radius());
-            return Ok(format!(
-                "Added arc {id} (sweep {:.6}°)",
-                d.arc.sweep_radians().to_degrees()
-            ));
+        let (output, used) = arc_deform_input::output_prefix(arguments, self.deformation.get())?;
+        let d =
+            arc_input::from_arguments(document, &arguments[used..], context, self.radius.get())?;
+        let id = document.add_geometry(output.geometry(d.output_arc(output.deformable))?)?;
+        if let Some(radius) = d.tangent_radius {
+            self.radius.set(radius);
         }
-        if arguments
-            .first()
-            .is_some_and(|option| option_name_eq(option, "StartPoint"))
-        {
-            let (start, count) = parse_point(&arguments[1..])?;
-            let remaining = &arguments[1 + count..];
-            if let Some((name, value)) = remaining.first().and_then(|token| token.split_once('='))
-                && option_name_eq(name, "Center")
-            {
-                let (_, used) = parse_point(&[value])?;
-                require_consumed(&[value], used, ARC_START_USAGE)?;
-                let mut reordered = vec!["Center", value];
-                reordered.extend_from_slice(&arguments[1..1 + count]);
-                reordered.extend_from_slice(&remaining[1..]);
-                return self.run_in_context(document, &reordered, context);
-            }
-            if remaining
-                .first()
-                .is_some_and(|token| option_name_eq(token, "Center"))
-            {
-                let (_, used) = parse_point(&remaining[1..])?;
-                let mut reordered = vec!["Center"];
-                reordered.extend_from_slice(&remaining[1..1 + used]);
-                reordered.extend_from_slice(&arguments[1..1 + count]);
-                reordered.extend_from_slice(&remaining[1 + used..]);
-                return self.run_in_context(document, &reordered, context);
-            }
-            if remaining
-                .first()
-                .is_some_and(|token| option_name_eq(token, "ThroughPoint"))
-            {
-                let (through, used) = parse_point(&remaining[1..])?;
-                let (end, end_used) = parse_point(&remaining[1 + used..])?;
-                require_consumed(&remaining[1..], used + end_used, ARC_START_USAGE)?;
-                let arc =
-                    CircularArc3::try_from_three_points(start, through, end, document.tolerance())?;
-                let sweep_degrees = arc.sweep_radians().to_degrees();
-                let id = document.add_geometry(Geometry::Arc(arc))?;
-                return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
-            }
-            let arc = if let Some((name, value)) =
-                remaining.first().and_then(|token| token.split_once('='))
-                && option_name_eq(name, "Direction")
-            {
-                let (direction, used) = parse_point(&[value])?;
-                require_consumed(&[value], used, ARC_START_USAGE)?;
-                let (end, used) = parse_point(&remaining[1..])?;
-                require_consumed(&remaining[1..], used, ARC_START_USAGE)?;
-                let tangent = start
-                    .vector_to(direction)?
-                    .normalized(document.tolerance())?;
-                CircularArc3::try_from_start_tangent_end(start, tangent, end, document.tolerance())?
-            } else if remaining
-                .first()
-                .is_some_and(|token| option_name_eq(token, "Direction"))
-            {
-                let (direction, used) = parse_point(&remaining[1..])?;
-                let (end, end_used) = parse_point(&remaining[1 + used..])?;
-                require_consumed(&remaining[1..], used + end_used, ARC_START_USAGE)?;
-                let tangent = start
-                    .vector_to(direction)?
-                    .normalized(document.tolerance())?;
-                CircularArc3::try_from_start_tangent_end(start, tangent, end, document.tolerance())?
-            } else {
-                let (end, used) = parse_point(remaining)?;
-                let (through, through_used) = parse_point(&remaining[used..])?;
-                require_consumed(remaining, used + through_used, ARC_START_USAGE)?;
-                CircularArc3::try_from_three_points(start, through, end, document.tolerance())?
-            };
-            let sweep_degrees = arc.sweep_radians().to_degrees();
-            let id = document.add_geometry(Geometry::Arc(arc))?;
-            return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
+        if output.deformable {
+            self.deformation.set(output.deformation);
         }
-        if arguments
-            .first()
-            .is_some_and(|option| option_name_eq(option, "Center"))
-        {
-            let arguments = &arguments[1..];
-            let (center, center_count) = parse_point(arguments)?;
-            let after_center = &arguments[center_count..];
-            if after_center
-                .first()
-                .is_some_and(|w| option_name_eq(w, "Tilted"))
-            {
-                let arc = arc_tilted_input::from_arguments(
-                    center,
-                    &after_center[1..],
-                    document.tolerance(),
-                )?;
-                let sweep = arc.sweep_radians().to_degrees();
-                let id = document.add_geometry(Geometry::Arc(arc))?;
-                return Ok(format!("Added arc {id} (sweep {sweep:.6}°)"));
-            }
-            if after_center
-                .first()
-                .is_some_and(|option| option_name_eq(option, "Midpoint"))
-            {
-                return run_arc_midpoint(document, center, &after_center[1..], context);
-            }
-            let (start, start_count) = parse_point(&arguments[center_count..])?;
-            let remaining = &arguments[center_count + start_count..];
-            let (remaining, endpoint_direction) = if let Some((name, value)) =
-                remaining.last().and_then(|token| token.split_once('='))
-                && option_name_eq(name, "Direction")
-            {
-                let direction = if option_name_eq(value, "Clockwise") || option_name_eq(value, "CW")
-                {
-                    Some(true)
-                } else if option_name_eq(value, "Counterclockwise") || option_name_eq(value, "CCW")
-                {
-                    Some(false)
-                } else {
-                    return Err(CommandError::Usage(ARC_CENTER_USAGE));
-                };
-                (&remaining[..remaining.len() - 1], direction)
-            } else {
-                (remaining, None)
-            };
-            let radial = center.vector_to(start)?;
-            let radius = radial.length()?;
-            let endpoint_tokens = match remaining {
-                [single] if single.contains(',') && !single.contains('=') => Some(remaining),
-                [name, rest @ ..] if option_name_eq(name, "End") => Some(rest),
-                [_, _, _] => Some(remaining),
-                _ => None,
-            };
-            let inline_endpoint = match remaining {
-                [single] => single
-                    .split_once('=')
-                    .filter(|(name, _)| option_name_eq(name, "End"))
-                    .map(|(_, value)| value),
-                _ => None,
-            };
-            let endpoint = if let Some(value) = inline_endpoint {
-                let (end, consumed) = parse_point(&[value])?;
-                require_consumed(&[value], consumed, ARC_CENTER_USAGE)?;
-                Some(end)
-            } else if let Some(tokens) = endpoint_tokens {
-                let (end, consumed) = parse_point(tokens)?;
-                require_consumed(tokens, consumed, ARC_CENTER_USAGE)?;
-                Some(end)
-            } else {
-                None
-            };
-            if let Some(end) = endpoint {
-                let normal = if endpoint_direction.unwrap_or(true) {
-                    context.construction_plane.z_axis().opposite()
-                } else {
-                    context.construction_plane.z_axis()
-                };
-                let arc = CircularArc3::try_from_center_start_end_on_plane(
-                    center,
-                    start,
-                    end,
-                    normal,
-                    document.tolerance(),
-                )?;
-                let sweep_degrees = arc.sweep_radians().to_degrees();
-                let id = document.add_geometry(Geometry::Arc(arc))?;
-                return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
-            }
-            if endpoint_direction.is_some() {
-                return Err(CommandError::Usage(ARC_CENTER_USAGE));
-            }
-            let (value, is_length) = match remaining {
-                [single] if let Some((name, value)) = single.split_once('=') => {
-                    if !option_name_eq(name, "Length") {
-                        return Err(CommandError::Usage(ARC_CENTER_USAGE));
-                    }
-                    (parse_finite_real(value)?, true)
-                }
-                [name, value] if option_name_eq(name, "Length") => {
-                    (parse_finite_real(value)?, true)
-                }
-                [angle] => (parse_finite_real(angle)?, false),
-                _ => return Err(CommandError::Usage(ARC_CENTER_USAGE)),
-            };
-            let signed_sweep = if is_length {
-                value / radius
-            } else {
-                value.to_radians()
-            };
-            let normal = if signed_sweep < 0.0 {
-                context.construction_plane.z_axis().opposite()
-            } else {
-                context.construction_plane.z_axis()
-            };
-            let circle = Circle3::try_from_frame(
-                center,
-                radius,
-                radial.normalized(document.tolerance())?,
-                normal,
-                document.tolerance(),
-            )?;
-            let sweep = signed_sweep.abs().min(std::f64::consts::TAU);
-            let arc = CircularArc3::try_from_circle_sweep(circle, sweep)?;
-            let sweep_degrees = sweep.to_degrees().copysign(signed_sweep);
-            let id = document.add_geometry(Geometry::Arc(arc))?;
-            return Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"));
-        }
-        let mut centered = Vec::with_capacity(arguments.len() + 1);
-        centered.push("Center");
-        centered.extend_from_slice(arguments);
-        self.run_in_context(document, &centered, context)
+        Ok(format!(
+            "Added arc {id} (sweep {:.6}°)",
+            d.signed_sweep_degrees
+        ))
     }
-}
-
-const ARC_CENTER_USAGE: &str = "Arc Center center start end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
-const ARC_START_USAGE: &str = "Arc StartPoint start end through | start ThroughPoint through end | start Direction=tangent-point end | start Center=center angle|Length=distance|End=point";
-const ARC_MIDPOINT_USAGE: &str = "Arc Center center Midpoint midpoint end-point [Direction=Clockwise|Counterclockwise] | angle-degrees | Length=arc-length";
-
-fn run_arc_midpoint(
-    document: &mut Document,
-    center: Point3,
-    arguments: &[&str],
-    context: CommandContext,
-) -> Result<String, CommandError> {
-    let (midpoint, count) = parse_point(arguments)?;
-    let remaining = &arguments[count..];
-    let (remaining, endpoint_direction) = if let Some((name, value)) =
-        remaining.last().and_then(|token| token.split_once('='))
-        && option_name_eq(name, "Direction")
-    {
-        let clockwise = if option_name_eq(value, "Clockwise") || option_name_eq(value, "CW") {
-            true
-        } else if option_name_eq(value, "Counterclockwise") || option_name_eq(value, "CCW") {
-            false
-        } else {
-            return Err(CommandError::Usage(ARC_MIDPOINT_USAGE));
-        };
-        (&remaining[..remaining.len() - 1], Some(clockwise))
-    } else {
-        (remaining, None)
-    };
-    let endpoint_tokens = match remaining {
-        [single] if single.contains(',') && !single.contains('=') => Some(remaining),
-        [name, rest @ ..] if option_name_eq(name, "End") => Some(rest),
-        [_, _, _] => Some(remaining),
-        _ => None,
-    };
-    let inline_endpoint = match remaining {
-        [single] => single
-            .split_once('=')
-            .filter(|(name, _)| option_name_eq(name, "End"))
-            .map(|(_, value)| value),
-        _ => None,
-    };
-    let endpoint = if let Some(value) = inline_endpoint {
-        let (point, used) = parse_point(&[value])?;
-        require_consumed(&[value], used, ARC_MIDPOINT_USAGE)?;
-        Some(point)
-    } else if let Some(tokens) = endpoint_tokens {
-        let (point, used) = parse_point(tokens)?;
-        require_consumed(tokens, used, ARC_MIDPOINT_USAGE)?;
-        Some(point)
-    } else {
-        None
-    };
-    let arc = if let Some(end) = endpoint {
-        let normal = if endpoint_direction.unwrap_or(false) {
-            context.construction_plane.z_axis().opposite()
-        } else {
-            context.construction_plane.z_axis()
-        };
-        CircularArc3::try_from_center_midpoint_end_on_plane(
-            center,
-            midpoint,
-            end,
-            normal,
-            document.tolerance(),
-        )?
-    } else {
-        if endpoint_direction.is_some() {
-            return Err(CommandError::Usage(ARC_MIDPOINT_USAGE));
-        }
-        let (value, is_length) = match remaining {
-            [single] if let Some((name, value)) = single.split_once('=') => {
-                if !option_name_eq(name, "Length") {
-                    return Err(CommandError::Usage(ARC_MIDPOINT_USAGE));
-                }
-                (parse_finite_real(value)?, true)
-            }
-            [name, value] if option_name_eq(name, "Length") => (parse_finite_real(value)?, true),
-            [angle] => (parse_finite_real(angle)?, false),
-            _ => return Err(CommandError::Usage(ARC_MIDPOINT_USAGE)),
-        };
-        let radial = center.vector_to(midpoint)?;
-        let radius = radial.length()?;
-        let axis = radial.normalized(document.tolerance())?;
-        let signed_sweep = if is_length {
-            value / radius
-        } else {
-            value.to_radians()
-        };
-        let normal = if signed_sweep < 0.0 {
-            context.construction_plane.z_axis().opposite()
-        } else {
-            context.construction_plane.z_axis()
-        };
-        if signed_sweep.abs() >= std::f64::consts::TAU {
-            let circle =
-                Circle3::try_from_frame(center, radius, axis, normal, document.tolerance())?;
-            CircularArc3::try_from_circle_sweep(circle, std::f64::consts::PI)?
-        } else {
-            CircularArc3::try_from_center_midpoint_sweep_on_plane(
-                center,
-                midpoint,
-                normal,
-                signed_sweep.abs(),
-                document.tolerance(),
-            )?
-        }
-    };
-    let sweep_degrees = arc.sweep_radians().to_degrees();
-    let id = document.add_geometry(Geometry::Arc(arc))?;
-    Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"))
 }
 
 const ELLIPSOID_USAGE: &str = "Ellipsoid center radius-x radius-y radius-z | Ellipsoid center first-axis-point second-axis-point third-axis-radius-point";

@@ -22,6 +22,7 @@ Rhino's complete command set is still a work in progress.
 - [Circle Tangent, picked contacts, radii and free points](circle-tangent.md)
 - [Arc Tangent, picked contacts and final arc choice](arc-tangent.md)
 - [Arc Tilted, spatial planes, endpoint dragging and length measurements](arc-tilted.md)
+- [Arc Deformable, editable NURBS output and degree/count settings](arc-deformable.md)
 - [Conic curves, endpoint constraints and temporary portions](conic.md)
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)

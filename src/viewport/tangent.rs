@@ -4,6 +4,7 @@ use super::*;
 pub struct TangentPreview<'a> {
     pub contacts: &'a viboceros_command::circle_tangent_input::Input,
     pub output: Option<viboceros_command::circle_deform_input::Output>,
+    pub arc_output: Option<viboceros_command::arc_deform_input::Output>,
     pub arc: Option<&'a viboceros_command::arc_tangent_input::Support>,
 }
 impl Viewport {
@@ -21,7 +22,15 @@ impl Viewport {
             self.paint_draft_points(painter, rect, &support.contact_points);
             cursor
                 .and_then(|p| support.choose(p, document.tolerance()).ok())
-                .and_then(|a| a.to_nurbs().ok())
+                .and_then(|a| {
+                    input
+                        .arc_output
+                        .map_or_else(
+                            || a.to_nurbs().map_err(viboceros_command::CommandError::from),
+                            |o| o.curve(a),
+                        )
+                        .ok()
+                })
         } else {
             if let Some(anchor) = getter.anchor() {
                 self.paint_draft_points(painter, rect, &[anchor]);

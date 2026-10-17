@@ -153,7 +153,11 @@ impl VibocerosApp {
             s.output
                 .map_or(command.clone(), |o| o.wrap_command(&command))
         };
-        self.try_execute_command_with_plane(&command, Some(s.plane))
+        if s.kind == Kind::Arc {
+            self.finish_arc_command(&command, Some(s.plane))
+        } else {
+            self.try_execute_command_with_plane(&command, Some(s.plane))
+        }
     }
     fn tangent_result(
         &mut self,

@@ -1,0 +1,54 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-deform-midpoint-negative",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Midpoint",
+        [
+          4,
+          0,
+          0
+        ],
+        -135
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-midpoint-endpoint",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Midpoint",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          4,
+          0
+        ]
+      ]
+    }
+  ]
+}

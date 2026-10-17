@@ -9,6 +9,7 @@ mod mass_integration;
 pub use area_mass_properties::AreaMassProperties;
 mod volume_mass_properties;
 pub use volume_mass_properties::{SurfaceVolumeMoments, VolumeBoundary, VolumeMassProperties};
+mod arc_deform;
 mod bezier;
 mod binary_accumulator;
 mod bounds;

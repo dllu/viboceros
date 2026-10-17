@@ -1,0 +1,570 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-spatial-ccw-minor",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            4.242640687119285,
+            4.242640687119285
+          ]
+        },
+        {
+          "click": [
+            3.6739403974420594e-16,
+            6.0,
+            6.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-spatial-cw-major",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            -4.242640687119285,
+            -4.242640687119285
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119285,
+            -4.242640687119286,
+            -4.242640687119286
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119286,
+            4.242640687119285,
+            4.242640687119285
+          ]
+        },
+        {
+          "click": [
+            -1.102182119232618e-15,
+            6.0,
+            6.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-spatial-ccw-major",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            4.242640687119285,
+            4.242640687119285
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119285,
+            4.242640687119286,
+            4.242640687119286
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119286,
+            -4.242640687119285,
+            -4.242640687119285
+          ]
+        },
+        {
+          "click": [
+            -1.102182119232618e-15,
+            -6.0,
+            -6.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-spatial-cw-minor",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            -4.242640687119285,
+            -4.242640687119285
+          ]
+        },
+        {
+          "click": [
+            3.6739403974420594e-16,
+            -6.0,
+            -6.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-flat-ccw-minor",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            4.242640687119285,
+            0
+          ]
+        },
+        {
+          "click": [
+            3.6739403974420594e-16,
+            6.0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-flat-cw-major",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            -4.242640687119285,
+            0
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119285,
+            -4.242640687119286,
+            0
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119286,
+            4.242640687119285,
+            0
+          ]
+        },
+        {
+          "click": [
+            -1.102182119232618e-15,
+            6.0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-flat-ccw-major",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            4.242640687119285,
+            0
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119285,
+            4.242640687119286,
+            0
+          ]
+        },
+        {
+          "hover": [
+            -4.242640687119286,
+            -4.242640687119285,
+            0
+          ]
+        },
+        {
+          "click": [
+            -1.102182119232618e-15,
+            -6.0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-flat-cw-minor",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "hover": [
+            6.0,
+            0.0,
+            0
+          ]
+        },
+        {
+          "hover": [
+            4.242640687119286,
+            -4.242640687119285,
+            0
+          ]
+        },
+        {
+          "click": [
+            3.6739403974420594e-16,
+            -6.0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-direct-pos",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-direct-neg",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            -3,
+            -3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-direct-out",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            6,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-arc-tilted-cursor-direct-major",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            -3,
+            -3,
+            -3
+          ]
+        }
+      ]
+    }
+  ]
+}

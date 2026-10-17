@@ -150,7 +150,6 @@
     "preexisting_unverifiable_records_left_unchanged": 69
   },
   "sha256": {
-    "crates/viboceros-geometry/src/circle_curve.rs": "8f95987035ade21be75a5fc258800f5b670ca72b838a521b9770acafd100693e",
     "crates/viboceros-geometry/src/curve_evaluate.rs": "a8c6b3575df5a56b22da798736def93ba8ac9979a7733aa8f5291eb5347f37a1",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "e5ccc9ca0f1af545cec98a1ec343b7e9f8396346ec31e0cb1b58fecdb5ebbd71",
     "crates/viboceros-opennurbs/native/curve_queries.h": "d989fb918aa7c0aaf7f74d78ed09d36ee5dcdf89c3149a86b84fdb63f41ce649",
@@ -197,6 +196,7 @@
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/orient-on-curve-edge-validation.json": "a95958578b622162ca3d63a1e44f6f7f94b607742e56bbf649e2c400dacf2b7a",
     "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/prepared-curve-length-validation.json": "3673d2340740d708c8317e23282b5b3650324604a7dfdc9fee529bfacd43209f",
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/sphere-fit-points-validation.json": "a051aa46072c32826f416e47c6144047264d8b330e1cc12366a6b0607a19bbc3",
-    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:crates/viboceros-geometry/src/circular.rs": "dc2b9956b9eb90fd6466a37959a02061cc9bc36d17e6b8afca9c8a68c38dab36"
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:crates/viboceros-geometry/src/circular.rs": "dc2b9956b9eb90fd6466a37959a02061cc9bc36d17e6b8afca9c8a68c38dab36",
+    "eed1fe254caffce125318350a5797bd11dafc5f0:crates/viboceros-geometry/src/circle_curve.rs": "8f95987035ade21be75a5fc258800f5b670ca72b838a521b9770acafd100693e"
   }
 }

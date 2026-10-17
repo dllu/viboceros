@@ -1,0 +1,564 @@
+{
+  "date": "2026-10-17",
+  "baseline": "eed1fe254caffce125318350a5797bd11dafc5f0",
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "comparison_absolute_tolerance": 1e-06,
+  "qualified_profiles": {
+    "basic": {
+      "rows": 7,
+      "success": 7,
+      "cancel": 0
+    },
+    "ordered": {
+      "rows": 10,
+      "success": 9,
+      "cancel": 1
+    },
+    "constructions": {
+      "rows": 23,
+      "success": 23,
+      "cancel": 0
+    },
+    "settings": {
+      "rows": 9,
+      "success": 8,
+      "cancel": 1
+    },
+    "tangent": {
+      "rows": 7,
+      "success": 6,
+      "cancel": 1
+    },
+    "cursor": {
+      "rows": 12,
+      "success": 12,
+      "cancel": 0
+    },
+    "midpoint_qualified": {
+      "rows": 3,
+      "success": 3,
+      "cancel": 0
+    }
+  },
+  "implementation": [
+    "Arc Deformable reuses the uniform Rebuild solve with endpoint tangent projection on a normalized unit arc. Full circles reuse the existing Circle layouts.",
+    "Arc output conversion is shared by command execution, ordinary final-point previews, Tilted and Tangent previews. Native-smlib delegates only interpolation to the existing rebuild backend.",
+    "Degree 2..11 and PointCount degree+2..1000 getters validate independently and in order. Retained low counts are accepted only when construction still has more controls than degree.",
+    "Successful constructions persist Arc settings outside document history. Native next-getter receipts independently witness successful, exact and cancelled preference behavior.",
+    "Deformable Midpoint numeric output starts at its input radial seam; exact Midpoint construction retains the symmetric sweep. The raw typed-endpoint timeout remains diagnostic.",
+    "Center length input supports signed scalars, explicit clockwise direction and arbitrary spatial distance points while retaining the construction plane."
+  ],
+  "input_calibration": "Physical native click and hover receipts calibrate authored inputs using public viewport rays, including the initial cursor. Expected output geometry never supplies construction inputs.",
+  "raw_capture_policy": [
+    "Basic rows are original initial indices [0,2,4,6,8,9,10]. Ordered rows are boundaries indices [0,1,2,3,5,6,8,9,10,11].",
+    "Constructions preserve modes indices [0,1,2,3,6..24]. Two earlier Midpoint captures timed out because the driver did not recognize the Midpoint prompt. The prompt prefix was corrected before new captures.",
+    "Settings preserve preferences indices [0,1,2,4,5,6,7,8,9]. The excluded low-count Enter capture remains raw: Enter retains the invalid getter default and subsequent coordinates cannot finish construction.",
+    "Raw boundary rows with point count <= degree report a native Arc Success event and no output. They are not relabeled as native failures.",
+    "The six-row Midpoint diagnostic batch did not respond within 240 seconds. Two smaller captures preserve negative-angle and endpoint diagnostics, plus length/default retry input. A clean numeric subset qualifies unchanged.",
+    "The original boundaries launch failed when the harness rejected an explicitly cancelled setup. The corrected bounded harness accepts clean, complete cancellation and a later launch produced the preserved raw response."
+  ],
+  "limitations": [
+    "Arc Extension remains pending.",
+    "Midpoint typed endpoints time out in native input; local endpoint preview and construction remain unqualified for native parity.",
+    "Exhaustive snapping, camera, error-message and performance parity remain unqualified.",
+    "Invalid CLI arguments return errors; exact native invalid-token messages and termination are not claimed."
+  ],
+  "excluded_baseline_test": {
+    "name": "join_command::tests::surfaces::original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+    "backend": "native-smlib",
+    "reason": "The broad arc filter also selects archive in this unrelated test. Prior candidate and baseline failure evidence is preserved; no Join code or assertion changes are included.",
+    "evidence_git_ref": "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/arc-tangent-validation.json"
+  },
+  "historical_source_policy": {
+    "records": [
+      "docs/arc-tangent-validation.json",
+      "docs/arc-tilted-validation.json",
+      "docs/circle-clamped-validation.json",
+      "docs/circle-deform-validation.json",
+      "docs/flow-poles-validation.json"
+    ],
+    "method": "Previously verifiable references to changed files are retained at full baseline Git blobs; historical non-SHA claims are unchanged.",
+    "preexisting_unverifiable_records_unchanged": 69
+  },
+  "checks": [
+    {
+      "name": "deform",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc_deform"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-deform.log",
+      "elapsed_seconds": 60.65,
+      "log_sha256": "2931d6e498aa7753e8b94b2a397281b42b61bb1cfbca4480ac0ca1ec8b22fdf2",
+      "test_summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1389 filtered out; finished in 0.74s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1503 filtered out; finished in 0.03s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 567 filtered out; finished in 1.39s"
+      ]
+    },
+    {
+      "name": "arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-arc.log",
+      "elapsed_seconds": 114.4,
+      "log_sha256": "60bedc90ecb1fedebabdd71487c88f1e5096ba2cbe3e279686b3ffaf79da1596",
+      "test_summaries": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1371 filtered out; finished in 19.26s",
+        "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 1468 filtered out; finished in 63.64s",
+        "test result: ok. 140 passed; 0 failed; 1 ignored; 0 measured; 2244 filtered out; finished in 13.02s",
+        "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 549 filtered out; finished in 9.31s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.34s"
+      ]
+    },
+    {
+      "name": "circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-circle.log",
+      "elapsed_seconds": 18.31,
+      "log_sha256": "b083bd28f23d1e4c1a2d4297dd0c1b726487e3e42e89b373b676630b94f49bc3",
+      "test_summaries": [
+        "test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 1348 filtered out; finished in 1.30s",
+        "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 1469 filtered out; finished in 0.39s",
+        "test result: ok. 70 passed; 0 failed; 0 ignored; 0 measured; 2315 filtered out; finished in 9.32s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 553 filtered out; finished in 6.31s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.69s"
+      ]
+    },
+    {
+      "name": "ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-ellipse.log",
+      "elapsed_seconds": 9.51,
+      "log_sha256": "2dd18dcf1927a13681a158d8b9da12dd87bbf4f212f3ac74281ca556372bddd4",
+      "test_summaries": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1377 filtered out; finished in 0.18s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1489 filtered out; finished in 0.16s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 562 filtered out; finished in 0.58s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.29s"
+      ]
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-drafting",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-point-input.log",
+      "elapsed_seconds": 18.9,
+      "log_sha256": "f1df28b1e741a443acb67db763c3674ee35c59aaf25c0e734fabb9d197f08c01",
+      "test_summaries": [
+        "test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 1329 filtered out; finished in 0.18s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 156 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "name": "viewport-drafting",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::tests::drafting"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-viewport-drafting.log",
+      "elapsed_seconds": 0.24,
+      "log_sha256": "d6e0893733da674af0db63c22d03a9665d0f8e5a6386a871004c18896c3943e7",
+      "test_summaries": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1386 filtered out; finished in 0.05s"
+      ]
+    },
+    {
+      "name": "components",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "component"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-components.log",
+      "elapsed_seconds": 0.35,
+      "log_sha256": "556ffce6a8aecae522901c8b64477d0179114061cde4c8667495f0bc642f32e3",
+      "test_summaries": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 1373 filtered out; finished in 0.15s"
+      ]
+    },
+    {
+      "name": "native-arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "arc",
+        "--",
+        "--skip",
+        "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-native-arc.log",
+      "elapsed_seconds": 220.04,
+      "log_sha256": "81d6e30496c2b5dd2c3cd9df1f2390eae301c2a34c013b6729808d53850a6358",
+      "test_summaries": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1383 filtered out; finished in 19.77s",
+        "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 1544 filtered out; finished in 62.28s",
+        "test result: ok. 140 passed; 0 failed; 1 ignored; 0 measured; 2244 filtered out; finished in 11.90s",
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 571 filtered out; finished in 10.57s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.47s"
+      ]
+    },
+    {
+      "name": "native-circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-native-circle.log",
+      "elapsed_seconds": 23.86,
+      "log_sha256": "54ef28568115523ab2c4c193e1e25e4326821d13c88da45d6790b840bb1f3536",
+      "test_summaries": [
+        "test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 1360 filtered out; finished in 1.30s",
+        "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 1545 filtered out; finished in 0.39s",
+        "test result: ok. 70 passed; 0 failed; 0 ignored; 0 measured; 2315 filtered out; finished in 9.40s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 574 filtered out; finished in 6.58s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.67s"
+      ]
+    },
+    {
+      "name": "native-ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-native-ellipse.log",
+      "elapsed_seconds": 9.5,
+      "log_sha256": "6a31b714c0c26b3b25e6b06315163bd3a78e02ff4016946b57e68ece9deefd02",
+      "test_summaries": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1389 filtered out; finished in 0.19s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1565 filtered out; finished in 0.17s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 583 filtered out; finished in 0.56s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.30s"
+      ]
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-clippy.log",
+      "elapsed_seconds": 49.06,
+      "log_sha256": "c49ffc20246c09cd4d7bc2511b4b152d2e825481738c47e8f247d60dd4a8d08e",
+      "test_summaries": []
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-format.log",
+      "elapsed_seconds": 5.05,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_summaries": []
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_arc_deform",
+        "tools.rhino_oracle.test_arc_command",
+        "tools.rhino_oracle.test_arc_tangent",
+        "tools.rhino_oracle.test_circle_tangent",
+        "tools.rhino_oracle.test_circle_clamped",
+        "tools.rhino_oracle.test_circle_deform",
+        "tools.rhino_oracle.test_circle_around",
+        "tools.rhino_oracle.test_ellipse_deform",
+        "tools.rhino_oracle.test_ellipse_around",
+        "tools.rhino_oracle.test_ellipse",
+        "tools.rhino_oracle.test_catenary_command",
+        "tools.rhino_oracle.test_catenary_point_picker",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_point_snap_input",
+        "tools.rhino_oracle.test_client"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-python.log",
+      "elapsed_seconds": 0.85,
+      "log_sha256": "1e9fcfbae5e63d22cf5d9bbe6a2b3ccd806df70f91bce9b0c130990becbd32eb",
+      "test_summaries": [
+        "Ran 92 tests in 0.753s"
+      ]
+    },
+    {
+      "name": "deform-final",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc_deform"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-deform-final.log",
+      "elapsed_seconds": 40.4,
+      "log_sha256": "7108eb4bb0464ba7d69f4cb4c25965dbb88000a4aa4617dc51dbd0731ca4f7b7",
+      "test_summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1389 filtered out; finished in 0.74s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1503 filtered out; finished in 0.01s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2383 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 567 filtered out; finished in 1.41s"
+      ]
+    },
+    {
+      "name": "native-deform-final",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "arc_deform"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-deform-final-native-deform-final.log",
+      "elapsed_seconds": 38.53,
+      "log_sha256": "a9846d1a909b5bc27250d8735694031326bc4051eb49318bb524fa93f6144251",
+      "test_summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1401 filtered out; finished in 0.74s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1579 filtered out; finished in 0.01s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2383 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 588 filtered out; finished in 1.37s"
+      ]
+    }
+  ],
+  "sha256": {
+    "README.md": "0aeccf0f3d6571fa0f564ef1312fc03cc7d1e3357e505fa36aa49461a50dc9d2",
+    "crates/viboceros-command/src/arc_deform_input.rs": "9d6b6302ba4d531ac4c2ed16cf077b726de375833fe3eeba145f71c9528e0b59",
+    "crates/viboceros-command/src/arc_input.rs": "962654bde60a15cf6152bfb3c23d625369e265a6262a7b476d6a4fb55a260aeb",
+    "crates/viboceros-command/src/lib.rs": "6f53705ee9751c048b8161f2422dd94d77ca16fd83621100c5a232e241ea68f3",
+    "crates/viboceros-geometry/src/arc_deform.rs": "fb46c4d1104a766bbe196ba67960d5a02bc6a5163e4cb504fa9af0b53cff6874",
+    "crates/viboceros-geometry/src/circle_curve.rs": "a72e5c943d8e4786bc67fa3ed76e1677f3b57909a4845cb0aa624a4297810ec2",
+    "crates/viboceros-geometry/src/circular.rs": "150b07fbe8244a42585ddf938098d3968011e3877e5e81b002900ac1588d97e2",
+    "crates/viboceros-geometry/src/error.rs": "f779cd426d71ac720fad68f781ccae4dd527994e73c09bda0290e75b033e3ba6",
+    "crates/viboceros-geometry/src/lib.rs": "2c2012faecd282c60ac505c694afeb9b6f1783d4ade70d552c90d8fae11a8687",
+    "crates/viboceros-oracle/src/arc_command.rs": "c18e174acd4a4e9641712280ebaa4de2f00b242f4903582a547637a5ab3118ed",
+    "crates/viboceros-oracle/src/arc_tangent.rs": "083554ee628c68452fe7d944f3808df541cbedbcf8604eb832c8265ba784d94a",
+    "crates/viboceros-oracle/src/circle_tangent.rs": "2acd3813b0fc7b6549be2a116d3e1ea1416f0850d8c5aa497a3aa3de675f13cd",
+    "docs/arc-tangent-validation.json": "798a78aa3c66e7a58aec4c7dd343f88d3c56d4bad5aa9b948f169821dd2ce0ae",
+    "docs/arc-tilted-validation.json": "f8cd6d7b097d67b3c07a3c904a43dccfd7c87c2bf577d35b7b6b10e6d9f994a4",
+    "docs/circle-clamped-validation.json": "1e2d2a327abc629de52f049a841417baf87c9fa3478d7fb0ea479404ba34c823",
+    "docs/circle-deform-validation.json": "982d8fa3dea92986238000622e8eb5d846637d2530983a952c5cbacbebda9728",
+    "docs/commands/README.md": "e1167adb0cd6760835838a74fbad03cc377d24270c690e171f97c2af6d6d0ea5",
+    "docs/commands/arc-deformable.md": "406f6ec9ef1833d371af3eddeb4705c9423f45bd30ab947ab2b7410995dec79a",
+    "docs/commands/arc-tangent.md": "c87c1480fe9e59bcc8e9a3638d7bbf9c6cdadfcc63975bc6382ec8d3ab7f4d2c",
+    "docs/flow-poles-validation.json": "357debd6263029599416dbf18c91645764ea260fc04403b57c2fab9403f8991e",
+    "src/app.rs": "aad07ebc06db19a7292ed7781c844af7050629df6ef3a62472f78b953fe79047",
+    "src/app/arc_deform.rs": "1a1de75ac35975644a25b69534b1df426e1dac0ea17d4a4bae71c543a472a258",
+    "src/app/arc_length.rs": "baaccf00ac474c4c3c53e2c4f9f9016d5df5493ba7f164411d30d0481bfa16f9",
+    "src/app/arc_tilted.rs": "73c9cdae0efcdfb07bb4443a28c50584b5b30afea199195135436cd7b0ca5ca4",
+    "src/app/point_input.rs": "a2162cad51f6dea3663368e41cbd5ee51d6132adb32c4fb09893b8e963c4077c",
+    "src/app/tangent.rs": "92b1726942450b65119911529b626b5a804b0e5bfb3c1d4409759ce3d7d60d8f",
+    "src/app/tests/arc_deform.rs": "7338e1d9b1856239b7f6cd3059a22c195954f0c7eb6c69320fd14895b8b5ff6b",
+    "src/app/tests/ellipse_around.rs": "9e152c26a1c60ce6180f3824b84e7a4ce1a3cc5b17e5f2e929cb064abbb6734e",
+    "src/viewport.rs": "a77ef6f75f357b42be5a629a37d1481150af5e9de1372ae86d85aa301effdf33",
+    "src/viewport/arc_tilted.rs": "17a197720c57b42430fad30b7ff5be1d1ffd3627ff4ee05c354f90183fab0fc2",
+    "src/viewport/tangent.rs": "fa7f77a55991aa5da0a20fb2ad5664aa5140f72726e522e9c0a136c8a8180ef2",
+    "tools/rhino_oracle/arc_command_probe.py": "418a589405006a642f652a579372b162f647d10f0bf7a31e37f6f609d47a9601",
+    "tools/rhino_oracle/arc_tangent_probe.py": "e8b37b12c15dbea99e1584604cbeee1368a982c99005b83d1cd1dd12a070e5ee",
+    "tools/rhino_oracle/conic_getter_input.py": "b62822f4223b7d603c47d003794c1e46c1d5516aff7f7d4524bcca4f8c0997d6",
+    "tools/rhino_oracle/curve_primitive_probe.py": "ed3175c37dfac3bc6200f032ae5ed63f2bf6ad0c0a7255954baea9a7328149d8",
+    "tools/rhino_oracle/fixtures/arc_deform_basic.json": "e5d545746ef80c6c657350a1072d1b9ff4189ba456540a7d05e0fa61b3bed981",
+    "tools/rhino_oracle/fixtures/arc_deform_boundaries.json": "862adf45bc5a571ece25567e1c252520b10c450eea22cb57d4e9c2c3a06944db",
+    "tools/rhino_oracle/fixtures/arc_deform_constructions.json": "9350fbbba5238080ea507ccd86810f2b578c82fd9a2d7381f90bbb8f3a7f9b86",
+    "tools/rhino_oracle/fixtures/arc_deform_cursor.json": "96eb66d867d5038de8853c2a875500a855258733a44fc2c844fb59b69c3ff924",
+    "tools/rhino_oracle/fixtures/arc_deform_initial.json": "265ea947b606d1855d69dff2358208160caaa0d0f23f0c12d24c8997c0eab8b2",
+    "tools/rhino_oracle/fixtures/arc_deform_midpoint.json": "ea523b8afe0f3733279055a8544867a49adf1b6e04cfb3a1de8d24e519ca6fb1",
+    "tools/rhino_oracle/fixtures/arc_deform_midpoint_endings.json": "bcbf83b3907e56382dd86e801cbf0ca100e4487af950a756d430bcd47df7ee66",
+    "tools/rhino_oracle/fixtures/arc_deform_midpoint_getters.json": "7e964fb20becd4b7df62bf21121de120e2affaa6d84f7b79525d5f029cfb7263",
+    "tools/rhino_oracle/fixtures/arc_deform_midpoint_qualified.json": "e8d453fe8daaef7cf2f9f9b954538714d4b53552e12a059db81260bbc1559fb6",
+    "tools/rhino_oracle/fixtures/arc_deform_modes.json": "b05174aee056f5399f4aae79107bef06e351e5d1eba1045e9708472624eb6e2d",
+    "tools/rhino_oracle/fixtures/arc_deform_ordered.json": "327d326da3f31a409cc96f544225bef72ce030cbbb086b2ed1629928239f6427",
+    "tools/rhino_oracle/fixtures/arc_deform_preferences.json": "0a1bb5c5c509f0e5bf8121f57fee50bc7c02db30d377dc97232f7c68053fa73b",
+    "tools/rhino_oracle/fixtures/arc_deform_settings.json": "c81474786f87951a67669925cb7c97347bcda0e0cca82f1f80b52040fd9138dc",
+    "tools/rhino_oracle/fixtures/arc_deform_tangent.json": "a9d3913d192bd53e119f1b180544c565fc25a1c5c1920588acac91afeab54118",
+    "tools/rhino_oracle/observations/arc_deform_basic_rhino_20261017.json": "9f7be303a5830d35b5bc082c7e6f22ce58cd8cb89d17e97bfd3c852593234f18",
+    "tools/rhino_oracle/observations/arc_deform_boundaries_rhino_20261017.json": "c8f3a4d0ec5c8c7a3ff52e500e90681c3fc911590377773c02909c65532a7ce6",
+    "tools/rhino_oracle/observations/arc_deform_constructions_rhino_20261017.json": "6c48ac17a7b9fe63cafbb82240df3b7bf19a201af95ecce27c7b2ea1e5122ad4",
+    "tools/rhino_oracle/observations/arc_deform_cursor_rhino_20261017.json": "bc539be091b6a38bf55671204fe6fe675c2cd62d63041f0cc706e462ead17aea",
+    "tools/rhino_oracle/observations/arc_deform_initial_rhino_20261017.json": "45a05fb07f0bab831aee6adb1c96ad32718fe876f6ea923f158df4f0e2e9b705",
+    "tools/rhino_oracle/observations/arc_deform_midpoint_endings_rhino_20261017.json": "d1d99560c54e2b86c9ad1dd138db883b3103e0dbe95a474ee205c27f8e1bf894",
+    "tools/rhino_oracle/observations/arc_deform_midpoint_getters_rhino_20261017.json": "9c0c42d83f65869cfef7699c8bcc5c36daf1a7c43d3a1c7ec082887bfab11267",
+    "tools/rhino_oracle/observations/arc_deform_midpoint_qualified_rhino_20261017.json": "c7d8cbb3bed55bc8e4a0aafa33a89d92a6b583fa9c8cb4191fe1b891630c7b24",
+    "tools/rhino_oracle/observations/arc_deform_modes_rhino_20261017.json": "2badd8e1f58f452fd6e9f385ba059483f547f26d248f0c7a20f2f1f95c1832ad",
+    "tools/rhino_oracle/observations/arc_deform_ordered_rhino_20261017.json": "afffc61f65d306048657d4b9685620139cf589c3a621eb0c829d5a88adcae454",
+    "tools/rhino_oracle/observations/arc_deform_preferences_rhino_20261017.json": "704f5f4b16b0f1d26668355e843bf86e5ef951675b9fcba230add01c16ab6f7c",
+    "tools/rhino_oracle/observations/arc_deform_settings_rhino_20261017.json": "74e512061eaf804793438c3c577e5df9142b406da0a11c603d0be13e5dd13139",
+    "tools/rhino_oracle/observations/arc_deform_tangent_rhino_20261017.json": "198e3d0045bee5facf615c1eaf7514405c7d2615ee7ee10da6cc58ff991a556d",
+    "tools/rhino_oracle/test_arc_deform.py": "c753e00544025bfccbc40effd2212157b229eff3e39dd1582bdb308a479a55d2"
+  },
+  "baseline_git_sha256": {
+    "eed1fe254caffce125318350a5797bd11dafc5f0:docs/arc-tilted-validation.json": "db6900a8658f7266e1d3a534d9cd6b4f57bc537b9fdea7cf812ecfc4c80e6e52",
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/arc-tangent-validation.json": "bc3ea35584827f2621f9f852b0f1c3bdc7e6658ffc5e608025dfed7f5a6b0dfb"
+  },
+  "owned_native_jobs": [
+    {
+      "scheme": "VibocerosOracleArcDeformInitial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformBoundaries20261017",
+      "exit_code": 2
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformBoundariesRetry20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformModes20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformPreferences20261017",
+      "exit_code": null,
+      "status": "Valid complete response saved and launcher process observed terminal; exit code was not recorded."
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformTangent20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformCursor20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformMidpoint20261017",
+      "exit_code": 2
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformMidpointEndings20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcDeformMidpointGetters20261017",
+      "exit_code": 0
+    }
+  ]
+}

@@ -1,0 +1,548 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-deform-start-through",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        "StartPoint",
+        [
+          4,
+          0,
+          0
+        ],
+        "ThroughPoint",
+        [
+          2,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-start-end-through",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        "StartPoint",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-start-direction",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        "StartPoint",
+        [
+          4,
+          0,
+          0
+        ],
+        "Direction",
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          0,
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-start-center",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        "StartPoint",
+        [
+          4,
+          0,
+          0
+        ],
+        "Center",
+        [
+          0,
+          0,
+          0
+        ],
+        135
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-center-length-points",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        "Length",
+        [
+          7,
+          8,
+          9
+        ],
+        [
+          10,
+          12,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-tilted",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          2,
+          -1,
+          5
+        ],
+        "Tilted",
+        [
+          6,
+          -1,
+          5
+        ],
+        [
+          13,
+          2,
+          8
+        ],
+        135
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-tilted-height",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          2,
+          -1,
+          5
+        ],
+        "Tilted",
+        [
+          6,
+          -1,
+          5
+        ],
+        15,
+        [
+          13,
+          2,
+          8
+        ],
+        -90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-spatial-plane",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          8
+        ],
+        135
+      ],
+      "construction_plane": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-angle-359_99",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        359.99
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-angle-359_99999998",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        359.99999998
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-angle-359_999999999",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        359.999999999
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-angle-360_1",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        360.1
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-2",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-3",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=4",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=6",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-7",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=7",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=8",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-9",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=9",
+        "PointCount=11",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-10",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=10",
+        "PointCount=12",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=11",
+        "PointCount=13",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-dense-1000",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=1000",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        120
+      ]
+    }
+  ]
+}

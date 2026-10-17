@@ -67,6 +67,12 @@ mod tests {
     fn arc_tangent_native_intervals_full_nurbs_selection_and_history() {
         for (q, n) in [
             (
+                include_str!("../../../tools/rhino_oracle/fixtures/arc_deform_tangent.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/arc_deform_tangent_rhino_20261017.json"
+                ),
+            ),
+            (
                 include_str!("../../../tools/rhino_oracle/fixtures/arc_tangent_basic.json"),
                 include_str!(
                     "../../../tools/rhino_oracle/observations/arc_tangent_basic_rhino_20261017.json"

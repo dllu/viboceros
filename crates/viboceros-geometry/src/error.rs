@@ -548,6 +548,8 @@ pub enum GeometryError {
     InvalidCurveRebuildDegree { actual: usize, maximum: usize },
     #[error("deformable Circle degree must be from 2 through 11 (got {actual})")]
     InvalidCircleDeformDegree { actual: usize },
+    #[error("deformable Arc degree must be from 2 through 11 (got {actual})")]
+    InvalidArcDeformDegree { actual: usize },
     #[error("deformable Circle output requires {minimum} through {maximum} points (got {actual})")]
     InvalidCircleDeformPointCount {
         actual: usize,

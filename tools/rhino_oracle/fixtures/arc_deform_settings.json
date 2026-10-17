@@ -1,0 +1,259 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-deform-midpoint-fixed",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Midpoint",
+        [
+          4,
+          0,
+          0
+        ],
+        135
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-midpoint-full-fixed",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        "Midpoint",
+        [
+          4,
+          0,
+          0
+        ],
+        360
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-defaults",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree",
+        "Enter",
+        "PointCount",
+        "Enter",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ],
+      "setup": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ],
+      "record_preferences": true
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-saved-settings",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ],
+      "setup": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ],
+      "record_preferences": true
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-ordinary-keeps-settings",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ],
+      "setup": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ],
+      "record_preferences": true
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-cancel-keeps-settings",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        "Cancel"
+      ],
+      "setup": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ],
+      "record_preferences": true
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-degree-bound-retry",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree",
+        0,
+        12,
+        3,
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-length-clockwise",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        "Length",
+        "Direction=Clockwise",
+        5
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-deform-length-clockwise-negative",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        "Length",
+        "Direction=Clockwise",
+        -5
+      ]
+    }
+  ]
+}
