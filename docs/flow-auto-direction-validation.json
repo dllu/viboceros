@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "timezone": "UTC",
+  "base_repository_revision": "050df0c7a103a0d39a45af38aa1f64bf49dd4f09",
+  "component": "Automatic spatial Flow direction sensitivity and held-out basis diagnostics",
+  "production_kernel_changed": false,
+  "production_command_behavior_changed": false,
+  "automatic_spatial_flow_qualified": false,
+  "complete_flow_qualified": false,
+  "fitted_directions_used_as_kernel_inputs": false,
+  "performance_qualified": false,
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "sdk_operations": 38,
+    "actual_commands": 0,
+    "captures": [
+      {
+        "scheme": "VibocerosOracleAuto20261017a",
+        "sdk_operations": 30
+      },
+      {
+        "scheme": "VibocerosOracleAuto20261017b",
+        "sdk_operations": 8
+      }
+    ],
+    "method": "Public RhinoCommon FlowSpaceMorph and curve frame/length/classification queries on authored geometry in an owned private display. Complete raw results concatenated without numeric changes. No proprietary implementation inspected or decompiled.",
+    "families": [
+      "baseline spatial cubic",
+      "five source line lengths",
+      "nine source/target/joint translations",
+      "five target scales with fixed/scaled source length",
+      "target reversal",
+      "exact knot refinement",
+      "three control-coordinate changes",
+      "four target-only and joint rotations"
+    ],
+    "document_epsilon": 1e-06,
+    "epsilon_changed": false
+  },
+  "diagnostic_method": [
+    "Validate operation identities, finite observations, 17 complete authored orthogonal probe bases per map, and native basis orthonormality.",
+    "Fit a six-coefficient homogeneous meridian relation on nine native sections and check all 17 sections, including eight held out. Either of two parallel coefficients identifies the shared direction; use the stronger coefficient to handle vanishing coefficients. Resolve tied dominant coordinates consistently for sign reporting.",
+    "Compare each current Rust center separately from the transverse basis. Native fitted directions only judge the frame family; no native or fitted value constructs the Rust map.",
+    "Compare pole directions by the norm of the cross product of unit vectors, making opposite signs equivalent. Compare joint rotations after rotating fitted poles back to the original coordinate system."
+  ],
+  "evidence": {
+    "native_basis_sections": 646,
+    "training_sections_per_map": 9,
+    "held_out_sections_per_map": 8,
+    "max_fitted_basis_coordinate_error": 7.571721027943568e-14,
+    "max_independent_kernel_center_coordinate_error": 5.382361223382759e-12,
+    "max_existing_kernel_basis_coordinate_error": 1.7641371552993328,
+    "translation_and_source_length_invariants": 14,
+    "max_translation_and_source_length_direction_error": 1.7277171425107626e-14,
+    "target_reversal_direction_error": 0.10617654611644169,
+    "exact_knot_refinement_direction_error": 5.3709112042773754e-06,
+    "rotation_comparisons": [
+      {
+        "id": "rotate-x",
+        "joint_rotation_direction_error": 0.743671457576771,
+        "changed_source_orientation_direction_error": 6.005796064674683e-15
+      },
+      {
+        "id": "rotate-y",
+        "joint_rotation_direction_error": 0.77779617078461,
+        "changed_source_orientation_direction_error": 1.9460597736562618e-15
+      },
+      {
+        "id": "rotate-z",
+        "joint_rotation_direction_error": 0.5725428708728815,
+        "changed_source_orientation_direction_error": 8.066126164927098e-15
+      },
+      {
+        "id": "cycle",
+        "joint_rotation_direction_error": 0.0031822026910050924,
+        "changed_source_orientation_direction_error": 3.6290879476388655e-15
+      }
+    ],
+    "small_scale_result": "Both fixed-source and jointly scaled cases at scales 0.01 and 0.1 reproduce the public TryGetPlane(0.1) pole, including the vanishing-coefficient case. Scales 0.2, 1, 2 and 10 share the nonplanar baseline pole.",
+    "inference": "For these witnesses the target direction is independent of source length, translation and the tested source orientations. Joint quarter turns contradict a rotation-covariant selector, so an independent covariance plane fit alone cannot select the native direction. Further work must account for world coordinates, reversal and tolerance classification. This evidence does not identify the selector."
+  },
+  "checks": [
+    {
+      "command": "cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_auto_directions.json tools/rhino_oracle/observations/flow_auto_directions_viboceros_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "3fe2171173186b41b757c5f3099800d292e402089f855518e2c877808c951ab3"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_auto_direction_report tools/rhino_oracle/observations/flow_auto_direction_report_20261017.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_auto_direction tools.rhino_oracle.test_flow_structure tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_nurbs",
+      "exit_code": 0,
+      "passed_tests": 21,
+      "log_sha256": "ab1adaf30ff023a57e7b9d2cef979a590bc110aace2719e15d82606bcb0a69f3"
+    },
+    {
+      "command": "python3 -m py_compile tools/rhino_oracle/flow_auto_direction_report.py tools/rhino_oracle/test_flow_auto_direction.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "corruption_checks": [
+    "reordered identities",
+    "incomplete bases",
+    "NaN/infinite geometry",
+    "finite nonorthogonal geometry",
+    "valid finite rotation of an unfitted basis remains visible",
+    "finite corruption of a local center remains visible"
+  ],
+  "limitations": [
+    "This is diagnostic progress, not an implementation of the automatic spatial selector. Existing spatial and Roadlike Automatic command guards remain. No new command mode is enabled.",
+    "A fitted direction predicts the native frame family but is not a geometry-derived selection rule. It must not initialize production geometry or serve as a lookup by recipe ID.",
+    "All new observations are SDK maps. No new actual-command, history, preview, performance, native-smlib runtime or cross-platform qualification is claimed.",
+    "NumPy is an optional dependency for this analysis; its tests skip explicitly if unavailable. The core oracle remains standard-library Python."
+  ],
+  "historical_provenance": {
+    "preserved_records": 1,
+    "preserved_entries": 1,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "reference_sources_sha256": {
+    "crates/viboceros-geometry/src/morph/flow.rs": "910ccae76c6f7ddf9b59e66a3079261373d099eaa390559d191d8edc52b3509f",
+    "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "5b566778f28cc47d52109a7f474443a05795e1b4ce8102bd116fd1c4340ac086",
+    "crates/viboceros-command/src/flow.rs": "b7d8c05b0697c8eb6ea13f2975bb3f14cf10d38a4a41c9b90ab99fd563826b6c",
+    "tools/rhino_oracle/flow_probe.py": "eb3f7c53789ec04e5675121a640f98a281b2db92a0cf55ee14ea8ba6b011e7f8"
+  },
+  "sha256": {
+    "docs/flow-development.md": "e1973c246de9455385c0b8d92b642453f6edf1d1ae92795b29e76eb15872b604",
+    "docs/flow-nurbs-validation.json": "b6a569e6bd5a3f395c05a7caac3c42a2f2274c3c37d09575825e3987eab1405a",
+    "tools/rhino_oracle/fixtures/flow_auto_directions.json": "9ec5d77545e3a2bf9325c999ee830afad6b04d5efe53fb82b39e0137bac4aca8",
+    "tools/rhino_oracle/flow_auto_direction_report.py": "d904a62652643c3ca39ac1e809079fa31f4e4fd1fa919c3145e4ef4ce5cdb231",
+    "tools/rhino_oracle/observations/flow_auto_direction_report_20261017.json": "853d49ce1a3001ea5f9b9e1092c6203015af6f3c507831500a639bd8870e9703",
+    "tools/rhino_oracle/observations/flow_auto_directions_rhino_20261017.json": "c05cc655f2649ca3e2674f69f989f545be1406453eb3c04cc08517101d4875aa",
+    "tools/rhino_oracle/observations/flow_auto_directions_viboceros_20261017.json": "14de7e685ceea3c1b2f4754c16155a0f0156defe60c3578b232843e16caec74f",
+    "tools/rhino_oracle/test_flow_auto_direction.py": "9596f3fd2a618af9453d1f450102d414fe8b9d3f0e994d55a45fcc5a8403c11d"
+  }
+}

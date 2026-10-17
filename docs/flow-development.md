@@ -41,6 +41,7 @@ and actual Flow macros in owned private displays:
 | `flow_nurbs_command.json` | 72 | Complete rational, cubic and composite command workflows with Copy, reversals, groups and Undo/Redo |
 | `flow_nurbs_spatial.json` | 60 | Spatial Roadlike base/target/both-guide workflows with Copy, Stretch, reversals, Rigid poses and Undo/Redo |
 | `flow_inverse_queries.json`, `flow_inverse_nodes.json` | 4 | Public query order, density, tolerances, curve lifetime and checkpoint snap windows |
+| `flow_auto_directions.json` | 38 | Automatic spatial direction under translations, base length, scaling, reversal, refinement, control changes and quarter turns |
 | `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
 | `flow_density.json`, `flow_coupled_frames.json`, `flow_up_lookup.json` | 13 | Dense spatial positions/bases, equivalent straight guide types, batch length lookups, degree elevation and changed spatial shapes |
 
@@ -308,4 +309,32 @@ eight witnesses and remains guarded; native Roadlike Automatic is also guarded.
 cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_nurbs_command.json /tmp/flow-nurbs-command-local.json
 python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_nurbs_command.json /tmp/flow-nurbs-command-local.json tools/rhino_oracle/observations/flow_nurbs_command_rhino_20261017.json /tmp/flow-nurbs-command-report.json
 python3 -m unittest tools.rhino_oracle.test_flow_nurbs tools.rhino_oracle.test_flow_integration
+```
+
+The [automatic-direction report](../tools/rhino_oracle/observations/flow_auto_direction_report_20261017.json)
+and [capture record](flow-auto-direction-validation.json) isolate orientation
+after the lookup implementation. Thirty-eight new SDK maps contain 646 basis
+sections. All independently generated Rust centers agree within `5.4e-12`,
+while the existing transported transverse bases still differ. A shared fixed
+direction fitted on nine sections of each map predicts its eight held-out
+sections too; maximum basis-coordinate error is below `7.6e-14`. This analysis
+also handles the small-scale case where one homogeneous fit coefficient
+vanishes. Fitted directions remain diagnostic expectations only.
+Direction errors are norms of cross products of unit directions, so opposite
+pole signs are equivalent.
+
+Five base lengths and nine translations leave the target direction unchanged
+to below `1.8e-14`; changing the source orientation also leaves it unchanged.
+Reversing the target changes it. Scales `0.01` and `0.1` agree with the public
+`TryGetPlane(0.1)` normal, while scales `0.2`, `1`, `2` and `10` share the same
+nonplanar direction. Exact knot refinement changes that direction by about
+`5.4e-6`. Three joint quarter turns fail to rotate the selected direction with
+the geometry; rotating the results back gives direction errors above `0.57`.
+This rules out a rotation-covariant plane fit alone for these witnesses and
+directs further work toward the selector's dependence on world coordinates.
+It does not supply that selector. Automatic spatial Flow remains guarded.
+
+```sh
+python3 -m tools.rhino_oracle.flow_auto_direction_report /tmp/flow-auto-direction-report.json
+python3 -m unittest tools.rhino_oracle.test_flow_auto_direction
 ```

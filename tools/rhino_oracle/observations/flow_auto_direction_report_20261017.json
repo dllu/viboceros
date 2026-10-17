@@ -1,0 +1,876 @@
+{
+  "cases": 38,
+  "native_basis_sections": 646,
+  "max_shared_direction_basis_error": 7.571721027943568e-14,
+  "max_kernel_center_coordinate_error": 5.382361223382759e-12,
+  "max_translation_and_source_length_direction_error": 1.7277171425107626e-14,
+  "target_reversal_direction_error": 0.10617654611644169,
+  "exact_refinement_direction_error": 5.3709112042773754e-06,
+  "production_kernel_changed": false,
+  "automatic_spatial_flow_qualified": false,
+  "fitted_directions_used_as_kernel_inputs": false,
+  "translation_and_source_length_invariants": [
+    {
+      "id": "base-length-1-0",
+      "direction_error": 1.6812182447209843e-15
+    },
+    {
+      "id": "base-length-2-0",
+      "direction_error": 2.0749961406402915e-15
+    },
+    {
+      "id": "base-length-5-0",
+      "direction_error": 2.2630583085980215e-15
+    },
+    {
+      "id": "base-length-20-0",
+      "direction_error": 1.2378488856700097e-15
+    },
+    {
+      "id": "base-length-100-0",
+      "direction_error": 1.0327163047051575e-14
+    },
+    {
+      "id": "base-shift-x",
+      "direction_error": 8.92504691863612e-15
+    },
+    {
+      "id": "target-shift-x",
+      "direction_error": 2.4913624836163812e-15
+    },
+    {
+      "id": "both-shift-x",
+      "direction_error": 3.451191265066082e-15
+    },
+    {
+      "id": "base-shift-y",
+      "direction_error": 1.9094948469985236e-15
+    },
+    {
+      "id": "target-shift-y",
+      "direction_error": 1.6392246515987586e-15
+    },
+    {
+      "id": "both-shift-y",
+      "direction_error": 8.1383967192227e-15
+    },
+    {
+      "id": "base-shift-z",
+      "direction_error": 9.456304652975026e-15
+    },
+    {
+      "id": "target-shift-z",
+      "direction_error": 1.7277171425107626e-14
+    },
+    {
+      "id": "both-shift-z",
+      "direction_error": 1.1424513204471568e-14
+    }
+  ],
+  "scale_classification": [
+    {
+      "id": "both-scale-0-01",
+      "direction_error_from_baseline": 0.5051184905921867,
+      "public_plane_at_0_1_available": true
+    },
+    {
+      "id": "target-scale-0-01",
+      "direction_error_from_baseline": 0.5051184905921725,
+      "public_plane_at_0_1_available": true
+    },
+    {
+      "id": "both-scale-0-1",
+      "direction_error_from_baseline": 0.9999975866819036,
+      "public_plane_at_0_1_available": true
+    },
+    {
+      "id": "target-scale-0-1",
+      "direction_error_from_baseline": 0.9999975866819036,
+      "public_plane_at_0_1_available": true
+    },
+    {
+      "id": "both-scale-0-2",
+      "direction_error_from_baseline": 4.167127877876209e-15,
+      "public_plane_at_0_1_available": false
+    },
+    {
+      "id": "target-scale-0-2",
+      "direction_error_from_baseline": 1.3102513289393096e-14,
+      "public_plane_at_0_1_available": false
+    },
+    {
+      "id": "both-scale-2-0",
+      "direction_error_from_baseline": 0.0,
+      "public_plane_at_0_1_available": false
+    },
+    {
+      "id": "target-scale-2-0",
+      "direction_error_from_baseline": 2.2630583085980215e-15,
+      "public_plane_at_0_1_available": false
+    },
+    {
+      "id": "both-scale-10-0",
+      "direction_error_from_baseline": 3.998826220562522e-15,
+      "public_plane_at_0_1_available": false
+    },
+    {
+      "id": "target-scale-10-0",
+      "direction_error_from_baseline": 4.3811628819003e-15,
+      "public_plane_at_0_1_available": false
+    }
+  ],
+  "rotation_comparisons": [
+    {
+      "id": "rotate-x",
+      "joint_rotation_direction_error": 0.743671457576771,
+      "changed_source_orientation_direction_error": 6.005796064674683e-15
+    },
+    {
+      "id": "rotate-y",
+      "joint_rotation_direction_error": 0.77779617078461,
+      "changed_source_orientation_direction_error": 1.9460597736562618e-15
+    },
+    {
+      "id": "rotate-z",
+      "joint_rotation_direction_error": 0.5725428708728815,
+      "changed_source_orientation_direction_error": 8.066126164927098e-15
+    },
+    {
+      "id": "cycle",
+      "joint_rotation_direction_error": 0.0031822026910050924,
+      "changed_source_orientation_direction_error": 3.6290879476388655e-15
+    }
+  ],
+  "results": [
+    {
+      "id": "baseline",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647729426,
+        0.863050004612636,
+        -0.35561584677391195
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 3.1086244689504383e-15,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145657,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-length-1-0",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.3587228164772927,
+        0.8630500046126366,
+        -0.3556158467739121
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.4988010832439613e-15,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145657,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-length-2-0",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647729237,
+        0.8630500046126368,
+        -0.355615846773912
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.3877787807814457e-15,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091456566,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-length-5-0",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647729215,
+        0.8630500046126369,
+        -0.35561584677391184
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.0824674490095276e-15,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145657,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-length-20-0",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647729337,
+        0.863050004612636,
+        -0.35561584677391284
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 2.7478019859472624e-15,
+      "kernel_center_max_coordinate_error": 4.876099524153688e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145657,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-length-100-0",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647728815,
+        0.863050004612635,
+        -0.35561584677392016
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 6.328271240363392e-15,
+      "kernel_center_max_coordinate_error": 4.840572387365683e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091456527,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-shift-x",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647728654,
+        0.86305000461264,
+        -0.3556158467739098
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 6.772360450213455e-15,
+      "kernel_center_max_coordinate_error": 4.876099524153688e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091456527,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "target-shift-x",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.3587228164772949,
+        0.8630500046126349,
+        -0.35561584677391406
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 6.439293542825908e-15,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091456416,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "both-shift-x",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647729104,
+        0.863050004612637,
+        -0.35561584677391256
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 2.4424906541753444e-15,
+      "kernel_center_max_coordinate_error": 4.876099524153688e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145644,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-shift-y",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647729437,
+        0.8630500046126353,
+        -0.35561584677391367
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 5.440092820663267e-15,
+      "kernel_center_max_coordinate_error": 4.876099524153688e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091456616,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "target-shift-y",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.358722816477295,
+        0.8630500046126363,
+        -0.35561584677391045
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 9.103828801926284e-15,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145667,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "both-shift-y",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647728677,
+        0.8630500046126391,
+        -0.35561584677391206
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 5.9396931817445875e-15,
+      "kernel_center_max_coordinate_error": 4.876099524153688e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145667,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "base-shift-z",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647730125,
+        0.8630500046126314,
+        -0.3556158467739162
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.2490009027033011e-14,
+      "kernel_center_max_coordinate_error": 4.876099524153688e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145644,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "target-shift-z",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35872281647727816,
+        0.8630500046126418,
+        -0.3556158467739143
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.454392162258955e-14,
+      "kernel_center_max_coordinate_error": 4.831690603168681e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145667,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "both-shift-z",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.3587228164772996,
+        0.8630500046126303,
+        -0.3556158467739203
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.2101430968414206e-14,
+      "kernel_center_max_coordinate_error": 4.831690603168681e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091456793,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "both-scale-0-01",
+      "probe_size": 0.01,
+      "fitted_direction": [
+        -0.0,
+        1.0,
+        2.220446049250313e-16
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 4.440892098500626e-16,
+      "kernel_center_max_coordinate_error": 6.331740687315346e-15,
+      "kernel_basis_max_coordinate_error": 0.5773502691896258,
+      "public_plane_at_0_1": {
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "x": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "y": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "z": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "direction_error_from_public_plane": 2.220446049250313e-16
+    },
+    {
+      "id": "target-scale-0-01",
+      "probe_size": 0.01,
+      "fitted_direction": [
+        0.0,
+        1.0,
+        -2.3335410937211138e-14
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 3.8968828164342995e-14,
+      "kernel_center_max_coordinate_error": 6.331740687315346e-15,
+      "kernel_basis_max_coordinate_error": 0.5773502691896258,
+      "public_plane_at_0_1": {
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "x": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "y": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "z": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "direction_error_from_public_plane": 2.3335410937211138e-14
+    },
+    {
+      "id": "both-scale-0-1",
+      "probe_size": 0.1,
+      "fitted_direction": [
+        0.7071067811865475,
+        -1.1254118050283206e-16,
+        -0.7071067811865476
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 3.885780586188048e-16,
+      "kernel_center_max_coordinate_error": 5.6565863104651726e-14,
+      "kernel_basis_max_coordinate_error": 0.5854804446595658,
+      "public_plane_at_0_1": {
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "x": [
+          0.4082482904638631,
+          0.8164965809277261,
+          0.4082482904638631
+        ],
+        "y": [
+          0.5773502691896258,
+          -0.5773502691896258,
+          0.5773502691896258
+        ],
+        "z": [
+          0.7071067811865475,
+          0.0,
+          -0.7071067811865475
+        ]
+      },
+      "direction_error_from_public_plane": 1.5808690316736973e-16
+    },
+    {
+      "id": "target-scale-0-1",
+      "probe_size": 0.1,
+      "fitted_direction": [
+        0.7071067811865476,
+        -4.12884939468436e-18,
+        -0.7071067811865476
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 3.552713678800501e-15,
+      "kernel_center_max_coordinate_error": 5.700995231450179e-14,
+      "kernel_basis_max_coordinate_error": 0.5854804446595658,
+      "public_plane_at_0_1": {
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "x": [
+          0.4082482904638631,
+          0.8164965809277261,
+          0.4082482904638631
+        ],
+        "y": [
+          0.5773502691896258,
+          -0.5773502691896258,
+          0.5773502691896258
+        ],
+        "z": [
+          0.7071067811865475,
+          0.0,
+          -0.7071067811865475
+        ]
+      },
+      "direction_error_from_public_plane": 4.12884939468436e-18
+    },
+    {
+      "id": "both-scale-0-2",
+      "probe_size": 0.2,
+      "fitted_direction": [
+        -0.3587228164772904,
+        0.8630500046126374,
+        -0.35561584677391267
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 8.604228440844963e-16,
+      "kernel_center_max_coordinate_error": 1.1313172620930345e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091457026,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "target-scale-0-2",
+      "probe_size": 0.2,
+      "fitted_direction": [
+        -0.35872281647728205,
+        0.8630500046126407,
+        -0.35561584677391284
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.0769163338864018e-14,
+      "kernel_center_max_coordinate_error": 1.1313172620930345e-13,
+      "kernel_basis_max_coordinate_error": 0.26579678091457026,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "both-scale-2-0",
+      "probe_size": 2.0,
+      "fitted_direction": [
+        -0.35872281647729426,
+        0.863050004612636,
+        -0.35561584677391195
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 3.1086244689504383e-15,
+      "kernel_center_max_coordinate_error": 9.743317264110374e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145657,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "target-scale-2-0",
+      "probe_size": 2.0,
+      "fitted_direction": [
+        -0.35872281647729215,
+        0.8630500046126369,
+        -0.35561584677391184
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.0824674490095276e-15,
+      "kernel_center_max_coordinate_error": 9.743317264110374e-13,
+      "kernel_basis_max_coordinate_error": 0.2657967809145657,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "both-scale-10-0",
+      "probe_size": 10.0,
+      "fitted_direction": [
+        -0.35872281647729065,
+        0.8630500046126369,
+        -0.3556158467739134
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 7.216449660063518e-16,
+      "kernel_center_max_coordinate_error": 5.3788085097039584e-12,
+      "kernel_basis_max_coordinate_error": 0.26579678091457,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "target-scale-10-0",
+      "probe_size": 10.0,
+      "fitted_direction": [
+        -0.35872281647729015,
+        0.8630500046126375,
+        -0.3556158467739125
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 8.881784197001252e-16,
+      "kernel_center_max_coordinate_error": 5.382361223382759e-12,
+      "kernel_basis_max_coordinate_error": 0.2657967809145699,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "target-reversed",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.29168530486783056,
+        0.9118031514203047,
+        -0.2890236945029971
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 5.662137425588298e-15,
+      "kernel_center_max_coordinate_error": 1.2927436898735323e-12,
+      "kernel_basis_max_coordinate_error": 1.7641371552993328,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "refined",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.35871940786635487,
+        0.863052716218828,
+        -0.3556127042827842
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.4988010832439613e-15,
+      "kernel_center_max_coordinate_error": 1.794564497004103e-12,
+      "kernel_basis_max_coordinate_error": 0.2657999475779349,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "control-one-axis-0",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.36654912191496547,
+        0.8568044660435357,
+        -0.3626676828602455
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 4.440892098500626e-15,
+      "kernel_center_max_coordinate_error": 1.4801493364302587e-12,
+      "kernel_basis_max_coordinate_error": 0.15036408581917765,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "control-one-axis-1",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.36562309015290817,
+        0.8571057010330048,
+        -0.3628905802080839
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 9.159339953157541e-16,
+      "kernel_center_max_coordinate_error": 2.0481394358284888e-12,
+      "kernel_basis_max_coordinate_error": 0.2890830587232042,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "control-one-axis-2",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.37054406736944895,
+        0.8531440402656932,
+        -0.3672088516041443
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 3.219646771412954e-15,
+      "kernel_center_max_coordinate_error": 1.7137402608113916e-12,
+      "kernel_basis_max_coordinate_error": 0.34783847347086483,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "rotate-x-both",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        0.4459779672238683,
+        0.4446386373123663,
+        0.7767883463079684
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 2.4702462297909733e-15,
+      "kernel_center_max_coordinate_error": 5.644373857194296e-13,
+      "kernel_basis_max_coordinate_error": 0.3498939812065348,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "rotate-x-target",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        0.4459779672238641,
+        0.4446386373123641,
+        0.7767883463079721
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 7.216449660063518e-16,
+      "kernel_center_max_coordinate_error": 5.644373857194296e-13,
+      "kernel_basis_max_coordinate_error": 0.3498939812065348,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "rotate-y-both",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        0.4858001895326105,
+        0.7262852311581961,
+        0.48632081885476103
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 7.771561172376096e-16,
+      "kernel_center_max_coordinate_error": 5.067057884389214e-13,
+      "kernel_basis_max_coordinate_error": 0.9159480224393595,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "rotate-y-target",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        0.48580018953261195,
+        0.7262852311581949,
+        0.4863208188547616
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.6653345369377348e-15,
+      "kernel_center_max_coordinate_error": 5.067057884389214e-13,
+      "kernel_basis_max_coordinate_error": 0.9155431132687948,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "rotate-z-both",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        0.9967944149773322,
+        -0.056054648215534374,
+        -0.05708564340909904
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 1.0824674490095276e-15,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 0.6193834857543972,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "rotate-z-target",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        0.996794414977332,
+        -0.0560546482155295,
+        -0.05708564340910546
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 7.571721027943568e-14,
+      "kernel_center_max_coordinate_error": 4.871658632055187e-13,
+      "kernel_basis_max_coordinate_error": 1.278851809860168,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "cycle-both",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.3580665941203682,
+        -0.3567005394130868,
+        0.8628748688874027
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 2.9976021664879227e-15,
+      "kernel_center_max_coordinate_error": 5.644373857194296e-13,
+      "kernel_basis_max_coordinate_error": 0.6180363474188634,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    },
+    {
+      "id": "cycle-target",
+      "probe_size": 1.0,
+      "fitted_direction": [
+        -0.3580665941203673,
+        -0.35670053941309016,
+        0.8628748688874017
+      ],
+      "training_sections": 9,
+      "held_out_sections": 8,
+      "checked_sections": 17,
+      "max_shared_direction_basis_error": 6.938893903907228e-16,
+      "kernel_center_max_coordinate_error": 5.644373857194296e-13,
+      "kernel_basis_max_coordinate_error": 0.38026157388087656,
+      "public_plane_at_0_1": null,
+      "direction_error_from_public_plane": null
+    }
+  ]
+}
