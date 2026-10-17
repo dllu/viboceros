@@ -42,6 +42,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Tangent arcs](docs/commands/arc-tangent.md), with curve/edge contacts, radius locks and arc-choice previews
 - [Tilted arcs](docs/commands/arc-tilted.md), with a spatial orientation rectangle, signed sweeps and measured lengths
 - [Deformable arcs](docs/commands/arc-deformable.md), with editable NURBS output, degree/count settings and shared previews
+- [Arc extensions](docs/commands/arc-extension.md), with curve/edge endpoints, normal-plane centers and source-preserving previews
 - [Circle construction](docs/commands/circle-deformable.md), with variable-degree periodic/clamped output,
   [Tangent](docs/commands/circle-tangent.md), FitPoints and
   [AroundCurve](docs/commands/circle-around-curve.md) curve/edge guides

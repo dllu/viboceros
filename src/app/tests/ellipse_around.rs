@@ -34,6 +34,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
         for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
             let (id, f) = match op {
                 viboceros_oracle::Operation::EllipseCommand { id, fixture }
+                | viboceros_oracle::Operation::ArcExtension { id, fixture }
                 | viboceros_oracle::Operation::ArcTangent { id, fixture }
                 | viboceros_oracle::Operation::ArcCommand { id, fixture }
                 | viboceros_oracle::Operation::CircleTangent { id, fixture }
@@ -91,7 +92,11 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
             let mut initial_arc_cursor = false;
             for (action_index, action) in f.actions.iter().enumerate() {
                 if !initial_arc_cursor
-                    && matches!(op, viboceros_oracle::Operation::ArcCommand { .. })
+                    && matches!(
+                        op,
+                        viboceros_oracle::Operation::ArcCommand { .. }
+                            | viboceros_oracle::Operation::ArcExtension { .. }
+                    )
                     && matches!(action, Action::Hover { .. } | Action::Click { .. })
                 {
                     let field = if matches!(action, Action::Hover { .. }) {
@@ -163,6 +168,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                             op,
                             viboceros_oracle::Operation::CircleTangent { .. }
                                 | viboceros_oracle::Operation::ArcTangent { .. }
+                                | viboceros_oracle::Operation::ArcExtension { .. }
                         ) {
                             // Input calibration uses native click rays, never expected geometry.
                             let clicks = row["value"]["input_trace"]["clicks"].as_array().unwrap();
@@ -171,11 +177,19 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                             let point: [f64; 3] =
                                 serde_json::from_value(click["projected_point"].clone()).unwrap();
                             assert!(
-                                app.pick_tangent_at(
-                                    guides[*curve],
-                                    *edge,
-                                    Point3::try_from(point).unwrap()
-                                ),
+                                if matches!(op, viboceros_oracle::Operation::ArcExtension { .. }) {
+                                    app.pick_arc_extension_at(
+                                        guides[*curve],
+                                        *edge,
+                                        Point3::try_from(point).unwrap(),
+                                    )
+                                } else {
+                                    app.pick_tangent_at(
+                                        guides[*curve],
+                                        *edge,
+                                        Point3::try_from(point).unwrap(),
+                                    )
+                                },
                                 "{id}"
                             );
                             continue;
@@ -211,6 +225,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
             assert!(
                 app.ellipse_session.is_none()
                     && app.tangent_session.is_none()
+                    && app.arc_extension_session.is_none()
                     && app.arc_tilted_session.is_none()
                     && app.arc_deform_session.is_none()
                     && app.arc_length_session.is_none()

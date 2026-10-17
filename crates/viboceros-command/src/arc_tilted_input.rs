@@ -35,6 +35,22 @@ impl Input {
     pub fn center(self) -> Point3 {
         self.center
     }
+    /// Start the shared endpoint/angle/length getter from an oriented circle.
+    pub fn from_circle(circle: Circle3, tolerance: Tolerance) -> Result<Self, GeometryError> {
+        let mut input = Self::new(circle.center(), tolerance);
+        input.start = Some(
+            circle
+                .center()
+                .translated(circle.x_axis().as_vector().scaled(circle.radius())?)?,
+        );
+        input.frame = Some(Frame3::try_from_directions(
+            circle.center(),
+            circle.x_axis().as_vector(),
+            circle.y_axis().as_vector(),
+            tolerance,
+        )?);
+        Ok(input)
+    }
     pub fn frame(self) -> Option<Frame3> {
         self.frame
     }

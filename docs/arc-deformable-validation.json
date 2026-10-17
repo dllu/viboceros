@@ -450,10 +450,6 @@
     }
   ],
   "sha256": {
-    "README.md": "0aeccf0f3d6571fa0f564ef1312fc03cc7d1e3357e505fa36aa49461a50dc9d2",
-    "crates/viboceros-command/src/arc_deform_input.rs": "9d6b6302ba4d531ac4c2ed16cf077b726de375833fe3eeba145f71c9528e0b59",
-    "crates/viboceros-command/src/arc_input.rs": "962654bde60a15cf6152bfb3c23d625369e265a6262a7b476d6a4fb55a260aeb",
-    "crates/viboceros-command/src/lib.rs": "6f53705ee9751c048b8161f2422dd94d77ca16fd83621100c5a232e241ea68f3",
     "crates/viboceros-geometry/src/arc_deform.rs": "fb46c4d1104a766bbe196ba67960d5a02bc6a5163e4cb504fa9af0b53cff6874",
     "crates/viboceros-geometry/src/circle_curve.rs": "a72e5c943d8e4786bc67fa3ed76e1677f3b57909a4845cb0aa624a4297810ec2",
     "crates/viboceros-geometry/src/circular.rs": "150b07fbe8244a42585ddf938098d3968011e3877e5e81b002900ac1588d97e2",
@@ -462,28 +458,17 @@
     "crates/viboceros-oracle/src/arc_command.rs": "c18e174acd4a4e9641712280ebaa4de2f00b242f4903582a547637a5ab3118ed",
     "crates/viboceros-oracle/src/arc_tangent.rs": "083554ee628c68452fe7d944f3808df541cbedbcf8604eb832c8265ba784d94a",
     "crates/viboceros-oracle/src/circle_tangent.rs": "2acd3813b0fc7b6549be2a116d3e1ea1416f0850d8c5aa497a3aa3de675f13cd",
-    "docs/arc-tangent-validation.json": "798a78aa3c66e7a58aec4c7dd343f88d3c56d4bad5aa9b948f169821dd2ce0ae",
-    "docs/arc-tilted-validation.json": "f8cd6d7b097d67b3c07a3c904a43dccfd7c87c2bf577d35b7b6b10e6d9f994a4",
     "docs/circle-clamped-validation.json": "1e2d2a327abc629de52f049a841417baf87c9fa3478d7fb0ea479404ba34c823",
     "docs/circle-deform-validation.json": "982d8fa3dea92986238000622e8eb5d846637d2530983a952c5cbacbebda9728",
-    "docs/commands/README.md": "e1167adb0cd6760835838a74fbad03cc377d24270c690e171f97c2af6d6d0ea5",
-    "docs/commands/arc-deformable.md": "406f6ec9ef1833d371af3eddeb4705c9423f45bd30ab947ab2b7410995dec79a",
-    "docs/commands/arc-tangent.md": "c87c1480fe9e59bcc8e9a3638d7bbf9c6cdadfcc63975bc6382ec8d3ab7f4d2c",
     "docs/flow-poles-validation.json": "357debd6263029599416dbf18c91645764ea260fc04403b57c2fab9403f8991e",
-    "src/app.rs": "aad07ebc06db19a7292ed7781c844af7050629df6ef3a62472f78b953fe79047",
-    "src/app/arc_deform.rs": "1a1de75ac35975644a25b69534b1df426e1dac0ea17d4a4bae71c543a472a258",
     "src/app/arc_length.rs": "baaccf00ac474c4c3c53e2c4f9f9016d5df5493ba7f164411d30d0481bfa16f9",
     "src/app/arc_tilted.rs": "73c9cdae0efcdfb07bb4443a28c50584b5b30afea199195135436cd7b0ca5ca4",
-    "src/app/point_input.rs": "a2162cad51f6dea3663368e41cbd5ee51d6132adb32c4fb09893b8e963c4077c",
     "src/app/tangent.rs": "92b1726942450b65119911529b626b5a804b0e5bfb3c1d4409759ce3d7d60d8f",
     "src/app/tests/arc_deform.rs": "7338e1d9b1856239b7f6cd3059a22c195954f0c7eb6c69320fd14895b8b5ff6b",
-    "src/app/tests/ellipse_around.rs": "9e152c26a1c60ce6180f3824b84e7a4ce1a3cc5b17e5f2e929cb064abbb6734e",
-    "src/viewport.rs": "a77ef6f75f357b42be5a629a37d1481150af5e9de1372ae86d85aa301effdf33",
     "src/viewport/arc_tilted.rs": "17a197720c57b42430fad30b7ff5be1d1ffd3627ff4ee05c354f90183fab0fc2",
     "src/viewport/tangent.rs": "fa7f77a55991aa5da0a20fb2ad5664aa5140f72726e522e9c0a136c8a8180ef2",
     "tools/rhino_oracle/arc_command_probe.py": "418a589405006a642f652a579372b162f647d10f0bf7a31e37f6f609d47a9601",
     "tools/rhino_oracle/arc_tangent_probe.py": "e8b37b12c15dbea99e1584604cbeee1368a982c99005b83d1cd1dd12a070e5ee",
-    "tools/rhino_oracle/conic_getter_input.py": "b62822f4223b7d603c47d003794c1e46c1d5516aff7f7d4524bcca4f8c0997d6",
     "tools/rhino_oracle/curve_primitive_probe.py": "ed3175c37dfac3bc6200f032ae5ed63f2bf6ad0c0a7255954baea9a7328149d8",
     "tools/rhino_oracle/fixtures/arc_deform_basic.json": "e5d545746ef80c6c657350a1072d1b9ff4189ba456540a7d05e0fa61b3bed981",
     "tools/rhino_oracle/fixtures/arc_deform_boundaries.json": "862adf45bc5a571ece25567e1c252520b10c450eea22cb57d4e9c2c3a06944db",
@@ -560,5 +545,22 @@
       "scheme": "VibocerosOracleArcDeformMidpointGetters20261017",
       "exit_code": 0
     }
-  ]
+  ],
+  "git_sha256": {
+    "8e69543c3e93fa78c2888133c95f018332adc544:README.md": "0aeccf0f3d6571fa0f564ef1312fc03cc7d1e3357e505fa36aa49461a50dc9d2",
+    "8e69543c3e93fa78c2888133c95f018332adc544:crates/viboceros-command/src/arc_input.rs": "962654bde60a15cf6152bfb3c23d625369e265a6262a7b476d6a4fb55a260aeb",
+    "8e69543c3e93fa78c2888133c95f018332adc544:crates/viboceros-command/src/lib.rs": "6f53705ee9751c048b8161f2422dd94d77ca16fd83621100c5a232e241ea68f3",
+    "8e69543c3e93fa78c2888133c95f018332adc544:docs/commands/README.md": "e1167adb0cd6760835838a74fbad03cc377d24270c690e171f97c2af6d6d0ea5",
+    "8e69543c3e93fa78c2888133c95f018332adc544:docs/commands/arc-deformable.md": "406f6ec9ef1833d371af3eddeb4705c9423f45bd30ab947ab2b7410995dec79a",
+    "8e69543c3e93fa78c2888133c95f018332adc544:docs/commands/arc-tangent.md": "c87c1480fe9e59bcc8e9a3638d7bbf9c6cdadfcc63975bc6382ec8d3ab7f4d2c",
+    "8e69543c3e93fa78c2888133c95f018332adc544:src/app.rs": "aad07ebc06db19a7292ed7781c844af7050629df6ef3a62472f78b953fe79047",
+    "8e69543c3e93fa78c2888133c95f018332adc544:src/app/arc_deform.rs": "1a1de75ac35975644a25b69534b1df426e1dac0ea17d4a4bae71c543a472a258",
+    "8e69543c3e93fa78c2888133c95f018332adc544:src/app/point_input.rs": "a2162cad51f6dea3663368e41cbd5ee51d6132adb32c4fb09893b8e963c4077c",
+    "8e69543c3e93fa78c2888133c95f018332adc544:src/app/tests/ellipse_around.rs": "9e152c26a1c60ce6180f3824b84e7a4ce1a3cc5b17e5f2e929cb064abbb6734e",
+    "8e69543c3e93fa78c2888133c95f018332adc544:src/viewport.rs": "a77ef6f75f357b42be5a629a37d1481150af5e9de1372ae86d85aa301effdf33",
+    "8e69543c3e93fa78c2888133c95f018332adc544:tools/rhino_oracle/conic_getter_input.py": "b62822f4223b7d603c47d003794c1e46c1d5516aff7f7d4524bcca4f8c0997d6",
+    "8e69543c3e93fa78c2888133c95f018332adc544:docs/arc-tangent-validation.json": "798a78aa3c66e7a58aec4c7dd343f88d3c56d4bad5aa9b948f169821dd2ce0ae",
+    "8e69543c3e93fa78c2888133c95f018332adc544:docs/arc-tilted-validation.json": "f8cd6d7b097d67b3c07a3c904a43dccfd7c87c2bf577d35b7b6b10e6d9f994a4",
+    "8e69543c3e93fa78c2888133c95f018332adc544:crates/viboceros-command/src/arc_deform_input.rs": "9d6b6302ba4d531ac4c2ed16cf077b726de375833fe3eeba145f71c9528e0b59"
+  }
 }

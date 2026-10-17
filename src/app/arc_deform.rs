@@ -23,7 +23,7 @@ impl VibocerosApp {
         for (index, word) in rest.iter().enumerate() {
             if index == rest.len() - 1
                 && settings.pending().is_none()
-                && ["Center", "StartPoint", "Tangent"]
+                && ["Center", "StartPoint", "Tangent", "Extension"]
                     .iter()
                     .any(|k| word.trim_start_matches('_').eq_ignore_ascii_case(k))
             {
@@ -130,6 +130,8 @@ impl VibocerosApp {
                 Ok(()) => self.arc_deform_prompt(),
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
+        } else if word.eq_ignore_ascii_case("Extension") {
+            self.start_arc_extension(true);
         } else if word.eq_ignore_ascii_case("Tangent") {
             self.start_arc_tangent_from_prompt();
         } else if ["Center", "StartPoint"]

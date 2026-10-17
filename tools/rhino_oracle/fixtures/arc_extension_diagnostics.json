@@ -1,0 +1,128 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-selection-cleanup",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            10,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        [
+          13,
+          4,
+          0
+        ]
+      ],
+      "preselect_all": true
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-collinear",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        [
+          15,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-cancel-preselected",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        "Cancel"
+      ],
+      "preselect": true
+    }
+  ]
+}

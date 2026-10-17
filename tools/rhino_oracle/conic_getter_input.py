@@ -5,7 +5,7 @@ def drive(op,host,guides,command="Conic"):
     if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle","Arc"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     plan_view=None
-    if command in('Circle','Arc') and op.get('op')in('circle_tangent','arc_tangent') and 'construction_plane'in op:
+    if command in('Circle','Arc') and op.get('op')in('circle_tangent','arc_tangent','arc_extension') and 'construction_plane'in op:
         origin,x,y=op['construction_plane']
         plan_view=bool(vp.SetToPlanView(R.Geometry.Point3d(*origin),R.Geometry.Vector3d(*x),R.Geometry.Vector3d(*y),True))
         if not plan_view:raise ValueError('could not align owned tangent input viewport')
@@ -45,18 +45,19 @@ def drive(op,host,guides,command="Conic"):
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
+    pointer_plane=vp.GetConstructionPlane().Plane
     arc_pointer_path=S.Array[S.Int32]([0]*384);arc_pointer_count=S.Array[S.Int32]([0])
     arc_pointer_initial=S.Array[S.Int32]([0]*(2*len(actions)))
     def pointer_request(i,marker,screen):
         receipt=[]
-        if op.get('op')=='arc_command':
+        if op.get('op')in('arc_command','arc_extension'):
             from System.Windows.Forms import Cursor
             position=E.Property(None,clr.GetClrType(Cursor).GetProperty('Position'))
             receipt=[E.Assign(item(arc_pointer_initial,2*i),E.Property(position,'X')),E.Assign(item(arc_pointer_initial,2*i+1),E.Property(position,'Y'))]
         return E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1))]+receipt+[log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
     for i,a in enumerate(actions):
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        located=command in('Circle','Arc')and op.get('op')in('circle_tangent','arc_tangent')and isinstance(a,dict)and'curve'in a and'pick'in a
+        located=command in('Circle','Arc')and op.get('op')in('circle_tangent','arc_tangent','arc_extension')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
@@ -71,10 +72,23 @@ def drive(op,host,guides,command="Conic"):
                 ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                 ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,plane)
                 if ok:clicks[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
+            if op.get('op')=='arc_extension' and not located:
+                selected=next(p for p in actions if isinstance(p,dict)and'curve'in p)
+                source=doc.Objects.FindId(guides[selected['curve']]).Geometry
+                if 'edge'in selected:source=source.Edges[selected['edge']]
+                endpoint=source.PointAtEnd if source.PointAtEnd.DistanceTo(R.Geometry.Point3d(*selected['pick']))<source.PointAtStart.DistanceTo(R.Geometry.Point3d(*selected['pick']))else source.PointAtStart
+                tangent=source.TangentAtEnd if endpoint==source.PointAtEnd else -source.TangentAtStart
+                center=R.Geometry.Point3d(*actions[actions.index('Center')+1]);normal_plane=R.Geometry.Plane(endpoint,tangent);center=normal_plane.ClosestPoint(center)
+                radial=endpoint-center;normal=R.Geometry.Vector3d.CrossProduct(radial,tangent)
+                plane=R.Geometry.Plane(center,normal);pointer_plane=plane
+                ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,plane)
+                if ok:clicks[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
             if located:
                 clicks[-1]['curve']=a['curve'];clicks[-1]['edge']=a.get('edge')
-                if 'edge'not in a:
+                if 'edge'not in a or op.get('op')=='arc_extension':
                     source=doc.Objects.FindId(guides[a['curve']]).Geometry
+                    if 'edge'in a:source=source.Edges[a['edge']]
                     ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
                     ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
                     if ok:
@@ -169,10 +183,11 @@ def drive(op,host,guides,command="Conic"):
         trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]==9)for c in clicks]
         trace['snap_settings']=snap_settings
         if op.get('op')=='arc_command':trace['pointer_path']=[dict(action=int(arc_pointer_path[3*i]),pixel=[int(arc_pointer_path[3*i+1]),int(arc_pointer_path[3*i+2])])for i in range(arc_pointer_count[0])]
-        if op.get('op')=='arc_command':
+        if op.get('op')in('arc_command','arc_extension'):
+            initial_plane=pointer_plane if op.get('op')=='arc_extension'else plane
             for c in trace['clicks']+trace['motion']:
                 i=c['action'];initial=view.ScreenToClient(S.Drawing.Point(arc_pointer_initial[2*i],arc_pointer_initial[2*i+1]))
-                ray=vp.ClientToWorld(initial);ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,plane)
+                ray=vp.ClientToWorld(initial);ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,initial_plane)
                 c['initial_pixel']=[int(initial.X),int(initial.Y)]
                 if ok:c['initial_projected_point']=host['_xyz'](ray.PointAt(t))
         trace['motion_acknowledgement']='Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.'

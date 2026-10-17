@@ -139,6 +139,7 @@ use command_line::command_completions;
 mod align;
 mod angle;
 mod arc_deform;
+mod arc_extension;
 mod arc_length;
 mod arc_tilted;
 mod circle;
@@ -419,6 +420,9 @@ enum InteractiveCommand {
         anchor: Option<Point3>,
     },
     ArcTilted {
+        anchor: Option<Point3>,
+    },
+    ArcExtension {
         anchor: Option<Point3>,
     },
     ArcDeform {
@@ -856,7 +860,10 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
-            Self::ArcTangent { .. } | Self::ArcTilted { .. } | Self::ArcDeform { .. } => "Arc",
+            Self::ArcTangent { .. }
+            | Self::ArcTilted { .. }
+            | Self::ArcExtension { .. }
+            | Self::ArcDeform { .. } => "Arc",
             Self::CircleTangent { .. } | Self::CircleAround { .. } | Self::CircleDeform { .. } => {
                 "Circle"
             }
@@ -1102,6 +1109,9 @@ impl InteractiveCommand {
             Self::ArcTangent { .. } => {
                 "Arc Tangent: specify contacts and choose an arc (Esc cancels)"
             }
+            Self::ArcExtension { .. } => {
+                "Arc Extension: select a source, endpoint or Center (Esc cancels)"
+            }
             Self::ArcTilted { .. } => {
                 "Arc Tilted: specify start, orientation, and endpoint or angle (Esc cancels)"
             }
@@ -1112,7 +1122,7 @@ impl InteractiveCommand {
                 setting: Some(viboceros_command::arc_deform_input::Setting::PointCount),
             } => "Arc Deformable: enter point count (Esc cancels)",
             Self::ArcDeform { setting: None } => {
-                "Arc Deformable: center or Degree/PointCount/StartPoint/Tangent (Esc cancels)"
+                "Arc Deformable: center or Degree/PointCount/StartPoint/Tangent/Extension (Esc cancels)"
             }
             Self::CircleTangent { .. } => {
                 "Circle Tangent: pick contacts, Point, radius or FromFirstPoint (Esc cancels)"
@@ -1244,7 +1254,7 @@ impl InteractiveCommand {
                 "Arc StartPoint Center Length: enter a signed length or pick two distance points; Direction reverses it (Esc cancels)"
             }
             Self::ArcCenter { center: None, .. } => {
-                "Arc: pick the center or choose Deformable/StartPoint/Tangent (Esc cancels)"
+                "Arc: pick the center or choose Deformable/StartPoint/Tangent/Extension (Esc cancels)"
             }
             Self::ArcCenter { start: None, .. } => {
                 "Arc Center: pick the start point or choose Tilted/Midpoint (Esc cancels)"
@@ -2049,7 +2059,8 @@ impl InteractiveCommand {
                 ..
             } => Some(major_point),
             Self::SplitMeshEdge { edge_point } => edge_point,
-            Self::ArcTilted { anchor: center }
+            Self::ArcExtension { anchor: center }
+            | Self::ArcTilted { anchor: center }
             | Self::ArcTangent { anchor: center }
             | Self::CircleTangent { anchor: center }
             | Self::CircleDeform { anchor: center }
@@ -2333,6 +2344,7 @@ pub struct VibocerosApp {
     ellipse_session: Option<ellipse::Session>,
     circle_around_session: Option<circle_around::Session>,
     tangent_session: Option<tangent::Session>,
+    arc_extension_session: Option<arc_extension::Session>,
     arc_tilted_session: Option<arc_tilted::Session>,
     arc_length_session: Option<arc_length::Session>,
     arc_deform_session: Option<viboceros_command::arc_deform_input::Settings>,
@@ -2463,6 +2475,7 @@ impl VibocerosApp {
             ellipse_session: None,
             circle_around_session: None,
             tangent_session: None,
+            arc_extension_session: None,
             arc_tilted_session: None,
             arc_length_session: None,
             arc_deform_session: None,
@@ -2597,6 +2610,7 @@ impl VibocerosApp {
         // Construction options can share names with snap modes, such as Vertex.
         if self.try_continue_circle_deform(&input)
             || self.try_continue_arc_deform(&input)
+            || self.try_continue_arc_extension(&input)
             || self.try_continue_arc_tilted(&input)
             || self.try_continue_tangent(&input)
             || self.try_continue_arc(&input)
@@ -2891,6 +2905,22 @@ impl VibocerosApp {
     fn try_continue_arc(&mut self, input: &str) -> bool {
         if self.plane_prompt.is_some() || self.object_prompt.is_some() {
             return false;
+        }
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::ArcCenter {
+                center: None,
+                start: None,
+                ..
+            })
+        ) && input
+            .trim()
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("Extension")
+        {
+            self.start_arc_extension(true);
+            self.command_input.clear();
+            return true;
         }
         if let Some(InteractiveCommand::ArcCenter {
             center: Some(center),
@@ -3339,6 +3369,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_arc_extension(input) {
+            return true;
+        }
         if self.try_start_arc_deform(input) {
             return true;
         }
@@ -5726,6 +5759,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.release_arc_extension_pick();
         self.release_circle_around_picks();
         self.release_ellipse_picks();
         self.commands.clear_curve_deviation();
@@ -5765,6 +5799,7 @@ impl VibocerosApp {
         self.ellipse_session = None;
         self.circle_around_session = None;
         self.tangent_session = None;
+        self.arc_extension_session = None;
         self.arc_tilted_session = None;
         self.arc_deform_session = None;
         self.arc_length_session = None;
@@ -5841,6 +5876,9 @@ impl VibocerosApp {
     ) -> bool {
         if !self.prepare_arc_deform_point() {
             return false;
+        }
+        if let Some(accepted) = self.accept_arc_extension_point(point) {
+            return accepted;
         }
         if let Some(accepted) = self.accept_arc_length_point(point) {
             return accepted;
@@ -5925,6 +5963,7 @@ impl VibocerosApp {
             | InteractiveCommand::OrientOnCurve
             | InteractiveCommand::CircleDeform { .. }
             | InteractiveCommand::ArcTangent { .. }
+            | InteractiveCommand::ArcExtension { .. }
             | InteractiveCommand::ArcTilted { .. }
             | InteractiveCommand::ArcDeform { .. }
             | InteractiveCommand::CircleTangent { .. }
@@ -8608,6 +8647,9 @@ impl VibocerosApp {
         if self.pick_conic_curve(click.object_id, None) {
             return;
         }
+        if self.pick_arc_extension_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_tangent_curve(click.object_id, None) {
             return;
         }
@@ -9199,6 +9241,9 @@ impl VibocerosApp {
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
         if output.selection_pointer.is_some() {
             self.capture_flow_pointer(output.selection_pointer);
+            if let Some(s) = &mut self.arc_extension_session {
+                s.pointer = output.selection_pointer;
+            }
             if let Some(s) = &mut self.tangent_session {
                 s.pointer = output.selection_pointer;
             }
@@ -9217,6 +9262,9 @@ impl VibocerosApp {
             return true;
         }
         if let Some(point) = output.drafting_hover.take() {
+            if let Some(s) = self.arc_extension_session.as_mut() {
+                let _ = s.input.observe_cursor(point);
+            }
             if let Some(s) = &mut self.arc_tilted_session {
                 let _ = s.input.observe_cursor(point);
             }
@@ -9351,6 +9399,7 @@ impl VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
+                || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
                 || self.picking_circle_around_curve()
             {
@@ -9646,6 +9695,7 @@ impl eframe::App for VibocerosApp {
         self.validate_conic_curve();
         self.validate_rectangle_curve();
         self.validate_ellipse_curve();
+        self.validate_arc_extension_source();
         self.validate_tangent_sources();
         self.validate_circle_around_curve();
         self.validate_blend_surface();
@@ -9710,6 +9760,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
                 && !self.picking_ellipse_curve()
+                && !self.picking_arc_extension_curve()
                 && self
                     .tangent_session
                     .as_ref()
@@ -9977,6 +10028,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
+            || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
             || self.picking_circle_around_curve())
             && self.plane_prompt.is_none()
@@ -10171,6 +10223,7 @@ impl eframe::App for VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
+                || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
                 || self.picking_circle_around_curve());
         let document = surface_rebuild::viewport_document(
@@ -10333,6 +10386,11 @@ impl eframe::App for VibocerosApp {
                     }),
                 )
             })
+            .filter(|_| model_input_active);
+        let arc_extension_input = self
+            .arc_extension_session
+            .as_ref()
+            .map(|s| &s.input)
             .filter(|_| model_input_active);
         let arc_tilted_input = self
             .arc_tilted_session
@@ -10505,6 +10563,7 @@ impl eframe::App for VibocerosApp {
                             ellipse_input,
                             tangent: tangent_input,
                             arc_tilted_input,
+                            arc_extension_input,
                             arc_output,
                             arc_preview,
                             circle_around_input,
@@ -10734,6 +10793,7 @@ mod tests {
     mod angle;
     mod apply_curves;
     mod arc_deform;
+    mod arc_extension;
     mod arc_tangent;
     mod arc_tilted;
     mod area;
@@ -10962,6 +11022,7 @@ mod tests {
             ellipse_session: None,
             circle_around_session: None,
             tangent_session: None,
+            arc_extension_session: None,
             arc_tilted_session: None,
             arc_length_session: None,
             arc_deform_session: None,

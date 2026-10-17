@@ -1,0 +1,373 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-behind-source",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        [
+          7,
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-spatial-end",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            3,
+            4
+          ],
+          "end": [
+            2,
+            13,
+            4
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            2,
+            12.5,
+            4
+          ]
+        },
+        [
+          2,
+          16,
+          8
+        ]
+      ],
+      "construction_plane": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-polyline",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              10,
+              10,
+              0
+            ]
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            10,
+            9.5,
+            0
+          ]
+        },
+        [
+          14,
+          13,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-curved",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              7.0710678118654755,
+              7.0710678118654755,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ]
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            0.5,
+            9.99,
+            0
+          ]
+        },
+        [
+          -4,
+          13,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-rational-nurbs",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                0,
+                0
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                7,
+                3,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                3,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            2.99,
+            0
+          ]
+        },
+        [
+          13,
+          7,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-preselected",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        [
+          13,
+          4,
+          0
+        ]
+      ],
+      "preselect": true
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-deformable",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=8",
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        [
+          13,
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-box-edge",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "box_brep",
+          "min": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            10,
+            10,
+            4
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        [
+          13,
+          -4,
+          0
+        ]
+      ]
+    }
+  ]
+}

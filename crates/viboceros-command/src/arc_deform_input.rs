@@ -169,7 +169,7 @@ impl Settings {
             Some(Setting::Degree) => format!("Degree <{}>", d.degree),
             Some(Setting::PointCount) => format!("PointCount <{}>", d.point_count),
             None => format!(
-                "center; Degree={}, PointCount={}, StartPoint, Tangent",
+                "center; Degree={}, PointCount={}, StartPoint, Tangent, Extension",
                 d.degree, d.point_count
             ),
         }

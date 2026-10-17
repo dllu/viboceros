@@ -43,4 +43,4 @@ Raw rejected input and incomplete captures are retained separately from the
 qualified workflow profiles. Midpoint endpoint parity remains unqualified:
 the native typed-endpoint capture timed out. The local point API and preview
 use the existing exact midpoint construction before approximation.
-Arc Extension remains pending.
+[Arc Extension](arc-extension.md) also supports Deformable output.

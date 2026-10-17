@@ -235,6 +235,17 @@ impl VibocerosApp {
                 return false;
             }
         };
+        let point = match self
+            .arc_extension_session
+            .as_ref()
+            .map_or(Ok(point), |s| s.input.resolve_point(point))
+        {
+            Ok(p) => p,
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                return false;
+            }
+        };
         let point = match self.resolve_circle_around_point(point) {
             Ok(point) => point,
             Err(error) => {
@@ -254,6 +265,9 @@ impl VibocerosApp {
             self.snaps.model_override = None;
             if self.active_command.is_some()
                 && self.arc_length_session.is_none()
+                && self.arc_extension_session.as_ref().is_none_or(|s| {
+                    !s.input.wants_center() && !s.input.sweep().is_some_and(|s| s.requests_length())
+                })
                 && self
                     .arc_tilted_session
                     .as_ref()

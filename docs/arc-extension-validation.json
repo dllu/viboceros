@@ -1,0 +1,572 @@
+{
+  "date": "2026-10-17",
+  "baseline": "8e69543c3e93fa78c2888133c95f018332adc544",
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "comparison_absolute_tolerance": 1e-06,
+  "qualified_profiles": {
+    "basic": {
+      "rows": 4,
+      "success": 3,
+      "cancel": 1
+    },
+    "center_numeric": {
+      "rows": 2,
+      "success": 2,
+      "cancel": 0
+    },
+    "center_cursor": {
+      "rows": 2,
+      "success": 2,
+      "cancel": 0
+    },
+    "sources": {
+      "rows": 8,
+      "success": 8,
+      "cancel": 0
+    },
+    "selection": {
+      "rows": 2,
+      "success": 1,
+      "cancel": 1
+    },
+    "end_choice": {
+      "rows": 1,
+      "success": 1,
+      "cancel": 0
+    },
+    "relative": {
+      "rows": 1,
+      "success": 1,
+      "cancel": 0
+    }
+  },
+  "implementation": [
+    "Curve and surface-edge inputs share immutable CapturedCurve references. The nearest geometric endpoint supplies the outward tangent. The nonuniform linear NURBS capture has picked parameter 0.3901 but selects the spatially nearer end.",
+    "Default Extension reuses CircularArc3::try_from_start_tangent_end. The center is projected with the existing endpoint normal frame; angle and cursor sweeps reuse the Tilted getter from an oriented circle.",
+    "Physical Center endpoints use the shared start-ray direction state, including captured initial cursor inputs. Read-only previews and completion use the same constructors and optional Deformable conversion.",
+    "Interactive source picks temporarily replace selection. Completion and cancellation release picks, including previous preselection. One Arc geometry history entry owns successful output; no helpers are added.",
+    "Captured-source changes in geometry, visibility, locking, deletion or document tolerance reset the picker. Tests verify source storage sharing, center projection, preview/commit agreement and retry/cancellation.",
+    "Source selection sets the relative point base to the chosen endpoint. The native prior-point recipe and its resulting curve establish this semantic rule; production computes the base from the source endpoint, not expected output coordinates."
+  ],
+  "input_calibration": "Public viewport ray projections locate source inputs and final Center endpoint directions. The initial cursor is read before a requested move. Expected output geometry never supplies production inputs.",
+  "raw_capture_policy": [
+    "Basic preserves initial rows [0,1,3,5] unchanged. Typed Center endpoints time out; entering Length at its endpoint starts the global measurement command and times out. Both remain raw diagnostics.",
+    "Center numeric preserves center rows [0,3]. The first two physical Center endpoints lack initial cursor receipts and remain diagnostic; the complete center_cursor capture qualifies in full.",
+    "Selection preserves diagnostics rows [0,2]. The collinear default endpoint row [1] reports native Arc Failure and no object with clean input. It is not relabeled as a native cancellation.",
+    "All eight source, one end-choice and one relative-base rows qualify unchanged. Source and expected-output artifacts are immutable; tests verify exact subset identity."
+  ],
+  "limitations": [
+    "Typed native Center endpoint input and exact invalid-input error/termination behavior remain unqualified. Physical endpoint parity uses independent mouse receipts.",
+    "The captured Rhino 8 Extension Center getter accepts endpoint/angle input. Length enters the global measurement command; this implementation does not offer an Extension length getter.",
+    "Exhaustive pointer trajectories, endpoint ties, zero-derivative and closed-source native error behavior, snapping/filter combinations, camera coverage and performance parity remain unqualified."
+  ],
+  "excluded_baseline_test": {
+    "name": "join_command::tests::surfaces::original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+    "backend": "native-smlib",
+    "reason": "The broad arc filter also selects archive in this unrelated test. Prior candidate and baseline failure evidence is preserved. No Join code or assertions changed.",
+    "evidence_git_ref": "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/arc-tangent-validation.json"
+  },
+  "historical_source_policy": {
+    "records": [
+      "docs/arc-deformable-validation.json",
+      "docs/arc-tangent-validation.json",
+      "docs/arc-tilted-validation.json"
+    ],
+    "preexisting_unverifiable_records_unchanged": 69,
+    "method": "Previously verifiable SHA references to changed files are pinned to full baseline Git blobs. Historical non-SHA outcomes are unchanged."
+  },
+  "owned_native_jobs": [
+    {
+      "scheme": "VibocerosOracleArcExtensionInitial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcExtensionCenter20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcExtensionCenterCursor20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcExtensionSources20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcExtensionDiagnostics20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcExtensionEndChoice20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcExtensionRelative20261017",
+      "exit_code": 0
+    }
+  ],
+  "checks": [
+    {
+      "name": "extension",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc_extension"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-extension.log",
+      "elapsed_seconds": 34.36,
+      "log_sha256": "cb14ed742cbd99958c8a151ef342035955b6e1e39bf5bb155d0ac551290ebb9f",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1391 filtered out; finished in 0.07s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1503 filtered out; finished in 0.00s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 568 filtered out; finished in 0.11s"
+      ]
+    },
+    {
+      "name": "arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-arc.log",
+      "elapsed_seconds": 139.38,
+      "log_sha256": "ff7408345b9e67bffe7d9041c13479037902b8e7357205fa90aa499c5c020159",
+      "test_summaries": [
+        "test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 1371 filtered out; finished in 19.38s",
+        "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 1468 filtered out; finished in 62.03s",
+        "test result: ok. 140 passed; 0 failed; 1 ignored; 0 measured; 2244 filtered out; finished in 12.60s",
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 549 filtered out; finished in 9.55s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.37s"
+      ]
+    },
+    {
+      "name": "circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-circle.log",
+      "elapsed_seconds": 18.29,
+      "log_sha256": "590207918fbf0d209b1c7f640c9a4c53806a89ec5b3d024d480e2b2241094318",
+      "test_summaries": [
+        "test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 1351 filtered out; finished in 1.32s",
+        "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 1469 filtered out; finished in 0.39s",
+        "test result: ok. 70 passed; 0 failed; 0 ignored; 0 measured; 2315 filtered out; finished in 9.31s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 554 filtered out; finished in 6.30s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.67s"
+      ]
+    },
+    {
+      "name": "ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-ellipse.log",
+      "elapsed_seconds": 9.61,
+      "log_sha256": "637e9a3a664f56a57b3cbc75c489c3a240767da4a313e8f55401d9f3a51ed6ee",
+      "test_summaries": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1380 filtered out; finished in 0.19s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1489 filtered out; finished in 0.14s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 563 filtered out; finished in 0.58s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.41s"
+      ]
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-drafting",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-point-input.log",
+      "elapsed_seconds": 0.42,
+      "log_sha256": "52131e437dfc0d4f352dabedbe902436ddfb2e3089ece0a8a51068574c798a2c",
+      "test_summaries": [
+        "test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 1332 filtered out; finished in 0.18s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 156 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "viewport-drafting",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::tests::drafting"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-viewport-drafting.log",
+      "elapsed_seconds": 0.25,
+      "log_sha256": "01a0d1a545d51fb2593444083295e8acb1aa5572ef559552f9c35371b2e2ed11",
+      "test_summaries": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1389 filtered out; finished in 0.05s"
+      ]
+    },
+    {
+      "name": "components",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "component"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-components.log",
+      "elapsed_seconds": 0.38,
+      "log_sha256": "4abef3cece15bf21916f6c55f357f093cc2842b2c49960be20d88f3119e90d3a",
+      "test_summaries": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 1376 filtered out; finished in 0.16s"
+      ]
+    },
+    {
+      "name": "native-arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "arc",
+        "--",
+        "--skip",
+        "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-native-arc.log",
+      "elapsed_seconds": 157.51,
+      "log_sha256": "b07de9908ef0a730274b874428987eab6c35405375a48cefe7d24bb1760728c2",
+      "test_summaries": [
+        "test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 1383 filtered out; finished in 19.51s",
+        "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 1544 filtered out; finished in 62.00s",
+        "test result: ok. 140 passed; 0 failed; 1 ignored; 0 measured; 2244 filtered out; finished in 11.48s",
+        "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 571 filtered out; finished in 9.31s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.39s"
+      ]
+    },
+    {
+      "name": "native-circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-native-circle.log",
+      "elapsed_seconds": 18.94,
+      "log_sha256": "fb56958a9dc0988c0da2ff5db976d6d9b82f27ee5263bb69694bf6e4293f9fb6",
+      "test_summaries": [
+        "test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 1363 filtered out; finished in 1.34s",
+        "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 1545 filtered out; finished in 0.38s",
+        "test result: ok. 70 passed; 0 failed; 0 ignored; 0 measured; 2315 filtered out; finished in 9.57s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 575 filtered out; finished in 6.60s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.68s"
+      ]
+    },
+    {
+      "name": "native-ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-native-ellipse.log",
+      "elapsed_seconds": 9.59,
+      "log_sha256": "df864084d5f67a934ed83ed4d950d56c148b2ad22ffce6983e071a7291438da9",
+      "test_summaries": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1392 filtered out; finished in 0.21s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1565 filtered out; finished in 0.16s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 584 filtered out; finished in 0.59s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.33s"
+      ]
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-clippy.log",
+      "elapsed_seconds": 32.76,
+      "log_sha256": "4d6b3287ab36d263807ad38b409869d130f338ebacd2164462ed820d5de924f5",
+      "test_summaries": []
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-format.log",
+      "elapsed_seconds": 4.97,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_summaries": []
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_arc_extension",
+        "tools.rhino_oracle.test_arc_deform",
+        "tools.rhino_oracle.test_arc_command",
+        "tools.rhino_oracle.test_arc_tangent",
+        "tools.rhino_oracle.test_circle_tangent",
+        "tools.rhino_oracle.test_circle_clamped",
+        "tools.rhino_oracle.test_circle_deform",
+        "tools.rhino_oracle.test_circle_around",
+        "tools.rhino_oracle.test_ellipse_deform",
+        "tools.rhino_oracle.test_ellipse_around",
+        "tools.rhino_oracle.test_ellipse",
+        "tools.rhino_oracle.test_catenary_command",
+        "tools.rhino_oracle.test_catenary_point_picker",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_point_snap_input",
+        "tools.rhino_oracle.test_client"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-python.log",
+      "elapsed_seconds": 0.91,
+      "log_sha256": "789541fbe177a7cf5ce8634879400e91859f1bde8548ff42653a027bb280397b",
+      "test_summaries": [
+        "Ran 95 tests in 0.799s"
+      ]
+    },
+    {
+      "name": "qualified",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc_extension"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-qualified.log",
+      "log_sha256": "a959846dc16de80404319fddbe8534d1694df5530c729a2613e0c6114e7aefe6",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1391 filtered out; finished in 0.06s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1503 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 568 filtered out; finished in 0.10s"
+      ]
+    },
+    {
+      "name": "qualified-native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "arc_extension"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-extension-final-qualified-native.log",
+      "log_sha256": "1077f64c85272a488533c0d108cc76221f4aa63729c8fe00697452f89cb8bc0d",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1403 filtered out; finished in 0.05s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1579 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 589 filtered out; finished in 0.09s"
+      ]
+    }
+  ],
+  "sha256": {
+    "README.md": "8e9115c73e13449b9ee649bf4f7ee298248adccdf7e03587165ba1e6275374da",
+    "crates/viboceros-command/src/arc_deform_input.rs": "318daefd24e7e4e0fd31ddf82fb1f73bb3e1f1715e414337efb712476d8f2324",
+    "crates/viboceros-command/src/arc_extension_input.rs": "8a9884bac2867d0c75db9d2aa25a57e5535bbaabb96832972bd9547285bf6e76",
+    "crates/viboceros-command/src/arc_input.rs": "8495bc59a1578e08b3176c75f3f171a60e26d78c8e450c4c2cb6127d362c17af",
+    "crates/viboceros-command/src/arc_tilted_input.rs": "b4235f0c6a80a9379167855880545b5418b3b9634b9f590c85902709d56215e2",
+    "crates/viboceros-command/src/lib.rs": "ae879ce16bfd4b7d467041e4b4a795ebbffc388d6305478d9be3f90999ab2d7d",
+    "crates/viboceros-oracle/src/arc_extension.rs": "d303c2b5cd163daa0e0b47eb2a7f3f10149798725329a983be3179ed6f8b8bb7",
+    "crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
+    "docs/arc-deformable-validation.json": "dced1862ee0cdcbb1623cdbe8b226c9fb67379c458baf4852f7d0cb140a16efa",
+    "docs/arc-tangent-validation.json": "5b8d0b88af9e6a3471fc3c89d8559e8311ab7c0e48e734e024d2b91de4164181",
+    "docs/arc-tilted-validation.json": "7d3cac47bfb4e128fbc0636748f208d2c094980bbacf8285dd84fc78cc53f279",
+    "docs/commands/README.md": "431510f9cd6143800216c773e252ffcff9d95a4e8a4c0a53c6ed4c7db837ce9a",
+    "docs/commands/arc-deformable.md": "d7c549de68029e204e04798ca30c0991b71b6cad4cd2617e37fe8f4504fcc940",
+    "docs/commands/arc-extension.md": "5b1e47b109cd00d6f06dc13271c395b27bd3e0565027f7ec795fc33ba28d4365",
+    "docs/commands/arc-tangent.md": "7e50fe177535bbcb3e179de6bcf112d72e1cd9ef9ed45a67980696653b0298a2",
+    "src/app.rs": "45bea5ff62df68810be84c2c0a514ed8d8a1c1bf252244f3860cd967929456ce",
+    "src/app/arc_deform.rs": "d6c3ac5c1e14a4c599ee7cf8796de0229868c212c4fe27be67169c713ff84614",
+    "src/app/arc_extension.rs": "fb628ebfbd51203bb548d308c9965afa356f39e952a0f7c2b07039d56e0a984b",
+    "src/app/component_selection.rs": "0c5b479a037092e52e277fa2dbe5dc53868ff08dbaa977baf692e54f73fcb130",
+    "src/app/object_selection.rs": "6fc3a031c8a30a82969f948ad7e4a3effbc24487222f02633a5227b4a51bf27d",
+    "src/app/point_input.rs": "d43fef428c643795cb2db46990869760a28ef1c5c8df55c6133effcba76ea18c",
+    "src/app/tests/arc_extension.rs": "0f149304c4d0c444ec832834f085df5a0bf0dd556adcf5cc5b5728564de46bc3",
+    "src/app/tests/ellipse_around.rs": "cc8979417370ff4755437d1848bde81051d79b60f05f81966b40bb6bdcd72719",
+    "src/viewport.rs": "e204967975793c6d24faa2b56de3fecfacd3b5f6fc15cf5b95146aa7d8a77728",
+    "tools/rhino_oracle/arc_extension_probe.py": "d07987f7365026ec0ce4d31f6a1970341ba66dbb01c4c5790b9b1375d2859643",
+    "tools/rhino_oracle/client.py": "96d04fd67d9444f81f680d00718c14a13745b0f8c7643a5090eb6d07ff3f9011",
+    "tools/rhino_oracle/conic_getter_input.py": "acf4aa5077d7cdae4a3ff8c8239463aa6e87edec0bb98a9d644986166b77b13c",
+    "tools/rhino_oracle/fixtures/arc_extension_basic.json": "0d2066b5a87adc60d1c7d8f8403d9a4dca630dfee546f5da7e68ca03d98627a0",
+    "tools/rhino_oracle/fixtures/arc_extension_center.json": "a05d492b9617370ca344facfdab7acef394b802294eeb1ba83ef41213d37a37c",
+    "tools/rhino_oracle/fixtures/arc_extension_center_cursor.json": "5fda2c8fbe8d1f9298dc0b5d4d4622c89fc9fa7d52e8ce050c93f8c2f04cf208",
+    "tools/rhino_oracle/fixtures/arc_extension_center_numeric.json": "49a707c62fdd3e49a89b996263c7c66925dd71d9cd43396b951abe1224a61fbc",
+    "tools/rhino_oracle/fixtures/arc_extension_diagnostics.json": "9c7b9bcc90cdf30bf214eb8be7761ec0612a2e5789ad9669ae9f40b988958363",
+    "tools/rhino_oracle/fixtures/arc_extension_end_choice.json": "b10cbc9fb314c62b3179a935bbeb6345f17063334a975a5bd55b60b969de83f4",
+    "tools/rhino_oracle/fixtures/arc_extension_initial.json": "d2dc9b9dd8da3cd7777508f5ca901437e9230ef4335df14bca762756accde002",
+    "tools/rhino_oracle/fixtures/arc_extension_relative.json": "c909fd92f2fa9548e9d574921c1f7083dc43c18e9ed986854bde1384468bc14f",
+    "tools/rhino_oracle/fixtures/arc_extension_selection.json": "a9de3ebf304b84eaf7af79b4867810b20e2ab4ad240f4bd0c74ddc1f1be9ad37",
+    "tools/rhino_oracle/fixtures/arc_extension_sources.json": "b0cbb3ed100ccd3c74c0a0144abe72bdd8797996b1258dff0ea9493eab083678",
+    "tools/rhino_oracle/observations/arc_extension_basic_rhino_20261017.json": "a9802dec8848ff556319273683200d7dc37e58e8ba8611779bd136257e378089",
+    "tools/rhino_oracle/observations/arc_extension_center_cursor_rhino_20261017.json": "9a7cdf62ebd8fc92132698ba407571ab8d0dabd0cc4d4dab3e4c05e7d26d28aa",
+    "tools/rhino_oracle/observations/arc_extension_center_numeric_rhino_20261017.json": "4b600fd228954711057f41811c98a71fc5b1fe4c451205fdbeb4c48e4efd0ada",
+    "tools/rhino_oracle/observations/arc_extension_center_rhino_20261017.json": "84c18c138950dd0bba24c5bbd4c3f9c99f3083b73adddf37a9a61bb8d2b4bb26",
+    "tools/rhino_oracle/observations/arc_extension_diagnostics_rhino_20261017.json": "c2bf7f372a7219ed94e79103f0c5a6956e1d96953775f47bd9616d18d83bdc51",
+    "tools/rhino_oracle/observations/arc_extension_end_choice_rhino_20261017.json": "3e1066aac53a897ded7548336f79f517734b7272bf99da40461e1b100d9524e9",
+    "tools/rhino_oracle/observations/arc_extension_initial_rhino_20261017.json": "e46edd966dfa226660e603f337d094db590c8ba7731eee52aa69b9012c4647a0",
+    "tools/rhino_oracle/observations/arc_extension_relative_rhino_20261017.json": "dd36bed8a726b837494da619c8324d15c72fa60bc9bfa57237f353f7ce4988bd",
+    "tools/rhino_oracle/observations/arc_extension_selection_rhino_20261017.json": "5508b3185c33657456de62176e6ee5e9d3f408552bf21c5e9134c9e99ff2438a",
+    "tools/rhino_oracle/observations/arc_extension_sources_rhino_20261017.json": "b259a12395dc080af0a8442822defcc19e74166e174076510cf82930b0094143",
+    "tools/rhino_oracle/rhino_worker.py": "65d00106ae72337cc6f706944d5e9a1be96277558d18d3cce6b194b3cb44f6b4",
+    "tools/rhino_oracle/structural_sdk.py": "a684b5146cf4d5e72b09f8ce82810cb1369043684dc0757d81d5dea32d545c55",
+    "tools/rhino_oracle/test_arc_extension.py": "205b7d450957888122efe2cea44ff986aaae2562109cc3901a343686ce6191fe"
+  },
+  "baseline_git_sha256": {
+    "8e69543c3e93fa78c2888133c95f018332adc544:docs/arc-deformable-validation.json": "b0eb2f510d3d208fb4c5bb770d19e84d1d12a5a6753ccecbc236486ec4e01bff",
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/arc-tangent-validation.json": "bc3ea35584827f2621f9f852b0f1c3bdc7e6658ffc5e608025dfed7f5a6b0dfb"
+  },
+  "corrected_validation_attempts": [
+    {
+      "name": "native-arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "arc",
+        "--",
+        "--skip",
+        "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins"
+      ],
+      "exit_code": 101,
+      "log": "/tmp/viboceros-arc-extension-prior-native-arc.log",
+      "elapsed_seconds": 105.09,
+      "log_sha256": "c7a74eda0b5ae56ec4a15b6a208acf283b3838cc8571c5a89e065bbab36c7dbb",
+      "resolution": "The initial native Arc run exposed the old relative-base behavior. The selected endpoint is now established as the relative base and the current implementation is recompiled and revalidated in the final checks."
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "log": "/tmp/viboceros-arc-extension-prior-clippy.log",
+      "elapsed_seconds": 15.66,
+      "log_sha256": "05ffab75ebc36a014174897426107c14e83ebd2e039ed86fedf05af771935a04",
+      "resolution": "The nested source-option guard was collapsed to satisfy clippy; behavior is unchanged."
+    }
+  ]
+}

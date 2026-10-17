@@ -75,6 +75,7 @@ impl Preview {
 pub struct Definition {
     pub arc: CircularArc3,
     pub tangent_radius: Option<Real>,
+    pub release_selection: bool,
     deformable_arc: Option<CircularArc3>,
     pub signed_sweep_degrees: Real,
 }
@@ -90,6 +91,7 @@ impl Definition {
         Self {
             arc,
             tangent_radius: None,
+            release_selection: false,
             deformable_arc: None,
             signed_sweep_degrees: arc.sweep_radians().to_degrees(),
         }
@@ -101,6 +103,18 @@ pub fn from_arguments(
     context: CommandContext,
     tangent_radius: Real,
 ) -> Result<Definition, CommandError> {
+    if arguments
+        .first()
+        .is_some_and(|w| option_name_eq(w, "Extension"))
+    {
+        return Ok(Definition {
+            release_selection: true,
+            ..Definition::new(crate::arc_extension_input::from_arguments(
+                document,
+                &arguments[1..],
+            )?)
+        });
+    }
     if arguments
         .first()
         .is_some_and(|w| option_name_eq(w, "Tangent"))

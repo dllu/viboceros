@@ -1,0 +1,84 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-projected-angle",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            9.5,
+            0,
+            0
+          ]
+        },
+        "Center",
+        [
+          12,
+          4,
+          0
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-center-negative",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            0.5,
+            0,
+            0
+          ]
+        },
+        "Center",
+        [
+          0,
+          4,
+          0
+        ],
+        -90
+      ]
+    }
+  ]
+}

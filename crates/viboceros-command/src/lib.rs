@@ -286,6 +286,7 @@ pub mod construction_plane;
 use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
 pub mod arc_deform_input;
+pub mod arc_extension_input;
 pub mod arc_input;
 pub mod arc_tangent_input;
 pub mod arc_tilted_input;
@@ -2392,6 +2393,9 @@ impl Command for ArcCommand {
         let d =
             arc_input::from_arguments(document, &arguments[used..], context, self.radius.get())?;
         let id = document.add_geometry(output.geometry(d.output_arc(output.deformable))?)?;
+        if d.release_selection {
+            document.clear_selection();
+        }
         if let Some(radius) = d.tangent_radius {
             self.radius.set(radius);
         }

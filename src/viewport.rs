@@ -352,6 +352,7 @@ pub struct ViewportInput<'a> {
     pub tangent: Option<TangentPreview<'a>>,
     pub arc_output: Option<viboceros_command::arc_deform_input::Output>,
     pub arc_preview: Option<(viboceros_command::arc_input::Preview, Frame3)>,
+    pub arc_extension_input: Option<&'a viboceros_command::arc_extension_input::Input>,
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
@@ -452,6 +453,7 @@ impl Default for ViewportInput<'_> {
             ellipse_input: None,
             tangent: None,
             arc_tilted_input: None,
+            arc_extension_input: None,
             arc_output: None,
             arc_preview: None,
             circle_around_input: None,
@@ -2253,6 +2255,14 @@ impl Viewport {
                 input.arc_output,
                 drafting_cursor.map(|c| c.point),
             );
+        }
+        if let Some(getter) = input.arc_extension_input {
+            if let Some(p) = getter.anchor() {
+                self.paint_draft_points(&painter, rect, &[p]);
+            }
+            if let Some(arc) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+                self.paint_arc_preview(&painter, rect, arc, input.arc_output);
+            }
         }
         if let Some((preview, plane)) = input.arc_preview
             && let Some(point) = drafting_cursor.map(|c| c.point)

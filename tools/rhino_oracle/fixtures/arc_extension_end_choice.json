@@ -1,0 +1,78 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_extension",
+      "id": "arc-extension-nonuniform-end-choice",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9.9,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "Extension",
+        {
+          "curve": 0,
+          "pick": [
+            7.5,
+            0,
+            0
+          ]
+        },
+        [
+          13,
+          4,
+          0
+        ]
+      ]
+    }
+  ]
+}
