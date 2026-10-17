@@ -3,7 +3,7 @@ import math
 import re
 
 
-def validate(op, operation, options, numeric_pattern=None, numeric_options=(), allow_points=False):
+def validate(op, operation, options, numeric_pattern=None, numeric_options=(), allow_points=False, allow_curve_locations=False):
     if not isinstance(op, dict) or op.get('op') != operation:
         raise ValueError('invalid curve getter recipe')
     if ('preselect_all' in op and not allow_points) or set(op) - {'preselect_all', 'op', 'id', 'actions', 'construction_plane', 'setup', 'live_getters', 'prior_point', 'curves', 'preselect', 'guide_selection'}:
@@ -34,7 +34,7 @@ def validate(op, operation, options, numeric_pattern=None, numeric_options=(), a
             if not {'curve'}<=set(a) or set(a)-{'curve','edge','pick'} or type(a['curve']) is not int or not 0<=a['curve']<len(curves):
                 return False
             surface=curves[a['curve']]['type'] in ('surface','box_brep')
-            return (set(a)=={'curve','edge','pick'} and type(a['edge']) is int and 0<=a['edge']<64 and point(a['pick']) and surface) if 'edge' in a else (set(a)=={'curve'} and not surface)
+            return (set(a)=={'curve','edge','pick'} and type(a['edge']) is int and 0<=a['edge']<64 and point(a['pick']) and surface) if 'edge' in a else ((set(a)=={'curve'} or (allow_curve_locations and set(a)=={'curve','pick'} and point(a['pick']))) and not surface)
         if not isinstance(a, str):
             return False
         if a in options or (numeric_pattern is not None and re.match(numeric_pattern,a) is not None):

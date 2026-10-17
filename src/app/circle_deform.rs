@@ -46,6 +46,15 @@ impl VibocerosApp {
                 self.start_circle_around_with_output(Some(input.output()));
                 return true;
             }
+            if index + 1 == words.len()
+                && input.at_start()
+                && word
+                    .trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("Tangent")
+            {
+                self.start_circle_tangent(Some(input.output()));
+                return true;
+            }
             let key = word
                 .trim_start_matches(['_', '-'])
                 .split('=')
@@ -143,6 +152,12 @@ impl VibocerosApp {
             } else {
                 self.cancel_interactive_command(true);
             }
+            self.command_input.clear();
+            return true;
+        }
+        if s.input.at_start() && word.eq_ignore_ascii_case("Tangent") {
+            let output = s.input.output();
+            self.start_circle_tangent(Some(output));
             self.command_input.clear();
             return true;
         }

@@ -39,7 +39,8 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Conic curves](docs/commands/conic.md), with tangent/perpendicular endpoints, surface edges and direction-locked temporary portions
 - Interactive [parabolas](docs/commands/parabola.md) and [hyperbolas](docs/commands/hyperbola.md), with construction modes, focus previews and numeric getters
 - [Ellipse construction](docs/commands/ellipse.md), including AroundCurve, deformable cubics, numeric axis locks and focus previews
-- [Circle construction](docs/commands/circle-deformable.md), with variable-degree periodic/clamped output, FitPoints and
+- [Circle construction](docs/commands/circle-deformable.md), with variable-degree periodic/clamped output,
+  [Tangent](docs/commands/circle-tangent.md), FitPoints and
   [AroundCurve](docs/commands/circle-around-curve.md) curve/edge guides
 - [Interactive catenaries](docs/commands/catenary.md), with four constraint modes, sag-side picking, endpoint End snaps and apex previews
 - [Interactive helices and spirals](docs/commands/helix-spiral.md), with radius locks, Turns/Pitch, Flat/Vertical previews and AroundCurve rail/edge picking

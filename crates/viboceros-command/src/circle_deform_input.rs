@@ -286,6 +286,7 @@ pub enum Construction {
     },
     Around(crate::circle_around_input::Definition),
     FitPoints,
+    Tangent(crate::circle_tangent_input::Definition),
 }
 pub fn is_deformable_start(args: &[&str]) -> bool {
     args.first().is_some_and(|w| {
@@ -361,6 +362,21 @@ pub fn from_arguments(
                 Construction::Around(crate::circle_around_input::from_arguments(
                     doc,
                     &args[i + 1..],
+                    prefs,
+                )?),
+            ));
+        }
+        if input.at_start() && word.eq_ignore_ascii_case("Tangent") {
+            let prefs = Preferences {
+                deformation: input.output.deformation,
+                ..preferences
+            };
+            return Ok((
+                input.output,
+                Construction::Tangent(crate::circle_tangent_input::from_arguments(
+                    doc,
+                    &args[i + 1..],
+                    plane,
                     prefs,
                 )?),
             ));

@@ -141,6 +141,7 @@ mod angle;
 mod circle;
 mod circle_around;
 mod circle_deform;
+mod circle_tangent;
 use circle::CircleSizeMode;
 mod apply_curves;
 mod bend_prompt;
@@ -410,6 +411,9 @@ enum InteractiveCommand {
     },
     Circle {
         center: Option<Point3>,
+    },
+    CircleTangent {
+        anchor: Option<Point3>,
     },
     CircleAround {
         center: Option<Point3>,
@@ -840,7 +844,9 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
-            Self::CircleAround { .. } | Self::CircleDeform { .. } => "Circle",
+            Self::CircleTangent { .. } | Self::CircleAround { .. } | Self::CircleDeform { .. } => {
+                "Circle"
+            }
             Self::CircleSize { .. } => "Circle",
             Self::CircleVertical { .. } => "Circle",
             Self::CircleOrientation { .. } => "Circle",
@@ -1075,10 +1081,13 @@ impl InteractiveCommand {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
             Self::Circle { center: None } => {
-                "Circle: pick the center or enter Deformable/2Point/3Point/Vertical/AroundCurve/FitPoints (Esc cancels)"
+                "Circle: pick the center or enter Deformable/2Point/3Point/Vertical/AroundCurve/Tangent/FitPoints (Esc cancels)"
             }
             Self::Circle { center: Some(_) } => {
                 "Circle: pick a radius point or type Radius/Diameter/Circumference/Area (Esc cancels)"
+            }
+            Self::CircleTangent { .. } => {
+                "Circle Tangent: pick contacts, Point, radius or FromFirstPoint (Esc cancels)"
             }
             Self::CircleDeform { .. } => "Circle Deformable: specify a circle (Esc cancels)",
             Self::CircleAround { .. } => {
@@ -2011,7 +2020,8 @@ impl InteractiveCommand {
                 ..
             } => Some(major_point),
             Self::SplitMeshEdge { edge_point } => edge_point,
-            Self::CircleDeform { anchor: center }
+            Self::CircleTangent { anchor: center }
+            | Self::CircleDeform { anchor: center }
             | Self::CircleAround { center }
             | Self::Ellipse { center, .. }
             | Self::Polygon { center, .. }
@@ -2291,6 +2301,7 @@ pub struct VibocerosApp {
     catenary_session: Option<catenary::Session>,
     ellipse_session: Option<ellipse::Session>,
     circle_around_session: Option<circle_around::Session>,
+    circle_tangent_session: Option<circle_tangent::Session>,
     circle_deform_session: Option<circle_deform::Session>,
     spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
@@ -2417,6 +2428,7 @@ impl VibocerosApp {
             catenary_session: None,
             ellipse_session: None,
             circle_around_session: None,
+            circle_tangent_session: None,
             circle_deform_session: None,
             spiral_session: None,
             hyperbola_session: None,
@@ -2547,6 +2559,7 @@ impl VibocerosApp {
         }
         // Construction options can share names with snap modes, such as Vertex.
         if self.try_continue_circle_deform(&input)
+            || self.try_continue_circle_tangent(&input)
             || self.try_continue_circle_around(&input)
             || self.try_continue_ellipse(&input)
             || self.try_continue_catenary(&input)
@@ -3245,6 +3258,9 @@ impl VibocerosApp {
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
         if self.try_start_circle_deform(input) {
+            return true;
+        }
+        if self.try_start_circle_tangent(input) {
             return true;
         }
         if self.try_start_circle_around(input) {
@@ -5660,6 +5676,7 @@ impl VibocerosApp {
         self.catenary_session = None;
         self.ellipse_session = None;
         self.circle_around_session = None;
+        self.circle_tangent_session = None;
         self.circle_deform_session = None;
         self.spiral_session = None;
         self.hyperbola_session = None;
@@ -5734,6 +5751,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_circle_deform_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_circle_tangent_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_circle_around_point(point) {
             return accepted;
         }
@@ -5804,6 +5824,7 @@ impl VibocerosApp {
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
             | InteractiveCommand::CircleDeform { .. }
+            | InteractiveCommand::CircleTangent { .. }
             | InteractiveCommand::CircleAround { .. }
             | InteractiveCommand::Ellipse { .. }
             | InteractiveCommand::Catenary { .. }
@@ -8490,6 +8511,9 @@ impl VibocerosApp {
         if self.pick_conic_curve(click.object_id, None) {
             return;
         }
+        if self.pick_circle_tangent(click.object_id, None) {
+            return;
+        }
         if self.pick_circle_around_curve(click.object_id, None) {
             return;
         }
@@ -9015,6 +9039,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
+        if self.circle_tangent_session.is_some() {
+            return;
+        }
         if self.pick_block_edit_sources(selection.object_ids.iter().copied(), selection.mode) {
             return;
         }
@@ -9075,6 +9102,9 @@ impl VibocerosApp {
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
         if output.selection_pointer.is_some() {
             self.capture_flow_pointer(output.selection_pointer);
+            if let Some(s) = &mut self.circle_tangent_session {
+                s.pointer = output.selection_pointer;
+            }
         }
         if let Some(id) = output.object_double_click.take()
             && self.try_open_block_edit_double_click(id)
@@ -9221,6 +9251,7 @@ impl VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
+                || self.picking_circle_tangent()
                 || self.picking_circle_around_curve()
             {
                 self.accept_component_click(crate::viewport::ComponentClick {
@@ -9515,6 +9546,7 @@ impl eframe::App for VibocerosApp {
         self.validate_conic_curve();
         self.validate_rectangle_curve();
         self.validate_ellipse_curve();
+        self.validate_circle_tangent();
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_tween_surfaces();
@@ -9578,6 +9610,10 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
                 && !self.picking_ellipse_curve()
+                && self
+                    .circle_tangent_session
+                    .as_ref()
+                    .is_none_or(|s| s.input.wants_point())
                 && !self.picking_circle_around_curve()
                 && !self.picking_orient_curve()
                 && (self.surface_flow_session.is_none() || self.drawing_surface_flow())
@@ -9839,6 +9875,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()
             || self.picking_ellipse_curve()
+            || self.picking_circle_tangent()
             || self.picking_circle_around_curve())
             && self.plane_prompt.is_none()
             && model_input_active
@@ -10032,6 +10069,7 @@ impl eframe::App for VibocerosApp {
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
                 || self.picking_ellipse_curve()
+                || self.picking_circle_tangent()
                 || self.picking_circle_around_curve());
         let document = surface_rebuild::viewport_document(
             &self.document,
@@ -10164,6 +10202,11 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let circle_tangent = self
+            .circle_tangent_session
+            .as_ref()
+            .filter(|_| model_input_active)
+            .map(|s| (&s.input, s.output));
         let circle_around_output = self
             .circle_around_session
             .as_ref()
@@ -10333,6 +10376,7 @@ impl eframe::App for VibocerosApp {
                             hyperbola_input,
                             parabola_input,
                             ellipse_input,
+                            circle_tangent,
                             circle_around_input,
                             circle_around_output,
                             circle_deform_input,
@@ -10581,6 +10625,7 @@ mod tests {
     mod circle_deform;
     mod circle_fit_grips;
     mod circle_fit_points;
+    mod circle_tangent;
     mod command_line;
     mod conic;
     mod construction_plane;
@@ -10783,6 +10828,7 @@ mod tests {
             catenary_session: None,
             ellipse_session: None,
             circle_around_session: None,
+            circle_tangent_session: None,
             circle_deform_session: None,
             spiral_session: None,
             hyperbola_session: None,

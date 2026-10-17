@@ -49,6 +49,7 @@ impl CircleCommand {
                 self.0.set(preferences);
                 return Ok(result);
             }
+            Construction::Tangent(d) => (d.circle, d.preferences),
         };
         let id = document.add_geometry(output.geometry(circle)?)?;
         self.0.set(preferences);
@@ -167,6 +168,23 @@ impl Command for CircleCommand {
     ) -> Result<String, CommandError> {
         if crate::circle_deform_input::is_deformable_start(arguments) {
             return self.deformable_run(document, arguments, context, false);
+        }
+        if arguments
+            .first()
+            .is_some_and(|w| option_name_eq(w, "Tangent"))
+        {
+            let d = crate::circle_tangent_input::from_arguments(
+                document,
+                &arguments[1..],
+                context.construction_plane,
+                self.0.get(),
+            )?;
+            let id = document.add_geometry(Geometry::Circle(d.circle))?;
+            self.0.set(d.preferences);
+            return Ok(format!(
+                "Added circle {id} (radius {:.6})",
+                d.circle.radius()
+            ));
         }
         if arguments
             .first()

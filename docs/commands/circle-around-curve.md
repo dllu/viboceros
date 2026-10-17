@@ -68,7 +68,8 @@ history. An unsupported Orientation attempt remains a separate diagnostic.
 
 Rhino 8.32 does not offer Orientation in AroundCurve's size getter. This path
 creates exact circles by default. Choose [Deformable](circle-deformable.md) before
-AroundCurve for a periodic NURBS approximation. Tangent remains unimplemented.
+AroundCurve for a NURBS approximation. [Tangent](circle-tangent.md) builds
+circles from picked tangent contacts and free points.
 The native per-getter ProjectOsnap switch is not wired to this getter.
 Exhaustive physical snapping, perspective/aperture behavior, extreme ranges
 and performance parity remain unqualified.

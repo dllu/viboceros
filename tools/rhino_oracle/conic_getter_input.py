@@ -4,6 +4,12 @@ import json,os
 def drive(op,host,guides,command="Conic"):
     if command not in ("Conic","Hyperbola","Helix","Spiral","Catenary","Ellipse","Circle"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
+    plan_view=None
+    if command=='Circle' and op.get('op')=='circle_tangent' and 'construction_plane'in op:
+        origin,x,y=op['construction_plane']
+        plan_view=bool(vp.SetToPlanView(R.Geometry.Point3d(*origin),R.Geometry.Vector3d(*x),R.Geometry.Vector3d(*y),True))
+        if not plan_view:raise ValueError('could not align owned tangent input viewport')
+        vp.ZoomExtents();view.Redraw()
     from snap_environment import environment
     import clr
     clr.AddReference('System.Core');clr.AddReference('System.Windows.Forms')
@@ -33,21 +39,34 @@ def drive(op,host,guides,command="Conic"):
     if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch','Number of points per turn','Points per turn')
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
-    if command=='Circle':prefixes=('Degree','PointCount','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
+    if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
     base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
     for i,a in enumerate(actions):
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
-        if isinstance(a,dict)and'click'in a:
-            aim=a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+        located=command=='Circle'and op.get('op')=='circle_tangent'and isinstance(a,dict)and'curve'in a and'pick'in a
+        if isinstance(a,dict)and('click'in a or located):
+            aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
             request=E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1)),log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
             ready=os.path.join(root,'catenary-click-ready-'+name+'.json')
             body=E.IfThen(base,request)
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
+            if located:
+                clicks[-1]['curve']=a['curve'];clicks[-1]['edge']=a.get('edge')
+                if 'edge'not in a:
+                    source=doc.Objects.FindId(guides[a['curve']]).Geometry
+                    ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                    ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,vp.GetConstructionPlane().Plane)
+                    if ok:
+                        ok,parameter=source.ClosestPoint(ray.PointAt(t))
+                        if ok:
+                            accepted=source.PointAt(parameter)
+                            clicks[-1]['projected_point']=[accepted.X,accepted.Y,accepted.Z]
+                            clicks[-1]['projected_parameter']=float(parameter)
         elif isinstance(a,dict)and('hover'in a or'edge'in a):
             hover='hover'in a;aim=a['hover']if hover else a['pick'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker=('@subcurve-direction:'if hover else'@conic-edge:')+name
@@ -117,6 +136,7 @@ def drive(op,host,guides,command="Conic"):
     if state[0]!=len(actions):errors.append('incomplete owned '+command+' input')
     trace=dict(completed=int(state[0]),expected=len(actions),errors=errors,prompts=list(observed),sent=[dict(action=i,token=tokens[i],prompt=observed[i])for i in range(state[0])if tokens[i]is not None],motion=[dict(h,acknowledged=counts[h['action']]>6)for h in hovers],edge_picks=[dict(p,acknowledged=observed[p['action']]is not None)for p in picks],motion_acknowledgement='No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.'if command!='Conic'else'Rhino MouseCallback.OnEndMouseMove in the owned active viewport, matching the requested source projection; the callback is a managed delegate.')
 
+    if plan_view is not None:trace['aligned_construction_plane_view']=plan_view
     if clicks:
         trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]==9)for c in clicks]
         trace['snap_settings']=snap_settings

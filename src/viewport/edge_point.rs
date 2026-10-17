@@ -18,6 +18,19 @@ pub(super) struct EdgeSnapCache {
 }
 
 impl Viewport {
+    pub(crate) fn curve_pick_point(
+        &self,
+        geometry: &Geometry,
+        edge: Option<usize>,
+        pointer: Pos2,
+        tolerance: Tolerance,
+    ) -> Option<Point3> {
+        let source = viboceros_command::curve_reference::resolve(geometry, edge, tolerance)?;
+        let curve = source.curve().to_nurbs().ok()?;
+        let parameter = self.pick_edge_parameter(&curve, pointer, self.last_rect?, false)?;
+        curve.evaluate(parameter).ok()
+    }
+
     pub(super) fn edge_point_cursor(
         &self,
         curve: &NurbsCurve,

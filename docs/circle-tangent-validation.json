@@ -1,0 +1,361 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "baseline_commit": "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c",
+  "feature": "Circle Tangent contact geometry, command input and interactive picking",
+  "engine": {
+    "name": "rhino",
+    "version": "8.32.26160.13001"
+  },
+  "absolute_comparison_tolerance": 1e-06,
+  "new_successful_native_workflows": 26,
+  "new_clean_native_cancellations": 1,
+  "acknowledged_native_curve_clicks": 44,
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_tangent_getters.json",
+      "observation": "tools/rhino_oracle/observations/circle_tangent_getters_rhino_20261017.json",
+      "rows": 10,
+      "qualified": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_tangent_special.json",
+      "observation": "tools/rhino_oracle/observations/circle_tangent_special_rhino_20261017.json",
+      "rows": 6,
+      "qualified": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_tangent_curves.json",
+      "observation": "tools/rhino_oracle/observations/circle_tangent_curves_rhino_20261017.json",
+      "rows": 5,
+      "qualified": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_tangent_spatial.json",
+      "observation": "tools/rhino_oracle/observations/circle_tangent_spatial_rhino_20261017.json",
+      "rows": 6,
+      "qualified": true
+    }
+  ],
+  "claims": [
+    "Circle Tangent supports two/three curve or free-point contacts, radius locks after the first contact or through the third Radius getter, and FromFirstPoint. Two free points with a locked radius use the final point as center direction.",
+    "Native two-curve Enter holds the second contact and seam; FromFirstPoint holds the first. Parallel supports use the first seam and second positional seed. Mixed point constraints and reversed curve directions retain the measured frame rules.",
+    "All 26 successful native workflows and one picked-source cancellation compare full NURBS controls, weights, knots, domain, length, closed status, preserved source geometry and selection, and actual Undo/Redo through command and frontend paths on default and native-smlib backends at absolute 1e-6.",
+    "The native corpus covers line and circle supports, three tangencies, mixed contacts, parallel supports, reversed directions, preselection, rotated spatial CPlanes, and periodic/clamped Deformable output.",
+    "The shared solver reuses existing analytic curve derivatives, circle/arc constructors, closest-point queries and nalgebra SVD. A normalized damped Newton solve enforces contact distance, plane, tangent and optional radius equations; physical residual checks gate acceptance.",
+    "Local checks cover spatial and scaled constraints, curved and quadratic NURBS supports, incompatible radii, singular corner seeds, and the incoming tangent at a closed curve endpoint.",
+    "Interactive curve and surface-edge routes resolve locations from viewport pointers. Captured source snapshots reject replacement, removal, hiding, locking and changed document tolerance. Previews and source acquisition leave the model and selection unchanged.",
+    "The input state machine is shared by frontend and canonical command replay. Failed construction commands preserve the document, preferences and history. Cancellation and command interruption release the session.",
+    "Circle, Ellipse, common point input, drafting and component regressions, workspace all-feature lint, formatting and bounded Python protocols pass."
+  ],
+  "input_calibration": {
+    "source": "Public RhinoViewport.ClientToWorld pixel ray intersected with the current construction plane, followed by the authored source curve ClosestPoint. Coordinates and parameters are saved in input_trace.clicks.",
+    "policy": "Tests replace only authored input pick positions with these resolved input coordinates. Expected output geometry never participates. Production requests and raw observations are preserved.",
+    "spatial_view": "Fresh tilted-plane captures use the public SetToPlanView API and record aligned_construction_plane_view=true before computing pixels.",
+    "scope": "Planar guide captures with the recorded view/CPlane; physical pixel aperture parity and arbitrary perspective/nonplanar picks are unqualified."
+  },
+  "diagnostic_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_tangent_initial.json",
+      "observation": "tools/rhino_oracle/observations/circle_tangent_initial_rhino_20261017.json",
+      "rows": 6,
+      "qualified": false,
+      "reason": "Initial probes retained in full. The fixed-contact row contains a trailing Enter after auto-completion and reports incomplete input. Older curve-click rows lack resolved input coordinates. Free-point and cancellation receipts remain diagnostic controls."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_tangent_curves_diagnostics.json",
+      "observation": "tools/rhino_oracle/observations/circle_tangent_curves_diagnostics_rhino_20261017.json",
+      "rows": 6,
+      "qualified": false,
+      "qualified_subset": "First five rows, copied unchanged as JSON values to the curves profile.",
+      "excluded_row": "circle-tangent-deformable-points",
+      "reason": "Degree=5 PointCount=4 is rejected by Rhino and retains the preceding PointCount=12. A fresh legal Degree=2 PointCount=4 Degree=5 capture qualifies the clamped layout."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_tangent_spatial_diagnostics.json",
+      "observation": "tools/rhino_oracle/observations/circle_tangent_spatial_diagnostics_rhino_20261017.json",
+      "rows": 6,
+      "qualified": false,
+      "reason": "The original tilted viewport was parallel to the construction plane: projected input locations are unavailable for the three tilted rows. Fresh plan-aligned captures qualify the entire spatial profile; this earlier batch is excluded from qualification counts."
+    }
+  ],
+  "limitations": [
+    "Every possible multiple-solution branch, nonplanar combinations and global solver completeness are unqualified. The solve may fail for difficult seeds; it never publishes a circle that fails the checked constraints.",
+    "Native surface-edge tangent construction is not qualified by this corpus. Object/edge pointer routing and source immutability have local UI tests.",
+    "Analytic line supports may extend outside their natural endpoints. Other open curve representations retain their domains.",
+    "Native preference changes after cancellation, exhaustive physical snapping/perspective/aperture parity and performance parity remain unqualified."
+  ],
+  "owned_native_jobs": [
+    {
+      "scheme": "VibocerosOracleCircleTangentInitial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleCircleTangentGetters20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleCircleTangentSpecial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleCircleTangentCurves20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleCircleTangentSpatial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleCircleTangentSpatialPlan20261017",
+      "exit_code": 0
+    }
+  ],
+  "checks": [
+    {
+      "name": "circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-circle.log",
+      "elapsed_seconds": 68.61,
+      "log_sha256": "b93facb68abf0e7d85dd3cd8381fefdc5e83e46316adc6b8507568a3b17c568e",
+      "rust_tests_passed": 162
+    },
+    {
+      "name": "ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-ellipse.log",
+      "elapsed_seconds": 9.27,
+      "log_sha256": "531b1ea20b617d2a0ab9c5060fddb251e12e7a6c2f3bf4148f7a8d0811f3c8ff",
+      "rust_tests_passed": 36
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-drafting",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-point-input.log",
+      "elapsed_seconds": 13.16,
+      "log_sha256": "a15058df2820ca5175be4e09e5c922e4dc3323cb7ab791027f6a8f554727d190",
+      "rust_tests_passed": 76
+    },
+    {
+      "name": "viewport-drafting",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::tests::drafting"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-viewport-drafting.log",
+      "elapsed_seconds": 0.19,
+      "log_sha256": "c7ca4d798e71878871df3fedd246ad168e2c5364c1580bf752108d8b11678b25",
+      "rust_tests_passed": 5
+    },
+    {
+      "name": "components",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "component"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-components.log",
+      "elapsed_seconds": 0.28,
+      "log_sha256": "ebbe3781f68c86498ed981cc0b00d0d9d9c69d0547d4e95ee2f7597119fa1155",
+      "rust_tests_passed": 18
+    },
+    {
+      "name": "native-circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-native-circle.log",
+      "elapsed_seconds": 82.89,
+      "log_sha256": "264cc97a405ebea9a4cbbe2cc5e165305998907ddb132d64a077fcd706a0ad17",
+      "rust_tests_passed": 162
+    },
+    {
+      "name": "native-ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-native-ellipse.log",
+      "elapsed_seconds": 9.32,
+      "log_sha256": "a57c68235b1cdfc14a0a3bd37b3f966227e92720cd11bd45afa35a594b5dee86",
+      "rust_tests_passed": 36
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-clippy.log",
+      "elapsed_seconds": 18.36,
+      "log_sha256": "7adacaab5074c49190403f586d5ae727ba5cf4ac4c2ba969e786aece2aea41b6",
+      "rust_tests_passed": 0
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-format.log",
+      "elapsed_seconds": 4.41,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rust_tests_passed": 0
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_circle_tangent",
+        "tools.rhino_oracle.test_circle_clamped",
+        "tools.rhino_oracle.test_circle_deform",
+        "tools.rhino_oracle.test_circle_around",
+        "tools.rhino_oracle.test_ellipse_deform",
+        "tools.rhino_oracle.test_ellipse_around",
+        "tools.rhino_oracle.test_ellipse",
+        "tools.rhino_oracle.test_catenary_command",
+        "tools.rhino_oracle.test_catenary_point_picker",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_point_snap_input",
+        "tools.rhino_oracle.test_client"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-circle-tangent-final-python.log",
+      "elapsed_seconds": 0.57,
+      "log_sha256": "8719e2c37a155ebd4e0851c193f1de27e0b3236dce44e5f27956ac80b301c32f",
+      "rust_tests_passed": 0,
+      "python_tests_passed": 82
+    }
+  ],
+  "historical_source_policy": "Previously verifiable SHA references to changed files are pinned to their full baseline Git blobs. Historical non-SHA outcomes are unchanged; 69 previously unverifiable records remain untouched.",
+  "sha256": {
+    "README.md": "3dec967642547c71383745c9b20356710b8411c0b86bb9031f3c5fd47a9816ef",
+    "crates/viboceros-command/src/circle_deform_input.rs": "0e48b067a2ffc4d028a9d0d557811971badcb386247354daf6d808e200dd58e7",
+    "crates/viboceros-command/src/circle_tangent_input.rs": "82e1921c53b80e81edd24249e185ed2259d5a436dbfc2f15589ef35136db29fa",
+    "crates/viboceros-command/src/lib.rs": "c4bc090c4d9296ce101343b9d1a7ead3a819a396b5017feb38789a4003df7623",
+    "crates/viboceros-command/src/plane_primitives.rs": "1e1032ba3753307859c7c62d4785a434ea9a36bc37c0fc42b3693e95df553be3",
+    "crates/viboceros-geometry/src/circle_tangent.rs": "c06eca82f870eee5204c06235cbb8cf187c04782fd0561d37cc2deb317def230",
+    "crates/viboceros-geometry/src/lib.rs": "756b27d5a5addedd30d4ec30980f0fb406f560ced501a41b3faa5e5638c09758",
+    "crates/viboceros-oracle/src/circle_tangent.rs": "2c47cee698363ae1578837fafb576bb89a027c226acefb33b94ed29b52694812",
+    "crates/viboceros-oracle/src/lib.rs": "bc4eabeb5583dbd8ba4a618789a59858e396f4456c5e112b6598be2b8cf5c23d",
+    "docs/circle-around-validation.json": "0bfe60298c6f6e84a13b2bcd49d031db58e5317783e5b30cf27fb9bfa19a90ff",
+    "docs/circle-clamped-validation.json": "a817f20100fdc7ba62720225374ab4ef164f32f9f122f8b9d2eb65794d3f2b18",
+    "docs/circle-deform-validation.json": "7435a6eb0fb74223d2958729b2d8faf35afc9914ac4c52b53e9a46e2521583e6",
+    "docs/commands/README.md": "9944fea301cf1ed2405fab898b12be8c77a5d70d4b783a4e7c8fc05be836f71a",
+    "docs/commands/circle-around-curve.md": "c25feb67bbe017a68163eb6e98ec08485dc241183ca1374eb2756f31fbce64f2",
+    "docs/commands/circle-deformable.md": "ceb0cb0bb94320ca3888f62b596e1256f497312b8b36f9e271932862448e82e1",
+    "docs/commands/circle-tangent.md": "fa8611f384c1329106388f92a7057cfc8c4f5a55e117445d0b800248dd37dbd8",
+    "src/app.rs": "c420d24c619b1d8435ad1178a43beffed7b7d2b394314fc682afa66d9bae5598",
+    "src/app/circle.rs": "64e08e1ed41950596a5a213a0600a695a1f7dbe0d1580ba58926a6c896f5f83d",
+    "src/app/circle_deform.rs": "dc1eb414c969bfd26ec09474aa4ae5aa387884b0f43ead399c4cded6ac38ad14",
+    "src/app/circle_tangent.rs": "ec356452dda3460d58cd06f1721b7b7bed2bd3f70265fb176d6aff4fcb7e575f",
+    "src/app/component_selection.rs": "16548cc05cdc57ee62418234041897993b289c65b23c41063bdfcd83e765d0ec",
+    "src/app/object_selection.rs": "41263da12be2c1deb30b65f622810eb5944679d768a6df4cc891d1717bd2148c",
+    "src/app/tests/circle_tangent.rs": "d82d592119f591d2fe585a32f64509d0d502de7d417ac45763734230991eea97",
+    "src/app/tests/ellipse_around.rs": "d090ecc8d05a62aed94ad581d3ed83cbdb70fbb6e0fb4ddc775fc7b20d70598a",
+    "src/viewport.rs": "cc7f1c820cf89f2ded0d8382b1a7adcdedd1d3d6badfd4fdbb99af73cd9ed274",
+    "src/viewport/edge_point.rs": "99272b7644b18db6d2daeb3c283ebfe17e8f40ec62a0076109729e402836d34e",
+    "tools/rhino_oracle/circle_around_probe.py": "6c866c217e8687282ede2a5d9dbd8ea9ec8ac5e868d132eb8d21d00f56090b22",
+    "tools/rhino_oracle/client.py": "f51044871eace9cc0c67cc3cbddd86941b0d4c0e6f44dc893efad23f1162b4a2",
+    "tools/rhino_oracle/conic_getter_input.py": "bc49017b93b91dcbe0b9986753d1d26693b0ba293a791b9037dd2105c49fc6c7",
+    "tools/rhino_oracle/fixtures/circle_tangent_curves.json": "603789ab80384ea33ce87335d49b4b7f874c4d65a5a1cbff1b59943dc0154f82",
+    "tools/rhino_oracle/fixtures/circle_tangent_curves_diagnostics.json": "ae84bb37df8272dc8bd135c9e866de2b75f4cdba8121a2b228d3474be7f47649",
+    "tools/rhino_oracle/fixtures/circle_tangent_getters.json": "13a64f026028692e717ea1e49f679aaadbb6097a117adac85f76512c12a75dc1",
+    "tools/rhino_oracle/fixtures/circle_tangent_initial.json": "84f9da01e194cb07217694ebe30a414e92739b1ef87bb98b55e6f1d7d207046d",
+    "tools/rhino_oracle/fixtures/circle_tangent_spatial.json": "294b5d625e87c2d61502622d9555f14d397bf2190309b8e429d5264e4e85dda9",
+    "tools/rhino_oracle/fixtures/circle_tangent_spatial_diagnostics.json": "294b5d625e87c2d61502622d9555f14d397bf2190309b8e429d5264e4e85dda9",
+    "tools/rhino_oracle/fixtures/circle_tangent_special.json": "05f80617c2ff4ceb2132e03599450a83d1302869062dc96a9d05edf28caacbd5",
+    "tools/rhino_oracle/getter_recipe.py": "a3c7e73df82c9c4b61b8e5f4f0c521af66089551ee84a9e31d9813ba0e519c5f",
+    "tools/rhino_oracle/observations/circle_tangent_curves_diagnostics_rhino_20261017.json": "23865adf7dc56c5d87f1be5316f1033a06d78611d51dd9c8b326b93abe95506c",
+    "tools/rhino_oracle/observations/circle_tangent_curves_rhino_20261017.json": "42756d5d4a70a78b8741c955a056b9bc134511d6cf17aca1f864388ff7b34f71",
+    "tools/rhino_oracle/observations/circle_tangent_getters_rhino_20261017.json": "01e9df2b8bdebf16eb4434b3da6dc676ecb2ac861ebb9d7bf7341f4b0fadc27d",
+    "tools/rhino_oracle/observations/circle_tangent_initial_rhino_20261017.json": "c43d8cde39b4e2ead9d50f1af03d451e0be0838dc3def3d305499f3f21dba1f7",
+    "tools/rhino_oracle/observations/circle_tangent_spatial_diagnostics_rhino_20261017.json": "a4a5960a78dd42e133320f48b1358348c13c3e2b66cc3b250a3e00c78609a71d",
+    "tools/rhino_oracle/observations/circle_tangent_spatial_rhino_20261017.json": "e4fcf14b53e5080c95ab8d7b4e52bf3f4441f68950038f18d25a1714b3529985",
+    "tools/rhino_oracle/observations/circle_tangent_special_rhino_20261017.json": "46b75d157455949737721c16487ed19fd235445f1d0f89b8d6fca09d5eb58cc0",
+    "tools/rhino_oracle/rhino_worker.py": "851bd2157ced5becb217bc9e07c619c7b5de3df8e7635690bdf94ffb26ceeff2",
+    "tools/rhino_oracle/structural_sdk.py": "859c23b7b9a904be434658945f291637f73dac20b64905350cddbc5c557f50c7",
+    "tools/rhino_oracle/test_circle_tangent.py": "9ee845112523039f2ee65daf2e6c70bf186e095aacdfe8f8d223c33e8be0acc6"
+  }
+}

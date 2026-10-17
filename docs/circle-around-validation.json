@@ -322,7 +322,6 @@
     "docs/ellipse-validation.json": "11469255088f6d70ae0b2ba41d3572fa460cefe273d5e7bc8891ec098fc3e2c6",
     "docs/rectangle-rounded-validation.json": "74d50cab68ce8363a6bc31d416c6ec4902e4220ac12e6fdd6eebb576ee236052",
     "docs/sphere-fit-points-validation.json": "5cf601a2059873f282af660888cb082c11894648add5e657386e0fd5aa6ad9d0",
-    "src/app/component_selection.rs": "494de6cb87a45e3eb132e2248781ad27e1aa068c1d1a733ee23e6924840c6d26",
     "src/app/point_input.rs": "c68e7bf77980b2ebcdcc111768325784d5fdb5174989342ccd62d993ccde9dab",
     "tools/rhino_oracle/ellipse_probe.py": "a9115d21bf141928028ed561a5bb18ccbcb3ae99fb59afb1151917e5c3f1b97b",
     "tools/rhino_oracle/fixtures/circle_around_command.json": "bf213eb2dccac9237c6e8684546614fb4a6604be2dfb10749d29689fd7827bf8",
@@ -365,6 +364,7 @@
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:tools/rhino_oracle/structural_sdk.py": "e890f3906156139424ed5c8bd991f93781f87b4dbdf8db86059a10f254d0a27d",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/ellipse-around-validation.json": "e8298043176a7d1752b0274a074976ab986992991d8af8375860720d00d62cc9",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/flow-poles-validation.json": "1cc64a0c18f8664a385eab07e31d51fa475f64514c5a076b48e858fa59583eb9",
-    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/hyperbola-validation.json": "196724eea6d967a0b8269e9b859a9686f1aafd8bb913f151a7cb5dfbc5bb4282"
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/hyperbola-validation.json": "196724eea6d967a0b8269e9b859a9686f1aafd8bb913f151a7cb5dfbc5bb4282",
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:src/app/component_selection.rs": "494de6cb87a45e3eb132e2248781ad27e1aa068c1d1a733ee23e6924840c6d26"
   }
 }

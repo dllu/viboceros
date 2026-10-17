@@ -1,0 +1,345 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-circle-line",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.2,
+            1.6,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            1,
+            8,
+            0
+          ]
+        },
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-circle-two-lines",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -10,
+            8,
+            0
+          ],
+          "end": [
+            14,
+            8,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            8,
+            -10,
+            0
+          ],
+          "end": [
+            8,
+            14,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            1.4142135623730951,
+            1.4142135623730951,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            4,
+            8,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            8,
+            4,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-reversed-lines",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            12,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-preselected",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ],
+      "preselect_all": true
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-deformable-three",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Deformable",
+        "Degree=4",
+        "PointCount=12",
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

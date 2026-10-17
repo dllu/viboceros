@@ -19,6 +19,7 @@ Rhino's complete command set is still a work in progress.
 - [Ellipse construction, AroundCurve, deformable output and focus markers](ellipse.md)
 - [Deformable Circle, construction modes and FitPoints](circle-deformable.md)
 - [Circle AroundCurve, size getters and guide picking](circle-around-curve.md)
+- [Circle Tangent, picked contacts, radii and free points](circle-tangent.md)
 - [Conic curves, endpoint constraints and temporary portions](conic.md)
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)

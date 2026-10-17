@@ -1,0 +1,361 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-tt",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-radius",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        3,
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-three",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            7,
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-fixed",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            0,
+            4,
+            0
+          ]
+        },
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-point",
+      "live_getters": true,
+      "curves": [],
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Point",
+        [
+          4,
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-cancel",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "Tangent",
+        "Cancel"
+      ]
+    }
+  ]
+}

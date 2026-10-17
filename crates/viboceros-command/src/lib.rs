@@ -289,6 +289,7 @@ pub mod circle_around_input;
 pub mod circle_deform_input;
 mod circle_fit_points;
 pub mod circle_input;
+pub mod circle_tangent_input;
 pub mod conic;
 mod context;
 mod control_points;

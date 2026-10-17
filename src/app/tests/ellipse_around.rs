@@ -34,6 +34,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
         for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
             let (id, f) = match op {
                 viboceros_oracle::Operation::EllipseCommand { id, fixture }
+                | viboceros_oracle::Operation::CircleTangent { id, fixture }
                 | viboceros_oracle::Operation::CircleDeform { id, fixture }
                 | viboceros_oracle::Operation::CircleAround { id, fixture } => (id, fixture),
                 _ => panic!(),
@@ -85,9 +86,26 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                 app.document.clear_history().unwrap();
             }
             enter(&mut app, command);
-            for action in &f.actions {
+            for (action_index, action) in f.actions.iter().enumerate() {
                 match action {
                     Action::Pick { curve, edge, .. } => {
+                        if matches!(op, viboceros_oracle::Operation::CircleTangent { .. }) {
+                            // Input calibration uses native click rays, never expected geometry.
+                            let clicks = row["value"]["input_trace"]["clicks"].as_array().unwrap();
+                            let click =
+                                clicks.iter().find(|c| c["action"] == action_index).unwrap();
+                            let point: [f64; 3] =
+                                serde_json::from_value(click["projected_point"].clone()).unwrap();
+                            assert!(
+                                app.pick_circle_tangent_at(
+                                    guides[*curve],
+                                    *edge,
+                                    Point3::try_from(point).unwrap()
+                                ),
+                                "{id}"
+                            );
+                            continue;
+                        }
                         let output = if let Some(edge) = edge {
                             ViewportOutput {
                                 edge_click: Some(vec![crate::viewport::EdgePick {
@@ -118,6 +136,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
             }
             assert!(
                 app.ellipse_session.is_none()
+                    && app.circle_tangent_session.is_none()
                     && app.circle_around_session.is_none()
                     && app.circle_deform_session.is_none(),
                 "{id}: {:?}",
@@ -131,7 +150,14 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                         app.document.undo()
                     }
                     .unwrap();
-                    assert_eq!(label.as_deref(), Some(command));
+                    assert_eq!(
+                        label.as_deref(),
+                        (!row["value"]["after_script"]["outputs"]
+                            .as_array()
+                            .unwrap()
+                            .is_empty())
+                        .then_some(command)
+                    );
                 }
                 let reference = if stage == "after" {
                     "after_script"
@@ -162,7 +188,13 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                     );
                 }
             }
-            assert!(app.document.undo().unwrap().is_some());
+            assert_eq!(
+                app.document.undo().unwrap().is_some(),
+                !row["value"]["after_script"]["outputs"]
+                    .as_array()
+                    .unwrap()
+                    .is_empty()
+            );
             assert!(app.document.undo().unwrap().is_none());
         }
     }

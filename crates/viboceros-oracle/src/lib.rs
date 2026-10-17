@@ -148,6 +148,7 @@ pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
 mod catenary_command;
 mod circle_around;
+mod circle_tangent;
 mod conic;
 mod curve_getters;
 mod ellipse_command;
@@ -1750,6 +1751,11 @@ pub enum Operation {
         id: String,
         turns: f64,
     },
+    CircleTangent {
+        id: String,
+        #[serde(flatten)]
+        fixture: CircleDeformFixture,
+    },
     CircleDeform {
         id: String,
         #[serde(flatten)]
@@ -2872,6 +2878,7 @@ impl Operation {
             | Self::FlowGrips { id, .. }
             | Self::SpiralLayout { id, .. }
             | Self::CatenaryCommand { id, .. }
+            | Self::CircleTangent { id, .. }
             | Self::CircleDeform { id, .. }
             | Self::CircleAround { id, .. }
             | Self::EllipseCommand { id, .. }
@@ -6130,6 +6137,9 @@ fn execute(
                 json!({"degree":c.degree(),"control_count":c.control_points().len(),"full_knot_count":c.knots().len()}),
                 elapsed,
             )
+        }
+        Operation::CircleTangent { fixture, .. } => {
+            circle_tangent::run(fixture, iterations, tolerance)?
         }
         Operation::CircleDeform { fixture, .. } | Operation::CircleAround { fixture, .. } => {
             circle_around::run(fixture, iterations, tolerance)?

@@ -352,18 +352,12 @@
     "tools/rhino_oracle/observations/circle_deform_diagnostics_rhino_20261017.json": "e9956d7be3bbea1c38bc6eba3cc37344d37702a5f23f67dd3e91dcc1b870c0d3"
   },
   "sha256": {
-    "README.md": "d6e5d01cf19bf34405c9f12a237861638c606bf7b81759e490ded184b88f4181",
-    "crates/viboceros-command/src/circle_deform_input.rs": "5d32da1f0870ef191962d1730df562265f171a75cb6d99181080f039e943091d",
     "crates/viboceros-command/src/plane_primitives/tests.rs": "557a8e34b937b91d8a934cd1e97c7d712496bc0e72adb6567fe42388ca52d036",
     "crates/viboceros-geometry/src/circle_deform.rs": "a5106d36befa35a081338d5c12303cb71c90a13a686051a1865fe8ccea4343a3",
     "crates/viboceros-geometry/src/curve_rebuild.rs": "78242f61015b5534cbed45ab52dd0d7fb9d7e60b5fb8c3756a9fb4cf59de2634",
     "crates/viboceros-geometry/src/error.rs": "cded868ae8c84963f956b2cbe123ce4e2b5a4e901f27d31ac57e9682bbe41f18",
     "crates/viboceros-oracle/src/circle_around.rs": "9936e5c3b0280e29c1d8774b831f07aaa3c4a8f7a2096818cb5af88301df18f5",
-    "docs/circle-deform-validation.json": "55006a9145ed7248e6d01ded3af692c5de0f94fbbaa013043d44e550e1d8de25",
-    "docs/commands/circle-deformable.md": "1ae19da0f3559b7156f20686c21034fa09442a2811c25f5ffaad66e84a1fb665",
-    "src/app/circle_deform.rs": "560ca083f2de2ff2601a50c0fa8fe8fc2432a9b769950c820d97edc64c131a93",
     "src/app/tests/circle_deform.rs": "4468296a7e60aa528a217bb760aefd26a312afef119d06e53be37833b1e613e1",
-    "tools/rhino_oracle/circle_around_probe.py": "6c183afdbeb081731700d3f762e90f64cd09a9b8fe6e1aa0900340715f5164eb",
     "tools/rhino_oracle/curve_primitive_probe.py": "e0e696bfd3da21c180ab4a5792c530e477e88d23be6baaabd75d46f78a587c66",
     "tools/rhino_oracle/fixtures/circle_clamped_controls.json": "8ff60a692b66bfe2ba2e9e6dfa54ff714ac5ed5b3af22471c35dde8befe6ca4e",
     "tools/rhino_oracle/fixtures/circle_clamped_grid.json": "493f1f53ed2c01d97ad156dd6a0c1807934350a9001aac396b405634cf59fba5",
@@ -376,5 +370,13 @@
     "tools/rhino_oracle/observations/circle_clamped_modes_rhino_20261017.json": "4930bb1391eb7cbeb47fc5c0d05bb974309e463a7b1c7d08886532aaf8aa2f09",
     "tools/rhino_oracle/observations/circle_clamped_precise_rhino_20261017.json": "fae61e41edef37afa070ac67a7e5c8385024e90ee69f4882d0289bbd464e1052",
     "tools/rhino_oracle/test_circle_clamped.py": "687ec45c8daa0d675750c7d4ff62d0ac62dc5d42eb56018da45c728e938801d4"
+  },
+  "git_sha256": {
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:README.md": "d6e5d01cf19bf34405c9f12a237861638c606bf7b81759e490ded184b88f4181",
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:crates/viboceros-command/src/circle_deform_input.rs": "5d32da1f0870ef191962d1730df562265f171a75cb6d99181080f039e943091d",
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:docs/commands/circle-deformable.md": "1ae19da0f3559b7156f20686c21034fa09442a2811c25f5ffaad66e84a1fb665",
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:src/app/circle_deform.rs": "560ca083f2de2ff2601a50c0fa8fe8fc2432a9b769950c820d97edc64c131a93",
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:tools/rhino_oracle/circle_around_probe.py": "6c183afdbeb081731700d3f762e90f64cd09a9b8fe6e1aa0900340715f5164eb",
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:docs/circle-deform-validation.json": "55006a9145ed7248e6d01ded3af692c5de0f94fbbaa013043d44e550e1d8de25"
   }
 }

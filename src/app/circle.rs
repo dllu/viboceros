@@ -107,6 +107,11 @@ impl VibocerosApp {
                 self.command_input.clear();
                 return true;
             }
+            if option.eq_ignore_ascii_case("Tangent") {
+                self.start_circle_tangent(None);
+                self.command_input.clear();
+                return true;
+            }
             if option.eq_ignore_ascii_case("AroundCurve") {
                 self.start_circle_around();
                 self.command_input.clear();

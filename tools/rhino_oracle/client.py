@@ -464,15 +464,20 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
-        if any(op.get('op') in ('circle_around','circle_deform') for op in request.get('operations', [])):
+        if any(op.get('op') in ('circle_around','circle_deform','circle_tangent') for op in request.get('operations', [])):
             from .circle_around_probe import validate
             operations=request['operations']
-            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')not in('circle_around','circle_deform')for op in operations):
+            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')not in('circle_around','circle_deform','circle_tangent')for op in operations):
                 raise OracleProtocolError('Circle getters require a private dedicated one-iteration capture')
             names=[op.get('id')for op in operations]
             if not 1<=len(names)<=64 or any(not isinstance(n,str)for n in names)or len(set(names))!=len(names):raise OracleProtocolError('Circle getters require 1 through 64 uniquely named cases')
             for op in operations:validate(op)
-            if any(isinstance(a,dict)and'edge'in a for op in operations for a in op.get('actions',[])):
+            if any(op.get('op')=='circle_tangent' for op in operations):
+                if any(op.get('op')!='circle_tangent' for op in operations):raise OracleProtocolError('Circle Tangent requires a dedicated contact-picking capture')
+                from .catenary_point_picker import CatenaryPointPicker
+                click_request=dict(request,operations=[dict(op,actions=[dict(click=a['pick'])if isinstance(a,dict)and'curve'in a and'pick'in a else a for a in op['actions']])for op in operations])
+                interaction=CatenaryPointPicker(click_request)
+            if not any(op.get('op')=='circle_tangent'for op in operations)and any(isinstance(a,dict)and'edge'in a for op in operations for a in op.get('actions',[])):
                 from .conic_getter_picker import ConicGetterPicker
                 interaction=ConicGetterPicker(request)
         if any(op.get('op') == 'ellipse_command' for op in request.get('operations', [])):

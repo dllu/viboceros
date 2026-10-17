@@ -6,7 +6,8 @@ Settings accept `Degree=5`, `PointCount=12`, or a separate integer prompt.
 Enter retains the integer setting; Escape and `Cancel` cancel the command.
 
 Deformable output works with center/size, 2Point, 3Point, 3Point Radius,
-Vertical, Orientation, [AroundCurve](circle-around-curve.md), and FitPoints.
+Vertical, Orientation, [AroundCurve](circle-around-curve.md),
+[Tangent](circle-tangent.md), and FitPoints.
 Radius, Diameter, Circumference and Area use the ordinary Circle sizing rules.
 FitPoints reuses the existing point/grip fitter and selection workflow.
 World, CPlane and relative points, snapping, filters and constraints use the
@@ -71,8 +72,8 @@ Circle Deformable Degree=2 PointCount=4 Degree=8 AroundCurve
 The second example opens the guide picker. Inline settings also accept bare
 integer getters, for example `C Deformable Degree 2 PointCount 4 Degree 8`.
 
-Tangent construction and native preference updates after cancellation remain
-unimplemented or unqualified. There is no performance-parity claim.
+Native preference updates after cancellation remain unqualified. There is no
+performance-parity claim.
 
 [Periodic-output validation](../circle-deform-validation.json) records the
 original 57 successful workflows and four cancellations. The

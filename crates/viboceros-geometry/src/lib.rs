@@ -18,6 +18,8 @@ mod circle_curve;
 mod circle_deform;
 pub use circle_deform::circle_deformable_minimum_points;
 mod circle_fit;
+mod circle_tangent;
+pub use circle_tangent::{CircleTangentConstraint, CircleTangentSolution, try_circle_tangent};
 mod radial_fit;
 mod sphere_fit;
 pub use circle_fit::MAX_CIRCLE_FIT_POINTS;

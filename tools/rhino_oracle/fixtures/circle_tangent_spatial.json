@@ -1,0 +1,379 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-deformable-clamped-points",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [],
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=5",
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-tilted-tt",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-tilted-three",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        },
+        {
+          "curve": 2,
+          "pick": [
+            14.2,
+            -14.399999999999999,
+            33
+          ]
+        }
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-tilted-fixed",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            17.2,
+            -10.399999999999999,
+            30
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            30
+          ],
+          "end": [
+            10.0,
+            -20.0,
+            42
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            10.0,
+            -20.0,
+            40
+          ],
+          "end": [
+            16.0,
+            -12.0,
+            30
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            11.8,
+            -17.6,
+            30
+          ]
+        },
+        "FromFirstPoint",
+        {
+          "curve": 1,
+          "pick": [
+            10.0,
+            -20.0,
+            34
+          ]
+        }
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-three-free-points",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [],
+      "actions": [
+        "Tangent",
+        "Point",
+        [
+          3,
+          0,
+          0
+        ],
+        "Point",
+        [
+          0,
+          4,
+          0
+        ],
+        "Point",
+        [
+          -3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_tangent",
+      "id": "circle-tangent-cancel-picked",
+      "live_getters": true,
+      "guide_selection": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            12,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            10,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "Tangent",
+        {
+          "curve": 0,
+          "pick": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Cancel"
+      ]
+    }
+  ]
+}
