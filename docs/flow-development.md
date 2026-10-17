@@ -2,7 +2,7 @@
 
 Flow is registered in the command API and application. Its current supported
 subset has a two-guide getter, direction reversal, cached preview, staged edits,
-Copy, Rigid/RigidGroups, Stretch, PreserveStructure, temporary Line guides, selected control/edit grips, option memory and one-step
+Copy, Rigid/RigidGroups, Stretch, PreserveStructure, temporary Line guides, explicit Roadlike axes, selected control/edit grips, option memory and one-step
 local Undo/Redo. See [usage and current limits](commands/flow.md).
 
 The implementation owns shared prepared guide geometry and reuses the existing
@@ -30,6 +30,8 @@ and actual Flow macros in owned private displays:
 | `flow_grips.json` | 72 | Complete grip owner, group, selection and Undo/Redo workflows across curves, surfaces and meshes |
 | `flow_line.json` | 128 | Actual commands with either or both guides drawn, Copy/Rigid/Stretch, reversals, mixed planes, selected grips and rigid curve owners |
 | `flow_line_orientation.json` | 24 | Twenty actual commands and four SDK diagnostics for opposite, collinear and nearly opposite lines |
+| `flow_roadlike.json` | 40 | Explicit Roadlike axes and CPlane-Z picker presets, selected/drawn guides, reversals, Copy/Rigid/Stretch, rational control/edit grips and full Undo/Redo |
+| `flow_roadlike_diagnostics.json` | 12 | Retained native Automatic and in-plane axis cases, rejected locally before edits |
 | `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
 | `flow_density.json`, `flow_coupled_frames.json`, `flow_up_lookup.json` | 13 | Dense spatial positions/bases, equivalent straight guide types, batch length lookups, degree elevation and changed spatial shapes |
 
@@ -50,7 +52,7 @@ do not change point results. These diagnostic observations are retained to guide
 further independent implementation; no spatial parity is claimed.
 
 Remaining scope includes all retained spatial point maps, Local
-input, Roadlike/Stairlike and TargetSurface orientation, native option
+input, Roadlike Automatic and in-plane axes, Stairlike and TargetSurface orientation, native option
 memory and history details, multiple-object rigid group qualification, fitted
 owner geometry, planar NURBS and closed-guide qualification, preview appearance and performance.
 
@@ -179,3 +181,31 @@ cases, including a stationary-endpoint discrepancy checked against an analytic
 inverse. This is the precise geometry path needed to construct lookup tables;
 the native coarse inverse approximation and automatic spatial direction selector
 remain implementation work.
+
+Explicit Roadlike axes now use the existing meridian-frame kernel, prepared
+length sampler, owner/grip reconstruction and preview cache. The input session
+collects two points for each axis, accepts the active CPlane Z as an explicit
+picker preset, and rebuilds the cached morph when either axis changes. The
+registered command requires both world directions and preflights the supported
+planar/straight guide and axis combinations before editing.
+
+The [Roadlike validation record](flow-roadlike-validation.json) retains 52 actual
+native commands in one owned capture. Forty explicit-axis workflows match full
+owner geometry, guide lifetime, groups, selection and Undo/Redo within `1e-6`;
+maximum coordinate error is `5.7063687108893646e-11`. Four of these use rational
+control/edit grips and four choose explicit directions from nonstandard CPlanes.
+The native macro for a CPlane preset picks the corresponding world direction;
+it does not invoke native Automatic. The remaining twelve observations retain
+eight in-plane-axis cases and four actual native Automatic cases. Those modes
+are explicitly rejected locally, with no document or history edit. They are
+negative evidence, not qualified matches or discarded captures. Native
+Automatic's selection rule remains unresolved; CPlane Z is a separate picker
+convenience. The original eight spatial mismatches and command guard remain.
+
+Replay the new supported and diagnostic cases without launching Rhino:
+
+```sh
+cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_roadlike.json /tmp/flow-roadlike-local.json
+cargo test -p viboceros-oracle --lib flow_roadlike
+python3 -m unittest tools.rhino_oracle.test_flow_roadlike
+```

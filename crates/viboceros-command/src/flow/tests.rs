@@ -120,7 +120,12 @@ fn flow_invalid_inputs_are_atomic_and_do_not_change_successful_preferences() {
         format!("Base={a} Target={b} Copy=Maybe"),
         format!("Base={a} Base={b} Target={b}"),
         format!("Base={a} BaseEdge={a},0 Target={b}"),
+        format!("Base={a} Target={b} Roadlike=Maybe"),
         format!("Base={a} Target={b} Roadlike=Yes"),
+        format!("Base={a} Target={b} Roadlike=Yes BaseUp=0,0,1 TargetUp=0,1,0"),
+        format!("Base={a} Target={b} Roadlike=Yes BaseUp=Automatic TargetUp=0,0,1"),
+        format!("Base={a} Target={b} Roadlike=Yes BaseUp=0,0,0"),
+        format!("Base={a} Target={b} Roadlike=Yes BaseUp=1,0,0"),
         format!("Base={a} Target={b} Local=Yes"),
         format!("Base={a} Target={b} TargetSurface={a}"),
         format!("Base={a} TargetEdge={a},999"),
@@ -144,6 +149,51 @@ fn flow_invalid_inputs_are_atomic_and_do_not_change_successful_preferences() {
     assert!(r.flow_options().preserve_structure);
     r.execute(&mut d, "Undo").unwrap();
     assert!(r.flow_options().stretch);
+}
+#[test]
+fn flow_roadlike_explicit_axes_round_trip_and_preserve_history() {
+    let (r, mut d, [base, _], ids) = setup();
+    let target = d
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(p(20., 0., 0.), p(30., 0., 0.), d.tolerance()).unwrap(),
+        ))
+        .unwrap();
+    let up = Vector3::try_new(0., 1., 0.).unwrap();
+    let input = format!(
+        "Flow Base={base} Target={target} Copy=No Roadlike=Yes BaseUp=0,0,1 TargetUp=0,1,0"
+    );
+    let before = ids
+        .iter()
+        .map(|id| d.object(*id).unwrap().geometry().clone())
+        .collect::<Vec<_>>();
+    r.execute(&mut d, &input).unwrap();
+    for (id, g) in ids.iter().zip(&before) {
+        let Geometry::Point(q) = g else { panic!() };
+        let expected = p(20. + q.x(), q.z(), -q.y());
+        assert_eq!(
+            d.object(*id).unwrap().geometry(),
+            &Geometry::Point(expected)
+        );
+    }
+    assert!(r.flow_options().roadlike);
+    assert_eq!(r.flow_options().base_up, None);
+    assert_eq!(r.flow_options().target_up, None);
+    let opts = Options {
+        roadlike: true,
+        base_up: Some(up),
+        target_up: Some(Vector3::try_new(0., 0., -1.).unwrap()),
+        ..Options::default()
+    };
+    let (again, _) = options(
+        &opts.arguments().split_whitespace().collect::<Vec<_>>(),
+        Options::default(),
+    )
+    .unwrap();
+    assert_eq!(again, opts);
+    assert_eq!(d.undo().unwrap().as_deref(), Some("Flow"));
+    for (id, g) in ids.iter().zip(before) {
+        assert_eq!(d.object(*id).unwrap().geometry(), &g);
+    }
 }
 #[test]
 fn flow_rigid_groups_use_a_shared_pose_and_picked_sources_release_selection() {

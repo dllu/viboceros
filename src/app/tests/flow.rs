@@ -407,3 +407,100 @@ fn flow_line_and_surface_edge_guides_share_selection_and_preview() {
     assert_eq!(app.document.object(parent).unwrap().geometry(), &original);
     assert!(app.document.is_selected(source));
 }
+
+#[test]
+fn flow_roadlike_axis_getters_rebuild_preview_and_keep_input_atomic() {
+    let (mut app, source, a, b, _) = setup();
+    enter(&mut app, "Flow Copy=No Stretch=Yes Roadlike=Yes");
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    assert!(app.drawing_flow_axis());
+    assert!(!app.picking_flow_guide());
+    assert!(app.flow_session.as_ref().unwrap().preview().is_none());
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "w1,2,3");
+    assert_eq!(
+        app.active_command.unwrap().anchor(),
+        Some(point(1., 2., 3.))
+    );
+    enter(&mut app, "w1,2,3");
+    assert!(app.drawing_flow_axis());
+    enter(&mut app, "r0,1,1");
+    assert!(app.drawing_flow_axis());
+    assert_eq!(app.active_command.unwrap().anchor(), None);
+    enter(&mut app, "CPlaneZ");
+    assert!(!app.drawing_flow_axis());
+    let first = app
+        .flow_session
+        .as_ref()
+        .unwrap()
+        .preview()
+        .unwrap()
+        .morph
+        .clone();
+    let p = point(5., 1., 0.);
+    let first_point = first.morph_point(p).unwrap();
+    enter(&mut app, "BaseUp=0,0,1");
+    let second = app.flow_session.as_ref().unwrap().preview().unwrap().morph;
+    assert!(!std::sync::Arc::ptr_eq(&first, second));
+    assert!(
+        first_point
+            .distance_to(second.morph_point(p).unwrap())
+            .unwrap()
+            > 0.1
+    );
+    enter(&mut app, "BaseUp=Automatic");
+    assert!(!app.drawing_flow_axis());
+    enter(&mut app, "BaseUp");
+    assert!(app.drawing_flow_axis());
+    enter(&mut app, "");
+    assert!(!app.drawing_flow_axis());
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert!(app.document.is_selected(source));
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Flow"));
+    assert!(app.document.undo().unwrap().is_none());
+}
+
+#[test]
+fn flow_roadlike_cplane_preset_reads_active_cplane_and_stale_guides_cancel_axis_input() {
+    let (mut app, _, a, b, _) = setup();
+    enter(&mut app, "Flow Roadlike=Yes");
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    let plane = viboceros_geometry::Frame3::try_from_normal(
+        point(0., 0., 0.),
+        viboceros_geometry::Vector3::try_new(0., 1., 1.).unwrap(),
+        app.document.tolerance(),
+    )
+    .unwrap();
+    app.viewports[app.active_viewport].set_construction_plane(plane);
+    enter(&mut app, "CPlaneZ");
+    enter(&mut app, "CPlaneZ");
+    assert_eq!(
+        app.flow_session
+            .as_ref()
+            .unwrap()
+            .preview()
+            .unwrap()
+            .options
+            .base_up,
+        Some(plane.z_axis().as_vector())
+    );
+    enter(&mut app, "Cancel");
+    enter(&mut app, "Flow Roadlike=Yes");
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    enter(&mut app, "w0,0,0");
+    app.document
+        .replace_object_geometries([(b, Geometry::Point(point(0., 0., 0.)))])
+        .unwrap();
+    app.validate_flow_guides();
+    assert!(!app.drawing_flow_axis());
+    assert!(app.picking_flow_guide());
+    assert_eq!(app.active_command.unwrap().anchor(), None);
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Cancel");
+    assert_eq!(format!("{:?}", app.document), before);
+}

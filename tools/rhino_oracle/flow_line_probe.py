@@ -8,12 +8,12 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 
-def validate(op):
+def validate(op,allow_selected_guides=False):
     allowed={'op','id','base','target','source','options','group','base_line','target_line','selected','edit'}
     if not isinstance(op,dict)or op.get('op')!='flow_line'or set(op)-allowed or not {'id','base','target','source'}<=set(op):raise ValueError('invalid Flow Line recipe')
     for k in ('group','base_line','target_line','edit'):
         if type(op.get(k,k=='base_line'))is not bool:raise ValueError('invalid Flow Line toggle')
-    if not op.get('base_line',True)and not op.get('target_line',False):raise ValueError('Flow Line needs at least one drawn guide')
+    if not allow_selected_guides and not op.get('base_line',True)and not op.get('target_line',False):raise ValueError('Flow Line needs at least one drawn guide')
     for role in ('base','target'):
         if op.get(role+'_line',role=='base'):
             if op[role].get('type')!='line':raise ValueError('drawn guide needs two endpoints')
@@ -31,8 +31,8 @@ def validate(op):
     if op.get('options',{}).get('roadlike')or op.get('options',{}).get('stairlike'):raise ValueError('advanced Flow Line modes are not qualified')
 
 
-def run(op,host,iterations,tolerance):
-    validate(op)
+def run(op,host,iterations,tolerance,roadlike_axes=None):
+    validate(op,allow_selected_guides=roadlike_axes is not None)
     if iterations!=1:raise ValueError('Flow Line capture requires one iteration')
     from join_probe import observe_command
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;o=op.get('options',{})
@@ -74,7 +74,7 @@ def run(op,host,iterations,tolerance):
         point=lambda p:'w'+','.join(repr(float(v))for v in p)
         flags=' '.join('_'+key+'=_'+('Yes'if o.get(field,default)else'No')for key,field,default in [('Copy','copy',True),('Rigid','rigid',False),('Stretch','stretch',False),('PreserveStructure','preserve_structure',False)])
         if o.get('rigid'):flags+=' _RigidGroups=_'+('Yes'if o.get('rigid_groups',True)else'No')
-        flags+=' _Roadlike=_No _Local=_No'
+        flags+=' _Roadlike=_'+('Yes'if roadlike_axes is not None else 'No')+' _Local=_No'
         picks=[]
         for role,key in zip(('base','target'),guides):
             if key is None:
@@ -82,7 +82,14 @@ def run(op,host,iterations,tolerance):
                 if o.get('reverse_'+role):a,b=b,a
                 picks.append(' _Line '+point(a)+' '+point(b))
             else:picks.append(" '_-SelID "+str(key))
-        macro='_Flow '+flags+''.join(picks)
+        axes=[]
+        if roadlike_axes is not None:
+            for curve,up in zip(curves,roadlike_axes):
+                if up is None:axes.append(' '+point(host['_xyz'](curve.PointAtStart))+' _Automatic')
+                else:
+                    start=host['_xyz'](curve.PointAtStart)
+                    axes.append(' '+point(start)+' '+point([a+b for a,b in zip(start,up)]))
+        macro='_Flow '+flags+''.join(picks)+''.join(axes)
         marker='Owned Flow Line '+str(host['System'].Guid.NewGuid());R.RhinoApp.WriteLine(marker)
         success,after,events=observe_command(R.Commands.Command,'Flow',lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
         result=dict(before=seed,after=after,after_script=snapshot(),events=events,command_returned=bool(success),macro=macro,history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip())

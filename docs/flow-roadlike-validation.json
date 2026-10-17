@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "a073235d672ba6ec22ebe0ed05c8f90bfad665b1",
+  "component": "Flow explicit Roadlike axes, CPlane Z picker presets and guarded unsupported native modes",
+  "complete_flow_qualified": false,
+  "complete_roadlike_qualified": false,
+  "spatial_flow_qualified": false,
+  "performance_qualified": false,
+  "native_outputs_used_as_kernel_construction_inputs": false,
+  "implementation": "Reuse CurveFlowPointMorph explicit up directions, supporting-plane classification, prepared curve length, ordinary/grip reconstruction, staged history and preview cages. Interactive axes use the shared drafting point getter, snaps and relative coordinates. CPlaneZ/Enter supplies an explicit world direction; scripted input requires both BaseUp and TargetUp. Re-picking or changing an axis invalidates the morph cache. Remember the Roadlike flag after success, but collect axes anew for each interactive command. Reject unsupported spatial guides, in-plane axes and native Automatic before edits.",
+  "native_capture": {
+    "scheme": "VibocerosOracleFlowRoadlike20261016f",
+    "engine_version": "8.32.26160.13001",
+    "actual_commands": 52,
+    "method": "Owned private display, public RhinoCommon document API and complete Flow macros at Rhino idle. Capture before, EndCommand, completed macro, Undo and Redo. No trailing Cancel tokens. No proprietary implementation inspected.",
+    "qualified_commands": 40,
+    "unsupported_diagnostics": 12,
+    "epsilon": 1e-06,
+    "max_qualified_coordinate_error": 5.7063687108893646e-11,
+    "compared_stages": [
+      "before",
+      "after_script",
+      "undo",
+      "redo"
+    ],
+    "raw_object_table_enumeration_order_compared": false,
+    "capture_note": "One 52-operation capture is split into the supported 40-case fixture and 12-case diagnostic fixture in original order, without numerical edits. Missing axis definitions in supported oracle recipes mean an explicit CPlane Z picker preset: the native macro picks that world direction and does not invoke Automatic. Diagnostic native_automatic recipes invoke actual native Automatic, while the local command reports the missing axis as unsupported. Earlier exploratory captures are not qualification evidence."
+  },
+  "coverage": {
+    "qualified_commands": 40,
+    "control_or_edit_grip_owners": 4,
+    "nonstandard_cplane_presets": 4,
+    "guide_inputs": {
+      "(True, True)": 4,
+      "(True, False)": 20,
+      "(False, True)": 4,
+      "(False, False)": 12
+    },
+    "cases": [
+      "straight and circular arc guides",
+      "explicit independent up directions and oblique frames",
+      "XY/XZ guide planes",
+      "both guide reversals",
+      "Copy, Rigid and Stretch",
+      "rational curve control and edit grips",
+      "guide lifetime, selection, groups, full owner geometry and Undo/Redo"
+    ]
+  },
+  "unsupported_evidence": {
+    "in_plane_axes": 8,
+    "native_automatic": 4,
+    "qualified_matches": 0,
+    "local_commands_rejected": 12,
+    "local_geometry_selection_groups_and_history_unchanged": true,
+    "note": "All twelve native commands succeed. Retain their outputs as unresolved behavior rather than allowing an inaccurate map. No Automatic or in-plane axis parity is claimed."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p viboceros-command --lib flow::",
+      "exit_code": 0,
+      "log_sha256": "4b8291bcdfd516135b003a6fc3f82805ab453f9d7d6c1f0452933701c01062d7",
+      "passed_tests": 7
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::flow::",
+      "exit_code": 0,
+      "log_sha256": "e12b6d0bc499c5a181caec3f25d77e21cfa3780681f59125fbe189e9bf9623a9",
+      "passed_tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "b5084b9e7335e7658ce8f3e5a88d567f4fb9de6b4bdd3bb409ef2e48eb9c2f22",
+      "passed_tests": 5
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow_grips::",
+      "exit_code": 0,
+      "log_sha256": "f817131a68ea01c947c2a66d14614efbfa454a9d5aa3016d7174e44b3fd69b41",
+      "passed_tests": 1
+    },
+    {
+      "command": "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "08858f63c52f86d3ed01ee9a0ca33223f0f1a20a50fdc036256b38b2234356f6"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_roadlike tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_structure tools.rhino_oracle.test_arc_length_batch",
+      "exit_code": 0,
+      "log_sha256": "52ed9272657a4bedb2c107c3899f52dcd0b6df577168a8fcbfea6bb7851fa1d6",
+      "passed_tests": 29
+    },
+    {
+      "command": "python3 -m py_compile tools/rhino_oracle/flow_line_probe.py tools/rhino_oracle/flow_roadlike_probe.py tools/rhino_oracle/test_flow_roadlike.py",
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "The original eight spatial Flow mismatches and the spatial command guard remain. Explicit axes do not yet qualify native spatial position lookups.",
+    "Roadlike Automatic and in-plane-axis behavior remain unfinished. The CPlane Z preset explicitly chooses an axis and is not native Automatic.",
+    "Further guide/owner families, Local, Stairlike, TargetSurface, option/history details, preview appearance and native performance remain to qualify.",
+    "No full workspace-suite or native-smlib-specific qualification is claimed by this record."
+  ],
+  "historical_provenance": {
+    "preserved_records": 5,
+    "preserved_entries": 20,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "bedefe9d72498037868f59197e1c4c292e5ab16274d9c263850d5db33553cb49",
+    "crates/viboceros-command/src/flow.rs": "bcf873fc86114bd9fd63e6754e4f1c5ca749810b727fa177b3688a1229616d01",
+    "crates/viboceros-command/src/flow/tests.rs": "1fadd3b0023a63977ce41df2237e85a2e2b4a429bc522cd30941182f6b00ffa4",
+    "crates/viboceros-command/src/lib.rs": "b49318050762c37f7dd19a929bfc2bcebf99f4b464d349eb27391945b0cfbee2",
+    "crates/viboceros-oracle/src/flow.rs": "27535e30bc5abe7bbe37b34c86dd0f531d0b86cc1b2c15d96a531cfd566d97c2",
+    "crates/viboceros-oracle/src/flow_grips.rs": "eb695c689727ec859b64eed398d1fcc01d450f71fcbb92ed15af28710fb33c86",
+    "crates/viboceros-oracle/src/flow_line.rs": "2b9c28ee119b4a8ae07fc61687463dae31ae7993bb4d80802bf74dc286fbb82b",
+    "crates/viboceros-oracle/src/flow_roadlike.rs": "d82f0179fff29cbc87bb7ada70e94a1de7d13b232a9652119e80077a114d8b5d",
+    "crates/viboceros-oracle/src/lib.rs": "5d56b3e9ae92e5917c007ce82605f8adf8dc4c10621351e840e9ec802af431cd",
+    "docs/commands/flow.md": "c9c124359fe3b62cd067641de60d51042e739baf4f5c2655afb325e9afec4369",
+    "docs/flow-development.md": "2c33907e56430531cdc3ba8a06c7d53a92c45023e47a25b05c2ca15cc573b3d7",
+    "src/app.rs": "7910a41d2e562d5143cffea1ece087c97bbd332cef09fd456881ac3cd8dd2fd0",
+    "src/app/flow.rs": "d8861957210c194004aa2a5dacc5af26fd613657bb6be9abfac91009df1562d3",
+    "src/app/tests/flow.rs": "0b8370bf29b904cb7eb1f40805639f57ea37c9488815b1248b4cd8b3fc50d84f",
+    "tools/rhino_oracle/fixtures/flow_roadlike.json": "478c2b35fb47d89c314447e1f834ce12a6387b1ff2f9b5642ca91851a83bf50e",
+    "tools/rhino_oracle/fixtures/flow_roadlike_diagnostics.json": "e65e81ae7748ae28fe5d92c9f3f95c7b5d8045531ad00d70ddc55e7656e57e13",
+    "tools/rhino_oracle/flow_line_probe.py": "7b1413737758202673163d6cb6a1c6791750a49526ff0f22425cda043191b49b",
+    "tools/rhino_oracle/flow_roadlike_probe.py": "a1223a1f07616289e349961106576b805575374ba015f030570cccee95a21519",
+    "tools/rhino_oracle/observations/flow_roadlike_comparison_20261016.json": "b52ecbe71d40d4b862f3f162947451de3927ef22525ee94366507422d6595706",
+    "tools/rhino_oracle/observations/flow_roadlike_diagnostics_comparison_20261016.json": "f99f7f032d3df4724e44b6a7b9e7afe9b3b95032a9a30416bc99fc2eeadfab89",
+    "tools/rhino_oracle/observations/flow_roadlike_diagnostics_rhino_20261016.json": "12466246a0200b153177c6fab17f487e8dd6d5f48854ea4b003a193821dd82bb",
+    "tools/rhino_oracle/observations/flow_roadlike_diagnostics_viboceros_20261016.json": "dc85ff795fb9ae32afc0a8b209fab9dc62032fc859f1d75198a367a61ec07f06",
+    "tools/rhino_oracle/observations/flow_roadlike_rhino_20261016.json": "8147c8471c3740fcad00cef225af316c173b5ffb7d3a1bdd90b270e5f9418d98",
+    "tools/rhino_oracle/observations/flow_roadlike_viboceros_20261016.json": "54039b21ff2c2cb1d67d2ac126db9aa171c93730d800d3bb676f45605687e1a9",
+    "tools/rhino_oracle/rhino_worker.py": "3591669863fac86d17f01133d72b54949a3775cc9afdfbde7eccfa2e68b854e5",
+    "tools/rhino_oracle/structural_sdk.py": "4f784cefc024d42ee5dd3ab0c77429c840fbea80ef4c5923c60258af579a59c2",
+    "tools/rhino_oracle/test_flow_roadlike.py": "43c2d2aeb8a3e7d90e9bb537447edd0d8293b9d8555cafb9113ab2ab4430c224"
+  }
+}

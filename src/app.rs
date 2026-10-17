@@ -5573,7 +5573,7 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
-        if let Some(accepted) = self.accept_flow_line_point(point) {
+        if let Some(accepted) = self.accept_flow_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_orient_surface_point(point) {
@@ -9407,7 +9407,9 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
                 && !self.picking_orient_curve()
-                && (self.flow_session.is_none() || self.drawing_flow_line())
+                && (self.flow_session.is_none()
+                    || self.drawing_flow_line()
+                    || self.drawing_flow_axis())
                 && !self.picking_orient_surface()
                 && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())

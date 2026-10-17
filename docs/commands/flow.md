@@ -17,7 +17,7 @@ guide getter. Guides must be separate from the sources. Hidden, locked, deleted,
 or replaced guides invalidate the preview and must be selected again.
 
 Supported options are `Copy`, `Rigid`, `RigidGroups`, `Stretch`,
-`PreserveStructure`, `ReverseBase`, and `ReverseTarget`, with `Yes` / `No` values.
+`PreserveStructure`, `ReverseBase`, `ReverseTarget`, and `Roadlike`, with `Yes` / `No` values.
 Entering an option name alone toggles it during interactive input. Initial
 settings are Copy=Yes, Rigid=No, RigidGroups=Yes, Stretch=No and
 PreserveStructure=No. Successful commands remember deformation settings; Copy
@@ -31,6 +31,7 @@ Flow Base=12 Target=17 Copy=No Stretch=Yes
 Flow BaseEdge=12,0 Target=17 Rigid=Yes RigidGroups=No
 Flow BaseLine=0,0,0;10,0,0 TargetLine=5,3,0;5,23,0 Copy=No
 Flow Line 0,0,0 10,0,0 Target=17 Stretch=Yes
+Flow Base=12 Target=17 Roadlike=Yes BaseUp=0,0,1 TargetUp=0,1,0
 ```
 
 Use the actual IDs from the current document. `BaseEdge` and `TargetEdge` refer
@@ -60,8 +61,22 @@ copied grips unselected. Unselected grips and the source knots, degrees and
 weights remain unchanged. Undo/Redo restores owner geometry and the native
 selection state, including grips picked during the command.
 
+With Roadlike enabled, pick an axis start and direction for each guide after
+selecting both guides. Enter or `CPlaneZ` at either axis prompt uses the active
+construction plane's Z direction as an explicit axis. Standard snapping, world
+and relative point input apply. Enter `BaseUp` or `TargetUp` to pick that axis
+again. Scripted commands require both `BaseUp=x,y,z` and `TargetUp=x,y,z` in
+world coordinates. Preview and commit use the same chosen axes. A new
+interactive command asks for axes again.
+
+Roadlike currently supports straight guides and planar curved guides whose
+axes have a component perpendicular to the curve plane. A straight guide's
+axis must have a component perpendicular to its direction. Unsupported axes
+are rejected before editing. Native Roadlike `Automatic` is still unimplemented;
+the `CPlaneZ` convenience explicitly chooses a direction instead.
+
 The implementation supports straight guides in 3D and planar curved guides.
-General spatial curved guides, Local, Roadlike, Stairlike and
+General spatial curved guides, Local, Stairlike and
 TargetSurface remain unfinished. Unsupported modes fail
 before editing. The kernel exposes a separate mathematical spatial transport
 policy, but the Flow command rejects it because it differs from Rhino.
@@ -86,3 +101,10 @@ commands and four SDK orientation diagnostics. It covers either or both drawn
 guides, mixed supporting planes, rational control/edit grips, rigid curve owners,
 parallel and opposite guides, temporary-guide lifetime and real Undo/Redo.
 All match within `1e-6`; the largest coordinate difference is below `9e-11`.
+
+The [Roadlike validation record](../flow-roadlike-validation.json) adds 40 actual
+native commands covering explicit axes, CPlane-Z presets, mixed planes,
+direction reversals, Copy/Rigid/Stretch, rational grips and full Undo/Redo.
+All match within `1e-6`; maximum coordinate error is below `6e-11`. Twelve
+additional native Automatic/in-plane-axis observations remain visible as
+unsupported diagnostics and are rejected locally before editing.

@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 use viboceros_document::{ControlPointId, CopyGroupPolicy, ReplacementHistory};
 use viboceros_geometry::{BoundingBox3, CurveFlowOptions, CurveFlowPointMorph};
 
-pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No]";
+pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No] [Roadlike=Yes|No] [BaseUp=x,y,z] [TargetUp=x,y,z]";
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub copy: bool,
@@ -14,6 +14,9 @@ pub struct Options {
     pub preserve_structure: bool,
     pub reverse_base: bool,
     pub reverse_target: bool,
+    pub roadlike: bool,
+    pub base_up: Option<Vector3>,
+    pub target_up: Option<Vector3>,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -25,6 +28,9 @@ impl Default for Options {
             preserve_structure: false,
             reverse_base: false,
             reverse_target: false,
+            roadlike: false,
+            base_up: None,
+            target_up: None,
         }
     }
 }
@@ -35,21 +41,46 @@ impl Options {
             preserve_structure: self.preserve_structure,
             reverse_base: self.reverse_base,
             reverse_target: self.reverse_target,
-            ..Default::default()
+            base_up: self.roadlike.then(|| {
+                self.base_up
+                    .unwrap_or(Vector3::try_new(0., 0., 1.).unwrap())
+            }),
+            target_up: self.roadlike.then(|| {
+                self.target_up
+                    .unwrap_or(Vector3::try_new(0., 0., 1.).unwrap())
+            }),
         }
+    }
+    /// Resolve the CPlane Z picker preset into explicit directions.
+    pub fn with_cplane_up(mut self, up: Vector3) -> Self {
+        if self.roadlike {
+            self.base_up.get_or_insert(up);
+            self.target_up.get_or_insert(up);
+        }
+        self
     }
     pub fn arguments(self) -> String {
         let yes = |v| if v { "Yes" } else { "No" };
-        format!(
-            "Copy={} Rigid={} RigidGroups={} Stretch={} PreserveStructure={} ReverseBase={} ReverseTarget={}",
+        let mut arguments = format!(
+            "Copy={} Rigid={} RigidGroups={} Stretch={} PreserveStructure={} ReverseBase={} ReverseTarget={} Roadlike={}",
             yes(self.copy),
             yes(self.rigid),
             yes(self.rigid_groups),
             yes(self.stretch),
             yes(self.preserve_structure),
             yes(self.reverse_base),
-            yes(self.reverse_target)
-        )
+            yes(self.reverse_target),
+            yes(self.roadlike)
+        );
+        if self.roadlike {
+            for (name, up) in [("BaseUp", self.base_up), ("TargetUp", self.target_up)] {
+                if let Some(up) = up {
+                    let value = up.to_array().map(|v| v.to_string()).join(",");
+                    arguments.push_str(&format!(" {name}={value}"));
+                }
+            }
+        }
+        arguments
     }
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -175,8 +206,31 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
                     refs.target = Some(reference.into());
                 }
             }
+            "baseup" | "targetup" => {
+                let up = if value
+                    .trim_start_matches('_')
+                    .eq_ignore_ascii_case("Automatic")
+                {
+                    return Err(CommandError::FlowOptionNotSupported("Roadlike Automatic"));
+                } else {
+                    let (point, count) = parse_point(&[value])?;
+                    if count != 1 {
+                        return Err(CommandError::Usage(USAGE));
+                    }
+                    Some(
+                        Vector3::try_from(point.to_array())?
+                            .normalized_nonzero()?
+                            .as_vector(),
+                    )
+                };
+                if key == "baseup" {
+                    options.base_up = up;
+                } else {
+                    options.target_up = up;
+                }
+            }
             "copy" | "rigid" | "rigidgroups" | "stretch" | "preservestructure" | "reversebase"
-            | "reversetarget" => {
+            | "reversetarget" | "roadlike" => {
                 let value = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
                 match key.as_str() {
                     "copy" => options.copy = value,
@@ -186,14 +240,14 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
                     "preservestructure" => options.preserve_structure = value,
                     "reversebase" => options.reverse_base = value,
                     "reversetarget" => options.reverse_target = value,
+                    "roadlike" => options.roadlike = value,
                     _ => unreachable!(),
                 }
             }
-            "roadlike" | "local" | "stairlike" => {
+            "local" | "stairlike" => {
                 let enabled = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
                 if enabled {
                     return Err(CommandError::FlowOptionNotSupported(match key.as_str() {
-                        "roadlike" => "Roadlike",
                         "local" => "Local",
                         _ => "Stairlike",
                     }));
@@ -227,12 +281,40 @@ pub fn prepare(
     target: impl Into<GuideInput>,
     options: Options,
 ) -> Result<CurveFlowPointMorph, CommandError> {
-    let mut morph = CurveFlowPointMorph::try_new(
-        guide(doc, base.into())?,
-        guide(doc, target.into())?,
-        options.geometry(),
-        doc.tolerance(),
-    )?;
+    let base = guide(doc, base.into())?;
+    let target = guide(doc, target.into())?;
+    // Explicit axes do not yet qualify the spatial curve position lookup.
+    if options.roadlike {
+        if options.base_up.is_none() || options.target_up.is_none() {
+            return Err(CommandError::FlowRoadlikeAxesRequired);
+        }
+        let geometry = options.geometry();
+        for (curve, up) in [
+            (&base, geometry.base_up.unwrap()),
+            (&target, geometry.target_up.unwrap()),
+        ] {
+            let Some(normal) = curve.as_ref().supporting_plane_normal(doc.tolerance())? else {
+                return Err(CommandError::FlowSpatialFramesNotSupported);
+            };
+            let up = up.normalized_nonzero()?;
+            let separation = if curve.as_ref().to_nurbs()?.is_linear_at_zero_tolerance()? {
+                let tangent = curve
+                    .as_ref()
+                    .evaluate_with_tangent(*curve.as_ref().domain().start())?
+                    .tangent();
+                up.as_vector().cross(tangent.as_vector())?.length()?
+            } else {
+                up.as_vector().dot(normal.as_vector())?.abs()
+            };
+            // Native singular-axis behavior is retained as diagnostic evidence,
+            // but is not the meridian-frame policy qualified by this command.
+            if separation <= 64. * Real::EPSILON {
+                return Err(CommandError::FlowRoadlikeAxisNotSupported);
+            }
+        }
+    }
+    let mut morph =
+        CurveFlowPointMorph::try_new(base, target, options.geometry(), doc.tolerance())?;
     if morph.uses_spatial_transport() {
         return Err(CommandError::FlowSpatialFramesNotSupported);
     }
@@ -332,6 +414,8 @@ impl Command for FlowCommand {
     fn remember_flow_options(&self, value: Options) -> bool {
         self.0.set(Options {
             copy: true,
+            base_up: None,
+            target_up: None,
             ..value
         });
         true

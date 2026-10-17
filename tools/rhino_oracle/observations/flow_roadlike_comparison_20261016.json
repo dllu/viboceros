@@ -1,0 +1,1367 @@
+{
+  "cases": 40,
+  "matched_cases": 40,
+  "native_table_enumeration_order_compared": false,
+  "results": [
+    {
+      "id": "road-line-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-2",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-3",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-4",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-5",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-6",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-7",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-8",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-9",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-10",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-line-11",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-12",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-13",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-14",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.9321433342156524e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.9321433342156524e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-15",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.7063687108893646e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.7063687108893646e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-16",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-17",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 7.105427357601002e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 7.105427357601002e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-18",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 7.833733661755105e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 7.833733661755105e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-19",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.9530156098189764e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.9530156098189764e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-20",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-21",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-22",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3873346915715956e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3873346915715956e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-arc-23",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.667644131790439e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.667644131790439e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-grips-8",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-grips-9",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 7.105427357601002e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 7.105427357601002e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-grips-10",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-grips-11",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 7.105427357601002e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 7.105427357601002e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-cplane-12",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-cplane-13",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-cplane-14",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 4.440892098500626e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 4.440892098500626e-16,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-cplane-15",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-2",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-3",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-4",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-5",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-6",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "road-xz-7",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.329070518200751e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    }
+  ]
+}

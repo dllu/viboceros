@@ -38,6 +38,7 @@ pub(super) struct Session {
     base: Option<Guide>,
     target: Option<Guide>,
     line: Option<Role>,
+    axis: Option<Role>,
     morph: Option<Arc<CurveFlowPointMorph>>,
     pick_pointer: Option<(usize, egui::Pos2)>,
     cache: RefCell<crate::viewport::FlowPreviewCache>,
@@ -55,12 +56,27 @@ impl Session {
 }
 impl VibocerosApp {
     pub(super) fn picking_flow_guide(&self) -> bool {
-        self.flow_session
-            .as_ref()
-            .is_some_and(|s| s.line.is_none() && (s.base.is_none() || s.target.is_none()))
+        self.flow_session.as_ref().is_some_and(|s| {
+            s.line.is_none() && s.axis.is_none() && (s.base.is_none() || s.target.is_none())
+        })
     }
     pub(super) fn drawing_flow_line(&self) -> bool {
         self.flow_session.as_ref().is_some_and(|s| s.line.is_some())
+    }
+    pub(super) fn drawing_flow_axis(&self) -> bool {
+        self.flow_session.as_ref().is_some_and(|s| s.axis.is_some())
+    }
+    fn accept_flow_axis(&mut self, up: viboceros_geometry::Vector3) {
+        let s = self.flow_session.as_mut().unwrap();
+        match s.axis.take().unwrap() {
+            Role::Base => s.options.base_up = Some(up),
+            Role::Target => s.options.target_up = Some(up),
+        }
+        self.active_command = Some(InteractiveCommand::Flow { start: None });
+        self.point_filter = None;
+        self.point_constraint = None;
+        self.prepare_flow_preview();
+        self.flow_prompt();
     }
     fn begin_flow_line(&mut self) {
         let s = self.flow_session.as_mut().unwrap();
@@ -73,13 +89,35 @@ impl VibocerosApp {
             return;
         };
         s.line = Some(role);
+        s.axis = None;
         s.morph = None;
         s.pick_pointer = None;
         self.active_command = Some(InteractiveCommand::Flow { start: None });
         self.component_selection.clear_choices();
         self.flow_prompt();
     }
-    pub(super) fn accept_flow_line_point(&mut self, point: Point3) -> Option<bool> {
+    pub(super) fn accept_flow_point(&mut self, point: Point3) -> Option<bool> {
+        if self.drawing_flow_axis() {
+            let Some(InteractiveCommand::Flow { start }) = self.active_command else {
+                return Some(false);
+            };
+            if let Some(start) = start {
+                match start
+                    .vector_to(point)
+                    .and_then(|v| v.normalized(self.document.tolerance()))
+                {
+                    Ok(up) => self.accept_flow_axis(up.as_vector()),
+                    Err(e) => {
+                        self.push_log(format!("Error: {e}"));
+                        return Some(false);
+                    }
+                }
+            } else {
+                self.active_command = Some(InteractiveCommand::Flow { start: Some(point) });
+                self.flow_prompt();
+            }
+            return Some(true);
+        }
         let role = self.flow_session.as_ref()?.line?;
         let Some(InteractiveCommand::Flow { start }) = self.active_command else {
             return Some(false);
@@ -190,6 +228,7 @@ impl VibocerosApp {
             base: None,
             target: None,
             line: None,
+            axis: None,
             morph: None,
             pick_pointer: None,
             cache: RefCell::default(),
@@ -297,6 +336,17 @@ impl VibocerosApp {
         let (Some(a), Some(b)) = (&s.base, &s.target) else {
             return;
         };
+        s.axis = if s.options.roadlike && s.options.base_up.is_none() {
+            Some(Role::Base)
+        } else if s.options.roadlike && s.options.target_up.is_none() {
+            Some(Role::Target)
+        } else {
+            None
+        };
+        if s.axis.is_some() {
+            self.active_command = Some(InteractiveCommand::Flow { start: None });
+            return;
+        }
         match solver::prepare(&self.document, a.input, b.input, s.options) {
             Ok(m) => s.morph = Some(Arc::new(m)),
             Err(e) => self.push_log(format!("Error: {e}")),
@@ -304,7 +354,24 @@ impl VibocerosApp {
     }
     fn flow_prompt(&mut self) {
         let Some(s) = &self.flow_session else { return };
-        let phase = if let Some(role) = s.line {
+        let phase = if let Some(role) = s.axis {
+            let start = matches!(
+                self.active_command,
+                Some(InteractiveCommand::Flow { start: Some(_) })
+            );
+            match (role, start) {
+                (Role::Base, false) => "base Roadlike axis start; Enter or CPlaneZ uses CPlane Z",
+                (Role::Base, true) => {
+                    "base Roadlike axis direction; Enter or CPlaneZ uses CPlane Z"
+                }
+                (Role::Target, false) => {
+                    "target Roadlike axis start; Enter or CPlaneZ uses CPlane Z"
+                }
+                (Role::Target, true) => {
+                    "target Roadlike axis direction; Enter or CPlaneZ uses CPlane Z"
+                }
+            }
+        } else if let Some(role) = s.line {
             let start = matches!(
                 self.active_command,
                 Some(InteractiveCommand::Flow { start: Some(_) })
@@ -346,6 +413,8 @@ impl VibocerosApp {
                 s.target = None;
             }
             s.morph = None;
+            s.axis = None;
+            self.active_command = Some(InteractiveCommand::Flow { start: None });
             self.component_selection.clear_choices();
             self.push_log("Flow guide changed or became unavailable; select it again".into());
             self.flow_prompt();
@@ -361,6 +430,39 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
+        if self.drawing_flow_axis() {
+            if input.is_empty()
+                || word.eq_ignore_ascii_case("Enter")
+                || word.eq_ignore_ascii_case("CPlaneZ")
+            {
+                let up = self.viewports[self.active_viewport]
+                    .construction_plane()
+                    .z_axis()
+                    .as_vector();
+                self.accept_flow_axis(up);
+                return true;
+            }
+            if !word.contains('=')
+                && !matches!(
+                    word.to_ascii_lowercase().as_str(),
+                    "roadlike"
+                        | "baseup"
+                        | "targetup"
+                        | "base"
+                        | "target"
+                        | "line"
+                        | "copy"
+                        | "rigid"
+                        | "rigidgroups"
+                        | "stretch"
+                        | "preservestructure"
+                        | "reversebase"
+                        | "reversetarget"
+                )
+            {
+                return false;
+            }
+        }
         if self.drawing_flow_line() {
             if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
                 self.flow_prompt();
@@ -373,6 +475,19 @@ impl VibocerosApp {
         if word.eq_ignore_ascii_case("Line") {
             self.begin_flow_line();
             return true;
+        }
+        if word.eq_ignore_ascii_case("BaseUp") || word.eq_ignore_ascii_case("TargetUp") {
+            let s = self.flow_session.as_mut().unwrap();
+            if s.options.roadlike && s.base.is_some() && s.target.is_some() {
+                if word.eq_ignore_ascii_case("BaseUp") {
+                    s.options.base_up = None;
+                } else {
+                    s.options.target_up = None;
+                }
+                self.prepare_flow_preview();
+                self.flow_prompt();
+                return true;
+            }
         }
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             let s = self.flow_session.as_ref().unwrap();
@@ -414,7 +529,9 @@ impl VibocerosApp {
                 s.target = None;
             }
             s.morph = None;
+            s.axis = None;
             s.pick_pointer = None;
+            self.active_command = Some(InteractiveCommand::Flow { start: None });
             self.flow_prompt();
             return true;
         }
@@ -458,6 +575,7 @@ impl VibocerosApp {
                 "preservestructure" => Some(prior.preserve_structure),
                 "reversebase" => Some(prior.reverse_base),
                 "reversetarget" => Some(prior.reverse_target),
+                "roadlike" => Some(prior.roadlike),
                 _ => None,
             };
             value
@@ -469,10 +587,15 @@ impl VibocerosApp {
         match solver::options(&args.split_whitespace().collect::<Vec<_>>(), prior) {
             Ok((options, refs)) if refs.base.is_none() && refs.target.is_none() => {
                 self.flow_session.as_mut().unwrap().options = options;
-                if options.geometry() != prior.geometry() {
-                    let same_guides = options.reverse_base == prior.reverse_base
-                        && options.reverse_target == prior.reverse_target
-                        && options.stretch == prior.stretch;
+                if options.geometry() != prior.geometry()
+                    || options.base_up != prior.base_up
+                    || options.target_up != prior.target_up
+                {
+                    let mut prior_geometry = prior.geometry();
+                    prior_geometry.preserve_structure = options.preserve_structure;
+                    let same_guides = prior_geometry == options.geometry()
+                        && options.base_up == prior.base_up
+                        && options.target_up == prior.target_up;
                     let s = self.flow_session.as_mut().unwrap();
                     if same_guides && let Some(morph) = &s.morph {
                         s.morph = Some(Arc::new(

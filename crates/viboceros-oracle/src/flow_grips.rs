@@ -46,6 +46,7 @@ impl Options {
             preserve_structure: self.preserve_structure,
             reverse_base: self.reverse_base,
             reverse_target: self.reverse_target,
+            ..Default::default()
         }
     }
 }

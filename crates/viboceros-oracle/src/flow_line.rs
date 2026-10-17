@@ -72,6 +72,14 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    run_with_options(f, iterations, tolerance, f.options.command())
+}
+pub(super) fn run_with_options(
+    f: &Fixture,
+    iterations: u32,
+    tolerance: Tolerance,
+    options: viboceros_command::flow::Options,
+) -> Result<(Value, u64), ProbeError> {
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let mut doc = Document::new(tolerance);
         let geometry = f.guide_geometries(tolerance)?;
@@ -135,7 +143,7 @@ pub(super) fn run(
                     "Flow {} {} {}{picks}",
                     inputs[0].arguments("Base"),
                     inputs[1].arguments("Target"),
-                    f.options.command().arguments()
+                    options.arguments()
                 ),
             )
             .err()
@@ -191,6 +199,16 @@ mod tests {
                 "../../../tools/rhino_oracle/observations/flow_line_orientation_rhino_20261016.json"
             ),
             24,
+        );
+    }
+    #[test]
+    fn flow_roadlike_matches_native_axes_owners_and_history() {
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_roadlike.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_roadlike_rhino_20261016.json"
+            ),
+            40,
         );
     }
     fn compare_native(request: &str, native: &str, cases: usize) {

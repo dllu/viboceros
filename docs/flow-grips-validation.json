@@ -107,10 +107,8 @@
     "No native preview-appearance or performance parity is claimed. No full workspace-suite claim."
   ],
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "01e7f653a28366374ce7a0d30b6ab0a39c4a1c298c892ce7ca20f9b2781148fd",
     "crates/viboceros-document/src/control_points/morph_tests.rs": "aa509c62a7f14ef4ba6a5577cef72c0e392afd05b63eef404d14f35db83dc15f",
     "crates/viboceros-document/src/control_points/transform.rs": "a5cd0dc55cc755367dd42903b55cf9d384a4bdffde45f5733e832fc13a30a4bd",
-    "crates/viboceros-oracle/src/flow_grips.rs": "faa8646faf8f2b587aeaffa406779e123d6d37645e067b755bc0a71828f8eaaf",
     "docs/orient-surface-grips-validation.json": "fc2b021b05ba2beebbcece6ef77e59d08eeb315b63c5e9f8e265174bb2856f0e",
     "src/app/transform_sources.rs": "9d85f6c5e0693ce766b57b8ed2acfa6d958416779fad8b69d8b7ecc444ad0d42",
     "src/viewport.rs": "8614ca527111fc658f4bc8f051a01276637f21dbedeb930cbb53d93d70cda934",
@@ -145,6 +143,8 @@
     "4a06411e8002e3b355f83dc9ed4f6fb1132e3a44:tools/rhino_oracle/rhino_worker.py": "1679d1f6ebc7ba719bf4d1fda0606ad4a6b9f98d31d069d1be4f5d64958f3a0a",
     "4a06411e8002e3b355f83dc9ed4f6fb1132e3a44:tools/rhino_oracle/structural_sdk.py": "adc064f3cf5cadbb1293aca80a984e17a2499e87085d75201bb920550b7153af",
     "6a2a544fef1a556e3bee48c1508c0e441dac00e0:tools/rhino_oracle/flow_probe.py": "b45f31fe28ae0ef2648dd0283a53dae07234d7e5479a20f458322a91f3e1227e",
-    "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/prepared-curve-length-validation.json": "8af171ab27d6a8d3f819a613d4485d61bcaddffafd99aaae0b10b7030a25a6f2"
+    "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/prepared-curve-length-validation.json": "8af171ab27d6a8d3f819a613d4485d61bcaddffafd99aaae0b10b7030a25a6f2",
+    "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:crates/viboceros-oracle/src/flow_grips.rs": "faa8646faf8f2b587aeaffa406779e123d6d37645e067b755bc0a71828f8eaaf",
+    "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:crates/viboceros-command/src/lib.rs": "01e7f653a28366374ce7a0d30b6ab0a39c4a1c298c892ce7ca20f9b2781148fd"
   }
 }

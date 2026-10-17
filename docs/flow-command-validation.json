@@ -95,7 +95,6 @@
   "sha256": {
     "crates/viboceros-geometry/src/lib.rs": "bfb3ecf8f74de171b3c79366dde9023046fd358df186ebca08a12a06cbd992ca",
     "crates/viboceros-geometry/src/morph.rs": "7ee16896d11ffac109218eb59086d60c7a7182777b0a10e17bf4e8dc6f752bb0",
-    "crates/viboceros-oracle/src/flow.rs": "122979fcaab9c71713949bd2aafadb6c8a691f34fb18a97bee6e0085d452a3af",
     "docs/flow-command-comparison.json": "9d02efddf0a58bbfe07e522d0ff65874a915f4d678832faf5b4ac62a19cd4042",
     "docs/orient-on-curve-edge-validation.json": "25db441cc2810e353d6411f33f70cfb1eb02b2ad981f794adf8cfee0ffad3936",
     "docs/orient-surface-options-validation.json": "32190410a59628febac7e3d2de10589c759731f57cf5ec1d24e558384f58f6be",
@@ -138,6 +137,7 @@
     "329f872a16919c12f94566186d7d2248db675ed1:docs/prepared-curve-length-validation.json": "09a9754dfa2ed58344664b26e1dbeb43277c5eb30c17f27155b0ffa3133c4f07",
     "4a06411e8002e3b355f83dc9ed4f6fb1132e3a44:crates/viboceros-geometry/src/morph/flow.rs": "b47f1f4856d235d7f80fb658ac2f240553f98f9277e56572a9d14d3ce5e48352",
     "4a06411e8002e3b355f83dc9ed4f6fb1132e3a44:src/app.rs": "29c4e3a8eff35093ad452056ac81b102133f0380b90aa62558de1e6edfe5cfde",
-    "6a2a544fef1a556e3bee48c1508c0e441dac00e0:tools/rhino_oracle/flow_probe.py": "b45f31fe28ae0ef2648dd0283a53dae07234d7e5479a20f458322a91f3e1227e"
+    "6a2a544fef1a556e3bee48c1508c0e441dac00e0:tools/rhino_oracle/flow_probe.py": "b45f31fe28ae0ef2648dd0283a53dae07234d7e5479a20f458322a91f3e1227e",
+    "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:crates/viboceros-oracle/src/flow.rs": "122979fcaab9c71713949bd2aafadb6c8a691f34fb18a97bee6e0085d452a3af"
   }
 }

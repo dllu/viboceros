@@ -121,6 +121,7 @@ pub(super) fn run(
                 preserve_structure: f.options.preserve_structure,
                 reverse_base: f.options.reverse_base,
                 reverse_target: f.options.reverse_target,
+                ..Default::default()
             };
             let registry = CommandRegistry::with_builtins();
             let error = registry
