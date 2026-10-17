@@ -1,0 +1,64 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-obtuse",
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          11,
+          2,
+          3
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        2,
+        0
+      ],
+      "end_tangent": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-steep-obtuse",
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          11,
+          2,
+          3
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        -2,
+        1,
+        0
+      ],
+      "end_tangent": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

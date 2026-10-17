@@ -13436,6 +13436,9 @@ def _execute(operation, iterations, tolerance):
         from spiral_layout_probe import run
         return run(operation, globals(), iterations, tolerance)
 
+    if kind == 'catenary_command':
+        from catenary_command_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind in ('helix_command', 'spiral_command'):
         from spiral_command_probe import run
         return run(operation, globals(), iterations, tolerance)
@@ -17479,7 +17482,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op')in('flow_grips','flow_line','flow_roadlike','surface_flow','rectangle','conic_command','parabola_command','hyperbola_command','helix_command','spiral_command') for op in request.get('operations',[])):
+        if not at_idle and any(op.get('op')in('flow_grips','flow_line','flow_roadlike','surface_flow','rectangle','conic_command','parabola_command','hyperbola_command','helix_command','spiral_command','catenary_command') for op in request.get('operations',[])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino,lambda:_main(True))
             return

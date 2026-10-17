@@ -1,0 +1,168 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-catenary4",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        0.52954212880604,
+        0,
+        -0.8482836399575129
+      ],
+      "end_tangent": [
+        0.52954212880604,
+        0,
+        0.8482836399575129
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-diagonal",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        1,
+        0,
+        -1
+      ],
+      "end_tangent": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-near-horizontal",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        1,
+        0,
+        -0.2
+      ],
+      "end_tangent": [
+        1,
+        0,
+        0.2
+      ]
+    },
+    {
+      "op": "catenary",
+      "id": "four-point-a2",
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        10,
+        0,
+        0
+      ],
+      "axis_direction": [
+        0,
+        0,
+        -1
+      ],
+      "construction": {
+        "mode": "parameter",
+        "value": 2
+      },
+      "smooth": true,
+      "point_count": 4
+    },
+    {
+      "op": "catenary",
+      "id": "four-point-a8",
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        10,
+        0,
+        0
+      ],
+      "axis_direction": [
+        0,
+        0,
+        -1
+      ],
+      "construction": {
+        "mode": "parameter",
+        "value": 8
+      },
+      "smooth": true,
+      "point_count": 4
+    },
+    {
+      "op": "catenary",
+      "id": "four-point-oblique",
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        10,
+        0,
+        -2
+      ],
+      "axis_direction": [
+        0,
+        0,
+        -1
+      ],
+      "construction": {
+        "mode": "parameter",
+        "value": 4
+      },
+      "smooth": true,
+      "point_count": 4
+    }
+  ]
+}

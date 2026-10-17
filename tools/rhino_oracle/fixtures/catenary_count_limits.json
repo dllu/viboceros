@@ -1,0 +1,60 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "catenary_command",
+      "id": "catenary-polyline-two",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Parameter",
+        "Output=Polyline",
+        "PointCount=2",
+        "MarkApex=Yes",
+        4
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-smooth-two",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=2",
+        "MarkApex=No",
+        4
+      ]
+    }
+  ]
+}

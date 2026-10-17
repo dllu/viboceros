@@ -342,6 +342,7 @@ pub struct ViewportInput<'a> {
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
     pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
+    pub catenary_input: Option<viboceros_command::catenary_input::Input>,
     pub spiral_input: Option<&'a viboceros_command::spiral_input::Input>,
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
@@ -433,6 +434,7 @@ impl Default for ViewportInput<'_> {
             translation_preview: None,
             affine_preview: None,
             surface_flow_preview: None,
+            catenary_input: None,
             spiral_input: None,
             hyperbola_input: None,
             parabola_input: None,
@@ -2133,6 +2135,41 @@ impl Viewport {
                     && input.taper_preview.is_none()
                     && input.maelstrom_preview.is_none(),
             );
+        }
+        if let Some(getter) = input.catenary_input {
+            self.paint_draft_points(&painter, rect, &getter.markers());
+            if let Some([a, b]) = getter.axis_guide()
+                && let (Some(a), Some(b)) = (
+                    self.project_selection_point(a, rect),
+                    self.project_selection_point(b, rect),
+                )
+                && (b - a).length_sq() > 1e-12
+            {
+                painter.arrow(
+                    a,
+                    (b - a).normalized() * 40.,
+                    Stroke::new(1.5, Color32::from_gray(130)),
+                );
+            }
+            if let Some(preview) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+                let curve = match preview.curve {
+                    viboceros_geometry::CatenaryCurve::Smooth(curve) => Ok(curve),
+                    viboceros_geometry::CatenaryCurve::Polyline(polyline) => polyline.to_nurbs(),
+                };
+                if let Ok(curve) = curve {
+                    let mut projected = ProjectedPrimitives::default();
+                    self.add_projected_nurbs_curve(&mut projected, rect, &curve);
+                    for segment in projected.segments {
+                        painter.line_segment(
+                            segment,
+                            Stroke::new(2., Color32::from_rgb(20, 115, 190)),
+                        );
+                    }
+                }
+                if let Some(apex) = preview.apex {
+                    self.paint_draft_points(&painter, rect, &[apex]);
+                }
+            }
         }
         if let Some(getter) = input.spiral_input {
             self.paint_draft_points(&painter, rect, &getter.markers());

@@ -106,6 +106,7 @@ use interpolation_options::parse_interp_curve_arguments;
 pub use interpolation_options::{
     format_interp_curve_options, parse_interp_curve_options, update_interp_curve_options,
 };
+pub mod catenary_input;
 pub mod hyperbola;
 #[cfg(test)]
 mod hyperbola_tests;
@@ -423,15 +424,14 @@ use viboceros_geometry::{
     MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
     MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
     MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
-    MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
-    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsCurve2,
-    NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real, RectangularSurfaceCorner,
-    RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent, SurfaceExtensionEdge,
-    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves, sort_and_cull_points,
-    try_catenary,
+    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle,
+    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real,
+    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
+    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves,
+    sort_and_cull_points, try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -460,6 +460,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
+        false
+    }
+    fn catenary_options(&self) -> Option<catenary_input::Options> {
+        None
+    }
+    fn remember_catenary_options(&self, _value: catenary_input::Options) -> bool {
         false
     }
     fn spiral_options(&self) -> Option<spiral_input::Options> {
@@ -965,7 +971,7 @@ impl CommandRegistry {
             .register(SpiralCommand::default())
             .expect("unique built-in command");
         registry
-            .register(CatenaryCommand)
+            .register(CatenaryCommand::default())
             .expect("unique built-in command");
         registry
             .register(TruncatedConeCommand)
@@ -2016,6 +2022,17 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn catenary_options(&self) -> catenary_input::Options {
+        self.lookup
+            .get(&normalize_command_name("Catenary"))
+            .and_then(|i| self.commands[*i].catenary_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_catenary_options(&self, value: catenary_input::Options) -> bool {
+        self.lookup
+            .get(&normalize_command_name("Catenary"))
+            .is_some_and(|i| self.commands[*i].remember_catenary_options(value))
+    }
     pub fn spiral_options(&self, kind: spiral_input::Kind) -> spiral_input::Options {
         self.lookup
             .get(&normalize_command_name(kind.name()))
@@ -5157,6 +5174,7 @@ struct SpiralCommandOptions {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct CatenaryCommandOptions {
+    mode: CatenaryMode,
     start: Point3,
     end: Point3,
     axis_direction: Vector3,
@@ -5166,13 +5184,7 @@ struct CatenaryCommandOptions {
     mark_apex: bool,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum CatenaryMode {
-    ThroughPoint,
-    Length,
-    Parameter,
-    Apex,
-}
+use catenary_input::Mode as CatenaryMode;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct PyramidCommandOptions {
@@ -5882,10 +5894,7 @@ fn parse_catenary_options(arguments: &[&str]) -> Result<CatenaryCommandOptions, 
             return Err(CommandError::Usage(CATENARY_USAGE));
         }
     }
-    let minimum = match output {
-        CatenaryOutput::Smooth => MIN_SMOOTH_CATENARY_POINT_COUNT,
-        CatenaryOutput::Polyline => MIN_POLYLINE_CATENARY_POINT_COUNT,
-    };
+    let minimum = MIN_SMOOTH_CATENARY_POINT_COUNT;
     if !(minimum..=MAX_CATENARY_POINT_COUNT).contains(&point_count) {
         return Err(GeometryError::InvalidCatenaryPointCount {
             actual: point_count,
@@ -5906,7 +5915,7 @@ fn parse_catenary_options(arguments: &[&str]) -> Result<CatenaryCommandOptions, 
         CatenaryMode::ThroughPoint => {
             let (point, consumed) = parse_point(constraint_arguments)?;
             require_consumed(constraint_arguments, consumed, CATENARY_USAGE)?;
-            CatenaryConstruction::ThroughPoint(point)
+            catenary_input::picked_constraint(mode, point)
         }
         CatenaryMode::Apex => {
             let (point, consumed) = parse_point(constraint_arguments)?;
@@ -5923,6 +5932,7 @@ fn parse_catenary_options(arguments: &[&str]) -> Result<CatenaryCommandOptions, 
         },
     };
     Ok(CatenaryCommandOptions {
+        mode,
         start,
         end,
         axis_direction: start.vector_to(axis_point)?,
@@ -7222,20 +7232,37 @@ impl Command for SpiralCommand {
     }
 }
 
-struct CatenaryCommand;
+#[derive(Default)]
+struct CatenaryCommand {
+    options: remembered::Remembered<catenary_input::Options>,
+}
 
 impl Command for CatenaryCommand {
+    fn remember_catenary_options(&self, value: catenary_input::Options) -> bool {
+        self.options.set(value);
+        true
+    }
+    fn catenary_options(&self) -> Option<catenary_input::Options> {
+        Some(self.options.get())
+    }
     fn name(&self) -> &'static str {
         "Catenary"
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_catenary_options(arguments)?;
-        let solution = try_catenary(
+        let (axis_direction, construction) = catenary_input::orient_constraint(
             options.start,
             options.end,
             options.axis_direction,
             options.construction,
+            document.tolerance(),
+        )?;
+        let solution = try_catenary(
+            options.start,
+            options.end,
+            axis_direction,
+            construction,
             options.output,
             options.point_count,
             document.tolerance(),
@@ -7258,6 +7285,14 @@ impl Command for CatenaryCommand {
                 "polyline",
             ),
         };
+        self.options.set(catenary_input::Options {
+            mode: options.mode,
+            output: options.output,
+            point_count: options.point_count,
+            mark_apex: options.mark_apex,
+            parameter: Some(parameter),
+            length: Some(length),
+        });
         Ok(format!(
             "Added {representation} catenary {curve_id} (parameter {parameter:.6}, length {length:.6}, {} points){}",
             options.point_count,
@@ -19663,14 +19698,27 @@ mod tests {
         assert!(apex.contains("polyline catenary"));
         registry.execute(&mut document, "Undo").unwrap();
 
+        for command in [
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,2 MarkApex=Yes",
+            "Catenary 0,0,0 10,0,0 0,0,-1 5,0,2 Mode=Apex MarkApex=Yes",
+            "Catenary 0,0,0 10,0,0 0,0,-1 -4 Mode=Parameter MarkApex=Yes",
+            "Catenary 0,0,0 10,0,0 0,0,-1 -14 Mode=Length MarkApex=Yes",
+        ] {
+            registry.execute(&mut document, command).unwrap();
+            let Geometry::Point(apex) = document.objects().next().unwrap().geometry() else {
+                panic!()
+            };
+            assert!(apex.z() > 0., "{command}");
+            registry.execute(&mut document, "Undo").unwrap();
+        }
         for invalid in [
             "Catenary",
             "Catenary 0,0,0 10,0,0 0,0,0 3,0,-2",
             "Catenary 0,0,0 0,0,-10 0,0,-1 4 Mode=Parameter",
             "Catenary 0,0,0 10,0,0 0,0,-1 0 Mode=Parameter",
             "Catenary 0,0,0 10,0,0 0,0,-1 10 Mode=Length",
-            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,1",
-            "Catenary 0,0,0 10,0,0 0,0,-1 5,0,1 Mode=Apex",
+            "Catenary 0,0,0 10,0,0 0,0,-1 10,0,0",
+            "Catenary 0,0,0 10,0,-2 0,0,-1 5,0,-1 Mode=Apex",
             "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 PointCount=3",
             "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 Output=Polyline PointCount=1",
             "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 Mode=Unknown",

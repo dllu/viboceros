@@ -503,16 +503,31 @@ fn interpolate_open_cubic_with_solver<E: From<GeometryError>>(
         Some(tangent) => tangent.normalized_nonzero()?,
         None => automatic_end_tangent(points)?,
     };
+    let handle_scale =
+        |direction: UnitVector3, a: Point3, b: Point3| -> Result<Real, GeometryError> {
+            let length = a.distance_to(b)?;
+            let correction = if points.len() == 2 {
+                // The public two-point cubic interpolator lengthens each handle
+                // by 1 + sin²(angle to chord), with the angle capped at 90°.
+                // Longer point lists retain the
+                // ordinary one-third adjacent-chord rule.
+                let chord = a.vector_to(b)?.normalized_nonzero()?;
+                let cosine = direction.as_vector().dot(chord.as_vector())?.clamp(0., 1.);
+                2. - cosine * cosine
+            } else {
+                1.
+            };
+            Ok((length / 3.) * correction)
+        };
     let start_handle = points[0].translated(
         start_direction
             .as_vector()
-            .scaled(points[0].distance_to(points[1])? / 3.0)?,
+            .scaled(handle_scale(start_direction, points[0], points[1])?)?,
     )?;
-    let end_handle = points[points.len() - 1].translated(
-        end_direction
-            .as_vector()
-            .scaled(-points[points.len() - 2].distance_to(points[points.len() - 1])? / 3.0)?,
-    )?;
+    let last = points.len() - 1;
+    let end_handle = points[last].translated(end_direction.as_vector().scaled(
+        -handle_scale(end_direction, points[last - 1], points[last])?,
+    )?)?;
     // Partition of unity makes the system translation invariant. Solve local
     // offsets so cancellation of a large shared origin cannot dominate the
     // small right-hand sides of tightly clustered interpolation points.
@@ -1513,8 +1528,8 @@ mod tests {
             &cubic,
             &[
                 [0.0, 0.0, 0.0],
-                [0.0, 10.0 / 3.0, 0.0],
-                [10.0, 10.0 / 3.0, 0.0],
+                [0.0, 20.0 / 3.0, 0.0],
+                [10.0, 20.0 / 3.0, 0.0],
                 [10.0, 0.0, 0.0],
             ],
         );

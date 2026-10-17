@@ -1,0 +1,199 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "catenary_command",
+      "id": "catenary-initial-length",
+      "live_getters": true,
+      "actions": [
+        "Mode=Length",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-default-y",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        "Enter",
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        4
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-through-end-pick",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          -2
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          10,
+          0,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-through-start-pick",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          -2
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -3
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          0,
+          0,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-apex-enter",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          -2
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Apex",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-through-opposite-end-enter",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          -2
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -3
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-through-level-end-enter",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    }
+  ]
+}

@@ -149,6 +149,7 @@ mod block_manager;
 mod blocks;
 mod boolean_solids;
 mod boolean_two;
+mod catenary;
 mod conic;
 mod construction_plane;
 mod contour;
@@ -509,6 +510,9 @@ enum InteractiveCommand {
     InterpCrv {
         options: viboceros_geometry::CurveInterpolationOptions,
     },
+    Catenary {
+        anchor: Option<Point3>,
+    },
     Spiral {
         kind: viboceros_command::spiral_input::Kind,
         anchor: Option<Point3>,
@@ -849,6 +853,7 @@ impl InteractiveCommand {
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
             Self::InterpCrv { .. } => "InterpCrv",
+            Self::Catenary { .. } => "Catenary",
             Self::Spiral { kind, .. } => kind.name(),
             Self::Hyperbola { .. } => "Hyperbola",
             Self::Parabola { kind, .. } => kind.name(),
@@ -1231,6 +1236,7 @@ impl InteractiveCommand {
             Self::InterpCrv { .. } => {
                 "InterpCrv: pick curve points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
+            Self::Catenary { .. } => "Catenary: follow the point prompts (Esc cancels)",
             Self::Spiral { .. } => "Helix/Spiral: follow the point prompts (Esc cancels)",
             Self::Hyperbola { .. } => "Hyperbola: follow the point prompts (Esc cancels)",
             Self::Parabola { .. } => "Parabola: follow the point prompts (Esc cancels)",
@@ -1826,6 +1832,7 @@ impl InteractiveCommand {
             | Self::Polyline
             | Self::Curve { .. }
             | Self::InterpCrv { .. }
+            | Self::Catenary { anchor: None }
             | Self::Spiral { anchor: None, .. }
             | Self::Hyperbola { anchor: None }
             | Self::Parabola { anchor: None, .. }
@@ -1924,6 +1931,7 @@ impl InteractiveCommand {
             | Self::CircleTwoPoint { first: start }
             | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
+            | Self::Catenary { anchor: start }
             | Self::Spiral { anchor: start, .. }
             | Self::Hyperbola { anchor: start }
             | Self::Parabola { anchor: start, .. }
@@ -2264,6 +2272,7 @@ pub struct VibocerosApp {
     orient_curve_session: Option<orient_curve::Session>,
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
+    catenary_session: Option<catenary::Session>,
     spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
@@ -2386,6 +2395,7 @@ impl VibocerosApp {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            catenary_session: None,
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
@@ -2514,7 +2524,8 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
-        if self.try_continue_spiral(&input)
+        if self.try_continue_catenary(&input)
+            || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
         {
@@ -3208,6 +3219,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_catenary(input) {
+            return true;
+        }
         if self.try_start_spiral(input) {
             return true;
         }
@@ -5611,6 +5625,7 @@ impl VibocerosApp {
         }
         self.flow_session = None;
         self.surface_flow_session = None;
+        self.catenary_session = None;
         self.spiral_session = None;
         self.hyperbola_session = None;
         self.parabola_session = None;
@@ -5674,6 +5689,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_catenary_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_spiral_point(point) {
             return accepted;
         }
@@ -5734,6 +5752,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Catenary { .. }
             | InteractiveCommand::Spiral { .. }
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
@@ -10082,6 +10101,11 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let viewport_positions = &self.viewport_positions;
+        let catenary_input = self
+            .catenary_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
         let spiral_input = self
             .spiral_session
             .as_ref()
@@ -10241,6 +10265,7 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
+                            catenary_input,
                             spiral_input: spiral_input.as_ref(),
                             hyperbola_input,
                             parabola_input,
@@ -10483,6 +10508,7 @@ mod tests {
     mod boolean_split_topology;
     mod boolean_two;
     mod boolean_union;
+    mod catenary;
     mod chamfer_edge;
     mod circle_fit_grips;
     mod circle_fit_points;
@@ -10682,6 +10708,7 @@ mod tests {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            catenary_session: None,
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,

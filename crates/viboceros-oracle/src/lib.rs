@@ -146,7 +146,9 @@ pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
+mod catenary_command;
 mod conic;
+pub use catenary_command::{Action as CatenaryCommandAction, Fixture as CatenaryCommandFixture};
 mod spiral_command;
 pub use spiral_command::{Action as SpiralCommandAction, Fixture as SpiralCommandFixture};
 mod hyperbola;
@@ -1742,6 +1744,11 @@ pub enum Operation {
         id: String,
         turns: f64,
     },
+    CatenaryCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: CatenaryCommandFixture,
+    },
     HelixCommand {
         id: String,
         #[serde(flatten)]
@@ -2843,6 +2850,7 @@ impl Operation {
             | Self::OrientSurfaceGrips { id, .. }
             | Self::FlowGrips { id, .. }
             | Self::SpiralLayout { id, .. }
+            | Self::CatenaryCommand { id, .. }
             | Self::HelixCommand { id, .. }
             | Self::SpiralCommand { id, .. }
             | Self::HyperbolaCommand { id, .. }
@@ -6098,6 +6106,9 @@ fn execute(
                 json!({"degree":c.degree(),"control_count":c.control_points().len(),"full_knot_count":c.knots().len()}),
                 elapsed,
             )
+        }
+        Operation::CatenaryCommand { fixture, .. } => {
+            catenary_command::run(fixture, iterations, tolerance)?
         }
         Operation::HelixCommand { fixture, .. } => spiral_command::run(
             fixture,

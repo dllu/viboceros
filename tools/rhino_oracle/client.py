@@ -463,6 +463,15 @@ class OracleClient:
             for op in request['operations']:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
+        if any(op.get('op') == 'catenary_command' for op in request.get('operations', [])):
+            from .catenary_command_probe import validate
+            operations = request['operations']
+            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1 or any(op.get('op') != 'catenary_command' for op in operations):
+                raise OracleProtocolError('Catenary getters require a private dedicated one-iteration request')
+            if not 1 <= len(operations) <= 64 or len({op.get('id') for op in operations}) != len(operations):
+                raise OracleProtocolError('Catenary getters require one through 64 uniquely named cases')
+            for operation in operations:
+                validate(operation)
         interaction = None
         if any(op.get('op')in('helix_command','spiral_command') and op.get('live_getters') for op in request.get('operations',[])):
             operations=request.get('operations',[])

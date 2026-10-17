@@ -1,0 +1,117 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-asymmetric",
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          11,
+          2,
+          3
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        1,
+        2,
+        3
+      ],
+      "end_tangent": [
+        4,
+        -1,
+        0
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-perpendicular",
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          11,
+          2,
+          3
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        0,
+        1,
+        0
+      ],
+      "end_tangent": [
+        0,
+        -1,
+        0
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-one-tangent",
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          11,
+          2,
+          3
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "two-tangent-reverse-chord",
+      "points": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          11,
+          2,
+          3
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        0,
+        0
+      ],
+      "end_tangent": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

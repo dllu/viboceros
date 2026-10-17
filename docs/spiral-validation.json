@@ -378,7 +378,6 @@
     "tools/rhino_oracle/observations/spiral_layout_rhino_20261017.json": "a4a074a1a27c7aef9e71819bbea2e502e01b57a5df898460b9fae05cc509ef79",
     "tools/rhino_oracle/observations/spiral_preferences_rhino_20261017.json": "10b07d6afcda340ad98418cddd2aeade13456bb6eff233a639ae9f0f8b72027e",
     "tools/rhino_oracle/observations/spiral_sampling_rhino_20261017.json": "40d2c9daeaba0590c736458f3c832542f407243761b18c0fcf9dfef36df8b1c9",
-    "tools/rhino_oracle/rhino_worker.py": "5f69ab4c49f59805ebf7fa6ae80659619a0445ecf85a12fb4b1a019a6e3eeb74",
     "tools/rhino_oracle/spiral_layout_probe.py": "f577e54e3f110eaaba0614598f3becb5bcc1f371060060aab95915ef1e676726"
   },
   "git_sha256": {
@@ -400,6 +399,7 @@
     "a4402e1b94914750c780147a340edcd895806a1d:tools/rhino_oracle/spiral_command_probe.py": "750aa14c667ceb7cb4acd4e08d5a1c785cf76f561cffdffc026e737b051f8297",
     "a4402e1b94914750c780147a340edcd895806a1d:tools/rhino_oracle/structural_sdk.py": "4d067d0ca59f42b90af57e56ad14be53aaf40acb12ec0c07405658ecc8da3def",
     "a4402e1b94914750c780147a340edcd895806a1d:tools/rhino_oracle/test_spiral_command.py": "bfa8909e46f8b1a26d2d3f951bd5a0a579d0cbc136d44ff5cf5e05200e45be6b",
-    "a4402e1b94914750c780147a340edcd895806a1d:docs/hyperbola-validation.json": "ff50b6d615b8c1f58cdfdda6e2ff986dd19c342bb77ec7e90beee8150806f18a"
+    "a4402e1b94914750c780147a340edcd895806a1d:docs/hyperbola-validation.json": "ff50b6d615b8c1f58cdfdda6e2ff986dd19c342bb77ec7e90beee8150806f18a",
+    "e343832fbbfb0757da7b1092802396790c6e1670:tools/rhino_oracle/rhino_worker.py": "5f69ab4c49f59805ebf7fa6ae80659619a0445ecf85a12fb4b1a019a6e3eeb74"
   }
 }

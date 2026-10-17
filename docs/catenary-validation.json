@@ -1,0 +1,487 @@
+{
+  "feature": "Interactive Catenary and measured two-point cubic tangent handles",
+  "date": "2026-10-17",
+  "source_base_commit": "e343832fbbfb0757da7b1092802396790c6e1670",
+  "native_engine": "rhino",
+  "native_engine_version": "8.32.26160.13001",
+  "summary": {
+    "successful_native_getter_workflows": 36,
+    "qualified_getter_workflows_within_1e_6": 36,
+    "additional_sdk_interpolation_cases": 9,
+    "additional_minimum_catenary_cases": 3,
+    "native_cancel_or_failure_diagnostics": 7,
+    "native_ignored_count_diagnostics": 2,
+    "legacy_constructor_regressions": 9
+  },
+  "command_absolute_epsilon": 1e-06,
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_command.json",
+      "observation": "tools/rhino_oracle/observations/catenary_command_rhino_20261017.json",
+      "rows": 9,
+      "comparison": "Full geometry, markers, selection, lengths and actual Undo/Redo at absolute epsilon 1e-6; replayed through command and frontend inputs."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_preferences.json",
+      "observation": "tools/rhino_oracle/observations/catenary_preferences_rhino_20261017.json",
+      "rows": 8,
+      "comparison": "Full geometry, markers, selection, lengths and actual Undo/Redo at absolute epsilon 1e-6; replayed through command and frontend inputs."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_directions.json",
+      "observation": "tools/rhino_oracle/observations/catenary_directions_rhino_20261017.json",
+      "rows": 11,
+      "comparison": "Full geometry, markers, selection, lengths and actual Undo/Redo at absolute epsilon 1e-6; replayed through command and frontend inputs."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_final.json",
+      "observation": "tools/rhino_oracle/observations/catenary_final_rhino_20261017.json",
+      "rows": 8,
+      "comparison": "Full geometry, markers, selection, lengths and actual Undo/Redo at absolute epsilon 1e-6; replayed through command and frontend inputs."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_rejections.json",
+      "observation": "tools/rhino_oracle/observations/catenary_rejections_rhino_20261017.json",
+      "rows": 7,
+      "comparison": "Clean native Cancel/Failure outcomes with complete input receipts and no model output; local retries/cancellation tested separately."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_count_limits.json",
+      "observation": "tools/rhino_oracle/observations/catenary_count_limits_rhino_20261017.json",
+      "rows": 2,
+      "comparison": "Native PointCount=2 is ignored and the retained four-point setting is used; local invalid count retries preserve input."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_low_count.json",
+      "observation": "tools/rhino_oracle/observations/catenary_low_count_rhino_20261017.json",
+      "rows": 6,
+      "comparison": "Three public two-point interpolation cases and three minimum-count catenary constructors, full control layouts at 1e-6."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_tangent_confirm.json",
+      "observation": "tools/rhino_oracle/observations/catenary_tangent_confirm_rhino_20261017.json",
+      "rows": 4,
+      "comparison": "Asymmetric, perpendicular, one-sided and reversed-chord two-point SDK interpolation, full controls at 1e-6."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary_negative_tangents.json",
+      "observation": "tools/rhino_oracle/observations/catenary_negative_tangents_rhino_20261017.json",
+      "rows": 2,
+      "comparison": "Obtuse tangent SDK controls verify the 90-degree cap on handle scaling, at 1e-6."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/catenary.json",
+      "observation": "tools/rhino_oracle/observations/catenary_legacy_rhino_20261017.json",
+      "rows": 9,
+      "comparison": "Fresh recapture of the previous nine constructor cases; complete local values at 1e-6, measured point distance below 2e-10."
+    }
+  ],
+  "qualifications": [
+    "Shared edit-free getters, live curve/apex previews, one model transaction and original geometry constructors",
+    "All four modes, signed numeric constraints, scalar picks measuring distance from start and sag-side selection; through-point side selection uses the endpoint chord",
+    "Default axis follows initial CPlane negative Y; relative axis/numeric-point bases use start, through/apex getters use last accepted point; tilted CPlanes and off-plane projection are captured",
+    "Both length and parameter remembered across all successful modes, numeric Enter defaults, separate Mode/PointCount getters, output and marker toggles",
+    "Minimum smooth four-control output and general two-point interpolation share corrected 1+sin\u00b2(angle) handle scaling, capped at 90 degrees; asymmetric and obtuse SDK controls verify the rule",
+    "Full controls, weights, knots, domains, lengths, apex output ordering, selection and actual history compared for all 36 getter workflows",
+    "Fresh capture/replay of all nine previous catenary constructor fixtures; previews/retries/cancellation, unit input and command interruption have local regressions"
+  ],
+  "native_capture_provenance": [
+    {
+      "scheme": "VibocerosOracleCatenaryFirst20261017",
+      "purpose": "Five complete getter workflows establishing four modes, marker order and the default axis."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryGetters20261017",
+      "purpose": "Four successful workflows retained in the main profile; fresh numeric-default cancellation and clean failures retained separately; incomplete distance-pick guesses excluded."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryPreferences20261017",
+      "purpose": "Eight qualified scalar-pick, remembered-value and minimum-count workflows; endpoint failure, apex cancellation and two ignored count values retained separately."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryDirections20261017",
+      "purpose": "Eleven successful signed, side-picked and relative-coordinate workflows; two unavailable Enter completions cancel without output."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryFinal20261017",
+      "purpose": "Eight fresh-default, chord-side, off-plane, tilted-relative and polyline workflows."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryLowCount20261017",
+      "purpose": "Public SDK two-point interpolation and minimum-count catenary constructors expose the shared handle rule."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryTangentConfirm20261017",
+      "purpose": "Four asymmetric, perpendicular, one-tangent and backward-tangent SDK inputs."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryNegativeTangents20261017",
+      "purpose": "Two additional obtuse-angle SDK controls confirm the handle correction cap."
+    },
+    {
+      "scheme": "VibocerosOracleCatenaryLegacyRegression20261017",
+      "purpose": "Fresh public command capture of the previous nine constructor fixtures."
+    }
+  ],
+  "metric_policy": "All 36 native getter snapshots and twelve public SDK/constructor control layouts compare at absolute 1e-6. The seven failed/cancelled native recipes and two ignored count inputs are separate behavior diagnostics, not successful shape qualifications. The prior nine constructors were recaptured and compared in full; maximum point distance is recorded below. No performance or exhaustive mouse/snap claim is made.",
+  "legacy_comparison": {
+    "cases": 9,
+    "absolute_epsilon": 1e-06,
+    "maximum_scalar_difference": 1.9544543761185196e-10,
+    "maximum_point_distance": 1.9247455734193777e-10,
+    "native_engine": "rhino",
+    "native_engine_version": "8.32.26160.13001",
+    "local_command": [
+      "cargo",
+      "run",
+      "-p",
+      "viboceros-oracle",
+      "--",
+      "tools/rhino_oracle/fixtures/catenary.json",
+      "/tmp/viboceros-catenary-legacy-local.json"
+    ]
+  },
+  "unqualified": [
+    "Endpoint-snap-specific apex completion is not implemented; the Enter path is qualified",
+    "Exhaustive physical mouse/snap behavior and point-getter shortcuts beyond the fixtures",
+    "Native preference changes on cancellation; local preferences save after success",
+    "Extreme parameter ranges and full native command error/termination parity; local invalid getters allow retries",
+    "Performance parity with Rhino"
+  ],
+  "tests": [
+    {
+      "name": "catenary",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros",
+        "catenary"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 49.42,
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1347 filtered out; finished in 0.13s",
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1479 filtered out; finished in 0.03s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 2364 filtered out; finished in 0.02s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 552 filtered out; finished in 0.24s"
+      ],
+      "log_sha256": "7eed2f95929dda90ca9fa589171c39ebaa6a3bd71a13274f4d2209602d41c66d"
+    },
+    {
+      "name": "interpolation",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "interpolation"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 56.95,
+      "test_results": [
+        "test result: ok. 48 passed; 0 failed; 0 ignored; 0 measured; 2322 filtered out; finished in 15.55s"
+      ],
+      "log_sha256": "d7124a0c6b92db9b44bc6402b479cd059e32f17dad3ff3330776645dcbccfa25"
+    },
+    {
+      "name": "interp-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "interp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 125.23,
+      "test_results": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1477 filtered out; finished in 0.02s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 552 filtered out; finished in 32.43s"
+      ],
+      "log_sha256": "591e65dbabfdcfd862c1f990540811368e423b42e387dea581d59566fdbb07b8"
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.0,
+      "test_results": [
+        "test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 1288 filtered out; finished in 0.28s"
+      ],
+      "log_sha256": "4cd48858a63ea5ff7f04ddfec3d77accc73cb9d45b37c2fc18ca2c0277f3e981"
+    },
+    {
+      "name": "spiral",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "spiral"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.41,
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1343 filtered out; finished in 0.54s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1476 filtered out; finished in 0.05s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 548 filtered out; finished in 4.11s"
+      ],
+      "log_sha256": "786659a954bf968989c7d7817693f13b7b1f51c8b6fb4f5b5de8b2f21f4033eb"
+    },
+    {
+      "name": "conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "conic"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.78,
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 0.16s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1472 filtered out; finished in 0.07s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 548 filtered out; finished in 9.19s"
+      ],
+      "log_sha256": "0e0fed65672e4a92d75e8423e649b097f0ccb154b9ab8647d339270365e1684b"
+    },
+    {
+      "name": "rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.84,
+      "test_results": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1330 filtered out; finished in 0.18s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1476 filtered out; finished in 2.58s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 551 filtered out; finished in 5.72s"
+      ],
+      "log_sha256": "a564fdde30932a83e4f23092a72ee950406f571885a77d852ae5de8ce0279e62"
+    },
+    {
+      "name": "parabola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "parabola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.55,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1346 filtered out; finished in 0.05s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1481 filtered out; finished in 0.01s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 551 filtered out; finished in 0.09s"
+      ],
+      "log_sha256": "e23125849ef1cd5755fa195bd82e4895a249982cc0ef06bc2b701cfea67494db"
+    },
+    {
+      "name": "hyperbola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "hyperbola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.71,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1345 filtered out; finished in 0.07s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1481 filtered out; finished in 0.03s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 550 filtered out; finished in 0.26s"
+      ],
+      "log_sha256": "a9c33c8b01ed282fd9eac57288f832039e7106afd63679223574249b5ea3783b"
+    },
+    {
+      "name": "native-catenary",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "catenary"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 93.79,
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1555 filtered out; finished in 0.03s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 573 filtered out; finished in 0.21s"
+      ],
+      "log_sha256": "bed94a292da014c9acea9482037aadb594fef5e2495f20ed45b35e5306b6eeeb"
+    },
+    {
+      "name": "native-interp",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "interp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 32.97,
+      "test_results": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1553 filtered out; finished in 0.01s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 573 filtered out; finished in 32.56s"
+      ],
+      "log_sha256": "7f32e6a0813b39514bd94d079d17b82fca8a9a52a7aadd1c58f69dfe3ab19b37"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 55.09,
+      "test_results": [],
+      "log_sha256": "8bfd12c55d0cca36b05ff2f61fc94cf12c849e1d0fb4942f85ca43a5c6ea3d1b"
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.58,
+      "test_results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_catenary_command",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5,
+      "test_results": [
+        "Ran 29 tests in 0.362s"
+      ],
+      "log_sha256": "89e824ebcd1e9ee74a6f117ba709f812655e98e71b017c1145b2c4610c368a5d"
+    }
+  ],
+  "historical_provenance": {
+    "records": [
+      "docs/spiral-around-validation.json",
+      "docs/spiral-validation.json"
+    ],
+    "archived_source_entries": 13,
+    "preexisting_unverifiable_records_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "9577547cdeb61a0f419910bf3be58e10aae9d3f93415473b3489efd3d741b7dc",
+    "crates/viboceros-command/src/catenary_input.rs": "d0dcf1e08d7f177e75ff0c20e94b7762b8d24b9624f2c861d1d9e6188c87fc4f",
+    "crates/viboceros-command/src/catenary_input/tests.rs": "535a1e50de269a283fd1594b2d10750cc184c25c8e50420a6b233af28fe410df",
+    "crates/viboceros-command/src/lib.rs": "38c3bfb9e196a7164d541be1d0b6559949ba45a6f868fb8eb35cf9cd84b67457",
+    "crates/viboceros-geometry/src/interpolation.rs": "3b0b8efeab01536f7667c9c5c3a1ff4e1d62fdb6c6eae896e364df6f342a0c81",
+    "crates/viboceros-oracle/src/catenary_command.rs": "3f517d0e6769fd50fff94a7a532b0f7b3749c9ed208fe0be603e95fb5f0c0678",
+    "crates/viboceros-oracle/src/lib.rs": "8f548394deb6eb22470487e9c979d9fc9f85a0e6752ee1b735aaba86aa2b6318",
+    "docs/commands/catenary.md": "094e78b928bf19d41839f62789cf68031bc031751f0b76c504e8285be19b92c4",
+    "docs/commands/curves.md": "b3577f4080bb5ee94b6ca05a48f21d518281d2e145df42cbdbb1971f5e80673c",
+    "docs/spiral-around-validation.json": "f800962dfade6101bd2fef50ea721d806ddaa30b649d5ab23b1eee1c0fd2105b",
+    "docs/spiral-validation.json": "c2e89689564fa02c67d3e5892865b71cb5afcf5236c17a126a18a5c5123b946d",
+    "src/app.rs": "1536566403aee633f1743e04cce84d55cb163e04366a9585c14f6358ccc611f0",
+    "src/app/catenary.rs": "b8962633614da8c0449b8e979586f2f222f4ec7e94f53c2bf2d5bf49c10a6c85",
+    "src/app/point_input.rs": "2ca3d6814bf83bbbe4a1943277f68a2d9c94d3ad31c20e7631a9b2237e8f74a3",
+    "src/app/tests/catenary.rs": "d17ec22b6a8ec31baf2eed1f2bf5e7a00f4ef76b749704986eb609ad08a95e48",
+    "src/viewport.rs": "5bf6d7edae1b8eec44bdc2d1e9f2d11916e63885f6d11e878de181c1ce868d0d",
+    "tools/rhino_oracle/catenary_command_probe.py": "e7609959ad3feb5abb794d3a075a9b0c2fb700c2868a66bc9b8d04936a25b62e",
+    "tools/rhino_oracle/client.py": "4d0717690faf794f910d1027fa763491b5e8b27a8581defa19feee637ddc13ff",
+    "tools/rhino_oracle/conic_getter_input.py": "e7a81e0ebd7f20a4e89a47bea2c010917270f436eb9e40bce9bf9567b184d75a",
+    "tools/rhino_oracle/fixtures/catenary_command.json": "cf860f686824ced108c4d359b215a46d8e27c4ae0945ec77a0f65ae8bfd951f0",
+    "tools/rhino_oracle/fixtures/catenary_count_limits.json": "d18fe6c6a14f8b8f6649bea96cd875a5971401ed2f18864010fa6ab4a1795afe",
+    "tools/rhino_oracle/fixtures/catenary_directions.json": "e68549d859f9feea041b3c253c4c83e8a722501a54775c18cac725024aa5c12a",
+    "tools/rhino_oracle/fixtures/catenary_final.json": "c3d9fb542420e3a8217284023f74f7c60108165fe1e300c7f2c2af661ffdf265",
+    "tools/rhino_oracle/fixtures/catenary_low_count.json": "06ef75a85a305d25a6fec683f2ec65fc5cce96bd5c7840cd774e58e670d4c7f1",
+    "tools/rhino_oracle/fixtures/catenary_negative_tangents.json": "1e0431d7689d226724ab254b82af85937e37cc124fbbea945f2958a92f199359",
+    "tools/rhino_oracle/fixtures/catenary_preferences.json": "95aea75c2fdef568422b218ccab3b29e6d2fc33f2b6c6430cf4d7b3bb4c926e0",
+    "tools/rhino_oracle/fixtures/catenary_rejections.json": "26999adf2d7579160f20088c1736513444556aa168ab4cab8d4cd6a8cbe3b363",
+    "tools/rhino_oracle/fixtures/catenary_tangent_confirm.json": "5d96f05b3c02ebf7363cbc8e34b9b3f359ba2130f1b3e19edd2af152b975b50f",
+    "tools/rhino_oracle/observations/catenary_command_rhino_20261017.json": "6015bdcfb0c721ec3866d07663462a8cdfce4ed3c8e91536e08d363afd18fe70",
+    "tools/rhino_oracle/observations/catenary_count_limits_rhino_20261017.json": "d10819414489d1cb8bc744be2e42146cf726c35341aad84b11552e5b8ba3af6e",
+    "tools/rhino_oracle/observations/catenary_directions_rhino_20261017.json": "2a8a4954011b75c93fef6ecc9ed7ecdcf153cf42d2c8b41485456145da0ba931",
+    "tools/rhino_oracle/observations/catenary_final_rhino_20261017.json": "53e0ec05b418cf359a40a58a1ac714edff441440259a595e405898dc345f13bd",
+    "tools/rhino_oracle/observations/catenary_legacy_rhino_20261017.json": "d482d8ef5e02ce5812233a5ceec35a09999a87d1a36d1e772982aa8eb7b35c91",
+    "tools/rhino_oracle/observations/catenary_low_count_rhino_20261017.json": "052f7d0ba9827d0cda656da68af1f66bdbc7d196648f2a30ccfc87eef8586ffa",
+    "tools/rhino_oracle/observations/catenary_negative_tangents_rhino_20261017.json": "d1151080944628ab8337edc8692d5d59b97750c9fd8bbd99c342bfaa736f7619",
+    "tools/rhino_oracle/observations/catenary_preferences_rhino_20261017.json": "b8296c847482e2729376160517fa62428adef854ed8d556da1643f649cb04635",
+    "tools/rhino_oracle/observations/catenary_rejections_rhino_20261017.json": "e8189d4965bf1371b0d4c2a335fc09da884caadd6da3f9644a6dacbb0bf29aef",
+    "tools/rhino_oracle/observations/catenary_tangent_confirm_rhino_20261017.json": "036ce03e3dbbb12d300dfe4a086bf5507ea7b53ee3895c688d2b756b46166d2f",
+    "tools/rhino_oracle/rhino_worker.py": "3c8ea64c4ec9bbeeafb8ef9a40b95b8e6cad0712ba273fe8dc88caea8e33411c",
+    "tools/rhino_oracle/structural_sdk.py": "e29e4f57c65b56f9792bc564aa8e0ff63fc9b786ca65c84088eeae35401fa7ea",
+    "tools/rhino_oracle/test_catenary_command.py": "73d153ae7d09c4c3740869968fca82648e7c4fecde6115c0c1b283000e28babb"
+  },
+  "reference_sha256": {
+    "tools/rhino_oracle/fixtures/catenary.json": "7de488a83ac29837de3adfafc400f48f0ac10db7d5809102470b43aa82ad45fb"
+  }
+}

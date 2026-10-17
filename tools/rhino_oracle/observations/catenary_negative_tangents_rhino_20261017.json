@@ -1,0 +1,122 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 8178711,
+      "id": "two-tangent-obtuse",
+      "value": {
+        "closed": false,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -1.9814239699997196,
+              7.962847939999439,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.666666666666666,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              11.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          10.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0
+        ],
+        "periodic": false
+      }
+    },
+    {
+      "elapsed_ns": 1945496,
+      "id": "two-tangent-steep-obtuse",
+      "value": {
+        "closed": false,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -4.962847939999439,
+              4.981423969999719,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7.666666666666666,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              11.0,
+              2.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          0.0,
+          10.0
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          10.0,
+          10.0,
+          10.0,
+          10.0
+        ],
+        "periodic": false
+      }
+    }
+  ]
+}

@@ -242,16 +242,20 @@ radius/turn-count limits remain recorded separately. See the
 [axial validation](../spiral-validation.json) and
 [AroundCurve validation](../spiral-around-validation.json) for exact coverage.
 
-`Catenary` constructs the physical hanging-chain curve from a through point,
-analytic length, catenary parameter, or apex height. The third point fixes the
-gravity direction from the start point. `Output=Smooth` creates Rhino's
-chord-parameterized cubic approximation with exact analytic endpoint tangents;
-`Output=Polyline` samples uniform horizontal stations. Both use 20 points by
-default, accept `PointCount=`, and can add the exact analytic apex with
-`MarkApex=Yes`. Overflow-safe hyperbolic evaluation and bounded root solvers
-cover asymmetric and arbitrarily oriented endpoint frames. All nine permanent
-smooth/polyline oracle cases agree with Rhino within `2e-8` (the observed
-maximum difference is below `2e-10`).
+`Catenary` constructs a hanging-chain approximation from a through point,
+analytic length, parameter, or apex height. It now supports [interactive
+getters and live previews](catenary.md), including the CPlane default axis,
+signed constraints, picked sag sides, relative coordinates and remembered
+length/parameter values across all four modes. `Output=Smooth|Polyline`,
+`PointCount=` (4 through 258) and `MarkApex=Yes|No` select the representation and
+optional analytic apex point. Completion creates one undo entry.
+
+Smooth output interpolates uniform horizontal stations with exact analytic end
+tangent directions. The four-control minimum uses the measured two-point cubic
+handle correction. Polyline output directly samples the requested vertex count.
+The [validation record](../catenary-validation.json) qualifies 36 native getter
+workflows at `1e-6`, plus twelve public SDK/constructor checks of the minimum
+count and tangent rule. Nine earlier cases remain regression inputs.
 
 ## Division, closure, and seams
 

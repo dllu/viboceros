@@ -1,0 +1,782 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-initial-length",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No ): _Mode=Length\nStart of catenary ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No ): w0.0,0.0,0.0\nEnd of catenary ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No ): w10.0,0.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No ): w0.0,0.0,-1.0\nCatenary length ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No ): _Output=Smooth\nCatenary length ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No ): _PointCount=8\nCatenary length ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=No ): _MarkApex=Yes\nCatenary length ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nCatenary length ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Start of catenary ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+            "End of catenary ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Catenary axis direction. Press Enter for default ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Catenary length ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Catenary length ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+            "Catenary length ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=No )",
+            "Catenary length ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "_Mode=Length"
+            },
+            {
+              "action": 1,
+              "prompt": "Start of catenary ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "End of catenary ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "w10.0,0.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "w0.0,0.0,-1.0"
+            },
+            {
+              "action": 4,
+              "prompt": "Catenary length ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Catenary length ( Mode=Length  Output=Smooth  PointCount=20  MarkApex=No )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Catenary length ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=No )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Catenary length ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-default-y",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,10.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nCatenary axis direction. Press Enter for default ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )\nCatenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=Parameter\nCatenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nCatenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nCatenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nCatenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes ): 4.0",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,10.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            },
+            {
+              "action": 3,
+              "prompt": "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=Parameter"
+            },
+            {
+              "action": 4,
+              "prompt": "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Catenary parameter <4> ( Mode=Parameter  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "4.0"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-through-end-pick",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,-2.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-1.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,-2.0",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,-2.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-1.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,-2.0"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-through-start-pick",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-2.0\nEnd of catenary ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-3.0\nCatenary length <12.815> ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-2.0",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary length <12.815> ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-2.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-3.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Catenary length <12.815> ( Mode=Length  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-2.0"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-apex-enter",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,-2.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-1.0\nPoint on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=Apex\nCatenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nCatenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nCatenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nCatenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nCatenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,-2.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-1.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary. Press Enter to end at apex ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=Apex"
+            },
+            {
+              "action": 4,
+              "prompt": "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-through-opposite-end-enter",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-2.0\nEnd of catenary ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-3.0\nCatenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-2.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-3.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Catenary apex ( Mode=Apex  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "catenary-through-level-end-enter",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Catenary",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Catenary\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Pause\nStart of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,0.0\nEnd of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w10.0,0.0,0.0\nCatenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): w0.0,0.0,-1.0\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Mode=ThroughPoint\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Output=Smooth\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _PointCount=8\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _MarkApex=Yes\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes ): _Enter\nPoint on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+        "input_trace": {
+          "completed": 8,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 8,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+            "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "End of catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w10.0,0.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Catenary axis direction. Press Enter for default ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "w0.0,0.0,-1.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Mode=ThroughPoint"
+            },
+            {
+              "action": 4,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Output=Smooth"
+            },
+            {
+              "action": 5,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_PointCount=8"
+            },
+            {
+              "action": 6,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_MarkApex=Yes"
+            },
+            {
+              "action": 7,
+              "prompt": "Point on catenary ( Mode=ThroughPoint  Output=Smooth  PointCount=8  MarkApex=Yes )",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Catenary _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

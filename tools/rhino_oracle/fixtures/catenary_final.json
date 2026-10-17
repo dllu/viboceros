@@ -1,0 +1,284 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "catenary_command",
+      "id": "catenary-initial-defaults",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        [
+          3,
+          0,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-through-opposite-chord",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          -10
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          3,
+          0,
+          -1
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-scalar-oblique-side",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          -10
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          3,
+          0,
+          -1
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-through-off-plane",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          3,
+          5,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-apex-off-plane",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Apex",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          2,
+          5,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-relative-tilted-through",
+      "live_getters": true,
+      "actions": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          12,
+          3
+        ],
+        [
+          1,
+          2,
+          2
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "relative": [
+            3,
+            -2,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          20,
+          30
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-relative-tilted-parameter",
+      "live_getters": true,
+      "actions": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          12,
+          3
+        ],
+        [
+          1,
+          2,
+          2
+        ],
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        {
+          "relative": [
+            4,
+            0,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          10,
+          20,
+          30
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-default-polyline",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Parameter",
+        "Output=Polyline",
+        "PointCount=20",
+        "MarkApex=No",
+        4
+      ]
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "catenary_command",
+      "id": "catenary-first-throughpoint",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          3,
+          0,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-first-length",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Length",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        14
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-first-parameter",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        4
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-first-apex",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=Apex",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        [
+          5,
+          0,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-default-axis",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        "Enter",
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        4
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-default-oblique",
+      "live_getters": true,
+      "actions": [
+        [
+          1,
+          2,
+          0
+        ],
+        [
+          11,
+          7,
+          0
+        ],
+        "Enter",
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        4
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-default-rotated",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        "Enter",
+        "Mode=Parameter",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        4
+      ],
+      "construction_plane": [
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-through-end-enter",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          -2
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Mode=ThroughPoint",
+        "Output=Smooth",
+        "PointCount=8",
+        "MarkApex=Yes",
+        "Enter"
+      ]
+    },
+    {
+      "op": "catenary_command",
+      "id": "catenary-bare-getters",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ],
+        "Output=Smooth",
+        "MarkApex=No",
+        "Mode",
+        "Parameter",
+        "Output",
+        "MarkApex",
+        "PointCount",
+        7,
+        4
+      ]
+    }
+  ]
+}
