@@ -1,6 +1,7 @@
 #![cfg(feature = "native")]
 use viboceros_geometry::{
-    AffineTransform3, Brep, Frame3, NurbsSurface, Point3, Tolerance, Vector3, WeightedPoint3,
+    AffineTransform3, Brep, Frame3, NurbsSurface, Point3, Polyline3, Tolerance, Vector3,
+    WeightedPoint3,
 };
 use viboceros_smlib::Shape;
 
@@ -93,6 +94,140 @@ fn copied_sheet_stitching_closes_box_retains_faces_and_preserves_source() {
     let mut origins = result.face_origins;
     origins.sort_unstable();
     assert_eq!(origins, (0..6).collect::<Vec<_>>());
+}
+
+#[test]
+fn stitched_source_uv_charts_preserve_native_shape_orientation_and_input_geometry() {
+    let tolerance = Tolerance::DEFAULT;
+    let original = cube();
+    for mask in [0_u8, 3, 21, 63] {
+        let pieces = (0..6)
+            .map(|i| {
+                let face = original.sub_brep(&[i], tolerance).unwrap();
+                if mask & (1 << i) != 0 {
+                    face.reversed()
+                } else {
+                    face
+                }
+            })
+            .collect();
+        let input = Brep::try_combine(pieces, tolerance).unwrap();
+        let before = input.clone();
+        let shape = Shape::from_brep(&input, tolerance).unwrap();
+        let native_before = shape.to_brep(tolerance).unwrap();
+        let result = shape.stitch(1e-6).unwrap();
+        let raw = result.shape.to_brep(tolerance).unwrap();
+        let output = result
+            .to_brep_preserving_source_uv(&input, tolerance)
+            .unwrap();
+        assert_eq!(output.vertices(), raw.vertices());
+        assert_eq!(output.edges(), raw.edges());
+        assert!(output.is_solid());
+        let raw_volume = raw.signed_volume(tolerance).unwrap();
+        let output_volume = output.signed_volume(tolerance).unwrap();
+        assert!((raw_volume.abs() - 8.).abs() < 1e-10);
+        assert!((output_volume - raw_volume).abs() < 1e-10);
+        for ((face, raw), &origin) in output
+            .faces()
+            .iter()
+            .zip(raw.faces())
+            .zip(&result.face_origins)
+        {
+            assert_eq!(
+                face.surface(),
+                input.faces()[origin].surface(),
+                "mask={mask}, origin={origin}"
+            );
+            let swapped = face.surface() != raw.surface();
+            for (u, v) in [(0.2, 0.3), (0.7, 0.8)] {
+                let u = face.surface().parameter_at_u(u).unwrap();
+                let v = face.surface().parameter_at_v(v).unwrap();
+                let (ru, rv) = if swapped { (v, u) } else { (u, v) };
+                assert!(
+                    face.surface()
+                        .evaluate(u, v)
+                        .unwrap()
+                        .distance_to(raw.surface().evaluate(ru, rv).unwrap())
+                        .unwrap()
+                        < 1e-12
+                );
+                let orient = |f: &viboceros_geometry::BrepFace, u, v| {
+                    let n = f.surface().normal_at(u, v).unwrap();
+                    if f.is_reversed() { n.opposite() } else { n }
+                };
+                assert!(
+                    orient(face, u, v)
+                        .as_vector()
+                        .dot(orient(raw, ru, rv).as_vector())
+                        .unwrap()
+                        > 1. - 1e-12
+                );
+            }
+        }
+        assert_eq!(shape.to_brep(tolerance).unwrap(), native_before);
+        assert_eq!(input, before);
+    }
+}
+
+#[test]
+fn reversed_sheet_uv_restoration_preserves_holes_and_normal_direction() {
+    let tolerance = Tolerance::DEFAULT;
+    let point = |x, y| Point3::try_new(x, y, 2.).unwrap();
+    let polygon = |vertices| {
+        Polyline3::try_new(vertices, tolerance)
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+    };
+    let outer = polygon(vec![
+        point(0., 0.),
+        point(8., 0.),
+        point(8., 6.),
+        point(0., 6.),
+        point(0., 0.),
+    ]);
+    let hole = polygon(vec![
+        point(2., 2.),
+        point(2., 4.),
+        point(5., 4.),
+        point(5., 2.),
+        point(2., 2.),
+    ]);
+    let input = Brep::try_planar_face_with_holes(&outer, &[hole], tolerance)
+        .unwrap()
+        .reversed();
+    let before = input.clone();
+    let shape = Shape::from_brep(&input, tolerance).unwrap();
+    let result = shape.stitch(1e-6).unwrap();
+    let raw = result.shape.to_brep(tolerance).unwrap();
+    let output = result
+        .to_brep_preserving_source_uv(&input, tolerance)
+        .unwrap();
+    Brep::try_new(
+        output.vertices().to_vec(),
+        output.edges().to_vec(),
+        output.faces().to_vec(),
+        tolerance,
+    )
+    .unwrap();
+    assert_eq!(output.vertices(), raw.vertices());
+    assert_eq!(output.edges(), raw.edges());
+    assert!((output.area(tolerance).unwrap() - 42.).abs() < 1e-10);
+    let (source, output) = (&input.faces()[0], &output.faces()[0]);
+    assert_eq!(output.surface(), source.surface());
+    assert_eq!(output.is_reversed(), source.is_reversed());
+    assert_eq!(output.loops().len(), 2);
+    for u in [0.1, 0.4, 0.9] {
+        for v in [0.1, 0.5, 0.9] {
+            let u = source.surface().parameter_at_u(u).unwrap();
+            let v = source.surface().parameter_at_v(v).unwrap();
+            assert_eq!(
+                output.contains_parameters(u, v, tolerance).unwrap(),
+                source.contains_parameters(u, v, tolerance).unwrap()
+            );
+        }
+    }
+    assert_eq!(input, before);
 }
 
 #[test]
@@ -215,15 +350,16 @@ fn rational_ruled_sheets_export_boundary_roundoff_with_a_certificate() {
     .unwrap();
     let before = input.clone();
     let shape = Shape::from_brep(&input, tolerance).unwrap();
-    let output = shape
-        .stitch(1.8e-9)
-        .unwrap()
-        .shape
-        .to_brep(tolerance)
+    let result = shape.stitch(1.8e-9).unwrap();
+    let output = result
+        .to_brep_preserving_source_uv(&input, tolerance)
         .unwrap();
     assert_eq!(output.edge_connected_face_components().len(), 1);
     assert_eq!(output.faces().len(), 2);
     assert!(output.is_manifold());
+    for (face, &origin) in output.faces().iter().zip(&result.face_origins) {
+        assert_eq!(face.surface(), input.faces()[origin].surface());
+    }
     assert!((output.area(tolerance).unwrap() - input.area(tolerance).unwrap()).abs() < 1e-8);
     assert_eq!(input, before);
 }

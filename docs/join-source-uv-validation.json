@@ -1,0 +1,262 @@
+{
+  "date": "2026-10-17",
+  "baseline": "5af970fe02df2adb375a5f460b5b9072a2fab0a7",
+  "native_backend_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "Native Join/JoinCopy source UV chart preservation. The default boundary matcher and upstream stitching algorithm are unchanged.",
+  "source_match": "Output face origins select input surfaces. Only exact U/V coefficient transposes are restored; no fitting, tolerance-based matching, or expected Rhino geometry supplies production inputs.",
+  "geometry_invariants": [
+    "Spatial vertices and edges retain their storage and values.",
+    "Face sense, loop traversal, edge-use directions, trim coordinates, tolerances and iso labels compensate chart transposition.",
+    "Oriented normals, trimmed regions, seams, singular trims and signed volume are preserved.",
+    "Invalid or duplicate face indices are atomic; an empty selection is exact and allocation-free."
+  ],
+  "tests_passed": 57,
+  "checks": [
+    {
+      "name": "UV chart geometry",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "face_uv",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-uv-core-final.log",
+      "log_sha256": "0aedfba3a838f665195863b9b747bf9071b6b0fc7e050d7cea37b09bbfb0e0fe",
+      "test_summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2385 filtered out; finished in 0.06s"
+      ]
+    },
+    {
+      "name": "Native stitching and sheets",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-smlib",
+        "--features",
+        "native",
+        "--test",
+        "stitching",
+        "--test",
+        "sheets",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-uv-native-stitching-sheets-final.log",
+      "log_sha256": "f6dc816df8ae6214bea4a7bf904604d12470109c06c3cee6853efc3f8d37e9a1",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s"
+      ]
+    },
+    {
+      "name": "Native Join commands",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "join::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-uv-native-command-final.log",
+      "log_sha256": "82a0ac6963a970b904da8cf5488e3e528af695c3e07fbcbb1e3266c933f246be",
+      "test_summaries": [
+        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 1558 filtered out; finished in 16.74s"
+      ]
+    },
+    {
+      "name": "Default Join commands",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "join::",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-uv-default-command-final.log",
+      "log_sha256": "fcd8eb24ce316ddb13baa989cf2e31d7ae0141588e2047102063ea611d209cc7",
+      "test_summaries": [
+        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 1482 filtered out; finished in 4.48s"
+      ]
+    },
+    {
+      "name": "Clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-uv-clippy-final.log",
+      "log_sha256": "46c3b76f295b6903a1688b98df8b809f09acfb7886f4c42d72ec5b3027f84087",
+      "test_summaries": []
+    },
+    {
+      "name": "Formatting",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-uv-fmt-final.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_summaries": []
+    },
+    {
+      "name": "Candidate archive replay",
+      "command": [
+        "cargo",
+        "run",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--",
+        "tools/rhino_oracle/fixtures/join_surface_differences.json",
+        "/tmp/viboceros-join-native-after-confirmed.json"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-native-after-confirmed.log",
+      "log_sha256": "84266bd132717299f8e822e0f3ed75f1625093379ae18e08ec486a3f729d171e",
+      "test_summaries": []
+    },
+    {
+      "name": "Repeat raw comparison",
+      "command": [
+        "python3",
+        "tools/rhino_oracle/join_source_uv_comparison.py",
+        "docs/join-source-uv-native-before.json",
+        "docs/join-source-uv-native-after.json",
+        "tools/rhino_oracle/observations/join_surface_differences.json",
+        "/tmp/viboceros-join-source-uv-comparison-repeat.json"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-join-uv-comparison-final.log",
+      "log_sha256": "41b86f7c5c0bc858584187549b4b4faa5d323e5c844c3fb49879a1b12a2b57a3",
+      "test_summaries": []
+    }
+  ],
+  "known_failures": [
+    {
+      "name": "Baseline strict native archive failure",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+        "--lib",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "log": "/tmp/viboceros-join-orientation-baseline.log",
+      "log_sha256": "633ee8dddb79104b9c2fc03396f72a2dc407e6c972358b0bebedf554ee8b435f",
+      "test_summaries": [
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 589 filtered out; finished in 1.68s"
+      ],
+      "reason": "The known zero-volume face-sense assertion fails at boundaries.rs:38 (false versus true)."
+    },
+    {
+      "name": "Candidate strict native archive failure",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+        "--lib",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "log": "/tmp/viboceros-join-uv-oracle-final.log",
+      "log_sha256": "a01d3e2ea675f53f837000a5fc1231b5fdeef929e979b733fa1a34857ec40184",
+      "test_summaries": [
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 589 filtered out; finished in 1.71s"
+      ],
+      "reason": "The same test passes that assertion, then fails at triple-boundary-Join-post/objects/0/brep/edge_tolerances/0 (1e-9 versus 0). The original comparison and observations are unchanged."
+    }
+  ],
+  "comparison": {
+    "cases": 26,
+    "before_matched_cases": 0,
+    "after_matched_cases": 0,
+    "before_difference_count": 7301,
+    "after_difference_count": 7289,
+    "report": "docs/join-source-uv-comparison.json",
+    "retention": "Complete baseline and candidate response values with whitespace compacted. IDs, table order, geometry, senses, tolerances, engine metadata and elapsed_ns are retained. A final replay matches the retained candidate values exactly.",
+    "reference": "Existing saved licensed Rhino observations; no new Rhino process or Wine configuration was needed."
+  },
+  "limitations": [
+    "No case in this 26-case discrepancy archive matches every raw field.",
+    "Zero-volume complementary senses, native stored tolerances, table order and gap behavior remain explicit discrepancies.",
+    "Raw numeric field differences are not Hausdorff distances or boundary-equivalence certificates.",
+    "No performance claim is made from audit elapsed_ns placeholders.",
+    "The older 92-case native replay remains a historical record, not a qualification of this change."
+  ],
+  "historical_provenance": {
+    "preserved_entries": 9,
+    "records": 8,
+    "policy": "Previously verifiable historical records retain original digests via full baseline Git blob references. Non-SHA claims are unchanged; 69 preexisting unverifiable records are left unchanged."
+  },
+  "source_sha256": {
+    "README.md": "1555e1b1695f727f40e3425154db034fe12de58d2232427cda9cf3ebdda0b8bf",
+    "crates/viboceros-command/src/join/breps/native.rs": "aec720de5e0a117fb7b08928c53daed223ff01fe149c87cde08c8ab72917fa75",
+    "crates/viboceros-geometry/src/brep.rs": "3121a923320d387016db11103192922caf3fe5b47115424b9a8e6a41e503c3a1",
+    "crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
+    "crates/viboceros-geometry/src/nurbs2.rs": "1c73a34a76741cdd0f663dc0c33660323ae6e4fda5ff3bac24e6a31b6f47cff0",
+    "crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
+    "crates/viboceros-smlib/src/native/brep.rs": "5b81ed9ed48efe577b90712705db13f861832c8aaef336bfa9886bf3569db6f3",
+    "crates/viboceros-smlib/tests/stitching.rs": "fad0d5efd2c28656cbe0d122722d42c873fac399a0b9e3fab77ee9222f2f8cbb",
+    "crates/viboceros-smlib/tests/sheets.rs": "750de01982a044d51524ad918e704175be4dba6b91048c292b1de062649c5432",
+    "crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f",
+    "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
+    "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
+    "crates/viboceros-oracle/src/join_command/tests/surfaces.rs": "dc3f904771bafc308cf56066b00351ddc7e651e0b028a5f88edf355dd89b4d80",
+    "crates/viboceros-oracle/src/join_command/tests/boundaries.rs": "dbd90668ab2c4ee840b3c834ca58eb593bb0ced8ba988deebb149827c29df97f",
+    "crates/viboceros-oracle/src/join_command/tests.rs": "a985034ea68154f731306a2ef228f8989d642f58d180a137cd36eb0c81b831ec",
+    "docs/smlib-joining.md": "57126684a2c24c5ad7015f20b53f740c4d2a4a6fa58cb858217a57caed2db8b6",
+    "docs/join-source-uv.md": "ae248d6b7c38bfa691db05aec532ce5ea04bb7165485228824c51bab9eeee809",
+    "docs/join-source-uv-comparison.json": "4f3663b412ab71551f3e71c85b1b06b27e44c1763430d285877f1caac6327a4b",
+    "docs/join-source-uv-native-before.json": "3e77005de019ed591f125a677e4de59a6cd3234bd2cf407901a6bd65db8aec2a",
+    "docs/join-source-uv-native-after.json": "4079e2884b61038a08492c66dc2245c06c91f81fdf3ad7483d8d3efa8427d92d",
+    "tools/rhino_oracle/join_source_uv_comparison.py": "32ee24222c3a94c838f8cffc57ac4726b372b7465bcb2eb11abfd8ee7181305c",
+    "tools/rhino_oracle/brep_join_probe.py": "3bde85ebee9eee56cf1941cddf0e282c60b7cc4b7586b436507332db225929a7",
+    "tools/rhino_oracle/fixtures/join_surface_differences.json": "b7342179d0c1adeb983d3023b5520618093eeabe424b10c7f775ff9dc0cfe515",
+    "tools/rhino_oracle/observations/join_surface_differences.json": "4066ffa7f53dbabda14369e60ef43e4c7eedd82b8fd584a555010ad722057ec0"
+  },
+  "baseline_git_sha256": {
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-command/src/join/breps/native.rs": "b5863337611e4c74c382f5c57d9ab5eec6272ba40ad0249e6a137400e9bd6b70",
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-geometry/src/brep.rs": "d6d4d9109c9cc70f39d1e8a590bec7515ddc270f2ad2384f163a9f69f7eabee2",
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63",
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-smlib/tests/stitching.rs": "65b92841296c73b6117ae7e11a82971181fa9df6ed06e27feda19d7b18394b74"
+  },
+  "candidate_probe_sha256": "4531448efc2f8c22754c532b12ba28f977f29cb3c391da754f7c283adf1be166"
+}

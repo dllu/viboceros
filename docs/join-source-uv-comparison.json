@@ -1,0 +1,2864 @@
+{
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "policy": "Raw table order, parameterizations, senses and tolerances are compared. Array/key shape changes count once, then common entries are compared. Difference counts do not measure physical boundary deviation.",
+  "cases": 26,
+  "before_matched_cases": 0,
+  "after_matched_cases": 0,
+  "results": [
+    {
+      "id": "triple-boundary-Join-post",
+      "before": {
+        "matched": false,
+        "difference_count": 287,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 1,
+          "brep.faces": 4,
+          "brep.surfaces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 284,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 2,
+          "brep.faces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "triple-boundary-Join-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 287,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 1,
+          "brep.faces": 4,
+          "brep.surfaces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 284,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 2,
+          "brep.faces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/0/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "triple-boundary-JoinCopy-post",
+      "before": {
+        "matched": false,
+        "difference_count": 287,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 1,
+          "brep.faces": 4,
+          "brep.surfaces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/3/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 284,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 2,
+          "brep.faces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/3/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "triple-boundary-JoinCopy-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 287,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 1,
+          "brep.faces": 4,
+          "brep.surfaces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/3/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 284,
+        "differences_by_field": {
+          "brep.edge_tolerances": 8,
+          "brep.edges": 190,
+          "brep.face_reversed": 2,
+          "brep.faces": 4,
+          "brep.trim_curves": 62,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 10
+        },
+        "first_differences": [
+          {
+            "path": "/objects/3/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/0",
+            "actual": 2,
+            "expected": 0
+          },
+          {
+            "path": "/objects/3/brep/edges/0/vertices/1",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/0",
+            "actual": 3,
+            "expected": 1
+          },
+          {
+            "path": "/objects/3/brep/edges/1/vertices/1",
+            "actual": 1,
+            "expected": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "partial-edge-Join-post",
+      "before": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "partial-edge-Join-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "partial-edge-JoinCopy-post",
+      "before": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "partial-edge-JoinCopy-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 380,
+        "differences_by_field": {
+          "brep.edge_tolerances": 9,
+          "brep.edges": 309,
+          "brep.faces": 5,
+          "brep.trim_curves": 45,
+          "brep.vertex_tolerances": 8,
+          "brep.vertices": 4
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 1e-09,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/7",
+            "actual": 1e-09,
+            "expected": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0005-Join-post",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0005-Join-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0005-JoinCopy-post",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0005-JoinCopy-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.00025000000000030553
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001000000000000334,
+            "expected": 0.00024999999999986144
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0002500000000003
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.001-Join-post",
+      "before": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.001-Join-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.001-JoinCopy-post",
+      "before": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.001-JoinCopy-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 218,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 167,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0004999999999997229
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.002000000000001556,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.001,
+            "expected": 0.000500000000000167
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.0004999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0015-Join-post",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0015-Join-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0015-JoinCopy-post",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0015-JoinCopy-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 339,
+        "differences_by_field": {
+          "brep.edge_tolerances": 7,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/4",
+            "actual": 0.001,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.0030000000000001137,
+            "expected": 0.0007500000000000284
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00075
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.002-Join-post",
+      "before": {
+        "matched": false,
+        "difference_count": 335,
+        "differences_by_field": {
+          "brep.edge_tolerances": 3,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.0039999999999995595,
+            "expected": 0.0009999999999998899
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.001
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/1/1",
+            "actual": 0.09375,
+            "expected": 0.09378125
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/2/1",
+            "actual": 0.1875,
+            "expected": 0.1875625
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/3/1",
+            "actual": 0.28125,
+            "expected": 0.28134375
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/4/1",
+            "actual": 0.375,
+            "expected": 0.375125
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 335,
+        "differences_by_field": {
+          "brep.edge_tolerances": 3,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/5",
+            "actual": 0.0039999999999995595,
+            "expected": 0.0009999999999998899
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.001
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/1/1",
+            "actual": 0.09375,
+            "expected": 0.09378125
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/2/1",
+            "actual": 0.1875,
+            "expected": 0.1875625
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/3/1",
+            "actual": 0.28125,
+            "expected": 0.28134375
+          },
+          {
+            "path": "/objects/0/brep/edges/0/curve/samples/4/1",
+            "actual": 0.375,
+            "expected": 0.375125
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.002-Join-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 109,
+        "differences_by_field": {
+          "brep.edge_tolerances": 5,
+          "brep.edges": 74,
+          "brep.face_reversed": 1,
+          "brep.faces": 2,
+          "brep.surfaces": 1,
+          "brep.trim_curves": 19,
+          "brep.vertex_tolerances": 5,
+          "brep.vertices": 1,
+          "objects": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/@length",
+            "actual": 1,
+            "expected": 2
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/0/brep/edges/3/curve/definition/control_points/0/point/1",
+            "actual": 3.002,
+            "expected": 3.0
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 109,
+        "differences_by_field": {
+          "brep.edge_tolerances": 5,
+          "brep.edges": 74,
+          "brep.face_reversed": 1,
+          "brep.faces": 2,
+          "brep.surfaces": 1,
+          "brep.trim_curves": 19,
+          "brep.vertex_tolerances": 5,
+          "brep.vertices": 1,
+          "objects": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/@length",
+            "actual": 1,
+            "expected": 2
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/0/brep/edges/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/0/brep/edges/3/curve/definition/control_points/0/point/1",
+            "actual": 3.002,
+            "expected": 3.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.002-JoinCopy-post",
+      "before": {
+        "matched": false,
+        "difference_count": 335,
+        "differences_by_field": {
+          "brep.edge_tolerances": 3,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.0039999999999995595,
+            "expected": 0.0009999999999998899
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.001
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/1/1",
+            "actual": 0.09375,
+            "expected": 0.09378125
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/2/1",
+            "actual": 0.1875,
+            "expected": 0.1875625
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/3/1",
+            "actual": 0.28125,
+            "expected": 0.28134375
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/4/1",
+            "actual": 0.375,
+            "expected": 0.375125
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 335,
+        "differences_by_field": {
+          "brep.edge_tolerances": 3,
+          "brep.edges": 285,
+          "brep.faces": 3,
+          "brep.trim_curves": 36,
+          "brep.vertex_tolerances": 6,
+          "brep.vertices": 2
+        },
+        "first_differences": [
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/5",
+            "actual": 0.0039999999999995595,
+            "expected": 0.0009999999999998899
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/6",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.001
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/1/1",
+            "actual": 0.09375,
+            "expected": 0.09378125
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/2/1",
+            "actual": 0.1875,
+            "expected": 0.1875625
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/3/1",
+            "actual": 0.28125,
+            "expected": 0.28134375
+          },
+          {
+            "path": "/objects/2/brep/edges/0/curve/samples/4/1",
+            "actual": 0.375,
+            "expected": 0.375125
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.002-JoinCopy-pre",
+      "before": {
+        "matched": false,
+        "difference_count": 109,
+        "differences_by_field": {
+          "brep.edge_tolerances": 5,
+          "brep.edges": 74,
+          "brep.face_reversed": 1,
+          "brep.faces": 2,
+          "brep.surfaces": 1,
+          "brep.trim_curves": 19,
+          "brep.vertex_tolerances": 5,
+          "brep.vertices": 1,
+          "objects": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/@length",
+            "actual": 3,
+            "expected": 4
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/2/brep/edges/3/curve/definition/control_points/0/point/1",
+            "actual": 3.002,
+            "expected": 3.0
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 109,
+        "differences_by_field": {
+          "brep.edge_tolerances": 5,
+          "brep.edges": 74,
+          "brep.face_reversed": 1,
+          "brep.faces": 2,
+          "brep.surfaces": 1,
+          "brep.trim_curves": 19,
+          "brep.vertex_tolerances": 5,
+          "brep.vertices": 1,
+          "objects": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/@length",
+            "actual": 3,
+            "expected": 4
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/0",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/1",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/2",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edge_tolerances/3",
+            "actual": 0.001,
+            "expected": 0.0
+          },
+          {
+            "path": "/objects/2/brep/edges/@length",
+            "actual": 7,
+            "expected": 4
+          },
+          {
+            "path": "/objects/2/brep/edges/3/curve/definition/control_points/0/point/1",
+            "actual": 3.002,
+            "expected": 3.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0021-Join-post",
+      "before": {
+        "matched": false,
+        "difference_count": 158,
+        "differences_by_field": {
+          "brep.edge_tolerances": 4,
+          "brep.edges": 138,
+          "brep.vertex_tolerances": 2,
+          "brep.vertices": 6,
+          "object.color": 1,
+          "object.groups": 1,
+          "objects": 5,
+          "succeeded": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.0,
+            "expected": 0.0010500000000002174
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.0,
+            "expected": 0.0010500000000002174
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00105
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/1/1",
+            "actual": 0.09375,
+            "expected": 0.0937828125
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/2/1",
+            "actual": 0.1875,
+            "expected": 0.187565625
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/3/1",
+            "actual": 0.28125,
+            "expected": 0.28134843750000005
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/4/1",
+            "actual": 0.375,
+            "expected": 0.37513125
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/5/1",
+            "actual": 0.46875,
+            "expected": 0.4689140625
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 158,
+        "differences_by_field": {
+          "brep.edge_tolerances": 4,
+          "brep.edges": 138,
+          "brep.vertex_tolerances": 2,
+          "brep.vertices": 6,
+          "object.color": 1,
+          "object.groups": 1,
+          "objects": 5,
+          "succeeded": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/0/brep/edge_tolerances/1",
+            "actual": 0.0,
+            "expected": 0.0010500000000002174
+          },
+          {
+            "path": "/objects/0/brep/edge_tolerances/3",
+            "actual": 0.0,
+            "expected": 0.0010500000000002174
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/definition/control_points/1/point/1",
+            "actual": 3.0,
+            "expected": 3.00105
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/1/1",
+            "actual": 0.09375,
+            "expected": 0.0937828125
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/2/1",
+            "actual": 0.1875,
+            "expected": 0.187565625
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/3/1",
+            "actual": 0.28125,
+            "expected": 0.28134843750000005
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/4/1",
+            "actual": 0.375,
+            "expected": 0.37513125
+          },
+          {
+            "path": "/objects/0/brep/edges/1/curve/samples/5/1",
+            "actual": 0.46875,
+            "expected": 0.4689140625
+          }
+        ]
+      }
+    },
+    {
+      "id": "gap-0.0021-JoinCopy-post",
+      "before": {
+        "matched": false,
+        "difference_count": 3,
+        "differences_by_field": {
+          "objects": 2,
+          "succeeded": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/@length",
+            "actual": 2,
+            "expected": 4
+          },
+          {
+            "path": "/objects/1/selected",
+            "actual": false,
+            "expected": true
+          },
+          {
+            "path": "/succeeded",
+            "actual": false,
+            "expected": true
+          }
+        ]
+      },
+      "after": {
+        "matched": false,
+        "difference_count": 3,
+        "differences_by_field": {
+          "objects": 2,
+          "succeeded": 1
+        },
+        "first_differences": [
+          {
+            "path": "/objects/@length",
+            "actual": 2,
+            "expected": 4
+          },
+          {
+            "path": "/objects/1/selected",
+            "actual": false,
+            "expected": true
+          },
+          {
+            "path": "/succeeded",
+            "actual": false,
+            "expected": true
+          }
+        ]
+      }
+    }
+  ],
+  "sha256": {
+    "docs/join-source-uv-native-before.json": "3e77005de019ed591f125a677e4de59a6cd3234bd2cf407901a6bd65db8aec2a",
+    "docs/join-source-uv-native-after.json": "4079e2884b61038a08492c66dc2245c06c91f81fdf3ad7483d8d3efa8427d92d",
+    "tools/rhino_oracle/observations/join_surface_differences.json": "4066ffa7f53dbabda14369e60ef43e4c7eedd82b8fd584a555010ad722057ec0",
+    "tools/rhino_oracle/join_source_uv_comparison.py": "32ee24222c3a94c838f8cffc57ac4726b372b7465bcb2eb11abfd8ee7181305c"
+  }
+}

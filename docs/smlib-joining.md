@@ -33,7 +33,12 @@ unqualified; this check is not a nesting or solid-validity certificate.
 Extreme spatial extents are translated and scaled before import, then restored
 on export. Their edge/surface domains are mapped to `[0,1]` together with the
 UV trims; scaling coordinates alone was insufficient. Parameterization can
-therefore change. Native orientation can also swap a face's UV axes.
+therefore change. Native orientation can also swap a face's UV axes. Join now
+restores the input chart when the exported NURBS is its exact U/V transpose,
+using checked source-face indices. It compensates the face sense, trim
+traversal and UV metadata without changing native spatial geometry or oriented
+normals. Other parameterizations retain the native chart. See the
+[source-chart regression and remaining differences](join-source-uv.md).
 
 The requested command radius remains below 1.8 model tolerances for preselection
 and 2.1 for command-first picking. SMLib additionally uses inherited entity
@@ -53,7 +58,7 @@ topology remain ongoing work. Input sheet components are limited to 128 by the
 shared importer. Command-first participation probes use copied two-source
 kernel operations in addition to the growing batch assembly.
 
-The [saved Rhino replay](smlib-join-comparison.json) retains all 66 original
+The [October 11 Rhino replay](smlib-join-comparison.json) retains all 66 original
 surface-command cases and 26 discrepancy cases. Every native operation now
 executes without an audit error; 14 of 92 cases match every raw field at
 `1e-10` absolute / `1e-12` relative epsilon. The other 78 retain explicit
@@ -61,6 +66,9 @@ tolerance, parameterization, orientation, ordering or geometry differences.
 Execution success does not establish boundary equivalence. The report retains
 native responses, fixture/observation hashes, source hashes and the probe hash;
 audit timings are placeholders and supply no performance evidence.
+The [October 17 chart comparison](join-source-uv-comparison.json) separately
+retains the current before/after responses for the 26 discrepancy cases;
+source-chart restoration does not make this strict archive pass.
 
 Release validation on October 11, 2026 passed 1,304 command tests and 44 native
 bridge tests, with two command tests and one bridge test ignored. The default

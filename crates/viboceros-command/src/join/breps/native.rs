@@ -60,7 +60,7 @@ fn assemble(
         Shape::from_brep(&prepared, local_tolerance)?
     };
     let stitched = shape.stitch(local_distance)?;
-    let output = stitched.shape.to_brep(local_tolerance)?;
+    let output = stitched.to_brep_preserving_source_uv(&prepared, local_tolerance)?;
     let output = if let Some(inverse) = inverse {
         output.transformed(inverse, tolerance)?
     } else {

@@ -61,7 +61,6 @@
     "crates/viboceros-command/src/extrude_surface_path.rs": "ea26c86f3f19cd1597fb88c48649be3217fe19ec40689e1b4b06e55e6cc61844",
     "crates/viboceros-command/src/extrude_surface_path/tests.rs": "28baad35d4f4342245c89957863a394de192d42e7e51895af320ebb8e4f26129",
     "crates/viboceros-oracle/src/surface_path_extrusion.rs": "17ce0dbf4452aafa73781363893aeb7a7be97ac31663753d05a30080dcf38e14",
-    "crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63",
     "crates/viboceros-smlib/tests/surface_extrusion.rs": "e18babe166cd2c3958acab073e55c7fb561a02c53efa935c0cb7bf1e6bce1b44",
     "crates/viboceros-smlib/tests/surface_path_extrusion.rs": "887efe1172b179ef07e940d3f94c79d16e2ea3dcfc4a1d2e9b3539c2f621ccfa",
     "docs/commands/extrude-srf-along-crv.md": "2e5006cf0eb1247f27b3ec7808f07ab1077250e8526614aab5a46cd631b59509",
@@ -95,6 +94,7 @@
     "cacb3f610632555af8698b87b61f535a4f6fa286:tools/rhino_oracle/rhino_worker.py": "08b1bcdad19a5341467e465429a08b8f461274a4e4c4b401be43425a16d519a6",
     "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:crates/viboceros-command/src/extrude_surface.rs": "52d6bf0f65d8e351c04aea255e1f563d4f1ea02fb55a1ae83c6b05e76f29b00a",
     "a077e3bcef2cd29816e5f404a9b989ceddc9a125:src/app/command_line.rs": "51946fae891a62370c635e9a16ae4e7feb073c355d61fad7f9ad579a5cce6a7b",
-    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:src/app/component_selection.rs": "f1843ca81a52fc602e8b8b300a89aa283436da7be78944668f10a0674381b92f"
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:src/app/component_selection.rs": "f1843ca81a52fc602e8b8b300a89aa283436da7be78944668f10a0674381b92f",
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63"
   }
 }

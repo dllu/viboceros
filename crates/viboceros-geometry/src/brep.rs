@@ -49,6 +49,7 @@ mod mass_properties;
 mod morph;
 mod parameter_frame;
 mod parameter_normalization;
+mod parameter_orientation;
 mod polygon_boundaries;
 mod rectangular_surface;
 mod reorder;

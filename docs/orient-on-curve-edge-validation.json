@@ -215,7 +215,6 @@
   "sha256": {
     "crates/viboceros-command/src/curve_domain.rs": "a6a1b6d8dd9f63f4abfca584c57067481429034a3ef6512ba6b870006dd8ff9d",
     "crates/viboceros-command/src/orient_curve.rs": "46a450e2b8dd936a73196d92e4d8b11e83445e0d661bb2d306f6368203f7610a",
-    "crates/viboceros-geometry/src/brep.rs": "d6d4d9109c9cc70f39d1e8a590bec7515ddc270f2ad2384f163a9f69f7eabee2",
     "crates/viboceros-oracle/src/orient_on_curve.rs": "199a812e2b1e436b0443a78f690efe0b43fb36716db43b7eca9f198c492b9d42",
     "docs/commands/orient-on-curve.md": "b9b0c3284831aa7803d8bf6af47ad70d7b0756c9c8b0baf95e5afd2b59b1cd94",
     "docs/curve-distance-validation.json": "b4aa8cfd6b984cc6db24d476d06d43dd01bf71396d54a4fd7c78e1a37a43fe0c",
@@ -271,6 +270,7 @@
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6",
     "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:crates/viboceros-command/src/curve_reference.rs": "01ec0902b95a76519da3f7476c6416210a1aae9416a797b598811bf87713a2d7",
     "04f7e1923710f12ee4228b34083f8b10048d068d:src/app/orient_curve/subcurve.rs": "160c45e0be7dbb763a70d1dc20ef3343bd16181e6e8778651f2261a84f1443a0",
-    "04f7e1923710f12ee4228b34083f8b10048d068d:src/app/subcurve_preview.rs": "6480e483e8ad97f4cb5e512d5566b8a407e907ee9cd8a578a805c89b1d1c2d50"
+    "04f7e1923710f12ee4228b34083f8b10048d068d:src/app/subcurve_preview.rs": "6480e483e8ad97f4cb5e512d5566b8a407e907ee9cd8a578a805c89b1d1c2d50",
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-geometry/src/brep.rs": "d6d4d9109c9cc70f39d1e8a590bec7515ddc270f2ad2384f163a9f69f7eabee2"
   }
 }

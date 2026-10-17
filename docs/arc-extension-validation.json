@@ -468,7 +468,6 @@
     }
   ],
   "sha256": {
-    "README.md": "8e9115c73e13449b9ee649bf4f7ee298248adccdf7e03587165ba1e6275374da",
     "crates/viboceros-command/src/arc_deform_input.rs": "318daefd24e7e4e0fd31ddf82fb1f73bb3e1f1715e414337efb712476d8f2324",
     "crates/viboceros-command/src/arc_extension_input.rs": "8a9884bac2867d0c75db9d2aa25a57e5535bbaabb96832972bd9547285bf6e76",
     "crates/viboceros-command/src/arc_input.rs": "8495bc59a1578e08b3176c75f3f171a60e26d78c8e450c4c2cb6127d362c17af",
@@ -476,7 +475,6 @@
     "crates/viboceros-command/src/lib.rs": "ae879ce16bfd4b7d467041e4b4a795ebbffc388d6305478d9be3f90999ab2d7d",
     "crates/viboceros-oracle/src/arc_extension.rs": "d303c2b5cd163daa0e0b47eb2a7f3f10149798725329a983be3179ed6f8b8bb7",
     "crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
-    "docs/arc-deformable-validation.json": "dced1862ee0cdcbb1623cdbe8b226c9fb67379c458baf4852f7d0cb140a16efa",
     "docs/arc-tangent-validation.json": "5b8d0b88af9e6a3471fc3c89d8559e8311ab7c0e48e734e024d2b91de4164181",
     "docs/arc-tilted-validation.json": "7d3cac47bfb4e128fbc0636748f208d2c094980bbacf8285dd84fc78cc53f279",
     "docs/commands/README.md": "431510f9cd6143800216c773e252ffcff9d95a4e8a4c0a53c6ed4c7db837ce9a",
@@ -568,5 +566,9 @@
       "log_sha256": "05ffab75ebc36a014174897426107c14e83ebd2e039ed86fedf05af771935a04",
       "resolution": "The nested source-option guard was collapsed to satisfy clippy; behavior is unchanged."
     }
-  ]
+  ],
+  "git_sha256": {
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:README.md": "8e9115c73e13449b9ee649bf4f7ee298248adccdf7e03587165ba1e6275374da",
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:docs/arc-deformable-validation.json": "dced1862ee0cdcbb1623cdbe8b226c9fb67379c458baf4852f7d0cb140a16efa"
+  }
 }

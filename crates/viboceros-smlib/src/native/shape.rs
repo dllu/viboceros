@@ -49,6 +49,37 @@ pub struct StitchResult {
     pub maximum_edge_gap: f64,
 }
 
+impl StitchResult {
+    /// Restore source UV axes when native normal unification transposes an
+    /// otherwise identical NURBS surface. The face sense and trims compensate
+    /// the chart change, preserving the native oriented spatial geometry.
+    /// Normalized, clamped or otherwise different control nets remain native;
+    /// no tolerance-based coefficient matching is used.
+    pub fn to_brep_preserving_source_uv(
+        &self,
+        source: &Brep,
+        tolerance: Tolerance,
+    ) -> Result<Brep, Error> {
+        let mut output = self.shape.to_brep(tolerance)?;
+        if output.faces().len() != self.face_origins.len()
+            || source.faces().len() != self.face_origins.len()
+        {
+            return Err(Error::InvalidOutput);
+        }
+        let mut swapped = Vec::new();
+        for (index, (face, &origin)) in output.faces().iter().zip(&self.face_origins).enumerate() {
+            let original = source.faces().get(origin).ok_or(Error::InvalidOutput)?;
+            if face.surface() != original.surface()
+                && face.surface().try_swapped_uv()? == *original.surface()
+            {
+                swapped.push(index);
+            }
+        }
+        output.try_swap_face_uv(&swapped)?;
+        Ok(output)
+    }
+}
+
 impl Shape {
     /// Query the native trimmed boundary's tight bounding box, including sheets.
     pub fn tight_bounds(&self) -> Result<viboceros_geometry::BoundingBox3, Error> {
