@@ -24,7 +24,20 @@ Rectangle AroundCurve Curve=12 0,0,5 8 6
 Rectangle AroundCurve Edge=13,0 0,0,0 8 6
 ```
 
-The same getter supplies [FlowAlongSrf's temporary Plane](flow-along-surface.md), without adding construction objects. Captured curve/edge references must remain selectable and unchanged until the center is accepted. Invalid dimensions remain correctable. Rounded rectangles are not implemented. AroundCurve uses explicit curve/edge picking; Rhino’s automatic acceptance of preselected source curves and its grip-selection side effects are outside the qualified cases.
+`Rounded` adds a corner-shape prompt after constructing the rectangle. Select it before the first corner or at a later construction prompt. `Corner=Arc` takes a radius or a point for the corner to pass through. Negative radii use their absolute value, and large radii clamp to half the shorter side. Zero produces four straight curve segments. At the maximum radius, circular arcs merge into semicircles or a full circle where appropriate.
+
+`Corner=Conic` takes a dimensionless rho strictly between zero and one, or a shape point. It creates four rational quadratic corners between edge midpoints. `Corner` toggles Arc/Conic. Enter uses the last accepted radius or rho. The corner kind and both values are remembered by the command registry; a new Rectangle starts with Rounded disabled. Length units and calculator expressions work for radii; rho accepts dimensionless calculator expressions.
+
+```text
+Rectangle Rounded 0,0,0 10,6,0 Corner=Arc 2
+Rectangle Rounded Center 0,0,0 10 6 Corner=Conic 0.6
+Rectangle 0,0,0 Rounded 10,6,0 Corner=Arc 0.5,0.5,0
+Rectangle Rounded 3Point 1,2,3 4,6,8 7,-1,3 Corner=Conic 0.4
+```
+
+The same construction modes supply [FlowAlongSrf's temporary Plane](flow-along-surface.md), which uses straight edges without adding construction objects. Captured curve/edge references must remain selectable and unchanged until the center is accepted. Invalid dimensions and rho values remain correctable. AroundCurve uses explicit curve/edge picking; Rhino’s automatic acceptance of preselected source curves and its grip-selection side effects are outside the qualified cases.
+
+Rounded shapes are checked against 60 native command workflows at `1e-6`, with actual Undo/Redo. Two additional tiny-radius inputs make Rhino report success without creating a curve. Viboceros constructs valid curves for them, using uniform outer parameters when length-sized spans would lose precision. Those cases remain compatibility exceptions; see the [rounded validation](../rectangle-rounded-validation.json).
 
 The [rectangle validation](../surface-flow-rectangles-validation.json) compares 60 completed native Rectangle outlines and FlowAlongSrf workflows, including numeric inputs, arbitrary planes, curved guides, copies, rigid groups, grips and actual Undo/Redo, at `1e-6`.
 

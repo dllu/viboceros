@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "timezone": "UTC",
+  "base_repository_revision": "a9831c6acb1beab4f3e20dd53c5c3ca83d42f01e",
+  "component": "Circular and conic rounded Rectangle getters, shape preview, remembered corner defaults and stable tiny-corner parameterization",
+  "fixtures_qualified": false,
+  "matched_native_geometry_cases": 60,
+  "unqualified_compatibility_cases": 2,
+  "complete_rectangle_command_qualified": false,
+  "performance_qualified": false,
+  "native_values_used_as_production_geometry_inputs": false,
+  "qualification_scope": "The 60 native workflows that produce a curve match at 1e-6. Two successful native commands produce no object; Viboceros intentionally creates valid geometry for them. The complete mixed corpus is not qualified as identical native behavior.",
+  "implementation": [
+    "Add optional Rounded input to the existing shared RectangleInput. FlowAlongSrf temporary planes keep this option disabled. After constructing the rectangle, Arc takes a radius or shape point; Conic takes rho or a shape point. Corner toggles the type; explicit Corner=Arc/Conic is supported.",
+    "Reuse the existing Polyline fillet, Circle3/CircularArc3, PolyCurve3 and rational NURBS kernels. Preserve Rectangle's seam after its first corner; merge adjacent arcs when a side disappears at the maximum radius, retaining the full circle case.",
+    "Construct four conic spans between edge midpoints, using the rectangle corners as apex controls and the independently derived rational weight rho/(1-rho). Keep rho strictly between zero and one, and derive shape-point rho from distances to the nearest corner axes.",
+    "Mirror shape-point distances at the nearest corner axes. Arc radii use absolute values and clamp to half the shorter side. Tiny radii below fixed curve coincidence tolerance produce four straight leaves. Invalid conic shape-point solutions retain the previous rho.",
+    "Keep corner kind, radius and rho in command-instance preferences outside document history. Rounded itself resets at each command. Support defaults through Enter, calculator/length units for radii, and dimensionless calculator input for rho.",
+    "Preview rounded curves during rectangle construction and during the corner getter. Complete one public Rectangle command and history edit; cancellation leaves geometry unchanged and invalid rho remains retryable.",
+    "Add an explicit uniform-outer-parameter fillet API without changing the existing natural-parameter API. Rounded rectangles use it only when length-sized spans lose significant precision after a large offset; exact leaves are retained."
+  ],
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "fixture": "tools/rhino_oracle/fixtures/rectangle_rounded.json",
+    "observation": "tools/rhino_oracle/observations/rectangle_rounded_rhino_20261017.json",
+    "cohorts": [
+      {
+        "scheme": "VibocerosOracleRectangleRounded",
+        "cases": 52
+      },
+      {
+        "scheme": "VibocerosOracleRectangleRoundedTiny",
+        "cases": 8,
+        "excluded_duplicate": "tiny-8 duplicates rounded-arc-6"
+      },
+      {
+        "scheme": "VibocerosOracleRectangleRoundedReflect",
+        "cases": 2
+      }
+    ],
+    "actual_rectangle_commands": 62,
+    "completed_with_geometry": 60,
+    "success_without_geometry": 2,
+    "document_epsilon": 1e-06,
+    "epsilon_changed": false,
+    "method": "Authored command inputs, public RhinoCommon exact NURBS/segment queries, EndCommand events, macro return, and actual Undo/Redo in owned private displays. Setup rectangles explicitly establish defaults when a fixture needs them. Combined observations retain exact selected rows from all three captures. No proprietary implementation inspected or decompiled."
+  },
+  "comparisons": {
+    "matched_workflows": 60,
+    "epsilon": 1e-06,
+    "full_curve": "Degree, controls, weights, original knots, original global domain, closure and length.",
+    "leaves": "Segment count, degree, controls, weights and normalized local knots. Native simplification can change leaf-local offsets; the full curve's original domain/knots are compared without normalization.",
+    "document_states": [
+      "before",
+      "EndCommand",
+      "macro return",
+      "Undo",
+      "Redo"
+    ],
+    "checked": [
+      "output count",
+      "output selection",
+      "guide preservation",
+      "actual command success",
+      "single local history edit and restoration",
+      "native Undo/Redo return and geometry"
+    ],
+    "previous_surface_flow_refit_exceptions_changed": false
+  },
+  "compatibility_exceptions": [
+    {
+      "id": "rounded-arc-6",
+      "radius": 1e-08,
+      "rectangle": [
+        10,
+        6
+      ],
+      "native": "Rectangle Success with no output object",
+      "viboceros": "Closed rounded curve with stable uniform outer parameters",
+      "qualified": false
+    },
+    {
+      "id": "tiny-9",
+      "radius": 1e-09,
+      "rectangle": [
+        10,
+        6
+      ],
+      "native": "Rectangle Success with no output object",
+      "viboceros": "Closed rounded curve with stable uniform outer parameters",
+      "qualified": false
+    }
+  ],
+  "coverage": {
+    "construction": [
+      "Corners",
+      "Center",
+      "3Point",
+      "EdgeMidpoint",
+      "Center then 3Point",
+      "Vertical",
+      "AroundCurve",
+      "numeric dimensions",
+      "Rounded after first corner"
+    ],
+    "corner_kinds": [
+      "Arc",
+      "Conic"
+    ],
+    "radii": [
+      "zero",
+      "negative",
+      "oversized",
+      "maximum",
+      "tiny",
+      "through-point",
+      "Enter default"
+    ],
+    "rho": [
+      "0.01",
+      "0.25",
+      "0.5",
+      "0.75",
+      "0.99",
+      "ellipse weight",
+      "through-point",
+      "invalid point retains default",
+      "Enter default"
+    ],
+    "custom_planes": 4,
+    "curve_guides": 4,
+    "setup_controls": 14,
+    "app": "Pure preview before/after rectangle extent completion, one history edit, Undo/Redo, negative radius with units, dimensionless rho, correctable invalid rho, corner toggle, defaults, cancellation and nonsticky Rounded mode.",
+    "independent_tiny_geometry_check": "Analytic rounded-rectangle perimeter, closure, rational degree and all eight leaves; the existing natural-domain fillet behavior is unchanged."
+  },
+  "limitations": [
+    "The complete Rectangle command remains unqualified: automatic use of preselected source curves and exhaustive interaction/scale combinations remain outside this change.",
+    "The two native-no-output cases intentionally differ in object count and history. Their geometry is independently checked; they are not counted among the 60 native matches.",
+    "Local domains of simplified polycurve leaves can differ while whole-curve parameters and geometry agree. Extremely short corners can use uniform outer spans to avoid parameter precision loss.",
+    "Performance parity and live dependency history are not claimed."
+  ],
+  "public_references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/rectangle.htm",
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/conic.htm",
+    "https://developer.rhino3d.com/api/RhinoCommon/html/T_Rhino_Geometry_NurbsCurve.htm"
+  ],
+  "historical_provenance": {
+    "preserved_entries": 13,
+    "records": 2,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "checks": [
+    {
+      "name": "geometry-fillet",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "polyline::fillet::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 44.380996766965836,
+      "log_sha256": "70da2810b2199b3c6a083aecac95fdb1543f21224809565dd27e43372c6821dd",
+      "test_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2364 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "command-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 42.10023405100219,
+      "log_sha256": "9e6dacea0247ad986c0c2203f87877cf3fb7172c5a021854cbaae27c4a118a05",
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1443 filtered out; finished in 2.64s"
+      ]
+    },
+    {
+      "name": "command-fillet",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "fillet_corners::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.20055577508173883,
+      "log_sha256": "94524f07c1fdebbeb4c1e81c8037b325009f61f95990dc336d92b7949d9d9415",
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1446 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "oracle-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--lib",
+        "rectangle::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 39.729358373908326,
+      "log_sha256": "8d58b8ca51550c528c5e85a73477f183901b81abd3473692d4f2b52c6ac4ab28",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 541 filtered out; finished in 0.53s"
+      ]
+    },
+    {
+      "name": "oracle-surface-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--lib",
+        "surface_flow::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.9417591139208525,
+      "log_sha256": "89373c8f335381b163d62cdfe1edc84877bbe2e7db44bc8e83062ca28cf9c93a",
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 535 filtered out; finished in 5.74s"
+      ]
+    },
+    {
+      "name": "app-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 56.924767811084166,
+      "log_sha256": "727458e6a4d4a5622bafec9c3d612cbf2924869214f562b57df1cb987a42679c",
+      "test_results": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1301 filtered out; finished in 0.20s"
+      ]
+    },
+    {
+      "name": "app-construction-plane",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::construction_plane::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.392250447999686,
+      "log_sha256": "06f5863186b53a2f01083d4c9b3ff55abc5425fa04147c954802204f03d58ab8",
+      "test_results": [
+        "test result: ok. 44 passed; 0 failed; 0 ignored; 0 measured; 1277 filtered out; finished in 0.11s"
+      ]
+    },
+    {
+      "name": "app-surface-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::surface_flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.39168451097793877,
+      "log_sha256": "148753c1a3e92b132c5621f6726cd99fb8f5f8cd9f9e1ccb1e5b8757c9495d14",
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1314 filtered out; finished in 0.10s"
+      ]
+    },
+    {
+      "name": "viewport-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "flow_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.29295119806192815,
+      "log_sha256": "e9e474ad7d4ce56bdb6b37960b29065c0119db10126eb19ba42f6ef5c0668276",
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1316 filtered out; finished in 0.04s"
+      ]
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_surface_flow",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.24666772107593715,
+      "log_sha256": "3618db4238830ab18d523d1dd5fcbfc1b6acc124de9cc0ec51778e3cc376d93c",
+      "test_results": [
+        "Ran 9 tests in 0.167s"
+      ]
+    },
+    {
+      "name": "native-smlib-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "rectangle::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 92.94946189597249,
+      "log_sha256": "7d56f92f6560b11188d780688fe0060f7b2e67480809276eb43cb0145f15ef83",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 562 filtered out; finished in 0.52s"
+      ]
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 22.07635624706745,
+      "log_sha256": "12147fa5a23628415c6fbbb079e7ea44f76b9faecafc8071b0f3e7b241ae7ece",
+      "test_results": []
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.506274061044678,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    }
+  ],
+  "sha256": {
+    "README.md": "1662b0c6d0cdb5a477f3deaca9f129e7ed8733a7feb22f6c9c60e883e754aa56",
+    "crates/viboceros-command/src/lib.rs": "9d2ed7c3bd78f7086ee15c3ac5cf54eb258ccccab8c03793d0a930454f9910ad",
+    "crates/viboceros-command/src/plane_primitives.rs": "d9517b406258c31208d3fbdfde2b347d481090ad7aa864663e7d3200224be10c",
+    "crates/viboceros-command/src/rectangle_input.rs": "c4a8c773d8558e1741ae06017c20e5a4291cd53ac29a0374db2822dd1761d978",
+    "crates/viboceros-command/src/rectangle_rounding.rs": "cc847c6200806666e4f589ccc1cf16f3434be5f2151b5edfe7e00bcda97fbe4b",
+    "crates/viboceros-geometry/src/polyline/fillet.rs": "ce387239bd6cd21b88eee7e0ac2e49b922929594770b934e587a5f8b7b7b331e",
+    "crates/viboceros-oracle/src/lib.rs": "0fc6b37dee7fd7d8ccf92170944db8625f739a063941107be0b7abf80118f317",
+    "crates/viboceros-oracle/src/rectangle.rs": "f44b835034da425eecf73b70c929721f753ebaa7ceb55a4b69a607824db02176",
+    "docs/commands/rectangle.md": "b0c96e0ca5504fc4dc69c70aa6e17954ad3963b156b4c8b6c6c1fbe5c58b8a47",
+    "docs/construction-planes.md": "b2e410d9500a7fa17cde995b91411e69e36865abcdb4f9fe90d43eff39e29988",
+    "docs/surface-flow-rectangles-validation.json": "8829c5cb7673358404acc64dcc3b3c59cfccb34e6bac4f1b4d57d3c2b000b899",
+    "docs/surface-flow-validation.json": "62eade00ea3817df9aa5d95304e34e40794b46c6ad8e5408cd2aafd1b5dd232e",
+    "src/app/rectangle.rs": "fa5d3802f4f4a7018bc6aca6f41794cd4a3b66b5e122a62a22f1f032081e6a72",
+    "src/app/tests/rectangle.rs": "3333e72fad6286a2490e2f93ec7706e8ef6b81c2136e255e0b9f28fd74fd8a24",
+    "src/viewport.rs": "96c920f67b5106029d97ad6c90f32cf95af49a982a4d124a15e37bc3e4ac5ba0",
+    "tools/rhino_oracle/fixtures/rectangle_rounded.json": "f73d3c3793fd617a566fdbb7f0f1634c65adcb49a996d7fb9b450f1dbbd13690",
+    "tools/rhino_oracle/observations/rectangle_rounded_rhino_20261017.json": "bbe2fbaf19221ed480f7813b1345551df53084d2cdb6fdf04eb3fc55dff1618f",
+    "tools/rhino_oracle/rectangle_probe.py": "93c26727bc82fcbd319259c61fc36c74942bc1c702cd625144d9996b6de45ced",
+    "tools/rhino_oracle/rhino_worker.py": "8d085d94f4662d592d9ecc24a323e48684c6e2659c3c7bc5dcdcf8495fa7fea5",
+    "tools/rhino_oracle/structural_sdk.py": "3ccc92e5d2cd87a98288715f7141c3bd2ba7024df3d134bdd401932dd3f577dc",
+    "tools/rhino_oracle/test_rectangle.py": "88b0b6c0ff532a8cf1b4b66ceb224c1c181fcefd8de6dd8551df50f46ca6712e"
+  }
+}

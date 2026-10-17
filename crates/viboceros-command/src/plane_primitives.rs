@@ -301,9 +301,20 @@ impl Command for CircleCommand {
     }
 }
 
-pub(super) struct RectangleCommand;
+#[derive(Default)]
+pub(super) struct RectangleCommand(
+    crate::remembered::Remembered<crate::rectangle_rounding::Options>,
+);
 
 impl Command for RectangleCommand {
+    fn rectangle_options(&self) -> Option<crate::rectangle_rounding::Options> {
+        Some(self.0.get())
+    }
+    fn remember_rectangle_options(&self, value: crate::rectangle_rounding::Options) -> bool {
+        self.0.set(value);
+        true
+    }
+
     fn name(&self) -> &'static str {
         "Rectangle"
     }
@@ -322,15 +333,17 @@ impl Command for RectangleCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let definition = crate::rectangle_input::from_arguments(
+        let (definition, options) = crate::rectangle_input::from_arguments_with_options(
             document,
             arguments,
             context.construction_plane,
+            self.0.get(),
         )?;
-        let polyline = definition.polyline(document.tolerance())?;
-        let width = polyline.vertices()[0].distance_to(polyline.vertices()[1])?;
-        let height = polyline.vertices()[1].distance_to(polyline.vertices()[2])?;
-        let id = document.add_geometry(Geometry::Polyline(polyline))?;
+        let geometry = definition.geometry(document.tolerance())?;
+        let width = definition.corners[0].distance_to(definition.corners[1])?;
+        let height = definition.corners[1].distance_to(definition.corners[2])?;
+        let id = document.add_geometry(geometry)?;
+        self.0.set(options);
         Ok(format!("Added rectangle {id} ({width:.6} × {height:.6})"))
     }
 }

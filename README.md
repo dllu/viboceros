@@ -36,6 +36,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
   [curve, edge, and temporary-portion placement](docs/commands/orient-on-curve.md)
   and [surface placement, XYZ presets and per-placement getters](docs/commands/orient-on-surface.md)
 - [Flow objects between curves](docs/commands/flow.md), with TargetSurface orientation, Local falloff, spatial Roadlike axes and grip previews
+- [Rectangle construction modes](docs/commands/rectangle.md), with circular and conic corner previews
 - [Flow objects between surfaces](docs/commands/flow-along-surface.md), with corner/edge orientation, rigid group origins, shared Rectangle input modes, normal constraints, and grip previews
 - Fit [planes](docs/commands/plane-through-points.md) and [lines](docs/commands/line-through-points.md) through points, clouds and grips
 - Fit [spheres through points and grips](docs/commands/sphere-fit-points.md)

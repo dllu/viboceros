@@ -190,3 +190,90 @@ fn rectangle_latches_the_first_pick_viewport_and_releases_the_plane_on_completio
         ]
     );
 }
+
+#[test]
+fn rounded_rectangle_previews_then_creates_one_history_edit_with_correct_defaults() {
+    let mut app = test_app();
+    enter(&mut app, "Rectangle Rounded");
+    enter(&mut app, "0");
+    let before = format!("{:?}", app.document);
+    let preview = app
+        .rectangle_getter()
+        .unwrap()
+        .input
+        .preview(point(10., 6., 0.))
+        .unwrap();
+    assert!(preview.rounding.is_some());
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "10,6,0");
+    assert!(app.rectangle_getter().unwrap().input.rounding_pending());
+    assert_eq!(app.document.objects().count(), 0);
+    enter(&mut app, "-2mm");
+    assert_eq!(app.commands.rectangle_options().radius, 2.);
+    assert_eq!(app.document.objects().count(), 1);
+    assert!(app.rectangle_session.is_none());
+    let original = app.document.objects().next().unwrap().geometry().clone();
+    assert!(matches!(original, Geometry::PolyCurve(_)));
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Rectangle"));
+    assert!(app.document.undo().unwrap().is_none());
+    app.document.redo().unwrap();
+    assert_eq!(app.document.objects().next().unwrap().geometry(), &original);
+    enter(&mut app, "Rectangle Rounded");
+    enter(&mut app, "0");
+    enter(&mut app, "10,6,0");
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().last().unwrap().geometry(), &original);
+    enter(&mut app, "Rectangle");
+    enter(&mut app, "0");
+    enter(&mut app, "10,6,0");
+    assert!(matches!(
+        app.document.objects().last().unwrap().geometry(),
+        Geometry::Polyline(_)
+    ));
+}
+
+#[test]
+fn conic_rectangle_dimensionless_input_retry_point_preview_and_cancellation_are_atomic() {
+    let mut app = test_app();
+    enter(&mut app, "Rectangle Rounded Center");
+    enter(&mut app, "0");
+    enter(&mut app, "10");
+    enter(&mut app, "6");
+    enter(&mut app, "Corner=Conic");
+    let before = format!("{:?}", app.document);
+    for input in ["0", "1", "0.5mm"] {
+        enter(&mut app, input);
+        assert_eq!(format!("{:?}", app.document), before);
+        assert!(app.rectangle_getter().unwrap().input.rho_pending());
+    }
+    enter(&mut app, "1/2");
+    assert_eq!(app.document.objects().count(), 1);
+    assert_eq!(app.commands.rectangle_options().rho, 0.5);
+    enter(&mut app, "Rectangle Rounded");
+    enter(&mut app, "0");
+    enter(&mut app, "10,6,0");
+    assert!(app.rectangle_getter().unwrap().input.rho_pending());
+    let getter = app.rectangle_getter().unwrap().input;
+    let p = point(1., 1., 3.);
+    let preview = getter
+        .preview(p)
+        .unwrap()
+        .geometry(app.document.tolerance())
+        .unwrap();
+    let before = format!("{:?}", app.document);
+    assert_eq!(format!("{:?}", app.document), before);
+    app.accept_drafting_point(p);
+    assert_eq!(app.document.objects().last().unwrap().geometry(), &preview);
+    enter(&mut app, "Rectangle Rounded");
+    enter(&mut app, "0");
+    enter(&mut app, "10,6,0");
+    enter(&mut app, "Corner");
+    assert!(!app.rectangle_getter().unwrap().input.rho_pending());
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Cancel");
+    assert_eq!(format!("{:?}", app.document), before);
+    assert_eq!(
+        app.commands.rectangle_options().kind,
+        viboceros_command::rectangle_rounding::Kind::Arc
+    );
+}

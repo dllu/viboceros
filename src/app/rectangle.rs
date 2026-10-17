@@ -107,12 +107,29 @@ impl VibocerosApp {
         let Some(s) = self.rectangle_getter() else {
             return;
         };
+        if self.rectangle_session.is_some()
+            && let Some(options) = s.input.rounding_options()
+        {
+            self.commands.remember_rectangle_options(options);
+        }
         let anchor = s.input.anchor();
         let frame = s.input.mouse_plane();
         let phase = if s.curve.is_some() {
             "center on curve"
         } else {
             s.input.prompt()
+        };
+        let phase = if s.input.rounding_pending() {
+            format!("{phase} <{}>", s.input.rounding_default().unwrap())
+        } else {
+            format!(
+                "{phase}{}",
+                if s.input.rounding_options().is_some() && !s.input.rounded() {
+                    "; Rounded"
+                } else {
+                    ""
+                }
+            )
         };
         let name = if self.rectangle_session.is_some() {
             "Rectangle"
@@ -133,12 +150,20 @@ impl VibocerosApp {
             // selection, layer attributes and history retain one owner.
             let [a, b, c] = definition.plane_points();
             let command = format!(
-                "Rectangle 3Point {} {} {}",
+                "Rectangle {}3Point {} {} {} {}",
+                if definition.rounding.is_some() {
+                    "Rounded "
+                } else {
+                    ""
+                },
                 format_model_point(a),
                 format_model_point(b),
-                format_model_point(c)
+                format_model_point(c),
+                definition
+                    .rounding
+                    .map_or_else(String::new, |r| r.arguments())
             );
-            if let Err(e) = definition.polyline(self.document.tolerance()) {
+            if let Err(e) = definition.geometry(self.document.tolerance()) {
                 self.push_log(format!("Error: {e}"));
                 return false;
             }
@@ -199,6 +224,9 @@ impl VibocerosApp {
         }
         let mut getter =
             InputSession::new(self.viewports[self.active_viewport].construction_plane());
+        getter.input = getter
+            .input
+            .with_rounding(self.commands.rectangle_options());
         if !words.all(|w| getter.input.option(w)) {
             return false;
         }
@@ -217,8 +245,11 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
+        let prior_mode = self.rectangle_getter().unwrap().input.mode();
         if self.rectangle_getter_mut().unwrap().input.option(word) {
-            self.rectangle_getter_mut().unwrap().curve = None;
+            if self.rectangle_getter().unwrap().input.mode() != prior_mode {
+                self.rectangle_getter_mut().unwrap().curve = None;
+            }
             self.point_filter = None;
             self.point_constraint = None;
             self.rectangle_prompt();
@@ -255,9 +286,14 @@ impl VibocerosApp {
             || self.rectangle_getter().unwrap().curve.is_some()
         {
             return false;
-        } else if let Some(value) =
-            viboceros_drafting::PointInput::parse_length_with_units(input, self.document.units())
-        {
+        } else if let Some(value) = viboceros_drafting::PointInput::parse_length_with_units(
+            input,
+            if self.rectangle_getter().unwrap().input.rho_pending() {
+                &viboceros_geometry::LengthUnitSystem::Unset
+            } else {
+                self.document.units()
+            },
+        ) {
             match value {
                 Ok(value) => self.rectangle_getter_mut().unwrap().input.number(value),
                 Err(e) => {

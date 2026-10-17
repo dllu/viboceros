@@ -4,6 +4,7 @@ const ZERO: Real = 2.3283064365386963e-10;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RectangleDefinition {
     pub corners: [Point3; 4],
+    pub rounding: Option<crate::rectangle_rounding::Corner>,
 }
 impl RectangleDefinition {
     pub fn plane_points(self) -> [Point3; 3] {
@@ -68,6 +69,7 @@ fn rectangle(
         });
     }
     Ok(RectangleDefinition {
+        rounding: None,
         corners: [
             frame.point_at([x0, y0, 0.])?,
             frame.point_at([x1, y0, 0.])?,
@@ -94,6 +96,7 @@ pub struct RectangleInput {
     length: Option<Real>,
     width: Option<Real>,
     centered: bool,
+    rounding: Option<crate::rectangle_rounding::Input>,
 }
 impl RectangleInput {
     pub fn new(plane: Frame3) -> Self {
@@ -104,7 +107,34 @@ impl RectangleInput {
             length: None,
             width: None,
             centered: false,
+            rounding: None,
         }
+    }
+    /// Enable Rectangle's corner getter; surface-flow planes keep it disabled.
+    pub fn with_rounding(mut self, options: crate::rectangle_rounding::Options) -> Self {
+        self.rounding = Some(crate::rectangle_rounding::Input::new(options));
+        self
+    }
+    pub fn rounded(self) -> bool {
+        self.rounding.is_some_and(|r| r.enabled)
+    }
+    pub fn rounding_default(self) -> Option<Real> {
+        self.rounding.map(|r| r.default_value())
+    }
+    pub fn rounding_options(self) -> Option<crate::rectangle_rounding::Options> {
+        self.rounding.map(|r| r.options)
+    }
+    pub fn rho_pending(self) -> bool {
+        self.rounding_pending()
+            && self.rounding.unwrap().options.kind == crate::rectangle_rounding::Kind::Conic
+    }
+    pub fn rounding_pending(self) -> bool {
+        self.rounding.is_some_and(|r| r.pending())
+    }
+    fn complete(&mut self, rectangle: RectangleDefinition) -> Option<RectangleDefinition> {
+        self.rounding
+            .as_mut()
+            .map_or(Some(rectangle), |r| r.complete(rectangle))
     }
     /// Interactive callers latch the receiving viewport at the first point.
     pub fn set_initial_plane(&mut self, plane: Frame3) {
@@ -122,6 +152,14 @@ impl RectangleInput {
         self.mode == RectangleMode::AroundCurve && self.points[0].is_none()
     }
     pub fn option(&mut self, word: &str) -> bool {
+        if let Some(rounding) = &mut self.rounding {
+            if rounding.option(word) {
+                return true;
+            }
+            if rounding.pending() {
+                return false;
+            }
+        }
         let word = word.trim_start_matches(['_', '-']);
         let mode = match word.to_ascii_lowercase().as_str() {
             "3point" => RectangleMode::ThreePoint,
@@ -165,6 +203,16 @@ impl RectangleInput {
         self.width = None;
     }
     pub fn prompt(self) -> &'static str {
+        if self.rounding_pending() {
+            return match self.rounding.unwrap().options.kind {
+                crate::rectangle_rounding::Kind::Arc => {
+                    "radius or point for rounded corner; Corner=Arc|Conic"
+                }
+                crate::rectangle_rounding::Kind::Conic => {
+                    "rho or point for conic corner; Corner=Arc|Conic"
+                }
+            };
+        }
         if self.width.is_some() {
             return "choose rectangle side or orientation";
         }
@@ -191,6 +239,9 @@ impl RectangleInput {
         }
     }
     pub fn mouse_plane(self) -> Option<Frame3> {
+        if self.rounding_pending() {
+            return self.rounding.unwrap().plane();
+        }
         self.points[0]?;
         if self.mode == RectangleMode::Vertical
             && let [Some(first), Some(second)] = self.points
@@ -209,6 +260,9 @@ impl RectangleInput {
         )
     }
     pub fn point(&mut self, p: Point3) -> Result<Option<RectangleDefinition>, GeometryError> {
+        if self.rounding_pending() {
+            return self.rounding.as_mut().unwrap().point(p).map(Some);
+        }
         if self.requests_curve() {
             return Err(GeometryError::Degenerate {
                 context: "rectangle curve reference",
@@ -342,9 +396,12 @@ impl RectangleInput {
                 });
             }
         };
-        Ok(Some(result))
+        Ok(self.complete(result))
     }
     pub fn number(&mut self, value: Real) -> Result<Option<RectangleDefinition>, GeometryError> {
+        if self.rounding_pending() {
+            return self.rounding.as_mut().unwrap().number(value).map(Some);
+        }
         if !value.is_finite() {
             return Err(GeometryError::NonFinite {
                 context: "rectangle length",
@@ -384,7 +441,7 @@ impl RectangleInput {
                         value
                     },
                 )
-                .map(Some);
+                .map(|rectangle| self.complete(rectangle));
             }
             self.length = Some(value);
             return Ok(None);
@@ -397,6 +454,9 @@ impl RectangleInput {
         Ok(None)
     }
     pub fn enter(&mut self) -> Result<Option<RectangleDefinition>, GeometryError> {
+        if self.rounding_pending() {
+            return self.number(self.rounding.unwrap().default_value());
+        }
         if let Some(length) = self.length {
             return self.number(length);
         }
@@ -408,19 +468,33 @@ impl RectangleInput {
     }
     pub fn preview(self, p: Point3) -> Option<RectangleDefinition> {
         let mut trial = self;
-        trial.point(p).ok().flatten()
+        trial.point(p).ok().flatten().or_else(|| {
+            trial
+                .rounding_pending()
+                .then(|| trial.enter().ok().flatten())
+                .flatten()
+        })
     }
 }
 
-pub const USAGE: &str = "Rectangle [Center|3Point|3Point EdgeMidpoint|Vertical|AroundCurve Curve=id|Edge=parent,index] points-or-dimensions";
+pub const USAGE: &str = "Rectangle [Rounded] [Center|3Point|3Point EdgeMidpoint|Vertical|AroundCurve Curve=id|Edge=parent,index] points-or-dimensions [Corner=Arc|Conic radius-or-rho|Enter]";
 /// Read scripted construction without adding helper objects to the document.
 pub fn from_arguments(
     doc: &viboceros_document::Document,
     args: &[&str],
     plane: Frame3,
 ) -> Result<RectangleDefinition, crate::CommandError> {
+    from_arguments_with_options(doc, args, plane, Default::default())
+        .map(|(rectangle, _)| rectangle)
+}
+pub fn from_arguments_with_options(
+    doc: &viboceros_document::Document,
+    args: &[&str],
+    plane: Frame3,
+    options: crate::rectangle_rounding::Options,
+) -> Result<(RectangleDefinition, crate::rectangle_rounding::Options), crate::CommandError> {
     use crate::CommandError;
-    let mut input = RectangleInput::new(plane);
+    let mut input = RectangleInput::new(plane).with_rounding(options);
     let mut curve = None;
     let mut result = None;
     let mut i = 0;
@@ -474,7 +548,9 @@ pub fn from_arguments(
             i += 1;
         }
     }
-    result.ok_or(CommandError::Usage(USAGE))
+    result
+        .map(|r| (r, input.rounding_options().unwrap()))
+        .ok_or(CommandError::Usage(USAGE))
 }
 
 #[cfg(test)]

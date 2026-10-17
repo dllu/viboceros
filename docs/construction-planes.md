@@ -21,7 +21,7 @@ completed primitive is one undo step.
   the pick. Circle supports a purely normal pick using the plane's Y direction;
   Polygon requires a nonzero in-plane component.
 - Rectangle [supports additional construction modes](commands/rectangle.md). Its two-corner form normalizes the two corners to increasing plane X/Y coordinates,
-  starts at the lower-left corner, and traverses counterclockwise. Rectangle
+  starts at the lower-left corner, and traverses counterclockwise. Unrounded Rectangle
   and Polygon use chord-length native parameters, not vertex-index parameters.
 - Two-corner Rectangle, MeshPlane, Box, and MeshBox project the opposite base corner onto
   the plane through the first corner. Box height is a signed displacement along

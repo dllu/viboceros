@@ -18,7 +18,19 @@ impl Polyline3 {
         radius: Real,
         tolerance: Tolerance,
     ) -> Result<PolyCurve3, GeometryError> {
-        self.fillet_corners_impl(radius, tolerance, None)
+        self.fillet_corners_impl(radius, tolerance, None, false)
+            .map(|(curve, _)| curve)
+    }
+
+    /// Use uniform outer spans while keeping the exact fillet leaves. This
+    /// supports very short corners whose natural domains lose precision when
+    /// accumulated after much longer straight segments.
+    pub fn try_fillet_corners_with_uniform_parameters(
+        &self,
+        radius: Real,
+        tolerance: Tolerance,
+    ) -> Result<PolyCurve3, GeometryError> {
+        self.fillet_corners_impl(radius, tolerance, None, true)
             .map(|(curve, _)| curve)
     }
 
@@ -28,7 +40,8 @@ impl Polyline3 {
         tolerance: Tolerance,
         corner_index: usize,
     ) -> Result<(PolyCurve3, usize), GeometryError> {
-        let (curve, marked) = self.fillet_corners_impl(radius, tolerance, Some(corner_index))?;
+        let (curve, marked) =
+            self.fillet_corners_impl(radius, tolerance, Some(corner_index), false)?;
         let marked = marked.ok_or(GeometryError::InvalidPolyCurve {
             context: "marked fillet corner has no arc",
         })?;
@@ -40,6 +53,7 @@ impl Polyline3 {
         radius: Real,
         tolerance: Tolerance,
         marked_corner: Option<usize>,
+        uniform: bool,
     ) -> Result<(PolyCurve3, Option<usize>), GeometryError> {
         require_finite([radius], "fillet radius")?;
         if radius <= tolerance.absolute() {
@@ -111,7 +125,13 @@ impl Polyline3 {
                 pieces.push(CurveSegment3::Arc(arc));
             }
         }
-        Ok((PolyCurve3::try_new(pieces)?, marked_piece))
+        let curve = if uniform {
+            let parameters = (0..=pieces.len()).map(|i| i as Real).collect();
+            PolyCurve3::try_with_segment_domains(pieces, parameters)?
+        } else {
+            PolyCurve3::try_new(pieces)?
+        };
+        Ok((curve, marked_piece))
     }
 }
 

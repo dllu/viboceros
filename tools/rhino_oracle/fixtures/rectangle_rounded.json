@@ -1,0 +1,1619 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-0",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        0
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-1",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-2",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        2.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-3",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        3
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-4",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        9
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-5",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        -1
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-6",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1e-08
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-0",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.01
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-1",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.25
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-2",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-3",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.75
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-4",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.99
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-5",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.41421356237309515
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-square-arc",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          4,
+          0
+        ],
+        "Corner=Arc",
+        99
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-square-conic",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          4,
+          0
+        ],
+        "Corner=Conic",
+        0.41421356237309515
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-tall-arc",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          10,
+          0
+        ],
+        "Corner=Arc",
+        99
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-tall-conic",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          10,
+          0
+        ],
+        "Corner=Conic",
+        0.41421356237309515
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-point-0",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        [
+          0.5,
+          0.5,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1.0
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-point-1",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        [
+          9.5,
+          0.5,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1.0
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-point-2",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        [
+          9.5,
+          5.5,
+          3
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1.0
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-point-3",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        [
+          0.5,
+          5.5,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1.0
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-point-4",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        [
+          2,
+          1,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1.0
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-point-5",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        [
+          -1,
+          1,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1.0
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-point-0",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        [
+          1,
+          1,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.4
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-point-1",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        [
+          9,
+          5,
+          2
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.4
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-point-2",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        [
+          2,
+          1,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.4
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-point-3",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        [
+          5,
+          3,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.4
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-point-4",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        [
+          -1,
+          1,
+          0
+        ]
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.4
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-arc-enter",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        "Enter"
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        2
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-conic-enter",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        "Enter"
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        0.6
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-toggle",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner",
+        0.5
+      ],
+      "setup": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-after-first",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Rounded",
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-center-arc",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          8,
+          3
+        ],
+        "Corner=Arc",
+        0.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-center-conic",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          8,
+          3
+        ],
+        "Corner=Conic",
+        0.6
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-three-arc",
+      "actions": [
+        "Rounded",
+        "3Point",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          -1,
+          3
+        ],
+        "Corner=Arc",
+        0.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-three-conic",
+      "actions": [
+        "Rounded",
+        "3Point",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          -1,
+          3
+        ],
+        "Corner=Conic",
+        0.6
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-mid-arc",
+      "actions": [
+        "Rounded",
+        "3Point",
+        "EdgeMidpoint",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          -1,
+          3
+        ],
+        "Corner=Arc",
+        0.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-mid-conic",
+      "actions": [
+        "Rounded",
+        "3Point",
+        "EdgeMidpoint",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          -1,
+          3
+        ],
+        "Corner=Conic",
+        0.6
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-center-three-arc",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        "3Point",
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          -1,
+          3
+        ],
+        "Corner=Arc",
+        0.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-center-three-conic",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        "3Point",
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          -1,
+          3
+        ],
+        "Corner=Conic",
+        0.6
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-vertical-arc",
+      "actions": [
+        "Rounded",
+        "Vertical",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          8,
+          9
+        ],
+        [
+          1,
+          2,
+          -5
+        ],
+        "Corner=Arc",
+        0.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-vertical-conic",
+      "actions": [
+        "Rounded",
+        "Vertical",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          8,
+          9
+        ],
+        [
+          1,
+          2,
+          -5
+        ],
+        "Corner=Conic",
+        0.6
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-numeric-arc",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        10,
+        6,
+        "Corner=Arc",
+        0.5
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-numeric-conic",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        10,
+        6,
+        "Corner=Conic",
+        0.6
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-front-arc",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        10,
+        6,
+        "Corner=Arc",
+        1
+      ],
+      "construction_plane": [
+        [
+          2,
+          4,
+          6
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-front-conic",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        10,
+        6,
+        "Corner=Conic",
+        0.3
+      ],
+      "construction_plane": [
+        [
+          2,
+          4,
+          6
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-oblique-arc",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        10,
+        6,
+        "Corner=Arc",
+        1
+      ],
+      "construction_plane": [
+        [
+          2,
+          4,
+          6
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          -2,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-oblique-conic",
+      "actions": [
+        "Rounded",
+        "Center",
+        [
+          1,
+          2,
+          3
+        ],
+        10,
+        6,
+        "Corner=Conic",
+        0.3
+      ],
+      "construction_plane": [
+        [
+          2,
+          4,
+          6
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          -2,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-around-line-arc",
+      "actions": [
+        "Rounded",
+        "AroundCurve",
+        [
+          6,
+          12,
+          18
+        ],
+        8,
+        6,
+        "Corner=Arc",
+        1
+      ],
+      "curve": {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          11,
+          22,
+          33
+        ]
+      }
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-around-line-conic",
+      "actions": [
+        "Rounded",
+        "AroundCurve",
+        [
+          6,
+          12,
+          18
+        ],
+        8,
+        6,
+        "Corner=Conic",
+        0.3
+      ],
+      "curve": {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          11,
+          22,
+          33
+        ]
+      }
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-around-arc-arc",
+      "actions": [
+        "Rounded",
+        "AroundCurve",
+        [
+          7.0710678118654755,
+          7.0710678118654755,
+          0
+        ],
+        8,
+        6,
+        "Corner=Arc",
+        1
+      ],
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            7.0710678118654755,
+            7.0710678118654755,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "op": "rectangle",
+      "id": "rounded-around-arc-conic",
+      "actions": [
+        "Rounded",
+        "AroundCurve",
+        [
+          7.0710678118654755,
+          7.0710678118654755,
+          0
+        ],
+        8,
+        6,
+        "Corner=Conic",
+        0.3
+      ],
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            7.0710678118654755,
+            7.0710678118654755,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-3",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        0.001
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-4",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        0.0001
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-5",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1e-05
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-6",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1e-06
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-7",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1e-07
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-9",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1e-09
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-10",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1e-10
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "tiny-11",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        1e-11
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "arc-reflect",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Arc",
+        [
+          -0.5,
+          0.5,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "rectangle",
+      "id": "conic-reflect",
+      "actions": [
+        "Rounded",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          6,
+          0
+        ],
+        "Corner=Conic",
+        [
+          -0.5,
+          -0.5,
+          3
+        ]
+      ]
+    }
+  ]
+}

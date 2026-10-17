@@ -2128,14 +2128,31 @@ impl Viewport {
             .rectangle_input
             .and_then(|getter| getter.preview(drafting_cursor?.point))
         {
-            for index in 0..4 {
-                if let Some(segment) = self.project_segment(
-                    rectangle.corners[index],
-                    rectangle.corners[(index + 1) % 4],
-                    rect,
-                ) {
-                    painter
-                        .line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
+            if rectangle.rounding.is_some() {
+                if let Ok(geometry) = rectangle.geometry(document.tolerance())
+                    && let Ok(Some(curve)) = geometry.nurbs_curve_representation()
+                {
+                    let mut projected = ProjectedPrimitives::default();
+                    self.add_projected_nurbs_curve(&mut projected, rect, &curve);
+                    for segment in projected.segments {
+                        painter.line_segment(
+                            segment,
+                            Stroke::new(2.0, Color32::from_rgb(20, 115, 190)),
+                        );
+                    }
+                }
+            } else {
+                for index in 0..4 {
+                    if let Some(segment) = self.project_segment(
+                        rectangle.corners[index],
+                        rectangle.corners[(index + 1) % 4],
+                        rect,
+                    ) {
+                        painter.line_segment(
+                            segment,
+                            Stroke::new(2.0, Color32::from_rgb(20, 115, 190)),
+                        );
+                    }
                 }
             }
         }

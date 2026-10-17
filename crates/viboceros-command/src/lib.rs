@@ -288,6 +288,7 @@ mod plane_primitives;
 mod plane_transforms;
 pub mod point_transform;
 pub mod rectangle_input;
+pub mod rectangle_rounding;
 use mirror::MirrorCommand;
 pub mod set_point;
 pub mod set_view;
@@ -452,6 +453,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
+        false
+    }
+    fn rectangle_options(&self) -> Option<rectangle_rounding::Options> {
+        None
+    }
+    fn remember_rectangle_options(&self, _value: rectangle_rounding::Options) -> bool {
         false
     }
     fn surface_flow_options(&self) -> Option<surface_flow::Options> {
@@ -753,7 +760,7 @@ impl CommandRegistry {
             .register(PolylineCommand)
             .expect("unique built-in command");
         registry
-            .register(RectangleCommand)
+            .register(RectangleCommand::default())
             .expect("unique built-in command");
         registry
             .register(PolygonCommand)
@@ -1984,6 +1991,17 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn rectangle_options(&self) -> rectangle_rounding::Options {
+        self.lookup
+            .get(&normalize_command_name("Rectangle"))
+            .and_then(|i| self.commands[*i].rectangle_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_rectangle_options(&self, value: rectangle_rounding::Options) -> bool {
+        self.lookup
+            .get(&normalize_command_name("Rectangle"))
+            .is_some_and(|i| self.commands[*i].remember_rectangle_options(value))
+    }
     pub fn surface_flow_options(&self) -> surface_flow::Options {
         self.lookup
             .get(&normalize_command_name("FlowAlongSrf"))
