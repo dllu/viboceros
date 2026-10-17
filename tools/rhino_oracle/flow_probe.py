@@ -6,7 +6,7 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 def validate(op):
-    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','diagnostic_length_batches','diagnostic_length_batch_divisions','diagnostic_integrals','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
+    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','diagnostic_length_batches','diagnostic_length_batch_divisions','diagnostic_integrals','diagnostic_length_requests','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid Flow id')
     for key in ('base','target'):
         if not isinstance(op[key],dict)or op[key].get('type')not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('Flow requires curve guides')
@@ -24,6 +24,17 @@ def validate(op):
     if 'diagnostic_length_samples'in op and(type(op['diagnostic_length_samples'])is not int or not 2<=op['diagnostic_length_samples']<=129 or not op.get('diagnostics')):raise ValueError('invalid Flow length diagnostic count')
     if 'diagnostic_length_batches'in op and(type(op['diagnostic_length_batches'])is not bool or not op.get('diagnostic_length_samples')):raise ValueError('invalid Flow batch length diagnostics')
     if 'diagnostic_integrals'in op and(type(op['diagnostic_integrals'])is not bool or not op.get('diagnostic_length_samples')):raise ValueError('invalid Flow integral diagnostics')
+    if 'diagnostic_length_requests'in op:
+        requests=op['diagnostic_length_requests']
+        if not op.get('diagnostics')or not isinstance(requests,list)or not 1<=len(requests)<=32:raise ValueError('invalid Flow length requests')
+        total=0
+        for request in requests:
+            if not isinstance(request,dict)or set(request)-{'fractions','absolute_tolerance','fractional_tolerance','fresh'}or not {'fractions','absolute_tolerance','fractional_tolerance'}<=set(request):raise ValueError('invalid Flow length request')
+            fractions=request['fractions'];absolute=request['absolute_tolerance'];fractional=request['fractional_tolerance']
+            if not isinstance(fractions,list)or not 1<=len(fractions)<=4096 or any(type(f)not in(int,float)or not 0<=f<=1 for f in fractions):raise ValueError('invalid Flow request fractions')
+            if type(absolute)not in(int,float)or not 0<=absolute<=1.7976931348623157e308 or type(fractional)not in(int,float)or not 0<fractional<1 or type(request.get('fresh',True))is not bool:raise ValueError('invalid Flow request tolerances')
+            total+=len(fractions)
+        if total>32768:raise ValueError('too many Flow request fractions')
     if 'diagnostic_length_batch_divisions'in op:
         counts=op['diagnostic_length_batch_divisions']
         if not op.get('diagnostic_length_batches')or not isinstance(counts,list)or not 1<=len(counts)<=8 or any(type(n)is not int or not 1<=n<=4096 for n in counts)or len(set(counts))!=len(counts):raise ValueError('invalid Flow batch division counts')
@@ -103,6 +114,18 @@ def run(op,host,iterations,tolerance):
                                 if 'diagnostic_length_batch_divisions'in op:row['divisions']=count
                                 batches.append(row)
                         result['length_batches']=batches
+                if 'diagnostic_length_requests'in op:
+                    requests=[]
+                    for request in op['diagnostic_length_requests']:
+                        owned=c.DuplicateCurve()if request.get('fresh',True)else None
+                        try:
+                            query=owned if owned is not None else c
+                            fractions=host['System'].Array[host['System'].Double](request['fractions'])
+                            values=query.NormalizedLengthParameters(fractions,request['absolute_tolerance'],request['fractional_tolerance'])
+                            requests.append(dict(parameters=list(values)if values is not None else None))
+                        finally:
+                            if owned is not None:owned.Dispose()
+                    result['length_requests']=requests
                 return result
             result['diagnostics']=dict(base=frames(base),target=frames(target))
         if not op.get('command'):return result,0

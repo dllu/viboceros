@@ -150,21 +150,15 @@
     "preexisting_unverifiable_records_left_unchanged": 69
   },
   "sha256": {
-    "crates/viboceros-command/src/flow.rs": "8bc5816dd6a58a1ae03c17d1018bc9247c9992ef4fa9e79154197a9205ab1efb",
     "crates/viboceros-command/src/flow/tests.rs": "5b6a2627e49c8b4da74e81ebc5fc43a4e47a49e697f23ab29dba5e141ccddf83",
-    "crates/viboceros-command/src/lib.rs": "c7fd248cad63dc6582f4cb54c34ecfc08ab00dd7770e502cddac56466c60a666",
     "crates/viboceros-geometry/src/circle_curve.rs": "8f95987035ade21be75a5fc258800f5b670ca72b838a521b9770acafd100693e",
     "crates/viboceros-geometry/src/circular.rs": "dc2b9956b9eb90fd6466a37959a02061cc9bc36d17e6b8afca9c8a68c38dab36",
     "crates/viboceros-geometry/src/curve_evaluate.rs": "a8c6b3575df5a56b22da798736def93ba8ac9979a7733aa8f5291eb5347f37a1",
-    "crates/viboceros-geometry/src/morph/flow.rs": "32dd141e0571610cf6a5acd04391c1fc1097f1abd19153ebc5fb65b3f1cbf394",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "e5ccc9ca0f1af545cec98a1ec343b7e9f8396346ec31e0cb1b58fecdb5ebbd71",
     "crates/viboceros-opennurbs/native/curve_queries.h": "d989fb918aa7c0aaf7f74d78ed09d36ee5dcdf89c3149a86b84fdb63f41ce649",
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "182e042e26e40454b6aab9f23a1d0fcc7a54c8715edb9bcbb8047d21cdea7ca3",
     "crates/viboceros-opennurbs/src/curve.rs": "8ec0cf2071b697b52075135a9a4dd261473ba8060687d9ed3c66e5271ad3df6c",
     "crates/viboceros-opennurbs/src/lib.rs": "5612e871fcd0c1b826191748094abc457dcc1ce42e3877536a879680f062dccd",
-    "crates/viboceros-oracle/src/flow_line.rs": "266108e222a31c373d2baee77af3b9dcd858bd85ea4267ad1e13fedcceeafebe",
-    "crates/viboceros-oracle/src/flow_roadlike.rs": "c4be80297eabac7ef6e30d0a285c19b48d304b4f8b7a940ab1d070406a375c7e",
-    "docs/commands/flow.md": "9fa3ab295a3c1bff36ceb878e64a42c436d1003439be126a15107f2c582c0b89",
     "docs/coplanar-mesh-qualification.json": "d58a927867dad99adf096b554982d1ef59d308241414cad4ad00757c5687dd42",
     "docs/cull-degenerate-mesh-faces-qualification.json": "294bd5769c989b37497e9bd962b53998f6d79d443ef8f7b207e8f7bc47fccbad",
     "docs/flow-grips-validation.json": "25dbde1a9c0f5d3967db28996e2d0307400c01a2fbaee9f2bd87dbc26d928b70",
@@ -176,19 +170,12 @@
     "docs/orient-surface-grips-validation.json": "1e2300070732faff295d9265282d16e3862209137e076d5bf68fd6c5ab4ccbc8",
     "docs/prepared-curve-length-validation.json": "3673d2340740d708c8317e23282b5b3650324604a7dfdc9fee529bfacd43209f",
     "docs/sphere-fit-points-validation.json": "a051aa46072c32826f416e47c6144047264d8b330e1cc12366a6b0607a19bbc3",
-    "src/app/tests/flow.rs": "f7d827411954dcf463f3d1f828b5ec41df7f7d75ec4ad9a1d8fe17d9becc722b",
     "tools/rhino_oracle/fixtures/flow_pole_lookup.json": "37c5f6866a54e21d789f494d70f0941a3bf601f1aece5e03dc3b6132dc1c5efd",
     "tools/rhino_oracle/fixtures/flow_roadlike_poles.json": "a80964a16595b6cd8b6947cd0813c560b875848bfed474e50615bffdf1b9712f",
-    "tools/rhino_oracle/flow_pole_report.py": "4bdaa0c3d980536a989d82d0bd7d09ba4f5c3a8b098d4d6def7142db7b1b50df",
     "tools/rhino_oracle/observations/flow_pole_lookup_rhino_20261016.json": "fec75434cc95226dfbe2bf87fd5e38d2de8f1d74fd78dfd0359c0d945cc8855a",
-    "tools/rhino_oracle/observations/flow_pole_lookup_viboceros_20261016.json": "a005f65fdb5fb56d6e4d440b451a5654bf7cd51c15817e5c3f9ba8aea1b56805",
-    "tools/rhino_oracle/observations/flow_pole_report_20261016.json": "90accfebb1956ae4a4d305a10f0ca47934b2b4e5433e00a93e8e229a5decae28",
     "tools/rhino_oracle/observations/flow_roadlike_diagnostics_comparison_20261016.json": "4ed11405f53d966847dada6476986465a9936d5efa24dda198c9fdd6950e5433",
     "tools/rhino_oracle/observations/flow_roadlike_diagnostics_viboceros_20261016.json": "90b00e189e43fa21e15d71a90920be20940280f6765a002fdf422a649bb188a0",
-    "tools/rhino_oracle/observations/flow_roadlike_poles_comparison_20261016.json": "3d3f31448125ce36dc98f161b743bec96f220634768294af84a74c1d0f058934",
-    "tools/rhino_oracle/observations/flow_roadlike_poles_rhino_20261016.json": "198ebb0025b41b0516b746afca87dd0d65ad8569d0073b00733ecf8a9da43232",
-    "tools/rhino_oracle/observations/flow_roadlike_poles_viboceros_20261016.json": "43d24d9991196a1b3c637e15de7422b8d0232ccdacee7f58d2a629a40a97cda2",
-    "tools/rhino_oracle/test_flow_roadlike.py": "a405d29277ca15c43c18b2d00b8d16489b2fbd5939e940452ea81f3e5c412607"
+    "tools/rhino_oracle/observations/flow_roadlike_poles_rhino_20261016.json": "198ebb0025b41b0516b746afca87dd0d65ad8569d0073b00733ecf8a9da43232"
   },
   "git_sha256": {
     "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:README.md": "ac2e7f8c4bc8c97628688f9016c3997ccf3522cc307933446c5d76c62304c45a",
@@ -197,6 +184,19 @@
     "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-command-validation.json": "05d0e0c247a80ecfe3fd8dc94acf9a6bea70773f62ca2c2f1b14c9062d9c726d",
     "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-development.md": "c15d106a486bb10d3a06349859e956bd717e9a078e3ea7a6d54e8b77fcf736a7",
     "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-roadlike-validation.json": "0bfe23ed2af8ce086e03530ac30d44372b19af7f3a11dd9d9fa9d87aa05392dd",
-    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-structure-validation.json": "650fadf1f6fee219841dce733a3246e8c7ed0387cfb160acaca8f79dc7197edb"
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-structure-validation.json": "650fadf1f6fee219841dce733a3246e8c7ed0387cfb160acaca8f79dc7197edb",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:crates/viboceros-command/src/flow.rs": "8bc5816dd6a58a1ae03c17d1018bc9247c9992ef4fa9e79154197a9205ab1efb",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:crates/viboceros-command/src/lib.rs": "c7fd248cad63dc6582f4cb54c34ecfc08ab00dd7770e502cddac56466c60a666",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:crates/viboceros-geometry/src/morph/flow.rs": "32dd141e0571610cf6a5acd04391c1fc1097f1abd19153ebc5fb65b3f1cbf394",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:crates/viboceros-oracle/src/flow_line.rs": "266108e222a31c373d2baee77af3b9dcd858bd85ea4267ad1e13fedcceeafebe",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:crates/viboceros-oracle/src/flow_roadlike.rs": "c4be80297eabac7ef6e30d0a285c19b48d304b4f8b7a940ab1d070406a375c7e",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:docs/commands/flow.md": "9fa3ab295a3c1bff36ceb878e64a42c436d1003439be126a15107f2c582c0b89",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:src/app/tests/flow.rs": "f7d827411954dcf463f3d1f828b5ec41df7f7d75ec4ad9a1d8fe17d9becc722b",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/flow_pole_report.py": "4bdaa0c3d980536a989d82d0bd7d09ba4f5c3a8b098d4d6def7142db7b1b50df",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_pole_lookup_viboceros_20261016.json": "a005f65fdb5fb56d6e4d440b451a5654bf7cd51c15817e5c3f9ba8aea1b56805",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_pole_report_20261016.json": "90accfebb1956ae4a4d305a10f0ca47934b2b4e5433e00a93e8e229a5decae28",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_roadlike_poles_comparison_20261016.json": "3d3f31448125ce36dc98f161b743bec96f220634768294af84a74c1d0f058934",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_roadlike_poles_viboceros_20261016.json": "43d24d9991196a1b3c637e15de7422b8d0232ccdacee7f58d2a629a40a97cda2",
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/test_flow_roadlike.py": "a405d29277ca15c43c18b2d00b8d16489b2fbd5939e940452ea81f3e5c412607"
   }
 }

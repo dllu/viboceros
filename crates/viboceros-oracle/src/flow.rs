@@ -93,6 +93,7 @@ pub(super) fn run(
             .to_owned();
         let integration_traces = if f.diagnostic_integrals {
             let mut roles = serde_json::Map::new();
+            let mut inverses = serde_json::Map::new();
             for (role, curve) in [("base", &a), ("target", &b)] {
                 let sampler =
                     viboceros_geometry::ArcLengthSampler::try_new(curve.as_ref(), tolerance)?;
@@ -106,8 +107,18 @@ pub(super) fn run(
                     }));
                 }
                 roles.insert(role.into(), json!(traces));
+                let mut batches = Vec::new();
+                for divisions in [2, 16, 100, 840] {
+                    let fractions = (0..=divisions)
+                        .map(|i| i as f64 / divisions as f64)
+                        .collect::<Vec<_>>();
+                    let parameters =
+                        sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-6)?;
+                    batches.push(json!({"divisions":divisions,"parameters":parameters}));
+                }
+                inverses.insert(role.into(), json!(batches));
             }
-            Some(roles)
+            Some((roles, inverses))
         } else {
             None
         };
@@ -175,8 +186,9 @@ pub(super) fn run(
             Value::Null
         };
         let mut result = json!({"sdk_points":points,"base_length":morph.base_length(),"target_length":morph.target_length(),"command":command});
-        if let Some(traces) = integration_traces {
+        if let Some((traces, inverses)) = integration_traces {
             result["integration_traces"] = Value::Object(traces);
+            result["incremental_inverse_batches"] = Value::Object(inverses);
         }
         Ok(result)
     })
@@ -186,7 +198,7 @@ pub(super) fn run(
 mod tests {
     use super::*;
     #[test]
-    fn integration_traces_match_thirty_public_native_length_queries() {
+    fn integration_traces_and_incremental_inverses_match_native_nurbs_batches() {
         let request: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/flow_integration.json"
         ))
@@ -196,7 +208,7 @@ mod tests {
         ))
         .unwrap();
         let actual = run_request(&request).unwrap();
-        assert_eq!(actual.results.len(), 3);
+        assert_eq!(actual.results.len(), 4);
         let mut compared = 0;
         for (a, n) in actual
             .results
@@ -205,6 +217,11 @@ mod tests {
         {
             assert_eq!(a.id, n["id"]);
             for role in ["base", "target"] {
+                let native_fractional = if a.id == "polycurve-integration" && role == "target" {
+                    1e-6
+                } else {
+                    1e-4
+                };
                 let traces = a.value["integration_traces"][role].as_array().unwrap();
                 let integrals = n["value"]["diagnostics"][role]["integrals"]
                     .as_array()
@@ -225,9 +242,55 @@ mod tests {
                     );
                     compared += 1;
                 }
+                let batches = a.value["incremental_inverse_batches"][role]
+                    .as_array()
+                    .unwrap();
+                assert_eq!(batches.len(), 4);
+                for batch in batches {
+                    let native = n["value"]["diagnostics"][role]["length_batches"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .find(|v| {
+                            v["divisions"] == batch["divisions"]
+                                && v["fractional_tolerance"] == native_fractional
+                        })
+                        .unwrap();
+                    let aa = batch["parameters"].as_array().unwrap();
+                    let nn = native["parameters"].as_array().unwrap();
+                    assert_eq!(aa.len(), nn.len());
+                    for (x, y) in aa.iter().zip(nn) {
+                        assert!(
+                            (x.as_f64().unwrap() - y.as_f64().unwrap()).abs() < 1e-8,
+                            "{} {role}: {x} != {y}",
+                            a.id
+                        );
+                    }
+                }
             }
         }
-        assert_eq!(compared, 30);
+        assert_eq!(compared, 40);
+    }
+    #[test]
+    fn nurbs_source_target_and_composite_guides_match_seventy_two_native_maps() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/flow_nurbs.json"
+        ))
+        .unwrap();
+        let native: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/flow_nurbs_rhino_20261017.json"
+        ))
+        .unwrap();
+        let actual = run_request(&request).unwrap();
+        assert_eq!(actual.results.len(), 72);
+        for (a, n) in actual
+            .results
+            .iter()
+            .zip(native["results"].as_array().unwrap())
+        {
+            assert_eq!(a.id, n["id"]);
+            near(&a.value["sdk_points"], &n["value"]["sdk_points"], &a.id);
+        }
     }
     fn near(a: &Value, b: &Value, label: &str) {
         let a = a.as_array().unwrap();

@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "timezone": "UTC",
+  "base_repository_revision": "0a30c30ed56d3b5f99344b10036de96f7c28117b",
+  "component": "Incremental curve inverse, NURBS and composite Flow, and spatial Roadlike with explicit axes",
+  "production_kernel_changed": true,
+  "production_flow_command_behavior_changed": true,
+  "complete_flow_qualified": false,
+  "complete_native_inverse_qualified": false,
+  "automatic_spatial_orientation_qualified": false,
+  "performance_qualified": false,
+  "native_values_used_as_kernel_inputs": false,
+  "implementation": [
+    "Reuse independent Cash-Karp 5/4 integration with the standard tableau and step controller. Retain span boundaries and checkpoints separated by strictly more than 0.01 in each integration interval. Apply this filter before mapping normalized parameters to avoid span-offset roundoff.",
+    "Invert nondecreasing fractions sequentially. Each accepted approximate point becomes the next origin. Tighten every root bracket with fresh integration checkpoints, snap near original nodes while retaining their canonical integrated distance, and preserve exact endpoints and repeated fractions.",
+    "Scale the stopping error by the complete integrated length for NURBS and by the containing component length for polycurves. The precise order-independent API remains available separately.",
+    "Bound initial integration at 65,536 attempted steps; inverse refinements share a separate 65,536-step budget and permit 80 bracket updates per query. Validate at most 1,048,576 finite nondecreasing fractions in [0,1] and a tolerance strictly in (0,1). Return no partial results and mutate no prepared state on failure.",
+    "Flow builds 841 parameters at uniform normalized distance using internal tolerance 1e-6. Interpolate this independent table in both source and target directions; obtain guide lengths separately with forward tolerance 1e-8. Primitive and exactly linear guide paths retain their existing policy.",
+    "Remove the curved-NURBS and explicit-Roadlike spatial guards. Retain the guards for automatic spatial transport and Roadlike without both explicit axes. Preview and commit share the prepared map."
+  ],
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "method": "Owned private Rhino display, public RhinoCommon SDK and actual Flow commands on authored geometry. Complete raw responses retained. No proprietary code inspected or decompiled.",
+    "captures": [
+      {
+        "scheme": "VibocerosOracleInverse20261017a",
+        "sdk_operations": 2,
+        "purpose": "Arbitrary inverse prefixes, suffixes, strides, order, tolerance and curve lifetime"
+      },
+      {
+        "scheme": "VibocerosOracleInverse20261017b",
+        "sdk_operations": 2,
+        "purpose": "Snap windows around independently integrated nodes"
+      },
+      {
+        "scheme": "VibocerosOracleInverse20261017d",
+        "sdk_operations": 1,
+        "purpose": "Mixed-polycurve forward integration and batch inverse diagnostics"
+      },
+      {
+        "scheme": "VibocerosOracleNurbsFlow20261017a",
+        "sdk_operations": 72
+      },
+      {
+        "scheme": "VibocerosOracleNurbsFlow20261017b",
+        "actual_commands": 24,
+        "purpose": "Rational planar guides"
+      },
+      {
+        "scheme": "VibocerosOracleNurbsFlow20261017c",
+        "actual_commands": 48,
+        "purpose": "Cubic and composite planar guides"
+      },
+      {
+        "scheme": "VibocerosOracleNurbsFlow20261017d",
+        "actual_commands": 24,
+        "purpose": "Spatial nonrigid Stretch=Yes"
+      },
+      {
+        "scheme": "VibocerosOracleNurbsFlow20261017e",
+        "actual_commands": 36,
+        "purpose": "Spatial nonrigid Stretch=No and rigid both Stretch modes"
+      }
+    ],
+    "integration_capture": "Original three operations from VibocerosOracleIntegration20261016a retained numerically unchanged; append one operation from VibocerosOracleInverse20261017d.",
+    "command_merge": "Planar b+c and spatial d+e captures concatenated without altering result values. Identical engine versions and unique authored operation IDs verified.",
+    "all_new_native_commands_returned_success": true,
+    "all_new_native_undo_redo_returned_success": true,
+    "numeric_epsilon": 1e-06,
+    "epsilon_changed": false
+  },
+  "comparisons": [
+    {
+      "fixture": "flow_nurbs",
+      "kind": "SDK maps",
+      "cases": 72,
+      "matched_cases": 72,
+      "max_coordinate_error": 2.1737278643740865e-10
+    },
+    {
+      "fixture": "flow_nurbs_command",
+      "kind": "planar Roadlike commands",
+      "cases": 72,
+      "matched_cases": 72,
+      "max_coordinate_error": 2.1737278643740865e-10
+    },
+    {
+      "fixture": "flow_nurbs_spatial",
+      "kind": "spatial Roadlike commands",
+      "cases": 60,
+      "matched_cases": 60,
+      "max_coordinate_error": 2.899873248196627e-07
+    }
+  ],
+  "coverage": {
+    "new_sdk_maps": 72,
+    "new_actual_commands": 132,
+    "planar_sdk": "Rational quarter-circle, cubic and NURBS-containing polycurve in base, target and both roles; both Stretch modes and both guide reversals.",
+    "planar_commands": "Three guide families in base, target and both roles; both Copy modes and both guide reversals; Stretch=Yes, Rigid=No, explicit Roadlike axes.",
+    "spatial_commands": "Spatial cubic in base, target and both roles; 48 nonrigid combinations cover both Copy modes, both Stretch modes and both guide reversals. Twelve rigid combinations cover both Copy and Stretch modes with reversals off. All use explicit Roadlike axes.",
+    "compared_states": [
+      "geometry",
+      "group membership",
+      "selection",
+      "guide preservation",
+      "before",
+      "after",
+      "real Undo",
+      "real Redo"
+    ],
+    "prior_pole_workflows": 40,
+    "matched_prior_pole_workflows": 40,
+    "newly_resolved_prior_nurbs_rejections": 4,
+    "prior_diagnostic_and_pole_workflows": 52,
+    "matched_prior_diagnostic_and_pole_workflows": 48,
+    "retained_atomic_roadlike_automatic_rejections": 4,
+    "app": "Spatial NURBS axes through CPlaneZ getters; all 51 preview and committed points match native, preview leaves the document unchanged and commit creates exactly one Undo record with exact Redo.",
+    "numerical": "Incremental prefix dependence, repeated fractions, component stopping scale, repeated knots, model scales 1e-200 through 1e200, shifted and quantized source domains, invalid input and exhausted budgets."
+  },
+  "integration": {
+    "forward_integrals": 40,
+    "matched_forward_integrals": 40,
+    "max_relative_forward_length_error": 7.251702204511755e-15,
+    "inverse_batches": 32,
+    "matched_inverse_batches": 32,
+    "inverse_parameters": 7696,
+    "max_inverse_parameter_error": 4.298839062499837e-12,
+    "parameter_epsilon": 1e-08,
+    "internal_fractional_tolerance": 1e-06,
+    "native_fractional_tolerances": {
+      "nurbs": 0.0001,
+      "polycurve": 1e-06
+    },
+    "arbitrary_query_evidence": "Native prefixes are invariant, suffixes differ, decreasing requests return null, fresh/reused curves agree, and loose fractional queries agree with absolute tolerance 0 and 1e-12. Native snap plateaus coincide with independently integrated checkpoints and discard the first 0.01 step."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve::arc_length::",
+      "exit_code": 0,
+      "log_sha256": "21da034ee33031b5e5960c800bac89db42a355920f9553f18e59c5c1bddc1219",
+      "passed_tests": 29
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib morph::flow::",
+      "exit_code": 0,
+      "log_sha256": "6b57dcbfd3e5eca725b5f38acaba22021859706d47cfd60a5a96f93b43bc78b4",
+      "passed_tests": 6
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib flow::",
+      "exit_code": 0,
+      "log_sha256": "7ed04fa71639f284f9448208f7c5d1e1050d0300369cf871d0d3972386f5701a",
+      "passed_tests": 7
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "5be7cc740d73dbcad67b67b59b7b8c01f94e536a7f24b39719acbb50a299dad2",
+      "passed_tests": 10
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::flow::",
+      "exit_code": 0,
+      "log_sha256": "f16d62bf763603ceb05df92943126488eeaff5fb0187b7f0716352f854fda5cf",
+      "passed_tests": 11
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_integration tools.rhino_oracle.test_flow_roadlike tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_structure tools.rhino_oracle.test_arc_length_batch tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_flow_nurbs",
+      "exit_code": 0,
+      "log_sha256": "a857654bb596bf6de1bc15af87d5b971f40f7a8f3304655aa80dbafed3964336",
+      "passed_tests": 44
+    },
+    {
+      "command": "cargo clippy -p viboceros-geometry -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "5f996488f449f2f14f1f014592da2bbbf61fbdf51e3c7fedc1c434b61082ab66"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m py_compile tools/rhino_oracle/flow_probe.py tools/rhino_oracle/flow_integration_report.py tools/rhino_oracle/flow_pole_report.py tools/rhino_oracle/test_flow_integration.py tools/rhino_oracle/test_flow_roadlike.py tools/rhino_oracle/test_flow_nurbs.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "Automatic spatial orientation remains unfinished: the eight original spatial mismatches and their command guard remain. Native Roadlike Automatic also remains guarded. Local, Stairlike and TargetSurface are unfinished.",
+    "This qualifies the stated Flow lookup and fixtures, not every public Rhino inverse tolerance, curve family or closed/periodic/edge guide combination. PolyCurve and NURBS public tolerance buckets differ; a general public-API tolerance translation is not implemented.",
+    "Incremental inverse errors accumulate and depend on earlier fractions. Use the precise API for independent high-accuracy geometry queries. Integration error estimates and interpolated lookup tables are not geometric accuracy guarantees.",
+    "Further fitted owner geometry, multiple-object rigid groups, native option/construction history, preview appearance and performance require Flow-specific native qualification.",
+    "No full workspace suite, native-smlib runtime, cross-platform runtime or performance parity is claimed."
+  ],
+  "historical_provenance": {
+    "preserved_records": 2,
+    "preserved_entries": 28,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "e5ec9e1a46b190cc4860066ca0ddc74b4b755dd51982a28df0a10c90c1b179eb",
+    "crates/viboceros-command/src/flow.rs": "b7d8c05b0697c8eb6ea13f2975bb3f14cf10d38a4a41c9b90ab99fd563826b6c",
+    "crates/viboceros-command/src/lib.rs": "e2a6a283304d4d8451297567a8dee9f1b4eb8cc5417656c7af65db1cc37d24af",
+    "crates/viboceros-geometry/src/curve/arc_length.rs": "27af2e1cba847223edd9811534352b85347b7a9ad5bfa9bf0824a32d4e4cbf4b",
+    "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "5b566778f28cc47d52109a7f474443a05795e1b4ce8102bd116fd1c4340ac086",
+    "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "5eff0dab39e2ebfc98ad794e38630f07822a698ab17936c79a8dd42396bd7bc5",
+    "crates/viboceros-geometry/src/error.rs": "2cfc0fa01186ee0ad7b721e54a54f2bde91671cdddd6e3b2a67a0c718e698bad",
+    "crates/viboceros-geometry/src/morph/flow.rs": "910ccae76c6f7ddf9b59e66a3079261373d099eaa390559d191d8edc52b3509f",
+    "crates/viboceros-oracle/src/flow.rs": "c78d8dd0c36d60109cefafe9b01be090a4d6b791ed087d5c120894613e86bd13",
+    "crates/viboceros-oracle/src/flow_line.rs": "f7ccbab03b8684039845bc6b765ff7f72c8768bac9c230c94d993155f8ad57ba",
+    "crates/viboceros-oracle/src/flow_roadlike.rs": "efaaa733ca94d27471d97d8b88637f996616ff7c5849bdc9abcbd9805018755b",
+    "docs/commands/flow.md": "233744113660c6cfa7acdbd0e1d571c0562b9da7b96740e0188a514db5a3b2ba",
+    "docs/flow-development.md": "c938dca674b9dbd3f5979a6ee892fb7d4d69b5b9bfb7fe8d7721087bd59524af",
+    "docs/flow-integration-validation.json": "577da9315bfac803db0c320f9560d7508abdc287cffee491425f26da8ac266cb",
+    "docs/flow-poles-validation.json": "a4bd3e6307a0ee30a49f92b9051806df28a6ae33975f58bc120b36212dc6882d",
+    "docs/prepared-curve-length.md": "faadeb3fbbfce8f9b764b518967c8607d7c6ebaeef63535d9dd291e525d25534",
+    "src/app/tests/flow.rs": "aac9d862aeda49d39f76d3720afc4a299f6c7587fa27b3d444e211a1d8333b9f",
+    "tools/rhino_oracle/fixtures/flow_integration.json": "447d6dd145c12b3ff3f9c135107d32d9db46e6cb2a4c24204e4f166b2840e9f6",
+    "tools/rhino_oracle/fixtures/flow_inverse_nodes.json": "7fe8d9cf975c630735b473fb55c232642bd514aacbc0407c62946159a73c0bcb",
+    "tools/rhino_oracle/fixtures/flow_inverse_queries.json": "799c27570806b18b9dc1ce0273820229d8b5207ad0df76a2f333a5119fa5cc68",
+    "tools/rhino_oracle/fixtures/flow_nurbs.json": "9e33db2fbf55a15486666b378ef957af59028db9ce8d3070b80771ca2ce3c552",
+    "tools/rhino_oracle/fixtures/flow_nurbs_command.json": "8afa986838a36ee7e62c48745f348d1c81a78ad590e5bdc5c5c81abb51cf50be",
+    "tools/rhino_oracle/fixtures/flow_nurbs_spatial.json": "57d71f21a8460aaff38af12821c40d7cde55c20f836a28088f46143b97fd53cc",
+    "tools/rhino_oracle/flow_integration_report.py": "5ca8ae7f8cd85faa662bc1f2c16a548a2cf5a83c8f58578f79d8b2ca04983833",
+    "tools/rhino_oracle/flow_pole_report.py": "0ce82311470ad2c22f77ac05d824c6a8af1d4529b9e776d23860435d26c9dde4",
+    "tools/rhino_oracle/flow_probe.py": "eb3f7c53789ec04e5675121a640f98a281b2db92a0cf55ee14ea8ba6b011e7f8",
+    "tools/rhino_oracle/observations/flow_integration_report_20261016.json": "4f21914804b82c040628a9bf2cbf31629a09fa2b3dfd60f41c272b92594c197b",
+    "tools/rhino_oracle/observations/flow_integration_rhino_20261016.json": "e7f4006ebb3be77638372c9b7dbc3beabf11fc55b18cf77c85c4ab07f6d4af4d",
+    "tools/rhino_oracle/observations/flow_integration_viboceros_20261016.json": "dced3420750a883add9517e89805e29a0ca5024bd4d85888197d0a3c81e80c8e",
+    "tools/rhino_oracle/observations/flow_inverse_nodes_rhino_20261017.json": "6e05439f7eea719c632d6a2c3573e34fce2b4669b42fbfe5bf1420231a17fe6c",
+    "tools/rhino_oracle/observations/flow_inverse_queries_rhino_20261017.json": "82d8846af06988578801d23dc33d7fe2081e9fa00b9da4e5c00827c10d1c9e90",
+    "tools/rhino_oracle/observations/flow_nurbs_command_comparison_20261017.json": "156f437209e2ca8449f2a23a13ca07c540aa3664e2a4456e3276f0ffa28f2dc7",
+    "tools/rhino_oracle/observations/flow_nurbs_command_rhino_20261017.json": "94c7eaa8d44ab990412a9e78ae2eb6a001fb845bc1d606e1aee49b2ab9a94f2f",
+    "tools/rhino_oracle/observations/flow_nurbs_command_viboceros_20261017.json": "21eeb6e1c1f5d443f9fb1d6c89f2f7aaebf8e938b1275a8c05e44d4e09d943cb",
+    "tools/rhino_oracle/observations/flow_nurbs_comparison_20261017.json": "d8c8d3eca29b4cc1c5fc2d7c44fece6608e8afb2d9c7e70c7230e5868c022689",
+    "tools/rhino_oracle/observations/flow_nurbs_rhino_20261017.json": "4b4ecc4d7b6eee778e357e5ac98ae1dfee79c94a5ac0e6aabb7bb161c77569d5",
+    "tools/rhino_oracle/observations/flow_nurbs_spatial_comparison_20261017.json": "b31a908b7007e5ed460b5aa47f026c87edc55b95157a7087cd25227d9cc1aa78",
+    "tools/rhino_oracle/observations/flow_nurbs_spatial_rhino_20261017.json": "cf41aedca3c782fcd67804633f56169311a44d9f2ba49e6174981448c0ba2d2f",
+    "tools/rhino_oracle/observations/flow_nurbs_spatial_viboceros_20261017.json": "9b8f27ed4db55abfca6a2c088f1041bea4fd6b1146b4999f633a19b6d2836159",
+    "tools/rhino_oracle/observations/flow_nurbs_viboceros_20261017.json": "d1eda2eef614a6aae1bb793a02c2af0a43ec0f4b65f90259b67ac20d3497587a",
+    "tools/rhino_oracle/observations/flow_pole_lookup_viboceros_20261016.json": "afd4379b56eb0431280a41ab3105a338309663e609a193cf040165f102267fcf",
+    "tools/rhino_oracle/observations/flow_pole_report_20261016.json": "acc7d1a2f698731a73560a666cd91fb3131c8b6fc1de21cbd9bdc5b00b389fc7",
+    "tools/rhino_oracle/observations/flow_roadlike_poles_comparison_20261016.json": "eb51168bc1b54e15831db4828c97629a26d62a62308914f6e0e3c4461f409b2d",
+    "tools/rhino_oracle/observations/flow_roadlike_poles_viboceros_20261016.json": "510df807f053274183c066610c793940528c9ace0139eb154ee943db495f04e6",
+    "tools/rhino_oracle/test_flow_integration.py": "4a1a34634cef136e2e0440cf5b4a9d2555a5cbb174cc7758dfa29987561b3429",
+    "tools/rhino_oracle/test_flow_nurbs.py": "3860c1896fb3015dcddde729dc7a8e32184473bffce390a5ed05b64f8bf96388",
+    "tools/rhino_oracle/test_flow_roadlike.py": "99b278222faf12ceb4324b5c3ec5241210e2a570175575ba888712e5122cb4ca"
+  }
+}

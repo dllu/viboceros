@@ -1,4 +1,4 @@
-"""Retain qualified Roadlike pole workflows and unresolved native length lookups."""
+"""Retain qualified Roadlike poles, NURBS lookups and Automatic rejections."""
 import argparse,json,math
 from pathlib import Path
 from .flow_line_comparison import comparison
@@ -37,7 +37,7 @@ def report(base=BASE):
             basis=[math.comb(degree,i)*(1-t)**(degree-i)*t**i*c['weight']for i,c in enumerate(controls)];denominator=sum(basis)
             point=[sum(b*c['point'][axis]for b,c in zip(basis,controls))/denominator for axis in range(3)]
             prediction.append(max(abs(a-b)for a,b in zip(point,actual)))
-        lookups.append(dict(id=op['id'],precise_kernel_max_coordinate_error=error,within_document_tolerance=error<=q['tolerance']['absolute'],public_840_prediction_samples=len(prediction),public_840_prediction_max_coordinate_error=max(prediction)))
+        lookups.append(dict(id=op['id'],kernel_max_coordinate_error=error,within_document_tolerance=error<=q['tolerance']['absolute'],public_840_prediction_samples=len(prediction),public_840_prediction_max_coordinate_error=max(prediction)))
     return dict(native_commands=sum(r['cases']for r in workflows),qualified_commands=sum(r['qualified_matches']for r in workflows),workflows=workflows,lookup_diagnostics=lookups,native_values_used_as_kernel_inputs=False,complete_flow_qualified=False)
 
 

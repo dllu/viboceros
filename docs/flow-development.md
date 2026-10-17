@@ -2,7 +2,8 @@
 
 Flow is registered in the command API and application. Its current supported
 subset has a two-guide getter, direction reversal, cached preview, staged edits,
-Copy, Rigid/RigidGroups, Stretch, PreserveStructure, temporary Line guides, explicit Roadlike axes, selected control/edit grips, option memory and one-step
+Copy, Rigid/RigidGroups, Stretch, PreserveStructure, temporary Line guides,
+NURBS/composite guides, explicit spatial Roadlike axes, selected control/edit grips, option memory and one-step
 local Undo/Redo. See [usage and current limits](commands/flow.md).
 
 The implementation owns shared prepared guide geometry and reuses the existing
@@ -11,7 +12,8 @@ fitting and viewport display cages. Straight guide pairs use a shortest-rotation
 map. Opposite directions use the plane determined by the guides' separation;
 collinear guides reuse the existing OpenNURBS-style perpendicular policy.
 Qualified planar curved guides use their supporting planes; a straight guide borrows
-the curved guide's plane. Source points beyond an endpoint retain their tangent
+the curved guide's plane. Explicit Roadlike axes provide spatial meridian frames.
+Source points beyond an endpoint retain their tangent
 residual separately from mapped guide distance. Stretch scales both distances.
 Native coordinates and returned frames are expectations, never construction
 inputs for the Rust implementation.
@@ -32,9 +34,13 @@ and actual Flow macros in owned private displays:
 | `flow_line_orientation.json` | 24 | Twenty actual commands and four SDK diagnostics for opposite, collinear and nearly opposite lines |
 | `flow_roadlike.json` | 40 | Explicit Roadlike axes and CPlane-Z picker presets, selected/drawn guides, reversals, Copy/Rigid/Stretch, rational control/edit grips and full Undo/Redo |
 | `flow_roadlike_diagnostics.json` | 12 | Eight formerly blocked in-plane cases now match; four native Automatic cases remain rejected |
-| `flow_roadlike_poles.json` | 40 | Thirty-six matching pole/rigid/grip/plane workflows and four retained curved-NURBS lookup rejections |
-| `flow_pole_lookup.json` | 2 | Precise-kernel versus native positions and public 840-interval batch diagnostics for two rational quarter circles |
-| `flow_integration.json` | 3 | Five-tolerance forward integration and prefix lengths, scalar inverses and four batch densities for rational and spatial NURBS |
+| `flow_roadlike_poles.json` | 40 | Matching pole/rigid/grip/plane workflows, including the four formerly rejected rational NURBS cases |
+| `flow_pole_lookup.json` | 2 | Matching rational-quarter-circle positions and public batch diagnostics |
+| `flow_integration.json` | 4 | Forty forward integrals and 32 inverse batches across rational, spatial, refined and composite guides |
+| `flow_nurbs.json` | 72 | NURBS and composite base/target/both-guide SDK maps, Stretch and both reversals |
+| `flow_nurbs_command.json` | 72 | Complete rational, cubic and composite command workflows with Copy, reversals, groups and Undo/Redo |
+| `flow_nurbs_spatial.json` | 60 | Spatial Roadlike base/target/both-guide workflows with Copy, Stretch, reversals, Rigid poses and Undo/Redo |
+| `flow_inverse_queries.json`, `flow_inverse_nodes.json` | 4 | Public query order, density, tolerances, curve lifetime and checkpoint snap windows |
 | `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
 | `flow_density.json`, `flow_coupled_frames.json`, `flow_up_lookup.json` | 13 | Dense spatial positions/bases, equivalent straight guide types, batch length lookups, degree elevation and changed spatial shapes |
 
@@ -52,12 +58,12 @@ Independent rotation-minimizing transport does not reproduce the native frames.
 Native experiments also show sensitivity to exact knot insertion and small
 scaling, while authored point order and the SDK QuickPreview/Tolerance settings
 do not change point results. These diagnostic observations are retained to guide
-further independent implementation; no spatial parity is claimed.
+further independent implementation; automatic spatial orientation is not qualified.
 
 Remaining scope includes all retained spatial point maps, Local
-input, Roadlike Automatic, native curved-NURBS lookups, Stairlike and TargetSurface orientation, native option
+input, Roadlike Automatic, Stairlike and TargetSurface orientation, native option
 memory and history details, multiple-object rigid group qualification, fitted
-owner geometry, planar NURBS and closed-guide qualification, preview appearance and performance.
+owner geometry, further closed/periodic guides, preview appearance and performance.
 
 Replay local maps without launching Rhino:
 
@@ -130,7 +136,7 @@ initial roll. Two small-scale initial frame modes are reproduced by frames
 constructed from the public `TryGetPlane(0.1)` result. This is diagnostic evidence
 for a classification rule, not qualification of a complete spatial policy.
 Neither returned native frames nor candidate classification normals feed the
-kernel. The eight original spatial mismatches and command guard remain.
+kernel. The eight original automatic spatial mismatches and their command guard remain.
 
 Regenerate this analysis without launching Rhino:
 
@@ -139,9 +145,10 @@ python3 -m tools.rhino_oracle.flow_spatial_report tools/rhino_oracle/fixtures/fl
 python3 -m unittest tools.rhino_oracle.test_flow_spatial
 ```
 
-The next implementation work must account for both the spatial frame policy
+These results required separate implementations of the spatial frame policy
 and Flow's position lookup. Replacing the initial frame alone, or merely
 loosening the precise shared arc-length sampler, does not match this evidence.
+The independent incremental inverse below now supplies the position policy.
 
 The [structure report](../tools/rhino_oracle/observations/flow_structure_report_20261016.json)
 and [capture record](flow-structure-validation.json) isolate two further rules.
@@ -170,20 +177,19 @@ python3 -m tools.rhino_oracle.flow_structure_report /tmp/flow-structure-report.j
 python3 -m unittest tools.rhino_oracle.test_flow_structure
 ```
 
-Remaining spatial work is to generate the automatic directions and bulk inverse
-parameters independently from authored geometry, qualify the subdivision policy
-on further curves and directions, and pass all original spatial maps and actual
-command/history workflows. The production kernel and spatial command guard
-remain unchanged by this diagnostic work.
+Remaining automatic spatial work is to generate the directions independently
+from authored geometry, qualify further curves and pass all original automatic
+spatial maps and command/history workflows. The diagnostic captures alone did
+not change the kernel or guard. Explicit spatial axes now use the qualified
+incremental lookup and meridian frames described below.
 
 The shared sampler now supplies independent
 [`parameters_at_normalized_lengths`](prepared-curve-length.md) batches with
 input-order preservation, duplicate reuse and full preflight validation.
 The [batch validation record](arc-length-batch-validation.json) retains 14 SDK
 cases, including a stationary-endpoint discrepancy checked against an analytic
-inverse. This is the precise geometry path needed to construct lookup tables;
-the native coarse inverse approximation and automatic spatial direction selector
-remain implementation work.
+inverse. This precise geometry path remains separate from Flow's incremental
+inverse. The automatic spatial direction selector remains unfinished.
 
 Explicit Roadlike axes now use the existing meridian-frame kernel, prepared
 length sampler, owner/grip reconstruction and preview cache. The input session
@@ -204,7 +210,7 @@ in-plane cases now match through the pole implementation below. Native
 Automatic remains explicitly rejected without a document or history edit.
 All original native observations remain retained. Native
 Automatic's selection rule remains unresolved; CPlane Z is a separate picker
-convenience. The original eight spatial mismatches and command guard remain.
+convenience. The original eight automatic spatial mismatches and their guard remain.
 
 Replay the new supported and diagnostic cases without launching Rhino:
 
@@ -230,22 +236,21 @@ boundaries across ARM and x86. This resolved a small supporting-plane tilt that
 otherwise selected a different side of a pole. No Rhino outputs initialize the
 production kernel.
 
-Thirty-six of forty new actual command workflows and the eight earlier
+The forty actual pole workflows and the eight earlier
 in-plane cases match complete owner/selection/group/history states within
-`1e-6`; maximum error is below `2.1e-10`. Four new rational-quarter-circle
-workflows expose a separate position lookup difference. Curved NURBS rails,
-including polycurve segments, are now rejected before editing in both ordinary
-and Roadlike modes. All four native successes and local rejections remain
-visible; this is an outstanding implementation task, not a tolerance exception.
+`1e-6`; maximum error is below `2.1e-10`. Four rational-quarter-circle
+workflows originally exposed a separate position lookup difference. They now
+match through the incremental inverse implementation; the historical rejection
+evidence remains available through the validation records' immutable Git hashes.
 
 Two further public SDK captures isolate the position difference independently
-of the Roadlike frames. Precise kernel centers differ from native Flow by
+of the Roadlike frames. The earlier precise-only kernel centers differed from native Flow by
 `5.392740487164538e-5` and `0.0005392740428122877` at unit and ten-unit scales.
 Linear interpolation of 841 public batch inverse parameters at fractional
 tolerance `1e-4` predicts the five interior/end centers in each case to below
 `3e-15`. Along with the spatial cubic captures, this provides a reproducible
-lookup target. The native tables are diagnostic expectations only; generating
-the coarse inverse and establishing the subdivision rule remain open.
+lookup target. The independent inverse now generates the table and passes
+these two SDK maps too. Native tables remain comparison expectations only.
 
 ```sh
 python3 -m tools.rhino_oracle.flow_pole_report /tmp/flow-poles-report.json
@@ -260,9 +265,9 @@ and [Rhino3dm's arc wrapper](https://github.com/mcneel/rhino3dm/blob/main/src/li
 The [integration record](flow-integration-validation.json) isolates the forward
 quadrature stage. The shared sampler now exposes accepted Cash–Karp 5/4
 checkpoints, normalized speed error control, span boundaries and local error
-estimates. Three fresh SDK recipes retain a rational quarter circle, a spatial
-cubic and its exact knot refinement. Across both guides and five tolerances,
-all 30 full-length integrals agree with Rhino; the maximum relative difference
+estimates. Four SDK recipes retain a rational quarter circle, a spatial
+cubic, its exact knot refinement and a mixed polycurve. Across both guides and five tolerances,
+all 40 full-length integrals agree with Rhino; the maximum relative difference
 is below `7.26e-15`. Prefix lengths are retained as further diagnostics.
 
 These captures also compare public scalar inverses with batch densities of
@@ -270,12 +275,16 @@ These captures also compare public scalar inverses with batch densities of
 parameters. Twelve exactly linear runs in the `1e-4`, 840-interval inverse
 queries each pass through an independently generated `1e-6` integration
 checkpoint, with normalized-distance residuals below `1.6e-12`. This is evidence
-for shared checkpoints in native inversion; the refinement rule remains open.
+for shared checkpoints in native inversion.
 Direct linear inversion of the coarse Rust checkpoints differs
 from the native 840-interval batch by more than `0.003` in parameter on every
-target. Matching forward quadrature therefore does not finish native inversion.
-No native parameters initialize the Rust trace, and curved NURBS guide guards
-remain until the inverse and frame policies are implemented and qualified.
+target. Matching forward quadrature alone therefore does not finish inversion.
+The new sequential solver tightens each root bracket with checkpoints generated
+while integrating that root's prefix, and retains each accepted approximate
+point as the next query's origin. Polycurves scale each root's stopping error
+by the containing component's integrated length. All 32 retained inverse
+batches, comprising 7,696 parameters, match within `1e-8`; observed maximum
+parameter error is below `4.3e-12`. No native parameters construct the Rust map.
 See [the comparison](../tools/rhino_oracle/observations/flow_integration_report_20261016.json)
 and [the sampler API](prepared-curve-length.md).
 
@@ -284,3 +293,19 @@ distinguishes a segment's fractional precision from an optional absolute
 length constraint. The Flow diagnostics deliberately retain the native
 zero-absolute-tolerance batch calls separately from the existing tightly
 constrained batch qualification.
+
+The [NURBS validation](flow-nurbs-validation.json) qualifies the resulting Flow
+lookup in both directions: 72 default planar SDK maps and 132 complete command
+workflows match within `1e-6`. The latter include 60 spatial Roadlike workflows,
+both Stretch modes and 12 Rigid poses. Source and target NURBS may appear
+independently or together; composite guides, reversals, Copy, group membership,
+selection, unchanged guides and real Undo/Redo are retained. Spatial guide
+preview uses the same prepared map, with explicit axes picked through the
+existing getter. Default spatial Automatic orientation still fails the original
+eight witnesses and remains guarded; native Roadlike Automatic is also guarded.
+
+```sh
+cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_nurbs_command.json /tmp/flow-nurbs-command-local.json
+python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_nurbs_command.json /tmp/flow-nurbs-command-local.json tools/rhino_oracle/observations/flow_nurbs_command_rhino_20261017.json /tmp/flow-nurbs-command-report.json
+python3 -m unittest tools.rhino_oracle.test_flow_nurbs tools.rhino_oracle.test_flow_integration
+```

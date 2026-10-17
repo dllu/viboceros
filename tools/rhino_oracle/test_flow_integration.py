@@ -22,17 +22,24 @@ class FlowIntegrationTests(TestCase):
         report = comparison(q, a, n)
         saved = json.loads((BASE / 'observations/flow_integration_report_20261016.json').read_text())
         self.assertEqual(report, saved)
-        self.assertEqual(report['forward_integrals'], 30)
-        self.assertEqual(report['matched_forward_integrals'], 30)
+        self.assertEqual(report['forward_integrals'], 40)
+        self.assertEqual(report['matched_forward_integrals'], 40)
+        self.assertEqual(report['inverse_batches'],32)
+        self.assertEqual(report['matched_inverse_batches'],32)
+        self.assertEqual(report['inverse_requests'],7696)
+        self.assertLess(report['max_inverse_parameter_error'],1e-8)
         self.assertLess(report['max_relative_forward_length_error'], 1e-12)
         self.assertFalse(report['complete_native_inverse_qualified'])
         self.assertFalse(report['complete_flow_qualified'])
         self.assertFalse(report['native_values_used_as_kernel_inputs'])
         for row in report['results']:
             self.assertGreater(row['coarse_checkpoint_linear_inverse_max_parameter_error'], 1e-3)
-            self.assertGreater(row['precise_flow_max_coordinate_error'], 1e-6)
-        self.assertEqual([len(r['native_batch_linear_runs']) for r in report['results']], [3, 4, 5])
-        for row in report['results']:
+            if row['id'] in ('spatial-cubic-integrals','refined-spatial-integrals'):
+                self.assertGreater(row['kernel_flow_max_coordinate_error'],1e-6)
+            else:
+                self.assertLess(row['kernel_flow_max_coordinate_error'],1e-6)
+        self.assertEqual([len(r['native_batch_linear_runs']) for r in report['results'][:3]], [3, 4, 5])
+        for row in report['results'][:3]:
             for run in row['native_batch_linear_runs']:
                 self.assertEqual(run['closest_checkpoint_fractional_tolerance'], 1e-6)
                 self.assertLess(run['normalized_distance_line_residual'], 1e-10)
@@ -47,7 +54,10 @@ class FlowIntegrationTests(TestCase):
             count = op['diagnostic_length_samples']
             scalar = diag['length_rows'][count // 2]['length_lookups'][1]['t']
             batch = next(r for r in diag['length_batches'] if r['divisions'] == 2 and r['fractional_tolerance'] == 1e-2)
-            self.assertAlmostEqual(scalar, batch['parameters'][1], places=13)
+            if op['target']['type']=='nurbs':
+                self.assertAlmostEqual(scalar, batch['parameters'][1], places=13)
+            else:
+                self.assertGreater(abs(scalar-batch['parameters'][1]),1e-6)
 
     def test_nonfinite_incomplete_and_mismatched_records_are_rejected(self):
         q, a, n = self.inputs()
@@ -75,4 +85,4 @@ class FlowIntegrationTests(TestCase):
         trace['length'] += .01
         trace['checkpoints'][-1]['length'] = trace['length']
         report = comparison(q, a, n)
-        self.assertEqual(report['matched_forward_integrals'], 29)
+        self.assertEqual(report['matched_forward_integrals'], 39)

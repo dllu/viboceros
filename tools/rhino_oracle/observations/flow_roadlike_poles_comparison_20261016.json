@@ -1,6 +1,6 @@
 {
   "cases": 40,
-  "matched_cases": 36,
+  "matched_cases": 40,
   "native_table_enumeration_order_compared": false,
   "results": [
     {
@@ -1229,7 +1229,7 @@
     },
     {
       "id": "rational-pole-1-False",
-      "within_1e_minus_6": false,
+      "within_1e_minus_6": true,
       "stages": [
         {
           "stage": "before",
@@ -1242,8 +1242,8 @@
           "stage": "after",
           "native_stage": "after_script",
           "metadata_match": true,
-          "max_coordinate_error": 11.157079633040688,
-          "within_1e_minus_6": false
+          "max_coordinate_error": 5.236922007156863e-13,
+          "within_1e_minus_6": true
         },
         {
           "stage": "undo",
@@ -1256,14 +1256,14 @@
           "stage": "redo",
           "native_stage": "redo",
           "metadata_match": true,
-          "max_coordinate_error": 11.157079633040688,
-          "within_1e_minus_6": false
+          "max_coordinate_error": 5.236922007156863e-13,
+          "within_1e_minus_6": true
         }
       ]
     },
     {
       "id": "rational-pole-1-True",
-      "within_1e_minus_6": false,
+      "within_1e_minus_6": true,
       "stages": [
         {
           "stage": "before",
@@ -1275,29 +1275,29 @@
         {
           "stage": "after",
           "native_stage": "after_script",
-          "metadata_match": false,
-          "max_coordinate_error": 0.0,
-          "within_1e_minus_6": false
+          "metadata_match": true,
+          "max_coordinate_error": 5.236922007156863e-13,
+          "within_1e_minus_6": true
         },
         {
           "stage": "undo",
           "native_stage": "undo",
-          "metadata_match": false,
+          "metadata_match": true,
           "max_coordinate_error": 0.0,
-          "within_1e_minus_6": false
+          "within_1e_minus_6": true
         },
         {
           "stage": "redo",
           "native_stage": "redo",
-          "metadata_match": false,
-          "max_coordinate_error": 0.0,
-          "within_1e_minus_6": false
+          "metadata_match": true,
+          "max_coordinate_error": 5.236922007156863e-13,
+          "within_1e_minus_6": true
         }
       ]
     },
     {
       "id": "rational-pole-10-False",
-      "within_1e_minus_6": false,
+      "within_1e_minus_6": true,
       "stages": [
         {
           "stage": "before",
@@ -1310,8 +1310,8 @@
           "stage": "after",
           "native_stage": "after_script",
           "metadata_match": true,
-          "max_coordinate_error": 12.570796330406887,
-          "within_1e_minus_6": false
+          "max_coordinate_error": 3.6153302573893598e-12,
+          "within_1e_minus_6": true
         },
         {
           "stage": "undo",
@@ -1324,14 +1324,14 @@
           "stage": "redo",
           "native_stage": "redo",
           "metadata_match": true,
-          "max_coordinate_error": 12.570796330406887,
-          "within_1e_minus_6": false
+          "max_coordinate_error": 3.6153302573893598e-12,
+          "within_1e_minus_6": true
         }
       ]
     },
     {
       "id": "rational-pole-10-True",
-      "within_1e_minus_6": false,
+      "within_1e_minus_6": true,
       "stages": [
         {
           "stage": "before",
@@ -1343,23 +1343,23 @@
         {
           "stage": "after",
           "native_stage": "after_script",
-          "metadata_match": false,
-          "max_coordinate_error": 0.0,
-          "within_1e_minus_6": false
+          "metadata_match": true,
+          "max_coordinate_error": 3.6153302573893598e-12,
+          "within_1e_minus_6": true
         },
         {
           "stage": "undo",
           "native_stage": "undo",
-          "metadata_match": false,
+          "metadata_match": true,
           "max_coordinate_error": 0.0,
-          "within_1e_minus_6": false
+          "within_1e_minus_6": true
         },
         {
           "stage": "redo",
           "native_stage": "redo",
-          "metadata_match": false,
-          "max_coordinate_error": 0.0,
-          "within_1e_minus_6": false
+          "metadata_match": true,
+          "max_coordinate_error": 3.6153302573893598e-12,
+          "within_1e_minus_6": true
         }
       ]
     }

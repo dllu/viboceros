@@ -217,28 +217,7 @@ mod tests {
         let native = include_str!(
             "../../../tools/rhino_oracle/observations/flow_roadlike_poles_rhino_20261016.json"
         );
-        let mut q: Value = serde_json::from_str(request).unwrap();
-        let mut n: Value = serde_json::from_str(native).unwrap();
-        let keep = q["operations"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|o| o["target"]["type"] != "nurbs")
-            .collect::<Vec<_>>();
-        assert_eq!(keep.iter().filter(|b| !**b).count(), 4);
-        let mut i = 0;
-        q["operations"].as_array_mut().unwrap().retain(|_| {
-            let b = keep[i];
-            i += 1;
-            b
-        });
-        i = 0;
-        n["results"].as_array_mut().unwrap().retain(|_| {
-            let b = keep[i];
-            i += 1;
-            b
-        });
-        compare_native(&q.to_string(), &n.to_string(), 36);
+        compare_native(request, native, 40);
         let mut q: Value = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/flow_roadlike_diagnostics.json"
         ))
@@ -250,6 +229,23 @@ mod tests {
         q["operations"].as_array_mut().unwrap().truncate(8);
         n["results"].as_array_mut().unwrap().truncate(8);
         compare_native(&q.to_string(), &n.to_string(), 8);
+    }
+    #[test]
+    fn nurbs_guides_match_native_command_owners_groups_and_history() {
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_nurbs_command.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_nurbs_command_rhino_20261017.json"
+            ),
+            72,
+        );
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_nurbs_spatial.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_nurbs_spatial_rhino_20261017.json"
+            ),
+            60,
+        );
     }
     fn compare_native(request: &str, native: &str, cases: usize) {
         let request: ProbeRequest = serde_json::from_str(request).unwrap();

@@ -5,6 +5,7 @@ use crate::{
     Curve3, GeometryError, ParameterSide, Point3, Real, Tolerance, UnitVector3,
     integration::integrate_adaptive, parameter::scaled_ratio, require_finite,
 };
+mod incremental;
 mod spans;
 mod trace;
 use spans::{LinearSpan, RawSpan, raw_spans};

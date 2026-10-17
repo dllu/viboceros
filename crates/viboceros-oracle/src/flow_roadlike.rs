@@ -79,7 +79,7 @@ mod tests {
         }
     }
     #[test]
-    fn flow_nurbs_lookup_rejections_are_atomic_in_both_orientation_modes() {
+    fn flow_nurbs_guides_work_in_both_orientation_modes_with_one_undo_record() {
         let q: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/flow_roadlike_poles.json"
         ))
@@ -107,13 +107,12 @@ mod tests {
                     options,
                 )
                 .unwrap();
-                assert_eq!(a["command_returned"], false);
-                assert!(a["error"].as_str().unwrap().contains("NURBS"));
-                for stage in ["after", "undo", "redo"] {
-                    assert_eq!(a["before"], a[stage]);
-                }
-                assert!(a["undo_label"].is_null());
-                assert!(a["redo_label"].is_null());
+                assert_eq!(a["command_returned"], true);
+                assert!(a["error"].is_null());
+                assert_eq!(a["undo_restores_source"], true);
+                assert_eq!(a["redo_restores_outputs"], true);
+                assert_eq!(a["undo_label"], "Flow");
+                assert_eq!(a["redo_label"], "Flow");
             }
         }
         assert_eq!(count, 4);

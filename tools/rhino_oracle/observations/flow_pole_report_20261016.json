@@ -1,6 +1,6 @@
 {
   "native_commands": 52,
-  "qualified_commands": 44,
+  "qualified_commands": 48,
   "workflows": [
     {
       "fixture": "flow_roadlike_diagnostics",
@@ -37,48 +37,23 @@
     {
       "fixture": "flow_roadlike_poles",
       "cases": 40,
-      "qualified_matches": 36,
-      "rejected": [
-        {
-          "id": "rational-pole-1-False",
-          "native_command_succeeded": true,
-          "local_rejection_atomic": true,
-          "error": "Flow curved NURBS guide length lookup is not implemented yet"
-        },
-        {
-          "id": "rational-pole-1-True",
-          "native_command_succeeded": true,
-          "local_rejection_atomic": true,
-          "error": "Flow curved NURBS guide length lookup is not implemented yet"
-        },
-        {
-          "id": "rational-pole-10-False",
-          "native_command_succeeded": true,
-          "local_rejection_atomic": true,
-          "error": "Flow curved NURBS guide length lookup is not implemented yet"
-        },
-        {
-          "id": "rational-pole-10-True",
-          "native_command_succeeded": true,
-          "local_rejection_atomic": true,
-          "error": "Flow curved NURBS guide length lookup is not implemented yet"
-        }
-      ],
+      "qualified_matches": 40,
+      "rejected": [],
       "max_qualified_coordinate_error": 2.0962143132408073e-10
     }
   ],
   "lookup_diagnostics": [
     {
       "id": "rational-pole-1-False-lookup",
-      "precise_kernel_max_coordinate_error": 5.392740487164538e-05,
-      "within_document_tolerance": false,
+      "kernel_max_coordinate_error": 2.6184610035784317e-13,
+      "within_document_tolerance": true,
       "public_840_prediction_samples": 5,
       "public_840_prediction_max_coordinate_error": 2.220446049250313e-16
     },
     {
       "id": "rational-pole-10-False-lookup",
-      "precise_kernel_max_coordinate_error": 0.0005392740428122877,
-      "within_document_tolerance": false,
+      "kernel_max_coordinate_error": 3.2867042421003134e-12,
+      "within_document_tolerance": true,
       "public_840_prediction_samples": 5,
       "public_840_prediction_max_coordinate_error": 2.6645352591003757e-15
     }

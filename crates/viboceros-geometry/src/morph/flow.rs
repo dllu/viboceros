@@ -3,6 +3,10 @@ use super::*;
 use crate::{Curve3, CurveRef, FrameTransportOptions, ParameterSide, curve::ArcLengthSampler};
 use std::sync::Arc;
 
+const FLOW_LOOKUP_INTERVALS: usize = 840;
+const FLOW_INVERSE_TOLERANCE: Real = 1e-6;
+const FLOW_LENGTH_TOLERANCE: Real = 1e-8;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CurveFlowOptions {
     pub stretch: bool,
@@ -54,10 +58,72 @@ impl Section {
 #[derive(Debug)]
 struct Guide {
     length: ArcLengthSampler<'static>,
+    lookup: Option<NurbsLookup>,
     normal: Option<UnitVector3>,
     parameters: Vec<Real>,
     frames: Vec<Frame3>,
     tolerance: Tolerance,
+}
+
+// Build the native Flow lookup policy from independent quadrature. The default
+// guide length and the sequential inverse use separate numerical tolerances.
+#[derive(Debug)]
+struct NurbsLookup {
+    parameters: Vec<Real>,
+    length: Real,
+}
+impl NurbsLookup {
+    fn needed(curve: CurveRef<'_>) -> Result<bool, GeometryError> {
+        match curve {
+            CurveRef::NurbsCurve(c) => Ok(!c.is_linear_at_zero_tolerance()?),
+            CurveRef::PolyCurve(c) => {
+                for segment in c.segments() {
+                    if Self::needed(segment.as_ref())? {
+                        return Ok(true);
+                    }
+                }
+                Ok(false)
+            }
+            _ => Ok(false),
+        }
+    }
+    fn new(sampler: &ArcLengthSampler<'_>) -> Result<Self, GeometryError> {
+        let fractions = (0..=FLOW_LOOKUP_INTERVALS)
+            .map(|i| i as Real / FLOW_LOOKUP_INTERVALS as Real)
+            .collect::<Vec<_>>();
+        let parameters = sampler
+            .parameters_at_incremental_normalized_lengths(&fractions, FLOW_INVERSE_TOLERANCE)?;
+        let length = sampler
+            .integration_checkpoints(FLOW_LENGTH_TOLERANCE)?
+            .last()
+            .unwrap()
+            .distance();
+        if !length.is_finite() || length <= 0. {
+            return Err(GeometryError::NumericalIntegrationDidNotConverge);
+        }
+        Ok(Self { parameters, length })
+    }
+    fn parameter(&self, fraction: Real) -> Real {
+        let u = fraction.clamp(0., 1.) * FLOW_LOOKUP_INTERVALS as Real;
+        let i = (u.floor() as usize).min(FLOW_LOOKUP_INTERVALS - 1);
+        let f = u - i as Real;
+        self.parameters[i] * (1. - f) + self.parameters[i + 1] * f
+    }
+    fn fraction(&self, parameter: Real) -> Real {
+        if parameter <= self.parameters[0] {
+            return 0.;
+        }
+        if parameter >= self.parameters[FLOW_LOOKUP_INTERVALS] {
+            return 1.;
+        }
+        let i = self
+            .parameters
+            .partition_point(|t| *t <= parameter)
+            .saturating_sub(1)
+            .min(FLOW_LOOKUP_INTERVALS - 1);
+        let f = (parameter - self.parameters[i]) / (self.parameters[i + 1] - self.parameters[i]);
+        (i as Real + f) / FLOW_LOOKUP_INTERVALS as Real
+    }
 }
 impl Guide {
     fn new(
@@ -106,8 +172,14 @@ impl Guide {
         }
         let mut length = ArcLengthSampler::try_new_owned(curve, tolerance)?;
         length.prepare_budgeted_repeated_sampling(64)?;
+        let lookup = if NurbsLookup::needed(length.source_curve())? {
+            Some(NurbsLookup::new(&length)?)
+        } else {
+            None
+        };
         Ok(Self {
             length,
+            lookup,
             normal,
             parameters,
             frames,
@@ -163,18 +235,37 @@ impl Guide {
         )?))
     }
     fn at_distance(&self, distance: Real) -> Result<Section, GeometryError> {
-        let length = self.length.total_length();
+        let length = self.total_length();
         let clamped = distance.clamp(0., length);
-        let sample = self.length.sample_at_distance(clamped)?;
+        let sample = if let Some(lookup) = &self.lookup {
+            self.curve()
+                .evaluate_with_tangent(lookup.parameter(clamped / length))?
+        } else {
+            self.length.sample_at_distance(clamped)?
+        };
         let frame = self.frame(sample.parameter())?.with_origin(sample.point());
         let extra = distance - clamped;
         Ok(frame.with_origin(frame.origin.translated(frame.axes[0].scaled(extra)?)?))
+    }
+    fn total_length(&self) -> Real {
+        self.lookup
+            .as_ref()
+            .map_or(self.length.total_length(), |q| q.length)
+    }
+    fn distance_at_parameter(&self, parameter: Real) -> Result<Real, GeometryError> {
+        if let Some(lookup) = &self.lookup {
+            Ok(lookup.fraction(parameter) * lookup.length)
+        } else {
+            self.length.distance_at_parameter(parameter)
+        }
     }
 }
 
 /// Curve-to-curve point map with supporting-plane or transported frames.
 /// Spatial transport is a mathematical frame policy; native Flow's spatial
-/// policy is still under investigation. Clones share guide
+/// automatic direction policy is still under investigation. Explicit up axes
+/// provide spatial Roadlike sections. NURBS guides retain an independently
+/// generated normalized-length lookup in both directions. Clones share guide
 /// geometry, arc-length brackets and frame checkpoints. Source coordinates
 /// and adaptive fitting retain the existing kernel's finite/error contracts.
 #[derive(Clone, Debug)]
@@ -379,10 +470,10 @@ impl CurveFlowPointMorph {
         self.options
     }
     pub fn base_length(&self) -> Real {
-        self.base.length.total_length()
+        self.base.total_length()
     }
     pub fn target_length(&self) -> Real {
-        self.target.length.total_length()
+        self.target.total_length()
     }
 }
 impl PointMorph for CurveFlowPointMorph {
@@ -402,7 +493,7 @@ impl PointMorph for CurveFlowPointMorph {
         let along = offset.dot(source.axes[0])?;
         let y = offset.dot(source.axes[1])?;
         let z = offset.dot(source.axes[2])?;
-        let mut distance = self.base.length.distance_at_parameter(parameter)?;
+        let mut distance = self.base.distance_at_parameter(parameter)?;
         let mut along = along;
         if self.options.stretch {
             distance =

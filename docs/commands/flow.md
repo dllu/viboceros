@@ -1,7 +1,8 @@
 # Flow
 
 Select source objects and enter `Flow`. Pick the base and target curves near
-corresponding ends. The preview appears after both guides are selected; Enter
+corresponding ends. The preview appears after both guides and any Roadlike axes
+are supplied; Enter
 applies it and Escape cancels without editing the document. Change an option
 before applying, or enter `Base` / `Target` to select that guide again.
 
@@ -69,6 +70,10 @@ again. Scripted commands require both `BaseUp=x,y,z` and `TargetUp=x,y,z` in
 world coordinates. Preview and commit use the same chosen axes. A new
 interactive command asks for axes again.
 
+NURBS curves and polycurves can supply either or both guides. For spatial
+curved guides, enable Roadlike and choose both axes; `CPlaneZ` supplies a
+convenient explicit direction. Planar curved guides also work with Roadlike off.
+
 Roadlike axes may lie in a curved guide's plane or be parallel to a straight
 guide. At an exact pole, ordinary Flow collapses both transverse coordinates
 onto the guide while retaining the along-tangent residual. Rigid keeps the
@@ -76,17 +81,14 @@ original object pose if the pole cannot supply a placement frame. Both behaviors
 share the command's staged owner/grip edit and preview paths. Native Roadlike
 `Automatic` remains unimplemented; `CPlaneZ` explicitly chooses a direction.
 
-The registered command rejects general spatial curved guides and curved NURBS
-rails, including those inside polycurves. The latter need Rhino's approximate
-length lookup, which differs from the kernel's precise inverse beyond document
-tolerance in retained rational-circle cases. The mathematical kernel remains
-available for independent curve maps. Local, Stairlike and TargetSurface also
-remain unfinished. Unsupported modes fail before editing.
+The registered command rejects automatic orientation of general spatial curved
+guides. Local, Stairlike and TargetSurface remain unfinished. Unsupported modes
+fail before editing.
 
 The native comparison covers 76 point maps and 43 actual grouped point-cloud
 commands at `1e-6`, including Copy, Rigid, Stretch, direction reversals and mixed
 supporting planes. The command also uses the shared curve/surface/B-rep fitting
-backend and cached display cages; curved NURBS guide lookup, fitted owner geometry,
+backend and cached display cages; further fitted owner geometry,
 multiple-object rigid groups, native history details, preview appearance and performance still need
 Flow-specific native qualification. Raw Rhino table enumeration order is not
 part of the current comparison. See [development evidence](../flow-development.md)
@@ -115,5 +117,13 @@ The [pole validation record](../flow-poles-validation.json) qualifies another
 36 native workflows and the eight formerly blocked in-plane cases at `1e-6`.
 It covers exact/near poles, other planes, both reversals, closed circles,
 polyline corners, source/target parallel axes, Rigid and control/edit grips.
-Four rational NURBS workflows and two SDK length-lookup diagnostics are retained
-as unresolved evidence; the command rejects those rails without editing.
+The four rational NURBS workflows and two SDK lookup diagnostics now match too.
+Their former precision differences are resolved by the independent incremental
+lookup described in the [NURBS validation record](../flow-nurbs-validation.json).
+
+That record additionally covers 72 native point maps and 132 complete command
+workflows. NURBS and composite guides appear as the base, target and both guides,
+with direction reversal, Copy, Stretch, groups and real Undo/Redo. Spatial NURBS
+guides use explicit Roadlike axes; the spatial matrix also checks Rigid poses.
+All comparisons retain the document's `1e-6` tolerance. Automatic spatial
+orientation and native Roadlike Automatic remain open requirements.

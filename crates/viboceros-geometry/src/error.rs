@@ -419,6 +419,9 @@ pub enum GeometryError {
     #[error("an arc-length query batch exceeds {maximum} fractions")]
     ArcLengthBatchResourceLimit { maximum: usize },
 
+    #[error("incremental arc-length fractions must be nondecreasing")]
+    ArcLengthFractionsNotIncreasing,
+
     #[error("surface pullback did not converge at absolute model tolerance {tolerance}")]
     SurfacePullbackDidNotConverge { tolerance: Real },
 

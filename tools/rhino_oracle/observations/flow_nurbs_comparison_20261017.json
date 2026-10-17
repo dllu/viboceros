@@ -1,0 +1,943 @@
+{
+  "cases": 72,
+  "matched_cases": 72,
+  "native_table_enumeration_order_compared": false,
+  "results": [
+    {
+      "id": "rational-base-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.4148683880630415e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-base-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.4148683880630415e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-base-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.4861890324245906e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-base-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.4861890324245906e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-base-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.1737278643740865e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-base-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.1737278643740865e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-base-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.5826984167688352e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-base-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.5826984167688352e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.0020430585864233e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.863665026277886e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.3004710076056654e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.423128530106624e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.1175062531474396e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 5.041300710217911e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.4283687000424834e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-target-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.586553359331447e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 6.349587522436195e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.902389605376811e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.849454171562684e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 6.349587522436195e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.902389605376811e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "rational-both-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.849454171562684e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 8.835598919176846e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 8.832046205498045e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.2946088645549025e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.2946088645549025e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.9447554677753942e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.9447554677753942e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.8489210990301217e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-base-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.8489210990301217e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.623767952376511e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.4283687000424834e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.121147867408581e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.6060043839825084e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.3092638912203256e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.2612133559741778e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.5934809855243657e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-target-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3500311979441904e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.1046275833214168e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.9391600264716544e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 7.105427357601002e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.1046275833214168e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.9388047551037744e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "cubic-both-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.40634187523392e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.40634187523392e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.48334686148155e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.48334686148155e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3249490393718588e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3249490393718588e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 9.659117949922802e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-base-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 9.658762678554922e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.8030021919912542e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.1119993814645568e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.9841905896100798e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 1.0125233984581428e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.161826273550105e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.362732397567015e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.374989094278135e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-target-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.9683811792201595e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-False-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 6.73558986363787e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-False-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.48299159011367e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-False-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.247180302423658e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-True-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 6.73523459226999e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-True-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.48299159011367e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "polycurve-both-True-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 3.247180302423658e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    }
+  ]
+}

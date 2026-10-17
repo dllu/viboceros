@@ -76,9 +76,8 @@ cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/arc_length_batch.js
 python3 -m tools.rhino_oracle.arc_length_batch_comparison tools/rhino_oracle/fixtures/arc_length_batch.json /tmp/length-batch-local.json tools/rhino_oracle/observations/arc_length_batch_rhino_20261016.json /tmp/length-batch-report.json
 ```
 
-This supplies precise independent batch inversion for future guide lookup
-construction. Rhino Flow's approximate lookup policy and automatic spatial
-direction selection remain unfinished.
+Precise independent inversion remains available alongside the incremental
+lookup used by Flow. Automatic spatial direction selection remains unfinished.
 
 `integration_checkpoints(fractional_tolerance)` returns accepted Cash–Karp 5/4
 integration checkpoints. Each `ArcLengthCheckpoint` exposes the original source
@@ -96,12 +95,14 @@ estimate. Linear interpolation between these checkpoints has no geometric
 accuracy guarantee and does not replace precise inversion or its brackets.
 
 The [integration comparison](../tools/rhino_oracle/observations/flow_integration_report_20261016.json)
-retains 30 public Rhino SDK length queries: both guides of a rational quarter
-circle, a spatial cubic and its exact knot refinement, at five fractional
+retains 40 public Rhino SDK length queries: both guides of a rational quarter
+circle, a spatial cubic, its exact knot refinement and a mixed polycurve, at five fractional
 tolerances. All forward integrals agree within `1e-10 * max(1, length)`; the
 observed maximum relative difference is `7.26e-15`. The same captures retain
 prefix lengths, scalar inverses and four batch densities. Their inverse
-differences remain visible and do not qualify a complete native lookup policy.
+differences remain visible alongside 32 matching independent inverse batches
+containing 7,696 requested parameters. Maximum inverse parameter error is below
+`4.3e-12`. This does not qualify every tolerance and curve family in Rhino's API.
 Twelve observed linear inverse runs coincide with independently generated
 integration checkpoints to below `1.6e-12` in normalized distance. These fitted
 lines are diagnostic report outputs only.
@@ -114,6 +115,30 @@ python3 -m tools.rhino_oracle.flow_integration_report tools/rhino_oracle/fixture
 The scalar rule uses the standard Cash–Karp tableau and the step controller
 also present in the Apache-2.0
 [usd-brep integrator](../third_party/usd-brep/source/SMLib/src/SmIntegrator.cpp).
-This Rust diagnostic path remains available without the optional native kernel.
+This Rust path remains available without the optional native kernel.
 Rhino observations are comparison expectations; neither native parameters nor
 fitted coefficients construct its checkpoints.
+
+`parameters_at_incremental_normalized_lengths(&fractions, fractional_tolerance)`
+implements the sequential inverse. Fractions must be nondecreasing, finite and
+inside `[0,1]`; repeats and empty batches are accepted. Each approximate result
+becomes the next origin, so earlier queries affect later results. The inverse
+retains checkpoints separated by more than one percent of each integration
+interval and tightens its root brackets with newly integrated checkpoints.
+Its per-increment stopping error scales with the complete integrated length,
+or the containing component's length for polycurves. Errors can accumulate;
+use the precise batch API for independent high-accuracy sampling.
+
+Tolerance must lie strictly in `(0,1)`. The input limit is 1,048,576 fractions.
+Initial integration permits 65,536 attempted steps; inverse refinements share
+a separate 65,536-step budget and permit 80 bracket updates per query. Failure
+returns no partial result and leaves prepared precise brackets intact. Tests
+cover component scaling, repeated knots, model scales from `1e-200` to `1e200`,
+shifted and quantized domains, invalid requests and exhausted budgets.
+
+Flow builds 841 normalized inverse parameters with a `1e-6` integration policy,
+interpolates that table in both directions, and obtains its guide lengths with
+the separate `1e-8` forward policy. The retained native expectations use public
+batch tolerances of `1e-4` for NURBS and `1e-6` for polycurves. This explicit
+Flow policy does not implement a general translation of every public Rhino
+fractional-tolerance setting. No native inverse parameters initialize the map.

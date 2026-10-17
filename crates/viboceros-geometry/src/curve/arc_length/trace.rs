@@ -43,13 +43,33 @@ impl ArcLengthSampler<'_> {
         &self,
         fractional_tolerance: Real,
     ) -> Result<Vec<ArcLengthCheckpoint>, GeometryError> {
+        self.integration_checkpoints_in_frame(fractional_tolerance, true, true)
+    }
+
+    pub(super) fn integration_checkpoints_in_frame(
+        &self,
+        fractional_tolerance: Real,
+        source_parameters: bool,
+        retain_all: bool,
+    ) -> Result<Vec<ArcLengthCheckpoint>, GeometryError> {
         if !fractional_tolerance.is_finite()
             || fractional_tolerance <= 0.
             || fractional_tolerance >= 1.
         {
             return Err(GeometryError::InvalidArcLengthIntegrationTolerance);
         }
-        let domain = self.source_curve().domain();
+        let map = |t| {
+            if source_parameters {
+                self.source_parameter(t)
+            } else {
+                Ok(t)
+            }
+        };
+        let domain = if source_parameters {
+            self.source_curve().domain()
+        } else {
+            self.curve().domain()
+        };
         let mut out = vec![ArcLengthCheckpoint {
             parameter: *domain.start(),
             distance: 0.,
@@ -59,18 +79,13 @@ impl ArcLengthSampler<'_> {
         let mut attempted_steps = 0;
         for span in &self.spans {
             let prefix = sum + correction;
-            let start = self.source_parameter(span.start)?;
+            let start = map(span.start)?;
             if out.last().unwrap().parameter != start {
                 push(&mut out, start, prefix, 0.)?;
             }
             if !span.variable_speed {
                 neumaier_add(&mut sum, &mut correction, span.length);
-                push(
-                    &mut out,
-                    self.source_parameter(span.end)?,
-                    sum + correction,
-                    0.,
-                )?;
+                push(&mut out, map(span.end)?, sum + correction, 0.)?;
                 continue;
             }
             let width = span.end - span.start;
@@ -97,7 +112,12 @@ impl ArcLengthSampler<'_> {
                 },
             )?;
             attempted_steps += trace.attempted_steps;
+            let mut saved = 0.;
             for node in trace.checkpoints.iter().skip(1) {
+                if !retain_all && node.parameter - saved <= 0.01 && node.parameter != 1. {
+                    continue;
+                }
+                saved = node.parameter;
                 let t = if node.parameter == 1. {
                     span.end
                 } else {
@@ -105,7 +125,7 @@ impl ArcLengthSampler<'_> {
                 };
                 push(
                     &mut out,
-                    self.source_parameter(t)?,
+                    map(t)?,
                     prefix + node.integral * span.length,
                     node.error * span.length,
                 )?;

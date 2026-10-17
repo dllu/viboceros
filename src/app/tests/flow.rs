@@ -506,6 +506,80 @@ fn flow_roadlike_cplane_preset_reads_active_cplane_and_stale_guides_cancel_axis_
 }
 
 #[test]
+fn flow_spatial_nurbs_axis_getters_preview_native_points_and_commit_one_undo() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/flow_nurbs_spatial.json"
+    ))
+    .unwrap();
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/flow_nurbs_spatial_rhino_20261017.json"
+    ))
+    .unwrap();
+    let fixture: viboceros_oracle::FlowRoadlikeFixture =
+        serde_json::from_value(request["operations"][0].clone()).unwrap();
+    let mut app = test_app();
+    let [base, target] = fixture
+        .flow
+        .guide_geometries(app.document.tolerance())
+        .unwrap()
+        .map(|g| app.document.add_geometry(g).unwrap());
+    let original = fixture
+        .flow
+        .source_geometry(app.document.tolerance())
+        .unwrap();
+    let source = app.document.add_geometry(original.clone()).unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Flow Copy=No Stretch=Yes Roadlike=Yes");
+    app.pick_flow_guide(Some(base), None);
+    app.pick_flow_guide(Some(target), None);
+    enter(&mut app, "CPlaneZ");
+    enter(&mut app, "CPlaneZ");
+    let preview = app.flow_session.as_ref().unwrap().preview().unwrap();
+    let Geometry::PointCloud(cloud) = &original else {
+        panic!()
+    };
+    let expected = native["results"][0]["value"]["after_script"]["outputs"][0]["points"]
+        .as_array()
+        .unwrap();
+    assert_eq!(cloud.points().len(), expected.len());
+    for (p, n) in cloud.points().iter().zip(expected) {
+        let xyz: [f64; 3] = serde_json::from_value(n.clone()).unwrap();
+        assert!(
+            preview
+                .morph
+                .morph_point(*p)
+                .unwrap()
+                .distance_to(Point3::try_from(xyz).unwrap())
+                .unwrap()
+                < 1e-6
+        );
+    }
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    let committed = app.document.object(source).unwrap().geometry().clone();
+    assert_ne!(committed, original);
+    let Geometry::PointCloud(cloud) = &committed else {
+        panic!()
+    };
+    assert_eq!(cloud.points().len(), expected.len());
+    for (p, n) in cloud.points().iter().zip(expected) {
+        let xyz: [f64; 3] = serde_json::from_value(n.clone()).unwrap();
+        assert!(p.distance_to(Point3::try_from(xyz).unwrap()).unwrap() < 1e-6);
+    }
+    assert_eq!(app.document.objects().count(), 3);
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Flow"));
+    assert_eq!(app.document.object(source).unwrap().geometry(), &original);
+    assert!(app.document.undo().unwrap().is_none());
+    assert_eq!(app.document.redo().unwrap().as_deref(), Some("Flow"));
+    assert_eq!(app.document.object(source).unwrap().geometry(), &committed);
+}
+
+#[test]
 fn flow_in_plane_axes_preview_native_poles_and_commit_one_history_entry() {
     let q: serde_json::Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/flow_roadlike_diagnostics.json"

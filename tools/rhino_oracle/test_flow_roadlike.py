@@ -53,33 +53,28 @@ class FlowRoadlikeTests(TestCase):
             for stage in ('after','undo','redo'):self.assertEqual(xx['before'],xx[stage])
             self.assertIsNone(xx['undo_label']);self.assertIsNone(xx['redo_label'])
 
-    def test_in_plane_poles_match_complete_native_workflows_and_lookup_limits_stay_visible(self):
+    def test_in_plane_and_nurbs_poles_match_complete_native_workflows(self):
         name='flow_roadlike_poles';q=self.request(name);a=self.observations('viboceros',name);n=self.observations('rhino',name)
         for o in q['operations']:validate(o)
-        r=comparison(q,a,n);self.assertEqual(r,self.observations('comparison',name));self.assertEqual(r['cases'],40);self.assertEqual(r['matched_cases'],36)
-        unsupported=0
+        r=comparison(q,a,n);self.assertEqual(r,self.observations('comparison',name));self.assertEqual(r['cases'],40);self.assertEqual(r['matched_cases'],40)
         for op,x,y,row in zip(q['operations'],a['results'],n['results'],r['results']):
             self.assertEqual(op['id'],x['id']);self.assertEqual(x['id'],y['id']);self.assertTrue(y['value']['command_returned'])
-            if op['target']['type']=='nurbs':
-                unsupported+=1;v=x['value'];self.assertFalse(v['command_returned']);self.assertIn('NURBS',v['error'])
-                for stage in ('after','undo','redo'):self.assertEqual(v['before'],v[stage])
-                self.assertIsNone(v['undo_label']);self.assertIsNone(v['redo_label'])
-            else:
-                self.assertTrue(row['within_1e_minus_6'],op['id']);self.assertNotIn('_Cancel',y['value']['macro'])
-        self.assertEqual(unsupported,4)
+            self.assertTrue(x['value']['command_returned'])
+            self.assertTrue(row['within_1e_minus_6'],op['id']);self.assertNotIn('_Cancel',y['value']['macro'])
+        self.assertEqual(sum(op['target']['type']=='nurbs'for op in q['operations']),4)
         # Axis-parallel maps are rank one; native Rigid retains its original pose.
         for key in ['rigid-pole-8','rigid-source-pole-16']:
             v=next(r['value']for r in n['results']if r['id']==key)
             self.assertEqual(v['before'],v['after_script'])
 
-    def test_lookup_diagnostics_retain_the_precision_mismatch_and_public_table_explanation(self):
+    def test_lookup_diagnostics_match_the_independent_inverse_and_preserve_automatic_rejections(self):
         from .flow_pole_report import report
         actual=report();self.assertEqual(actual,self.read('observations/flow_pole_report_20261016.json'))
-        self.assertEqual(actual['native_commands'],52);self.assertEqual(actual['qualified_commands'],44)
+        self.assertEqual(actual['native_commands'],52);self.assertEqual(actual['qualified_commands'],48)
         self.assertTrue(all(row['local_rejection_atomic']and row['native_command_succeeded']for group in actual['workflows']for row in group['rejected']))
         self.assertEqual(len(actual['lookup_diagnostics']),2)
         for row in actual['lookup_diagnostics']:
-            self.assertFalse(row['within_document_tolerance'])
-            self.assertGreater(row['precise_kernel_max_coordinate_error'],1e-6)
+            self.assertTrue(row['within_document_tolerance'])
+            self.assertLess(row['kernel_max_coordinate_error'],1e-6)
             self.assertLess(row['public_840_prediction_max_coordinate_error'],1e-12)
         self.assertFalse(actual['native_values_used_as_kernel_inputs'])

@@ -283,43 +283,13 @@ pub fn prepare(
 ) -> Result<CurveFlowPointMorph, CommandError> {
     let base = guide(doc, base.into())?;
     let target = guide(doc, target.into())?;
-    // Explicit axes do not yet qualify the spatial curve position lookup.
-    if options.roadlike {
-        if options.base_up.is_none() || options.target_up.is_none() {
-            return Err(CommandError::FlowRoadlikeAxesRequired);
-        }
-        for curve in [&base, &target] {
-            if curve
-                .as_ref()
-                .supporting_plane_normal(doc.tolerance())?
-                .is_none()
-            {
-                return Err(CommandError::FlowSpatialFramesNotSupported);
-            }
-        }
+    if options.roadlike && (options.base_up.is_none() || options.target_up.is_none()) {
+        return Err(CommandError::FlowRoadlikeAxesRequired);
     }
-    fn curved_nurbs(curve: viboceros_geometry::CurveRef<'_>) -> Result<bool, GeometryError> {
-        match curve {
-            viboceros_geometry::CurveRef::NurbsCurve(c) => Ok(!c.is_linear_at_zero_tolerance()?),
-            viboceros_geometry::CurveRef::PolyCurve(c) => {
-                for s in c.segments() {
-                    if curved_nurbs(s.as_ref())? {
-                        return Ok(true);
-                    }
-                }
-                Ok(false)
-            }
-            _ => Ok(false),
-        }
-    }
-    let native_lookup = curved_nurbs(base.as_ref())? || curved_nurbs(target.as_ref())?;
     let mut morph =
         CurveFlowPointMorph::try_new(base, target, options.geometry(), doc.tolerance())?;
     if morph.uses_spatial_transport() {
         return Err(CommandError::FlowSpatialFramesNotSupported);
-    }
-    if native_lookup {
-        return Err(CommandError::FlowNurbsLookupNotSupported);
     }
     if let Some(solver) = morph_interpolation_solver() {
         morph = morph.with_interpolation_solver(solver);

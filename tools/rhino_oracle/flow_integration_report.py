@@ -60,6 +60,7 @@ def comparison(request, local, native):
         if not op.get('diagnostic_integrals') or op.get('diagnostic_length_batch_divisions') != DIVISIONS:
             raise ValueError('missing integration diagnostics')
         rows = []
+        inverse_rows = []
         for role in ('base', 'target'):
             traces = a['integration_traces'][role]
             diag = n['diagnostics'][role]
@@ -85,6 +86,17 @@ def comparison(request, local, native):
                     raise ValueError('invalid native prefix integrals')
                 error = abs(trace['length'] - integral['length'])
                 rows.append(dict(role=role, fractional_tolerance=trace['fractional_tolerance'], checkpoints=len(checkpoints), absolute_length_error=error, relative_length_error=error / integral['length'], within_numeric_epsilon=error <= 1e-10 * max(1., integral['length'])))
+            native_tolerance = 1e-6 if op[role]['type'] == 'polycurve' else 1e-4
+            independent = a['incremental_inverse_batches'][role]
+            if [b['divisions'] for b in independent] != DIVISIONS:
+                raise ValueError('incremental batch divisions differ')
+            for batch in independent:
+                reference = next(b for b in diag['length_batches'] if b['divisions'] == batch['divisions'] and b['fractional_tolerance'] == native_tolerance)
+                parameters = batch['parameters']
+                if len(parameters) != batch['divisions']+1 or not all(map(finite, parameters)) or parameters[0] != domain[0] or parameters[-1] != domain[1] or any(p > q for p, q in zip(parameters, parameters[1:])):
+                    raise ValueError('invalid incremental inverse parameters')
+                error = max(abs(p-q) for p, q in zip(parameters, reference['parameters']))
+                inverse_rows.append(dict(role=role, divisions=batch['divisions'], requests=len(parameters), native_fractional_tolerance=native_tolerance, max_parameter_error=error, within_1e_minus_8=error <= 1e-8))
         # Compare retained public calls, rather than treating dense batch values
         # as interchangeable with scalar inverses or integration checkpoints.
         batches = n['diagnostics']['target']['length_batches']
@@ -109,11 +121,13 @@ def comparison(request, local, native):
             if len(v['sdk_points']) != len(op['points']) or not all(map(point, v['sdk_points'])):
                 raise ValueError('invalid Flow diagnostic points')
         flow_error = max(abs(x-y) for p, q in zip(a['sdk_points'], n['sdk_points']) for x, y in zip(p, q))
-        observed_batch = next(b for b in batches if b['divisions'] == 840 and b['fractional_tolerance'] == 1e-4)
+        native_tolerance = 1e-6 if op['target']['type'] == 'polycurve' else 1e-4
+        observed_batch = next(b for b in batches if b['divisions'] == 840 and b['fractional_tolerance'] == native_tolerance)
         runs = inverse_linear_runs(observed_batch, a['integration_traces']['target'])
-        results.append(dict(id=op['id'], forward_integrals=rows, batch_midpoints=midpoints, native_batch_linear_runs=runs, coarse_checkpoint_linear_inverse_max_parameter_error=interpolation_error, precise_flow_max_coordinate_error=flow_error))
+        results.append(dict(id=op['id'], forward_integrals=rows, incremental_inverse_batches=inverse_rows, batch_midpoints=midpoints, native_batch_linear_runs=runs, coarse_checkpoint_linear_inverse_max_parameter_error=interpolation_error, kernel_flow_max_coordinate_error=flow_error))
     rows = [row for r in results for row in r['forward_integrals']]
-    return dict(cases=len(results), forward_integrals=len(rows), matched_forward_integrals=sum(r['within_numeric_epsilon'] for r in rows), max_relative_forward_length_error=max(r['relative_length_error'] for r in rows), complete_native_inverse_qualified=False, complete_flow_qualified=False, native_values_used_as_kernel_inputs=False, results=results)
+    inverse_rows = [row for r in results for row in r['incremental_inverse_batches']]
+    return dict(cases=len(results), forward_integrals=len(rows), matched_forward_integrals=sum(r['within_numeric_epsilon'] for r in rows), max_relative_forward_length_error=max(r['relative_length_error'] for r in rows), inverse_batches=len(inverse_rows), matched_inverse_batches=sum(r['within_1e_minus_8'] for r in inverse_rows), inverse_requests=sum(r['requests'] for r in inverse_rows), max_inverse_parameter_error=max(r['max_parameter_error'] for r in inverse_rows), complete_native_inverse_qualified=False, complete_flow_qualified=False, native_values_used_as_kernel_inputs=False, results=results)
 
 
 def main():
@@ -125,6 +139,8 @@ def main():
     args.output.write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
     if report['matched_forward_integrals'] != report['forward_integrals']:
         raise SystemExit('forward integration comparisons failed')
+    if report['matched_inverse_batches'] != report['inverse_batches']:
+        raise SystemExit('incremental inverse comparisons failed')
 
 
 if __name__ == '__main__':

@@ -16744,10 +16744,10 @@ pub enum CommandError {
     LoftRequiresCurves,
     #[error("Flow guides must be curves or explicit surface edges")]
     FlowGuideNotCurve,
-    #[error("Flow of spatial guides is not implemented yet; straight 3D guides are supported")]
+    #[error(
+        "Flow spatial guide orientation requires Roadlike with explicit BaseUp and TargetUp directions"
+    )]
     FlowSpatialFramesNotSupported,
-    #[error("Flow curved NURBS guide length lookup is not implemented yet")]
-    FlowNurbsLookupNotSupported,
     #[error(
         "Flow Roadlike requires explicit BaseUp and TargetUp directions; interactive input can pick axes or use CPlaneZ"
     )]
