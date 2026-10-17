@@ -224,7 +224,6 @@
     "docs/orient-on-curve-edge.md": "9524e88dc0bf4d3dcef5066dd64604a1f9807ff45467bd147793a46668414e0d",
     "docs/orient-on-curve-subcurve.md": "27b560038b622ae5ff3f6d1993aafbc606ad7f9518554f5efc317aeb51ef1aa4",
     "docs/point-deviation-validation.json": "04678a3e37a9a03bf2fadfd38685ff3dbe472f5f5dccd6a2731bae28f7039475",
-    "src/app/component_selection.rs": "b65d49b7d37136dcfe1ccae6803bfcfc8e5d541ab2a0c497f8e2eaab1dc8ae37",
     "src/app/orient_curve.rs": "aa327a50781c52a787903ef8a823c86fc1f51c7f5b07f0cde26a4f1e0c17bd04",
     "src/app/orient_curve/subcurve.rs": "160c45e0be7dbb763a70d1dc20ef3343bd16181e6e8778651f2261a84f1443a0",
     "src/app/subcurve_preview.rs": "6480e483e8ad97f4cb5e512d5566b8a407e907ee9cd8a578a805c89b1d1c2d50",
@@ -271,6 +270,7 @@
     "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:docs/orient-on-curve-subcurve-validation.json": "1fbcd98f22b6e529ca67b8d9053096dced20cea2cfef8f9dd3983261684a30cc",
     "7328cac3ea1e7be903f19ab8719d2d1cc94f7221:docs/orient-on-curve-validation.json": "9a741cc248a7477326a32bc7a60be4bcb00109f0934873ce0021eb66f448961c",
     "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de:docs/selected-coplanar-faces-qualification.json": "f1c46ffc38fc4bdb18b2a611640be8874e14f7d676879fe7c252e9ee8d92cfa8",
-    "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:docs/curvature-graph-validation.json": "58480128c9a839aa60396ec02e7dba399d7178f06d1bb1a8da7afc3feace4ff0"
+    "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:docs/curvature-graph-validation.json": "58480128c9a839aa60396ec02e7dba399d7178f06d1bb1a8da7afc3feace4ff0",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/app/component_selection.rs": "b65d49b7d37136dcfe1ccae6803bfcfc8e5d541ab2a0c497f8e2eaab1dc8ae37"
   }
 }

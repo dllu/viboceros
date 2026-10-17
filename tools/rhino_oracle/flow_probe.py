@@ -6,7 +6,7 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 def validate(op):
-    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics'}:raise ValueError('invalid Flow recipe')
+    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid Flow id')
     for key in ('base','target'):
         if not isinstance(op[key],dict)or op[key].get('type')not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('Flow requires curve guides')
@@ -15,8 +15,11 @@ def validate(op):
     for p in op['points']:
         if not isinstance(p,list)or len(p)!=3 or any(type(x)not in(int,float)or math.isnan(x)or math.isinf(x)for x in p):raise ValueError('invalid Flow witness')
     o=op.get('options',{})
-    if not isinstance(o,dict)or set(o)-{'reverse_base','reverse_target','stretch','copy','rigid','rigid_groups','preserve_structure'}or any(type(v)is not bool for v in o.values()):raise ValueError('invalid Flow options')
-    for k in ('command','group','diagnostics'):
+    if not isinstance(o,dict)or set(o)-{'reverse_base','reverse_target','stretch','copy','rigid','rigid_groups','preserve_structure','roadlike','stairlike'}or any(type(v)is not bool for v in o.values()):raise ValueError('invalid Flow options')
+    if o.get('stairlike'):raise ValueError('Stairlike capture is not qualified')
+    if op.get('roadlike_syntax',0)not in(0,1,2,3):raise ValueError('invalid roadlike capture sequence')
+    if 'morph_tolerance'in op and(type(op['morph_tolerance'])not in(int,float)or (math.isnan(op['morph_tolerance'])or math.isinf(op['morph_tolerance']))or op['morph_tolerance']<=0):raise ValueError('invalid Flow morph tolerance')
+    for k in ('command','group','diagnostics','quick_preview'):
         if type(op.get(k,False))is not bool:raise ValueError('invalid Flow capture flag')
 
 def run(op,host,iterations,tolerance):
@@ -25,6 +28,8 @@ def run(op,host,iterations,tolerance):
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;o=op.get('options',{})
     base=host['_object_source'](op['base'],tolerance);target=host['_object_source'](op['target'],tolerance)
     morph=G.Morphs.FlowSpaceMorph(base,target,o.get('reverse_base',False),o.get('reverse_target',False),not o.get('stretch',True))
+    if 'morph_tolerance'in op:morph.Tolerance=float(op['morph_tolerance'])
+    if 'quick_preview'in op:morph.QuickPreview=op['quick_preview']
     before=set(obj.Id for obj in doc.Objects);groups=set(g.Index for g in doc.Groups if not g.IsDeleted)
     try:
         points=[G.Point3d(*p)for p in op['points']]
@@ -41,7 +46,7 @@ def run(op,host,iterations,tolerance):
                         if ok:row[name]=plane(p)
                     out.append(row)
                 ok,p=c.TryGetPlane();batch=c.GetPerpendicularFrames(host['System'].Array[host['System'].Double](parameters))
-                return dict(rows=out,plane=plane(p)if ok else None,batch=[plane(p)for p in batch]if batch is not None else None)
+                return dict(rows=out,plane=plane(p)if ok else None,batch=[plane(p)for p in batch]if batch is not None else None,linear=[dict(tolerance=t,value=bool(c.IsLinear(t)))for t in(1e-6,1e-4,.001,.01,.1,1.)])
             result['diagnostics']=dict(base=frames(base),target=frames(target))
         if not op.get('command'):return result,0
         # Reverse copies of the authored guide definitions; the SDK constructor
@@ -55,10 +60,15 @@ def run(op,host,iterations,tolerance):
         definition=lambda key:host['_nurbs_curve_definition'](doc.Objects.FindId(key).Geometry)
         guides=[definition(a),definition(b)];doc.Objects.UnselectAll();doc.Objects.Select(source,True)
         flags=' '.join('_'+key+'=_'+('Yes'if o.get(field,default)else'No')for key,field,default in [('Copy','copy',False),('Rigid','rigid',False),('Stretch','stretch',True),('PreserveStructure','preserve_structure',False)])
-        flags+=' _Roadlike=_No'
+        flags+=' _Roadlike=_'+('Yes'if o.get('roadlike')else'No')
         if o.get('rigid'):flags+=' _RigidGroups=_'+('Yes'if o.get('rigid_groups',True)else'No')
         marker='Owned Flow '+str(host['System'].Guid.NewGuid());R.RhinoApp.WriteLine(marker)
-        macro='_Flow '+flags+" '_-SelID "+str(a)+" '_-SelID "+str(b)+' _Cancel'
+        point=lambda p:'w'+','.join(repr(float(v))for v in p)
+        def axis(c):
+            if not o.get('roadlike'):return ''
+            style=op.get('roadlike_syntax',0);p=host['_xyz'](c.PointAtStart)
+            return [' _Automatic',' _Automatic _Enter',' '+point(p)+' _Automatic',' '+point(p)+' '+point([p[0],p[1],p[2]+1])][style]
+        macro='_Flow '+flags+" '_-SelID "+str(a)+" '_-SelID "+str(b)+axis(base)+axis(target)+' _Cancel'
         returned=R.RhinoApp.RunScript(macro,True);outputs=[]
         for obj in doc.Objects:
             if obj.Id in before or obj.Id in(a,b)or not isinstance(obj.Geometry,G.PointCloud):continue

@@ -17,6 +17,9 @@ pub(crate) trait MorphPreviewKey: Clone + PartialEq {
     -> Result<Self::Morph, viboceros_geometry::GeometryError>;
     fn rigid(&self) -> bool;
     fn preserve(&self) -> bool;
+    fn rigid_groups(&self) -> bool {
+        true
+    }
     fn rigid_transform(
         &self,
         morph: &Self::Morph,
@@ -241,7 +244,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                     transform: None,
                 }
             } else if key.rigid() {
-                let transform = if let Some(group) = source.group {
+                let transform = if let Some(group) = source.group.filter(|_| key.rigid_groups()) {
                     if let Some(map) = group_maps.get(&group) {
                         *map
                     } else {
@@ -250,7 +253,15 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                         map
                     }
                 } else {
-                    key.rigid_transform(&morph, self.centers.as_ref().unwrap()[i])?
+                    let center = if key.rigid_groups() {
+                        self.centers.as_ref().unwrap()[i]
+                    } else {
+                        source
+                            .snapshot
+                            .tight_bounds(document.tolerance())?
+                            .center()?
+                    };
+                    key.rigid_transform(&morph, center)?
                 };
                 PreviewObject {
                     geometry: source.display.clone(),

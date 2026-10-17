@@ -192,6 +192,7 @@ impl VibocerosApp {
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
+            && !self.picking_flow_guide()
         {
             if self
                 .hole_prompt
@@ -230,7 +231,10 @@ impl VibocerosApp {
             self.component_selection.clear_choices();
             return;
         }
-        let picks = if self.picking_subcurve_edge() || self.picking_orient_curve() {
+        let picks = if self.picking_subcurve_edge()
+            || self.picking_orient_curve()
+            || self.picking_flow_guide()
+        {
             click
                 .picks
                 .into_iter()
@@ -294,6 +298,12 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        if self.picking_flow_guide() {
+            if let [pick] = picks.as_slice() {
+                self.pick_flow_guide(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
         if self.picking_orient_curve() {
             if let [pick] = picks.as_slice() {
                 self.pick_orient_edge(crate::viewport::EdgePick {

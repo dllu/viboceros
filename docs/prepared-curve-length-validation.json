@@ -71,26 +71,28 @@
     "method": "Retain original digests and non-hash metadata; move baseline-verifiable affected paths to immutable full base-revision Git references."
   },
   "sha256": {
-    "README.md": "320eca94f418c2885b9d47a9b4dce9f4c8fdf519e711bab3cb231210a79abcf8",
     "crates/viboceros-geometry/src/curve.rs": "05cccde0ced33d5b2c166aea034ee002521ccdda8b7db864a36586c6c341d404",
     "crates/viboceros-geometry/src/curve/arc_length.rs": "a9e271f0cba81d4ccab4eeb3d39a44ad99284640f8d126ac2d2b7d85080ba7a9",
     "crates/viboceros-geometry/src/curve/arc_length/tests.rs": "febcc4b507eba10d098183970869adb3c24a755658f16085b7f01db3e4bdc054",
-    "crates/viboceros-geometry/src/lib.rs": "69c5e27d75aae60a1ffcb19e3ce720f4df9323e8d3eab96cf5bb635df1e5d4d0",
     "docs/common-parameter-curve-fit-validation.json": "e1c1636c9dc572ff9a8fcc4fd648786884cc6685eb7ca715e0e9c14eb1249026",
     "docs/constrained-network-fit-validation.json": "4f335adc5f7bc2715cde42834212dd7659e900adf1fec0ac062320091ef6555e",
     "docs/curvature-sampling-validation.json": "a050b4e9f5976b3155243705f679fd74efddfa2fd3fd09f19c600fbed23f1739",
-    "docs/flow-development.md": "20553fb0928ba49e62558f46252c7c185763f671c50f417ba8674e3f19683ee5",
     "docs/orient-on-curve-validation.json": "f909d90eeeee52c03bcfb57583bda7e65504a1bd1d858512834a2676cfff1daf",
-    "docs/orient-surface-grips-validation.json": "51ad75434d94e9bf3ec61210fd36b82442f2eb3d8b763db616e119d0941fe119",
-    "docs/orient-surface-options-validation.json": "ddb58374fe862d8a20767d9245bcb095a6a4068ea008ba928257009d1d603644",
     "docs/prepared-curve-length.md": "d49e9bb960e568cde6b0a527f077d51f92b8e98285056521c72c11a41e8e7243",
     "tools/rhino_oracle/fixtures/flow.json": "d521c6a45678f6d96cf47ecec9cae42813ef576610da118c1373c70ab9c51e62",
     "tools/rhino_oracle/fixtures/flow_frames.json": "7006e5717a68ef8e021c1ee888a4aca3fb4c9e4f1ebdb33accf3d1477b711fab",
-    "tools/rhino_oracle/flow_probe.py": "4f642c52afa76a0318970b8b1ac7ed6d6d80696165848308a9a58d67952f2cf3",
     "tools/rhino_oracle/observations/flow_frames_rhino_20261016.json": "ca81823eadd4b49de7be7f2533f9bd8f22c10def72de383681bea71d424c7946",
     "tools/rhino_oracle/observations/flow_rhino_20261016.json": "fd694b30791cd4c82469f4790616e87c226ce96f7f78598bd02457dc85e04e6b",
     "tools/rhino_oracle/rhino_worker.py": "928a835cb5308b0788185ff91777b5f6021ecb373b7f06402dadd48faa34dee7",
-    "tools/rhino_oracle/structural_sdk.py": "d5c87f7d3444d68abe61040d7901bb567c68d8a8b46d387f73522d5ab3b69a45",
-    "tools/rhino_oracle/test_flow_capture.py": "2c404dce09db6c8803673cab0943006011e7cde13df8c3428954afe877cfced9"
+    "tools/rhino_oracle/structural_sdk.py": "d5c87f7d3444d68abe61040d7901bb567c68d8a8b46d387f73522d5ab3b69a45"
+  },
+  "git_sha256": {
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:README.md": "320eca94f418c2885b9d47a9b4dce9f4c8fdf519e711bab3cb231210a79abcf8",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:crates/viboceros-geometry/src/lib.rs": "69c5e27d75aae60a1ffcb19e3ce720f4df9323e8d3eab96cf5bb635df1e5d4d0",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:docs/flow-development.md": "20553fb0928ba49e62558f46252c7c185763f671c50f417ba8674e3f19683ee5",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:docs/orient-surface-grips-validation.json": "51ad75434d94e9bf3ec61210fd36b82442f2eb3d8b763db616e119d0941fe119",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:docs/orient-surface-options-validation.json": "ddb58374fe862d8a20767d9245bcb095a6a4068ea008ba928257009d1d603644",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:tools/rhino_oracle/flow_probe.py": "4f642c52afa76a0318970b8b1ac7ed6d6d80696165848308a9a58d67952f2cf3",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:tools/rhino_oracle/test_flow_capture.py": "2c404dce09db6c8803673cab0943006011e7cde13df8c3428954afe877cfced9"
   }
 }

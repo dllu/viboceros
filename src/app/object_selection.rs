@@ -274,6 +274,11 @@ impl VibocerosApp {
                 .picking_orient_surface()
                 .then_some(ObjectSelectionFilter::SurfaceComponents);
         }
+        if self.flow_session.is_some() {
+            return self
+                .picking_flow_guide()
+                .then_some(ObjectSelectionFilter::Curves);
+        }
         if self.picking_orient_curve() {
             return Some(ObjectSelectionFilter::Curves);
         }

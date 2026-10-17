@@ -39,3 +39,28 @@ class FlowCaptureTests(TestCase):
                 self.assertEqual(len(cloud['points']),len(op['points']))
                 self.assertLessEqual(max(abs(a-b)for p,q in zip(cloud['points'],v['sdk_points'])for a,b in zip(p,q)),1e-12)
         self.assertEqual(commands,4)
+
+    def test_flow_command_and_mixed_plane_captures_have_clean_macros(self):
+        commands=0
+        for name,count in [('flow_command',24),('flow_planes',16),('flow_equivalence',19),('flow_precision',19)]:
+            request=json.loads((BASE/'fixtures'/(name+'.json')).read_text())
+            native=json.loads((BASE/'observations'/(name+'_rhino_20261016.json')).read_text())
+            self.assertEqual(len(request['operations']),count)
+            self.assertEqual(len(native['results']),count)
+            for op,row in zip(request['operations'],native['results']):
+                validate(op)
+                self.assertEqual(op['id'],row['id'])
+                self.assertEqual(len(op['points']),len(row['value']['sdk_points']))
+                self.assertTrue(all(math.isfinite(x)for p in row['value']['sdk_points']for x in p))
+                if not op.get('command'):continue
+                commands+=1;c=row['value']['command']
+                self.assertTrue(c['returned']);self.assertTrue(c['guides_unchanged'])
+                self.assertNotIn('Unknown command',c['history'])
+                self.assertEqual(c['guides_selected'],[False,False])
+                copy=op.get('options',{}).get('copy',False)
+                self.assertEqual(c['group_count'],2 if copy else 1)
+                self.assertEqual(len(c['outputs']),2 if copy else 1)
+                original=next(o for o in c['outputs']if o['original'])
+                self.assertTrue(original['selected'])
+                if copy:self.assertFalse(next(o for o in c['outputs']if not o['original'])['selected'])
+        self.assertEqual(commands,40)

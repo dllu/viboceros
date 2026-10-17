@@ -146,8 +146,10 @@ pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod curvature_graph;
+mod flow;
 mod orient_on_curve;
 mod orient_points;
+pub use flow::Fixture as FlowFixture;
 mod orient_surface;
 mod orient_surface_grips;
 pub use orient_on_curve::Fixture as OrientOnCurveFixture;
@@ -1710,6 +1712,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: OrientSurfaceGripsFixture,
     },
+    Flow {
+        id: String,
+        #[serde(flatten)]
+        fixture: FlowFixture,
+    },
     OrientSurfaceOptions {
         id: String,
         #[serde(flatten)]
@@ -2750,6 +2757,7 @@ impl Operation {
             | Self::LineThroughPoints { id, .. }
             | Self::CurveDeviation { id, .. }
             | Self::OrientPoints { id, .. }
+            | Self::Flow { id, .. }
             | Self::OrientSurfaceOptions { id, .. }
             | Self::OrientSurface { id, .. }
             | Self::OrientSurfaceGrips { id, .. }
@@ -5987,6 +5995,7 @@ fn execute(
         Operation::OrientSurfaceGrips { fixture, .. } => {
             orient_surface_grips::run(fixture, iterations, tolerance)?
         }
+        Operation::Flow { fixture, .. } => flow::run(fixture, iterations, tolerance)?,
         Operation::OrientSurfaceOptions { fixture, .. } => {
             orient_surface::run_options(fixture, iterations, tolerance)?
         }

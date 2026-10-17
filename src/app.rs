@@ -167,6 +167,7 @@ mod extrude_surface_apex;
 mod extrude_surface_path;
 mod extrude_surface_tapered;
 mod extrude_tapered;
+mod flow;
 mod grid_settings;
 mod group_prompt;
 mod interface;
@@ -325,6 +326,7 @@ impl InteractiveScaleKind {
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
     OrientOnCurve,
+    Flow,
     OrientOnSurface {
         last: Option<Point3>,
     },
@@ -774,6 +776,7 @@ impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
             Self::OrientOnCurve => "OrientOnCrv",
+            Self::Flow => "Flow",
             Self::OrientOnSurface { .. } => "OrientOnSrf",
             Self::OrientPoints { kind, .. } => kind.name(),
             Self::ProjectDirection { .. } => "Project",
@@ -900,6 +903,7 @@ impl InteractiveCommand {
     const fn prompt(self) -> &'static str {
         match self {
             Self::OrientOnCurve => "OrientOnCrv: follow the curve placement prompt (Esc finishes)",
+            Self::Flow => "Flow: choose base and target curves, then Enter applies (Esc cancels)",
             Self::OrientOnSurface { .. } => {
                 "OrientOnSrf: follow the surface placement prompt (Esc finishes)"
             }
@@ -1830,6 +1834,7 @@ impl InteractiveCommand {
             | Self::TrimCurve
             | Self::Move { start: None }
             | Self::OrientOnCurve
+            | Self::Flow
             | Self::SetPoint { .. }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -2207,6 +2212,7 @@ pub struct VibocerosApp {
     translation_session: Option<translation_prompt::TranslationSession>,
     set_point_sources: Option<set_point::SetPointSources>,
     orient_curve_session: Option<orient_curve::Session>,
+    flow_session: Option<flow::Session>,
     orient_points_session: Option<orient_points::Session>,
     orient_surface_session: Option<orient_surface::Session>,
     surface_extrusion_sources: Option<extrude_surface::SurfaceExtrusionSources>,
@@ -2322,6 +2328,7 @@ impl VibocerosApp {
             translation_session: None,
             set_point_sources: None,
             orient_curve_session: None,
+            flow_session: None,
             orient_points_session: None,
             orient_surface_session: None,
             surface_extrusion_sources: None,
@@ -2528,6 +2535,7 @@ impl VibocerosApp {
         if self.try_continue_orient_surface(&input)
             || self.try_continue_orient_points(&input)
             || self.try_continue_orient_curve(&input)
+            || self.try_continue_flow(&input)
             || self.try_continue_translation(&input)
             || self.try_continue_transform(&input)
             || self.try_continue_twist(&input)
@@ -3136,6 +3144,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_orient_points_input(input, picked_sources.as_deref()) {
+            return true;
+        }
+        if self.try_start_flow_input(input, picked_sources.as_deref()) {
             return true;
         }
         if self.try_start_orient_curve_input(input, picked_sources.as_deref()) {
@@ -5500,6 +5511,7 @@ impl VibocerosApp {
         if self.unjoin_prompt.is_some() {
             self.finish_unjoin_command(false);
         }
+        self.flow_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_taper_session(false);
@@ -5597,6 +5609,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Flow
             | InteractiveCommand::OrientOnSurface { .. }
             | InteractiveCommand::Section { .. }
             | InteractiveCommand::Contour { .. } => {
@@ -8341,6 +8354,9 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.pick_flow_guide(click.object_id, None) {
+            return;
+        }
         if self.pick_orient_curve(click.object_id) {
             return;
         }
@@ -8863,6 +8879,7 @@ impl VibocerosApp {
         }
         self.selection_window_override = None;
         if self.replacing_block()
+            || self.flow_session.is_some()
             || self.picking_alignment_curve()
             || self.picking_scale_by_plane_object()
             || self.picking_scale_by_plane_view()
@@ -8904,6 +8921,9 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if output.selection_pointer.is_some() {
+            self.capture_flow_pointer(output.selection_pointer);
+        }
         if let Some(id) = output.object_double_click.take()
             && self.try_open_block_edit_double_click(id)
         {
@@ -9036,7 +9056,10 @@ impl VibocerosApp {
         } else if let Some(window) = output.component_window {
             self.accept_component_window(window);
         } else if let Some(picks) = output.edge_click {
-            if self.picking_subcurve_edge() || self.picking_orient_curve() {
+            if self.picking_subcurve_edge()
+                || self.picking_orient_curve()
+                || self.picking_flow_guide()
+            {
                 self.accept_component_click(crate::viewport::ComponentClick {
                     picks: picks
                         .into_iter()
@@ -9318,6 +9341,7 @@ impl eframe::App for VibocerosApp {
         self.show_curve_deviation(ui);
         self.validate_orient_guide();
         self.validate_orient_surface();
+        self.validate_flow_guides();
         self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9377,6 +9401,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
                 && !self.picking_orient_curve()
+                && self.flow_session.is_none()
                 && !self.picking_orient_surface()
                 && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
@@ -9623,7 +9648,8 @@ impl eframe::App for VibocerosApp {
                 .as_ref()
                 .is_some_and(blend_surface::Prompt::selecting)
             || self.picking_subcurve_edge()
-            || self.picking_orient_curve())
+            || self.picking_orient_curve()
+            || self.picking_flow_guide())
             && self.plane_prompt.is_none()
             && model_input_active
             && !end_analysis_picking;
@@ -9787,8 +9813,10 @@ impl eframe::App for VibocerosApp {
             })
             .flatten();
         let selecting_normal = model_input_active && self.selecting_move_normal_reference();
-        let curve_or_edge_pick =
-            edge_pick && (self.picking_subcurve_edge() || self.picking_orient_curve());
+        let curve_or_edge_pick = edge_pick
+            && (self.picking_subcurve_edge()
+                || self.picking_orient_curve()
+                || self.picking_flow_guide());
         let document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
@@ -10015,6 +10043,11 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
+                            flow_preview: self
+                                .flow_session
+                                .as_ref()
+                                .and_then(flow::Session::preview)
+                                .filter(|_| model_input_active),
                             twist_preview,
                             bend_preview,
                             taper_preview,
@@ -10266,6 +10299,7 @@ mod tests {
     mod extrude_surface_path;
     mod extrude_surface_tapered;
     mod extrude_tapered;
+    mod flow;
     mod geometry_check;
     mod grip_transform;
     mod group_prompt;
@@ -10425,6 +10459,7 @@ mod tests {
             translation_session: None,
             set_point_sources: None,
             orient_curve_session: None,
+            flow_session: None,
             orient_points_session: None,
             orient_surface_session: None,
             surface_extrusion_sources: None,

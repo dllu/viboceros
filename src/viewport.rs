@@ -40,8 +40,10 @@ pub(crate) mod affine_preview;
 pub(crate) mod bend_preview;
 pub(crate) mod orient_surface_preview;
 pub(crate) use orient_surface_preview::{OrientSurfacePreview, OrientSurfacePreviewCache};
+mod flow_preview;
 pub(crate) mod maelstrom_preview;
 mod morph_preview;
+pub(crate) use flow_preview::{FlowPreview, FlowPreviewCache};
 mod object_preview;
 #[cfg(test)]
 mod preview_test_support;
@@ -337,6 +339,7 @@ pub struct ViewportInput<'a> {
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
+    pub flow_preview: Option<FlowPreview<'a>>,
     pub twist_preview: Option<TwistPreview<'a>>,
     pub bend_preview: Option<BendPreview<'a>>,
     pub orient_surface_preview: Option<OrientSurfacePreview<'a>>,
@@ -419,6 +422,7 @@ impl Default for ViewportInput<'_> {
             mirror_preview: None,
             translation_preview: None,
             affine_preview: None,
+            flow_preview: None,
             twist_preview: None,
             bend_preview: None,
             orient_surface_preview: None,
@@ -480,6 +484,7 @@ pub struct ViewportOutput {
     pub orient_surface_preview: Option<Option<Point3>>,
     pub taper_preview: Option<Option<Point3>>,
     pub maelstrom_preview: Option<MaelstromCursor>,
+    pub selection_pointer: Option<Pos2>,
     pub selection_click: Option<SelectionClick>,
     pub object_double_click: Option<ObjectId>,
     pub selection_choice: Option<SelectionChoice>,
@@ -1161,6 +1166,9 @@ impl Viewport {
                         .0
                 })
             });
+        let flow_image = input
+            .flow_preview
+            .and_then(|p| p.resolve(document, &self.display_cache));
         let previous_twist = input
             .twist_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
@@ -1178,6 +1186,11 @@ impl Viewport {
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                flow_image.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
             .or_else(|| {
                 previous_twist
                     .as_ref()
@@ -1758,6 +1771,11 @@ impl Viewport {
             .or(affine_preview)
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
+                flow_image.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
                 twist_preview
                     .as_ref()
                     .map(|p| object_preview::ObjectPreview::Deformed(&p.objects))
@@ -2285,6 +2303,10 @@ impl Viewport {
                         .and_then(|(curve, cursor)| curve.evaluate(cursor.parameter).ok())
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
+                .flatten(),
+            selection_pointer: response
+                .clicked_by(PointerButton::Primary)
+                .then(|| response.interact_pointer_pos())
                 .flatten(),
             selection_click,
             object_double_click,

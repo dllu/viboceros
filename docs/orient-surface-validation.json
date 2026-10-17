@@ -249,7 +249,6 @@
     "docs/orient-on-curve-subcurve-validation.json": "ec1c30d0a20dbfcee902790a862407e83a0385b317c30706f810207aaec1fa7d",
     "docs/selected-coplanar-faces-qualification.json": "87a99f4ebcfb03f02397548ee791e0f1171365f9bee263076d01a58927f8f204",
     "src/app/mesh_face_prompt.rs": "501085858483065af7c50c605ec669354708f2ded6202f830481edf4eebfbf07",
-    "src/app/object_selection.rs": "5a9ae5e495036355262be7315f6d5945eec97e7965aed84a748f9ccdc731b68a",
     "src/app/point_input.rs": "5f3a48a8c422ad819b8fe625f581e4c3eb94c58822ec76c75d665adf3d4813e6",
     "src/app/transform_prompt.rs": "8ecd572469b24c0546c10c6093ed4517525f6ae4e2570f869cefc35a6457eb1a",
     "src/viewport/affine_preview.rs": "3fe7536191c78f40edeb277c590f126cbabf55db6273c1926b26343421cbd563",
@@ -287,6 +286,7 @@
     "588c04e3c44165e5d150a089674a53f1e689b1f7:crates/viboceros-geometry/src/morph.rs": "fdd0490dddf74eb2f29b1c1568e28a2ed22af0004571eae8e1adb709a5ebd8b4",
     "588c04e3c44165e5d150a089674a53f1e689b1f7:crates/viboceros-oracle/src/orient_surface.rs": "9ee82e7157381c9419da13c73f3f482916ae5083b99c61deb3f0bf9691b4f7ed",
     "588c04e3c44165e5d150a089674a53f1e689b1f7:src/app/tests/orient_surface.rs": "d26a2103a6fd81ce7b2274722f5bef6745c96ba88fef11f753be6eaeaef7f3d9",
-    "588c04e3c44165e5d150a089674a53f1e689b1f7:tools/rhino_oracle/orient_surface_probe.py": "95783a77584234073094c4d4a6126e0859861c68bc6d3ec58909ab5030c0ddde"
+    "588c04e3c44165e5d150a089674a53f1e689b1f7:tools/rhino_oracle/orient_surface_probe.py": "95783a77584234073094c4d4a6126e0859861c68bc6d3ec58909ab5030c0ddde",
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/app/object_selection.rs": "5a9ae5e495036355262be7315f6d5945eec97e7965aed84a748f9ccdc731b68a"
   }
 }

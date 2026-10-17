@@ -1,0 +1,905 @@
+{
+  "schema_version": 1,
+  "epsilon": 1e-06,
+  "all_sdk_maps_pass": false,
+  "supported_maps_pass": true,
+  "supported_point_maps": 76,
+  "unresolved_spatial_maps": 8,
+  "supported_command_count": 43,
+  "supported_commands_pass": true,
+  "native_table_enumeration_order_compared": false,
+  "native_frames_used_as_construction_inputs": false,
+  "cases": [
+    {
+      "fixture": "flow",
+      "id": "line-False-False",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "line-False-True",
+      "sdk_max_distance": 3.552713678800501e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "line-True-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow",
+      "id": "line-True-True",
+      "sdk_max_distance": 1.7774118882073174e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "arc-False-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "arc-False-True",
+      "sdk_max_distance": 7.944109290391274e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "arc-True-False",
+      "sdk_max_distance": 7.32410687763558e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.32410687763558e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow",
+      "id": "arc-True-True",
+      "sdk_max_distance": 5.0242958677880805e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "space-False-False",
+      "sdk_max_distance": 0.41072893839879954,
+      "sdk_pass": false,
+      "supported": false,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "space-False-True",
+      "sdk_max_distance": 2.5711544500999692,
+      "sdk_pass": false,
+      "supported": false,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "space-True-False",
+      "sdk_max_distance": 0.42537291432437224,
+      "sdk_pass": false,
+      "supported": false,
+      "command": {
+        "supported": false,
+        "rejected_before_edit": true,
+        "error": "Flow of spatial guides is not implemented yet; straight 3D guides are supported"
+      }
+    },
+    {
+      "fixture": "flow",
+      "id": "space-True-True",
+      "sdk_max_distance": 2.5711544500999692,
+      "sdk_pass": false,
+      "supported": false,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "circle-False-False",
+      "sdk_max_distance": 3.580361673049448e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "circle-False-True",
+      "sdk_max_distance": 7.755684626330685e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "circle-True-False",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "circle-True-True",
+      "sdk_max_distance": 3.972054645195637e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unbend-False-False",
+      "sdk_max_distance": 8.881784197001252e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unbend-False-True",
+      "sdk_max_distance": 7.944109290391274e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unbend-True-False",
+      "sdk_max_distance": 7.32410687763558e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unbend-True-True",
+      "sdk_max_distance": 5.617333549722722e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unspace-False-False",
+      "sdk_max_distance": 0.3534818565432301,
+      "sdk_pass": false,
+      "supported": false,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unspace-False-True",
+      "sdk_max_distance": 1.6245506280394884,
+      "sdk_pass": false,
+      "supported": false,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unspace-True-False",
+      "sdk_max_distance": 0.35348200094030613,
+      "sdk_pass": false,
+      "supported": false,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "unspace-True-True",
+      "sdk_max_distance": 1.6245506594584884,
+      "sdk_pass": false,
+      "supported": false,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "vertical-False-False",
+      "sdk_max_distance": 9.930136612989092e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "vertical-False-True",
+      "sdk_max_distance": 6.753223014464259e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "vertical-True-False",
+      "sdk_max_distance": 6.735557395310443e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "vertical-True-True",
+      "sdk_max_distance": 6.753223014464259e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "from-vertical-False-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "from-vertical-False-True",
+      "sdk_max_distance": 7.944109290391274e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "from-vertical-True-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "from-vertical-True-True",
+      "sdk_max_distance": 5.0242958677880805e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "space-line-False-False",
+      "sdk_max_distance": 3.972054645195637e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "space-line-False-True",
+      "sdk_max_distance": 1.887379141862766e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "space-line-True-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "space-line-True-True",
+      "sdk_max_distance": 2.175583928816829e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "corner-False-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "corner-False-True",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "corner-True-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow",
+      "id": "corner-True-True",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "reverse-base-False-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "reverse-base-False-True",
+      "sdk_max_distance": 4.440892098500626e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "reverse-base-True-False",
+      "sdk_max_distance": 5.0242958677880805e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow",
+      "id": "reverse-base-True-True",
+      "sdk_max_distance": 5.0242958677880805e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": null
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-False-False-False",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 8.881784197001252e-16,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-False-False-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-False-True-False",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 0.0,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-False-True-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 8.881784197001252e-16,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-True-False-False",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 8.881784197001252e-16,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-True-False-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-True-True-False",
+      "sdk_max_distance": 8.881784197001252e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 0.0,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-line-True-True-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 8.881784197001252e-16,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-False-False-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.105427357601002e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-False-False-True",
+      "sdk_max_distance": 7.32410687763558e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.32410687763558e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-False-True-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.24080954308002e-11,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-False-True-True",
+      "sdk_max_distance": 7.32410687763558e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 2.5309928973294553e-11,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-True-False-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.105427357601002e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-True-False-True",
+      "sdk_max_distance": 7.32410687763558e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.32410687763558e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-True-True-False",
+      "sdk_max_distance": 7.105427357601002e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.24080954308002e-11,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-arc-True-True-True",
+      "sdk_max_distance": 7.32410687763558e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 2.5309928973294553e-11,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-False-False-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-False-False-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-False-True-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 0.0,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-False-True-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 0.0,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-True-False-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-True-False-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 1.7763568394002505e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-True-True-False",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 0.0,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_command",
+      "id": "cmd-corner-True-True-True",
+      "sdk_max_distance": 1.7763568394002505e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 0.0,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-line-False-False",
+      "sdk_max_distance": 7.32410687763558e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.32410687763558e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-line-False-True",
+      "sdk_max_distance": 5.0242958677880805e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 5.0242958677880805e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-line-True-False",
+      "sdk_max_distance": 5.0242958677880805e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 5.0242958677880805e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-line-True-True",
+      "sdk_max_distance": 5.0242958677880805e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 5.0242958677880805e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-arc-False-False",
+      "sdk_max_distance": 7.944109290391274e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.944109290391274e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-arc-False-True",
+      "sdk_max_distance": 5.657974630217269e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 5.657974630217269e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-arc-True-False",
+      "sdk_max_distance": 5.657974630217269e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 5.657974630217269e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-xz-arc-True-True",
+      "sdk_max_distance": 7.944109290391274e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 7.944109290391274e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-line-False-False",
+      "sdk_max_distance": 6.661338147750939e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.661338147750939e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-line-False-True",
+      "sdk_max_distance": 6.330654316175355e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.330654316175355e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-line-True-False",
+      "sdk_max_distance": 6.330654316175355e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.330654316175355e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-line-True-True",
+      "sdk_max_distance": 6.661338147750939e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.661338147750939e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-arc-False-False",
+      "sdk_max_distance": 2.220446049250313e-16,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 2.220446049250313e-16,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-arc-False-True",
+      "sdk_max_distance": 6.275967847400981e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.275967847400981e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-arc-True-False",
+      "sdk_max_distance": 6.275967847400981e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 6.275967847400981e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    },
+    {
+      "fixture": "flow_planes",
+      "id": "plane-yz-arc-True-True",
+      "sdk_max_distance": 2.3314683517128287e-15,
+      "sdk_pass": true,
+      "supported": true,
+      "command": {
+        "supported": true,
+        "max_distance": 2.3314683517128287e-15,
+        "metadata_pass": true,
+        "passed": true
+      }
+    }
+  ]
+}
