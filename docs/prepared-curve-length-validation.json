@@ -71,7 +71,6 @@
     "method": "Retain original digests and non-hash metadata; move baseline-verifiable affected paths to immutable full base-revision Git references."
   },
   "sha256": {
-    "crates/viboceros-geometry/src/curve.rs": "05cccde0ced33d5b2c166aea034ee002521ccdda8b7db864a36586c6c341d404",
     "crates/viboceros-geometry/src/curve/arc_length/tests.rs": "febcc4b507eba10d098183970869adb3c24a755658f16085b7f01db3e4bdc054",
     "docs/common-parameter-curve-fit-validation.json": "e1c1636c9dc572ff9a8fcc4fd648786884cc6685eb7ca715e0e9c14eb1249026",
     "docs/constrained-network-fit-validation.json": "4f335adc5f7bc2715cde42834212dd7659e900adf1fec0ac062320091ef6555e",
@@ -93,6 +92,7 @@
     "329f872a16919c12f94566186d7d2248db675ed1:tools/rhino_oracle/structural_sdk.py": "d5c87f7d3444d68abe61040d7901bb567c68d8a8b46d387f73522d5ab3b69a45",
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:crates/viboceros-geometry/src/curve/arc_length.rs": "a9e271f0cba81d4ccab4eeb3d39a44ad99284640f8d126ac2d2b7d85080ba7a9",
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/orient-on-curve-validation.json": "f909d90eeeee52c03bcfb57583bda7e65504a1bd1d858512834a2676cfff1daf",
-    "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/prepared-curve-length.md": "d49e9bb960e568cde6b0a527f077d51f92b8e98285056521c72c11a41e8e7243"
+    "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/prepared-curve-length.md": "d49e9bb960e568cde6b0a527f077d51f92b8e98285056521c72c11a41e8e7243",
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/curve.rs": "05cccde0ced33d5b2c166aea034ee002521ccdda8b7db864a36586c6c341d404"
   }
 }

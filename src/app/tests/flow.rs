@@ -504,3 +504,61 @@ fn flow_roadlike_cplane_preset_reads_active_cplane_and_stale_guides_cancel_axis_
     enter(&mut app, "Cancel");
     assert_eq!(format!("{:?}", app.document), before);
 }
+
+#[test]
+fn flow_in_plane_axes_preview_native_poles_and_commit_one_history_entry() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/flow_roadlike_diagnostics.json"
+    ))
+    .unwrap();
+    let n: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/flow_roadlike_diagnostics_rhino_20261016.json"
+    ))
+    .unwrap();
+    let f: viboceros_oracle::FlowRoadlikeFixture =
+        serde_json::from_value(q["operations"][0].clone()).unwrap();
+    let mut app = test_app();
+    let [a, b] = f
+        .flow
+        .guide_geometries(app.document.tolerance())
+        .unwrap()
+        .map(|g| app.document.add_geometry(g).unwrap());
+    let source = app
+        .document
+        .add_geometry(f.flow.source_geometry(app.document.tolerance()).unwrap())
+        .unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(
+        &mut app,
+        "Flow Copy=No Stretch=Yes Roadlike=Yes BaseUp=0,1,1 TargetUp=0,1,0",
+    );
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    let preview = app.flow_session.as_ref().unwrap().preview().unwrap();
+    let Geometry::PointCloud(cloud) = app.document.object(source).unwrap().geometry() else {
+        panic!()
+    };
+    let native = &n["results"][0]["value"]["after_script"]["outputs"][0]["points"];
+    for (p, row) in cloud.points().iter().zip(native.as_array().unwrap()) {
+        let expected: [f64; 3] = serde_json::from_value(row.clone()).unwrap();
+        assert!(
+            preview
+                .morph
+                .morph_point(*p)
+                .unwrap()
+                .distance_to(Point3::try_from(expected).unwrap())
+                .unwrap()
+                < 1e-6
+        );
+    }
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "");
+    assert!(app.flow_session.is_none());
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Flow"));
+    assert!(app.document.undo().unwrap().is_none());
+    assert_eq!(app.document.redo().unwrap().as_deref(), Some("Flow"));
+}

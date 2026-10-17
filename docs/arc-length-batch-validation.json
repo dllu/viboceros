@@ -112,9 +112,6 @@
     "crates/viboceros-geometry/src/curve/arc_length/batch_tests.rs": "62ddcb6ba306573a3eb7d6ef111a3d27096a3b6b1b73a017b9cb3077e1510b6c",
     "crates/viboceros-geometry/src/error.rs": "fbc521df660226a364a405a1279897a88afe0f4680d7de66dfcc28d0f633770c",
     "crates/viboceros-oracle/src/arc_length_batch.rs": "403db9b0ea11e046bd8296692737fd9da4c55497ac037e808b5b1d963d77796c",
-    "docs/flow-structure-validation.json": "ce6afc559ba211c1126f9c13b96a161cd742bce9801cfce4796f1fb10be7fa84",
-    "docs/orient-on-curve-validation.json": "ab12dc3d0b0156ba290ec36244a93204757bbd18b08e6bf8aaf20055481af910",
-    "docs/prepared-curve-length-validation.json": "add3771421d958cfe8d9c06da37132e1d399bf56d201f542e657fbb41650a4f6",
     "docs/prepared-curve-length.md": "8fec0549b37393f87221e8bfbea4c6dae76c6458b89b58423d01dd799f96f418",
     "tools/rhino_oracle/arc_length_batch_comparison.py": "3d1e747472207fa19781a10a80c46f9416f6a0c564b91c674f748e01a8c629b4",
     "tools/rhino_oracle/arc_length_batch_probe.py": "6c2e62395ca424c608212a7b17ca47659bd15a2993158af448293e0cb357294e",
@@ -136,6 +133,9 @@
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:docs/flow-grips-validation.json": "a1682bc743d6ae075ad63f0e83f64752c2c4aac642058ac627e479cdcd0866b7",
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:docs/flow-line-validation.json": "8db1c6ea5b8208490fe7ec5fe00de1165dbe0596e76ef32c21bfe44ee94d9e6b",
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:docs/flow-spatial-validation.json": "32474b1350b2c323977f0b7e81417dae8ec92e0f0277b68fa41379e30baf9888",
-    "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:docs/flow-development.md": "8b58a8abaacbb6ca1c594c310d3fdb4e1503b10440b0ffdf2b300a6cbb2db5b6"
+    "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:docs/flow-development.md": "8b58a8abaacbb6ca1c594c310d3fdb4e1503b10440b0ffdf2b300a6cbb2db5b6",
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/flow-structure-validation.json": "ce6afc559ba211c1126f9c13b96a161cd742bce9801cfce4796f1fb10be7fa84",
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/orient-on-curve-validation.json": "ab12dc3d0b0156ba290ec36244a93204757bbd18b08e6bf8aaf20055481af910",
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/prepared-curve-length-validation.json": "add3771421d958cfe8d9c06da37132e1d399bf56d201f542e657fbb41650a4f6"
   }
 }

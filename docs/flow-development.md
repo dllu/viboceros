@@ -10,7 +10,7 @@ The implementation owns shared prepared guide geometry and reuses the existing
 fitting and viewport display cages. Straight guide pairs use a shortest-rotation
 map. Opposite directions use the plane determined by the guides' separation;
 collinear guides reuse the existing OpenNURBS-style perpendicular policy.
-Planar curved guides use their supporting planes; a straight guide borrows
+Qualified planar curved guides use their supporting planes; a straight guide borrows
 the curved guide's plane. Source points beyond an endpoint retain their tangent
 residual separately from mapped guide distance. Stretch scales both distances.
 Native coordinates and returned frames are expectations, never construction
@@ -31,7 +31,9 @@ and actual Flow macros in owned private displays:
 | `flow_line.json` | 128 | Actual commands with either or both guides drawn, Copy/Rigid/Stretch, reversals, mixed planes, selected grips and rigid curve owners |
 | `flow_line_orientation.json` | 24 | Twenty actual commands and four SDK diagnostics for opposite, collinear and nearly opposite lines |
 | `flow_roadlike.json` | 40 | Explicit Roadlike axes and CPlane-Z picker presets, selected/drawn guides, reversals, Copy/Rigid/Stretch, rational control/edit grips and full Undo/Redo |
-| `flow_roadlike_diagnostics.json` | 12 | Retained native Automatic and in-plane axis cases, rejected locally before edits |
+| `flow_roadlike_diagnostics.json` | 12 | Eight formerly blocked in-plane cases now match; four native Automatic cases remain rejected |
+| `flow_roadlike_poles.json` | 40 | Thirty-six matching pole/rigid/grip/plane workflows and four retained curved-NURBS lookup rejections |
+| `flow_pole_lookup.json` | 2 | Precise-kernel versus native positions and public 840-interval batch diagnostics for two rational quarter circles |
 | `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
 | `flow_density.json`, `flow_coupled_frames.json`, `flow_up_lookup.json` | 13 | Dense spatial positions/bases, equivalent straight guide types, batch length lookups, degree elevation and changed spatial shapes |
 
@@ -52,7 +54,7 @@ do not change point results. These diagnostic observations are retained to guide
 further independent implementation; no spatial parity is claimed.
 
 Remaining scope includes all retained spatial point maps, Local
-input, Roadlike Automatic and in-plane axes, Stairlike and TargetSurface orientation, native option
+input, Roadlike Automatic, native curved-NURBS lookups, Stairlike and TargetSurface orientation, native option
 memory and history details, multiple-object rigid group qualification, fitted
 owner geometry, planar NURBS and closed-guide qualification, preview appearance and performance.
 
@@ -187,7 +189,7 @@ length sampler, owner/grip reconstruction and preview cache. The input session
 collects two points for each axis, accepts the active CPlane Z as an explicit
 picker preset, and rebuilds the cached morph when either axis changes. The
 registered command requires both world directions and preflights the supported
-planar/straight guide and axis combinations before editing.
+guide families before editing.
 
 The [Roadlike validation record](flow-roadlike-validation.json) retains 52 actual
 native commands in one owned capture. Forty explicit-axis workflows match full
@@ -196,9 +198,10 @@ maximum coordinate error is `5.7063687108893646e-11`. Four of these use rational
 control/edit grips and four choose explicit directions from nonstandard CPlanes.
 The native macro for a CPlane preset picks the corresponding world direction;
 it does not invoke native Automatic. The remaining twelve observations retain
-eight in-plane-axis cases and four actual native Automatic cases. Those modes
-are explicitly rejected locally, with no document or history edit. They are
-negative evidence, not qualified matches or discarded captures. Native
+eight in-plane-axis cases and four actual native Automatic cases. The eight
+in-plane cases now match through the pole implementation below. Native
+Automatic remains explicitly rejected without a document or history edit.
+All original native observations remain retained. Native
 Automatic's selection rule remains unresolved; CPlane Z is a separate picker
 convenience. The original eight spatial mismatches and command guard remain.
 
@@ -209,3 +212,46 @@ cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_roadlike.json 
 cargo test -p viboceros-oracle --lib flow_roadlike
 python3 -m unittest tools.rhino_oracle.test_flow_roadlike
 ```
+
+The [pole validation record](flow-poles-validation.json) extends the section
+model to represent a rank-one map at an exact Roadlike pole. `Frame3` remains
+orthonormal; a separate internal Flow section carries zero transverse vectors.
+Nonzero cross products keep their direction, including very small ones. Rigid
+returns the original pose when a Roadlike placement frame is degenerate;
+nonfinite and other failures still propagate.
+
+Three-point arcs reuse the public OpenNURBS constructor after tolerance checks,
+with the scaled Rust construction retained for inputs outside its numerical
+range. Arc evaluation uses the retained supporting plane/angular interval,
+including reversal, and the public OpenNURBS quadrant-cleanup rule. The native
+build disables multiply/add contraction to preserve those double-operation
+boundaries across ARM and x86. This resolved a small supporting-plane tilt that
+otherwise selected a different side of a pole. No Rhino outputs initialize the
+production kernel.
+
+Thirty-six of forty new actual command workflows and the eight earlier
+in-plane cases match complete owner/selection/group/history states within
+`1e-6`; maximum error is below `2.1e-10`. Four new rational-quarter-circle
+workflows expose a separate position lookup difference. Curved NURBS rails,
+including polycurve segments, are now rejected before editing in both ordinary
+and Roadlike modes. All four native successes and local rejections remain
+visible; this is an outstanding implementation task, not a tolerance exception.
+
+Two further public SDK captures isolate the position difference independently
+of the Roadlike frames. Precise kernel centers differ from native Flow by
+`5.392740487164538e-5` and `0.0005392740428122877` at unit and ten-unit scales.
+Linear interpolation of 841 public batch inverse parameters at fractional
+tolerance `1e-4` predicts the five interior/end centers in each case to below
+`3e-15`. Along with the spatial cubic captures, this provides a reproducible
+lookup target. The native tables are diagnostic expectations only; generating
+the coarse inverse and establishing the subdivision rule remain open.
+
+```sh
+python3 -m tools.rhino_oracle.flow_pole_report /tmp/flow-poles-report.json
+python3 -m unittest tools.rhino_oracle.test_flow_roadlike
+```
+
+Public sources used for the reusable arc behavior:
+[OpenNURBS arc-curve evaluator](https://github.com/mcneel/opennurbs/blob/8.x/opennurbs_arccurve.cpp),
+[three-point circle construction](https://github.com/mcneel/opennurbs/blob/8.x/opennurbs_circle.cpp),
+and [Rhino3dm's arc wrapper](https://github.com/mcneel/rhino3dm/blob/main/src/librhino3dm_native/on_arc.cpp).

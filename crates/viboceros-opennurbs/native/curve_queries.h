@@ -1,4 +1,41 @@
 // Reuse the file bridge's rational constructor and OpenNURBS' plane query.
+extern "C" int32_t vibo_arc_through_points(const double* points, int32_t* found,
+    double* result, char* error, size_t capacity) {
+  if (found) *found = -1;
+  set_error(error, capacity, "");
+  try {
+    if (!points || !found || !result) {
+      set_error(error, capacity, "Invalid arc construction buffers");
+      return 0;
+    }
+    for (int i=0; i<9; ++i) if (!std::isfinite(points[i])) {
+      set_error(error, capacity, "Nonfinite arc construction point");
+      return 0;
+    }
+    vibo_begin_open_nurbs();
+    ON_Arc arc;
+    if (!arc.Create(ON_3dPoint(points), ON_3dPoint(points+3), ON_3dPoint(points+6)) || !arc.IsValid()) {
+      *found = 0;
+      return 1;
+    }
+    for (int i=0; i<3; ++i) {
+      result[i] = arc.plane.origin[i];
+      result[3+i] = arc.plane.xaxis[i];
+      result[6+i] = arc.plane.yaxis[i];
+      result[9+i] = arc.plane.zaxis[i];
+    }
+    result[12] = arc.radius;
+    result[13] = arc.AngleRadians();
+    *found = 1;
+    return 1;
+  } catch (const std::exception& exception) {
+    set_error(error, capacity, std::string("Arc construction failed: ") + exception.what());
+  } catch (...) {
+    set_error(error, capacity, "Unknown arc construction failure");
+  }
+  return 0;
+}
+
 extern "C" int32_t vibo_curve_plane_normal(uint32_t degree, size_t count,
     const double* controls, size_t knot_count, const double* knots,
     double tolerance, int32_t* planar, double* normal, char* error, size_t capacity) {

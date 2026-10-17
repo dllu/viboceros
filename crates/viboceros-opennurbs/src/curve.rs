@@ -6,6 +6,13 @@ use std::ffi::{c_char, c_int};
 pub struct CurveQueryError(pub String);
 
 unsafe extern "C" {
+    fn vibo_arc_through_points(
+        points: *const f64,
+        found: *mut c_int,
+        result: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vibo_curve_plane_normal(
         degree: u32,
         count: usize,
@@ -18,6 +25,60 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+}
+
+/// Public OpenNURBS arc construction, retaining its plane and angular interval.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ArcDefinition {
+    pub center: [f64; 3],
+    pub x: [f64; 3],
+    pub y: [f64; 3],
+    pub normal: [f64; 3],
+    pub radius: f64,
+    pub sweep: f64,
+}
+pub fn arc_through_points(points: [[f64; 3]; 3]) -> Result<Option<ArcDefinition>, CurveQueryError> {
+    if points.as_flattened().iter().any(|x| !x.is_finite()) {
+        return Err(CurveQueryError("Nonfinite arc construction point".into()));
+    }
+    let mut result = [0.; 14];
+    let mut found = -1;
+    let mut error = [0u8; 1024];
+    // Fixed, live buffers; the synchronous bridge retains no pointers.
+    let status = unsafe {
+        vibo_arc_through_points(
+            points.as_flattened().as_ptr(),
+            &mut found,
+            result.as_mut_ptr(),
+            error.as_mut_ptr().cast(),
+            error.len(),
+        )
+    };
+    if status != 1 || !(0..=1).contains(&found) {
+        let end = error.iter().position(|b| *b == 0).unwrap_or(error.len());
+        return Err(CurveQueryError(
+            String::from_utf8_lossy(&error[..end]).into_owned(),
+        ));
+    }
+    if found == 0 {
+        return Ok(None);
+    }
+    if result.iter().any(|x| !x.is_finite())
+        || result[12] <= 0.
+        || !(0. ..=std::f64::consts::TAU).contains(&result[13])
+        || result[13] == 0.
+    {
+        return Err(CurveQueryError("Invalid native arc frame".into()));
+    }
+    let triple = |i| [result[i], result[i + 1], result[i + 2]];
+    Ok(Some(ArcDefinition {
+        center: triple(0),
+        x: triple(3),
+        y: triple(6),
+        normal: triple(9),
+        radius: result[12],
+        sweep: result[13],
+    }))
 }
 
 /// Query the oriented support plane, including OpenNURBS' line-plane and
@@ -81,6 +142,35 @@ pub fn curve_plane_normal(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn public_three_point_arc_returns_an_owned_plane_and_rejects_invalid_points() {
+        let arc = arc_through_points([[1., 0., 0.], [0., 1., 0.], [-1., 0., 0.]])
+            .unwrap()
+            .unwrap();
+        assert_eq!(arc.center, [0.; 3]);
+        assert_eq!(arc.x, [1., 0., 0.]);
+        assert_eq!(arc.y, [0., 1., 0.]);
+        assert_eq!(arc.normal, [0., 0., 1.]);
+        assert_eq!(arc.radius, 1.);
+        assert_eq!(arc.sweep, std::f64::consts::PI);
+        // A multiply/add contraction in the three-plane intersection tilted
+        // this coordinate-axis frame on ARM and changed a Roadlike pole.
+        let quarter = arc_through_points([
+            [30., 0., 0.],
+            [27.071067811865476, 7.071067811865475, 0.],
+            [20., 10., 0.],
+        ])
+        .unwrap()
+        .unwrap();
+        assert_eq!(quarter.center[1], 0.);
+        assert_eq!(quarter.x, [1., 0., 0.]);
+        assert_eq!(quarter.y, [0., 1., 0.]);
+        assert_eq!(
+            arc_through_points([[0.; 3], [1., 0., 0.], [2., 0., 0.]]).unwrap(),
+            None
+        );
+        assert!(arc_through_points([[0.; 3], [f64::NAN, 0., 0.], [2., 0., 0.]]).is_err());
+    }
     #[test]
     fn curve_plane_query_uses_native_orientation_and_classifies_spatial_curves() {
         let line = [[0., 0., 0., 1.], [2., 3., 4., 1.]];

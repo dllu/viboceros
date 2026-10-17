@@ -288,35 +288,38 @@ pub fn prepare(
         if options.base_up.is_none() || options.target_up.is_none() {
             return Err(CommandError::FlowRoadlikeAxesRequired);
         }
-        let geometry = options.geometry();
-        for (curve, up) in [
-            (&base, geometry.base_up.unwrap()),
-            (&target, geometry.target_up.unwrap()),
-        ] {
-            let Some(normal) = curve.as_ref().supporting_plane_normal(doc.tolerance())? else {
+        for curve in [&base, &target] {
+            if curve
+                .as_ref()
+                .supporting_plane_normal(doc.tolerance())?
+                .is_none()
+            {
                 return Err(CommandError::FlowSpatialFramesNotSupported);
-            };
-            let up = up.normalized_nonzero()?;
-            let separation = if curve.as_ref().to_nurbs()?.is_linear_at_zero_tolerance()? {
-                let tangent = curve
-                    .as_ref()
-                    .evaluate_with_tangent(*curve.as_ref().domain().start())?
-                    .tangent();
-                up.as_vector().cross(tangent.as_vector())?.length()?
-            } else {
-                up.as_vector().dot(normal.as_vector())?.abs()
-            };
-            // Native singular-axis behavior is retained as diagnostic evidence,
-            // but is not the meridian-frame policy qualified by this command.
-            if separation <= 64. * Real::EPSILON {
-                return Err(CommandError::FlowRoadlikeAxisNotSupported);
             }
         }
     }
+    fn curved_nurbs(curve: viboceros_geometry::CurveRef<'_>) -> Result<bool, GeometryError> {
+        match curve {
+            viboceros_geometry::CurveRef::NurbsCurve(c) => Ok(!c.is_linear_at_zero_tolerance()?),
+            viboceros_geometry::CurveRef::PolyCurve(c) => {
+                for s in c.segments() {
+                    if curved_nurbs(s.as_ref())? {
+                        return Ok(true);
+                    }
+                }
+                Ok(false)
+            }
+            _ => Ok(false),
+        }
+    }
+    let native_lookup = curved_nurbs(base.as_ref())? || curved_nurbs(target.as_ref())?;
     let mut morph =
         CurveFlowPointMorph::try_new(base, target, options.geometry(), doc.tolerance())?;
     if morph.uses_spatial_transport() {
         return Err(CommandError::FlowSpatialFramesNotSupported);
+    }
+    if native_lookup {
+        return Err(CommandError::FlowNurbsLookupNotSupported);
     }
     if let Some(solver) = morph_interpolation_solver() {
         morph = morph.with_interpolation_solver(solver);

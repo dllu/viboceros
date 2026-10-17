@@ -3,4 +3,4 @@
 mod mesh;
 pub use mesh::*;
 mod curve;
-pub use curve::{CurveQueryError, curve_plane_normal};
+pub use curve::{ArcDefinition, CurveQueryError, arc_through_points, curve_plane_normal};

@@ -5,6 +5,27 @@ use crate::{
     UnitVector3, Vector3, WeightedPoint3, require_finite,
 };
 
+/// Quadrant cleanup from the public OpenNURBS ON_ArcCurve::Evaluate rule.
+/// Keep nonzero angular displacements beyond libm's small-multiple-of-pi
+/// residuals; a general angular tolerance would erase valid neighboring frames.
+pub(crate) fn curve_sin_cos(angle: Real) -> (Real, Real) {
+    static RESIDUALS: std::sync::OnceLock<(Real, Real)> = std::sync::OnceLock::new();
+    let &(s_limit, c_limit) = RESIDUALS.get_or_init(|| {
+        (
+            (4. * PI).sin().abs().max(PI.sin().abs()),
+            (4.5 * PI).cos().abs().max((0.5 * PI).cos().abs()),
+        )
+    });
+    let (s, c) = angle.sin_cos();
+    if c.abs() <= c_limit {
+        (s.signum(), 0.)
+    } else if s.abs() <= s_limit {
+        (0., c.signum())
+    } else {
+        (s, c)
+    }
+}
+
 /// A finite, non-degenerate circle in three-dimensional model space.
 ///
 /// The orthonormal in-plane axes retain a stable parameterization, which is
@@ -123,6 +144,12 @@ impl CircleFrame3 {
             cosine,
             sine,
         )
+    }
+
+    pub(crate) fn point_at_curve_angle(self, angle: Real) -> Result<Point3, GeometryError> {
+        require_finite([angle], "circle curve angle")?;
+        let (s, c) = curve_sin_cos(angle);
+        frame_point(self.center, self.x_axis, self.y_axis, self.radius, c, s)
     }
 
     pub fn quadrants(self) -> Result<[Point3; 4], GeometryError> {
@@ -411,6 +438,15 @@ impl CircularArc3 {
             });
         }
         let normal = normal_vector.normalized_nonzero()?;
+        // Reuse OpenNURBS' public supporting-plane construction. Retain the
+        // scaled construction below for inputs outside its numerical range.
+        if let Some(native) = viboceros_opennurbs::arc_through_points([
+            start.to_array(),
+            through.to_array(),
+            end.to_array(),
+        ])? {
+            return Self::from_native_arc(native, tolerance);
+        }
         let local_y = normal
             .as_vector()
             .cross(local_x.as_vector())?
@@ -445,6 +481,37 @@ impl CircularArc3 {
             });
         }
         Self::try_from_frame_sweep(circle, sweep_radians)
+    }
+
+    fn from_native_arc(
+        native: viboceros_opennurbs::ArcDefinition,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if native.radius <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "circular arc",
+            });
+        }
+        let x = Vector3::try_from(native.x)?;
+        let y = Vector3::try_from(native.y)?;
+        let n = Vector3::try_from(native.normal)?;
+        if (x.length()? - 1.).abs() > 64. * Real::EPSILON
+            || (y.length()? - 1.).abs() > 64. * Real::EPSILON
+            || x.dot(y)?.abs() > 64. * Real::EPSILON
+            || x.cross(y)?.dot(n)? < 1. - 64. * Real::EPSILON
+        {
+            return Err(GeometryError::Degenerate {
+                context: "native arc plane",
+            });
+        }
+        let circle = CircleFrame3 {
+            center: Point3::try_from(native.center)?,
+            radius: native.radius,
+            x_axis: UnitVector3(x),
+            y_axis: UnitVector3(y),
+        };
+        circle.checked_bounds()?;
+        Self::try_from_frame_sweep(circle, native.sweep)
     }
 
     /// Constructs the osculating arc that starts at `start`, follows
@@ -788,14 +855,14 @@ impl CircularArc3 {
     }
 
     pub fn start(self) -> Result<Point3, GeometryError> {
-        self.circle.point_at_angle(0.0)
+        self.point_at_angle(self.angles[0])
     }
 
     pub fn end(self) -> Result<Point3, GeometryError> {
         if self.sweep_radians == TAU {
             self.start()
         } else {
-            self.circle.point_at_angle(self.sweep_radians)
+            self.point_at_angle(self.angles[1])
         }
     }
 
@@ -811,8 +878,21 @@ impl CircularArc3 {
         if normalized == 1.0 {
             self.end()
         } else {
-            self.circle.point_at_angle(self.sweep_radians * normalized)
+            self.point_at_angle(crate::parameter::map_parameter(
+                normalized,
+                0. ..=1.,
+                self.angle_domain(),
+            )?)
         }
+    }
+
+    fn point_at_angle(self, angle: Real) -> Result<Point3, GeometryError> {
+        let plane = CircleFrame3 {
+            x_axis: self.plane_x_axis,
+            y_axis: self.plane_y_axis()?,
+            ..self.circle
+        };
+        plane.point_at_curve_angle(angle)
     }
 
     pub fn length(self) -> Result<Real, GeometryError> {

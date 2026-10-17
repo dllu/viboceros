@@ -16746,10 +16746,8 @@ pub enum CommandError {
     FlowGuideNotCurve,
     #[error("Flow of spatial guides is not implemented yet; straight 3D guides are supported")]
     FlowSpatialFramesNotSupported,
-    #[error(
-        "Flow Roadlike needs an axis with a component perpendicular to the curved guide plane, or perpendicular to a straight guide"
-    )]
-    FlowRoadlikeAxisNotSupported,
+    #[error("Flow curved NURBS guide length lookup is not implemented yet")]
+    FlowNurbsLookupNotSupported,
     #[error(
         "Flow Roadlike requires explicit BaseUp and TargetUp directions; interactive input can pick axes or use CPlaneZ"
     )]

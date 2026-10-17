@@ -25,6 +25,32 @@ impl Default for CurveFlowOptions {
     }
 }
 
+/// A Flow section can lose both transverse directions at a Roadlike pole.
+/// Keep that rank-one map separate from Frame3's orthonormal invariant.
+#[derive(Clone, Copy, Debug)]
+struct Section {
+    origin: Point3,
+    axes: [Vector3; 3],
+}
+impl Section {
+    fn from_frame(frame: Frame3) -> Self {
+        Self {
+            origin: frame.origin(),
+            axes: frame.axes().map(UnitVector3::as_vector),
+        }
+    }
+    fn axial(origin: Point3, tangent: UnitVector3) -> Result<Self, GeometryError> {
+        let zero = Vector3::try_new(0., 0., 0.)?;
+        Ok(Self {
+            origin,
+            axes: [tangent.as_vector(), zero, zero],
+        })
+    }
+    fn with_origin(self, origin: Point3) -> Self {
+        Self { origin, ..self }
+    }
+}
+
 #[derive(Debug)]
 struct Guide {
     length: ArcLengthSampler<'static>,
@@ -91,7 +117,7 @@ impl Guide {
     fn curve(&self) -> CurveRef<'_> {
         self.length.source_curve()
     }
-    fn frame(&self, t: Real) -> Result<Frame3, GeometryError> {
+    fn frame(&self, t: Real) -> Result<Section, GeometryError> {
         let curve = self.curve();
         let side = if t == *curve.domain().end() {
             ParameterSide::Left
@@ -100,9 +126,11 @@ impl Guide {
         };
         let sample = curve.evaluate_with_tangent_on_side(t, side)?;
         let y = if let Some(n) = self.normal {
-            n.as_vector()
-                .cross(sample.tangent().as_vector())?
-                .normalized_nonzero()?
+            let cross = n.as_vector().cross(sample.tangent().as_vector())?;
+            if cross.length()? == 0. {
+                return Section::axial(sample.point(), sample.tangent());
+            }
+            cross.normalized_nonzero()?
         } else {
             let index = self
                 .parameters
@@ -127,24 +155,20 @@ impl Guide {
                     .x_axis()
             }
         };
-        Frame3::try_from_directions(
+        Ok(Section::from_frame(Frame3::try_from_directions(
             sample.point(),
             sample.tangent().as_vector(),
             y.as_vector(),
             Tolerance::NUMERICAL_VALIDATION,
-        )
+        )?))
     }
-    fn at_distance(&self, distance: Real) -> Result<Frame3, GeometryError> {
+    fn at_distance(&self, distance: Real) -> Result<Section, GeometryError> {
         let length = self.length.total_length();
         let clamped = distance.clamp(0., length);
         let sample = self.length.sample_at_distance(clamped)?;
         let frame = self.frame(sample.parameter())?.with_origin(sample.point());
         let extra = distance - clamped;
-        Ok(frame.with_origin(
-            frame
-                .origin()
-                .translated(frame.x_axis().as_vector().scaled(extra)?)?,
-        ))
+        Ok(frame.with_origin(frame.origin.translated(frame.axes[0].scaled(extra)?)?))
     }
 }
 
@@ -331,7 +355,17 @@ impl CurveFlowPointMorph {
         &self,
         center: Point3,
     ) -> Result<crate::AffineTransform3, GeometryError> {
-        super::rigid_transform(self, center)
+        match super::rigid_transform(self, center) {
+            // A Roadlike pole can make a forward placement frame singular.
+            // Native Rigid then retains the object's original pose, including
+            // its origin. Other numerical failures still propagate.
+            Err(GeometryError::Degenerate { .. })
+                if self.options.base_up.is_some() || self.options.target_up.is_some() =>
+            {
+                Ok(crate::AffineTransform3::identity())
+            }
+            result => result,
+        }
     }
     pub fn uses_spatial_transport(&self) -> bool {
         self.linear_mapping.is_none()
@@ -364,10 +398,10 @@ impl PointMorph for CurveFlowPointMorph {
             .curve()
             .closest_parameter(point, self.base.tolerance)?;
         let source = self.base.frame(parameter)?;
-        let offset = source.origin().vector_to(point)?;
-        let along = offset.dot(source.x_axis().as_vector())?;
-        let y = offset.dot(source.y_axis().as_vector())?;
-        let z = offset.dot(source.z_axis().as_vector())?;
+        let offset = source.origin.vector_to(point)?;
+        let along = offset.dot(source.axes[0])?;
+        let y = offset.dot(source.axes[1])?;
+        let z = offset.dot(source.axes[2])?;
         let mut distance = self.base.length.distance_at_parameter(parameter)?;
         let mut along = along;
         if self.options.stretch {
@@ -378,11 +412,11 @@ impl PointMorph for CurveFlowPointMorph {
         }
         crate::require_finite([distance, along, y, z], "curve flow coordinates")?;
         let frame = self.target.at_distance(distance)?;
-        let c = frame.x_axis().as_vector().scaled(along)?.to_array();
-        let a = frame.y_axis().as_vector().scaled(y)?.to_array();
-        let b = frame.z_axis().as_vector().scaled(z)?.to_array();
+        let c = frame.axes[0].scaled(along)?.to_array();
+        let a = frame.axes[1].scaled(y)?.to_array();
+        let b = frame.axes[2].scaled(z)?.to_array();
         frame
-            .origin()
+            .origin
             .translated(Vector3::try_from(std::array::from_fn(|i| {
                 a[i] + b[i] + c[i]
             }))?)
@@ -574,5 +608,54 @@ mod line_orientation_tests {
         )
         .unwrap();
         assert_eq!(m.morph_point(p(1e308, 1., 0.)).unwrap(), p(-1e308, -2., 0.));
+    }
+}
+
+#[cfg(test)]
+mod pole_tests {
+    use super::*;
+    fn p(x: Real, y: Real, z: Real) -> Point3 {
+        Point3::try_new(x, y, z).unwrap()
+    }
+    fn vector(x: Real, y: Real, z: Real) -> Vector3 {
+        Vector3::try_new(x, y, z).unwrap()
+    }
+    fn morph(up: Vector3) -> CurveFlowPointMorph {
+        CurveFlowPointMorph::try_new(
+            Curve3::Line(
+                crate::LineSegment::try_new(p(0., 0., 0.), p(10., 0., 0.), Tolerance::DEFAULT)
+                    .unwrap(),
+            ),
+            Curve3::Line(
+                crate::LineSegment::try_new(p(20., 30., 0.), p(20., 50., 0.), Tolerance::DEFAULT)
+                    .unwrap(),
+            ),
+            CurveFlowOptions {
+                base_up: Some(up),
+                target_up: Some(vector(0., 0., 1.)),
+                ..Default::default()
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+    }
+    #[test]
+    fn flow_axial_section_collapses_transverse_coordinates_and_keeps_endpoint_residuals() {
+        let m = morph(vector(1., 0., 0.));
+        for x in [-1., 0., 3., 10., 11.] {
+            for (y, z) in [(0., 0.), (1., 2.), (-3., 4.)] {
+                assert_eq!(m.morph_point(p(x, y, z)).unwrap(), p(20., 30. + 2. * x, 0.));
+            }
+        }
+        let pose = m.rigid_transform(p(5., 1., 2.)).unwrap();
+        assert_eq!(pose, crate::AffineTransform3::identity());
+        assert!(m.rigid_transform(p(f64::MAX, 1., 2.)).is_err());
+    }
+    #[test]
+    fn flow_nonzero_cross_products_retain_small_direction_changes() {
+        let m = morph(vector(1., 0., 1e-100));
+        let a = m.morph_point(p(5., 0., 0.)).unwrap();
+        let b = m.morph_point(p(5., 1., 0.)).unwrap();
+        assert!((a.distance_to(b).unwrap() - 1.).abs() < 1e-14);
     }
 }

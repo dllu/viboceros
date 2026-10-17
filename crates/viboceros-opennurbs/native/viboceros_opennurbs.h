@@ -164,6 +164,11 @@ int32_t vibo_curve_plane_normal(uint32_t degree, size_t control_count,
     double tolerance, int32_t* planar, double* normal,
     char* error, size_t capacity);
 
+// Construct an owned OpenNURBS three-point arc. No native pointer escapes.
+// found=0 means construction failed; result is center/X/Y/Z/radius/sweep.
+int32_t vibo_arc_through_points(const double* points, int32_t* found,
+    double* result, char* error, size_t capacity);
+
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
                       char* error, size_t error_capacity);
 void vibo_3dm_free(ViboThreeDmModel* model);

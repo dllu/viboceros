@@ -122,7 +122,6 @@ fn flow_invalid_inputs_are_atomic_and_do_not_change_successful_preferences() {
         format!("Base={a} BaseEdge={a},0 Target={b}"),
         format!("Base={a} Target={b} Roadlike=Maybe"),
         format!("Base={a} Target={b} Roadlike=Yes"),
-        format!("Base={a} Target={b} Roadlike=Yes BaseUp=0,0,1 TargetUp=0,1,0"),
         format!("Base={a} Target={b} Roadlike=Yes BaseUp=Automatic TargetUp=0,0,1"),
         format!("Base={a} Target={b} Roadlike=Yes BaseUp=0,0,0"),
         format!("Base={a} Target={b} Roadlike=Yes BaseUp=1,0,0"),

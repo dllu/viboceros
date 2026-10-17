@@ -157,16 +157,16 @@ impl CurveRef<'_> {
                 c.x_axis().as_vector(),
                 c.y_axis().as_vector(),
                 c.radius(),
-                TAU,
+                0. ..=TAU,
                 domain,
                 parameter,
                 order,
             ),
             Self::Arc(c) => angular_derivative(
-                c.x_axis().as_vector(),
-                c.y_axis().as_vector(),
+                c.plane_x_axis().as_vector(),
+                c.plane_y_axis()?.as_vector(),
                 c.radius(),
-                c.sweep_radians(),
+                c.angle_domain(),
                 domain,
                 parameter,
                 order,
@@ -180,13 +180,14 @@ fn angular_derivative(
     x: Vector3,
     y: Vector3,
     radius: Real,
-    sweep: Real,
+    angles: RangeInclusive<Real>,
     domain: RangeInclusive<Real>,
     parameter: Real,
     order: usize,
 ) -> Result<Vector3, GeometryError> {
-    let angle = map_parameter(parameter, domain.clone(), 0.0..=sweep)?;
-    let (sine, cosine) = angle.sin_cos();
+    let sweep = angles.end() - angles.start();
+    let angle = map_parameter(parameter, domain.clone(), angles)?;
+    let (sine, cosine) = crate::circular::curve_sin_cos(angle);
     let mut vector = if order == 1 {
         combine(x, y, -sine, cosine)?
     } else {
@@ -265,4 +266,58 @@ fn combine(x: Vector3, y: Vector3, a: Real, b: Real) -> Result<Vector3, Geometry
         x.y().mul_add(a, y.y() * b),
         x.z().mul_add(a, y.z() * b),
     )
+}
+
+#[cfg(test)]
+mod arc_quadrants {
+    use super::*;
+    use crate::{Circle3, CircularArc3, Tolerance};
+    #[test]
+    fn curve_quadrants_are_exact_without_erasing_resolvable_neighboring_angles() {
+        let circle = Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            1e12,
+            Vector3::try_new(0., 0., 1.)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let c = CurveRef::Circle(&circle);
+        let t = c.parameter_at(0.5).unwrap();
+        assert_eq!(c.evaluate(t).unwrap().to_array(), [-1e12, 0., 0.]);
+        assert_eq!(
+            c.evaluate_with_tangent(t)
+                .unwrap()
+                .tangent()
+                .as_vector()
+                .to_array(),
+            [0., -1., 0.]
+        );
+        let near = c.parameter_at(0.5 + 1e-12).unwrap();
+        assert!(c.evaluate(near).unwrap().y().abs() > 1.);
+        let arc = CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2)
+            .unwrap()
+            .reversed(Tolerance::DEFAULT)
+            .unwrap();
+        let a = CurveRef::Arc(&arc);
+        assert_eq!(
+            a.evaluate(*a.domain().start()).unwrap().to_array(),
+            [0., 1e12, 0.]
+        );
+        assert_eq!(
+            a.evaluate_with_tangent(*a.domain().start())
+                .unwrap()
+                .tangent()
+                .as_vector()
+                .to_array(),
+            [1., 0., 0.]
+        );
+        let (_, d, _) = a
+            .evaluate_with_second_derivative(*a.domain().start())
+            .unwrap();
+        assert_eq!(d.y(), 0.);
+        assert!(d.x() > 0.);
+    }
 }

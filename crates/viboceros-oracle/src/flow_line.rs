@@ -211,6 +211,46 @@ mod tests {
             40,
         );
     }
+    #[test]
+    fn flow_roadlike_poles_match_supported_native_owners_and_history() {
+        let request = include_str!("../../../tools/rhino_oracle/fixtures/flow_roadlike_poles.json");
+        let native = include_str!(
+            "../../../tools/rhino_oracle/observations/flow_roadlike_poles_rhino_20261016.json"
+        );
+        let mut q: Value = serde_json::from_str(request).unwrap();
+        let mut n: Value = serde_json::from_str(native).unwrap();
+        let keep = q["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|o| o["target"]["type"] != "nurbs")
+            .collect::<Vec<_>>();
+        assert_eq!(keep.iter().filter(|b| !**b).count(), 4);
+        let mut i = 0;
+        q["operations"].as_array_mut().unwrap().retain(|_| {
+            let b = keep[i];
+            i += 1;
+            b
+        });
+        i = 0;
+        n["results"].as_array_mut().unwrap().retain(|_| {
+            let b = keep[i];
+            i += 1;
+            b
+        });
+        compare_native(&q.to_string(), &n.to_string(), 36);
+        let mut q: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/flow_roadlike_diagnostics.json"
+        ))
+        .unwrap();
+        let mut n: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/flow_roadlike_diagnostics_rhino_20261016.json"
+        ))
+        .unwrap();
+        q["operations"].as_array_mut().unwrap().truncate(8);
+        n["results"].as_array_mut().unwrap().truncate(8);
+        compare_native(&q.to_string(), &n.to_string(), 8);
+    }
     fn compare_native(request: &str, native: &str, cases: usize) {
         let request: ProbeRequest = serde_json::from_str(request).unwrap();
         let actual = run_request(&request).unwrap();

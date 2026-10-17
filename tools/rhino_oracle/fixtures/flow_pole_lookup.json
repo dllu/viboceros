@@ -1,0 +1,213 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "flow",
+      "id": "rational-pole-1-False-lookup",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              1.0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "points": [
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ]
+      ],
+      "options": {
+        "stretch": true
+      },
+      "diagnostics": true,
+      "diagnostic_length_samples": 17,
+      "diagnostic_length_batches": true,
+      "diagnostic_length_batch_divisions": [
+        840
+      ]
+    },
+    {
+      "op": "flow",
+      "id": "rational-pole-10-False-lookup",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              10.0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10.0,
+              10.0,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10.0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "points": [
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ]
+      ],
+      "options": {
+        "stretch": true
+      },
+      "diagnostics": true,
+      "diagnostic_length_samples": 17,
+      "diagnostic_length_batches": true,
+      "diagnostic_length_batch_divisions": [
+        840
+      ]
+    }
+  ]
+}

@@ -202,11 +202,12 @@ impl Circle3 {
     }
     pub fn evaluate(self, parameter: Real) -> Result<Point3, GeometryError> {
         let angle = map_parameter(parameter, self.domain(), 0.0..=std::f64::consts::TAU)?;
-        self.point_at_angle(if parameter == self.domain[1] {
-            0.0
-        } else {
-            angle
-        })
+        self.frame
+            .point_at_curve_angle(if parameter == self.domain[1] {
+                0.0
+            } else {
+                angle
+            })
     }
     pub fn reversed(self) -> Self {
         Self {

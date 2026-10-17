@@ -46,7 +46,7 @@ pub(super) fn run(
 mod tests {
     use super::*;
     #[test]
-    fn flow_roadlike_unqualified_axis_modes_are_rejected_without_edits() {
+    fn flow_roadlike_native_automatic_remains_rejected_and_poles_now_succeed() {
         let q: ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/flow_roadlike_diagnostics.json"
         ))
@@ -57,9 +57,18 @@ mod tests {
         .unwrap();
         let a = run_request(&q).unwrap();
         assert_eq!(a.results.len(), 12);
-        for (a, n) in a.results.iter().zip(n["results"].as_array().unwrap()) {
+        for (i, (a, n)) in a
+            .results
+            .iter()
+            .zip(n["results"].as_array().unwrap())
+            .enumerate()
+        {
             assert_eq!(a.id, n["id"]);
             assert_eq!(n["value"]["command_returned"], true);
+            if i < 8 {
+                assert_eq!(a.value["command_returned"], true, "{}", a.id);
+                continue;
+            }
             assert_eq!(a.value["command_returned"], false, "{}", a.id);
             assert!(a.value["error"].as_str().unwrap().contains("Roadlike"));
             for stage in ["after", "undo", "redo"] {
@@ -68,5 +77,45 @@ mod tests {
             assert!(a.value["undo_label"].is_null());
             assert!(a.value["redo_label"].is_null());
         }
+    }
+    #[test]
+    fn flow_nurbs_lookup_rejections_are_atomic_in_both_orientation_modes() {
+        let q: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/flow_roadlike_poles.json"
+        ))
+        .unwrap();
+        let mut count = 0;
+        for o in q.operations {
+            let Operation::FlowRoadlike { fixture, .. } = o else {
+                panic!()
+            };
+            let guides = fixture
+                .flow
+                .guide_geometries(q.tolerance.geometry().unwrap())
+                .unwrap();
+            if !matches!(guides[1], Geometry::NurbsCurve(_)) {
+                continue;
+            }
+            count += 1;
+            for roadlike in [false, true] {
+                let mut options = fixture.options().unwrap();
+                options.roadlike = roadlike;
+                let (a, _) = super::super::flow_line::run_with_options(
+                    &fixture.flow,
+                    1,
+                    q.tolerance.geometry().unwrap(),
+                    options,
+                )
+                .unwrap();
+                assert_eq!(a["command_returned"], false);
+                assert!(a["error"].as_str().unwrap().contains("NURBS"));
+                for stage in ["after", "undo", "redo"] {
+                    assert_eq!(a["before"], a[stage]);
+                }
+                assert!(a["undo_label"].is_null());
+                assert!(a["redo_label"].is_null());
+            }
+        }
+        assert_eq!(count, 4);
     }
 }

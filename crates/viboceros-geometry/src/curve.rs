@@ -469,9 +469,9 @@ impl CurveRef<'_> {
                 )?,
             )?,
             Self::Arc(c) => angular_tangent(
-                c.x_axis(),
-                c.y_axis(),
-                crate::parameter::map_parameter(parameter, c.domain(), 0.0..=c.sweep_radians())?,
+                c.plane_x_axis(),
+                c.plane_y_axis()?,
+                crate::parameter::map_parameter(parameter, c.domain(), c.angle_domain())?,
             )?,
             Self::Ellipse(c) => {
                 let jet =
@@ -540,14 +540,10 @@ impl CurveRef<'_> {
                 )?,
             ),
             Self::Arc(arc) => radial_curvature(
-                arc.x_axis(),
-                arc.y_axis(),
+                arc.plane_x_axis(),
+                arc.plane_y_axis()?,
                 arc.radius(),
-                crate::parameter::map_parameter(
-                    parameter,
-                    arc.domain(),
-                    0.0..=arc.sweep_radians(),
-                )?,
+                crate::parameter::map_parameter(parameter, arc.domain(), arc.angle_domain())?,
             ),
             Self::Ellipse(ellipse) => {
                 let jet = crate::curve_evaluate::ellipse_unit_jet_on_side(
@@ -583,7 +579,7 @@ impl CurveRef<'_> {
 }
 
 fn angular_tangent(x: UnitVector3, y: UnitVector3, angle: Real) -> Result<Vector3, GeometryError> {
-    let (sine, cosine) = angle.sin_cos();
+    let (sine, cosine) = crate::circular::curve_sin_cos(angle);
     combine_vectors(x.as_vector(), y.as_vector(), -sine, cosine)
 }
 
@@ -593,7 +589,7 @@ fn radial_curvature(
     radius: Real,
     angle: Real,
 ) -> Result<Vector3, GeometryError> {
-    let (sine, cosine) = angle.sin_cos();
+    let (sine, cosine) = crate::circular::curve_sin_cos(angle);
     crate::curve_evaluate::scale(
         combine_vectors(x.as_vector(), y.as_vector(), -cosine, -sine)?,
         1.0,

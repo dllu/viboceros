@@ -42,10 +42,44 @@ class FlowRoadlikeTests(TestCase):
 
     def test_unqualified_native_modes_remain_visible_and_rejected_atomically(self):
         name='flow_roadlike_diagnostics';q=self.request(name);a=self.observations('viboceros',name);n=self.observations('rhino',name)
-        r=comparison(q,a,n);self.assertEqual(r,self.observations('comparison',name));self.assertEqual(r['matched_cases'],0)
+        r=comparison(q,a,n);self.assertEqual(r,self.observations('comparison',name));self.assertEqual(r['matched_cases'],8)
         self.assertEqual(sum(bool(o.get('native_automatic'))for o in q['operations']),4)
         for op,x,y in zip(q['operations'],a['results'],n['results']):
             self.assertEqual(op['id'],x['id']);self.assertEqual(x['id'],y['id']);xx,yy=x['value'],y['value']
-            self.assertFalse(xx['command_returned']);self.assertTrue(yy['command_returned']);self.assertIn('Roadlike',xx['error'])
+            self.assertTrue(yy['command_returned'])
+            if not op.get('native_automatic'):
+                self.assertTrue(xx['command_returned']);continue
+            self.assertFalse(xx['command_returned']);self.assertIn('Roadlike',xx['error'])
             for stage in ('after','undo','redo'):self.assertEqual(xx['before'],xx[stage])
             self.assertIsNone(xx['undo_label']);self.assertIsNone(xx['redo_label'])
+
+    def test_in_plane_poles_match_complete_native_workflows_and_lookup_limits_stay_visible(self):
+        name='flow_roadlike_poles';q=self.request(name);a=self.observations('viboceros',name);n=self.observations('rhino',name)
+        for o in q['operations']:validate(o)
+        r=comparison(q,a,n);self.assertEqual(r,self.observations('comparison',name));self.assertEqual(r['cases'],40);self.assertEqual(r['matched_cases'],36)
+        unsupported=0
+        for op,x,y,row in zip(q['operations'],a['results'],n['results'],r['results']):
+            self.assertEqual(op['id'],x['id']);self.assertEqual(x['id'],y['id']);self.assertTrue(y['value']['command_returned'])
+            if op['target']['type']=='nurbs':
+                unsupported+=1;v=x['value'];self.assertFalse(v['command_returned']);self.assertIn('NURBS',v['error'])
+                for stage in ('after','undo','redo'):self.assertEqual(v['before'],v[stage])
+                self.assertIsNone(v['undo_label']);self.assertIsNone(v['redo_label'])
+            else:
+                self.assertTrue(row['within_1e_minus_6'],op['id']);self.assertNotIn('_Cancel',y['value']['macro'])
+        self.assertEqual(unsupported,4)
+        # Axis-parallel maps are rank one; native Rigid retains its original pose.
+        for key in ['rigid-pole-8','rigid-source-pole-16']:
+            v=next(r['value']for r in n['results']if r['id']==key)
+            self.assertEqual(v['before'],v['after_script'])
+
+    def test_lookup_diagnostics_retain_the_precision_mismatch_and_public_table_explanation(self):
+        from .flow_pole_report import report
+        actual=report();self.assertEqual(actual,self.read('observations/flow_pole_report_20261016.json'))
+        self.assertEqual(actual['native_commands'],52);self.assertEqual(actual['qualified_commands'],44)
+        self.assertTrue(all(row['local_rejection_atomic']and row['native_command_succeeded']for group in actual['workflows']for row in group['rejected']))
+        self.assertEqual(len(actual['lookup_diagnostics']),2)
+        for row in actual['lookup_diagnostics']:
+            self.assertFalse(row['within_document_tolerance'])
+            self.assertGreater(row['precise_kernel_max_coordinate_error'],1e-6)
+            self.assertLess(row['public_840_prediction_max_coordinate_error'],1e-12)
+        self.assertFalse(actual['native_values_used_as_kernel_inputs'])

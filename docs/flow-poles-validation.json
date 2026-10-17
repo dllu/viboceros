@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7",
+  "component": "Flow Roadlike poles, public OpenNURBS three-point arc construction and native curve quadrant precision",
+  "production_kernel_changed": true,
+  "complete_flow_qualified": false,
+  "complete_roadlike_qualified": false,
+  "performance_qualified": false,
+  "rhino_oracle_outputs_used_as_kernel_inputs": false,
+  "implementation": "A separate finite Flow section represents the rank-one map at a tangent-aligned up direction; Frame3 remains orthonormal. Exact-zero crosses collapse both transverse axes, while nonzero crosses retain their direction. Roadlike Rigid retains the original pose when its placement frame is degenerate, and propagates nonfinite/other failures. Three-point arcs reuse public OpenNURBS construction after tolerance checks, retaining a scaled Rust fallback outside the native constructor range. Curve evaluation uses the supporting-plane angular interval and the public OpenNURBS quadrant cleanup, including reversed arcs. GNU/Clang native builds disable multiply/add contraction to preserve operation boundaries. A native unit regression retains the formerly tilted coordinate-axis frame.",
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "method": "Owned private displays, public RhinoCommon APIs and complete Flow macros at Rhino idle. Capture before, EndCommand, completed macro, Undo and Redo; compare completed macro after getter cleanup. No trailing Cancel. No proprietary implementation inspected.",
+    "parts": [
+      {
+        "scheme": "VibocerosOracleFlowPole20261016b",
+        "actual_commands": 20
+      },
+      {
+        "scheme": "VibocerosOracleFlowPole20261016c",
+        "actual_commands": 20
+      },
+      {
+        "scheme": "VibocerosOracleFlowPole20261016d",
+        "sdk_operations": 2
+      }
+    ],
+    "retained_prior_commands": 12,
+    "new_qualified_commands": 36,
+    "resolved_prior_in_plane_commands": 8,
+    "qualified_commands": 44,
+    "local_rejections": {
+      "native_automatic": 4,
+      "curved_nurbs_guide_lookup": 4
+    },
+    "max_qualified_coordinate_error": 2.0962143132408073e-10,
+    "epsilon": 1e-06,
+    "capture_note": "The two successful 20-command captures concatenate in order without numeric edits. The prior 12-command native diagnostic capture remains unchanged. Local replay now matches eight former in-plane cases and rejects four Automatic cases. Four rational-rail commands remain native successes and local atomic rejections. The first exploratory capture failed on an authored polyline field name; its partial results are not qualification evidence. No native tables or fitted axes initialize production morphs."
+  },
+  "coverage": [
+    "exact and near endpoint/interior poles",
+    "parallel source, target and both straight-guide axes",
+    "closed circles and polyline corners",
+    "XY, XZ and YZ planes with both reversals and Copy",
+    "Rigid singular/regular poses and source-parallel rigid maps",
+    "rational control/edit grip owners",
+    "complete guide lifetime, group, selection, geometry and Undo/Redo states",
+    "nonzero crosses down to 1e-100 and finite-error propagation",
+    "large-radius exact quadrants without erasing resolvable neighboring angles"
+  ],
+  "lookup_evidence": [
+    {
+      "id": "rational-pole-1-False-lookup",
+      "precise_kernel_max_coordinate_error": 5.392740487164538e-05,
+      "within_document_tolerance": false,
+      "public_840_prediction_samples": 5,
+      "public_840_prediction_max_coordinate_error": 2.220446049250313e-16
+    },
+    {
+      "id": "rational-pole-10-False-lookup",
+      "precise_kernel_max_coordinate_error": 0.0005392740428122877,
+      "within_document_tolerance": false,
+      "public_840_prediction_samples": 5,
+      "public_840_prediction_max_coordinate_error": 2.6645352591003757e-15
+    }
+  ],
+  "remaining_lookup": "The precise sampler differs from native Flow beyond 1e-6 on two rational-quarter-circle SDK cases. A diagnostic 841-parameter public batch at fractional tolerance 1e-4 predicts five source-center witnesses per case to below 3e-15. This explains the positions independently of Roadlike orientation, but does not implement the native coarse inverse or establish a universal subdivision rule. Registered Flow rejects curved NURBS guides recursively, including polycurve segments, in both ordinary and Roadlike modes. The independent mathematical kernel remains available.",
+  "checks": [
+    {
+      "command": "cargo test -p viboceros-opennurbs -p viboceros-geometry --lib",
+      "exit_code": 0,
+      "log_sha256": "94ee2104e26eafd0153f307fc602f9d7ad23a899dd55030edc7367751e6b718a",
+      "passed_tests": 2354,
+      "geometry_passed": 2340,
+      "opennurbs_passed": 14,
+      "ignored_tests": 8
+    },
+    {
+      "command": "cargo test -p viboceros-opennurbs --lib",
+      "exit_code": 0,
+      "log_sha256": "90fc2dda73d996c03993262d63a953e1e3baf337021cbf58897e055519d3a145",
+      "passed_tests": 14
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::flow::",
+      "exit_code": 0,
+      "log_sha256": "4eee3c0c230fd0d029a7b1281581cde7a3afd1fdb6c055e6fceb7beea8772664",
+      "passed_tests": 10
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib flow::",
+      "exit_code": 0,
+      "log_sha256": "23eb8567d7c0a1dcf6fd69cfa91e2ab3310256f74ca96f6cb5bf6a0d47712109",
+      "passed_tests": 7
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "e1a0c2ab9c6a0f0633a8e4d2ba79d1b23e33f00356c4b2fe2ee4889c2319533e",
+      "passed_tests": 7
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow_grips::",
+      "exit_code": 0,
+      "log_sha256": "a6f71a5e424dec30cd6af094e8edce6ae3b19df79b719608e371115fb1e1e929",
+      "passed_tests": 1
+    },
+    {
+      "command": "cargo clippy -p viboceros-opennurbs -p viboceros-geometry -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "ff75af6676d652f41391e512f5fd93a0bb28f34fd4db8023a0c380489dc98dcd"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_roadlike tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_structure tools.rhino_oracle.test_arc_length_batch",
+      "exit_code": 0,
+      "log_sha256": "949a12ac0b81efb543d85dc50ce7b1769f460af2808ed3bc8573441ad58167a1",
+      "passed_tests": 31
+    },
+    {
+      "command": "python3 -m py_compile tools/rhino_oracle/flow_pole_report.py tools/rhino_oracle/test_flow_roadlike.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_pole_report tools/rhino_oracle/observations/flow_pole_report_20261016.json",
+      "exit_code": 0
+    }
+  ],
+  "cancelled_unrelated_check": {
+    "command": "cargo test -p viboceros -p viboceros-command -p viboceros-oracle flow",
+    "exit_code": 101,
+    "status": "cancelled_by_agent",
+    "reason": "The broad substring also selected a long-running unrelated Smooth workflow. Stop only the owned app-test process after confirming its exact command line. Replace this accidental scope with the explicit Flow app/command/oracle filters listed above; no completed Smooth result or full workspace-suite pass is claimed.",
+    "log_sha256": "bd20df99aab5017616da2139fda745eb47811c6e17ad32f1f8d40362f4d850cb"
+  },
+  "limitations": [
+    "The full Flow command, original spatial-frame policy and eight retained spatial mismatches remain unfinished.",
+    "Native Roadlike Automatic and curved NURBS guide length lookup remain open requirements; no tolerance was widened and all failing native observations remain retained.",
+    "Further fitted owners, guide/owner families, Local, Stairlike, TargetSurface, option/history details, preview appearance and performance remain to qualify.",
+    "No full workspace-suite, native-smlib-specific, cross-platform runtime or native-performance parity is claimed. Eight existing geometry tests were ignored by their test declarations."
+  ],
+  "historical_provenance": {
+    "preserved_records": 15,
+    "preserved_entries": 33,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "ac2e7f8c4bc8c97628688f9016c3997ccf3522cc307933446c5d76c62304c45a",
+    "crates/viboceros-command/src/flow.rs": "8bc5816dd6a58a1ae03c17d1018bc9247c9992ef4fa9e79154197a9205ab1efb",
+    "crates/viboceros-command/src/flow/tests.rs": "5b6a2627e49c8b4da74e81ebc5fc43a4e47a49e697f23ab29dba5e141ccddf83",
+    "crates/viboceros-command/src/lib.rs": "c7fd248cad63dc6582f4cb54c34ecfc08ab00dd7770e502cddac56466c60a666",
+    "crates/viboceros-geometry/src/circle_curve.rs": "8f95987035ade21be75a5fc258800f5b670ca72b838a521b9770acafd100693e",
+    "crates/viboceros-geometry/src/circular.rs": "dc2b9956b9eb90fd6466a37959a02061cc9bc36d17e6b8afca9c8a68c38dab36",
+    "crates/viboceros-geometry/src/curve.rs": "3996f40ffff56644281fa02b6e35e673e93d68cd6349ceb5a2943b9d9e82b345",
+    "crates/viboceros-geometry/src/curve_evaluate.rs": "a8c6b3575df5a56b22da798736def93ba8ac9979a7733aa8f5291eb5347f37a1",
+    "crates/viboceros-geometry/src/morph/flow.rs": "32dd141e0571610cf6a5acd04391c1fc1097f1abd19153ebc5fb65b3f1cbf394",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "e5ccc9ca0f1af545cec98a1ec343b7e9f8396346ec31e0cb1b58fecdb5ebbd71",
+    "crates/viboceros-opennurbs/native/curve_queries.h": "d989fb918aa7c0aaf7f74d78ed09d36ee5dcdf89c3149a86b84fdb63f41ce649",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "182e042e26e40454b6aab9f23a1d0fcc7a54c8715edb9bcbb8047d21cdea7ca3",
+    "crates/viboceros-opennurbs/src/curve.rs": "8ec0cf2071b697b52075135a9a4dd261473ba8060687d9ed3c66e5271ad3df6c",
+    "crates/viboceros-opennurbs/src/lib.rs": "5612e871fcd0c1b826191748094abc457dcc1ce42e3877536a879680f062dccd",
+    "crates/viboceros-oracle/src/flow_line.rs": "266108e222a31c373d2baee77af3b9dcd858bd85ea4267ad1e13fedcceeafebe",
+    "crates/viboceros-oracle/src/flow_roadlike.rs": "c4be80297eabac7ef6e30d0a285c19b48d304b4f8b7a940ab1d070406a375c7e",
+    "docs/arc-length-batch-validation.json": "59a554a2253de4bafde16f9d09c343b7a20a5fe41f0cde9b59776c24e543a427",
+    "docs/commands/flow.md": "9fa3ab295a3c1bff36ceb878e64a42c436d1003439be126a15107f2c582c0b89",
+    "docs/coplanar-mesh-qualification.json": "d58a927867dad99adf096b554982d1ef59d308241414cad4ad00757c5687dd42",
+    "docs/cull-degenerate-mesh-faces-qualification.json": "294bd5769c989b37497e9bd962b53998f6d79d443ef8f7b207e8f7bc47fccbad",
+    "docs/flow-command-validation.json": "05d0e0c247a80ecfe3fd8dc94acf9a6bea70773f62ca2c2f1b14c9062d9c726d",
+    "docs/flow-development.md": "c15d106a486bb10d3a06349859e956bd717e9a078e3ea7a6d54e8b77fcf736a7",
+    "docs/flow-grips-validation.json": "25dbde1a9c0f5d3967db28996e2d0307400c01a2fbaee9f2bd87dbc26d928b70",
+    "docs/flow-line-validation.json": "99b1970171a2f46f66d55b67fdc36980d3034c0edfea7c09a03a3972dfafc581",
+    "docs/flow-roadlike-validation.json": "0bfe23ed2af8ce086e03530ac30d44372b19af7f3a11dd9d9fa9d87aa05392dd",
+    "docs/flow-spatial-validation.json": "0d31714f9a392fd7051afda076b54dbd6901b604592c063dfb3e29ab8b9b81c0",
+    "docs/flow-structure-validation.json": "650fadf1f6fee219841dce733a3246e8c7ed0387cfb160acaca8f79dc7197edb",
+    "docs/geometry-check-qualification.json": "bca0e86f44f9a630087de83c1aca4a6efb21cc9bc74cc2e94abc364bb3e78173",
+    "docs/orient-on-curve-edge-validation.json": "a95958578b622162ca3d63a1e44f6f7f94b607742e56bbf649e2c400dacf2b7a",
+    "docs/orient-on-curve-validation.json": "e2c67c9de4e535ea1344689752e5afb194dadb0d94748da25f2f9faba14ed6c0",
+    "docs/orient-surface-grips-validation.json": "1e2300070732faff295d9265282d16e3862209137e076d5bf68fd6c5ab4ccbc8",
+    "docs/prepared-curve-length-validation.json": "3673d2340740d708c8317e23282b5b3650324604a7dfdc9fee529bfacd43209f",
+    "docs/sphere-fit-points-validation.json": "a051aa46072c32826f416e47c6144047264d8b330e1cc12366a6b0607a19bbc3",
+    "src/app/tests/flow.rs": "f7d827411954dcf463f3d1f828b5ec41df7f7d75ec4ad9a1d8fe17d9becc722b",
+    "tools/rhino_oracle/fixtures/flow_pole_lookup.json": "37c5f6866a54e21d789f494d70f0941a3bf601f1aece5e03dc3b6132dc1c5efd",
+    "tools/rhino_oracle/fixtures/flow_roadlike_poles.json": "a80964a16595b6cd8b6947cd0813c560b875848bfed474e50615bffdf1b9712f",
+    "tools/rhino_oracle/flow_pole_report.py": "4bdaa0c3d980536a989d82d0bd7d09ba4f5c3a8b098d4d6def7142db7b1b50df",
+    "tools/rhino_oracle/observations/flow_pole_lookup_rhino_20261016.json": "fec75434cc95226dfbe2bf87fd5e38d2de8f1d74fd78dfd0359c0d945cc8855a",
+    "tools/rhino_oracle/observations/flow_pole_lookup_viboceros_20261016.json": "a005f65fdb5fb56d6e4d440b451a5654bf7cd51c15817e5c3f9ba8aea1b56805",
+    "tools/rhino_oracle/observations/flow_pole_report_20261016.json": "90accfebb1956ae4a4d305a10f0ca47934b2b4e5433e00a93e8e229a5decae28",
+    "tools/rhino_oracle/observations/flow_roadlike_diagnostics_comparison_20261016.json": "4ed11405f53d966847dada6476986465a9936d5efa24dda198c9fdd6950e5433",
+    "tools/rhino_oracle/observations/flow_roadlike_diagnostics_viboceros_20261016.json": "90b00e189e43fa21e15d71a90920be20940280f6765a002fdf422a649bb188a0",
+    "tools/rhino_oracle/observations/flow_roadlike_poles_comparison_20261016.json": "3d3f31448125ce36dc98f161b743bec96f220634768294af84a74c1d0f058934",
+    "tools/rhino_oracle/observations/flow_roadlike_poles_rhino_20261016.json": "198ebb0025b41b0516b746afca87dd0d65ad8569d0073b00733ecf8a9da43232",
+    "tools/rhino_oracle/observations/flow_roadlike_poles_viboceros_20261016.json": "43d24d9991196a1b3c637e15de7422b8d0232ccdacee7f58d2a629a40a97cda2",
+    "tools/rhino_oracle/test_flow_roadlike.py": "a405d29277ca15c43c18b2d00b8d16489b2fbd5939e940452ea81f3e5c412607"
+  }
+}

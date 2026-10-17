@@ -22,6 +22,11 @@ if(MSVC)
   target_compile_options(viboceros_opennurbs PRIVATE /W4 /permissive-)
 else()
   target_compile_options(viboceros_opennurbs PRIVATE -Wall -Wextra -Wpedantic)
+  # Preserve explicit double-operation boundaries in OpenNURBS constructions.
+  # Contracting a multiply/add on ARM can change a coordinate-axis arc into a
+  # slightly tilted one, which changes the side of a singular Flow frame.
+  target_compile_options(opennurbsStatic PRIVATE -ffp-contract=off)
+  target_compile_options(viboceros_opennurbs PRIVATE -ffp-contract=off)
 endif()
 
 option(VIBOCEROS_OPENNURBS_ASAN "Instrument the native kernel and C ABI" OFF)

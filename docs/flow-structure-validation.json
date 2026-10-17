@@ -165,8 +165,7 @@
     "tools/rhino_oracle/test_flow_spatial.py": "d425379ac6599a2e250d9e3d4d33e12d04185e385f1b91a35e86e2efc6ef02ba",
     "tools/rhino_oracle/test_flow_structure.py": "f78f4d6e701d6f75020b3775006f4d61c4ca4def4c544d4e5f0cd912e3f8501d",
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
-    "tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6",
-    "crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5"
+    "tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6"
   },
   "fixture_sha256": {
     "tools/rhino_oracle/fixtures/flow_coupled_frames.json": "16af86cb323a451eedd08ff4b39307f1a4587c64f7a82f46ad59b6779e87134e",
@@ -184,6 +183,7 @@
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/flow-development.md": "d7054c0ab4132549ed217491381aec8bd3a1caa926e97aa88f5e032240403faf",
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/flow-spatial-validation.json": "adc91a52ad3603bba46955595e59db8899a7a1520b191ef12d9d1520ed70b137",
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:tools/rhino_oracle/rhino_worker.py": "3debec12cb1ccd465a0410e37b0056e58a89ae73f1b71878e6768e2a8da9455e",
-    "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:tools/rhino_oracle/structural_sdk.py": "80e436b8738b00ac98cc35b31ed858c70b6aa73fafac79b8ebfc13cb3fa54c5d"
+    "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:tools/rhino_oracle/structural_sdk.py": "80e436b8738b00ac98cc35b31ed858c70b6aa73fafac79b8ebfc13cb3fa54c5d",
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5"
   }
 }

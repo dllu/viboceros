@@ -1,0 +1,88 @@
+{
+  "native_commands": 52,
+  "qualified_commands": 44,
+  "workflows": [
+    {
+      "fixture": "flow_roadlike_diagnostics",
+      "cases": 12,
+      "qualified_matches": 8,
+      "rejected": [
+        {
+          "id": "native-automatic-0",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow Roadlike requires explicit BaseUp and TargetUp directions; interactive input can pick axes or use CPlaneZ"
+        },
+        {
+          "id": "native-automatic-1",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow Roadlike requires explicit BaseUp and TargetUp directions; interactive input can pick axes or use CPlaneZ"
+        },
+        {
+          "id": "native-automatic-2",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow Roadlike requires explicit BaseUp and TargetUp directions; interactive input can pick axes or use CPlaneZ"
+        },
+        {
+          "id": "native-automatic-3",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow Roadlike requires explicit BaseUp and TargetUp directions; interactive input can pick axes or use CPlaneZ"
+        }
+      ],
+      "max_qualified_coordinate_error": 3.552713678800501e-15
+    },
+    {
+      "fixture": "flow_roadlike_poles",
+      "cases": 40,
+      "qualified_matches": 36,
+      "rejected": [
+        {
+          "id": "rational-pole-1-False",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow curved NURBS guide length lookup is not implemented yet"
+        },
+        {
+          "id": "rational-pole-1-True",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow curved NURBS guide length lookup is not implemented yet"
+        },
+        {
+          "id": "rational-pole-10-False",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow curved NURBS guide length lookup is not implemented yet"
+        },
+        {
+          "id": "rational-pole-10-True",
+          "native_command_succeeded": true,
+          "local_rejection_atomic": true,
+          "error": "Flow curved NURBS guide length lookup is not implemented yet"
+        }
+      ],
+      "max_qualified_coordinate_error": 2.0962143132408073e-10
+    }
+  ],
+  "lookup_diagnostics": [
+    {
+      "id": "rational-pole-1-False-lookup",
+      "precise_kernel_max_coordinate_error": 5.392740487164538e-05,
+      "within_document_tolerance": false,
+      "public_840_prediction_samples": 5,
+      "public_840_prediction_max_coordinate_error": 2.220446049250313e-16
+    },
+    {
+      "id": "rational-pole-10-False-lookup",
+      "precise_kernel_max_coordinate_error": 0.0005392740428122877,
+      "within_document_tolerance": false,
+      "public_840_prediction_samples": 5,
+      "public_840_prediction_max_coordinate_error": 2.6645352591003757e-15
+    }
+  ],
+  "native_values_used_as_kernel_inputs": false,
+  "complete_flow_qualified": false
+}
