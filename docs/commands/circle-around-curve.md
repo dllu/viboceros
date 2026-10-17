@@ -67,7 +67,8 @@ zero-radius retry. Five native cancellations also replay without geometry or
 history. An unsupported Orientation attempt remains a separate diagnostic.
 
 Rhino 8.32 does not offer Orientation in AroundCurve's size getter. This path
-creates exact circles; Circle Deformable and Tangent remain unimplemented.
+creates exact circles by default. Choose [Deformable](circle-deformable.md) before
+AroundCurve for a periodic NURBS approximation. Tangent remains unimplemented.
 The native per-getter ProjectOsnap switch is not wired to this getter.
 Exhaustive physical snapping, perspective/aperture behavior, extreme ranges
 and performance parity remain unqualified.

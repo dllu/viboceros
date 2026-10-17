@@ -31,6 +31,8 @@ pub struct Fixture {
     #[serde(default)]
     pub preselect: bool,
     #[serde(default)]
+    pub preselect_all: bool,
+    #[serde(default)]
     pub guide_selection: bool,
 }
 impl Fixture {
@@ -75,7 +77,11 @@ pub(super) fn run(
                 Ok((id, g))
             })
             .collect::<Result<Vec<_>, ProbeError>>()?;
-        if f.preselect
+        if f.preselect_all {
+            for (id, _) in &guides {
+                doc.select_object(*id, viboceros_document::SelectionMode::Add)?;
+            }
+        } else if f.preselect
             && let Some((id, _)) = guides.first()
         {
             doc.select_object(*id, viboceros_document::SelectionMode::Replace)?;

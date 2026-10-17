@@ -3,16 +3,16 @@ import math
 import re
 
 
-def validate(op, operation, options, numeric_pattern=None, numeric_options=()):
+def validate(op, operation, options, numeric_pattern=None, numeric_options=(), allow_points=False):
     if not isinstance(op, dict) or op.get('op') != operation:
         raise ValueError('invalid curve getter recipe')
-    if set(op) - {'op', 'id', 'actions', 'construction_plane', 'setup', 'live_getters', 'prior_point', 'curves', 'preselect', 'guide_selection'}:
+    if ('preselect_all' in op and not allow_points) or set(op) - {'preselect_all', 'op', 'id', 'actions', 'construction_plane', 'setup', 'live_getters', 'prior_point', 'curves', 'preselect', 'guide_selection'}:
         raise ValueError('unknown curve getter field')
     if not isinstance(op.get('id'), str) or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z', op['id']) is None:
         raise ValueError('invalid curve getter id')
     if type(op.get('live_getters', False)) is not bool:
         raise ValueError('invalid curve getter getter flag')
-    for field in ('preselect','guide_selection'):
+    for field in ('preselect','preselect_all','guide_selection'):
         if type(op.get(field,False)) is not bool:
             raise ValueError('invalid curve getter source flag')
     curves=op.get('curves',[])
@@ -20,7 +20,7 @@ def validate(op, operation, options, numeric_pattern=None, numeric_options=()):
         from .curve_source_bounds import validate as validate_sources
     else:
         from curve_source_bounds import validate as validate_sources
-    validate_sources(curves,op['id'])
+    validate_sources(curves,op['id'],allow_points=allow_points)
     def finite(v):
         return type(v) in (int, float) and abs(v) <= 1e6 and not (math.isnan(v) or math.isinf(v))
     def point(p):

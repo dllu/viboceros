@@ -34,7 +34,9 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
         guide_crcs=[doc.Objects.FindId(key).Geometry.DataCRC(0)for key in guides]
         guide=guides[0]if guides else None
         doc.Objects.UnselectAll()
-        if guide and op.get('preselect'):doc.Objects.Select(guide,True)
+        if op.get('preselect_all'):
+            for key in guides:doc.Objects.Select(key,True)
+        elif guide and op.get('preselect'):doc.Objects.Select(guide,True)
         def curve_value(curve):
             pieces=list(curve.DuplicateSegments())if isinstance(curve,G.PolyCurve)else[curve.DuplicateCurve()]
             try:

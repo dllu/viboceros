@@ -3,7 +3,7 @@ import json
 import math
 
 
-def validate(curves, name):
+def validate(curves, name, allow_points=False):
     if not isinstance(curves,list) or len(curves)>4:
         raise ValueError('invalid curve sources')
     if globals().get('__package__'):
@@ -18,6 +18,10 @@ def validate(curves, name):
         if depth > 8 or not isinstance(curve, dict):
             raise ValueError('invalid curve source nesting')
         kind = curve.get('type')
+        if kind == 'point':
+            if not allow_points or depth or set(curve) != {'type','point'} or not point(curve.get('point')):
+                raise ValueError('invalid point source')
+            return
         if depth and kind in ('surface', 'box_brep'):
             raise ValueError('curve segment required')
         if kind not in ('line', 'nurbs', 'arc', 'circle', 'ellipse', 'polyline', 'polycurve', 'surface', 'box_brep'):

@@ -154,6 +154,7 @@ mod ellipse_command;
 pub use catenary_command::{Action as CatenaryCommandAction, Fixture as CatenaryCommandFixture};
 pub use curve_getters::{Action as EllipseCommandAction, Fixture as EllipseCommandFixture};
 pub use curve_getters::{Action as CircleAroundAction, Fixture as CircleAroundFixture};
+pub use curve_getters::{Action as CircleDeformAction, Fixture as CircleDeformFixture};
 mod spiral_command;
 pub use spiral_command::{Action as SpiralCommandAction, Fixture as SpiralCommandFixture};
 mod hyperbola;
@@ -1749,6 +1750,11 @@ pub enum Operation {
         id: String,
         turns: f64,
     },
+    CircleDeform {
+        id: String,
+        #[serde(flatten)]
+        fixture: CircleDeformFixture,
+    },
     CircleAround {
         id: String,
         #[serde(flatten)]
@@ -2866,6 +2872,7 @@ impl Operation {
             | Self::FlowGrips { id, .. }
             | Self::SpiralLayout { id, .. }
             | Self::CatenaryCommand { id, .. }
+            | Self::CircleDeform { id, .. }
             | Self::CircleAround { id, .. }
             | Self::EllipseCommand { id, .. }
             | Self::HelixCommand { id, .. }
@@ -6124,7 +6131,7 @@ fn execute(
                 elapsed,
             )
         }
-        Operation::CircleAround { fixture, .. } => {
+        Operation::CircleDeform { fixture, .. } | Operation::CircleAround { fixture, .. } => {
             circle_around::run(fixture, iterations, tolerance)?
         }
         Operation::EllipseCommand { fixture, .. } => {

@@ -15,6 +15,8 @@ mod bounds;
 mod brep;
 mod catenary;
 mod circle_curve;
+mod circle_deform;
+pub use circle_deform::circle_deformable_minimum_points;
 mod circle_fit;
 mod radial_fit;
 mod sphere_fit;

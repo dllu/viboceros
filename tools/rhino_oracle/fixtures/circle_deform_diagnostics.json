@@ -1,0 +1,171 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-bare",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree",
+        3,
+        "PointCount",
+        8,
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-reset",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Deformable=No",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-min-d11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=11",
+        "PointCount=13",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree-raised-11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=12",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree-raised-fallback",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-layout-d9-n11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=9",
+        "PointCount=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-layout-d10-n12",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=10",
+        "PointCount=12",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-layout-d11-n14",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=11",
+        "PointCount=14",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-layout-d7-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=8",
+        "Degree=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-layout-d8-n9",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=9",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    }
+  ]
+}

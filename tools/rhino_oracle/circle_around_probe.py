@@ -1,11 +1,18 @@
-"""Bounded public Circle AroundCurve getters with complete history snapshots."""
+"""Bounded public Circle construction getters with complete history snapshots."""
 def validate(op):
     if globals().get('__package__'):
         from .getter_recipe import validate as validate_recipe
     else:
         from getter_recipe import validate as validate_recipe
-    validate_recipe(op,'circle_around',{'AroundCurve','Radius','Diameter','Circumference','Area','Orientation','3Point','2Point','Enter','Cancel'},numeric_options={'Radius','Diameter','Circumference','Area'})
-    if not op.get('live_getters'):raise ValueError('Circle AroundCurve requires owned live input')
+    operation=op.get('op')if isinstance(op,dict)else None
+    if operation not in ('circle_around','circle_deform'):raise ValueError('invalid Circle getter recipe')
+    options={'AroundCurve','Radius','Diameter','Circumference','Area','Orientation','3Point','2Point','Enter','Cancel'}
+    pattern=None
+    if operation=='circle_deform':
+        options.update({'Deformable','Deformable=Yes','Deformable=No','PointCount','Degree','Vertical','FitPoints'})
+        pattern=r'\A(?:Degree=[0-9]{1,2}|PointCount=(?:[0-9]{1,3}|1000))\Z'
+    validate_recipe(op,operation,options,pattern,numeric_options={'Radius','Diameter','Circumference','Area'},allow_points=operation=='circle_deform')
+    if not op.get('live_getters'):raise ValueError('Circle getters require owned live input')
 
 
 def run(op,host,iterations,tolerance):

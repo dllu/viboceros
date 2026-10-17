@@ -1,0 +1,166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree2",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=2",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree3",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=3",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=4",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=5",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=6",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree7",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree9",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree10",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount=16",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    }
+  ]
+}

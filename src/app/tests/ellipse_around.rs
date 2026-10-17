@@ -34,6 +34,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
         for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
             let (id, f) = match op {
                 viboceros_oracle::Operation::EllipseCommand { id, fixture }
+                | viboceros_oracle::Operation::CircleDeform { id, fixture }
                 | viboceros_oracle::Operation::CircleAround { id, fixture } => (id, fixture),
                 _ => panic!(),
             };
@@ -49,7 +50,11 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                 .iter()
                 .map(|id| app.document.object(*id).unwrap().clone())
                 .collect::<Vec<_>>();
-            if f.preselect {
+            if f.preselect_all {
+                for id in &guides {
+                    app.document.select_object(*id, SelectionMode::Add).unwrap();
+                }
+            } else if f.preselect {
                 app.document
                     .select_object(guides[0], SelectionMode::Replace)
                     .unwrap();
@@ -112,7 +117,9 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                 assert!(app.command_input.is_empty(), "{id}: {:?}", app.command_log);
             }
             assert!(
-                app.ellipse_session.is_none() && app.circle_around_session.is_none(),
+                app.ellipse_session.is_none()
+                    && app.circle_around_session.is_none()
+                    && app.circle_deform_session.is_none(),
                 "{id}: {:?}",
                 app.command_log
             );

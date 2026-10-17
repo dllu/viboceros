@@ -443,3 +443,40 @@ fn box_command_and_contour_use_native_topology_and_closed_seams() {
     document.undo().unwrap();
     assert_eq!(document.objects().len(), 1);
 }
+
+#[test]
+fn circle_deform_invalid_layout_is_atomic_and_exact_output_resets_each_command() {
+    let commands = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let preferences = commands.circle_preferences();
+    for text in [
+        "Circle Deformable Degree=1 0,0,0 3",
+        "Circle Deformable Degree=3 PointCount=4 0,0,0 3",
+        "Circle Deformable Degree=2 PointCount=4 Degree=8 0,0,0 3",
+        "Circle Deformable PointCount=1001 0,0,0 3",
+    ] {
+        assert!(commands.execute(&mut doc, text).is_err(), "{text}");
+        assert_eq!(doc.objects().len(), 0);
+        assert!(doc.undo_label().is_none());
+        assert_eq!(commands.circle_preferences(), preferences);
+    }
+    commands
+        .execute(
+            &mut doc,
+            "Circle Deformable Degree=2 PointCount=4 Degree=3 0,0,0 3",
+        )
+        .unwrap();
+    let Geometry::NurbsCurve(curve) = doc.objects().next().unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(curve.degree(), 3);
+    assert_eq!(curve.control_points().len(), 7);
+    let saved = commands.circle_preferences();
+    doc.undo().unwrap();
+    assert_eq!(commands.circle_preferences(), saved);
+    commands.execute(&mut doc, "Circle 0,0,0 3").unwrap();
+    assert!(matches!(
+        doc.objects().next().unwrap().geometry(),
+        Geometry::Circle(_)
+    ));
+}

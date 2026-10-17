@@ -1,0 +1,532 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-bare",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree",
+        3,
+        "PointCount",
+        8,
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-fit",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        "FitPoints"
+      ],
+      "curves": [
+        {
+          "type": "point",
+          "point": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            3,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -3,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            -3,
+            0
+          ]
+        }
+      ],
+      "preselect_all": true,
+      "guide_selection": true
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-default",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-center-tilt",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-circumference",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        [
+          0,
+          0,
+          0
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-area",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        [
+          0,
+          0,
+          0
+        ],
+        "Area",
+        28.274333882308138
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-two",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        "2Point",
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-three",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        "3Point",
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        [
+          -3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-three-radius",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        "3Point",
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        "Radius",
+        3,
+        [
+          0,
+          4,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-vertical",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        "Vertical",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-vertical-size",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        "Vertical",
+        [
+          0,
+          0,
+          0
+        ],
+        3,
+        [
+          3,
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-orientation",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        [
+          1,
+          2,
+          3
+        ],
+        "Orientation",
+        [
+          4,
+          6,
+          8
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-orientation-point",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        [
+          1,
+          2,
+          3
+        ],
+        "Orientation",
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          5,
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-around",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          1,
+          2,
+          4
+        ],
+        3
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-exact-reset",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ],
+      "setup": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-min-d2",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-min-d3",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=5",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-min-d4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=4",
+        "PointCount=6",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-min-d5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-preselected",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "preselect": true,
+      "guide_selection": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=8",
+        "AroundCurve",
+        [
+          0,
+          0,
+          4
+        ],
+        [
+          3,
+          4,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-relative-plane",
+      "live_getters": true,
+      "construction_plane": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "prior_point": [
+        2,
+        3,
+        4
+      ],
+      "actions": [
+        "Deformable",
+        "Degree=4",
+        "PointCount=8",
+        {
+          "relative": [
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "relative": [
+            3,
+            4,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-diameter",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=5",
+        "PointCount=12",
+        [
+          0,
+          0,
+          0
+        ],
+        "Diameter",
+        8
+      ]
+    }
+  ]
+}

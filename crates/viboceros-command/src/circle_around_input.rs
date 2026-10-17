@@ -9,12 +9,14 @@ use viboceros_geometry::{Circle3, Frame3, GeometryError, Point3, Tolerance};
 pub struct Preferences {
     pub radius: f64,
     pub diameter: bool,
+    pub deformation: crate::circle_deform_input::Deformation,
 }
 impl Default for Preferences {
     fn default() -> Self {
         Self {
             radius: 1.,
             diameter: false,
+            deformation: Default::default(),
         }
     }
 }
@@ -33,6 +35,7 @@ pub struct Input {
     frame: Frame3,
     tolerance: Tolerance,
     retained_mode: CircleSizeMode,
+    preferences: Preferences,
 }
 impl Input {
     pub fn new(frame: Frame3, preferences: Preferences, tolerance: Tolerance) -> Self {
@@ -42,6 +45,7 @@ impl Input {
             frame,
             tolerance,
             retained_mode: preferences.mode(),
+            preferences,
         }
     }
     pub fn center(self) -> Point3 {
@@ -110,6 +114,7 @@ impl Input {
         Preferences {
             radius: circle.radius(),
             diameter: self.retained_mode == CircleSizeMode::Diameter,
+            ..self.preferences
         }
     }
     pub fn command(

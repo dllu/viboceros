@@ -1087,7 +1087,7 @@ fn project_to_plane(vector: Vector3, normal: UnitVector3) -> Result<Vector3, Geo
     )
 }
 
-fn frame_point(
+pub(crate) fn frame_point(
     origin: Point3,
     x_axis: UnitVector3,
     y_axis: UnitVector3,

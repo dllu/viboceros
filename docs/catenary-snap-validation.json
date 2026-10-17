@@ -381,7 +381,6 @@
     "src/app/catenary.rs": "991e11b73e8f84190d5337bdc8bc07f1c1c646e7a8e4a8201b224394f094066e",
     "tools/rhino_oracle/catenary_command_probe.py": "26e17a22a7cfa390687c42e0115285f829002cb8b3e30f0e56d0baa362099df4",
     "tools/rhino_oracle/catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
-    "tools/rhino_oracle/curve_primitive_probe.py": "47c4c1fb3085b28ccc62a9ca835ce960464ae72b82fa2adb6079e80422d8fbbe",
     "tools/rhino_oracle/fixtures/catenary_end_apex_enter.json": "09531edffa348c7c77c49b78a2bd6eb5d012ffed1da15a20f6c42223d5838dc8",
     "tools/rhino_oracle/fixtures/catenary_end_apex_snap.json": "e5ea3885c539f05de052bde76192d6c076cc4822040a7f6426efe1a182bfdf23",
     "tools/rhino_oracle/fixtures/catenary_endpoint_click_controls.json": "1a6b0b8d1ff4c65b0e36fab5491446aa31e10cec1b59448a8a6dc10210ceef26",
@@ -406,6 +405,7 @@
     "2bac54482aab156bddaa5d06215f4c267019408c:docs/spiral-around-validation.json": "168df2df17d3be3be6d09a038878477fc046d5edd46134d0db81ca21b745dedd",
     "dbb6bf38e387d24a920d7452e338284261d24406:src/app/point_input.rs": "83bf83573bf51baedf4a97b332fcef17858ff46a61e13451b16bf1b89693a4db",
     "dbb6bf38e387d24a920d7452e338284261d24406:docs/conic-getters-validation.json": "bcb7ea73cf56c1ef5a5898bfc294f8abdc4547be77ad7e908500c256f0dcd462",
-    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/hyperbola-validation.json": "d665fc270a6a1fb8b1bc93fdec7289af3a642a9a7861f5890df06a4d5728add4"
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/hyperbola-validation.json": "d665fc270a6a1fb8b1bc93fdec7289af3a642a9a7861f5890df06a4d5728add4",
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:tools/rhino_oracle/curve_primitive_probe.py": "47c4c1fb3085b28ccc62a9ca835ce960464ae72b82fa2adb6079e80422d8fbbe"
   }
 }

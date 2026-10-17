@@ -6,6 +6,7 @@ use viboceros_command::{
     curve_reference::{CapturedCurve, perpendicular_frame},
 };
 pub(super) struct Session {
+    pub(super) output: Option<viboceros_command::circle_deform_input::Output>,
     curve: Option<CapturedCurve>,
     pub(super) input: Option<Input>,
     postselected: bool,
@@ -38,9 +39,19 @@ impl VibocerosApp {
         }
     }
     pub(super) fn start_circle_around(&mut self) {
+        self.start_circle_around_with_output(None);
+    }
+    pub(super) fn start_circle_around_with_output(
+        &mut self,
+        output: Option<viboceros_command::circle_deform_input::Output>,
+    ) {
         self.cancel_interactive_command(false);
-        let preferences = self.commands.circle_preferences();
+        let mut preferences = self.commands.circle_preferences();
+        if let Some(output) = output {
+            preferences.deformation = output.deformation;
+        }
         self.circle_around_session = Some(Session {
+            output,
             curve: None,
             input: None,
             postselected: false,
@@ -178,6 +189,9 @@ impl VibocerosApp {
             .unwrap()
             .command(circle, curve.object_id(), curve.source().1, s.postselected)
             .expect("complete Circle AroundCurve");
+        let command = s
+            .output
+            .map_or(command.clone(), |output| output.wrap_command(&command));
         self.try_execute_command(&command)
     }
     pub(super) fn accept_circle_around_point(&mut self, point: Point3) -> Option<bool> {

@@ -10,6 +10,52 @@ pub(super) struct CircleCommand(
     crate::remembered::Remembered<crate::circle_around_input::Preferences>,
 );
 
+impl CircleCommand {
+    fn deformable_run(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+        postselected: bool,
+    ) -> Result<String, CommandError> {
+        use crate::circle_deform_input::{Construction, from_arguments};
+        let (output, construction) = from_arguments(
+            document,
+            arguments,
+            context.construction_plane,
+            self.0.get(),
+        )?;
+        let (circle, preferences) = match construction {
+            Construction::Circle {
+                circle,
+                preferences,
+            } => (circle, preferences),
+            Construction::Around(d) => {
+                if d.edge.is_none() {
+                    if d.postselected {
+                        document.release_command_selection_on_history_replay([d.source])?;
+                        document.select_command_results([])?;
+                    } else {
+                        document.select_command_results([d.source])?;
+                    }
+                }
+                (d.circle, d.preferences)
+            }
+            Construction::FitPoints => {
+                let result =
+                    circle_fit_points::run_with_output(document, postselected, Some(output))?;
+                let mut preferences = self.0.get();
+                preferences.deformation = output.deformation;
+                self.0.set(preferences);
+                return Ok(result);
+            }
+        };
+        let id = document.add_geometry(output.geometry(circle)?)?;
+        self.0.set(preferences);
+        Ok(format!("Added circle {id} (radius {:.6})", circle.radius()))
+    }
+}
+
 #[derive(Clone, Copy)]
 enum CircleSizeMode {
     Radius,
@@ -72,6 +118,14 @@ impl Command for CircleCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if let Some((_, consumed)) =
+            crate::circle_deform_input::output_prefix(arguments, self.0.get())?
+        {
+            return Ok(
+                matches!(&arguments[consumed..], [w] if option_name_eq(w,"FitPoints"))
+                    .then(circle_fit_points::selection_prompt),
+            );
+        }
         Ok(
             matches!(arguments, [option] if option_name_eq(option, "FitPoints"))
                 .then(circle_fit_points::selection_prompt),
@@ -88,6 +142,9 @@ impl Command for CircleCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        if crate::circle_deform_input::is_deformable_start(arguments) {
+            return self.deformable_run(document, arguments, context, true);
+        }
         if arguments
             .first()
             .is_some_and(|option| option_name_eq(option, "FitPoints"))
@@ -108,6 +165,9 @@ impl Command for CircleCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        if crate::circle_deform_input::is_deformable_start(arguments) {
+            return self.deformable_run(document, arguments, context, false);
+        }
         if arguments
             .first()
             .is_some_and(|w| option_name_eq(w, "AroundCurve"))

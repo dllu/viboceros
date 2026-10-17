@@ -280,7 +280,7 @@ fn clamped_uniform_knots(degree: usize, point_count: usize, span_count: usize) -
     knots
 }
 
-fn periodic_uniform_knots(degree: usize, point_count: usize) -> Vec<Real> {
+pub(crate) fn periodic_uniform_knots(degree: usize, point_count: usize) -> Vec<Real> {
     let short_count = point_count + 2 * degree - 1;
     let first = -((degree - 1) as Real);
     let last = first + (short_count - 1) as Real;

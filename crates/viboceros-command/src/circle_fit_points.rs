@@ -13,6 +13,14 @@ pub(super) fn selection_prompt() -> ObjectSelectionPrompt {
 }
 
 pub(super) fn run(document: &mut Document, postselected: bool) -> Result<String, CommandError> {
+    run_with_output(document, postselected, None)
+}
+
+pub(super) fn run_with_output(
+    document: &mut Document,
+    postselected: bool,
+    output: Option<crate::circle_deform_input::Output>,
+) -> Result<String, CommandError> {
     let points = document
         .selected_objects()
         .filter_map(|object| match object.geometry() {
@@ -34,7 +42,8 @@ pub(super) fn run(document: &mut Document, postselected: bool) -> Result<String,
     };
     let radius = circle.radius();
     let selection = document.selected_object_ids().collect::<Vec<_>>();
-    let id = document.add_geometry(Geometry::Circle(circle))?;
+    let geometry = output.map_or_else(|| Ok(Geometry::Circle(circle)), |o| o.geometry(circle))?;
+    let id = document.add_geometry(geometry)?;
     if postselected {
         document.release_command_selection_on_history_replay(selection)?;
         document.clear_selection();

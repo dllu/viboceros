@@ -286,6 +286,7 @@ pub mod construction_plane;
 use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
 pub mod circle_around_input;
+pub mod circle_deform_input;
 mod circle_fit_points;
 pub mod circle_input;
 pub mod conic;

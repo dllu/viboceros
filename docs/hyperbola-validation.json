@@ -390,7 +390,6 @@
     "docs/prepared-gordon-families-validation.json": "0e69b0949d4f4c712d88c0ae6741388660c5e24079611bdc515194b5fdb0b8a9",
     "docs/projection-loose-qualification.json": "4a4d6b8060d5cbd056ddbada89921ecb16146e8ac165121fd240408d172dd660",
     "docs/shared-gordon-curve-fit-validation.json": "1631008547774fec9fb46a7bd328272fad73b4b8a1e3fd398cfdfefa6e6402ce",
-    "docs/surface-flow-validation.json": "0957dcec744703877ef7ea94ad4953309a9e96c430b58816c61665fdd062a0ee",
     "src/app/hyperbola.rs": "fadb185f906dbdb87a515536a693dbda38dca0332f2906dc24ef25fb0d16300b",
     "src/app/tests/hyperbola.rs": "b35a7e3c1b4f3c6232f20b26236115e1884226133b62d31f19d14fbd1ab81787",
     "src/viewport/curve_sampling.rs": "dc2a727fc083ebedcc2b3a071724d0a9637e89f2299494a64137e7672aeabac2",
@@ -429,6 +428,7 @@
     "b041cf1270003f3feb1bf5942252316568c1cf5d:tools/rhino_oracle/structural_sdk.py": "f637718f2bbca671bfa20cc1668d8df6f69ef4450db0738631cc802f3d24b41b",
     "a4402e1b94914750c780147a340edcd895806a1d:docs/parabola-validation.json": "a0bad0bc00f4ec693eb12a2286e085c20efc6d8cd836b1cf9a4bfe20f0cbd282",
     "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/conic-getters-validation.json": "96a02e70e723c4838489efab7557503ca960add0121c407cb7e027fcb1604626",
-    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/flow-poles-validation.json": "ecac59fd84672a1c05f25a6b4b9b630b1dd4544d2af3520addb3c488cb737db1"
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/flow-poles-validation.json": "ecac59fd84672a1c05f25a6b4b9b630b1dd4544d2af3520addb3c488cb737db1",
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/surface-flow-validation.json": "0957dcec744703877ef7ea94ad4953309a9e96c430b58816c61665fdd062a0ee"
   }
 }

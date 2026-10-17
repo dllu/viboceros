@@ -17,7 +17,11 @@ fn enter(
     let mut around = false;
     let mut input: Option<Input> = None;
     let mut postselected = false;
-    let mut ordinary = viboceros_command::circle_input::CircleInput::new(plane);
+    let mut ordinary = viboceros_command::circle_deform_input::Input::new(
+        plane,
+        commands.circle_preferences(),
+        doc.tolerance(),
+    );
     let mut completed = None;
     let mut tokens = vec!["Circle".to_owned()];
     for action in actions {
@@ -33,12 +37,7 @@ fn enter(
                 )
             })
         } else {
-            !ordinary.requests_size()
-                || !matches!(
-                    ordinary.size_mode(),
-                    viboceros_command::circle_input::CircleSizeMode::Radius
-                        | viboceros_command::circle_input::CircleSizeMode::Diameter
-                )
+            !ordinary.accepts_default()
         };
         match action {
             Action::Option(word)
@@ -97,25 +96,24 @@ fn enter(
             }
             Action::Option(word) => {
                 if !around && word.eq_ignore_ascii_case("Enter") {
-                    let radius = commands.circle_preferences().radius;
-                    let value = if ordinary.size_mode()
-                        == viboceros_command::circle_input::CircleSizeMode::Diameter
-                    {
-                        2. * radius
-                    } else {
-                        radius
-                    };
-                    tokens.push(value.to_string());
-                    if let Some(d) = ordinary.number(value)? {
-                        completed = Some(Circle3::try_from_frame(
-                            d.frame.origin(),
-                            d.radius,
-                            d.frame.x_axis(),
-                            d.frame.z_axis(),
-                            doc.tolerance(),
-                        )?);
-                    }
+                    tokens.push("Enter".into());
+                    completed = ordinary.default_value()?;
                     continue;
+                }
+                if !around && word.eq_ignore_ascii_case("FitPoints") {
+                    let command = if ordinary.output().deformable {
+                        format!("{} FitPoints", ordinary.output().command_prefix())
+                    } else {
+                        "Circle FitPoints".into()
+                    };
+                    commands.execute_in_context(
+                        doc,
+                        &command,
+                        viboceros_command::CommandContext {
+                            construction_plane: plane,
+                        },
+                    )?;
+                    return Ok(());
                 }
                 if !around {
                     tokens.push(word.clone());
@@ -134,10 +132,20 @@ fn enter(
                     } else if !input.option(word) {
                         return Err(ProbeError::FixtureInvariant("unsupported Circle option"));
                     }
-                } else if !around && !ordinary.option(word) {
-                    return Err(ProbeError::FixtureInvariant(
-                        "unsupported setup Circle option",
-                    ));
+                } else if !around && !ordinary.option(word)? {
+                    if let Some((key, value)) = word.split_once('=')
+                        && viboceros_command::circle_input::CircleSizeMode::parse(key).is_some()
+                        && ordinary.option(key)?
+                    {
+                        completed =
+                            ordinary.number(value.parse().map_err(|_| {
+                                ProbeError::FixtureInvariant("invalid Circle size")
+                            })?)?;
+                    } else {
+                        return Err(ProbeError::FixtureInvariant(
+                            "unsupported setup Circle option",
+                        ));
+                    }
                 }
             }
             Action::Number(value) => {
@@ -153,15 +161,7 @@ fn enter(
                         Err(error) => return Err(error.into()),
                     }
                 } else if !around {
-                    if let Some(d) = ordinary.number(*value)? {
-                        completed = Some(Circle3::try_from_frame(
-                            d.frame.origin(),
-                            d.radius,
-                            d.frame.x_axis(),
-                            d.frame.z_axis(),
-                            doc.tolerance(),
-                        )?);
-                    }
+                    completed = ordinary.number(*value)?;
                 } else {
                     return Err(ProbeError::FixtureInvariant("Circle requires a center"));
                 }
@@ -195,15 +195,7 @@ fn enter(
                 } else if !around {
                     let [x, y, z] = point.to_array();
                     tokens.push(format!("{x},{y},{z}"));
-                    if let Some(d) = ordinary.point(point)? {
-                        completed = Some(Circle3::try_from_frame(
-                            d.frame.origin(),
-                            d.radius,
-                            d.frame.x_axis(),
-                            d.frame.z_axis(),
-                            doc.tolerance(),
-                        )?);
-                    }
+                    completed = ordinary.point(point)?;
                     *last = Some(point);
                 } else {
                     return Err(ProbeError::FixtureInvariant("Circle requires a guide"));
@@ -214,7 +206,12 @@ fn enter(
     let circle = completed.ok_or(ProbeError::FixtureInvariant("incomplete Circle"))?;
     let command = if let Some(input) = input {
         let guide = guide.unwrap();
-        input.command(circle, guide.object_id(), guide.source().1, postselected)?
+        let command = input.command(circle, guide.object_id(), guide.source().1, postselected)?;
+        if ordinary.output().deformable {
+            ordinary.output().wrap_command(&command)
+        } else {
+            command
+        }
     } else {
         tokens.join(" ")
     };
@@ -323,6 +320,154 @@ mod cancellation_tests {
             }
             assert!(a.value["undo_label"].is_null());
             assert!(a.value["redo_label"].is_null());
+        }
+    }
+}
+
+#[cfg(test)]
+mod deform_tests {
+    use super::*;
+    #[test]
+    fn circle_deform_native_clamped_layouts_are_rejected_atomically() {
+        let q: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/circle_deform_diagnostics.json"
+        ))
+        .unwrap();
+        let n: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/circle_deform_diagnostics_rhino_20261017.json"
+        ))
+        .unwrap();
+        let mut checked = 0;
+        for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
+            if !row["value"]["input_trace"]["errors"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+                || row["value"]["history"]
+                    .as_str()
+                    .unwrap()
+                    .contains("Unknown command")
+            {
+                continue;
+            }
+            let Operation::CircleDeform { id, fixture } = op else {
+                panic!()
+            };
+            let tokens = fixture
+                .actions
+                .iter()
+                .map(|a| match a {
+                    Action::Option(s) => s.to_owned(),
+                    Action::Number(n) => n.to_string(),
+                    Action::Point([x, y, z]) => format!("{x},{y},{z}"),
+                    _ => panic!(),
+                })
+                .collect::<Vec<_>>();
+            let mut doc = Document::default();
+            let commands = CommandRegistry::with_builtins();
+            let preferences = commands.circle_preferences();
+            assert!(
+                commands
+                    .execute(&mut doc, &format!("Circle {}", tokens.join(" ")))
+                    .is_err(),
+                "{id}"
+            );
+            assert_eq!(doc.objects().len(), 0, "{id}");
+            assert!(doc.undo_label().is_none());
+            assert_eq!(commands.circle_preferences(), preferences);
+            checked += 1;
+        }
+        assert!(checked >= 6);
+    }
+
+    #[test]
+    fn circle_deform_native_cancellations_have_no_output_or_history() {
+        let q: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/circle_deform_controls.json"
+        ))
+        .unwrap();
+        let n: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/circle_deform_controls_rhino_20261017.json"
+        ))
+        .unwrap();
+        let actual = run_request(&q).unwrap();
+        assert_eq!(actual.results.len(), 4);
+        for (a, b) in actual.results.iter().zip(n["results"].as_array().unwrap()) {
+            for stage in ["before", "after", "undo", "redo"] {
+                crate::curve_getters::assert_close(
+                    &a.value[stage],
+                    &b["value"][if stage == "after" {
+                        "after_script"
+                    } else {
+                        stage
+                    }],
+                    &a.id,
+                );
+            }
+            assert!(a.value["undo_label"].is_null());
+            assert!(a.value["redo_label"].is_null());
+        }
+    }
+
+    #[test]
+    fn circle_deform_native_controls_knots_domain_selection_and_history() {
+        for (q, n, count) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_deform_degrees.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_deform_degrees_rhino_20261017.json"
+                ),
+                10,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_deform_default.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_deform_default_rhino_20261017.json"
+                ),
+                1,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_deform_modes.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_deform_modes_rhino_20261017.json"
+                ),
+                22,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_deform_extended.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_deform_extended_rhino_20261017.json"
+                ),
+                7,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_deform_boundaries.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_deform_boundaries_rhino_20261017.json"
+                ),
+                17,
+            ),
+        ] {
+            let q: ProbeRequest = serde_json::from_str(q).unwrap();
+            let n: Value = serde_json::from_str(n).unwrap();
+            let actual = run_request(&q).unwrap();
+            assert_eq!(actual.results.len(), count);
+            for (a, b) in actual.results.iter().zip(n["results"].as_array().unwrap()) {
+                assert_eq!(a.id, b["id"]);
+                for stage in ["before", "after", "undo", "redo"] {
+                    crate::curve_getters::assert_close(
+                        &a.value[stage],
+                        &b["value"][if stage == "after" {
+                            "after_script"
+                        } else {
+                            stage
+                        }],
+                        &format!("{}/{stage}", a.id),
+                    );
+                }
+                assert_eq!(a.value["undo_label"], "Circle");
+                assert_eq!(a.value["redo_label"], "Circle");
+            }
         }
     }
 }

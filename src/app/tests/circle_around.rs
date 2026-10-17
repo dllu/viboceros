@@ -126,62 +126,82 @@ fn circle_around_parameter_filters_preview_seam_and_history_use_the_constrained_
 }
 #[test]
 fn circle_around_stale_guides_clear_helpers_and_filters_before_and_after_center() {
-    for centered in [false, true] {
-        for change in 0..5 {
-            let mut app = test_app();
-            let id = guide(&mut app);
-            enter(&mut app, "Circle AroundCurve");
-            assert!(app.pick_circle_around_curve(Some(id), None));
-            if centered {
-                enter(&mut app, "w2,3,5");
-                enter(&mut app, "Diameter");
+    for deformable in [false, true] {
+        for centered in [false, true] {
+            for change in 0..5 {
+                let mut app = test_app();
+                let id = guide(&mut app);
+                if deformable {
+                    enter(&mut app, "Circle Deformable Degree=4 PointCount=12");
+                    enter(&mut app, "AroundCurve");
+                } else {
+                    enter(&mut app, "Circle AroundCurve");
+                }
+                assert!(app.pick_circle_around_curve(Some(id), None));
+                if centered {
+                    enter(&mut app, "w2,3,5");
+                    enter(&mut app, "Diameter");
+                }
+                enter(&mut app, ".y");
+                assert!(app.point_filter.is_some());
+                match change {
+                    0 => {
+                        app.document
+                            .replace_object_geometries([(
+                                id,
+                                Geometry::Line(
+                                    viboceros_geometry::LineSegment::try_new(
+                                        p(0., 0., 0.),
+                                        p(10., 0., 0.),
+                                        app.document.tolerance(),
+                                    )
+                                    .unwrap(),
+                                ),
+                            )])
+                            .unwrap();
+                    }
+                    1 => {
+                        app.document.set_objects_visibility([id], false).unwrap();
+                    }
+                    2 => {
+                        app.document.set_objects_locked([id], true).unwrap();
+                    }
+                    3 => {
+                        app.document
+                            .set_tolerance(Tolerance::try_new(2e-9, 1e-12, 1e-10).unwrap());
+                    }
+                    _ => {
+                        app.document.delete_objects([id]).unwrap();
+                    }
+                }
+                app.document.clear_history().unwrap();
+                app.validate_circle_around_curve();
+                assert!(app.picking_circle_around_curve());
+                assert!(app.circle_around_session.as_ref().unwrap().input.is_none());
+                if deformable {
+                    assert_eq!(
+                        app.circle_around_session
+                            .as_ref()
+                            .unwrap()
+                            .output
+                            .unwrap()
+                            .deformation
+                            .degree,
+                        4
+                    );
+                }
+                assert!(app.point_filter.is_none());
+                assert!(app.point_constraint.is_none());
+                assert!(app.document.objects().all(|o| o.id() == id));
+                assert!(app.document.undo_label().is_none());
+                enter(&mut app, "Cancel");
+                assert!(app.circle_around_session.is_none());
+                assert!(app.document.undo().unwrap().is_none());
             }
-            enter(&mut app, ".y");
-            assert!(app.point_filter.is_some());
-            match change {
-                0 => {
-                    app.document
-                        .replace_object_geometries([(
-                            id,
-                            Geometry::Line(
-                                viboceros_geometry::LineSegment::try_new(
-                                    p(0., 0., 0.),
-                                    p(10., 0., 0.),
-                                    app.document.tolerance(),
-                                )
-                                .unwrap(),
-                            ),
-                        )])
-                        .unwrap();
-                }
-                1 => {
-                    app.document.set_objects_visibility([id], false).unwrap();
-                }
-                2 => {
-                    app.document.set_objects_locked([id], true).unwrap();
-                }
-                3 => {
-                    app.document
-                        .set_tolerance(Tolerance::try_new(2e-9, 1e-12, 1e-10).unwrap());
-                }
-                _ => {
-                    app.document.delete_objects([id]).unwrap();
-                }
-            }
-            app.document.clear_history().unwrap();
-            app.validate_circle_around_curve();
-            assert!(app.picking_circle_around_curve());
-            assert!(app.circle_around_session.as_ref().unwrap().input.is_none());
-            assert!(app.point_filter.is_none());
-            assert!(app.point_constraint.is_none());
-            assert!(app.document.objects().all(|o| o.id() == id));
-            assert!(app.document.undo_label().is_none());
-            enter(&mut app, "Cancel");
-            assert!(app.circle_around_session.is_none());
-            assert!(app.document.undo().unwrap().is_none());
         }
     }
 }
+
 #[test]
 fn circle_around_cancel_interrupt_and_size_errors_release_only_postselected_guides() {
     for preselect in [false, true] {

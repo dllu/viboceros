@@ -1,0 +1,20 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-default",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    }
+  ]
+}

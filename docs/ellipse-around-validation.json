@@ -452,9 +452,7 @@
     "crates/viboceros-drafting/src/point_input.rs": "b53d3b5f3c863f89ee27441244d570e1205f45b98ef3ebfc90a2b934c2b8b3ef",
     "crates/viboceros-drafting/src/point_input/length_quantity_tests.rs": "dcb0ebbe0727d151af8283f5449d85069d126156de0c82b2547753c2dd7abd4a",
     "docs/conic-getters-validation.json": "d60c1a4cf26d320b820b530200e1c2fbcd731e6cbdab8ace7aad2fada3dd48b5",
-    "docs/spiral-around-validation.json": "1850b6cb920b601a1256f94ba59bff3ab3cabf944f6d72dfc2f81b2145568479",
     "src/app/tests/catenary.rs": "67de1ed24344243482fd67fcdcc79c0c93634b15debd4973e8ffc106aa6d1304",
-    "tools/rhino_oracle/curve_source_bounds.py": "defa47b86b1e9cf2f0e053d574644c9e06f82ba15ec8b5158cda987292b94cdf",
     "tools/rhino_oracle/fixtures/ellipse_around_command.json": "0891fd4ced86ba88b746233c1b8376c896769ec22a332658fd0902850ea62906",
     "tools/rhino_oracle/fixtures/ellipse_around_controls.json": "4d191f07d7a672b43cf72fa3549679b69255d31daf8ebc9be745a441c1139eed",
     "tools/rhino_oracle/fixtures/ellipse_around_diagnostics.json": "c05c3259edde3f2e19ffa34c133efa3b67273d2f97e95ad34bb558ce8e7f5a84",
@@ -488,6 +486,8 @@
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/structural_sdk.py": "bc07a4c19ced1976f03dc34cdea61c52cf5335e38cc99496f8f631b061fb2df1",
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/test_ellipse.py": "4a48c46be29a25be980cc4b98f0307ca680cb6ba57f40eda95658f091aca3aa8",
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/rectangle-rounded-validation.json": "0dc8154cec3e82e448fd5826ae3835d934939cb6a0a8b1a908f363005e13b99f",
-    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/catenary-snap-validation.json": "e7d6fc94fb87884e90f1f864ce25afbe3578ea7b65e94efcedd6f4c668fc2284"
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/catenary-snap-validation.json": "e7d6fc94fb87884e90f1f864ce25afbe3578ea7b65e94efcedd6f4c668fc2284",
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:tools/rhino_oracle/curve_source_bounds.py": "defa47b86b1e9cf2f0e053d574644c9e06f82ba15ec8b5158cda987292b94cdf",
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/spiral-around-validation.json": "1850b6cb920b601a1256f94ba59bff3ab3cabf944f6d72dfc2f81b2145568479"
   }
 }

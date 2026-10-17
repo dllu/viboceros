@@ -1,0 +1,329 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-surface-edge",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=4",
+        "PointCount=12",
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-curved-edge",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                3,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                13,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 3,
+          "control_point_count_v": 2
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=4",
+        "PointCount=12",
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0.96,
+            0.64
+          ]
+        },
+        [
+          5,
+          1.5,
+          1
+        ],
+        [
+          5,
+          4,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-box-edge",
+      "curves": [
+        {
+          "type": "box_brep",
+          "min": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            10,
+            10,
+            4
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=4",
+        "PointCount=12",
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-memory",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        [
+          1,
+          2,
+          3
+        ],
+        "Enter"
+      ],
+      "setup": [
+        "Deformable",
+        "Degree=7",
+        "PointCount=14",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-defaults",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree",
+        "Enter",
+        "PointCount",
+        "Enter",
+        [
+          0,
+          0,
+          0
+        ],
+        "Enter"
+      ],
+      "setup": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-dense",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=8",
+        "PointCount=64",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-degree-raised-periodic",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=3",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    }
+  ]
+}

@@ -686,6 +686,7 @@ impl VibocerosApp {
                     | "ExtrudeSrfToPoint"
                     | "ExtrudeSrfTapered"
                     | "RailRevolve"
+                    | "Circle FitPoints"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());

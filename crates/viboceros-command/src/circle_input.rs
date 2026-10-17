@@ -152,6 +152,15 @@ impl CircleInput {
             State::Orientation { center, .. } => Some(center),
         }
     }
+    pub fn at_start(self) -> bool {
+        matches!(self.state, State::Center { center: None, .. })
+    }
+    pub fn remembers_radius(self) -> bool {
+        !matches!(
+            self.state,
+            State::TwoPoint { .. } | State::ThreePoint { .. }
+        )
+    }
     pub fn size_mode(self) -> CircleSizeMode {
         match self.state {
             State::Center { mode, .. }
@@ -186,7 +195,7 @@ impl CircleInput {
     }
     pub fn prompt(self) -> &'static str {
         match self.state {
-            State::Center { center: None, .. } => "Center of maelstrom; Vertical, 2Point, 3Point",
+            State::Center { center: None, .. } => "Center of circle; Vertical, 2Point, 3Point",
             State::Center { mode, .. } => match mode {
                 CircleSizeMode::Radius => {
                     "Circle radius; Diameter, Orientation, Circumference, Area; Enter accepts the remembered radius"

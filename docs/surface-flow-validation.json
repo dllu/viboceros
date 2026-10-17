@@ -451,13 +451,11 @@
   ],
   "sha256": {
     "crates/viboceros-geometry/src/brep/shrink.rs": "fdbba501cf03cf9fba82324f8be54cf6c798b377f91439a1c2ca3f7d1e4cdd03",
-    "crates/viboceros-geometry/src/lib.rs": "746280e1272364022098da8d0c568522bc750db546c4ddda96f34b9768f3c452",
     "crates/viboceros-geometry/src/morph.rs": "83af5748a6b4846816607bbbee55b32851b4dbb9851c078801931cd10e97cd3e",
     "crates/viboceros-geometry/src/morph/rigid.rs": "f991aee484cd6a5fb1c2e61d27b6b73fd4df9c7f8c394aec3fad40796cf7edfe",
     "crates/viboceros-geometry/src/morph/surface_flow.rs": "0827783711a3fd18673a319af10c4211d2b920a52e5450430108d53ab6356ab4",
     "docs/flow-grips-validation.json": "531304131e60328841a95a34bb543e1cca3c2ca2d87ff82efa4f7e14d70fc1c3",
     "docs/flow-integration-validation.json": "8e359e17c54d0bfd1aa082de3286e7ba5e32fe83f53113b63016f3ba804bb4d3",
-    "docs/flow-local-validation.json": "9611d98df2dbc54bd3a6bbe99f00278f85ca220986d3a1c96db0ce769229af6a",
     "docs/flow-roadlike-validation.json": "46e1466903ad6a24a8d721f5ba4e22ce41140dc740523e288c93fdd9a8d604d7",
     "docs/flow-spatial-validation.json": "78a054eeb13ca993db084b1a721b6e453c53247b5fad8e30cff770d3eeb15701",
     "docs/flow-structure-validation.json": "16c61acc1a0d1bb510dd91e360c9d725b8cc9b1987477babad0d26d1632751e0",
@@ -496,6 +494,8 @@
     "a9831c6acb1beab4f3e20dd53c5c3ca83d42f01e:tools/rhino_oracle/rhino_worker.py": "7770e1c1d2e9c1e2a7b458bc857f9e2a5085d4d911b8a4ffec509cca2f98ac0e",
     "a9831c6acb1beab4f3e20dd53c5c3ca83d42f01e:tools/rhino_oracle/structural_sdk.py": "f35e2ca05ae66e6e93b9a8866c5eb2d0076bc27d306743d0cb4a54c1d767c1ad",
     "04f7e1923710f12ee4228b34083f8b10048d068d:tools/rhino_oracle/client.py": "db57c26d2f45e3d412d34828fa24c643669f92b67473a9602cdaf94e90e43fa5",
-    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/flow-poles-validation.json": "555ba358a3600ecf86c9c43ee1d2637861da052f57d4496089228dccb1e40d31"
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/flow-poles-validation.json": "555ba358a3600ecf86c9c43ee1d2637861da052f57d4496089228dccb1e40d31",
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:crates/viboceros-geometry/src/lib.rs": "746280e1272364022098da8d0c568522bc750db546c4ddda96f34b9768f3c452",
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/flow-local-validation.json": "9611d98df2dbc54bd3a6bbe99f00278f85ca220986d3a1c96db0ce769229af6a"
   }
 }

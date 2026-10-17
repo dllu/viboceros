@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-cancel-center",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Cancel"
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-cancel-size",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=3",
+        "PointCount=8",
+        [
+          0,
+          0,
+          0
+        ],
+        "Cancel"
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-cancel-integer",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "PointCount",
+        "Cancel"
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-deform-cancel-degree",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree",
+        "Cancel"
+      ]
+    }
+  ]
+}

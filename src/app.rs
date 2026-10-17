@@ -140,6 +140,7 @@ mod align;
 mod angle;
 mod circle;
 mod circle_around;
+mod circle_deform;
 use circle::CircleSizeMode;
 mod apply_curves;
 mod bend_prompt;
@@ -412,6 +413,9 @@ enum InteractiveCommand {
     },
     CircleAround {
         center: Option<Point3>,
+    },
+    CircleDeform {
+        anchor: Option<Point3>,
     },
     CircleSize {
         center: Point3,
@@ -836,7 +840,7 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Distance { .. } => "Distance",
             Self::Circle { .. } => "Circle",
-            Self::CircleAround { .. } => "Circle",
+            Self::CircleAround { .. } | Self::CircleDeform { .. } => "Circle",
             Self::CircleSize { .. } => "Circle",
             Self::CircleVertical { .. } => "Circle",
             Self::CircleOrientation { .. } => "Circle",
@@ -1071,11 +1075,12 @@ impl InteractiveCommand {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
             Self::Circle { center: None } => {
-                "Circle: pick the center or enter 2Point/3Point/Vertical/FitPoints (Esc cancels)"
+                "Circle: pick the center or enter Deformable/2Point/3Point/Vertical/AroundCurve/FitPoints (Esc cancels)"
             }
             Self::Circle { center: Some(_) } => {
                 "Circle: pick a radius point or type Radius/Diameter/Circumference/Area (Esc cancels)"
             }
+            Self::CircleDeform { .. } => "Circle Deformable: specify a circle (Esc cancels)",
             Self::CircleAround { .. } => {
                 "Circle AroundCurve: select a guide, center and size (Esc cancels)"
             }
@@ -2006,7 +2011,8 @@ impl InteractiveCommand {
                 ..
             } => Some(major_point),
             Self::SplitMeshEdge { edge_point } => edge_point,
-            Self::CircleAround { center }
+            Self::CircleDeform { anchor: center }
+            | Self::CircleAround { center }
             | Self::Ellipse { center, .. }
             | Self::Polygon { center, .. }
             | Self::Ellipsoid {
@@ -2285,6 +2291,7 @@ pub struct VibocerosApp {
     catenary_session: Option<catenary::Session>,
     ellipse_session: Option<ellipse::Session>,
     circle_around_session: Option<circle_around::Session>,
+    circle_deform_session: Option<circle_deform::Session>,
     spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
@@ -2410,6 +2417,7 @@ impl VibocerosApp {
             catenary_session: None,
             ellipse_session: None,
             circle_around_session: None,
+            circle_deform_session: None,
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
@@ -2538,7 +2546,8 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
-        if self.try_continue_circle_around(&input)
+        if self.try_continue_circle_deform(&input)
+            || self.try_continue_circle_around(&input)
             || self.try_continue_ellipse(&input)
             || self.try_continue_catenary(&input)
             || self.try_continue_spiral(&input)
@@ -3235,6 +3244,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_circle_deform(input) {
+            return true;
+        }
         if self.try_start_circle_around(input) {
             return true;
         }
@@ -5648,6 +5660,7 @@ impl VibocerosApp {
         self.catenary_session = None;
         self.ellipse_session = None;
         self.circle_around_session = None;
+        self.circle_deform_session = None;
         self.spiral_session = None;
         self.hyperbola_session = None;
         self.parabola_session = None;
@@ -5718,6 +5731,9 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
+        if let Some(accepted) = self.accept_circle_deform_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_circle_around_point(point) {
             return accepted;
         }
@@ -5787,6 +5803,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::CircleDeform { .. }
             | InteractiveCommand::CircleAround { .. }
             | InteractiveCommand::Ellipse { .. }
             | InteractiveCommand::Catenary { .. }
@@ -10142,6 +10159,16 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let circle_deform_input = self
+            .circle_deform_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
+        let circle_around_output = self
+            .circle_around_session
+            .as_ref()
+            .and_then(|s| s.output)
+            .filter(|_| model_input_active);
         let circle_around_input = self
             .circle_around_session
             .as_ref()
@@ -10307,6 +10334,8 @@ impl eframe::App for VibocerosApp {
                             parabola_input,
                             ellipse_input,
                             circle_around_input,
+                            circle_around_output,
+                            circle_deform_input,
                             conic_input,
                             conic_reference,
                             rectangle_input,
@@ -10549,6 +10578,7 @@ mod tests {
     mod catenary;
     mod chamfer_edge;
     mod circle_around;
+    mod circle_deform;
     mod circle_fit_grips;
     mod circle_fit_points;
     mod command_line;
@@ -10753,6 +10783,7 @@ mod tests {
             catenary_session: None,
             ellipse_session: None,
             circle_around_session: None,
+            circle_deform_session: None,
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
