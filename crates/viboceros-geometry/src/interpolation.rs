@@ -1,3 +1,4 @@
+mod periodic_uniform;
 use faer::{Mat, prelude::*};
 
 use crate::{
@@ -199,6 +200,26 @@ impl NurbsCurve {
         )
     }
 
+    /// Uniform periodic samples retain every parameter station, including
+    /// repeated spatial locations, and use a linear cyclic interpolation solve.
+    pub(crate) fn try_interpolate_periodic_uniform_samples(
+        points: &[Point3],
+        maximum: usize,
+    ) -> Result<Self, GeometryError> {
+        if points.len() < 3 {
+            return Err(GeometryError::InsufficientCurveInterpolationPoints {
+                actual: points.len(),
+            });
+        }
+        if points.len() > maximum {
+            return Err(GeometryError::TooManyCurveInterpolationPoints { maximum });
+        }
+        interpolate_periodic_cubic_with_solver(
+            points,
+            CurveKnotSpacing::Uniform,
+            &mut solve_portable_interpolation,
+        )
+    }
     /// Interpolates one potentially large point set for `TweenCurves` sample
     /// matching. The command's documented sample ceiling is supplied by the
     /// caller; large open cubics use a linear-memory tridiagonal solve.
@@ -823,17 +844,22 @@ fn solve_portable_interpolation(
         .collect::<Result<Vec<_>, _>>()?;
     let n = input.parameters.len() - usize::from(input.closed);
     let controls = if input.closed {
-        let mut rows = Vec::with_capacity(n);
-        for parameter in &input.parameters[..n] {
-            let basis =
-                bspline_basis_values(input.knots, CUBIC_DEGREE, n + CUBIC_DEGREE, *parameter)?;
-            let mut folded = vec![0.; n];
-            for (i, value) in basis.into_iter().enumerate() {
-                folded[i % n] += value;
+        let h = input.knots[1] - input.knots[0];
+        if h > 0. && input.knots.windows(2).all(|k| k[1] - k[0] == h) {
+            periodic_uniform::solve(&points)?
+        } else {
+            let mut rows = Vec::with_capacity(n);
+            for parameter in &input.parameters[..n] {
+                let basis =
+                    bspline_basis_values(input.knots, CUBIC_DEGREE, n + CUBIC_DEGREE, *parameter)?;
+                let mut folded = vec![0.; n];
+                for (i, value) in basis.into_iter().enumerate() {
+                    folded[i % n] += value;
+                }
+                rows.push(folded);
             }
-            rows.push(folded);
+            solve_control_points(&rows, &points)?
         }
-        solve_control_points(&rows, &points)?
     } else {
         solve_open_portable_points(
             &points[..n],

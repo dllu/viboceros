@@ -8459,6 +8459,9 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.pick_spiral_rail(click.object_id, None) {
+            return;
+        }
         if self.pick_conic_curve(click.object_id, None) {
             return;
         }
@@ -9180,6 +9183,7 @@ impl VibocerosApp {
             if self.picking_subcurve_edge()
                 || self.picking_orient_curve()
                 || self.picking_flow_guide()
+                || self.picking_spiral_rail()
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
             {
@@ -9469,6 +9473,7 @@ impl eframe::App for VibocerosApp {
         self.validate_orient_surface();
         self.validate_flow_guides();
         self.validate_surface_flow();
+        self.validate_spiral_rail();
         self.validate_conic_curve();
         self.validate_rectangle_curve();
         self.validate_blend_surface();
@@ -9529,6 +9534,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_scale_by_plane_object()
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
+                && !self.picking_spiral_rail()
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
                 && !self.picking_orient_curve()
@@ -9787,6 +9793,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_subcurve_edge()
             || self.picking_orient_curve()
             || self.picking_flow_guide()
+            || self.picking_spiral_rail()
             || self.picking_conic_curve()
             || self.picking_rectangle_curve())
             && self.plane_prompt.is_none()
@@ -9967,6 +9974,7 @@ impl eframe::App for VibocerosApp {
             && (self.picking_subcurve_edge()
                 || self.picking_orient_curve()
                 || self.picking_flow_guide()
+                || self.picking_spiral_rail()
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve());
         let document = surface_rebuild::viewport_document(
@@ -10077,7 +10085,7 @@ impl eframe::App for VibocerosApp {
         let spiral_input = self
             .spiral_session
             .as_ref()
-            .map(|s| s.input)
+            .map(|s| s.input.clone())
             .filter(|_| model_input_active);
         let hyperbola_input = self
             .hyperbola_session
@@ -10233,7 +10241,7 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
-                            spiral_input,
+                            spiral_input: spiral_input.as_ref(),
                             hyperbola_input,
                             parabola_input,
                             conic_input,
@@ -10561,6 +10569,7 @@ mod tests {
     mod smooth;
     mod sphere_fit_points;
     mod spiral;
+    mod spiral_rail;
     mod split_edge;
     mod standalone_subcurve;
     mod subcurve_direction;

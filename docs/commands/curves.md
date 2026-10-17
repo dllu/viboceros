@@ -220,23 +220,27 @@ CPlane-dependent rational charts and pole-aware drawing.
 `Helix` creates a non-rational uniform cubic along an explicit axis. Numeric or
 picked radii, arbitrary axis directions, fractional `Turns=`, `Mode=Pitch`,
 and `ReverseTwist=Yes` are supported. `Spiral` extends the same workflow with
-independent numeric or picked start and end radii. `Flat` creates a planar
-spiral with an optional `Axis=` normal. `AroundCurve` follows a whole named or
-last-selected line, analytic curve, polyline, or NURBS rail. Its first radius
-must be a point to seed the radial direction; the end radius can be numeric or
-picked. It supports Turns/Pitch, reverse twist, and `PointsPerTurn=` values of
-at least five (12 by default).
-Both commands now support [interactive axial input and previews](helix-spiral.md),
-including Vertical, Flat spirals, diameter input, numeric radius locks and
-remembered Turns/Pitch settings. The axial linear-time tridiagonal constructor
-uses the freshly measured 120/60/36/24 span policy and a three-span minimum.
-The C2 analytic endpoint rule retains small control differences from Rhino;
-the interactive corpus agrees within `1e-6`, with larger-radius/turn-count
-sampling limits recorded separately.
-Swept spirals use equal-arc-length
-rail stations and shared [adaptive frame transport](../curve-frames.md); their complete cubic
-control layout agrees with Rhino within `2e-7` across straight, planar curved,
-and spatial curved rails in `swept_spiral.json`.
+independent start and end radii. `Flat` creates a planar spiral with an optional
+`Axis=` normal and requires unequal radii. Both commands support
+[interactive input and previews](helix-spiral.md), including Vertical, diameter
+input, radius locks and remembered settings.
+
+`AroundCurve` supports explicit whole-curve and surface/Brep-edge picking,
+source invalidation, and named/selected/scripted rail references. Its first
+radius seeds direction; `Spiral` then accepts a numeric or picked end radius.
+`NumPointsPerTurn` (`PointsPerTurn` in scripts) is at least five, default 12.
+Pitch uses rail length. Swept spirals use equal-arc-length stations and shared
+[adaptive frame transport](../curve-frames.md). Closed rails interpolate the
+first N stations periodically, including fractional twists and tapered radii.
+The uniform periodic cyclic solve takes linear time and memory.
+
+The axial constructor uses the measured 120/60/36/24 span policy and a three-span
+minimum. Swept counts round down, also with a minimum of three. Native command
+captures verify full control layouts and actual history at `1e-6`, except the
+explicit closed spatial rail diagnostic near `1.97e-6`. The earlier large axial
+radius/turn-count limits remain recorded separately. See the
+[axial validation](../spiral-validation.json) and
+[AroundCurve validation](../spiral-around-validation.json) for exact coverage.
 
 `Catenary` constructs the physical hanging-chain curve from a through point,
 analytic length, catenary parameter, or apex height. The third point fixes the

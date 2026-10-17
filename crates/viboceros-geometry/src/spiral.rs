@@ -6,8 +6,7 @@ use crate::{
 };
 
 const CUBIC_DEGREE: usize = 3;
-const MIN_AXIAL_SPIRAL_SPANS: usize = 3;
-const MIN_SPIRAL_SPANS: usize = 4;
+const MIN_SPIRAL_SPANS: usize = 3;
 
 /// Resource ceiling for one spiral or helix construction.
 pub const MAX_SPIRAL_CONTROL_POINTS: usize = 1_000_000;
@@ -28,7 +27,7 @@ impl NurbsCurve {
     /// below ten turns, 60 below fifty, 36 below one thousand, then 24.
     /// The measured density is independent of radius, pitch and twist direction. Fractional counts round upward;
     /// at least three spans are retained. The swept overload has its own
-    /// explicit density and retains its four-span minimum.
+    /// explicit density and also retains at least three spans.
     ///
     /// Every span-boundary sample lies on the analytic spiral. Analytic end
     /// tangents close the interpolation system, and its strictly diagonally
@@ -61,7 +60,7 @@ impl NurbsCurve {
                 maximum: MAX_SPIRAL_CONTROL_POINTS,
             });
         }
-        let span_count = (requested_spans.ceil() as usize).max(MIN_AXIAL_SPIRAL_SPANS);
+        let span_count = (requested_spans.ceil() as usize).max(MIN_SPIRAL_SPANS);
         let parameter_step = turn_count / span_count as Real;
         let angle_step = turns.signum() * TAU / span_count as Real * turn_count;
 
@@ -131,7 +130,10 @@ impl NurbsCurve {
     /// `turns * 2π`. Radius varies linearly between the two endpoints.
     /// Negative turns and radii are supported, matching RhinoCommon's swept
     /// spiral constructor. `points_per_turn` must be at least five; 12 is the
-    /// recommended default.
+    /// recommended default. The span count is the floor of the requested
+    /// density times absolute turns, with at least three spans. Closed rails
+    /// interpolate the first N stations periodically, even with fractional
+    /// twists or unequal endpoint radii; the terminal station is omitted.
     pub fn try_swept_spiral(
         rail: CurveRef<'_>,
         radius_point: Point3,
@@ -153,12 +155,12 @@ impl NurbsCurve {
         let turn_count = turns.abs();
         let requested_spans = turn_count * points_per_turn as Real;
         let maximum_spans = MAX_SPIRAL_CONTROL_POINTS - CUBIC_DEGREE;
-        if !requested_spans.is_finite() || requested_spans.ceil() > maximum_spans as Real {
+        if !requested_spans.is_finite() || requested_spans.floor() > maximum_spans as Real {
             return Err(GeometryError::TooManySpiralControlPoints {
                 maximum: MAX_SPIRAL_CONTROL_POINTS,
             });
         }
-        let span_count = (requested_spans.ceil() as usize).max(MIN_SPIRAL_SPANS);
+        let span_count = (requested_spans.floor() as usize).max(MIN_SPIRAL_SPANS);
         let rail_length = rail.length(tolerance)?;
         if rail_length <= tolerance.absolute() {
             return Err(GeometryError::Degenerate {
@@ -180,6 +182,23 @@ impl NurbsCurve {
                 rail_sample.point().translated(radial.scaled(radius)?)
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
+
+        // Rhino's swept overload uses this scale for its otherwise-uniform
+        // knot vector. It does not affect the locus, but retaining it makes
+        // edited control data and downstream parameter values interoperable.
+        let mean_radius = radii[0].abs() * 0.5 + radii[1].abs() * 0.5;
+        let domain_end = mean_radius * (rail_length + TAU * turn_count);
+        require_finite([domain_end], "swept spiral parameterization")?;
+        if domain_end <= 0.0 {
+            return Err(GeometryError::InvalidSpiralDimensions);
+        }
+        if rail.is_closed()? {
+            return NurbsCurve::try_interpolate_periodic_uniform_samples(
+                &samples[..span_count],
+                maximum_spans,
+            )?
+            .try_reparameterized(0.0..=domain_end);
+        }
 
         let start_curvature = rail.curvature_vector(rail_samples[0].parameter())?;
         let end_curvature = rail.curvature_vector(rail_samples[span_count].parameter())?;
@@ -212,15 +231,6 @@ impl NurbsCurve {
         controls.push(end_handle);
         controls.push(samples[span_count]);
 
-        // Rhino's swept overload uses this scale for its otherwise-uniform
-        // knot vector. It does not affect the locus, but retaining it makes
-        // edited control data and downstream parameter values interoperable.
-        let mean_radius = radii[0].abs() * 0.5 + radii[1].abs() * 0.5;
-        let domain_end = mean_radius * (rail_length + TAU * turn_count);
-        require_finite([domain_end], "swept spiral parameterization")?;
-        if domain_end <= 0.0 {
-            return Err(GeometryError::InvalidSpiralDimensions);
-        }
         let parameter_step = domain_end / span_count as Real;
         let mut knots = Vec::with_capacity(controls.len() + CUBIC_DEGREE + 1);
         knots.extend([0.0; CUBIC_DEGREE + 1]);
@@ -365,7 +375,7 @@ fn solve_uniform_cubic_controls(
     span_count: usize,
 ) -> Result<Vec<Point3>, GeometryError> {
     debug_assert_eq!(samples.len(), span_count + 1);
-    debug_assert!(span_count >= MIN_AXIAL_SPIRAL_SPANS);
+    debug_assert!(span_count >= MIN_SPIRAL_SPANS);
     let unknown_count = span_count - 1;
     let mut diagonal = vec![4.0; unknown_count];
     diagonal[0] = 7.0;

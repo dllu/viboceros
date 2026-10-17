@@ -1,4 +1,5 @@
-//! Edit-free axial Helix/Spiral getters shared by the GUI and oracle.
+//! Edit-free Helix/Spiral getters shared by the GUI and oracle.
+pub(crate) mod rail;
 use crate::{
     AxialPrimitiveRadius, CommandError, axial_primitive_frame, axial_primitive_radius_value,
 };
@@ -40,6 +41,7 @@ pub enum Axis {
     Free,
     Vertical,
     Flat,
+    AroundCurve,
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
@@ -50,6 +52,7 @@ pub struct Options {
     pub diameter: bool,
     pub start_radius: Real,
     pub end_radius: Real,
+    pub points_per_turn: usize,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -61,11 +64,13 @@ impl Default for Options {
             diameter: false,
             start_radius: 1.,
             end_radius: 0.,
+            points_per_turn: 12,
         }
     }
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Slot {
+    Rail,
     Start,
     End,
     StartRadius,
@@ -76,8 +81,9 @@ pub enum Slot {
 pub enum Numeric {
     Turns,
     Pitch,
+    PointsPerTurn,
 }
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Input {
     kind: Kind,
     options: Options,
@@ -91,6 +97,7 @@ pub struct Input {
     locked_radius: Option<Real>,
     locked_height: Option<Real>,
     complete: bool,
+    rail: Option<rail::Rail>,
 }
 fn invalid(context: &'static str) -> CommandError {
     GeometryError::Degenerate { context }.into()
@@ -110,23 +117,26 @@ impl Input {
             locked_radius: None,
             locked_height: None,
             complete: false,
+            rail: None,
         }
     }
-    pub fn kind(self) -> Kind {
+    pub fn kind(&self) -> Kind {
         self.kind
     }
-    pub fn options(self) -> Options {
+    pub fn options(&self) -> Options {
         self.options
     }
-    pub fn axis(self) -> Axis {
+    pub fn axis(&self) -> Axis {
         self.axis
     }
-    pub fn plane(self) -> Frame3 {
+    pub fn plane(&self) -> Frame3 {
         self.plane
     }
-    pub fn slot(self) -> Slot {
+    pub fn slot(&self) -> Slot {
         if self.complete {
             Slot::Complete
+        } else if self.axis == Axis::AroundCurve && self.rail.is_none() {
+            Slot::Rail
         } else if self.start.is_none() {
             Slot::Start
         } else if self.end.is_none() && self.axis != Axis::Flat {
@@ -137,14 +147,20 @@ impl Input {
             Slot::EndRadius
         }
     }
-    pub fn anchor(self) -> Option<Point3> {
+    pub fn anchor(&self) -> Option<Point3> {
         if self.slot() == Slot::EndRadius {
             self.end.or(self.start)
         } else {
             self.start
         }
     }
-    pub fn markers(self) -> Vec<Point3> {
+    /// Radius coordinates are relative to their station on the axis or rail.
+    pub fn relative_base(&self) -> Option<Point3> {
+        matches!(self.slot(), Slot::StartRadius | Slot::EndRadius)
+            .then(|| self.anchor())
+            .flatten()
+    }
+    pub fn markers(&self) -> Vec<Point3> {
         [self.start, self.end, self.radial]
             .into_iter()
             .flatten()
@@ -155,11 +171,15 @@ impl Input {
             self.plane = plane;
         }
     }
-    pub fn mouse_plane(self) -> Frame3 {
+    pub fn mouse_plane(&self) -> Frame3 {
         match self.slot() {
             Slot::StartRadius | Slot::EndRadius => {
                 if let (Some(start), Some(end)) = (self.start, self.end.or(self.start)) {
-                    let normal = if self.axis == Axis::Flat {
+                    let normal = if let Some(rail) = &self.rail {
+                        rail.ends[usize::from(self.slot() == Slot::EndRadius)]
+                            .tangent()
+                            .as_vector()
+                    } else if self.axis == Axis::Flat {
                         self.plane.z_axis().as_vector()
                     } else {
                         match start.vector_to(end) {
@@ -187,8 +207,22 @@ impl Input {
         let (key, value) = word
             .split_once('=')
             .map_or((word, None), |(k, v)| (k, Some(v.trim_start_matches('_'))));
-        let mut next = *self;
+        let mut next = self.clone();
         match key.to_ascii_lowercase().as_str() {
+            "aroundcurve" if value.is_none() => {
+                if self.start.is_some() {
+                    return Err(invalid(
+                        "AroundCurve is only available before the first point",
+                    ));
+                }
+                next.axis = Axis::AroundCurve;
+            }
+            "numpointsperturn" | "pointsperturn" => {
+                let value = value
+                    .and_then(|v| v.parse::<Real>().ok())
+                    .ok_or_else(|| invalid("points per turn requires an integer"))?;
+                next.numeric(Numeric::PointsPerTurn, value)?;
+            }
             "vertical" | "flat" if value.is_none() => {
                 if self.start.is_some()
                     || key.eq_ignore_ascii_case("Flat") && self.kind != Kind::Spiral
@@ -262,8 +296,20 @@ impl Input {
         if !value.is_finite() || value <= 0. {
             return Err(invalid("spiral advance must be positive and finite"));
         }
-        let mut next = *self;
+        let mut next = self.clone();
         match key {
+            Numeric::PointsPerTurn => {
+                if self.axis != Axis::AroundCurve
+                    || value < viboceros_geometry::MIN_SWEPT_SPIRAL_POINTS_PER_TURN as Real
+                    || value.fract() != 0.
+                    || value > viboceros_geometry::MAX_SPIRAL_CONTROL_POINTS as Real
+                {
+                    return Err(invalid(
+                        "points per turn requires an integer of at least five",
+                    ));
+                }
+                next.options.points_per_turn = value as usize;
+            }
             Numeric::Turns => {
                 next.options.turns = value;
                 next.options.mode = Mode::Turns;
@@ -282,7 +328,10 @@ impl Input {
             return Ok(());
         }
         if let (Some(a), Some(b)) = (self.start, self.end) {
-            let height = a.distance_to(b)?;
+            let height = self
+                .rail
+                .as_ref()
+                .map_or_else(|| a.distance_to(b), |r| Ok(r.length))?;
             match self.options.mode {
                 Mode::Turns => self.options.pitch = height / self.options.turns,
                 Mode::Pitch => self.options.turns = height / self.options.pitch,
@@ -298,10 +347,13 @@ impl Input {
         Ok(())
     }
     pub fn number(&mut self, value: Real) -> Result<bool, CommandError> {
+        self.number_impl(value, true)
+    }
+    fn number_impl(&mut self, value: Real, validate: bool) -> Result<bool, CommandError> {
         if !value.is_finite() {
             return Err(invalid("spiral input must be finite"));
         }
-        let mut next = *self;
+        let mut next = self.clone();
         match next.slot() {
             Slot::End if next.axis == Axis::Vertical => {
                 if value == 0. {
@@ -321,19 +373,25 @@ impl Input {
                 }
                 next.end_radius = Some(value * if next.options.diameter { 0.5 } else { 1. });
                 next.complete = true;
-                next.curve()?;
             }
             _ => return Err(invalid("pick a spiral point")),
         }
         if next.complete {
+            if validate {
+                next.curve()?;
+            }
             next.options.end_radius = next.end_radius.unwrap();
         }
         *self = next;
         Ok(self.complete)
     }
     pub fn point(&mut self, point: Point3) -> Result<bool, CommandError> {
-        let mut next = *self;
+        self.point_impl(point, true)
+    }
+    fn point_impl(&mut self, point: Point3, validate: bool) -> Result<bool, CommandError> {
+        let mut next = self.clone();
         match self.slot() {
+            Slot::Rail => return Err(invalid("select the spiral rail")),
             Slot::Start => next.start = Some(point),
             Slot::End => {
                 let start = next.start.unwrap();
@@ -372,23 +430,28 @@ impl Input {
                 if next.kind == Kind::Helix {
                     next.end_radius = Some(radius);
                     next.complete = true;
-                    next.curve()?;
                 }
             }
             Slot::EndRadius => {
                 let (frame, _) = next.radial_frame(next.radial.unwrap())?;
-                let radius = axial_primitive_radius_value(
-                    next.end.or(next.start).unwrap(),
-                    AxialPrimitiveRadius::Point(point),
-                    frame,
-                )?;
+                let radius = if let Some(rail) = &next.rail {
+                    crate::curve_radius_value(rail.ends[1], AxialPrimitiveRadius::Point(point))?
+                } else {
+                    axial_primitive_radius_value(
+                        next.end.or(next.start).unwrap(),
+                        AxialPrimitiveRadius::Point(point),
+                        frame,
+                    )?
+                };
                 next.end_radius = Some(radius * if next.options.diameter { 0.5 } else { 1. });
                 next.complete = true;
-                next.curve()?;
             }
             Slot::Complete => return Err(invalid("spiral input is complete")),
         }
         if next.complete {
+            if validate {
+                next.curve()?;
+            }
             next.options.end_radius = next.end_radius.unwrap();
         }
         *self = next;
@@ -399,7 +462,7 @@ impl Input {
         if self.slot() != Slot::StartRadius {
             return Err(invalid("radius getter required"));
         }
-        let mut next = *self;
+        let mut next = self.clone();
         next.locked_radius = Some(next.locked_radius.unwrap_or(next.options.start_radius));
         let complete = next.point(cursor)?;
         *self = next;
@@ -412,11 +475,13 @@ impl Input {
             Err(invalid("pick a point to set the spiral direction"))
         }
     }
-    fn radial_frame(self, point: Point3) -> Result<(Frame3, Real), CommandError> {
+    fn radial_frame(&self, point: Point3) -> Result<(Frame3, Real), CommandError> {
         let start = self
             .start
             .ok_or_else(|| invalid("axis start is required"))?;
-        let normal = if self.axis == Axis::Flat {
+        let normal = if let Some(rail) = &self.rail {
+            rail.ends[0].tangent().as_vector()
+        } else if self.axis == Axis::Flat {
             self.plane.z_axis().as_vector()
         } else {
             start.vector_to(self.end.ok_or_else(|| invalid("axis end is required"))?)?
@@ -428,7 +493,7 @@ impl Input {
             self.tolerance,
         )
     }
-    pub fn curve(self) -> Result<NurbsCurve, CommandError> {
+    pub fn curve(&self) -> Result<NurbsCurve, CommandError> {
         let (frame, radius) = self.radial_frame(
             self.radial
                 .ok_or_else(|| invalid("radius point is required"))?,
@@ -439,32 +504,52 @@ impl Input {
             self.start.unwrap().distance_to(self.end.unwrap())?
         };
         let turns = self.options.turns * if self.options.reverse_twist { -1. } else { 1. };
+        if let Some(rail) = &self.rail {
+            return Ok(NurbsCurve::try_swept_spiral(
+                rail.curve(),
+                self.radial.unwrap(),
+                turns,
+                [
+                    radius,
+                    self.end_radius
+                        .ok_or_else(|| invalid("end radius is required"))?,
+                ],
+                self.options.points_per_turn,
+                self.tolerance,
+            )?);
+        }
+        let end_radius = self
+            .end_radius
+            .ok_or_else(|| invalid("end radius is required"))?;
+        if self.axis == Axis::Flat && radius == end_radius {
+            return Err(GeometryError::InvalidSpiralDimensions.into());
+        }
         Ok(NurbsCurve::try_spiral(
             frame,
             height,
             turns,
-            [
-                radius,
-                self.end_radius
-                    .ok_or_else(|| invalid("end radius is required"))?,
-            ],
+            [radius, end_radius],
         )?)
     }
-    pub fn radius_value(self) -> Real {
+    pub fn radius_value(&self) -> Real {
         self.locked_radius.unwrap_or(self.options.start_radius)
     }
-    pub fn preview(self, cursor: Point3) -> Option<NurbsCurve> {
-        let mut next = self;
-        let complete = next.point(cursor).ok()?;
+    pub fn preview(&self, cursor: Point3) -> Option<NurbsCurve> {
+        let mut next = self.clone();
+        let complete = next.point_impl(cursor, false).ok()?;
         if !complete {
             if self.slot() != Slot::StartRadius || self.kind != Kind::Spiral {
                 return None;
             }
-            next.enter().ok()?;
+            next.number_impl(
+                next.options.end_radius * if next.options.diameter { 2. } else { 1. },
+                false,
+            )
+            .ok()?;
         }
         next.curve().ok()
     }
-    pub fn command(self) -> Result<String, CommandError> {
+    pub fn command(&self) -> Result<String, CommandError> {
         if !self.complete {
             return Err(invalid("spiral input is incomplete"));
         }
@@ -473,20 +558,34 @@ impl Input {
             format!("{x},{y},{z}")
         }
         let mut words = vec![self.kind.name().to_owned()];
-        if self.axis == Axis::Flat {
-            words.push("Flat".into());
-        }
-        words.push(p(self.start.unwrap()));
-        if self.axis != Axis::Flat {
-            words.push(p(self.end.unwrap()));
-        }
-        words.push(p(self.radial.unwrap()));
-        if self.kind == Kind::Spiral {
-            words.push(self.end_radius.unwrap().to_string());
-        }
-        if self.axis == Axis::Flat {
-            let [x, y, z] = self.plane.z_axis().as_vector().to_array();
-            words.push(format!("Axis={x},{y},{z}"));
+        if let Some(rail) = &self.rail {
+            words.push("AroundCurve".to_owned());
+            words.push(p(self.radial.unwrap()));
+            if self.kind == Kind::Spiral {
+                words.push(self.end_radius.unwrap().to_string());
+            }
+            words.push(if let Some(edge) = rail.edge {
+                format!("Edge={},{edge}", rail.id)
+            } else {
+                format!("Curve={}", rail.id)
+            });
+            words.push(format!("PointsPerTurn={}", self.options.points_per_turn));
+        } else {
+            if self.axis == Axis::Flat {
+                words.push("Flat".into());
+            }
+            words.push(p(self.start.unwrap()));
+            if self.axis != Axis::Flat {
+                words.push(p(self.end.unwrap()));
+            }
+            words.push(p(self.radial.unwrap()));
+            if self.kind == Kind::Spiral {
+                words.push(self.end_radius.unwrap().to_string());
+            }
+            if self.axis == Axis::Flat {
+                let [x, y, z] = self.plane.z_axis().as_vector().to_array();
+                words.push(format!("Axis={x},{y},{z}"));
+            }
         }
         match self.options.mode {
             Mode::Turns => words.push(format!("Mode=Turns Turns={}", self.options.turns)),
@@ -530,7 +629,7 @@ mod tests {
         i.point(p(0., 0., 6.)).unwrap();
         i.option("Turns=2").unwrap();
         i.number(2.).unwrap();
-        let before = i;
+        let before = i.clone();
         let preview = i.preview(p(0., 7., 0.)).unwrap();
         assert_eq!(before, i);
         assert_eq!(preview.control_points()[0].point(), p(0., 2., 0.));
@@ -556,13 +655,13 @@ mod tests {
         let mut i = input(Kind::Helix);
         assert!(i.option("Flat").is_err());
         i.point(p(1., 2., 3.)).unwrap();
-        let before = i;
+        let before = i.clone();
         assert!(i.option("Vertical").is_err());
         assert_eq!(i, before);
         assert!(i.point(p(1., 2., 3.)).is_err());
         assert_eq!(i, before);
         i.point(p(1., 2., 9.)).unwrap();
-        let before = i;
+        let before = i.clone();
         for v in [0., -1., Real::NAN, Real::INFINITY] {
             assert!(i.number(v).is_err());
             assert_eq!(i, before);
@@ -575,7 +674,7 @@ mod tests {
         assert_eq!(i, before);
         i.point(p(3., 2., 3.)).unwrap();
         assert!(i.complete);
-        let complete = i;
+        let complete = i.clone();
         assert!(i.point(p(0., 0., 0.)).is_err());
         assert!(i.option("ReverseTwist").is_err());
         assert_eq!(complete, i);

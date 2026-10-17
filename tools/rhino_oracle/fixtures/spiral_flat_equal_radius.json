@@ -1,0 +1,39 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "spiral_command",
+      "id": "flat-relative-second",
+      "live_getters": true,
+      "prior_point": [
+        10,
+        10,
+        0
+      ],
+      "actions": [
+        "Flat",
+        [
+          5,
+          2,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ],
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        {
+          "relative": [
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -22,6 +22,11 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
             bounds.Inflate(5.);
             if edge_input:vp.SetCameraDirection(G.Vector3d(-1.,1.,-1.),True);vp.CameraUp=G.Vector3d(0.,0.,1.)
             vp.ZoomBoundingBox(bounds);vp.SetConstructionPlane(plane if'construction_plane'in op else G.Plane.WorldXY);doc.Views.Redraw()
+        if 'prior_point'in op:
+            prior_before=set(o.Id for o in doc.Objects)
+            if not R.RhinoApp.RunScript('_Point w'+','.join(repr(float(v))for v in op['prior_point']),False):raise ValueError('failed to establish prior point')
+            for obj in list(doc.Objects):
+                if obj.Id not in prior_before:doc.Objects.Delete(obj.Id,True)
         guide_crcs=[doc.Objects.FindId(key).Geometry.DataCRC(0)for key in guides]
         guide=guides[0]if guides else None
         doc.Objects.UnselectAll()
@@ -42,17 +47,20 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
             def output(obj):
                 value = dict(point=host['_xyz'](obj.Geometry.Location)) if isinstance(obj.Geometry,G.Point) else curve_value(obj.Geometry)
                 return dict(selected=bool(obj.IsSelected(False)),**value)
-            return dict(outputs=[output(obj)for obj in doc.Objects if obj.Id not in before and obj.Id not in guides],guide_unchanged=all(doc.Objects.FindId(key).Geometry.DataCRC(0)==crc for key,crc in zip(guides,guide_crcs)))
+            value=dict(outputs=[output(obj)for obj in doc.Objects if obj.Id not in before and obj.Id not in guides],guide_unchanged=all(doc.Objects.FindId(key).Geometry.DataCRC(0)==crc for key,crc in zip(guides,guide_crcs)))
+            if op.get('guide_selection'):value['guide_selected']=[bool(doc.Objects.FindId(key).IsSelected(False))for key in guides]
+            return value
         def macro_for(actions):
             tokens=['_'+command]
             for action in actions:
                 if isinstance(action,dict):
                     if 'hover'in action:continue
+                    if 'relative'in action:tokens.append('r'+','.join(repr(float(v))for v in action['relative']));continue
                     if 'edge'in action:tokens.append('w'+','.join(repr(float(v))for v in action['pick']))
                     else:tokens.extend(["'_-SelID",str(guides[action['curve']])])
                     continue
                 tokens.append('_'+action if isinstance(action,str)else'w'+','.join(repr(float(v))for v in action)if isinstance(action,list)else repr(float(action)))
-                if action=='AroundCurve'and guide and not op.get('preselect'):tokens.extend(["'_-SelID",str(guide)])
+                if action=='AroundCurve'and guide and not op.get('preselect')and not any(isinstance(a,dict)and'curve'in a for a in actions):tokens.extend(["'_-SelID",str(guide)])
             return ' '.join(tokens)
         setup_trace=None
         if 'setup'in op:

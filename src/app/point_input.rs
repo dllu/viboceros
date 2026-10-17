@@ -96,7 +96,10 @@ impl VibocerosApp {
         let point = parsed.and_then(|input| {
             input.resolve(
                 self.viewports[self.active_viewport].construction_plane(),
-                self.last_point,
+                self.spiral_session
+                    .as_ref()
+                    .and_then(|s| s.input.relative_base())
+                    .or(self.last_point),
             )
         });
         match point {

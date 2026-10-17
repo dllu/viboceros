@@ -193,6 +193,7 @@ impl VibocerosApp {
             && !self.picking_subcurve_edge()
             && !self.picking_orient_curve()
             && !self.picking_flow_guide()
+            && !self.picking_spiral_rail()
             && !self.picking_conic_curve()
             && !self.picking_rectangle_curve()
         {
@@ -236,6 +237,7 @@ impl VibocerosApp {
         let picks = if self.picking_subcurve_edge()
             || self.picking_orient_curve()
             || self.picking_flow_guide()
+            || self.picking_spiral_rail()
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()
         {
@@ -302,6 +304,14 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        if self.picking_spiral_rail() {
+            if let [pick] = picks.as_slice()
+                && pick.kind == viboceros_command::ComponentSelectionKind::BrepEdge
+            {
+                self.pick_spiral_rail(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
         if self.picking_conic_curve() {
             if let [pick] = picks.as_slice() {
                 self.pick_conic_curve(Some(pick.object), Some(pick.index));

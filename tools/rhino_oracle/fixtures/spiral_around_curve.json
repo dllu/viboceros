@@ -1,0 +1,1148 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "helix_command",
+      "id": "around-line-default",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-planar-spiral",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                5,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          0,
+          0,
+          1
+        ],
+        2
+      ]
+    },
+    {
+      "op": "helix_command",
+      "id": "around-spatial-helix",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4,
+                0,
+                2
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4,
+                4,
+                4
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                5,
+                6
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=8",
+        "ReverseTwist=No",
+        [
+          0,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "helix_command",
+      "id": "around-line-pitch",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        "Mode=Pitch",
+        "Pitch=2",
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-line-reverse-fraction",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1.25",
+        "NumPointsPerTurn=8",
+        "ReverseTwist=Yes",
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-line-locked-radius",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        2,
+        [
+          0,
+          5,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-line-diameter",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        "Diameter",
+        6,
+        [
+          0,
+          8,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-line-radius-reset",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        "Radius",
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-spatial-low-turn",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4,
+                0,
+                2
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4,
+                4,
+                4
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                5,
+                6
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=0.25",
+        "NumPointsPerTurn=5",
+        "ReverseTwist=No",
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-planar-reverse-spiral",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                5,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1.25",
+        "NumPointsPerTurn=8",
+        "ReverseTwist=Yes",
+        [
+          0,
+          0,
+          1
+        ],
+        2
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-planar-end-pick",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                5,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1.5",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          5,
+          5,
+          3
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-planar-pitch",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                5,
+                5,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        "Mode=Pitch",
+        "Pitch=2",
+        [
+          0,
+          0,
+          1
+        ],
+        2
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-spatial-spiral",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4,
+                0,
+                2
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                4,
+                4,
+                4
+              ]
+            },
+            {
+              "weight": 1.0,
+              "point": [
+                0,
+                5,
+                6
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1.5",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          0,
+          1,
+          0
+        ],
+        2
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-closed-circle",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=3",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          5,
+          0,
+          1
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-closed-circle-reverse",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1.5",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=Yes",
+        [
+          6,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-closed-circle-spiral",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1.25",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          5,
+          0,
+          1
+        ],
+        2
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-ellipse",
+      "curves": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=2",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          5,
+          0,
+          1
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-arc-end-pick",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              3.5355339059327373,
+              3.5355339059327373,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ]
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          5,
+          0,
+          1
+        ],
+        [
+          0,
+          5,
+          2
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-polyline-corner",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              5,
+              5,
+              0
+            ]
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=2",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-polycurve-corner",
+      "curves": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                0,
+                0
+              ],
+              "end": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                5,
+                0,
+                0
+              ],
+              "end": [
+                5,
+                5,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=2",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          0,
+          0,
+          1
+        ],
+        2
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-preselected-line",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true,
+      "preselect": true,
+      "guide_selection": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-density-number",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        "NumPointsPerTurn",
+        10,
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "live_getters": true,
+      "guide_selection": true
+    },
+    {
+      "op": "helix_command",
+      "id": "around-surface-edge",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ],
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "guide_selection": true
+    }
+  ]
+}

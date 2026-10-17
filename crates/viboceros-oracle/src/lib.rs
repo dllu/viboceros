@@ -148,7 +148,7 @@ pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
 mod conic;
 mod spiral_command;
-pub use spiral_command::Fixture as SpiralCommandFixture;
+pub use spiral_command::{Action as SpiralCommandAction, Fixture as SpiralCommandFixture};
 mod hyperbola;
 pub use hyperbola::Fixture as HyperbolaCommandFixture;
 mod parabola;

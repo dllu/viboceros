@@ -38,7 +38,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Flow objects between curves](docs/commands/flow.md), with TargetSurface orientation, Local falloff, spatial Roadlike axes and grip previews
 - [Conic curves](docs/commands/conic.md), with tangent/perpendicular endpoints, surface edges and direction-locked temporary portions
 - Interactive [parabolas](docs/commands/parabola.md) and [hyperbolas](docs/commands/hyperbola.md), with construction modes, focus previews and numeric getters
-- [Interactive helices and spirals](docs/commands/helix-spiral.md), with radius locks, Turns/Pitch, diameter input and Flat/Vertical previews
+- [Interactive helices and spirals](docs/commands/helix-spiral.md), with radius locks, Turns/Pitch, Flat/Vertical previews and AroundCurve rail/edge picking
 - [Rectangle construction modes](docs/commands/rectangle.md), with circular and conic corner previews
 - [Flow objects between surfaces](docs/commands/flow-along-surface.md), with corner/edge orientation, rigid group origins, shared Rectangle input modes, normal constraints, and grip previews
 - Fit [planes](docs/commands/plane-through-points.md) and [lines](docs/commands/line-through-points.md) through points, clouds and grips

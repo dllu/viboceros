@@ -30,7 +30,7 @@ def drive(op,host,guides,command="Conic"):
     def log(message):return call(None,append,[E.Constant(progress),E.Constant(message)])
     def point(p):return 'w'+','.join(repr(float(x))for x in p)
     prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
-    if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch')
+    if command in ('Helix','Spiral'):prefixes=('Start of axis','End of axis','Radius and start point','Diameter and start point','First radius and start point','First diameter and start point','Second radius','Second diameter','Spiral center','Mode','Number of turns','New number of turns','Pitch','New pitch','Number of points per turn','Points per turn')
     base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
@@ -50,7 +50,8 @@ def drive(op,host,guides,command="Conic"):
                 body=block([E.IfThen(selection,request),E.IfThen(acknowledged(marker),block(advance))]);picks.append(dict(action=i,marker=marker,pick=aim,authored_edge=a['edge']))
             tokens.append(None)
         else:
-            if isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=selection
+            if isinstance(a,dict)and'relative'in a:token='r'+','.join(repr(float(v))for v in a['relative']);gate=base
+            elif isinstance(a,dict):token="'_-SelID "+str(guides[a['curve']]);gate=selection
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
             else:token=repr(float(a));gate=base

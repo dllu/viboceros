@@ -28,6 +28,7 @@ impl VibocerosApp {
             pending: None,
         });
         self.spiral_prompt();
+        self.begin_spiral_rail_selection();
         true
     }
     fn spiral_prompt(&mut self) {
@@ -40,11 +41,12 @@ impl VibocerosApp {
             .pending
             .map(str::to_owned)
             .unwrap_or_else(|| match s.input.slot() {
+                Slot::Rail => "select rail curve or surface edge".to_owned(),
                 Slot::Start if s.input.axis() == Axis::Flat => "center of flat spiral".to_owned(),
                 Slot::Start if s.input.kind() == Kind::Helix => {
-                    "start of axis (Vertical)".to_owned()
+                    "start of axis (Vertical, AroundCurve)".to_owned()
                 }
-                Slot::Start => "start of axis (Vertical, Flat)".to_owned(),
+                Slot::Start => "start of axis (Vertical, Flat, AroundCurve)".to_owned(),
                 Slot::End => "end of axis".to_owned(),
                 Slot::StartRadius => format!(
                     "{} and start point <{}>; number locks size, then pick direction",
@@ -64,16 +66,24 @@ impl VibocerosApp {
         });
         self.drafting_plane = Some(s.input.mouse_plane());
         self.push_log(format!(
-            "{}: {phase}; Mode={:?}, Turns={}, Pitch={}, ReverseTwist={}; {}; Esc cancels",
+            "{}: {phase}; Mode={:?}, Turns={}, Pitch={}, ReverseTwist={}; {}{}; Esc cancels",
             s.input.kind().name(),
             o.mode,
             o.turns,
             o.pitch,
             if o.reverse_twist { "Yes" } else { "No" },
-            if o.diameter { "Radius" } else { "Diameter" }
+            if o.diameter { "Radius" } else { "Diameter" },
+            if s.input.axis() == Axis::AroundCurve {
+                format!("; NumPointsPerTurn={}", o.points_per_turn)
+            } else {
+                String::new()
+            }
         ));
     }
     fn finish_spiral(&mut self) {
+        if !self.validate_spiral_rail() {
+            return;
+        }
         let Some(s) = &self.spiral_session else {
             return;
         };
@@ -91,9 +101,15 @@ impl VibocerosApp {
         }
     }
     pub(super) fn try_continue_spiral(&mut self, text: &str) -> bool {
-        let Some(s) = &mut self.spiral_session else {
+        if self.spiral_session.is_none() {
             return false;
-        };
+        }
+        self.validate_spiral_rail();
+        if self.try_spiral_rail_token(text) {
+            self.command_input.clear();
+            return true;
+        }
+        let s = self.spiral_session.as_mut().unwrap();
         let word = text.trim().trim_start_matches('_');
         if word.trim_start_matches('-').eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
@@ -112,7 +128,7 @@ impl VibocerosApp {
         if word.is_empty() || word.eq_ignore_ascii_case("Enter") {
             if s.pending.take().is_some() {
                 self.spiral_prompt();
-            } else if s.input.slot() == Slot::Start {
+            } else if matches!(s.input.slot(), Slot::Start | Slot::Rail) {
                 self.cancel_interactive_command(true);
             } else {
                 let result = if s.input.slot() == Slot::StartRadius {
@@ -139,6 +155,10 @@ impl VibocerosApp {
                 Some("Turns")
             } else if key.eq_ignore_ascii_case("Pitch") {
                 Some("Pitch")
+            } else if key.eq_ignore_ascii_case("NumPointsPerTurn")
+                || key.eq_ignore_ascii_case("PointsPerTurn")
+            {
+                Some("NumPointsPerTurn")
             } else if key.eq_ignore_ascii_case("Mode") && value.is_some() {
                 Some("Mode")
             } else {
@@ -155,7 +175,7 @@ impl VibocerosApp {
                 if key == "Mode" {
                     s.input.option(&format!("Mode={value}")).map(|_| ())
                 } else {
-                    let units = if key == "Turns" {
+                    let units = if key == "Turns" || key == "NumPointsPerTurn" {
                         &viboceros_geometry::LengthUnitSystem::Unset
                     } else {
                         self.document.units()
@@ -168,6 +188,8 @@ impl VibocerosApp {
                         Ok(v) => s.input.numeric(
                             if key == "Turns" {
                                 Numeric::Turns
+                            } else if key == "NumPointsPerTurn" {
+                                Numeric::PointsPerTurn
                             } else {
                                 Numeric::Pitch
                             },
@@ -204,6 +226,7 @@ impl VibocerosApp {
                 self.point_constraint = None;
                 self.command_input.clear();
                 self.spiral_prompt();
+                self.begin_spiral_rail_selection();
                 return true;
             }
             Err(e) => {
@@ -247,7 +270,13 @@ impl VibocerosApp {
         true
     }
     pub(super) fn accept_spiral_point(&mut self, point: Point3) -> Option<bool> {
-        let s = self.spiral_session.as_mut()?;
+        self.spiral_session.as_ref()?;
+        self.validate_spiral_rail();
+        let s = self.spiral_session.as_mut().unwrap();
+        if s.input.slot() == Slot::Rail {
+            self.spiral_prompt();
+            return Some(false);
+        }
         if s.pending.is_some() {
             self.spiral_prompt();
             return Some(false);
@@ -268,5 +297,108 @@ impl VibocerosApp {
                 false
             }
         })
+    }
+}
+
+impl VibocerosApp {
+    pub(super) fn picking_spiral_rail(&self) -> bool {
+        self.spiral_session
+            .as_ref()
+            .is_some_and(|s| s.input.slot() == Slot::Rail)
+    }
+    pub(super) fn validate_spiral_rail(&mut self) -> bool {
+        if self
+            .spiral_session
+            .as_ref()
+            .is_some_and(|s| !s.input.rail_current(&self.document))
+        {
+            let session = self.spiral_session.as_mut().unwrap();
+            session.input.clear_rail();
+            session.pending = None;
+            session.cursor = None;
+            self.document.clear_selection();
+            self.component_selection.clear_choices();
+            self.point_filter = None;
+            self.point_constraint = None;
+            self.push_log("Spiral rail changed or became unavailable; select it again".to_owned());
+            self.spiral_prompt();
+            return false;
+        }
+        true
+    }
+    fn begin_spiral_rail_selection(&mut self) {
+        if self.picking_spiral_rail() {
+            self.document.clear_selection();
+        }
+    }
+    pub(super) fn pick_spiral_rail(&mut self, id: Option<ObjectId>, edge: Option<usize>) -> bool {
+        if !self.picking_spiral_rail() {
+            return false;
+        }
+        let result = id
+            .ok_or_else(|| "Select a rail curve or surface edge".to_owned())
+            .and_then(|id| {
+                self.spiral_session
+                    .as_mut()
+                    .unwrap()
+                    .input
+                    .capture_rail(&self.document, id, edge)
+                    .map_err(|e| e.to_string())
+            });
+        match result {
+            Ok(()) => {
+                self.spiral_session.as_mut().unwrap().cursor = None;
+                if edge.is_none()
+                    && let Some(id) = id
+                {
+                    let _ = self
+                        .document
+                        .select_object(id, viboceros_document::SelectionMode::Add);
+                }
+                self.component_selection.clear_choices();
+                self.spiral_prompt();
+            }
+            Err(e) => self.push_log(format!("Error: {e}")),
+        }
+        true
+    }
+    fn try_spiral_rail_token(&mut self, text: &str) -> bool {
+        if !self.picking_spiral_rail() {
+            return false;
+        }
+        let Some((key, value)) = text.trim().trim_start_matches('_').split_once('=') else {
+            return false;
+        };
+        let source = if key.eq_ignore_ascii_case("Curve") {
+            value.parse().ok().map(|id| (id, None))
+        } else if key.eq_ignore_ascii_case("Edge") {
+            viboceros_command::curve_reference::parse_edge(value).map(|(id, e)| (id, Some(e)))
+        } else if key.eq_ignore_ascii_case("PathName") {
+            let ids = self
+                .document
+                .objects()
+                .filter(|o| {
+                    o.attributes()
+                        .name()
+                        .is_some_and(|n| n.eq_ignore_ascii_case(value))
+                })
+                .map(|o| o.id())
+                .collect::<Vec<_>>();
+            if ids.len() != 1 {
+                self.push_log(
+                    "Error: a rail name must identify exactly one selectable curve".to_owned(),
+                );
+                return true;
+            }
+            Some((ids[0], None))
+        } else {
+            return false;
+        };
+        if let Some((id, edge)) = source {
+            self.pick_spiral_rail(Some(id), edge);
+        } else {
+            self.push_log("Error: invalid spiral rail reference".to_owned());
+        }
+        true
     }
 }

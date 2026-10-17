@@ -463,9 +463,6 @@
   "sha256": {
     "crates/viboceros-command/src/rectangle_rounding.rs": "74b3b29a4e97798efa051c5f6f49c2170401455ca46e2391c5da4419d8f3a1bc",
     "crates/viboceros-oracle/src/rectangle.rs": "777777d853680a08a2ee73fa249fc6e06fca956937eefa53f9614b70873ec6a3",
-    "src/app/component_selection.rs": "3c01f6ba382c457997cd7cd31bb9296301b2a240c656349fc6a07aa949f1da42",
-    "src/app/object_selection.rs": "8df0a2b4e20778e0c2fad2d433d21e52f12320fd0bacc6bfed756f91e54dd85a",
-    "src/app/point_input.rs": "ea020b4baebd4799156f163692edffb41ebbef19198ce6b4fd29cd642e05950c",
     "tools/rhino_oracle/fixtures/conic_command.json": "e1c07dc2f13ac066053f6f1defc7cfa5dcb36d8896bbdd56378e71d36ab7e1d9",
     "tools/rhino_oracle/observations/conic_command_default_length_rhino_20261017.json": "59a5019c166cbf4644ab708e33f47c4c3c8e9b349dbf80a42b56dce4fd2ba386",
     "tools/rhino_oracle/observations/conic_command_rhino_20261017.json": "f6e6cdf1689ab7317c8c1c20511b69da191db19e46b57814e300044d0e7a8198",
@@ -492,6 +489,9 @@
     "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:docs/commands/README.md": "1c0d57c5c289683dec9af4d1ed98e7f862d53f1b1198e209f5c3e3e27bcd96a9",
     "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:src/app.rs": "01f92b28a6fe6cf689b2ad643c806cc89ffedc49bb11248370dd25b3a4bb0fa0",
     "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:src/viewport.rs": "7620564a769231cf2f3e9518a817fd4fecaba6c3a3fda8df47ba0509b014aec8",
-    "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:tools/rhino_oracle/rhino_worker.py": "1724b692968535f33b07328c4c94e9dfd9836593b57c0c3d2715ab751cb4911a"
+    "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:tools/rhino_oracle/rhino_worker.py": "1724b692968535f33b07328c4c94e9dfd9836593b57c0c3d2715ab751cb4911a",
+    "a4402e1b94914750c780147a340edcd895806a1d:src/app/component_selection.rs": "3c01f6ba382c457997cd7cd31bb9296301b2a240c656349fc6a07aa949f1da42",
+    "a4402e1b94914750c780147a340edcd895806a1d:src/app/object_selection.rs": "8df0a2b4e20778e0c2fad2d433d21e52f12320fd0bacc6bfed756f91e54dd85a",
+    "a4402e1b94914750c780147a340edcd895806a1d:src/app/point_input.rs": "ea020b4baebd4799156f163692edffb41ebbef19198ce6b4fd29cd642e05950c"
   }
 }

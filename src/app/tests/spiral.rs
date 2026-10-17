@@ -81,7 +81,7 @@ fn spiral_frontend_enter_uses_hover_direction_without_preview_edits() {
     enter(&mut a, "2");
     let s = a.spiral_session.as_mut().unwrap();
     s.cursor = Some(point(0., 7., 0.));
-    let before = s.input;
+    let before = s.input.clone();
     assert!(s.input.preview(point(0., 7., 0.)).is_some());
     assert_eq!(s.input, before);
     assert_eq!(a.document.objects().len(), 0);

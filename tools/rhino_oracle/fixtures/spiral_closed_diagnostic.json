@@ -1,0 +1,137 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "nurbs_curve_divide",
+      "id": "closed-spatial-stations",
+      "degree": 4,
+      "control_points": [
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            8,
+            0,
+            2
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            8,
+            8,
+            8
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            0,
+            8,
+            4
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        }
+      ],
+      "knots": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "segment_count": 15,
+      "include_ends": true
+    },
+    {
+      "op": "swept_spiral",
+      "id": "closed-spatial-sdk",
+      "rail_degree": 4,
+      "rail_control_points": [
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            8,
+            0,
+            2
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            8,
+            8,
+            8
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            0,
+            8,
+            4
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        }
+      ],
+      "rail_knots": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "radius_point": [
+        0,
+        1,
+        0
+      ],
+      "turns": 1.25,
+      "radii": [
+        1,
+        2
+      ],
+      "points_per_turn": 12
+    }
+  ]
+}

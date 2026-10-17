@@ -470,6 +470,9 @@ class OracleClient:
                 raise OracleProtocolError('live spiral getters require a private scheme and a dedicated one-iteration request')
             if not 1<=len(operations)<=128 or len({op.get('id')for op in operations})!=len(operations):
                 raise OracleProtocolError('live spiral getters require one through 128 unique cases')
+            if any(isinstance(a,dict)and'edge'in a for op in operations for a in op.get('actions',[])):
+                from .conic_getter_picker import ConicGetterPicker
+                interaction=ConicGetterPicker(request)
         if any(op.get('op')=='hyperbola_command' and op.get('live_getters') for op in request.get('operations',[])):
             operations=request['operations']
             if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')!='hyperbola_command'for op in operations):

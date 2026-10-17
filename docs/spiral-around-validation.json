@@ -1,0 +1,440 @@
+{
+  "feature": "Helix and Spiral AroundCurve with whole-rail and surface/Brep edge picking",
+  "date": "2026-10-17",
+  "source_base_commit": "a4402e1b94914750c780147a340edcd895806a1d",
+  "native_engine": "rhino",
+  "native_engine_version": "8.32.26160.13001",
+  "summary": {
+    "unique_successful_native_workflows": 32,
+    "successful_profile_rows": 35,
+    "qualified_workflows_within_1e_6": 31,
+    "control_distance_diagnostic": {
+      "id": "around-closed-spatial",
+      "measured_maximum": 1.9701377076804505e-06,
+      "bound": 3e-06,
+      "qualified_at_1e_6": false
+    },
+    "native_failure_workflows": 1,
+    "additional_public_sdk_diagnostics": 2,
+    "physical_edge_cases": [
+      "around-surface-edge",
+      "around-box-edge"
+    ]
+  },
+  "command_absolute_epsilon": 1e-06,
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_around_curve.json",
+      "observation": "tools/rhino_oracle/observations/spiral_around_curve_rhino_20261017.json",
+      "rows": 23,
+      "comparison": "Full geometry/history at 1e-6 except around-closed-spatial, retained as a 3e-6 diagnostic. Source selection compares the native EndCommand snapshot, Undo and Redo."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_around_inputs.json",
+      "observation": "tools/rhino_oracle/observations/spiral_around_inputs_rhino_20261017.json",
+      "rows": 3,
+      "comparison": "Full geometry/history at 1e-6 except around-closed-spatial, retained as a 3e-6 diagnostic. Source selection compares the native EndCommand snapshot, Undo and Redo."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_around_topology.json",
+      "observation": "tools/rhino_oracle/observations/spiral_around_topology_rhino_20261017.json",
+      "rows": 3,
+      "comparison": "Full geometry/history at 1e-6 except around-closed-spatial, retained as a 3e-6 diagnostic. Source selection compares the native EndCommand snapshot, Undo and Redo."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_relative_points.json",
+      "observation": "tools/rhino_oracle/observations/spiral_relative_points_rhino_20261017.json",
+      "rows": 6,
+      "comparison": "Full geometry/history at 1e-6 except around-closed-spatial, retained as a 3e-6 diagnostic. Source selection compares the native EndCommand snapshot, Undo and Redo."
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_flat_equal_radius.json",
+      "observation": "tools/rhino_oracle/observations/spiral_flat_equal_radius_rhino_20261017.json",
+      "rows": 1,
+      "comparison": "Native failure with no geometry for equal Flat radii"
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/spiral_closed_diagnostic.json",
+      "observation": "tools/rhino_oracle/observations/spiral_closed_diagnostic_rhino_20261017.json",
+      "rows": 2,
+      "comparison": "Public SDK closed swept controls equal the interactive command exactly; precise public station samples retained as diagnostics"
+    }
+  ],
+  "qualifications": [
+    "Whole analytic/NURBS/polyline/polycurve rails, explicit surface and box Brep edge routes, both command kinds and source currentness guards",
+    "Turns/Pitch from full rail length, reverse twist, fractional turns, default and numeric density, radius locks and diameter conversion",
+    "Swept span counts floor(abs(turns)*points_per_turn) with a minimum of three; closed rails interpolate the first N stations periodically, including fractional twists and tapered radii",
+    "Linear cyclic interpolation checked against the independent pivoted dense solver across sizes and scales, plus a 10000-station periodic solve",
+    "CPlane-relative radius coordinates use the appropriate station or Flat center; whole and edge sources retain original geometry storage through actual Undo/Redo",
+    "Source selection at the native EndCommand boundary and through Undo/Redo; selected input requires a new explicit pick in AroundCurve",
+    "Flat equal-radius input fails without output, with an atomic local retry"
+  ],
+  "metric_policy": "Thirty-one distinct successful workflows compare full geometry/history within absolute 1e-6. The closed spatial workflow is a named diagnostic: topology, counts, degree, knots and source/history behavior match, but maximum Euclidean control distance is about 1.97e-6. It is bounded at 3e-6 and is not a 1e-6 qualification. The SDK and interactive native curves for that input are identical. The earlier four large axial endpoint-control limits remain in spiral-validation.json.",
+  "source_selection_policy": "The native EndCommand snapshot retains whole input selection. The private Pause/SelID macro unwinds with the whole source unselected in after_script; its geometry is identical. Local command snapshots compare EndCommand, Undo and Redo. Macro-unwind selection is not claimed as UI parity.",
+  "native_capture_provenance": [
+    {
+      "scheme": "VibocerosOracleSpiralAroundCurve20261017",
+      "purpose": "Twenty-three attempted rail workflows; 21 clean initial results. The two timed-out input rows were replaced and the surface-edge row was recaptured with selection receipts."
+    },
+    {
+      "scheme": "VibocerosOracleSpiralRailInputs20261017",
+      "purpose": "Three complete managed getter recaptures for explicit preselection picking, separate numeric density and physically acknowledged surface-edge selection; merged into the main profile and retained separately."
+    },
+    {
+      "scheme": "VibocerosOracleSpiralRailTopology20261017",
+      "purpose": "Physically acknowledged box edge, closed polyline and closed spatial rail."
+    },
+    {
+      "scheme": "VibocerosOracleSpiralRailRelative20261017",
+      "purpose": "Three rail-relative radius inputs, including a rotated CPlane and an independently established prior point."
+    },
+    {
+      "scheme": "VibocerosOracleSpiralRadiusRelative20261017",
+      "purpose": "Axial second-radius relative input and native equal-radius Flat failure."
+    },
+    {
+      "scheme": "VibocerosOracleSpiralFlatRelative20261017",
+      "purpose": "Two successful nonconstant Flat radius relative-coordinate inputs."
+    },
+    {
+      "scheme": "VibocerosOracleSpiralClosedDiagnostic20261017",
+      "purpose": "Independent public SDK swept constructor and precise closed-rail station output; SDK curve equals interactive native control data exactly."
+    }
+  ],
+  "unqualified": [
+    "Full 1e-6 control agreement for around-closed-spatial",
+    "Exhaustive mouse/snap/ambiguity behavior and rail families or parameter ranges outside the fixtures",
+    "Native preference retention on cancellation and deterministic Enter directions without pointer receipts",
+    "Native macro-unwind whole-source selection behavior",
+    "Performance parity with Rhino; the cyclic solver has linear complexity and a 10000-point correctness check, not a native timing benchmark",
+    "The four earlier large axial endpoint-control limits in spiral-validation.json"
+  ],
+  "tests": [
+    {
+      "name": "spiral",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros",
+        "spiral"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 71.59,
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 0.51s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1470 filtered out; finished in 0.03s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 2362 filtered out; finished in 0.02s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 546 filtered out; finished in 4.03s"
+      ],
+      "log_sha256": "d582c677b61eca68f7d88fbeaee187454f39692595fae777fc0a5db6c843d5fe"
+    },
+    {
+      "name": "interpolation",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "interpolation"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 43.63,
+      "test_results": [
+        "test result: ok. 48 passed; 0 failed; 0 ignored; 0 measured; 2322 filtered out; finished in 15.56s"
+      ],
+      "log_sha256": "f7682c84ba1934262d38f7b39488d463f3b076e7d8904859b876fa2065925a18"
+    },
+    {
+      "name": "interp-command",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "interp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 80.25,
+      "test_results": [
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 1472 filtered out; finished in 0.03s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 551 filtered out; finished in 32.60s"
+      ],
+      "log_sha256": "d15cffd47e67956ae4fe5b89721dbcf7d4cd846bfcb17175d2a88f8cd80757f5"
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.33,
+      "test_results": [
+        "test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 1285 filtered out; finished in 0.24s"
+      ],
+      "log_sha256": "2db0f45fd3d978c484287ac03f3800879e30b466410c997a9a71b46098d0889a"
+    },
+    {
+      "name": "component-selection",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "component_"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5,
+      "test_results": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1333 filtered out; finished in 0.20s"
+      ],
+      "log_sha256": "1b0fc3fa66faa4943c9bd21a75c8e04de6b7a43fc89dffceb389b0b84203f935"
+    },
+    {
+      "name": "conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "conic"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.84,
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1337 filtered out; finished in 0.13s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1466 filtered out; finished in 0.09s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 546 filtered out; finished in 9.13s"
+      ],
+      "log_sha256": "c6c8edaa91718e1956170a976c0dc53bc270b6ff82483fd83517160d879e7326"
+    },
+    {
+      "name": "rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.54,
+      "test_results": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1327 filtered out; finished in 0.16s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1470 filtered out; finished in 2.54s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 549 filtered out; finished in 5.46s"
+      ],
+      "log_sha256": "1dc82e5e8b12f428a4d9737002ad27428494adc0ce558bc46438040eacf0d8bf"
+    },
+    {
+      "name": "parabola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "parabola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.52,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1343 filtered out; finished in 0.05s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1475 filtered out; finished in 0.02s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 549 filtered out; finished in 0.08s"
+      ],
+      "log_sha256": "08c76fb3496aea8833746ba4f77d259987845077e47ca597b956d01922e32a54"
+    },
+    {
+      "name": "hyperbola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "hyperbola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.71,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1342 filtered out; finished in 0.04s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1475 filtered out; finished in 0.03s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 548 filtered out; finished in 0.27s"
+      ],
+      "log_sha256": "81124b9755a22103d281dc6d19c9bddcd7e7410e20d2f18fb9b72e6ea626ddaf"
+    },
+    {
+      "name": "native-spiral",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "spiral"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 101.7,
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1546 filtered out; finished in 0.03s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 567 filtered out; finished in 4.05s"
+      ],
+      "log_sha256": "c53a08dac86cc9ea0bed7038f73d2858453fa251b5e56dee321e8ebbac8248c2"
+    },
+    {
+      "name": "native-interp",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "interp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 32.78,
+      "test_results": [
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 1548 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 572 filtered out; finished in 32.36s"
+      ],
+      "log_sha256": "c9efb625fbe9472c925dfacf539ff31ca6a70b7b9142202b99f0d941a23e9698"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 39.01,
+      "test_results": [],
+      "log_sha256": "0bfd02275695f1b0b56efb6568dd2e8d70e84aadffec4b6c22b92edc12bbf325"
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.66,
+      "test_results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.44,
+      "test_results": [
+        "Ran 24 tests in 0.326s"
+      ],
+      "log_sha256": "0da6e45fa4f976aa5922ee24ed682f2e01510198afe42cc4f73e82180485a93a"
+    }
+  ],
+  "historical_provenance": {
+    "records": [
+      "docs/conic-validation.json",
+      "docs/hyperbola-validation.json",
+      "docs/parabola-validation.json",
+      "docs/spiral-validation.json"
+    ],
+    "archived_source_entries": 24,
+    "preexisting_unverifiable_records_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "253eef9a7225ab17ac8506027b72e9160557978cf0faa0c0d7a2696112fe9850",
+    "crates/viboceros-command/src/lib.rs": "9588b7eeec60fc5aa0351768e766ddb7bc3796f2e23ea4bf077454ca8e20d6ef",
+    "crates/viboceros-command/src/spiral_input.rs": "eb38a303403cbfa9d23e24ffbedc40bd2956be998790ab17d8a340e66308710d",
+    "crates/viboceros-command/src/spiral_input/rail.rs": "e93e58a6d99bd0eb4f0b45ec3eba9190bfdfedee1e9d3762596226e3af3fabad",
+    "crates/viboceros-geometry/src/interpolation.rs": "4283e1b1f10c75073337dae2f6ad7a60fc04ba5d2a34bd5efb9d7cf8fd7c70f6",
+    "crates/viboceros-geometry/src/interpolation/periodic_uniform.rs": "e05a2f925f8359f6eb41d1d657588802d56e3e76457e7b38aeca5591c4a7cb04",
+    "crates/viboceros-geometry/src/spiral.rs": "885d4d985accadfb49df417331d3a80a8a0dd217c8b4e9437e80dbaf62e0b2d5",
+    "crates/viboceros-oracle/src/lib.rs": "b88be05ca9a93a319cadcc4b41ffab5d4c6fe0cbeb2bbef5ad09c0a79e054a8a",
+    "crates/viboceros-oracle/src/spiral_command.rs": "0640afa9dc8f8cc9a74d3ea189099303fd35e4a5651afbb7e308e329e329659a",
+    "docs/commands/curves.md": "bdd30e77f0e104b07b96c70e76fa8ce5a3d879bc16fd901c14ede01f2684a322",
+    "docs/commands/helix-spiral.md": "32007c2bd6fb525294ede74f8daa794fee378db0a6223269463bae86be26ae5d",
+    "docs/conic-validation.json": "9dcdccc2406e01144f4eb3c95b89ed53f7c3106d0cff5c48893afa1e841d3112",
+    "docs/hyperbola-validation.json": "6f73c64b3129bceafe6bc8c98ccba23eeeffe68af0d47baf4ef125b09f1f3677",
+    "docs/parabola-validation.json": "d059174f1938963df9c38f1293730573e3840e76da4d6804faafd31b26ffa7d3",
+    "docs/spiral-validation.json": "4325e84ce79fcbe991afab91544d24ccf6d47a76d78f1dc3ddcdd4578a842ca3",
+    "src/app.rs": "584d7248745229eaada419e2641e190da1e53d63d2f9dfbfd4be8b28b05b06d1",
+    "src/app/component_selection.rs": "279a8fc0815881916b199568280b84910d3847263109df96cde2019825605ec1",
+    "src/app/object_selection.rs": "65ee720e2f970cb480f87770ced8a02f5e795f3f75c4af8761088b90e23998f9",
+    "src/app/point_input.rs": "e4012c2ffc36903a870f33482846708c977bb6605d1f73f78c8796404752cc59",
+    "src/app/spiral.rs": "f808748ebd73b3f6297943970726f77c43bb282e21cd76aab2e462077ac0fe19",
+    "src/app/tests/spiral.rs": "c1e80f79a9cc111fc7ac0622d7e4f446b735543c13195918093a7576d6bdf7ce",
+    "src/app/tests/spiral_rail.rs": "547092ec52c4419585e1532a7fdeed41ac1dca9ac8e96b859e37d511c825cc1f",
+    "src/viewport.rs": "c37f6ee2cc1e5906f9e1d53676a14390c1c3511e77ae13c6a31aa33bae21b087",
+    "tools/rhino_oracle/client.py": "d07fc707648307ed5b9b8d88de1d9f75207c453573a47d0eb68ff45674c59cac",
+    "tools/rhino_oracle/conic_getter_input.py": "9e9ce54fa5fd1cce56dc274ddaa25d6db9533def4225f5f1dc55fdd5eeb498a7",
+    "tools/rhino_oracle/curve_primitive_probe.py": "d06e478dd4d29a96fa84db83f2cfc10c3b3586bba33eea13aa0746b969f6a531",
+    "tools/rhino_oracle/fixtures/spiral_around_curve.json": "6416cca2ea4f1f23c3b24e048a1c588822f5caaced16053e1cd9e1cfc60eecbc",
+    "tools/rhino_oracle/fixtures/spiral_around_inputs.json": "3ebb190a1caeaf2dec3fc57622571182833dd89da2f5993447cdaa27f720fcc2",
+    "tools/rhino_oracle/fixtures/spiral_around_topology.json": "5dcbe4e8e5d6d33caf64628e1801892dcc28f4a282404888e0be19f0758a7521",
+    "tools/rhino_oracle/fixtures/spiral_closed_diagnostic.json": "178bc070e4f9298fc55cb50cd15315b6fd3c9b0849d82637cb0a1ffab703e4a4",
+    "tools/rhino_oracle/fixtures/spiral_flat_equal_radius.json": "dfab761b9f58ffd28f056ff6b6b5b3f73d582f1466a0829c757e748eb32178b5",
+    "tools/rhino_oracle/fixtures/spiral_relative_points.json": "77ba506b374df3bb755a587762e1d15b1548738a84fb8fa42b1c5b2f565f4383",
+    "tools/rhino_oracle/observations/spiral_around_curve_rhino_20261017.json": "89cb6148d640f38f7eb7f1ede7883d21e745b73af569a0c15f036a9457ef8a8c",
+    "tools/rhino_oracle/observations/spiral_around_inputs_rhino_20261017.json": "b1d893a079fd679f514e3cd224d5343ae9b7210a7dbb43e1d8cf21ed2097920e",
+    "tools/rhino_oracle/observations/spiral_around_topology_rhino_20261017.json": "f26ccbff9b39a887b2f72d8a282c6a696ef75b628c054d0d75edc091906b34e6",
+    "tools/rhino_oracle/observations/spiral_closed_diagnostic_rhino_20261017.json": "f2232a14e9af1b5558d3ead30c3891132d93549914146bbc77609538bb3add39",
+    "tools/rhino_oracle/observations/spiral_flat_equal_radius_rhino_20261017.json": "790dcb1400ce61f48153d9650c2b276acb9c3a3393cde49143df8bbf181d5b86",
+    "tools/rhino_oracle/observations/spiral_relative_points_rhino_20261017.json": "93b1f05e3dfbb67069866c82665fc13c0bfbb21cc570b24952fce415281bdf4f",
+    "tools/rhino_oracle/spiral_command_probe.py": "18b5afb7a04ede25c1132c723ae2b4474e9d7db76dcd908bc134fdcba79ec9cf",
+    "tools/rhino_oracle/structural_sdk.py": "715153fed31b14d3e9e258e7d5cdcc09b4c8eb2369c3be07fa8c4f8c093df7d4",
+    "tools/rhino_oracle/test_spiral_command.py": "b9e8e9d2a0f13c637d59d822cd7d7f92b3d61238969452673dc97464d3c6cf8a"
+  }
+}

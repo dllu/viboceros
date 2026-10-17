@@ -1,0 +1,253 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "helix_command",
+      "id": "around-relative-first",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            0
+          ],
+          "end": [
+            5,
+            2,
+            10
+          ]
+        }
+      ],
+      "live_getters": true,
+      "prior_point": [
+        10,
+        10,
+        0
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        {
+          "relative": [
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "spiral_command",
+      "id": "around-relative-second",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            0
+          ],
+          "end": [
+            5,
+            2,
+            10
+          ]
+        }
+      ],
+      "live_getters": true,
+      "prior_point": [
+        10,
+        10,
+        0
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        [
+          6,
+          2,
+          0
+        ],
+        {
+          "relative": [
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "helix_command",
+      "id": "around-relative-plane",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            5,
+            2,
+            0
+          ],
+          "end": [
+            5,
+            2,
+            10
+          ]
+        }
+      ],
+      "live_getters": true,
+      "prior_point": [
+        10,
+        10,
+        0
+      ],
+      "construction_plane": [
+        [
+          7,
+          8,
+          9
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ]
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "NumPointsPerTurn=12",
+        "ReverseTwist=No",
+        {
+          "relative": [
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "spiral_command",
+      "id": "axial-relative-second",
+      "live_getters": true,
+      "prior_point": [
+        10,
+        10,
+        0
+      ],
+      "actions": [
+        [
+          5,
+          2,
+          0
+        ],
+        [
+          5,
+          2,
+          10
+        ],
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        [
+          6,
+          2,
+          0
+        ],
+        {
+          "relative": [
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "spiral_command",
+      "id": "flat-relative-second-nonconstant",
+      "live_getters": true,
+      "prior_point": [
+        10,
+        10,
+        0
+      ],
+      "actions": [
+        "Flat",
+        [
+          5,
+          2,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ],
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        {
+          "relative": [
+            2,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "spiral_command",
+      "id": "flat-relative-first",
+      "live_getters": true,
+      "prior_point": [
+        10,
+        10,
+        0
+      ],
+      "actions": [
+        "Flat",
+        [
+          5,
+          2,
+          0
+        ],
+        {
+          "relative": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Mode=Turns",
+        "Turns=1",
+        "ReverseTwist=No",
+        2
+      ]
+    }
+  ]
+}

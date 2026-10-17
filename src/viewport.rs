@@ -342,7 +342,7 @@ pub struct ViewportInput<'a> {
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
     pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
-    pub spiral_input: Option<viboceros_command::spiral_input::Input>,
+    pub spiral_input: Option<&'a viboceros_command::spiral_input::Input>,
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,

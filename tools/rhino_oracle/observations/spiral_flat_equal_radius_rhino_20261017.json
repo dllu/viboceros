@@ -1,0 +1,109 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "flat-relative-second",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Spiral",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Failure",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Spiral\nStart of axis ( Flat  Vertical  AroundCurve ): _Pause\nStart of axis ( Flat  Vertical  AroundCurve ): _Flat\nSpiral center: w5.0,2.0,0.0\nFirst radius and start point <1.000> ( Diameter ): w6.0,2.0,0.0\nSecond radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No ): _Mode=Turns\nSecond radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No ): _Turns=1\nSecond radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No ): _ReverseTwist=No\nSecond radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No ): r1.0,0.0,0.0",
+        "input_trace": {
+          "completed": 7,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 7,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Start of axis ( Flat  Vertical  AroundCurve )",
+            "Spiral center",
+            "First radius and start point <1.000> ( Diameter )",
+            "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )",
+            "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )",
+            "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )",
+            "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Start of axis ( Flat  Vertical  AroundCurve )",
+              "token": "_Flat"
+            },
+            {
+              "action": 1,
+              "prompt": "Spiral center",
+              "token": "w5.0,2.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "First radius and start point <1.000> ( Diameter )",
+              "token": "w6.0,2.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )",
+              "token": "_Mode=Turns"
+            },
+            {
+              "action": 4,
+              "prompt": "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )",
+              "token": "_Turns=1"
+            },
+            {
+              "action": 5,
+              "prompt": "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )",
+              "token": "_ReverseTwist=No"
+            },
+            {
+              "action": 6,
+              "prompt": "Second radius <1.000> ( Diameter  Mode=Turns  Turns=1  ReverseTwist=No )",
+              "token": "r1.0,0.0,0.0"
+            }
+          ]
+        },
+        "macro": "_Spiral _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

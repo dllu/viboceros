@@ -417,22 +417,21 @@ use viboceros_geometry::{
     CurveCurveIntersectionEvent, CurveExtensionBoundary as GeometryCurveExtensionBoundary,
     CurveExtensionSide, CurveExtensionStyle as GeometryCurveExtensionStyle, CurveJoinOptions,
     CurveKnotSpacing, CurveOffsetCornerStyle, CurveRef, CurveSample, CurveSurfaceIntersectionEvent,
-    CurveThroughConstruction, CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT,
-    DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3, GeometryError, LineSegment,
-    MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE,
-    MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT,
-    MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
+    CurveThroughConstruction, CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT, Ellipse3,
+    Frame3, GeometryError, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
+    MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
+    MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
     MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
     MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
     MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
-    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real,
-    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
-    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves,
-    sort_and_cull_points, try_catenary,
+    MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
+    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsCurve2,
+    NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real, RectangularSurfaceCorner,
+    RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent, SurfaceExtensionEdge,
+    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves, sort_and_cull_points,
+    try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -5037,8 +5036,8 @@ const PARABOLA_USAGE: &str = "Parabola [Focus] focus direction-point end-point |
 const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point third-point [direction-point] [Mode=Focus|ThroughPoint|Vertex] [PickOrder=Default|EndsFirst|EndsLast] [MarkFocus=Yes|No]";
 const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
-const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
-const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No] | Spiral AroundCurve start-radius-point end-radius-or-point [PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
+const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Helix AroundCurve radius-point [Curve=id|Edge=id,index|PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
+const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No] | Spiral AroundCurve start-radius-point end-radius-or-point [Curve=id|Edge=id,index|PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const CATENARY_USAGE: &str = "Catenary start end axis-direction-point constraint [Mode=ThroughPoint|Length|Parameter|Apex] [Output=Smooth|Polyline] [PointCount=integer] [MarkApex=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
@@ -5144,18 +5143,8 @@ struct HelixCommandOptions {
 
 #[derive(Clone, Debug, PartialEq)]
 enum SpiralAxis {
-    Segment {
-        start: Point3,
-        end: Point3,
-    },
-    Flat {
-        center: Point3,
-        normal: Vector3,
-    },
-    AroundCurve {
-        path_name: Option<String>,
-        points_per_turn: usize,
-    },
+    Segment { start: Point3, end: Point3 },
+    Flat { center: Point3, normal: Vector3 },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -5779,58 +5768,6 @@ fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, Comman
 }
 
 fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, CommandError> {
-    if arguments.first().is_some_and(|argument| {
-        argument
-            .trim_start_matches('_')
-            .eq_ignore_ascii_case("AroundCurve")
-    }) {
-        let remaining = &arguments[1..];
-        let positional_count = remaining
-            .iter()
-            .take_while(|argument| !argument.contains('='))
-            .count();
-        let radii = parse_spiral_radii(&remaining[..positional_count], SPIRAL_USAGE)?;
-        if !matches!(radii[0], AxialPrimitiveRadius::Point(_)) {
-            return Err(CommandError::Usage(SPIRAL_USAGE));
-        }
-        let mut path_name = None;
-        let mut points_per_turn = DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN;
-        let mut points_per_turn_seen = false;
-        let mut advance_arguments = Vec::new();
-        for argument in &remaining[positional_count..] {
-            if let Some((name, value)) = argument.split_once('=')
-                && option_name_eq(name, "PathName")
-                && path_name.is_none()
-                && !value.is_empty()
-            {
-                path_name = Some(value.to_owned());
-            } else if let Some((name, value)) = argument.split_once('=')
-                && option_name_eq(name, "PointsPerTurn")
-                && !points_per_turn_seen
-            {
-                points_per_turn = value
-                    .parse::<usize>()
-                    .ok()
-                    .filter(|count| *count >= MIN_SWEPT_SPIRAL_POINTS_PER_TURN)
-                    .ok_or(CommandError::Usage(SPIRAL_USAGE))?;
-                points_per_turn_seen = true;
-            } else {
-                advance_arguments.push(*argument);
-            }
-        }
-        let (advance, reverse_twist) =
-            parse_spiral_advance_options(&advance_arguments, SPIRAL_USAGE)?;
-        return Ok(SpiralCommandOptions {
-            axis: SpiralAxis::AroundCurve {
-                path_name,
-                points_per_turn,
-            },
-            radii,
-            advance,
-            reverse_twist,
-        });
-    }
-
     if arguments.first().is_some_and(|argument| {
         argument
             .trim_start_matches('_')
@@ -7187,6 +7124,12 @@ impl Command for HelixCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.first().is_some_and(|w| {
+            w.trim_start_matches('_')
+                .eq_ignore_ascii_case("AroundCurve")
+        }) {
+            return spiral_input::rail::run(document, spiral_input::Kind::Helix, arguments);
+        }
         let options = parse_helix_options(arguments)?;
         let tolerance = document.tolerance();
         let axis = options.axis_start.vector_to(options.axis_end)?;
@@ -7234,56 +7177,14 @@ impl Command for SpiralCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.first().is_some_and(|w| {
+            w.trim_start_matches('_')
+                .eq_ignore_ascii_case("AroundCurve")
+        }) {
+            return spiral_input::rail::run(document, spiral_input::Kind::Spiral, arguments);
+        }
         let options = parse_spiral_options(arguments)?;
         let tolerance = document.tolerance();
-        if let SpiralAxis::AroundCurve {
-            path_name,
-            points_per_turn,
-        } = &options.axis
-        {
-            let (path_geometry, path_id) = spiral_curve_path(document, path_name.as_deref())?;
-            let rail = geometry_curve_ref(&path_geometry)
-                .expect("spiral path resolution validates the rail geometry");
-            let endpoint_samples = rail.divide_by_count_samples(1, true, tolerance)?;
-            let radius_point = match options.radii[0] {
-                AxialPrimitiveRadius::Point(point) => point,
-                AxialPrimitiveRadius::Numeric(_) => {
-                    return Err(CommandError::Usage(SPIRAL_USAGE));
-                }
-            };
-            let start_radius = curve_radius_value(endpoint_samples[0], options.radii[0])?;
-            let end_radius = curve_radius_value(endpoint_samples[1], options.radii[1])?;
-            if start_radius <= 0.0 || end_radius < 0.0 {
-                return Err(GeometryError::InvalidSpiralDimensions.into());
-            }
-            let rail_length = rail.length(tolerance)?;
-            let turn_count = match options.advance {
-                SpiralAdvance::Turns(turn_count) => turn_count,
-                SpiralAdvance::Pitch(pitch) => rail_length / pitch,
-            };
-            let signed_turn_count = if options.reverse_twist {
-                -turn_count
-            } else {
-                turn_count
-            };
-            let curve = NurbsCurve::try_swept_spiral(
-                rail,
-                radius_point,
-                signed_turn_count,
-                [start_radius, end_radius],
-                *points_per_turn,
-                tolerance,
-            )?;
-            let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
-            return Ok(format!(
-                "Added NURBS spiral {id} around curve {path_id} (radii {start_radius:.6} to {end_radius:.6}, turns {turn_count:.6}, {points_per_turn} points per turn{})",
-                if options.reverse_twist {
-                    ", reverse twist"
-                } else {
-                    ""
-                }
-            ));
-        }
         let (axis_start, axis_end, axis, height) = match options.axis {
             SpiralAxis::Segment { start, end } => {
                 let axis = start.vector_to(end)?;
@@ -7291,14 +7192,11 @@ impl Command for SpiralCommand {
                 (start, end, axis, height)
             }
             SpiralAxis::Flat { center, normal } => (center, center, normal, 0.0),
-            SpiralAxis::AroundCurve { .. } => {
-                unreachable!("around-curve spirals return before axial construction")
-            }
         };
         let (frame, start_radius) =
             axial_primitive_frame(axis_start, options.radii[0], axis, tolerance)?;
         let end_radius = axial_primitive_radius_value(axis_end, options.radii[1], frame)?;
-        if start_radius < 0.0 || end_radius < 0.0 {
+        if start_radius < 0.0 || end_radius < 0.0 || height == 0.0 && start_radius == end_radius {
             return Err(GeometryError::InvalidSpiralDimensions.into());
         }
         let turn_count = match options.advance {
@@ -7387,41 +7285,6 @@ fn curve_radius_value(
             .map_err(Into::into)
         }
     }
-}
-
-fn spiral_curve_path(
-    document: &Document,
-    path_name: Option<&str>,
-) -> Result<(Geometry, ObjectId), CommandError> {
-    let path_id = if let Some(name) = path_name {
-        let matches = document
-            .objects()
-            .filter(|object| {
-                object
-                    .attributes()
-                    .name()
-                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
-            })
-            .map(|object| object.id())
-            .collect::<Vec<_>>();
-        match matches.as_slice() {
-            [] => return Err(CommandError::SpiralPathNotFound(name.to_owned())),
-            [id] => *id,
-            _ => return Err(CommandError::AmbiguousSpiralPath(name.to_owned())),
-        }
-    } else {
-        document
-            .selected_object_ids()
-            .last()
-            .ok_or(CommandError::SpiralPathRequired)?
-    };
-    let path = document
-        .object(path_id)
-        .expect("resolved spiral path identifiers are present");
-    if geometry_curve_ref(path.geometry()).is_none() {
-        return Err(CommandError::SpiralPathNotCurve);
-    }
-    Ok((path.geometry().clone(), path_id))
 }
 
 struct TruncatedConeCommand;
