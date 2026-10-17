@@ -373,3 +373,42 @@ cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_local_owners.j
 python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_local_owners.json /tmp/flow-local-owners.json tools/rhino_oracle/observations/flow_local_owners_rhino_20261017.json /tmp/flow-local-owners-report.json
 python3 -m unittest tools.rhino_oracle.test_flow_local
 ```
+
+
+The [TargetSurface validation record](flow-target-surface-validation.json)
+qualifies 119 actual Flow commands using authored planes, rational cylinders
+and a curved rational tensor-product patch. The target guide keeps its existing
+arc-length lookup. Each section queries the shared surface closest-point and
+regular-normal kernels, respecting B-rep face reversal. Surface orientation
+supersedes the target Roadlike axis. It allows spatial target guides without
+using the still-unqualified automatic spatial frame selector. Spatial source
+guides still require explicit Roadlike axes.
+
+The command and preview capture immutable surface/face references using the
+existing surface resolver. They share the point map, owner/grip staging,
+groups and one-step Undo/Redo. Native surface picking releases source object
+and grip selection; final history states follow that behavior. Hidden, locked,
+replaced and removed references invalidate preview without deforming sources.
+Native Local/Rigid rational-curve witnesses exposed a center error from using
+model-tolerance bounds for a placement pose. Flow now refines the existing
+bound kernel with numerical validation tolerance before choosing rigid centers
+in both preview and commit.
+No native coordinates, UV values or fitted directions initialize the kernel.
+
+```sh
+cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_target_surface.json /tmp/flow-target-surface.json
+python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_target_surface.json /tmp/flow-target-surface.json tools/rhino_oracle/observations/flow_target_surface_rhino_20261017.json /tmp/flow-target-surface-report.json
+python3 -m unittest tools.rhino_oracle.test_flow_target_surface
+```
+
+
+The patch witnesses also distinguish unstretched lookup preparation. When a
+nonlinear NURBS target is longer than the base, Flow uses its source-length
+prefix: independently invert that fraction with the existing incremental
+policy, trim a private copy, and prepare the prefix's 841-point inverse table.
+Retain the original guide length and geometry, and normalize the prefix table
+by the base length. Clipping a full-curve parameter array, a precise cut, or
+merely scaling its fractions gives different results. Two retained public SDK
+maps compare this case and a longer curved base; a native corner command checks
+the prefix endpoint. Surface normals are queried at the full axial destination,
+including the source endpoint residual, before transverse offsets are applied.

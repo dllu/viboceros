@@ -1,6 +1,8 @@
 mod curve_fit;
 mod flow;
-pub use flow::{CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph};
+pub use flow::{
+    CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph, CurveFlowTargetSurface,
+};
 mod denominator;
 mod preview;
 mod rigid;

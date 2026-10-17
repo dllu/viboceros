@@ -8360,6 +8360,9 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.pick_flow_surface(click.object_id, None) {
+            return;
+        }
         if self.pick_flow_guide(click.object_id, None) {
             return;
         }
@@ -9594,6 +9597,7 @@ impl eframe::App for VibocerosApp {
         let face_pick = if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
         } else if self.picking_orient_surface()
+            || self.picking_flow_surface()
             || self.selecting_move_normal_reference()
             || self.picking_uv_reference()
             || self.picking_mirror_object()

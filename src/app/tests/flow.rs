@@ -4,6 +4,172 @@ fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
 }
+fn target_surface_setup(
+    name: &str,
+) -> (
+    VibocerosApp,
+    ObjectId,
+    [ObjectId; 2],
+    ObjectId,
+    serde_json::Value,
+) {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/flow_target_surface.json"
+    ))
+    .unwrap();
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/flow_target_surface_rhino_20261017.json"
+    ))
+    .unwrap();
+    let i = request["operations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .position(|v| v["id"] == name)
+        .unwrap();
+    let f: viboceros_oracle::FlowLineFixture =
+        serde_json::from_value(request["operations"][i].clone()).unwrap();
+    let mut app = test_app();
+    let guides = f
+        .guide_geometries(app.document.tolerance())
+        .unwrap()
+        .map(|g| app.document.add_geometry(g).unwrap());
+    let surface = app
+        .document
+        .add_geometry(
+            f.target_surface_geometry(app.document.tolerance())
+                .unwrap()
+                .unwrap(),
+        )
+        .unwrap();
+    let source = app
+        .document
+        .add_geometry(f.source_geometry(app.document.tolerance()).unwrap())
+        .unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    (
+        app,
+        source,
+        guides,
+        surface,
+        native["results"][i]["value"].clone(),
+    )
+}
+#[test]
+fn flow_target_surface_and_flipped_face_previews_match_rhino_and_commit_one_undo() {
+    for name in ["cylinder-x-True-0100", "face-reversed-100"] {
+        let (mut app, source, [a, b], surface, native) = target_surface_setup(name);
+        let before = format!("{:?}", app.document);
+        let reference = app.document.object(surface).unwrap().geometry().clone();
+        let original = app.document.object(source).unwrap().geometry().clone();
+        enter(&mut app, "Flow Copy=No Stretch=Yes");
+        app.pick_flow_guide(Some(a), None);
+        enter(&mut app, "TargetSurface");
+        assert!(app.picking_flow_surface());
+        assert_eq!(
+            app.viewport_object_filter(),
+            Some(viboceros_command::ObjectSelectionFilter::SurfaceComponents)
+        );
+        app.pick_flow_surface(Some(source), None);
+        assert!(app.picking_flow_surface());
+        if name.starts_with("face") {
+            app.accept_component_face_hit(surface, 0, None);
+        } else {
+            enter(&mut app, &format!("SelID {surface}"));
+        }
+        app.pick_flow_guide(Some(b), None);
+        let preview = app.flow_session.as_ref().unwrap().preview().unwrap();
+        let Geometry::PointCloud(cloud) = &original else {
+            panic!()
+        };
+        let expected = native["after_script"]["outputs"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|o| o["original"] == true)
+            .unwrap()["points"]
+            .as_array()
+            .unwrap();
+        for (p, expected) in cloud.points().iter().zip(expected) {
+            let actual = preview.morph.morph_point(*p).unwrap().to_array();
+            for i in 0..3 {
+                assert!((actual[i] - expected[i].as_f64().unwrap()).abs() < 1e-6);
+            }
+        }
+        assert_eq!(format!("{:?}", app.document), before);
+        enter(&mut app, "");
+        assert!(app.flow_session.is_none());
+        let after = app.document.object(source).unwrap().geometry().clone();
+        assert_ne!(after, original);
+        assert_eq!(app.document.object(surface).unwrap().geometry(), &reference);
+        assert!(!app.document.is_selected(source));
+        assert!(app.commands.flow_options().target_surface.is_none());
+        assert_eq!(app.document.undo().unwrap().as_deref(), Some("Flow"));
+        assert_eq!(app.document.object(source).unwrap().geometry(), &original);
+        assert!(app.document.undo_label().is_none());
+        assert_eq!(app.document.redo().unwrap().as_deref(), Some("Flow"));
+        assert_eq!(app.document.object(source).unwrap().geometry(), &after);
+    }
+}
+#[test]
+fn flow_surface_replacement_visibility_removal_and_cancel_invalidate_without_deformation() {
+    for change in ["Hide", "Lock", "Delete", "Replace"] {
+        let (mut app, source, [a, b], surface, _) = target_surface_setup("surface-xz-copy0");
+        let original = app.document.object(source).unwrap().geometry().clone();
+        enter(&mut app, &format!("Flow Copy=No TargetSurface={surface}"));
+        app.pick_flow_guide(Some(a), None);
+        app.pick_flow_guide(Some(b), None);
+        assert!(app.flow_session.as_ref().unwrap().preview().is_some());
+        if change == "Replace" {
+            app.document
+                .replace_object_geometries([(surface, Geometry::Point(point(0., 0., 0.)))])
+                .unwrap();
+        } else if change == "Hide" {
+            app.document
+                .set_objects_visibility([surface], false)
+                .unwrap();
+        } else if change == "Lock" {
+            app.document.set_objects_locked([surface], true).unwrap();
+        } else {
+            app.document.delete_objects([surface]).unwrap();
+        }
+        app.validate_flow_guides();
+        assert!(app.picking_flow_surface());
+        assert!(app.flow_session.as_ref().unwrap().preview().is_none());
+        enter(&mut app, "");
+        assert_eq!(app.document.object(source).unwrap().geometry(), &original);
+        enter(&mut app, "Cancel");
+        assert!(app.flow_session.is_none());
+        assert_eq!(app.document.object(source).unwrap().geometry(), &original);
+    }
+    let (mut app, _, [a, b], surface, _) = target_surface_setup("surface-xz-copy0");
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Flow");
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    enter(&mut app, &format!("TargetSurfaceFace={surface},0"));
+    let with_surface = app
+        .flow_session
+        .as_ref()
+        .unwrap()
+        .preview()
+        .unwrap()
+        .morph
+        .clone();
+    enter(&mut app, "TargetSurface=None");
+    let without_surface = app.flow_session.as_ref().unwrap().preview().unwrap().morph;
+    assert_ne!(
+        with_surface.morph_point(point(4., 1., 2.)).unwrap(),
+        without_surface.morph_point(point(4., 1., 2.)).unwrap()
+    );
+    enter(&mut app, "TargetSurface");
+    enter(&mut app, "Cancel");
+    assert_eq!(format!("{:?}", app.document), before);
+    assert!(app.document.undo_label().is_none());
+}
 fn setup() -> (
     VibocerosApp,
     ObjectId,

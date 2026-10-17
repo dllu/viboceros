@@ -6,7 +6,7 @@ use viboceros_geometry::{
     BoundingBox3, CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph,
 };
 
-pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No] [Roadlike=Yes|No] [BaseUp=x,y,z] [TargetUp=x,y,z] [Local=Yes|No] [LocalRadii=inner,outer]";
+pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [TargetSurface=id|None] [TargetSurfaceFace=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No] [Roadlike=Yes|No] [BaseUp=x,y,z] [TargetUp=x,y,z] [Local=Yes|No] [LocalRadii=inner,outer]";
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub copy: bool,
@@ -21,6 +21,7 @@ pub struct Options {
     pub target_up: Option<Vector3>,
     pub local: bool,
     pub local_radii: Option<CurveFlowLocalRadii>,
+    pub target_surface: Option<SurfaceReference>,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -37,6 +38,7 @@ impl Default for Options {
             target_up: None,
             local: false,
             local_radii: None,
+            target_surface: None,
         }
     }
 }
@@ -80,6 +82,9 @@ impl Options {
             yes(self.roadlike)
         );
         arguments.push_str(&format!(" Local={}", yes(self.local)));
+        if let Some(surface) = self.target_surface {
+            arguments.push_str(&format!(" {}", surface.arguments()));
+        }
         if self.local
             && let Some(radii) = self.local_radii
         {
@@ -101,6 +106,19 @@ impl Options {
 pub struct GuideReference {
     pub id: ObjectId,
     pub edge: Option<usize>,
+}
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SurfaceReference {
+    pub id: ObjectId,
+    pub face: Option<usize>,
+}
+impl SurfaceReference {
+    pub fn arguments(self) -> String {
+        match self.face {
+            Some(face) => format!("TargetSurfaceFace={},{}", self.id, face),
+            None => format!("TargetSurface={}", self.id),
+        }
+    }
 }
 /// A selected document curve/edge or an immutable temporary line.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -180,6 +198,7 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
         let canonical = match key.as_str() {
             "baseedge" | "baseline" => "base",
             "targetedge" | "targetline" => "target",
+            "targetsurfaceface" => "targetsurface",
             _ => &key,
         };
         if !seen.insert(canonical.to_owned()) {
@@ -271,7 +290,24 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
                     return Err(CommandError::FlowOptionNotSupported("Stairlike"));
                 }
             }
-            "targetsurface" => return Err(CommandError::FlowOptionNotSupported("TargetSurface")),
+            "targetsurface" | "targetsurfaceface" => {
+                options.target_surface =
+                    if value.trim_start_matches('_').eq_ignore_ascii_case("None") {
+                        None
+                    } else if key == "targetsurfaceface" {
+                        let (id, face) =
+                            curve_reference::parse_edge(value).ok_or(CommandError::Usage(USAGE))?;
+                        Some(SurfaceReference {
+                            id,
+                            face: Some(face),
+                        })
+                    } else {
+                        Some(SurfaceReference {
+                            id: value.parse().map_err(|_| CommandError::Usage(USAGE))?,
+                            face: None,
+                        })
+                    };
+            }
             _ => return Err(CommandError::Usage(USAGE)),
         }
         i += 1;
@@ -327,8 +363,20 @@ pub fn prepare(
     if options.roadlike && (options.base_up.is_none() || options.target_up.is_none()) {
         return Err(CommandError::FlowRoadlikeAxesRequired);
     }
-    let mut morph =
-        CurveFlowPointMorph::try_new(base, target, options.geometry(), doc.tolerance())?;
+    let surface = options
+        .target_surface
+        .map(|r| {
+            capture_target_surface(doc, r)
+                .map(|t| viboceros_geometry::CurveFlowTargetSurface::new(t.surface, t.reversed))
+        })
+        .transpose()?;
+    let mut morph = CurveFlowPointMorph::try_new_shared_with_surface(
+        std::sync::Arc::new(base),
+        std::sync::Arc::new(target),
+        options.geometry(),
+        surface,
+        doc.tolerance(),
+    )?;
     if morph.uses_spatial_transport() {
         return Err(CommandError::FlowSpatialFramesNotSupported);
     }
@@ -336,6 +384,16 @@ pub fn prepare(
         morph = morph.with_interpolation_solver(solver);
     }
     Ok(morph)
+}
+/// Capture one selectable immutable surface/face using the shared resolver.
+pub fn capture_target_surface(
+    doc: &Document,
+    r: SurfaceReference,
+) -> Result<orient_surface::Target, CommandError> {
+    orient_surface::Target::capture(doc, r.id, r.face).map_err(|error| match error {
+        CommandError::SurfaceOrientTargetNotSurface => CommandError::FlowTargetSurfaceNotSurface,
+        other => other,
+    })
 }
 pub fn deformed_geometries(
     doc: &Document,
@@ -366,11 +424,15 @@ pub fn deformed_with_grips(
         .filter(|id| !grip_owners.contains(id))
         .collect::<Vec<_>>();
     let mut bounds = BTreeMap::new();
+    // Bounds select a placement pose, not an approximate output enclosure.
+    // A model-tolerance error in the center can be amplified by Local's
+    // displacement derivative. Refine the existing bound kernel numerically.
+    let pose_tolerance = Tolerance::NUMERICAL_VALIDATION;
     if options.rigid && options.rigid_groups && !ordinary.is_empty() {
         for id in &context {
             let o = doc.object(*id).ok_or(DocumentError::ObjectNotFound(*id))?;
             if let Some(group) = o.top_group() {
-                let b = o.geometry().tight_bounds(doc.tolerance())?;
+                let b = o.geometry().tight_bounds(pose_tolerance)?;
                 let next = if let Some(prior) = bounds.get(&group) {
                     BoundingBox3::union(*prior, b)?
                 } else {
@@ -394,7 +456,7 @@ pub fn deformed_with_grips(
                 {
                     transforms[&group]
                 } else {
-                    morph.rigid_transform(o.geometry().tight_bounds(doc.tolerance())?.center()?)?
+                    morph.rigid_transform(o.geometry().tight_bounds(pose_tolerance)?.center()?)?
                 };
                 o.geometry().transformed(transform, doc.tolerance())?
             } else {
@@ -431,6 +493,7 @@ impl Command for FlowCommand {
             base_up: None,
             target_up: None,
             local_radii: None,
+            target_surface: None,
             ..value
         });
         true
@@ -438,16 +501,22 @@ impl Command for FlowCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let (args, mut sources) = affine_transform_arguments(doc, args, USAGE)?;
         let (options, refs) = options(&args, self.0.get())?;
+        // The native surface getter releases object and grip preselection. Capture
+        // that final selection in the same history record as the deformation.
+        let surface_releases_selection = options.target_surface.is_some();
+        sources.release_on_replay |= surface_releases_selection;
         let base = refs.base.ok_or(CommandError::Usage(USAGE))?;
         let target = refs.target.ok_or(CommandError::Usage(USAGE))?;
-        sources
-            .ids
-            .retain(|id| Some(*id) != base.object_id() && Some(*id) != target.object_id());
-        if sources
-            .grips
-            .iter()
-            .any(|g| Some(g.object) == base.object_id() || Some(g.object) == target.object_id())
-        {
+        sources.ids.retain(|id| {
+            Some(*id) != base.object_id()
+                && Some(*id) != target.object_id()
+                && Some(*id) != options.target_surface.map(|s| s.id)
+        });
+        if sources.grips.iter().any(|g| {
+            Some(g.object) == base.object_id()
+                || Some(g.object) == target.object_id()
+                || Some(g.object) == options.target_surface.map(|s| s.id)
+        }) {
             return Err(CommandError::Usage(
                 "Flow guides cannot supply source grips",
             ));
@@ -488,7 +557,7 @@ impl Command for FlowCommand {
             doc.release_command_selection_on_history_replay(sources.ids.iter().copied())?;
             // Postselected grip replacements restore the getter's selected
             // grips on Undo. Copy records their released source selection.
-            if options.copy || sources.grips.is_empty() {
+            if options.copy || sources.grips.is_empty() || surface_releases_selection {
                 doc.clear_selection();
             }
         }
@@ -510,7 +579,7 @@ impl Command for FlowCommand {
             doc.move_objects_to_end_in_order(staged_ids)?;
         }
         doc.select_objects_direct(sources.ids.iter().copied(), SelectionMode::Replace)?;
-        if sources.postselected {
+        if sources.postselected || surface_releases_selection {
             doc.clear_selection();
         }
         self.remember_flow_options(options);

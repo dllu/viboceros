@@ -18,7 +18,7 @@ guide getter. Guides must be separate from the sources. Hidden, locked, deleted,
 or replaced guides invalidate the preview and must be selected again.
 
 Supported options are `Copy`, `Rigid`, `RigidGroups`, `Stretch`,
-`PreserveStructure`, `ReverseBase`, `ReverseTarget`, `Roadlike`, and `Local`, with `Yes` / `No` values.
+`PreserveStructure`, `ReverseBase`, `ReverseTarget`, `Roadlike`, and `Local`, with `Yes` / `No` values. `TargetSurface` chooses a surface for target orientation.
 Entering an option name alone toggles it during interactive input. Initial
 settings are Copy=Yes, Rigid=No, RigidGroups=Yes, Stretch=No and
 PreserveStructure=No. Successful commands remember deformation settings; Copy
@@ -34,6 +34,8 @@ Flow BaseLine=0,0,0;10,0,0 TargetLine=5,3,0;5,23,0 Copy=No
 Flow Line 0,0,0 10,0,0 Target=17 Stretch=Yes
 Flow Base=12 Target=17 Roadlike=Yes BaseUp=0,0,1 TargetUp=0,1,0
 Flow Base=12 Target=17 Local=Yes LocalRadii=1,3 Copy=No
+Flow Base=12 Target=17 TargetSurface=23 Stretch=Yes
+Flow Base=12 Target=17 TargetSurfaceFace=23,0 Copy=No
 ```
 
 Use the actual IDs from the current document. `BaseEdge` and `TargetEdge` refer
@@ -97,8 +99,21 @@ original object pose if the pole cannot supply a placement frame. Both behaviors
 share the command's staged owner/grip edit and preview paths. Native Roadlike
 `Automatic` remains unimplemented; `CPlaneZ` explicitly chooses a direction.
 
+Enter `TargetSurface` during Flow input to pick the surface containing the target
+curve. Surface and B-rep face picks are supported; typed input accepts `SelID 23`
+or `Face=23,0`. Scripted input uses `TargetSurface=23` or
+`TargetSurfaceFace=23,0`. Enter `TargetSurface=None` to remove it.
+The target curve should lie on the chosen surface. Its closest surface normal
+orients each target section, including along a spatial target curve. Flipped
+B-rep faces reverse this orientation. Roadlike still collects both axes, but the
+surface normal controls the target orientation. Reference surfaces remain
+unchanged; hidden, locked, deleted or replaced references invalidate preview.
+A new command asks for a fresh surface reference. Applying TargetSurface also
+releases source object and grip selection, including on Undo/Redo.
+
 The registered command rejects automatic orientation of general spatial curved
-guides. Stairlike and TargetSurface remain unfinished. Unsupported modes
+guides without explicit axes or a target surface. A spatial base still needs
+Roadlike axes. Stairlike remains unfinished. Unsupported modes
 fail before editing.
 
 The native comparison covers 76 point maps and 43 actual grouped point-cloud
@@ -150,3 +165,11 @@ caps, both reversals, Copy/Stretch, NURBS and composite guide roles, explicit
 spatial Roadlike, Rigid poses, control/edit grips, unchanged whole owners,
 groups, guide lifetime and real Undo/Redo. App tests cover picked and typed
 circles, live previews, radius changes, cancellation, stale guides and one Undo.
+
+The [TargetSurface validation record](../flow-target-surface-validation.json)
+adds 119 actual native workflows on planes, cylinders and a curved rational
+NURBS patch. It covers spatial target curves, face reversal, both guide
+reversals, Copy/Stretch, Roadlike interaction, Local/Rigid placement, control/edit
+and mesh grips, complete geometry and real Undo/Redo at `1e-6`. App tests check
+preview against native points, face picking, reference invalidation, removal,
+cancellation and a single committed history entry.

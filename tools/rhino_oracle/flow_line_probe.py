@@ -9,14 +9,18 @@ else:
 
 
 def validate(op,allow_selected_guides=False):
-    allowed={'op','id','base','target','source','options','group','base_line','target_line','selected','edit','local_radii'}
+    allowed={'op','id','base','target','source','options','group','base_line','target_line','selected','edit','local_radii','target_surface','target_surface_reversed'}
     if not isinstance(op,dict)or op.get('op')!='flow_line'or set(op)-allowed or not {'id','base','target','source'}<=set(op):raise ValueError('invalid Flow Line recipe')
-    for k in ('group','base_line','target_line','edit'):
+    for k in ('group','base_line','target_line','edit','target_surface_reversed'):
         if type(op.get(k,k=='base_line'))is not bool:raise ValueError('invalid Flow Line toggle')
     if 'local_radii'in op:
         radii=op['local_radii']
         if not isinstance(radii,list)or len(radii)!=2 or any(type(r)not in(int,float)or not 0<=r<=1e6 for r in radii)or radii[0]==radii[1]:raise ValueError('invalid Flow local radii')
-    if not allow_selected_guides and 'local_radii'not in op and not op.get('base_line',True)and not op.get('target_line',False):raise ValueError('Flow Line needs at least one drawn guide')
+    if 'target_surface'in op:
+        if not isinstance(op['target_surface'],dict)or op['target_surface'].get('type')!='surface':raise ValueError('Flow target surface requires a NURBS surface')
+        validate_source(dict(op='geometry_validity',id=op['id'],source=op['target_surface']))
+    elif op.get('target_surface_reversed'):raise ValueError('reversed target face requires a surface')
+    if not allow_selected_guides and not {'local_radii','target_surface'}&set(op)and not op.get('base_line',True)and not op.get('target_line',False):raise ValueError('Flow Line needs at least one drawn guide')
     for role in ('base','target'):
         if op.get(role+'_line',role=='base'):
             if op[role].get('type')!='line':raise ValueError('drawn guide needs two endpoints')
@@ -41,7 +45,21 @@ def run(op,host,iterations,tolerance,roadlike_axes=None):
     R=host['Rhino'];G=R.Geometry;doc=R.RhinoDoc.ActiveDoc;o=op.get('options',{})
     before=set(obj.Id for obj in doc.Objects);groups=set(g.Index for g in doc.Groups if not g.IsDeleted)
     curves=[host['_object_source'](op[k],tolerance)for k in('base','target')];geometry=host['_object_source'](op['source'],tolerance)
+    surface=None;surface_id=None;surface_before=None
     try:
+        if 'target_surface'in op:
+            surface=host['_object_source'](op['target_surface'],tolerance)
+            if op.get('target_surface_reversed'):
+                brep=G.Brep.CreateFromSurface(surface)
+                try:
+                    brep.Flip();surface_id=doc.Objects.AddBrep(brep)
+                finally:brep.Dispose()
+            else:surface_id=doc.Objects.AddSurface(surface)
+        def surface_definition():
+            if surface_id is None:return None
+            face=doc.Objects.FindId(surface_id).Geometry.Faces[0]
+            return dict(surface=host['_nurbs_surface_definition'](face.UnderlyingSurface().ToNurbsSurface()),reversed=bool(face.OrientationIsReversed))
+        surface_before=surface_definition()
         for role,curve in zip(('base','target'),curves):
             if op.get(role+'_line',role=='base')and curve.GetLength()<=doc.ModelAbsoluteTolerance:raise ValueError('drawn guide is too short for capture tolerance')
         guides=[]
@@ -64,7 +82,7 @@ def run(op,host,iterations,tolerance,roadlike_axes=None):
         def snapshot():
             outputs=[];objects=[obj for obj in doc.Objects if obj.Id not in before];active=sorted(g.Index for g in doc.Groups if not g.IsDeleted and g.Index not in groups)
             for obj in objects:
-                if obj.Id in originals:continue
+                if obj.Id in originals or obj.Id==surface_id:continue
                 g=obj.Geometry;row=dict(original=obj.Id==source,peer=False,selected=bool(obj.IsSelected(False)),group_count=obj.GroupCount,groups=sorted(active.index(i)for i in(obj.GetGroupList()or[])if i in active),grips_on=bool(obj.GripsOn),grips=[dict(index=int(p.Index),point=host['_xyz'](p.CurrentLocation),selected=bool(p.IsSelected(False)))for p in(obj.GetGrips()or[])])
                 if isinstance(g,G.PointCloud):row['points']=[host['_xyz'](p.Location)for p in g]
                 elif isinstance(g,G.Curve):row['curve']=host['_nurbs_curve_definition'](g.ToNurbsCurve())
@@ -72,7 +90,7 @@ def run(op,host,iterations,tolerance,roadlike_axes=None):
                 elif isinstance(g,G.Mesh):row['mesh']=host['_polygon_mesh_value'](g)
                 else:raise ValueError('unexpected Flow Line output')
                 outputs.append(row)
-            return dict(outputs=outputs,object_count=len(objects),guide_unchanged=all(definition(k)==v for k,v in originals.items()),guide_selected=any(bool(doc.Objects.FindId(k).IsSelected(False))for k in originals),group_count=len(active))
+            return dict(outputs=outputs,object_count=len(objects),guide_unchanged=all(definition(k)==v for k,v in originals.items())and surface_definition()==surface_before,guide_selected=any(bool(doc.Objects.FindId(k).IsSelected(False))for k in list(originals)+([surface_id]if surface_id is not None else[])),group_count=len(active))
         doc.ClearUndoRecords(True);seed=snapshot()
         point=lambda p:'w'+','.join(repr(float(v))for v in p)
         flags=' '.join('_'+key+'=_'+('Yes'if o.get(field,default)else'No')for key,field,default in [('Copy','copy',True),('Rigid','rigid',False),('Stretch','stretch',False),('PreserveStructure','preserve_structure',False)])
@@ -80,11 +98,12 @@ def run(op,host,iterations,tolerance,roadlike_axes=None):
         flags+=' _Roadlike=_'+('Yes'if roadlike_axes is not None else 'No')+' _Local=_'+('Yes'if 'local_radii'in op else'No')
         picks=[]
         for role,key in zip(('base','target'),guides):
+            prefix=" _TargetSurface '_-SelID "+str(surface_id)if role=='target'and surface_id is not None else''
             if key is None:
                 a,b=op[role]['start'],op[role]['end']
                 if o.get('reverse_'+role):a,b=b,a
-                picks.append(' _Line '+point(a)+' '+point(b))
-            else:picks.append(" '_-SelID "+str(key))
+                picks.append(prefix+' _Line '+point(a)+' '+point(b))
+            else:picks.append(prefix+" '_-SelID "+str(key))
         axes=[]
         if roadlike_axes is not None:
             for curve,up in zip(curves,roadlike_axes):
@@ -97,7 +116,7 @@ def run(op,host,iterations,tolerance,roadlike_axes=None):
         marker='Owned Flow Line '+str(host['System'].Guid.NewGuid());R.RhinoApp.WriteLine(marker)
         try:success,after,events=observe_command(R.Commands.Command,'Flow',lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
         except ValueError as error:
-            if 'local_radii'in op:raise ValueError(str(error)+'; '+R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1][-2000:])
+            if 'local_radii'in op or 'target_surface'in op:raise ValueError(str(error)+'; '+R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1][-2000:])
             raise
         result=dict(before=seed,after=after,after_script=snapshot(),events=events,command_returned=bool(success),macro=macro,history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip())
         result['undo_command_returned']=bool(R.RhinoApp.RunScript('_Undo',False));result['undo']=snapshot()
@@ -112,3 +131,4 @@ def run(op,host,iterations,tolerance,roadlike_axes=None):
             if not g.IsDeleted and g.Index not in groups:doc.Groups.Delete(g.Index)
         for curve in curves:curve.Dispose()
         geometry.Dispose()
+        if surface is not None:surface.Dispose()

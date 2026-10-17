@@ -16676,6 +16676,8 @@ pub enum CommandError {
         "Flow Local requires LocalRadii=inner,outer; interactive input can enter or pick both radii"
     )]
     FlowLocalRadiiRequired,
+    #[error("Flow TargetSurface requires a NURBS surface or an explicit B-rep face")]
+    FlowTargetSurfaceNotSurface,
     #[error("Silhouette requires the native kernel; build with --features native-smlib")]
     SilhouetteRequiresNativeKernel,
     #[error("ExtrudeCrvTapered requires the native kernel; build with --features native-smlib")]
@@ -16749,7 +16751,7 @@ pub enum CommandError {
     #[error("Flow guides must be curves or explicit surface edges")]
     FlowGuideNotCurve,
     #[error(
-        "Flow spatial guide orientation requires Roadlike with explicit BaseUp and TargetUp directions"
+        "Flow spatial guides require explicit Roadlike axes; TargetSurface can supply target orientation"
     )]
     FlowSpatialFramesNotSupported,
     #[error(

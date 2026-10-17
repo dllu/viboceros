@@ -275,6 +275,9 @@ impl VibocerosApp {
                 .then_some(ObjectSelectionFilter::SurfaceComponents);
         }
         if self.flow_session.is_some() {
+            if self.picking_flow_surface() {
+                return Some(ObjectSelectionFilter::SurfaceComponents);
+            }
             return self
                 .picking_flow_guide()
                 .then_some(ObjectSelectionFilter::Curves);

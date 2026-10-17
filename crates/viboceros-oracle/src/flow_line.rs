@@ -25,8 +25,38 @@ pub struct Fixture {
     pub options: super::flow_grips::Options,
     #[serde(default)]
     pub local_radii: Option<[f64; 2]>,
+    #[serde(default)]
+    pub target_surface: Option<ObjectSource>,
+    #[serde(default)]
+    pub target_surface_reversed: bool,
 }
 impl Fixture {
+    pub fn target_surface_geometry(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Option<Geometry>, ProbeError> {
+        self.target_surface
+            .as_ref()
+            .map(|s| {
+                let geometry = s.geometry(tolerance)?;
+                if !self.target_surface_reversed {
+                    return Ok(geometry);
+                }
+                let Geometry::NurbsSurface(surface) = geometry else {
+                    return Err(ProbeError::FixtureInvariant(
+                        "Flow target surface requires a surface",
+                    ));
+                };
+                let u = surface.domain_u();
+                let v = surface.domain_v();
+                Ok(Geometry::Brep(
+                    viboceros_geometry::Brep::try_rectangular_surface_face_with_orientation(
+                        surface, u, v, true, tolerance,
+                    )?,
+                ))
+            })
+            .transpose()
+    }
     pub fn source_geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
         self.source.geometry(tolerance)
     }
@@ -48,15 +78,28 @@ impl Fixture {
         doc: &Document,
         source: ObjectId,
         guides: [Option<ObjectId>; 2],
+        surface: Option<ObjectId>,
     ) -> Result<Value, ProbeError> {
-        let ids = guides.into_iter().flatten().collect::<Vec<_>>();
+        let ids = guides
+            .into_iter()
+            .chain([surface])
+            .flatten()
+            .collect::<Vec<_>>();
         let mut value = super::orient_surface_grips::snapshot_excluding(doc, source, None, &ids)?;
         value["object_count"] = json!(doc.objects().count());
         value["guide_selected"] = json!(ids.iter().any(|id| doc.is_selected(*id)));
         let geometry = self.guide_geometries(doc.tolerance())?;
-        value["guide_unchanged"] = json!(guides.into_iter().zip(geometry).all(|(id, g)| {
-            id.is_none_or(|id| doc.object(id).is_some_and(|o| o.geometry() == &g))
-        }));
+        value["guide_unchanged"] = json!(
+            guides.into_iter().zip(geometry).all(|(id, g)| {
+                id.is_none_or(|id| doc.object(id).is_some_and(|o| o.geometry() == &g))
+            }) && match (surface, &self.target_surface) {
+                (Some(id), Some(_)) => doc.object(id).is_some_and(|o| self
+                    .target_surface_geometry(doc.tolerance())
+                    .is_ok_and(|g| Some(o.geometry()) == g.as_ref())),
+                (None, None) => true,
+                _ => false,
+            }
+        );
         Ok(value)
     }
     pub fn input(geometry: &Geometry, id: Option<ObjectId>) -> Result<GuideInput, ProbeError> {
@@ -90,6 +133,12 @@ pub(super) fn run_with_options(
     }
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let mut doc = Document::new(tolerance);
+        let surface = f
+            .target_surface_geometry(tolerance)?
+            .map(|s| doc.add_geometry(s))
+            .transpose()?;
+        options.target_surface =
+            surface.map(|id| viboceros_command::flow::SurfaceReference { id, face: None });
         let geometry = f.guide_geometries(tolerance)?;
         let guides = [
             if f.base_line {
@@ -130,7 +179,7 @@ pub(super) fn run_with_options(
             doc.select_control_points(grips.iter().copied(), SelectionMode::Add)?;
         }
         doc.clear_history()?;
-        let before = f.observe(&doc, source, guides)?;
+        let before = f.observe(&doc, source, guides, surface)?;
         let picks = if grips.is_empty() {
             String::new()
         } else {
@@ -156,18 +205,18 @@ pub(super) fn run_with_options(
             )
             .err()
             .map(|e| e.to_string());
-        let after = f.observe(&doc, source, guides)?;
+        let after = f.observe(&doc, source, guides, surface)?;
         let after_geometry = doc
             .objects()
             .map(|o| (o.id(), o.geometry().clone()))
             .collect::<Vec<_>>();
         let undo_label = doc.undo()?;
-        let undo = f.observe(&doc, source, guides)?;
+        let undo = f.observe(&doc, source, guides, surface)?;
         let undo_restores_source = doc
             .object(source)
             .is_some_and(|o| o.geometry() == &original);
         let redo_label = doc.redo()?;
-        let redo = f.observe(&doc, source, guides)?;
+        let redo = f.observe(&doc, source, guides, surface)?;
         let redo_restores_outputs = after_geometry
             .iter()
             .all(|(id, g)| doc.object(*id).is_some_and(|o| o.geometry() == g));
@@ -180,6 +229,37 @@ pub(super) fn run_with_options(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn target_surface_matches_native_geometry_faces_grips_selection_and_history() {
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_target_surface.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_target_surface_rhino_20261017.json"
+            ),
+            98,
+        );
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_target_surface_patches.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_target_surface_patches_rhino_20261017.json"
+            ),
+            20,
+        );
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_target_surface_lookup.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_target_surface_lookup_rhino_20261017.json"
+            ),
+            2,
+        );
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_target_surface_corner.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_target_surface_corner_rhino_20261017.json"
+            ),
+            1,
+        );
+    }
     fn close(a: &Value, b: &Value) -> bool {
         match (a, b) {
             (Value::Number(a), Value::Number(b)) => {

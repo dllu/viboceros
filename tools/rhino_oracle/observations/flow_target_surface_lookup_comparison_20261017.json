@@ -1,0 +1,33 @@
+{
+  "cases": 2,
+  "matched_cases": 2,
+  "native_table_enumeration_order_compared": false,
+  "results": [
+    {
+      "id": "patch-sdk-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 4.0607517348689726e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "long-planar-base",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "sdk",
+          "native_stage": "sdk",
+          "metadata_match": true,
+          "max_coordinate_error": 2.873434823413845e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    }
+  ]
+}

@@ -47,6 +47,9 @@ pub(crate) trait MorphPreviewKey: Clone + PartialEq {
     fn rigid_groups(&self) -> bool {
         true
     }
+    fn rigid_bounds_tolerance(&self, tolerance: Tolerance) -> Tolerance {
+        tolerance
+    }
     fn rigid_transform(
         &self,
         morph: &Self::Morph,
@@ -213,7 +216,10 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
             let bounds = self
                 .sources
                 .iter()
-                .map(|s| s.snapshot.tight_bounds(document.tolerance()))
+                .map(|s| {
+                    s.snapshot
+                        .tight_bounds(key.rigid_bounds_tolerance(document.tolerance()))
+                })
                 .collect::<Result<Vec<_>, _>>()?;
             let mut groups = BTreeMap::<GroupId, BoundingBox3>::new();
             for (source, bounds) in self.sources.iter().zip(&bounds) {
@@ -285,7 +291,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                     } else {
                         source
                             .snapshot
-                            .tight_bounds(document.tolerance())?
+                            .tight_bounds(key.rigid_bounds_tolerance(document.tolerance()))?
                             .center()?
                     };
                     key.rigid_transform(&morph, center)?

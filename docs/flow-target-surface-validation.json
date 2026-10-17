@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "timezone": "UTC",
+  "base_repository_revision": "76ae3d7a661bd54636a2b05e7e11a716523d1210",
+  "component": "Flow TargetSurface orientation, immutable face picking, endpoint normals and unstretched NURBS prefixes",
+  "production_kernel_changed": true,
+  "production_command_behavior_changed": true,
+  "target_surface_fixtures_qualified": true,
+  "complete_flow_qualified": false,
+  "automatic_spatial_flow_qualified": false,
+  "performance_qualified": false,
+  "native_values_used_as_kernel_inputs": false,
+  "implementation": [
+    "Own the underlying surface through Arc and retain face orientation. Query the existing closest-parameter and regular-normal kernels to orient target sections, overriding target Roadlike up. A straight automatic source uses world Z with its deterministic vertical-line fallback. General spatial target curves can use surface orientation without the unqualified automatic frame selector.",
+    "Query normals at the full axial destination, including finite-guide endpoint residuals, before applying transverse coordinates. Preserve guide positions and independently generated arc-length lookup data. Skip unused transported frame preparation for surface targets.",
+    "For unstretched nonlinear NURBS targets longer than the base, independently invert the source-length fraction with incremental tolerance 1e-6, trim a private curve copy, and build the prefix inverse table. Normalize it by source length while retaining original guide geometry and total length. The inferred preparation rule matches the retained public SDK maps; native arrays, cuts, normals and UVs remain expectations only.",
+    "Reuse selectable surface/B-rep face resolution and immutable snapshots. Register TargetSurface=id|None and TargetSurfaceFace=parent,index; exclude references from sources and reject their grips. Collect both Roadlike axes as native does; the surface controls target orientation. Reset the surface reference after success.",
+    "Release source object and grip selection before recording TargetSurface replacements/copies, retaining native final selection in Undo/Redo. Reuse staged ordinary/grip/group edits. Refine existing geometry bounds numerically in both command and Flow preview for rigid placement centers so Local derivatives do not amplify model-tolerance center error.",
+    "Interactive surface and face picks, SelID/Face input, reference changes/removal, live preview and one staged commit share the kernel. Hidden, locked, replaced and deleted references invalidate previews. Cancellation and reference getters do not deform the document."
+  ],
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "actual_commands": 119,
+    "sdk_operations": 2,
+    "method": "Fresh actual Flow macros and public FlowSpaceMorph/curve length APIs in owned private Rhino displays, using authored geometry. Public object, grip, command-event and Undo/Redo observations only. No proprietary implementation inspected or decompiled.",
+    "captures": [
+      {
+        "scheme": "VibocerosOracleFlowSurface20261017A",
+        "actual_commands": 98
+      },
+      {
+        "scheme": "VibocerosOracleFlowSurface20261017B",
+        "actual_commands": 20
+      },
+      {
+        "scheme": "VibocerosOracleFlowSurface20261017C",
+        "sdk_operations": 2
+      },
+      {
+        "scheme": "VibocerosOracleFlowSurface20261017D",
+        "actual_commands": 1
+      }
+    ],
+    "all_commands_undo_redo_returned_success": true,
+    "all_macros_completed_without_cancel_or_invalid_tokens": true,
+    "document_epsilon": 1e-06,
+    "epsilon_changed": false
+  },
+  "comparisons": [
+    {
+      "fixture": "flow_target_surface",
+      "cases": 98,
+      "matched_cases": 98,
+      "max_coordinate_error": 1.0881482381819296e-09
+    },
+    {
+      "fixture": "flow_target_surface_patches",
+      "cases": 20,
+      "matched_cases": 20,
+      "max_coordinate_error": 2.336754123533069e-10
+    },
+    {
+      "fixture": "flow_target_surface_lookup",
+      "cases": 2,
+      "matched_cases": 2,
+      "max_coordinate_error": 2.873434823413845e-11
+    },
+    {
+      "fixture": "flow_target_surface_corner",
+      "cases": 1,
+      "matched_cases": 1,
+      "max_coordinate_error": 0.0
+    }
+  ],
+  "coverage": {
+    "cases": 121,
+    "source_families": {
+      "point_cloud": 87,
+      "nurbs": 16,
+      "surface": 8,
+      "mesh": 8
+    },
+    "selected_grip_workflows": 16,
+    "rigid_workflows": 22,
+    "explicit_roadlike_workflows": 6,
+    "reversed_face_workflows": 8,
+    "matrices": [
+      "Planes with flipped parameterization, tilted normals and source world-axis orientations.",
+      "Rational cylinder and spatial cylinder curves with both Copy/Stretch and guide reversals.",
+      "Planar curved source roles, reversed B-rep faces, selected/drawn guides and target Roadlike overrides.",
+      "Rational curve control/edit grips, surface controls and mesh vertices; rigid and preserved ordinary owners with Local falloff.",
+      "Curved rational surface patch, endpoint residuals, all guide reversals, rational rigid poses and both unstretched guide-length roles.",
+      "NURBS corner at the source-length prefix endpoint."
+    ],
+    "compared_states": [
+      "complete geometry",
+      "original/copy identity",
+      "selection",
+      "grip mode and selection",
+      "groups",
+      "reference preservation and selection",
+      "before",
+      "completed macro",
+      "real Undo",
+      "real Redo"
+    ],
+    "app": "Surface/face and typed picks, native preview points including face reversal, unchanged previews, one Undo/Redo, reference visibility/lock/deletion/replacement, removal and cancellation."
+  },
+  "checks": [
+    {
+      "command": "cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_target_surface.json tools/rhino_oracle/observations/flow_target_surface_viboceros_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "2809d20411659ce8023ebdf9993511e6a14995a1c1df725249c7ac2ada907f8f"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_target_surface.json tools/rhino_oracle/observations/flow_target_surface_viboceros_20261017.json tools/rhino_oracle/observations/flow_target_surface_rhino_20261017.json tools/rhino_oracle/observations/flow_target_surface_comparison_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_target_surface_patches.json tools/rhino_oracle/observations/flow_target_surface_patches_viboceros_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "4c706ff406534200119b6b513ecfae11d35dd9263cbfadc56fde1ef1660a49e6"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_target_surface_patches.json tools/rhino_oracle/observations/flow_target_surface_patches_viboceros_20261017.json tools/rhino_oracle/observations/flow_target_surface_patches_rhino_20261017.json tools/rhino_oracle/observations/flow_target_surface_patches_comparison_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_target_surface_lookup.json tools/rhino_oracle/observations/flow_target_surface_lookup_viboceros_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "3583f0ba9171fcd4e50641081521ef20b34275cf5b07095570410a833d716462"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_target_surface_lookup.json tools/rhino_oracle/observations/flow_target_surface_lookup_viboceros_20261017.json tools/rhino_oracle/observations/flow_target_surface_lookup_rhino_20261017.json tools/rhino_oracle/observations/flow_target_surface_lookup_comparison_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_target_surface_corner.json tools/rhino_oracle/observations/flow_target_surface_corner_viboceros_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "c231c3d574b0c7cd870e36ea509a5986d76c08bef760c1b9798c52a48be8dfc1"
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_target_surface_corner.json tools/rhino_oracle/observations/flow_target_surface_corner_viboceros_20261017.json tools/rhino_oracle/observations/flow_target_surface_corner_rhino_20261017.json tools/rhino_oracle/observations/flow_target_surface_corner_comparison_20261017.json",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib morph::flow::",
+      "exit_code": 0,
+      "log_sha256": "645b37e4b79bc31297cc2ec2c6d5174d338280cd7e337958b209a493d812059f",
+      "passed_tests": 9
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib flow::tests::",
+      "exit_code": 0,
+      "log_sha256": "5246e71e96fc8bd95a3902bda6f6e9a2508d7c2347a49fa6445f876e4f299995",
+      "passed_tests": 11
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "a9d373267055da4cbb6de8aacfd86d914cfcfeb705f2b80db3a4cc37830afd1c",
+      "passed_tests": 12
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros app::tests::flow::",
+      "exit_code": 0,
+      "log_sha256": "afe9bf900f959f691d69d692175412dba16fb19640a11958c818337dc6da7249",
+      "passed_tests": 15
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros viewport::flow_preview::",
+      "exit_code": 0,
+      "log_sha256": "caf78ea59d36ed0484d22cb82fab65b12e3a1a9256401242844d942b4277a056",
+      "passed_tests": 3
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros viewport::bend_preview::",
+      "exit_code": 0,
+      "log_sha256": "6b3eaae1d4b93be65b78f06ce67ae4caca39d9ed32d3f196734f6c33f858a261",
+      "passed_tests": 4
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros viewport::twist_preview::",
+      "exit_code": 0,
+      "log_sha256": "6091a6c772b78ca057a90bf5f7a87375a243758f3a335dbaa40e870483a62a67",
+      "passed_tests": 4
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros viewport::taper_preview::",
+      "exit_code": 0,
+      "log_sha256": "ea7e4ec062960363f53fe35c3c595025329fff98c6f68d34412bd5fedf637806",
+      "passed_tests": 3
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros viewport::maelstrom_preview::",
+      "exit_code": 0,
+      "log_sha256": "96660a29567061c95e7cf2a369030616605952bee168bb31e03ecb3b42e05375",
+      "passed_tests": 4
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_integration tools.rhino_oracle.test_flow_roadlike tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_structure tools.rhino_oracle.test_arc_length_batch tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_flow_nurbs tools.rhino_oracle.test_flow_auto_direction tools.rhino_oracle.test_flow_local tools.rhino_oracle.test_flow_target_surface",
+      "exit_code": 0,
+      "log_sha256": "40441e4943f1f48f253514804b00083770aad889e3f0279dd794c4f41a44d215",
+      "passed_tests": 59
+    },
+    {
+      "command": "cargo clippy -p viboceros-geometry -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "193fdc91031b7a62c185cc421ade4ef0472b13e8cc2323a87307d34672373a81"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "public_references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/flow.htm",
+    "https://developer.rhino3d.com/api/cpp/class_c_rhino_flow_space_morph.html",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/normalizedlengthparameters"
+  ],
+  "limitations": [
+    "Automatic spatial source orientation, native Roadlike Automatic and Stairlike remain unfinished and guarded.",
+    "Targets should lie on regular parts of their reference surface. Singular normals, seams, trimmed/multiple-face ambiguities and all surface families are not exhaustively qualified.",
+    "Further fitted owner geometry, mixed rigid groups, option/construction-history details, preview appearance and performance still need Flow-specific qualification.",
+    "No full workspace suite, native-smlib runtime, cross-platform runtime or performance parity is claimed."
+  ],
+  "historical_provenance": {
+    "preserved_records": 5,
+    "preserved_entries": 24,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "6770b5f39a5eee2fddea7894f396113bc6fdc137efd4e6f6dc7e79bd0d57b64e",
+    "crates/viboceros-command/src/flow.rs": "3230254fc85e3de7e072c2260b0032959dc566bcac3aa8b7487c145d63092370",
+    "crates/viboceros-command/src/flow/tests.rs": "4ae425f02c529ddc5c7ae25d9969c36fad62155569f1b0c4959d9b86e3187d13",
+    "crates/viboceros-command/src/lib.rs": "8417b48846784f0d3af94cb143028cce9cd786f66097d7cecf54576154e7b67e",
+    "crates/viboceros-geometry/src/lib.rs": "ff61e8f0a3326b124777bd94e145f214bc1a7842c0517ecf8f30f6ab24906a15",
+    "crates/viboceros-geometry/src/morph.rs": "0697b798ff9ef5ca43efd5ab62584695d10fe9760e365c11e98c7a8ed1ae4c55",
+    "crates/viboceros-geometry/src/morph/flow.rs": "bc1f9f17b10b16f460f1303b444d35a119390c5780774089f5f4ddcca818a9e7",
+    "crates/viboceros-oracle/src/flow_line.rs": "22ce157420876ff9b28321694233af588bcb675aedfe694417cda8bbbf706135",
+    "docs/commands/flow.md": "0e2ce2cabe2377a992609421c8a2f377a1557a11da4bb818230ba6a10dd52f80",
+    "docs/flow-auto-direction-validation.json": "86ad0e2cfb129be7866e59104ea6ac137d020cccea911711750d98f185db67a1",
+    "docs/flow-command-validation.json": "43f9f815233afa4f9eb891645117123c85fdaf5fd94d67edbf0f744330dbfbf2",
+    "docs/flow-development.md": "48e5750f3e560351f3945843dc08fe9c3cfe1e2294c287d17ddd03a38b2831c9",
+    "docs/flow-local-validation.json": "770ce8723a5ef6997e125dcb8742e275136c1f43a7496f4374db0de111d9b2bc",
+    "docs/flow-nurbs-validation.json": "46ed14a25e1a56719bf02f90c2ca2b76686b58a088c68e2ebed55b448c97fad0",
+    "docs/orient-surface-validation.json": "ea75a5a3ad8030645bd5b0d8fd0c7d6ad046d5b3d812a4d755d429a3615df16a",
+    "src/app.rs": "ef283484e5292fb85d51635962e5590bc7be01c7f5944eff8fe507e76cf5fbd8",
+    "src/app/flow.rs": "9a0ae4172fba8595118b38502b64886871bbdfb5a09a1fbc34a327e24f6ab728",
+    "src/app/mesh_face_prompt.rs": "8acd37a14ea9f46dfb396665d6ecd7194d25a563ce47131abac95e2c86add631",
+    "src/app/object_selection.rs": "b5484ab7707104c13cb43552c0cf0505b5de41a28b2ced1e032dd3b0c45493a0",
+    "src/app/tests/flow.rs": "481cae7f07d11562c758698e7228da8c54f8520d5cb35d2729b971a54a11e042",
+    "src/viewport/flow_preview.rs": "0deb37859cfcc94b55645bdf412f34e89a48f077d59f21ab863a77323ff671a0",
+    "src/viewport/morph_preview.rs": "e05e9e85b2e46ed8a24afe8c46779345b5527c69e1097454e2283e9c638deca3",
+    "tools/rhino_oracle/fixtures/flow_target_surface.json": "db3b468f73647bcff0f443d0375fb2094854cf9ddc914f34ebf1bceb49f3f54a",
+    "tools/rhino_oracle/fixtures/flow_target_surface_corner.json": "db1c1b20848527586d3e1b7f429bdba3193a948b031bf71abc6f002d48f34cbc",
+    "tools/rhino_oracle/fixtures/flow_target_surface_lookup.json": "714302f5ec0ade9c996431fb1c3b15376fd96815a3541ed03e3dc2bc6d2a5156",
+    "tools/rhino_oracle/fixtures/flow_target_surface_patches.json": "e1951e73a3b7758d1aff2e800f40d006ec10cc3e0de505f954b9ded052ef1beb",
+    "tools/rhino_oracle/flow_line_probe.py": "ff805cbc2cb3efa7d9d261a51244828543c06cac9368a42aeccaeef72e9e33cc",
+    "tools/rhino_oracle/flow_probe.py": "c054ff20ab2ff3347bef7767fa23b6cff38811585b67c62200a39d10d469b697",
+    "tools/rhino_oracle/observations/flow_target_surface_comparison_20261017.json": "0282fb0e39a52805162fe11fa3d939b07ab7890d1a486f6c51b75064c5067ac5",
+    "tools/rhino_oracle/observations/flow_target_surface_corner_comparison_20261017.json": "820cfb2b1f7c8a3e24933cbacefc90d76b1b84f03104090adfd2d3dfafc097db",
+    "tools/rhino_oracle/observations/flow_target_surface_corner_rhino_20261017.json": "c0d753d299bee49bf2180faabed8dcbed9da7921558fcb883421ee1e13fbc6e3",
+    "tools/rhino_oracle/observations/flow_target_surface_corner_viboceros_20261017.json": "45544adc0c1d45c37819e8e2952bfc3d386bf7f33c0a99362282f93cb582b525",
+    "tools/rhino_oracle/observations/flow_target_surface_lookup_comparison_20261017.json": "8065f54cb004b752907e5d5bcd3330c1ece4f29cb187e4acc71c3d7bfd482768",
+    "tools/rhino_oracle/observations/flow_target_surface_lookup_rhino_20261017.json": "e8f6e19de82d4fcb4da5123686608719284ff031c6ac7707e1ad5ecddab7de2b",
+    "tools/rhino_oracle/observations/flow_target_surface_lookup_viboceros_20261017.json": "560d6dbe6cb1363ab32ad120c1c485d964064fffb4ab8bfe80f72b02d7a02278",
+    "tools/rhino_oracle/observations/flow_target_surface_patches_comparison_20261017.json": "289a3fc071d655fb49c2e17f2c1ba0fa33f97a9bd6e7d83f702b406397b1b750",
+    "tools/rhino_oracle/observations/flow_target_surface_patches_rhino_20261017.json": "a61223f3c4278dfd086426c723c4b89d509bf60477dee5514304086b2faa1aba",
+    "tools/rhino_oracle/observations/flow_target_surface_patches_viboceros_20261017.json": "f6cf364c3cdcba04da50a3071e27507db55103559edef36e32efeee86ab64ac1",
+    "tools/rhino_oracle/observations/flow_target_surface_rhino_20261017.json": "a1218bd23e2432ab330cc01db665912d2ae0d20ad13b903669bec14f5c4b2250",
+    "tools/rhino_oracle/observations/flow_target_surface_viboceros_20261017.json": "d62d79e2166b431307a7632249d91922b618e1a01751decc377eaa66034d248e",
+    "tools/rhino_oracle/test_flow_target_surface.py": "c167a3015ffec7c8bb4f0af98f489370c0a8f0370ec92c86b2a7c82f121b42f7"
+  }
+}

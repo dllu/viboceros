@@ -40,6 +40,92 @@ fn setup() -> (CommandRegistry, Document, [ObjectId; 2], Vec<ObjectId>) {
     (CommandRegistry::with_builtins(), d, [a, b], ids)
 }
 #[test]
+fn flow_target_surface_preserves_reference_excludes_selected_parent_and_releases_selection_on_replay()
+ {
+    let (r, mut d, [a, _], ids) = setup();
+    let b = d
+        .add_geometry(Geometry::Line(
+            LineSegment::try_new(p(20., 0., 0.), p(30., 0., 0.), d.tolerance()).unwrap(),
+        ))
+        .unwrap();
+    let surface = NurbsSurface::try_bilinear([
+        p(18., 0., -4.),
+        p(32., 0., -4.),
+        p(32., 0., 4.),
+        p(18., 0., 4.),
+    ])
+    .unwrap();
+    let s = d
+        .add_geometry(Geometry::NurbsSurface(surface.clone()))
+        .unwrap();
+    let original = ids
+        .iter()
+        .map(|id| (*id, d.object(*id).unwrap().geometry().clone()))
+        .collect::<Vec<_>>();
+    d.select_objects_direct([s], SelectionMode::Add).unwrap();
+    d.clear_history().unwrap();
+    let options = Options {
+        target_surface: Some(SurfaceReference {
+            id: s,
+            face: Some(0),
+        }),
+        copy: false,
+        ..Default::default()
+    };
+    assert_eq!(
+        super::options(
+            &options.arguments().split_whitespace().collect::<Vec<_>>(),
+            Options::default()
+        )
+        .unwrap()
+        .0,
+        options
+    );
+    r.execute(
+        &mut d,
+        &format!("Flow Base={a} Target={b} {}", options.arguments()),
+    )
+    .unwrap();
+    for (id, expected) in ids.iter().zip([p(22., 0., 1.), p(27., -1., 2.)]) {
+        let Geometry::Point(actual) = d.object(*id).unwrap().geometry() else {
+            panic!()
+        };
+        assert!(actual.distance_to(expected).unwrap() < 1e-12);
+    }
+    assert_eq!(
+        d.object(s).unwrap().geometry(),
+        &Geometry::NurbsSurface(surface)
+    );
+    assert_eq!(d.selected_object_ids().count(), 0);
+    assert!(r.flow_options().target_surface.is_none());
+    assert_eq!(d.undo().unwrap().as_deref(), Some("Flow"));
+    assert!(d.undo_label().is_none());
+    for (id, geometry) in original {
+        assert_eq!(d.object(id).unwrap().geometry(), &geometry);
+    }
+    assert_eq!(d.selected_object_ids().count(), 0);
+    assert_eq!(d.redo().unwrap().as_deref(), Some("Flow"));
+    assert_eq!(d.selected_object_ids().count(), 0);
+}
+#[test]
+fn invalid_surface_references_and_duplicate_surface_forms_fail_atomically() {
+    let (r, mut d, [a, b], _) = setup();
+    let before = format!("{d:?}");
+    for args in [
+        format!("TargetSurface={a}"),
+        format!("TargetSurfaceFace={a},999"),
+        format!("TargetSurface={a} TargetSurfaceFace={a},0"),
+        "TargetSurface=999999999".into(),
+    ] {
+        assert!(
+            r.execute(&mut d, &format!("Flow Base={a} Target={b} {args}"))
+                .is_err()
+        );
+        assert_eq!(format!("{d:?}"), before);
+        assert!(d.undo_label().is_none());
+    }
+}
+#[test]
 fn flow_copy_and_replace_retain_attributes_groups_and_one_history_entry() {
     for copy in [false, true] {
         let (r, mut d, [a, b], ids) = setup();

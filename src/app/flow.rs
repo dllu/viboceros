@@ -2,7 +2,9 @@
 use super::*;
 use std::{cell::RefCell, sync::Arc};
 use viboceros_command::circle_input::CircleInput;
-use viboceros_command::flow::{self as solver, GuideInput, GuideReference, Options};
+use viboceros_command::flow::{
+    self as solver, GuideInput, GuideReference, Options, SurfaceReference,
+};
 use viboceros_geometry::{CurveFlowLocalRadii, CurveFlowPointMorph};
 
 struct Guide {
@@ -38,6 +40,8 @@ pub(super) struct Session {
     options: Options,
     base: Option<Guide>,
     target: Option<Guide>,
+    surface: Option<viboceros_command::orient_surface::Target>,
+    picking_surface: bool,
     line: Option<Role>,
     axis: Option<Role>,
     local_circle: Option<CircleInput>,
@@ -66,8 +70,50 @@ impl Session {
 impl VibocerosApp {
     pub(super) fn picking_flow_guide(&self) -> bool {
         self.flow_session.as_ref().is_some_and(|s| {
-            s.line.is_none() && s.axis.is_none() && (s.base.is_none() || s.target.is_none())
+            !s.picking_surface
+                && s.line.is_none()
+                && s.axis.is_none()
+                && (s.base.is_none() || s.target.is_none())
         })
+    }
+    pub(super) fn picking_flow_surface(&self) -> bool {
+        self.flow_session
+            .as_ref()
+            .is_some_and(|s| s.picking_surface)
+    }
+    fn capture_flow_surface(
+        &self,
+        r: SurfaceReference,
+    ) -> Result<viboceros_command::orient_surface::Target, String> {
+        let s = self.flow_session.as_ref().unwrap();
+        if s.sources.contains(&r.id) || s.grips.iter().any(|g| g.object == r.id) {
+            return Err("Flow references must be separate from the source objects".into());
+        }
+        solver::capture_target_surface(&self.document, r).map_err(|e| e.to_string())
+    }
+    pub(super) fn pick_flow_surface(&mut self, id: Option<ObjectId>, face: Option<usize>) -> bool {
+        if !self.picking_flow_surface() {
+            return false;
+        }
+        let result = id
+            .ok_or_else(|| "Select the surface containing the target curve".to_owned())
+            .and_then(|id| self.capture_flow_surface(SurfaceReference { id, face }));
+        match result {
+            Ok(surface) => {
+                let s = self.flow_session.as_mut().unwrap();
+                s.options.target_surface = Some(SurfaceReference {
+                    id: surface.id,
+                    face: Some(surface.face),
+                });
+                s.surface = Some(surface);
+                s.picking_surface = false;
+                self.component_selection.clear_choices();
+                self.prepare_flow_preview();
+                self.flow_prompt();
+            }
+            Err(e) => self.push_log(format!("Error: {e}")),
+        }
+        true
     }
     pub(super) fn drawing_flow_line(&self) -> bool {
         self.flow_session.as_ref().is_some_and(|s| s.line.is_some())
@@ -131,6 +177,7 @@ impl VibocerosApp {
             return;
         };
         s.line = Some(role);
+        s.picking_surface = false;
         s.axis = None;
         s.local_circle = None;
         s.local_inner = None;
@@ -283,6 +330,8 @@ impl VibocerosApp {
             options,
             base: None,
             target: None,
+            surface: None,
+            picking_surface: false,
             line: None,
             axis: None,
             local_circle: None,
@@ -292,6 +341,17 @@ impl VibocerosApp {
             cache: RefCell::default(),
         });
         self.active_command = Some(InteractiveCommand::Flow { start: None });
+        if let Some(r) = options.target_surface {
+            match self.capture_flow_surface(r) {
+                Ok(surface) => self.flow_session.as_mut().unwrap().surface = Some(surface),
+                Err(e) => {
+                    let s = self.flow_session.as_mut().unwrap();
+                    s.options.target_surface = None;
+                    s.picking_surface = true;
+                    self.push_log(format!("Error: {e}"));
+                }
+            }
+        }
         for (role, input) in [(Role::Base, refs.base), (Role::Target, refs.target)] {
             if let Some(input) = input {
                 match self.capture_flow_guide(input) {
@@ -393,6 +453,9 @@ impl VibocerosApp {
         s.morph = None;
         s.local_circle = None;
         self.drafting_plane = None;
+        if s.picking_surface {
+            return;
+        }
         let (Some(a), Some(b)) = (&s.base, &s.target) else {
             return;
         };
@@ -428,7 +491,9 @@ impl VibocerosApp {
     }
     fn flow_prompt(&mut self) {
         let Some(s) = &self.flow_session else { return };
-        let phase = if s.local_circle.is_some() {
+        let phase = if s.picking_surface {
+            "select the surface containing the target curve, or TargetSurface=None"
+        } else if s.local_circle.is_some() {
             if s.local_inner.is_some() {
                 "enter or pick the second radius of influence"
             } else {
@@ -485,12 +550,21 @@ impl VibocerosApp {
             .target
             .as_ref()
             .is_some_and(|g| !g.current(&self.document));
-        if base || target {
+        let surface = s
+            .surface
+            .as_ref()
+            .is_some_and(|s| !s.current(&self.document));
+        if base || target || surface {
             if base {
                 s.base = None;
             }
             if target {
                 s.target = None;
+            }
+            if surface {
+                s.surface = None;
+                s.options.target_surface = None;
+                s.picking_surface = true;
             }
             s.morph = None;
             s.axis = None;
@@ -513,6 +587,46 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
+        if word.eq_ignore_ascii_case("TargetSurface") {
+            let s = self.flow_session.as_mut().unwrap();
+            s.surface = None;
+            s.options.target_surface = None;
+            s.picking_surface = true;
+            s.line = None;
+            s.axis = None;
+            s.local_inner = None;
+            s.pick_pointer = None;
+            self.active_command = Some(InteractiveCommand::Flow { start: None });
+            self.prepare_flow_preview();
+            self.flow_prompt();
+            return true;
+        }
+        if self.picking_flow_surface() {
+            let tokens = input.split_whitespace().collect::<Vec<_>>();
+            let reference = match tokens.as_slice() {
+                [key, id] if key.trim_start_matches('_').eq_ignore_ascii_case("SelID") => id
+                    .parse()
+                    .ok()
+                    .map(|id| SurfaceReference { id, face: None }),
+                [token] => token
+                    .parse()
+                    .ok()
+                    .map(|id| SurfaceReference { id, face: None })
+                    .or_else(|| {
+                        let (key, value) = token.split_once('=')?;
+                        key.eq_ignore_ascii_case("Face")
+                            .then(|| viboceros_command::curve_reference::parse_edge(value))?
+                            .map(|(id, face)| SurfaceReference {
+                                id,
+                                face: Some(face),
+                            })
+                    }),
+                _ => None,
+            };
+            if let Some(r) = reference {
+                return self.pick_flow_surface(Some(r.id), r.face);
+            }
+        }
         if self.drawing_flow_radius() {
             if let Ok(radius) = input.trim().parse() {
                 self.accept_flow_radius(radius);
@@ -533,6 +647,7 @@ impl VibocerosApp {
                         | "targetup"
                         | "base"
                         | "target"
+                        | "targetsurface"
                         | "line"
                         | "copy"
                         | "rigid"
@@ -566,6 +681,7 @@ impl VibocerosApp {
                         | "targetup"
                         | "base"
                         | "target"
+                        | "targetsurface"
                         | "line"
                         | "copy"
                         | "rigid"
@@ -655,6 +771,7 @@ impl VibocerosApp {
             } else {
                 s.target = None;
             }
+            s.picking_surface = false;
             s.morph = None;
             s.axis = None;
             s.local_circle = None;
@@ -717,6 +834,38 @@ impl VibocerosApp {
         };
         match solver::options(&args.split_whitespace().collect::<Vec<_>>(), prior) {
             Ok((options, refs)) if refs.base.is_none() && refs.target.is_none() => {
+                if options.target_surface != prior.target_surface {
+                    let surface = options
+                        .target_surface
+                        .map(|r| self.capture_flow_surface(r))
+                        .transpose();
+                    match surface {
+                        Ok(surface) => {
+                            let s = self.flow_session.as_mut().unwrap();
+                            s.surface = surface;
+                            s.picking_surface = false;
+                        }
+                        Err(e) => {
+                            self.push_log(format!("Error: {e}"));
+                            return true;
+                        }
+                    }
+                } else if self.picking_flow_surface()
+                    && options.target_surface.is_none()
+                    && args.split_whitespace().any(|arg| {
+                        matches!(
+                            arg.split('=')
+                                .next()
+                                .unwrap()
+                                .trim_start_matches(['_', '-'])
+                                .to_ascii_lowercase()
+                                .as_str(),
+                            "targetsurface" | "targetsurfaceface"
+                        )
+                    })
+                {
+                    self.flow_session.as_mut().unwrap().picking_surface = false;
+                }
                 self.flow_session.as_mut().unwrap().options = options;
                 if !options.local || options.local_radii.is_some() {
                     self.flow_session.as_mut().unwrap().local_inner = None;
@@ -725,6 +874,8 @@ impl VibocerosApp {
                     || options.local != prior.local
                     || options.base_up != prior.base_up
                     || options.target_up != prior.target_up
+                    || options.target_surface != prior.target_surface
+                    || self.flow_session.as_ref().unwrap().morph.is_none()
                 {
                     let mut prior_geometry = prior.geometry();
                     prior_geometry.preserve_structure = options.preserve_structure;
@@ -733,6 +884,7 @@ impl VibocerosApp {
                         && (!options.local || options.local_radii.is_some())
                         && options.base_up == prior.base_up
                         && options.target_up == prior.target_up;
+                    let same_guides = same_guides && options.target_surface == prior.target_surface;
                     let s = self.flow_session.as_mut().unwrap();
                     if same_guides && let Some(morph) = &s.morph {
                         s.morph = Some(Arc::new(

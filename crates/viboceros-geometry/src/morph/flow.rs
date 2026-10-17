@@ -5,6 +5,27 @@ use std::sync::Arc;
 mod local;
 pub use local::CurveFlowLocalRadii;
 
+/// Immutable underlying surface and B-rep face orientation for target sections.
+#[derive(Clone, Debug)]
+pub struct CurveFlowTargetSurface {
+    surface: Arc<NurbsSurface>,
+    reversed: bool,
+}
+impl CurveFlowTargetSurface {
+    pub fn new(surface: Arc<NurbsSurface>, reversed: bool) -> Self {
+        Self { surface, reversed }
+    }
+    fn normal(&self, point: Point3, tolerance: Tolerance) -> Result<UnitVector3, GeometryError> {
+        let (u, v) = self.surface.closest_parameters(point, tolerance)?;
+        let normal = self.surface.normal_at(u, v)?;
+        Ok(if self.reversed {
+            normal.opposite()
+        } else {
+            normal
+        })
+    }
+}
+
 const FLOW_LOOKUP_INTERVALS: usize = 840;
 const FLOW_INVERSE_TOLERANCE: Real = 1e-6;
 const FLOW_LENGTH_TOLERANCE: Real = 1e-8;
@@ -64,6 +85,7 @@ struct Guide {
     length: ArcLengthSampler<'static>,
     lookup: Option<NurbsLookup>,
     normal: Option<UnitVector3>,
+    surface: Option<CurveFlowTargetSurface>,
     parameters: Vec<Real>,
     frames: Vec<Frame3>,
     tolerance: Tolerance,
@@ -75,6 +97,7 @@ struct Guide {
 struct NurbsLookup {
     parameters: Vec<Real>,
     length: Real,
+    mapped_length: Real,
 }
 impl NurbsLookup {
     fn needed(curve: CurveRef<'_>) -> Result<bool, GeometryError> {
@@ -105,7 +128,38 @@ impl NurbsLookup {
         if !length.is_finite() || length <= 0. {
             return Err(GeometryError::NumericalIntegrationDidNotConverge);
         }
-        Ok(Self { parameters, length })
+        Ok(Self {
+            parameters,
+            length,
+            mapped_length: length,
+        })
+    }
+    fn prefix(
+        &self,
+        sampler: &ArcLengthSampler<'_>,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        // Unstretched Flow uses the source-length prefix of a longer target.
+        // Its cut and the prefix's inverse table each use incremental queries;
+        // scaling a full-curve table gives different quadrature checkpoints.
+        let fraction = crate::parameter::scaled_ratio(1., length, self.length)?;
+        let cut = sampler
+            .parameters_at_incremental_normalized_lengths(&[fraction], FLOW_INVERSE_TOLERANCE)?[0];
+        let curve = sampler
+            .source_curve()
+            .to_owned()
+            .try_trimmed(*sampler.source_curve().domain().start()..=cut)?;
+        let prefix = ArcLengthSampler::try_new(curve.as_ref(), tolerance)?;
+        let fractions = (0..=FLOW_LOOKUP_INTERVALS)
+            .map(|i| i as Real / FLOW_LOOKUP_INTERVALS as Real)
+            .collect::<Vec<_>>();
+        Ok(Self {
+            parameters: prefix
+                .parameters_at_incremental_normalized_lengths(&fractions, FLOW_INVERSE_TOLERANCE)?,
+            length: self.length,
+            mapped_length: length,
+        })
     }
     fn parameter(&self, fraction: Real) -> Real {
         let u = fraction.clamp(0., 1.) * FLOW_LOOKUP_INTERVALS as Real;
@@ -134,6 +188,7 @@ impl Guide {
         curve: Arc<Curve3>,
         reverse: bool,
         up: Option<Vector3>,
+        surface: Option<CurveFlowTargetSurface>,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let curve = if reverse {
@@ -148,7 +203,7 @@ impl Guide {
         };
         let mut parameters = Vec::new();
         let mut frames = Vec::new();
-        if normal.is_none() {
+        if normal.is_none() && surface.is_none() {
             for i in 0..=64 {
                 let t = reference.parameter_at(i as Real / 64.)?;
                 if parameters.last().is_none_or(|last| *last < t) {
@@ -185,6 +240,7 @@ impl Guide {
             length,
             lookup,
             normal,
+            surface,
             parameters,
             frames,
             tolerance,
@@ -194,6 +250,13 @@ impl Guide {
         self.length.source_curve()
     }
     fn frame(&self, t: Real) -> Result<Section, GeometryError> {
+        self.frame_at_point(t, None)
+    }
+    fn frame_at_point(
+        &self,
+        t: Real,
+        normal_point: Option<Point3>,
+    ) -> Result<Section, GeometryError> {
         let curve = self.curve();
         let side = if t == *curve.domain().end() {
             ParameterSide::Left
@@ -201,7 +264,12 @@ impl Guide {
             ParameterSide::Right
         };
         let sample = curve.evaluate_with_tangent_on_side(t, side)?;
-        let y = if let Some(n) = self.normal {
+        let normal = if let Some(surface) = &self.surface {
+            Some(surface.normal(normal_point.unwrap_or(sample.point()), self.tolerance)?)
+        } else {
+            self.normal
+        };
+        let y = if let Some(n) = normal {
             let cross = n.as_vector().cross(sample.tangent().as_vector())?;
             if cross.length()? == 0. {
                 return Section::axial(sample.point(), sample.tangent());
@@ -238,8 +306,11 @@ impl Guide {
             Tolerance::NUMERICAL_VALIDATION,
         )?))
     }
-    fn at_distance(&self, distance: Real) -> Result<Section, GeometryError> {
-        let length = self.total_length();
+    fn at_distance(&self, distance: Real, along: Real) -> Result<Section, GeometryError> {
+        let length = self
+            .lookup
+            .as_ref()
+            .map_or(self.total_length(), |q| q.mapped_length);
         let clamped = distance.clamp(0., length);
         let sample = if let Some(lookup) = &self.lookup {
             self.curve()
@@ -247,9 +318,20 @@ impl Guide {
         } else {
             self.length.sample_at_distance(clamped)?
         };
-        let frame = self.frame(sample.parameter())?.with_origin(sample.point());
         let extra = distance - clamped;
-        Ok(frame.with_origin(frame.origin.translated(frame.axes[0].scaled(extra)?)?))
+        let origin = sample
+            .point()
+            .translated(sample.tangent().as_vector().scaled(extra)?)?;
+        let normal_point = if self.surface.is_some() {
+            // Surface orientation follows the axial endpoint residual too,
+            // before applying either transverse coordinate.
+            Some(origin.translated(sample.tangent().as_vector().scaled(along)?)?)
+        } else {
+            None
+        };
+        Ok(self
+            .frame_at_point(sample.parameter(), normal_point)?
+            .with_origin(origin))
     }
     fn total_length(&self) -> Real {
         self.lookup
@@ -258,7 +340,7 @@ impl Guide {
     }
     fn distance_at_parameter(&self, parameter: Real) -> Result<Real, GeometryError> {
         if let Some(lookup) = &self.lookup {
-            Ok(lookup.fraction(parameter) * lookup.length)
+            Ok(lookup.fraction(parameter) * lookup.mapped_length)
         } else {
             self.length.distance_at_parameter(parameter)
         }
@@ -295,11 +377,32 @@ impl CurveFlowPointMorph {
         options: CurveFlowOptions,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        let mut base = Guide::new(base, options.reverse_base, options.base_up, tolerance)?;
-        let mut target = Guide::new(target, options.reverse_target, options.target_up, tolerance)?;
+        Self::try_new_shared_with_surface(base, target, options, None, tolerance)
+    }
+    pub fn try_new_shared_with_surface(
+        base: Arc<Curve3>,
+        target: Arc<Curve3>,
+        options: CurveFlowOptions,
+        surface: Option<CurveFlowTargetSurface>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut base = Guide::new(base, options.reverse_base, options.base_up, None, tolerance)?;
+        let mut target = Guide::new(
+            target,
+            options.reverse_target,
+            options.target_up,
+            surface,
+            tolerance,
+        )?;
         let base_linear = base.curve().to_nurbs()?.is_linear_at_zero_tolerance()?;
         let target_linear = target.curve().to_nurbs()?.is_linear_at_zero_tolerance()?;
-        if options.base_up.is_none() && options.target_up.is_none() {
+        if !options.stretch
+            && base.total_length() < target.total_length()
+            && let Some(lookup) = &target.lookup
+        {
+            target.lookup = Some(lookup.prefix(&target.length, base.total_length(), tolerance)?);
+        }
+        if target.surface.is_none() && options.base_up.is_none() && options.target_up.is_none() {
             // A straight rail has no unique supporting plane. Borrow the
             // curved rail's plane; a parallel tangent needs a deterministic
             // perpendicular axis instead. Both straight rails use the direct
@@ -341,9 +444,29 @@ impl CurveFlowPointMorph {
                 target.normal = Some(b.opposite());
             }
         }
+        if target.surface.is_some() && base_linear && options.base_up.is_none() {
+            let tangent = base
+                .curve()
+                .evaluate_with_tangent(*base.curve().domain().start())?
+                .tangent();
+            let vertical = Vector3::try_new(0., 0., 1.)?.normalized_nonzero()?;
+            base.normal = Some(
+                if vertical.as_vector().cross(tangent.as_vector())?.length()? == 0. {
+                    Frame3::try_from_normal(
+                        base.curve().start_point()?,
+                        tangent.as_vector(),
+                        Tolerance::NUMERICAL_VALIDATION,
+                    )?
+                    .x_axis()
+                } else {
+                    vertical
+                },
+            );
+        }
         let base = Arc::new(base);
         let target = Arc::new(target);
-        let linear_mapping = if options.base_up.is_none()
+        let linear_mapping = if target.surface.is_none()
+            && options.base_up.is_none()
             && options.target_up.is_none()
             && base_linear
             && target_linear
@@ -464,7 +587,8 @@ impl CurveFlowPointMorph {
     }
     pub fn uses_spatial_transport(&self) -> bool {
         self.linear_mapping.is_none()
-            && (self.base.normal.is_none() || self.target.normal.is_none())
+            && (self.base.normal.is_none()
+                || (self.target.normal.is_none() && self.target.surface.is_none()))
     }
     pub fn with_preserve_structure(mut self, preserve: bool) -> Self {
         self.options.preserve_structure = preserve;
@@ -555,7 +679,7 @@ impl CurveFlowPointMorph {
                 crate::parameter::scaled_ratio(along, self.target_length(), self.base_length())?;
         }
         crate::require_finite([distance, along, y, z], "curve flow coordinates")?;
-        let frame = self.target.at_distance(distance)?;
+        let frame = self.target.at_distance(distance, along)?;
         let c = frame.axes[0].scaled(along)?.to_array();
         let a = frame.axes[1].scaled(y)?.to_array();
         let b = frame.axes[2].scaled(z)?.to_array();
@@ -593,6 +717,56 @@ mod tests {
                     .unwrap(),
             ),
         )
+    }
+    #[test]
+    fn surface_sections_override_target_up_respect_face_orientation_and_share_storage() {
+        let surface = Arc::new(
+            NurbsSurface::try_bilinear([
+                p(18., 0., -4.),
+                p(32., 0., -4.),
+                p(32., 0., 4.),
+                p(18., 0., 4.),
+            ])
+            .unwrap(),
+        );
+        for reversed in [false, true] {
+            let morph = CurveFlowPointMorph::try_new_shared_with_surface(
+                Arc::new(Curve3::Line(
+                    crate::LineSegment::try_new(p(0., 0., 0.), p(10., 0., 0.), Tolerance::DEFAULT)
+                        .unwrap(),
+                )),
+                Arc::new(Curve3::Line(
+                    crate::LineSegment::try_new(p(20., 0., 0.), p(30., 0., 0.), Tolerance::DEFAULT)
+                        .unwrap(),
+                )),
+                CurveFlowOptions {
+                    target_up: Some(Vector3::try_new(0., 0., 1.).unwrap()),
+                    ..Default::default()
+                },
+                Some(CurveFlowTargetSurface::new(surface.clone(), reversed)),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert!(!morph.uses_spatial_transport());
+            assert!(morph.linear_mapping.is_none());
+            let clone = morph.clone();
+            assert!(Arc::ptr_eq(&morph.target, &clone.target));
+            assert!(Arc::ptr_eq(
+                &surface,
+                &morph.target.surface.as_ref().unwrap().surface
+            ));
+            let sign = if reversed { -1. } else { 1. };
+            for x in [-1., 0., 4., 10., 11.] {
+                assert!(
+                    morph
+                        .morph_point(p(x, 1., 2.))
+                        .unwrap()
+                        .distance_to(p(x + 20., -2. * sign, sign))
+                        .unwrap()
+                        < 1e-12
+                );
+            }
+        }
     }
     #[test]
     fn flow_endpoint_residual_uses_endpoint_tangent_and_clones_share_preparation() {

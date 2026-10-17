@@ -6,7 +6,7 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 def validate(op):
-    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','diagnostic_length_batches','diagnostic_length_batch_divisions','diagnostic_integrals','diagnostic_length_requests','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
+    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','diagnostic_length_batches','diagnostic_length_batch_divisions','diagnostic_integrals','diagnostic_length_requests','morph_tolerance','quick_preview','roadlike_syntax','diagnostic_flow_trim'}:raise ValueError('invalid Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid Flow id')
     for key in ('base','target'):
         if not isinstance(op[key],dict)or op[key].get('type')not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('Flow requires curve guides')
@@ -19,8 +19,9 @@ def validate(op):
     if o.get('stairlike'):raise ValueError('Stairlike capture is not qualified')
     if op.get('roadlike_syntax',0)not in(0,1,2,3):raise ValueError('invalid roadlike capture sequence')
     if 'morph_tolerance'in op and(type(op['morph_tolerance'])not in(int,float)or (math.isnan(op['morph_tolerance'])or math.isinf(op['morph_tolerance']))or op['morph_tolerance']<=0):raise ValueError('invalid Flow morph tolerance')
-    for k in ('command','group','diagnostics','quick_preview'):
+    for k in ('command','group','diagnostics','quick_preview','diagnostic_flow_trim'):
         if type(op.get(k,False))is not bool:raise ValueError('invalid Flow capture flag')
+    if op.get('diagnostic_flow_trim')and not op.get('diagnostics'):raise ValueError('Flow trim diagnostic requires diagnostics')
     if 'diagnostic_length_samples'in op and(type(op['diagnostic_length_samples'])is not int or not 2<=op['diagnostic_length_samples']<=129 or not op.get('diagnostics')):raise ValueError('invalid Flow length diagnostic count')
     if 'diagnostic_length_batches'in op and(type(op['diagnostic_length_batches'])is not bool or not op.get('diagnostic_length_samples')):raise ValueError('invalid Flow batch length diagnostics')
     if 'diagnostic_integrals'in op and(type(op['diagnostic_integrals'])is not bool or not op.get('diagnostic_length_samples')):raise ValueError('invalid Flow integral diagnostics')
@@ -114,6 +115,21 @@ def run(op,host,iterations,tolerance):
                                 if 'diagnostic_length_batch_divisions'in op:row['divisions']=count
                                 batches.append(row)
                         result['length_batches']=batches
+                if op.get('diagnostic_flow_trim'):
+                    common=min(base.GetLength(),target.GetLength())
+                    if c.GetLength()>common:
+                        ok,default_cut=c.LengthParameter(common)
+                        if not ok:raise ValueError('public trim length query failed')
+                        fraction=host['System'].Array[host['System'].Double]([common/c.GetLength()])
+                        cuts=c.NormalizedLengthParameters(fraction,0.,1e-4)
+                        if cuts is None:raise ValueError('public prefix inverse failed')
+                        cut=cuts[0]
+                        clipped=c.Trim(c.Domain.T0,cut)
+                        try:
+                            fractions=host['System'].Array[host['System'].Double]([float(i)/840 for i in range(841)])
+                            parameters=clipped.NormalizedLengthParameters(fractions,0.,1e-4)
+                            result['flow_trim']=dict(cut=cut,default_cut=default_cut,length=clipped.GetLength(),parameters=list(parameters))
+                        finally:clipped.Dispose()
                 if 'diagnostic_length_requests'in op:
                     requests=[]
                     for request in op['diagnostic_length_requests']:

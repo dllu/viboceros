@@ -28,6 +28,9 @@ impl MorphPreviewKey for Key {
     fn rigid_groups(&self) -> bool {
         self.options.rigid_groups
     }
+    fn rigid_bounds_tolerance(&self, _: Tolerance) -> Tolerance {
+        Tolerance::NUMERICAL_VALIDATION
+    }
     fn preserve(&self) -> bool {
         self.options.preserve_structure
     }

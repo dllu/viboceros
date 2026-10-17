@@ -1,0 +1,173 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "flow_line",
+      "id": "surface-target-prefix-corner",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          5,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "nurbs",
+        "degree": 1,
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          2
+        ],
+        "control_points": [
+          {
+            "point": [
+              20,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              25,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              25,
+              10,
+              0
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "source": {
+        "type": "point_cloud",
+        "points": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            0.3,
+            0
+          ],
+          [
+            4,
+            0,
+            0.3
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            5,
+            0.3,
+            0
+          ],
+          [
+            5,
+            0,
+            0.3
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            0.3,
+            0
+          ],
+          [
+            6,
+            0,
+            0.3
+          ]
+        ]
+      },
+      "target_surface": {
+        "type": "surface",
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              18,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              28,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              18,
+              12,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              28,
+              12,
+              0
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "options": {
+        "copy": false,
+        "stretch": false
+      },
+      "group": true
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "surface-target-prefix-corner",
+      "value": {
+        "after": {
+          "group_count": 1,
+          "guide_selected": true,
+          "guide_unchanged": true,
+          "object_count": 3,
+          "outputs": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "group_count": 1,
+              "groups": [
+                0
+              ],
+              "original": true,
+              "peer": false,
+              "points": [
+                [
+                  24.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  24.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  24.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  25.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  24.7,
+                  0.0,
+                  0.0
+                ],
+                [
+                  25.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  25.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  24.7,
+                  1.0,
+                  0.0
+                ],
+                [
+                  25.0,
+                  1.0,
+                  0.3
+                ]
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "group_count": 1,
+          "guide_selected": false,
+          "guide_unchanged": true,
+          "object_count": 3,
+          "outputs": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "group_count": 1,
+              "groups": [
+                0
+              ],
+              "original": true,
+              "peer": false,
+              "points": [
+                [
+                  24.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  24.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  24.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  25.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  24.7,
+                  0.0,
+                  0.0
+                ],
+                [
+                  25.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  25.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  24.7,
+                  1.0,
+                  0.0
+                ],
+                [
+                  25.0,
+                  1.0,
+                  0.3
+                ]
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "group_count": 1,
+          "guide_selected": false,
+          "guide_unchanged": true,
+          "object_count": 3,
+          "outputs": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "group_count": 1,
+              "groups": [
+                0
+              ],
+              "original": true,
+              "peer": false,
+              "points": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  5.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  5.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  5.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.3
+                ]
+              ],
+              "selected": true
+            }
+          ]
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Flow",
+            "objects": {
+              "group_count": 1,
+              "guide_selected": true,
+              "guide_unchanged": true,
+              "object_count": 3,
+              "outputs": [
+                {
+                  "grips": [],
+                  "grips_on": false,
+                  "group_count": 1,
+                  "groups": [
+                    0
+                  ],
+                  "original": true,
+                  "peer": false,
+                  "points": [
+                    [
+                      24.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      24.0,
+                      0.3,
+                      0.0
+                    ],
+                    [
+                      24.0,
+                      0.0,
+                      0.3
+                    ],
+                    [
+                      25.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      24.7,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      25.0,
+                      0.0,
+                      0.3
+                    ],
+                    [
+                      25.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      24.7,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      25.0,
+                      1.0,
+                      0.3
+                    ]
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Flow\nBase curve - select near one end ( Copy=Yes  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _Copy=_No\nBase curve - select near one end ( Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _Rigid=_No\nBase curve - select near one end ( Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _Stretch=_No\nBase curve - select near one end ( Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _PreserveStructure=_No\nBase curve - select near one end ( Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _Roadlike=_No\nBase curve - select near one end ( Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _Local=_No\nBase curve - select near one end ( Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _Line\nStart of line: w0.0,0.0,0.0\nEnd of line: w5.0,0.0,0.0\nTarget curve - select near matching end ( TargetSurface  Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): _TargetSurface\nSelect surface the target curve is on: '_-SelID\nObject ID to select: e2ff861f-52d2-490d-b4d2-c0101f595ad3\n1 surface added to selection.\nTarget curve - select near matching end ( TargetSurface  Copy=No  Rigid=No  Line  Local=No  Stretch=No  PreserveStructure=No  Roadlike=No ): '_-SelID\nObject ID to select: 12e89de4-c91e-4855-b032-70b6bcc7b8cf\n1 curve added to selection.\nMorphed one object.",
+        "macro": "_Flow _Copy=_No _Rigid=_No _Stretch=_No _PreserveStructure=_No _Roadlike=_No _Local=_No _Line w0.0,0.0,0.0 w5.0,0.0,0.0 _TargetSurface '_-SelID e2ff861f-52d2-490d-b4d2-c0101f595ad3 '_-SelID 12e89de4-c91e-4855-b032-70b6bcc7b8cf",
+        "redo": {
+          "group_count": 1,
+          "guide_selected": false,
+          "guide_unchanged": true,
+          "object_count": 3,
+          "outputs": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "group_count": 1,
+              "groups": [
+                0
+              ],
+              "original": true,
+              "peer": false,
+              "points": [
+                [
+                  24.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  24.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  24.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  25.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  24.7,
+                  0.0,
+                  0.0
+                ],
+                [
+                  25.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  25.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  24.7,
+                  1.0,
+                  0.0
+                ],
+                [
+                  25.0,
+                  1.0,
+                  0.3
+                ]
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_command_returned": true,
+        "undo": {
+          "group_count": 1,
+          "guide_selected": false,
+          "guide_unchanged": true,
+          "object_count": 3,
+          "outputs": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "group_count": 1,
+              "groups": [
+                0
+              ],
+              "original": true,
+              "peer": false,
+              "points": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  5.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  5.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  5.0,
+                  0.0,
+                  0.3
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.3,
+                  0.0
+                ],
+                [
+                  6.0,
+                  0.0,
+                  0.3
+                ]
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "undo_command_returned": true
+      }
+    }
+  ]
+}
