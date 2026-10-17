@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 use viboceros_document::{ControlPointId, CopyGroupPolicy, ReplacementHistory};
 use viboceros_geometry::{BoundingBox3, CurveFlowOptions, CurveFlowPointMorph};
 
-pub const USAGE: &str = "Flow Base=id Target=id [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No]";
+pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No]";
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub copy: bool,
@@ -52,15 +52,55 @@ impl Options {
         )
     }
 }
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct GuideReference {
     pub id: ObjectId,
     pub edge: Option<usize>,
 }
+/// A selected document curve/edge or an immutable temporary line.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum GuideInput {
+    Object(GuideReference),
+    Line([Point3; 2]),
+}
+impl From<GuideReference> for GuideInput {
+    fn from(value: GuideReference) -> Self {
+        Self::Object(value)
+    }
+}
+impl GuideInput {
+    pub fn object_id(self) -> Option<ObjectId> {
+        match self {
+            Self::Object(r) => Some(r.id),
+            Self::Line(_) => None,
+        }
+    }
+    pub fn arguments(self, name: &str) -> String {
+        match self {
+            Self::Object(r) => match r.edge {
+                Some(edge) => format!("{name}Edge={},{}", r.id, edge),
+                None => format!("{name}={}", r.id),
+            },
+            Self::Line([a, b]) => {
+                let point = |p: Point3| p.to_array().map(|x| x.to_string()).join(",");
+                format!("{name}Line={};{}", point(a), point(b))
+            }
+        }
+    }
+}
 #[derive(Default)]
 pub struct References {
-    pub base: Option<GuideReference>,
-    pub target: Option<GuideReference>,
+    pub base: Option<GuideInput>,
+    pub target: Option<GuideInput>,
+}
+fn line_pair(value: &str) -> Result<[Point3; 2], CommandError> {
+    let (a, b) = value.split_once(';').ok_or(CommandError::Usage(USAGE))?;
+    let (a, n) = parse_point(&[a])?;
+    let (b, m) = parse_point(&[b])?;
+    if n != 1 || m != 1 {
+        return Err(CommandError::Usage(USAGE));
+    }
+    Ok([a, b])
 }
 pub fn options(args: &[&str], mut options: Options) -> Result<(Options, References), CommandError> {
     let mut refs = References::default();
@@ -71,9 +111,30 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
             .split_once('=')
             .map_or((args[i], None), |(k, v)| (k, Some(v)));
         let key = key.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        if key == "line" {
+            let base = refs.base.is_none();
+            let role = if base { "base" } else { "target" };
+            if !seen.insert(role.to_owned()) {
+                return Err(CommandError::Usage(USAGE));
+            }
+            let (points, consumed) = if let Some(value) = value {
+                (line_pair(value)?, 0)
+            } else {
+                let (a, n) = parse_point(&args[i + 1..])?;
+                let (b, m) = parse_point(&args[i + 1 + n..])?;
+                ([a, b], n + m)
+            };
+            if base {
+                refs.base = Some(GuideInput::Line(points));
+            } else {
+                refs.target = Some(GuideInput::Line(points));
+            }
+            i += consumed + 1;
+            continue;
+        }
         let canonical = match key.as_str() {
-            "baseedge" => "base",
-            "targetedge" => "target",
+            "baseedge" | "baseline" => "base",
+            "targetedge" | "targetline" => "target",
             _ => &key,
         };
         if !seen.insert(canonical.to_owned()) {
@@ -86,6 +147,14 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
             *args.get(i).ok_or(CommandError::Usage(USAGE))?
         };
         match key.as_str() {
+            "baseline" | "targetline" => {
+                let input = GuideInput::Line(line_pair(value)?);
+                if key.starts_with("base") {
+                    refs.base = Some(input);
+                } else {
+                    refs.target = Some(input);
+                }
+            }
             "base" | "target" | "baseedge" | "targetedge" => {
                 let reference = if key.ends_with("edge") {
                     let (id, edge) =
@@ -101,9 +170,9 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
                     }
                 };
                 if key.starts_with("base") {
-                    refs.base = Some(reference);
+                    refs.base = Some(reference.into());
                 } else {
-                    refs.target = Some(reference);
+                    refs.target = Some(reference.into());
                 }
             }
             "copy" | "rigid" | "rigidgroups" | "stretch" | "preservestructure" | "reversebase"
@@ -137,7 +206,13 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
     }
     Ok((options, refs))
 }
-fn guide(doc: &Document, r: GuideReference) -> Result<Curve3, CommandError> {
+fn guide(doc: &Document, input: GuideInput) -> Result<Curve3, CommandError> {
+    let r = match input {
+        GuideInput::Line([a, b]) => {
+            return Ok(Curve3::Line(LineSegment::try_new(a, b, doc.tolerance())?));
+        }
+        GuideInput::Object(r) => r,
+    };
     let object = doc
         .object(r.id)
         .filter(|_| doc.is_object_selectable(r.id))
@@ -148,13 +223,13 @@ fn guide(doc: &Document, r: GuideReference) -> Result<Curve3, CommandError> {
 }
 pub fn prepare(
     doc: &Document,
-    base: GuideReference,
-    target: GuideReference,
+    base: impl Into<GuideInput>,
+    target: impl Into<GuideInput>,
     options: Options,
 ) -> Result<CurveFlowPointMorph, CommandError> {
     let mut morph = CurveFlowPointMorph::try_new(
-        guide(doc, base)?,
-        guide(doc, target)?,
+        guide(doc, base.into())?,
+        guide(doc, target.into())?,
         options.geometry(),
         doc.tolerance(),
     )?;
@@ -266,11 +341,13 @@ impl Command for FlowCommand {
         let (options, refs) = options(&args, self.0.get())?;
         let base = refs.base.ok_or(CommandError::Usage(USAGE))?;
         let target = refs.target.ok_or(CommandError::Usage(USAGE))?;
-        sources.ids.retain(|id| *id != base.id && *id != target.id);
+        sources
+            .ids
+            .retain(|id| Some(*id) != base.object_id() && Some(*id) != target.object_id());
         if sources
             .grips
             .iter()
-            .any(|g| g.object == base.id || g.object == target.id)
+            .any(|g| Some(g.object) == base.object_id() || Some(g.object) == target.object_id())
         {
             return Err(CommandError::Usage(
                 "Flow guides cannot supply source grips",

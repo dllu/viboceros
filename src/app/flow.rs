@@ -1,22 +1,34 @@
 //! Two immutable guides, a shared preview, and one staged Flow edit.
 use super::*;
 use std::{cell::RefCell, sync::Arc};
-use viboceros_command::flow::{self as solver, GuideReference, Options};
+use viboceros_command::flow::{self as solver, GuideInput, GuideReference, Options};
 use viboceros_geometry::CurveFlowPointMorph;
 
 struct Guide {
-    reference: GuideReference,
-    parent: viboceros_document::GeometrySnapshot,
+    input: GuideInput,
+    parent: Option<viboceros_document::GeometrySnapshot>,
     tolerance: Tolerance,
 }
 impl Guide {
     fn current(&self, doc: &Document) -> bool {
         self.tolerance == doc.tolerance()
-            && doc.is_object_selectable(self.reference.id)
-            && doc
-                .object(self.reference.id)
-                .is_some_and(|o| self.parent.shares_storage_with(o.geometry_snapshot()))
+            && match self.input {
+                GuideInput::Line(_) => true,
+                GuideInput::Object(r) => {
+                    doc.is_object_selectable(r.id)
+                        && doc.object(r.id).is_some_and(|o| {
+                            self.parent
+                                .as_ref()
+                                .is_some_and(|p| p.shares_storage_with(o.geometry_snapshot()))
+                        })
+                }
+            }
     }
+}
+#[derive(Clone, Copy)]
+enum Role {
+    Base,
+    Target,
 }
 pub(super) struct Session {
     sources: Vec<ObjectId>,
@@ -25,6 +37,7 @@ pub(super) struct Session {
     options: Options,
     base: Option<Guide>,
     target: Option<Guide>,
+    line: Option<Role>,
     morph: Option<Arc<CurveFlowPointMorph>>,
     pick_pointer: Option<(usize, egui::Pos2)>,
     cache: RefCell<crate::viewport::FlowPreviewCache>,
@@ -44,7 +57,62 @@ impl VibocerosApp {
     pub(super) fn picking_flow_guide(&self) -> bool {
         self.flow_session
             .as_ref()
-            .is_some_and(|s| s.base.is_none() || s.target.is_none())
+            .is_some_and(|s| s.line.is_none() && (s.base.is_none() || s.target.is_none()))
+    }
+    pub(super) fn drawing_flow_line(&self) -> bool {
+        self.flow_session.as_ref().is_some_and(|s| s.line.is_some())
+    }
+    fn begin_flow_line(&mut self) {
+        let s = self.flow_session.as_mut().unwrap();
+        let role = if s.base.is_none() {
+            Role::Base
+        } else if s.target.is_none() {
+            Role::Target
+        } else {
+            self.push_log("Choose Base or Target before drawing another line".into());
+            return;
+        };
+        s.line = Some(role);
+        s.morph = None;
+        s.pick_pointer = None;
+        self.active_command = Some(InteractiveCommand::Flow { start: None });
+        self.component_selection.clear_choices();
+        self.flow_prompt();
+    }
+    pub(super) fn accept_flow_line_point(&mut self, point: Point3) -> Option<bool> {
+        let role = self.flow_session.as_ref()?.line?;
+        let Some(InteractiveCommand::Flow { start }) = self.active_command else {
+            return Some(false);
+        };
+        if let Some(start) = start {
+            let guide = match self.capture_flow_guide(GuideInput::Line([start, point])) {
+                Ok(guide) => guide,
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    return Some(false);
+                }
+            };
+            let s = self.flow_session.as_mut().unwrap();
+            match role {
+                Role::Base => {
+                    s.base = Some(guide);
+                    s.options.reverse_base = false;
+                }
+                Role::Target => {
+                    s.target = Some(guide);
+                    s.options.reverse_target = false;
+                }
+            }
+            s.line = None;
+            self.active_command = Some(InteractiveCommand::Flow { start: None });
+            self.point_filter = None;
+            self.point_constraint = None;
+            self.prepare_flow_preview();
+        } else {
+            self.active_command = Some(InteractiveCommand::Flow { start: Some(point) });
+        }
+        self.flow_prompt();
+        Some(true)
     }
     pub(super) fn capture_flow_pointer(&mut self, pointer: Option<egui::Pos2>) {
         if self.picking_flow_guide()
@@ -66,7 +134,25 @@ impl VibocerosApp {
             return false;
         }
         let args = tokens.collect::<Vec<_>>();
-        let Ok((mut options, refs)) = solver::options(&args, self.commands.flow_options()) else {
+        let defaults = self.commands.flow_options();
+        let mut line = false;
+        let parsed = solver::options(&args, defaults).or_else(|error| {
+            let rest = args
+                .iter()
+                .copied()
+                .filter(|v| {
+                    !v.trim_start_matches(['_', '-'])
+                        .eq_ignore_ascii_case("Line")
+                })
+                .collect::<Vec<_>>();
+            if rest.len() + 1 != args.len() {
+                return Err(error);
+            }
+            let parsed = solver::options(&rest, defaults)?;
+            line = true;
+            Ok(parsed)
+        });
+        let Ok((mut options, refs)) = parsed else {
             return false;
         };
         if refs.base.is_some() && refs.target.is_some() {
@@ -103,25 +189,47 @@ impl VibocerosApp {
             options,
             base: None,
             target: None,
+            line: None,
             morph: None,
             pick_pointer: None,
             cache: RefCell::default(),
         });
-        self.active_command = Some(InteractiveCommand::Flow);
-        if let Some(r) = refs.base {
-            self.pick_flow_guide(Some(r.id), r.edge);
-        }
-        if let Some(r) = refs.target {
-            // A target supplied before the base is saved without changing the getter order.
-            match self.capture_flow_guide(r) {
-                Ok(g) => self.flow_session.as_mut().unwrap().target = Some(g),
-                Err(e) => self.push_log(format!("Error: {e}")),
+        self.active_command = Some(InteractiveCommand::Flow { start: None });
+        for (role, input) in [(Role::Base, refs.base), (Role::Target, refs.target)] {
+            if let Some(input) = input {
+                match self.capture_flow_guide(input) {
+                    Ok(g) => {
+                        let s = self.flow_session.as_mut().unwrap();
+                        match role {
+                            Role::Base => s.base = Some(g),
+                            Role::Target => s.target = Some(g),
+                        }
+                    }
+                    Err(e) => self.push_log(format!("Error: {e}")),
+                }
             }
+        }
+        if line {
+            self.begin_flow_line();
+        } else {
+            self.prepare_flow_preview();
         }
         self.flow_prompt();
         true
     }
-    fn capture_flow_guide(&self, r: GuideReference) -> Result<Guide, String> {
+    fn capture_flow_guide(&self, input: GuideInput) -> Result<Guide, String> {
+        let r = match input {
+            GuideInput::Line([a, b]) => {
+                viboceros_geometry::LineSegment::try_new(a, b, self.document.tolerance())
+                    .map_err(|e| e.to_string())?;
+                return Ok(Guide {
+                    input,
+                    parent: None,
+                    tolerance: self.document.tolerance(),
+                });
+            }
+            GuideInput::Object(r) => r,
+        };
         let s = self.flow_session.as_ref().unwrap();
         if s.sources.contains(&r.id) || s.grips.iter().any(|g| g.object == r.id) {
             return Err("Flow guides must be separate from the source objects".into());
@@ -138,8 +246,8 @@ impl VibocerosApp {
         )
         .ok_or("Select a curve or surface edge")?;
         Ok(Guide {
-            reference: r,
-            parent: o.geometry_snapshot().clone(),
+            input,
+            parent: Some(o.geometry_snapshot().clone()),
             tolerance: self.document.tolerance(),
         })
     }
@@ -149,14 +257,17 @@ impl VibocerosApp {
         }
         let result = id
             .ok_or_else(|| "Select a Flow guide".to_owned())
-            .and_then(|id| self.capture_flow_guide(GuideReference { id, edge }));
+            .and_then(|id| self.capture_flow_guide(GuideReference { id, edge }.into()));
         match result {
             Ok(g) => {
                 let s = self.flow_session.as_mut().unwrap();
                 let reverse = s.pick_pointer.take().and_then(|(index, p)| {
+                    let GuideInput::Object(r) = g.input else {
+                        return None;
+                    };
                     self.viewports[index].flow_pick_reversed(
-                        &g.parent,
-                        g.reference.edge,
+                        g.parent.as_ref()?,
+                        r.edge,
                         p,
                         self.document.tolerance(),
                     )
@@ -186,17 +297,28 @@ impl VibocerosApp {
         let (Some(a), Some(b)) = (&s.base, &s.target) else {
             return;
         };
-        match solver::prepare(&self.document, a.reference, b.reference, s.options) {
+        match solver::prepare(&self.document, a.input, b.input, s.options) {
             Ok(m) => s.morph = Some(Arc::new(m)),
             Err(e) => self.push_log(format!("Error: {e}")),
         }
     }
     fn flow_prompt(&mut self) {
         let Some(s) = &self.flow_session else { return };
-        let phase = if s.base.is_none() {
-            "select the base curve near its start"
+        let phase = if let Some(role) = s.line {
+            let start = matches!(
+                self.active_command,
+                Some(InteractiveCommand::Flow { start: Some(_) })
+            );
+            match (role, start) {
+                (Role::Base, false) => "start of base line",
+                (Role::Base, true) => "end of base line",
+                (Role::Target, false) => "start of target line",
+                (Role::Target, true) => "end of target line",
+            }
+        } else if s.base.is_none() {
+            "select the base curve near its start, or Line"
         } else if s.target.is_none() {
-            "select the target curve near its start"
+            "select the target curve near its start, or Line"
         } else if s.morph.is_none() {
             "choose supported guides with Base or Target"
         } else {
@@ -239,17 +361,26 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
+        if self.drawing_flow_line() {
+            if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
+                self.flow_prompt();
+                return true;
+            }
+            // Coordinate parsing, CPlane input, filters and constraints use the
+            // ordinary point getter while the line is being drawn.
+            return false;
+        }
+        if word.eq_ignore_ascii_case("Line") {
+            self.begin_flow_line();
+            return true;
+        }
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             let s = self.flow_session.as_ref().unwrap();
             if let (Some(a), Some(b), Some(_)) = (&s.base, &s.target, &s.morph) {
-                let reference = |name: &str, r: GuideReference| match r.edge {
-                    Some(edge) => format!("{name}Edge={},{}", r.id, edge),
-                    None => format!("{name}={}", r.id),
-                };
                 let command = format!(
                     "Flow {} {} {} {}={} {}",
-                    reference("Base", a.reference),
-                    reference("Target", b.reference),
+                    a.input.arguments("Base"),
+                    b.input.arguments("Target"),
                     s.options.arguments(),
                     if s.postselected {
                         "PickedSources"

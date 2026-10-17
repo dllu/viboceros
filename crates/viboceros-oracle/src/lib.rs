@@ -148,7 +148,9 @@ pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod curvature_graph;
 mod flow;
 mod flow_grips;
+mod flow_line;
 pub use flow_grips::Fixture as FlowGripsFixture;
+pub use flow_line::Fixture as FlowLineFixture;
 mod orient_on_curve;
 mod orient_points;
 pub use flow::Fixture as FlowFixture;
@@ -1709,6 +1711,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurveDeviationFixture,
     },
+    FlowLine {
+        id: String,
+        #[serde(flatten)]
+        fixture: FlowLineFixture,
+    },
     FlowGrips {
         id: String,
         #[serde(flatten)]
@@ -2769,6 +2776,7 @@ impl Operation {
             | Self::OrientSurface { id, .. }
             | Self::OrientSurfaceGrips { id, .. }
             | Self::FlowGrips { id, .. }
+            | Self::FlowLine { id, .. }
             | Self::OrientOnCurve { id, .. }
             | Self::CurvatureGraph { id, .. }
             | Self::ExtractCurvatureGraph { id, .. }
@@ -6000,6 +6008,7 @@ fn execute(
         Operation::CurveDeviation { fixture, .. } => {
             curve_deviation::run(fixture, iterations, tolerance)?
         }
+        Operation::FlowLine { fixture, .. } => flow_line::run(fixture, iterations, tolerance)?,
         Operation::FlowGrips { fixture, .. } => flow_grips::run(fixture, iterations, tolerance)?,
         Operation::OrientSurfaceGrips { fixture, .. } => {
             orient_surface_grips::run(fixture, iterations, tolerance)?

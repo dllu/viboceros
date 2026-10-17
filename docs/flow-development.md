@@ -2,13 +2,15 @@
 
 Flow is registered in the command API and application. Its current supported
 subset has a two-guide getter, direction reversal, cached preview, staged edits,
-Copy, Rigid/RigidGroups, Stretch, PreserveStructure, selected control/edit grips, option memory and one-step
+Copy, Rigid/RigidGroups, Stretch, PreserveStructure, temporary Line guides, selected control/edit grips, option memory and one-step
 local Undo/Redo. See [usage and current limits](commands/flow.md).
 
 The implementation owns shared prepared guide geometry and reuses the existing
 [arc-length sampler](prepared-curve-length.md), affine direction mapping, morph
 fitting and viewport display cages. Straight guide pairs use a shortest-rotation
-map. Planar curved guides use their supporting planes; a straight guide borrows
+map. Opposite directions use the plane determined by the guides' separation;
+collinear guides reuse the existing OpenNURBS-style perpendicular policy.
+Planar curved guides use their supporting planes; a straight guide borrows
 the curved guide's plane. Source points beyond an endpoint retain their tangent
 residual separately from mapped guide distance. Stretch scales both distances.
 Native coordinates and returned frames are expectations, never construction
@@ -26,6 +28,8 @@ and actual Flow macros in owned private displays:
 | `flow_equivalence.json` | 19 | Domain changes, exact knot insertion, rotation, scaling, spatial polylines and identity diagnostics |
 | `flow_precision.json` | 19 | Point order, SDK precision settings and scale diagnostics |
 | `flow_grips.json` | 72 | Complete grip owner, group, selection and Undo/Redo workflows across curves, surfaces and meshes |
+| `flow_line.json` | 128 | Actual commands with either or both guides drawn, Copy/Rigid/Stretch, reversals, mixed planes, selected grips and rigid curve owners |
+| `flow_line_orientation.json` | 24 | Twenty actual commands and four SDK diagnostics for opposite, collinear and nearly opposite lines |
 
 Of the main 44 maps, 36 match within `1e-6`; eight involving spatial curved
 guides remain unresolved. All 24 command and 16 mixed-plane maps match too:
@@ -43,8 +47,8 @@ scaling, while authored point order and the SDK QuickPreview/Tolerance settings
 do not change point results. These diagnostic observations are retained to guide
 further independent implementation; no spatial parity is claimed.
 
-Remaining scope includes all retained spatial point maps, Line
-and Local input, Roadlike/Stairlike and TargetSurface orientation, native option
+Remaining scope includes all retained spatial point maps, Local
+input, Roadlike/Stairlike and TargetSurface orientation, native option
 memory and history details, multiple-object rigid group qualification, fitted
 owner geometry, planar NURBS and closed-guide qualification, preview appearance and performance.
 
@@ -85,3 +89,21 @@ use the completed macro's state. Complete macros have no trailing Cancel token.
 Earlier discovery captures inside the script's undo record or with an extra
 Cancel are not qualified. Further grip-family, seam/alias and preview appearance
 qualification remains open.
+
+Line input uses the ordinary drafting point getter, anchors, filters and snaps.
+Both guide roles accept an immutable pair of endpoints through the shared
+command/preview preparation path; no temporary document object is created.
+Interactive preview and cancelled or invalid pairs leave the model and history
+unchanged. Scripted input accepts `BaseLine`, `TargetLine` or `Line` followed by
+two points. See the [Line validation record](flow-line-validation.json).
+
+The 128-command capture merges a 96-case matrix and a separate 32-case parallel
+matrix without changing numeric outputs. An additional 24-case orientation
+capture retains all collinear, separated and near-opposite diagnostics. These
+showed that separated opposite guides need a half-turn axis perpendicular to
+their common direction and separation. Collinear guides use the existing
+perpendicular helper. Any nonzero cross product between nearly opposite
+directions retains its unique axis, even below the usual angular tolerance.
+The kernel regression includes finite results when subtracting large guide
+origins would otherwise overflow. All 152 retained Line observations match
+within `1e-6`; maximum coordinate error is `8.341061175087816e-11`.

@@ -269,3 +269,141 @@ fn flow_control_and_edit_grips_preview_copy_rigid_and_command_first_getters() {
         }
     }
 }
+
+#[test]
+fn flow_draws_both_guides_with_relative_points_and_keeps_them_out_of_the_document() {
+    let mut app = test_app();
+    let id = app
+        .document
+        .add_geometry(Geometry::Point(point(2., 1., 0.)))
+        .unwrap();
+    app.document
+        .select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Flow Copy=No Stretch=Yes");
+    enter(&mut app, "Line");
+    assert!(app.drawing_flow_line());
+    assert!(!app.picking_flow_guide());
+    assert_eq!(app.viewport_object_filter(), None);
+    enter(&mut app, "w0,0,0");
+    assert_eq!(
+        app.active_command.unwrap().anchor(),
+        Some(point(0., 0., 0.))
+    );
+    enter(&mut app, "r10,0,0");
+    assert!(!app.drawing_flow_line());
+    assert!(app.picking_flow_guide());
+    enter(&mut app, "Line");
+    enter(&mut app, "w5,2,3");
+    enter(&mut app, "r0,20,0");
+    assert!(!app.drawing_flow_line());
+    assert!(!app.picking_flow_guide());
+    let preview = app.flow_session.as_ref().unwrap().preview().unwrap();
+    assert!(
+        preview
+            .morph
+            .morph_point(point(2., 1., 0.))
+            .unwrap()
+            .distance_to(point(4., 6., 3.))
+            .unwrap()
+            < 1e-12
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.objects().count(), 1);
+    assert_eq!(app.document.undo_label(), Some("Flow"));
+    app.document.undo().unwrap();
+    assert_eq!(
+        app.document.object(id).unwrap().geometry(),
+        &Geometry::Point(point(2., 1., 0.))
+    );
+    assert!(app.document.undo().unwrap().is_none());
+    app.document.redo().unwrap();
+    assert_eq!(app.document.objects().count(), 1);
+}
+#[test]
+fn flow_line_command_first_grips_reject_short_lines_and_cancel_without_edits() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/flow_line.json"
+    ))
+    .unwrap();
+    let f: viboceros_oracle::FlowLineFixture = serde_json::from_value(
+        request["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|o| o["id"] == "grips-False-True-True")
+            .unwrap()
+            .clone(),
+    )
+    .unwrap();
+    let mut app = test_app();
+    let source = app
+        .document
+        .add_geometry(f.source_geometry(app.document.tolerance()).unwrap())
+        .unwrap();
+    app.document.enable_control_points([source]).unwrap();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Flow Line Copy=No");
+    assert!(app.object_prompt.is_some());
+    let picks = f
+        .selected
+        .iter()
+        .map(|&index| viboceros_document::ControlPointId {
+            object: source,
+            index,
+        })
+        .collect::<Vec<_>>();
+    app.handle_viewport_action(ViewportOutput {
+        control_point_selection: Some(crate::viewport::ControlPointSelection {
+            picks,
+            mode: SelectionMode::Add,
+        }),
+        ..Default::default()
+    });
+    enter(&mut app, "");
+    let before = format!("{:?}", app.document);
+    assert!(app.drawing_flow_line());
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w0,0,0");
+    assert!(app.drawing_flow_line());
+    assert_eq!(
+        app.active_command.unwrap().anchor(),
+        Some(point(0., 0., 0.))
+    );
+    enter(&mut app, "r10,0,0");
+    enter(&mut app, "Line");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "Cancel");
+    assert!(app.active_command.is_none());
+    assert_eq!(format!("{:?}", app.document), before);
+    assert!(app.document.undo_label().is_none());
+}
+#[test]
+fn flow_line_and_surface_edge_guides_share_selection_and_preview() {
+    let (mut app, source, _, _, _) = setup();
+    let parent = app
+        .document
+        .add_geometry(Geometry::Brep(
+            viboceros_geometry::Brep::try_box(
+                viboceros_command::CommandContext::default().construction_plane,
+                [[1., 10.], [2., 7.], [3., 4.]],
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let original = app.document.object(parent).unwrap().geometry().clone();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Flow Line Copy=No Stretch=Yes");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w10,0,0");
+    enter(&mut app, &format!("Edge={parent},0"));
+    assert!(app.flow_session.as_ref().unwrap().preview().is_some());
+    enter(&mut app, "");
+    assert_eq!(app.document.object(parent).unwrap().geometry(), &original);
+    assert!(app.document.is_selected(source));
+}

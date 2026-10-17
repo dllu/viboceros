@@ -229,28 +229,89 @@ impl CurveFlowPointMorph {
             && base_linear
             && target_linear
         {
-            Some(crate::AffineTransform3::try_direction_mapping(
-                base.curve().start_point()?,
-                base.curve()
-                    .evaluate_with_tangent(*base.curve().domain().start())?
-                    .tangent(),
-                target.curve().start_point()?,
-                target
-                    .curve()
-                    .evaluate_with_tangent(*target.curve().domain().start())?
-                    .tangent(),
-                if options.stretch {
-                    crate::parameter::scaled_ratio(
-                        1.,
-                        target.length.total_length(),
-                        base.length.total_length(),
+            let source_origin = base.curve().start_point()?;
+            let target_origin = target.curve().start_point()?;
+            let source_direction = base
+                .curve()
+                .evaluate_with_tangent(*base.curve().domain().start())?
+                .tangent();
+            let target_direction = target
+                .curve()
+                .evaluate_with_tangent(*target.curve().domain().start())?
+                .tangent();
+            let axial = if options.stretch {
+                crate::parameter::scaled_ratio(
+                    1.,
+                    target.length.total_length(),
+                    base.length.total_length(),
+                )?
+            } else {
+                1.
+            };
+            let opposite = source_direction
+                .as_vector()
+                .dot(target_direction.as_vector())?
+                < 0.
+                && source_direction
+                    .as_vector()
+                    .cross(target_direction.as_vector())?
+                    .length()?
+                    == 0.;
+            if opposite {
+                // The separated lines determine the half-turn plane. Exact
+                // collinearity uses the existing OpenNURBS-style perpendicular.
+                let chord = source_origin.vector_to(base.curve().end_point()?)?;
+                let between = source_origin.vector_to(target_origin).or_else(|_| {
+                    let a = source_origin.to_array();
+                    let b = target_origin.to_array();
+                    let scale = a.into_iter().chain(b).map(Real::abs).fold(0., Real::max);
+                    Vector3::try_from(std::array::from_fn(|i| b[i] / scale - a[i] / scale))
+                })?;
+                let normal = chord.cross(between).or_else(|_| {
+                    chord
+                        .normalized_nonzero()?
+                        .as_vector()
+                        .cross(between.normalized_nonzero()?.as_vector())
+                })?;
+                let normal = if normal.to_array() == [0.; 3] {
+                    Frame3::try_from_normal(
+                        source_origin,
+                        source_direction.as_vector(),
+                        Tolerance::NUMERICAL_VALIDATION,
                     )?
+                    .x_axis()
+                    .as_vector()
                 } else {
-                    1.
-                },
-                1.,
-                Tolerance::NUMERICAL_VALIDATION,
-            )?)
+                    normal.normalized_nonzero()?.as_vector()
+                };
+                let source = Frame3::try_from_directions(
+                    source_origin,
+                    source_direction.as_vector(),
+                    normal.cross(source_direction.as_vector())?,
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?;
+                let target = Frame3::try_from_directions(
+                    target_origin,
+                    target_direction.as_vector(),
+                    normal.cross(target_direction.as_vector())?,
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?;
+                Some(crate::AffineTransform3::try_frame_mapping(
+                    source,
+                    target,
+                    [axial, 1., 1.],
+                )?)
+            } else {
+                Some(crate::AffineTransform3::try_direction_mapping(
+                    source_origin,
+                    source_direction,
+                    target_origin,
+                    target_direction,
+                    axial,
+                    1.,
+                    Tolerance::MESH_VALIDATION,
+                )?)
+            }
         } else {
             None
         };
@@ -450,5 +511,68 @@ mod tests {
             assert_eq!(a.weight(), b.weight());
             assert_eq!(morph.morph_point(a.point()).unwrap(), b.point());
         }
+    }
+}
+
+#[cfg(test)]
+mod line_orientation_tests {
+    use super::*;
+    fn p(x: Real, y: Real, z: Real) -> Point3 {
+        Point3::try_new(x, y, z).unwrap()
+    }
+    fn line(a: Point3, b: Point3, t: Tolerance) -> Curve3 {
+        Curve3::Line(crate::LineSegment::try_new(a, b, t).unwrap())
+    }
+    #[test]
+    fn opposite_lines_use_their_common_plane_and_collinear_lines_use_a_deterministic_axis() {
+        let t = Tolerance::DEFAULT;
+        for (origin, expected_y, expected_z) in [
+            (
+                p(15., 2., 3.),
+                p(15., 2. + 5. / 13., 3. - 12. / 13.),
+                p(15., 2. - 12. / 13., 3. - 5. / 13.),
+            ),
+            (p(15., 0., 0.), p(15., 1., 0.), p(15., 0., -1.)),
+        ] {
+            let m = CurveFlowPointMorph::try_new(
+                line(p(0., 0., 0.), p(10., 0., 0.), t),
+                line(
+                    origin,
+                    origin
+                        .translated(Vector3::try_new(-20., 0., 0.).unwrap())
+                        .unwrap(),
+                    t,
+                ),
+                CurveFlowOptions::default(),
+                t,
+            )
+            .unwrap();
+            assert!(
+                m.morph_point(p(0., 1., 0.))
+                    .unwrap()
+                    .distance_to(expected_y)
+                    .unwrap()
+                    < 1e-12
+            );
+            assert!(
+                m.morph_point(p(0., 0., 1.))
+                    .unwrap()
+                    .distance_to(expected_z)
+                    .unwrap()
+                    < 1e-12
+            );
+        }
+    }
+    #[test]
+    fn opposite_guide_origins_can_exceed_a_finite_subtraction_without_losing_a_finite_map() {
+        let t = Tolerance::MESH_VALIDATION;
+        let m = CurveFlowPointMorph::try_new(
+            line(p(1e308, 0., 0.), p(1e308, 10., 0.), t),
+            line(p(-1e308, 0., 0.), p(-1e308, -20., 0.), t),
+            CurveFlowOptions::default(),
+            t,
+        )
+        .unwrap();
+        assert_eq!(m.morph_point(p(1e308, 1., 0.)).unwrap(), p(-1e308, -2., 0.));
     }
 }

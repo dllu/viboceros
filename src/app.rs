@@ -326,7 +326,9 @@ impl InteractiveScaleKind {
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
     OrientOnCurve,
-    Flow,
+    Flow {
+        start: Option<Point3>,
+    },
     OrientOnSurface {
         last: Option<Point3>,
     },
@@ -776,7 +778,7 @@ impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
             Self::OrientOnCurve => "OrientOnCrv",
-            Self::Flow => "Flow",
+            Self::Flow { .. } => "Flow",
             Self::OrientOnSurface { .. } => "OrientOnSrf",
             Self::OrientPoints { kind, .. } => kind.name(),
             Self::ProjectDirection { .. } => "Project",
@@ -903,7 +905,9 @@ impl InteractiveCommand {
     const fn prompt(self) -> &'static str {
         match self {
             Self::OrientOnCurve => "OrientOnCrv: follow the curve placement prompt (Esc finishes)",
-            Self::Flow => "Flow: choose base and target curves, then Enter applies (Esc cancels)",
+            Self::Flow { .. } => {
+                "Flow: choose base and target curves, then Enter applies (Esc cancels)"
+            }
             Self::OrientOnSurface { .. } => {
                 "OrientOnSrf: follow the surface placement prompt (Esc finishes)"
             }
@@ -1711,7 +1715,7 @@ impl InteractiveCommand {
 
     const fn anchor(self) -> Option<Point3> {
         match self {
-            Self::ProjectDirection { start } => start,
+            Self::ProjectDirection { start } | Self::Flow { start } => start,
             Self::OrientPoints { last, .. } | Self::OrientOnSurface { last } => last,
             Self::ProjectPlane { anchor, .. } => anchor,
             Self::Section { start, .. } => start,
@@ -1834,7 +1838,6 @@ impl InteractiveCommand {
             | Self::TrimCurve
             | Self::Move { start: None }
             | Self::OrientOnCurve
-            | Self::Flow
             | Self::SetPoint { .. }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -5570,6 +5573,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_flow_line_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_orient_surface_point(point) {
             return accepted;
         }
@@ -5609,7 +5615,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
-            | InteractiveCommand::Flow
+            | InteractiveCommand::Flow { .. }
             | InteractiveCommand::OrientOnSurface { .. }
             | InteractiveCommand::Section { .. }
             | InteractiveCommand::Contour { .. } => {
@@ -9401,7 +9407,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
                 && !self.picking_orient_curve()
-                && self.flow_session.is_none()
+                && (self.flow_session.is_none() || self.drawing_flow_line())
                 && !self.picking_orient_surface()
                 && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())

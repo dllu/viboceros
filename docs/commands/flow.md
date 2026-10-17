@@ -5,6 +5,13 @@ corresponding ends. The preview appears after both guides are selected; Enter
 applies it and Escape cancels without editing the document. Change an option
 before applying, or enter `Base` / `Target` to select that guide again.
 
+At either guide prompt, enter `Line` and pick two endpoints instead of selecting
+a curve. The standard point input supports snapping, world coordinates and
+relative coordinates such as `r10,0,0` for the second endpoint. The drawn line
+is temporary: preview, commit, Undo and Redo never add guide objects to the model.
+Its endpoint order determines its direction. A short or coincident pair asks for
+another endpoint; Escape cancels the command.
+
 With no preselection, Flow first asks for source objects. Enter continues to the
 guide getter. Guides must be separate from the sources. Hidden, locked, deleted,
 or replaced guides invalidate the preview and must be selected again.
@@ -22,6 +29,8 @@ For scripted use, supply both guide object IDs:
 ```text
 Flow Base=12 Target=17 Copy=No Stretch=Yes
 Flow BaseEdge=12,0 Target=17 Rigid=Yes RigidGroups=No
+Flow BaseLine=0,0,0;10,0,0 TargetLine=5,3,0;5,23,0 Copy=No
+Flow Line 0,0,0 10,0,0 Target=17 Stretch=Yes
 ```
 
 Use the actual IDs from the current document. `BaseEdge` and `TargetEdge` refer
@@ -29,6 +38,10 @@ to a parent object and a zero-based edge index. During interactive selection,
 `SelID 12` picks a curve and `Edge=12,0` picks an edge. Typed guide references
 use the direction options; mouse picks choose the nearer projected endpoint.
 Explicit reversals can then change either direction.
+`BaseLine` and `TargetLine` each take two coordinate triples separated by a
+semicolon. A scripted `Line` followed by two points supplies the next missing
+guide; it can be used twice. Drawn guides can be combined with selected curves
+or surface edges.
 
 Flow maps distance along the base onto the target, carrying the two transverse
 coordinates. Stretch scales distance and the along-tangent residual at source
@@ -48,7 +61,7 @@ weights remain unchanged. Undo/Redo restores owner geometry and the native
 selection state, including grips picked during the command.
 
 The implementation supports straight guides in 3D and planar curved guides.
-General spatial curved guides, Line, Local, Roadlike, Stairlike and
+General spatial curved guides, Local, Roadlike, Stairlike and
 TargetSurface remain unfinished. Unsupported modes fail
 before editing. The kernel exposes a separate mathematical spatial transport
 policy, but the Flow command rejects it because it differs from Rhino.
@@ -67,3 +80,9 @@ native command workflows: rational curve controls/edit points, weighted surface
 controls and mesh vertices, with Copy, Rigid/RigidGroups, PreserveStructure,
 selected parents, ordinary peers and command-first grip selection. It compares
 complete owner definitions, grips, groups and real Undo/Redo at `1e-6`.
+
+The [Line validation record](../flow-line-validation.json) adds 148 actual native
+commands and four SDK orientation diagnostics. It covers either or both drawn
+guides, mixed supporting planes, rational control/edit grips, rigid curve owners,
+parallel and opposite guides, temporary-guide lifetime and real Undo/Redo.
+All match within `1e-6`; the largest coordinate difference is below `9e-11`.

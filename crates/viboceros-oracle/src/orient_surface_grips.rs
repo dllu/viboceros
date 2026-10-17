@@ -57,13 +57,16 @@ pub(super) fn snapshot_excluding(
     peer: Option<ObjectId>,
     guides: &[ObjectId],
 ) -> Result<Value, ProbeError> {
-    let guide = guides[0];
+    let guide = guides.first().copied();
     let groups = doc.groups().map(|g| g.id()).collect::<Vec<_>>();
     let mut outputs = Vec::new();
     for o in doc.objects().filter(|o| !guides.contains(&o.id())) {
         let mut row = json!({"original":o.id()==source,"peer":Some(o.id())==peer,"selected":doc.is_selected(o.id()),"group_count":o.group_ids().len(),"groups":o.group_ids().iter().filter_map(|g|groups.iter().position(|v|v==g)).collect::<Vec<_>>(),"grips_on":doc.grip_mode(o.id()).is_some(),"grips":doc.control_points().filter(|(id,_,_)|id.object==o.id()).map(|(id,p,selected)|json!({"index":id.index,"point":p.to_array(),"selected":selected})).collect::<Vec<_>>()});
         match o.geometry() {
             Geometry::Point(p) => row["point"] = json!(p.to_array()),
+            Geometry::PointCloud(p) => {
+                row["points"] = json!(p.points().iter().map(|p| p.to_array()).collect::<Vec<_>>())
+            }
             Geometry::Mesh(m) => row["mesh"] = polygon_mesh_value(m),
             Geometry::NurbsSurface(s) => row["surface"] = nurbs_surface_definition_value(s),
             Geometry::Brep(b) if b.faces().len() == 1 => {
@@ -96,7 +99,7 @@ pub(super) fn snapshot_excluding(
         outputs.push(row);
     }
     Ok(
-        json!({"outputs":outputs,"group_count":groups.len(),"guide_selected":doc.is_selected(guide),"guide_unchanged":true}),
+        json!({"outputs":outputs,"group_count":groups.len(),"guide_selected":guide.is_some_and(|id|doc.is_selected(id)),"guide_unchanged":true}),
     )
 }
 pub(super) fn run(

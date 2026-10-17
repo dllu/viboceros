@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "4a06411e8002e3b355f83dc9ed4f6fb1132e3a44",
+  "component": "Flow temporary Line guides, shared drafting input and straight-guide orientation",
+  "complete_flow_qualified": false,
+  "performance_qualified": false,
+  "native_frames_or_owner_outputs_used_as_construction_inputs": false,
+  "implementation": "GuideInput holds a selected curve/edge reference or two immutable temporary endpoints. Command preparation and cached previews share the same guide resolver and staged edit path. Interactive Line uses the existing drafting point getter, anchors, snapping, filters and constraints. Opposite straight guides use their separation to determine the half-turn axis; collinear guides reuse the existing OpenNURBS-style perpendicular helper. Nearly opposite directions retain every nonzero cross-product axis. Reuse shared affine, curve-length, morph fitting and grip reconstruction code.",
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "method": "Owned private Rhino displays, public RhinoCommon FlowSpaceMorph and complete Flow command macros at Rhino idle. Record before, EndCommand, completed macro, Undo and Redo independently. Compare completed macro state after guide/postselection cleanup. No trailing Cancel tokens. No proprietary implementation inspected.",
+    "parts": [
+      {
+        "scheme": "VibocerosOracleFlowLine20261016b",
+        "cases": 96,
+        "actual_commands": 96,
+        "retained_in": "flow_line.json"
+      },
+      {
+        "scheme": "VibocerosOracleFlowLine20261016c",
+        "cases": 32,
+        "actual_commands": 32,
+        "retained_in": "flow_line.json"
+      },
+      {
+        "scheme": "VibocerosOracleFlowLine20261016d",
+        "cases": 12,
+        "actual_commands": 8,
+        "sdk_diagnostics": 4,
+        "retained_in": "flow_line_orientation.json"
+      },
+      {
+        "scheme": "VibocerosOracleFlowLine20261016e",
+        "cases": 12,
+        "actual_commands": 12,
+        "retained_in": "flow_line_orientation.json"
+      }
+    ],
+    "matched_cases": 152,
+    "actual_command_workflows": 148,
+    "sdk_diagnostics": 4,
+    "epsilon": 1e-06,
+    "max_coordinate_error": 8.341061175087816e-11,
+    "compared_command_stages": [
+      "before",
+      "after_script",
+      "undo",
+      "redo"
+    ],
+    "raw_object_table_enumeration_order_compared": false,
+    "capture_note": "Each retained fixture/observation concatenates its two captures in order without numerical edits. All orientation diagnostics are retained. An earlier discovery macro with trailing Cancel is excluded. The current native helper adds finite/nondegenerate endpoint and document-tolerance preflight validation after these successful captures; it preserves their authored recipes and complete macros. Helper source hashes identify the current validated driver, not byte-identical historical staging files."
+  },
+  "coverage": {
+    "main_matrix": {
+      "both_drawn": 64,
+      "base_drawn_target_selected": 48,
+      "base_selected_target_drawn": 16,
+      "point_cloud_sources": 112,
+      "rational_nurbs_sources": 16,
+      "selected_control_or_edit_grips": 8,
+      "whole_rigid_curve_owners": 8
+    },
+    "orientation_matrix": {
+      "actual_commands": 20,
+      "sdk_diagnostics": 4,
+      "nearly_opposite_endpoint_perturbations": [
+        0.001,
+        1e-07,
+        1e-09,
+        1e-11,
+        1e-13,
+        1e-15
+      ]
+    },
+    "checks": [
+      "Copy/Rigid/Stretch and both guide directions; XY/XZ/YZ curved targets and vertical/oblique bases",
+      "Complete owner definitions, active grips, original/copy identity, groups, selection and real Undo/Redo",
+      "Drawn guides absent from the document before/after commit and Undo/Redo; persistent guides unchanged and unselected",
+      "Interactive world/relative points, drafting anchors, shared immutable preview, guide/edge mixing, short-line retry and command-first grips",
+      "Invalid/duplicate/degenerate/nonfinite inputs preserve document, preferences and history",
+      "Straight guide orientation across separated, collinear, coincident, oblique and nearly opposite pairs; finite kernel mapping across overflowing origin differences",
+      "Existing 76 point maps and 43 actual Flow commands; existing 72 grip workflows; existing 30 OrientOnSrf grip workflows"
+    ]
+  },
+  "checks": [
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-oracle flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "059add0d6318e08c97d018d32140ab6a1b7dfcda2223cadcd181320b7d192189",
+      "passed_rust_tests": 40
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib morph::flow::",
+      "exit_code": 0,
+      "log_sha256": "e1fc750034042bd0475c27c4c8ae7e552b073cf4324c1655d787839ffefa976d",
+      "passed_rust_tests": 4
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow_grips::",
+      "exit_code": 0,
+      "log_sha256": "75ed3cc15444a40e434c64db1ac79d497d00881cefc5fa54e30c8b186ef33f63",
+      "passed_rust_tests": 1
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib orient_surface_grips::",
+      "exit_code": 0,
+      "log_sha256": "778775881b6a8fab34a662ec566b59a90655acac2a65be3426ce68a37208dab1",
+      "passed_rust_tests": 1
+    },
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-oracle --features native-smlib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "464be0a0de5e64deba1480559ed950121c8e08309502453ac61fc73ed2ecb1e8",
+      "passed_rust_tests": 40
+    },
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-oracle --features native-smlib flow_grips::",
+      "exit_code": 0,
+      "log_sha256": "cc1e80c966f0e6b63d0311b48391e60b8cbe7f5c132ef4b6f56e29c753f62988",
+      "passed_rust_tests": 1
+    },
+    {
+      "command": "cargo clippy -p viboceros -p viboceros-command -p viboceros-geometry -p viboceros-oracle --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "83b31b235058e10568df064a9732133077c5c0850b7b4f05abb36b100e365c80"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_orient_surface_grips tools.rhino_oracle.test_orient_surface_options tools.rhino_oracle.test_orient_surface tools.rhino_oracle.test_orient_points tools.rhino_oracle.test_orient_on_curve tools.rhino_oracle.test_grip_transform tools.rhino_oracle.test_grip_alias",
+      "exit_code": 0,
+      "log_sha256": "c8772a1a57b167f76ff711e76856dd10eb6b2bdf3b588470589435112dc8a9bc",
+      "passed_python_tests": 40
+    }
+  ],
+  "limitations": [
+    "The eight retained general spatial curved-guide mismatches remain unresolved. The registered command rejects unqualified spatial transport before edits.",
+    "Local, Roadlike/Stairlike and TargetSurface remain Flow implementation work.",
+    "General fitted owner geometry, planar NURBS/closed guides, further rigid group graphs and native option-memory/history variants need qualification.",
+    "No native preview-appearance or performance parity is claimed. No full workspace-suite claim."
+  ],
+  "historical_provenance": {
+    "preserved_records": 2,
+    "preserved_entries": 14,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "1958111563e9d6b5775b2d9cb5d9638d4f0024359887d6d5625426ff22bfb9fd",
+    "crates/viboceros-command/src/flow.rs": "6b23c34ded64ea7ac689523612c906f5da99099a66fdcb36aacb0faa383dcd0f",
+    "crates/viboceros-command/src/flow/tests.rs": "90a3ec348581cb6ec401953b090751b77446022a8e8fd769c5861c73dfa2656f",
+    "crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5",
+    "crates/viboceros-oracle/src/flow_line.rs": "eca6be6170d27859f4e3675269c8a71acf1346c23b62bc009edd2a595c62cc2a",
+    "crates/viboceros-oracle/src/lib.rs": "5bedf4fa208f9da9c310d9427653718759cb8f9590183d3cd36a018f2026d6a0",
+    "crates/viboceros-oracle/src/orient_surface_grips.rs": "8e48963670e56708986ba1ecf6853749d09da12e5dfd5992713436385879511b",
+    "docs/commands/flow.md": "67efd08568c268944d731b446eed8691861557c7721dc715987f1fd4ea1687db",
+    "docs/flow-command-validation.json": "01020d047e251e90adeaed6b18fc8ae2289881e8dc0dc7d050f08df342562ae8",
+    "docs/flow-development.md": "bd9862083b44734d1ee5f0b101bda349493ad32b9870ef06116e4335783cb477",
+    "docs/flow-grips-validation.json": "5cce1e9f31ed14054c6461ca8d3fb07d423f210e30e1526ff640613ad01f5e28",
+    "src/app.rs": "0d2872ac51fd486e4b11a19ba89fbe998e4fd0a6f47c5afa7f5ecac4de505539",
+    "src/app/flow.rs": "b73865ae490c7be76050cf9425d1ac007b8260ea4bca1504effb5f0a80c570b4",
+    "src/app/tests/flow.rs": "8f09d9df5f3055886f72a9bdb7c2e6f5979be132ffda34ec7159987bf3077faf",
+    "tools/rhino_oracle/flow_line_comparison.py": "c5807f65f8f8921a29c8d07fc46aa984f1aaeb23b3a8ca6fdf1121c4ece64e44",
+    "tools/rhino_oracle/flow_line_probe.py": "e41f1f924954924f34a40cc73e93d08bd8b35cbe3157324df8e5d784f1e68b45",
+    "tools/rhino_oracle/rhino_worker.py": "3debec12cb1ccd465a0410e37b0056e58a89ae73f1b71878e6768e2a8da9455e",
+    "tools/rhino_oracle/structural_sdk.py": "80e436b8738b00ac98cc35b31ed858c70b6aa73fafac79b8ebfc13cb3fa54c5d",
+    "tools/rhino_oracle/test_flow_line.py": "d4c716b8335a726ba15e9da1992a45551ea5b4d5450fbac0c6e862824855d35b",
+    "tools/rhino_oracle/flow_probe.py": "b45f31fe28ae0ef2648dd0283a53dae07234d7e5479a20f458322a91f3e1227e",
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/orient_surface_grips_comparison.py": "7820fe60cd3c72fc5c62dbc892c2eb511adc7d757a967170a1804da32920970d",
+    "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22"
+  },
+  "fixture_sha256": {
+    "tools/rhino_oracle/fixtures/flow_line.json": "2ec4b0a46c23dcb8a778d66498e28924f8276373d75742cc91cb8dc006d9ac37",
+    "tools/rhino_oracle/fixtures/flow_line_orientation.json": "16203ffbf30ea36e172ba054776ccf8dfc702ffd014ed24454ce50aeacc1745c"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/flow_line_comparison_20261016.json": "46a5f99bdffdccabb196cc8bf104406d34467ca9eb4069c9e2e9d38206fdbeb9",
+    "tools/rhino_oracle/observations/flow_line_orientation_comparison_20261016.json": "3949879074127bf4d093d60abf5343876a4f638bff3a32e339e3e5cb5dbb42f2",
+    "tools/rhino_oracle/observations/flow_line_orientation_rhino_20261016.json": "39c8cde9caa3ced0eeecd213269a6fc4ccb5bfaa49c358a7ba0ef6bdbf82e794",
+    "tools/rhino_oracle/observations/flow_line_orientation_viboceros_20261016.json": "5d2424b8ea9061478d82537b9d7b53fdddcfed663c4d93017264876aa0502335",
+    "tools/rhino_oracle/observations/flow_line_rhino_20261016.json": "86f0a8e83650a936a18ee4707ff4f31f9d46cd532cb1a8362e029c284d8a0fc4",
+    "tools/rhino_oracle/observations/flow_line_viboceros_20261016.json": "f4f3412c0447769f3aa731f1a62983bd9ffbf75d33ff2f29ce9544dbc70608cd"
+  }
+}

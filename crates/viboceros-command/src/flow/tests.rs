@@ -227,3 +227,61 @@ fn flow_spatial_guides_and_guide_grips_fail_before_document_changes() {
     ));
     assert_eq!(format!("{d:?}"), before);
 }
+
+#[test]
+fn flow_drawn_lines_share_argument_validation_and_leave_no_guide_objects() {
+    for words in [
+        "Line w0,0,0 w10,0,0 Line w5,2,3 w5,22,3",
+        "BaseLine=0,0,0;10,0,0 TargetLine=5,2,3;5,22,3",
+        "Line 0 0 0 10 0 0 TargetLine=5,2,3;5,22,3",
+    ] {
+        let r = CommandRegistry::with_builtins();
+        let mut d = Document::default();
+        let id = d.add_geometry(Geometry::Point(p(2., 1., 0.))).unwrap();
+        d.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        d.clear_history().unwrap();
+        r.execute(&mut d, &format!("Flow {words} Copy=No Stretch=Yes"))
+            .unwrap();
+        let Geometry::Point(out) = d.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        assert!(
+            out.distance_to(p(4., 6., 3.)).unwrap() < 1e-12,
+            "{words}: {out:?}"
+        );
+        assert_eq!(d.objects().count(), 1);
+        assert_eq!(d.undo_label(), Some("Flow"));
+        d.undo().unwrap();
+        assert_eq!(
+            d.object(id).unwrap().geometry(),
+            &Geometry::Point(p(2., 1., 0.))
+        );
+        d.redo().unwrap();
+        assert_eq!(d.objects().count(), 1);
+    }
+}
+#[test]
+fn flow_line_failures_are_atomic_and_canonical_reference_duplicates_are_rejected() {
+    let (r, mut d, [a, b], _) = setup();
+    let before = format!("{d:?}");
+    for args in [
+        format!("BaseLine=0,0,0;0,0,0 Target={b}"),
+        format!("Base={a} TargetLine=1,2,3;1,2,3"),
+        format!("Line 0,0,0 0.000000000001,0,0 Target={b}"),
+        format!("BaseLine=0,0,0;NaN,0,0 Target={b}"),
+        format!("BaseLine=0,0,0;inf,0,0 Target={b}"),
+        format!("BaseLine=0,0,0;1,0,0 Base={a} Target={b}"),
+        format!("Base={a} Target={b} TargetLine=1,2,3;2,3,4"),
+        "Line 0,0,0 10,0,0 Line 0,0,0 10,0,0 Line 0,0,0 10,0,0".into(),
+        format!("Line 0,0,0 Target={b}"),
+        format!("BaseLine=0,0,0 Target={b}"),
+    ] {
+        assert!(
+            r.execute(&mut d, &format!("Flow {args}")).is_err(),
+            "{args}"
+        );
+        assert_eq!(format!("{d:?}"), before, "{args}");
+        assert_eq!(r.flow_options(), Options::default());
+    }
+}
