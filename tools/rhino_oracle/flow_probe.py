@@ -6,7 +6,7 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 def validate(op):
-    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
+    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid Flow id')
     for key in ('base','target'):
         if not isinstance(op[key],dict)or op[key].get('type')not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('Flow requires curve guides')
@@ -21,6 +21,7 @@ def validate(op):
     if 'morph_tolerance'in op and(type(op['morph_tolerance'])not in(int,float)or (math.isnan(op['morph_tolerance'])or math.isinf(op['morph_tolerance']))or op['morph_tolerance']<=0):raise ValueError('invalid Flow morph tolerance')
     for k in ('command','group','diagnostics','quick_preview'):
         if type(op.get(k,False))is not bool:raise ValueError('invalid Flow capture flag')
+    if 'diagnostic_length_samples'in op and(type(op['diagnostic_length_samples'])is not int or not 2<=op['diagnostic_length_samples']<=129 or not op.get('diagnostics')):raise ValueError('invalid Flow length diagnostic count')
 
 def run(op,host,iterations,tolerance):
     validate(op)
@@ -46,7 +47,34 @@ def run(op,host,iterations,tolerance):
                         if ok:row[name]=plane(p)
                     out.append(row)
                 ok,p=c.TryGetPlane();batch=c.GetPerpendicularFrames(host['System'].Array[host['System'].Double](parameters))
-                return dict(rows=out,plane=plane(p)if ok else None,batch=[plane(p)for p in batch]if batch is not None else None,linear=[dict(tolerance=t,value=bool(c.IsLinear(t)))for t in(1e-6,1e-4,.001,.01,.1,1.)])
+                result=dict(rows=out,plane=plane(p)if ok else None,batch=[plane(p)for p in batch]if batch is not None else None,linear=[dict(tolerance=t,value=bool(c.IsLinear(t)))for t in(1e-6,1e-4,.001,.01,.1,1.)])
+                if 'diagnostic_length_samples'in op:
+                    rows=[];parameters=[]
+                    for i in range(op['diagnostic_length_samples']):
+                        fraction=float(i)/(op['diagnostic_length_samples']-1)
+                        ok,t=c.NormalizedLengthParameter(fraction,1e-12)
+                        if not ok:raise ValueError('public normalized length lookup failed')
+                        row=dict(fraction=fraction,t=t,point=host['_xyz'](c.PointAt(t)),tangent=host['_xyz'](c.TangentAt(t)))
+                        lookups=[]
+                        for error in (1e-2,1e-4,1e-6,1e-8):
+                            success,parameter=c.NormalizedLengthParameter(fraction,error)
+                            if not success:raise ValueError('public fractional length lookup failed')
+                            lookups.append(dict(fractional_tolerance=error,t=parameter))
+                        row['length_lookups']=lookups
+                        for name,method in [('frame',c.FrameAt),('perp',c.PerpendicularFrameAt)]:
+                            success,frame=method(t)
+                            if not success:raise ValueError('public length frame query failed')
+                            row[name]=plane(frame)
+                        rows.append(row);parameters.append(t)
+                    batch=c.GetPerpendicularFrames(host['System'].Array[host['System'].Double](parameters))
+                    if batch is None or len(batch)!=len(rows):raise ValueError('public length batch frames failed')
+                    result['length_rows']=rows;result['length_batch']=[plane(p)for p in batch]
+                    classifications=[]
+                    for error in (1e-6,.001,.01,.05,.1,.2,1.):
+                        success,frame=c.TryGetPlane(error)
+                        classifications.append(dict(tolerance=error,linear=bool(c.IsLinear(error)),plane=plane(frame)if success else None))
+                    result['tolerance_classification']=classifications
+                return result
             result['diagnostics']=dict(base=frames(base),target=frames(target))
         if not op.get('command'):return result,0
         # Reverse copies of the authored guide definitions; the SDK constructor

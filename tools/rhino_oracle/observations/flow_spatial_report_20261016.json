@@ -1,0 +1,570 @@
+{
+  "cases": 6,
+  "native_spatial_parity_qualified": false,
+  "native_outputs_used_as_kernel_inputs": false,
+  "dense": {
+    "samples": 101,
+    "max_center_difference_from_precise_normalized_length": 0.00012836943112159993,
+    "public_frame_comparisons": {
+      "single": {
+        "initial_roll_degrees": -16.699413804928813,
+        "max_roll_after_initial_alignment_degrees": 15.492851934878393
+      },
+      "batch": {
+        "initial_roll_degrees": -169.00485235415204,
+        "max_roll_after_initial_alignment_degrees": 15.49285065320657
+      }
+    },
+    "public_fractional_length_comparisons": [
+      {
+        "fractional_tolerance": 0.01,
+        "max_coordinate_error": 0.05015294098957579
+      },
+      {
+        "fractional_tolerance": 0.0001,
+        "max_coordinate_error": 0.00045578231408516245
+      },
+      {
+        "fractional_tolerance": 1e-06,
+        "max_coordinate_error": 0.00012891387658386932
+      },
+      {
+        "fractional_tolerance": 1e-08,
+        "max_coordinate_error": 0.00012837764734574542
+      }
+    ]
+  },
+  "initial_scale_frame_candidates": [
+    {
+      "id": "scale-0-01",
+      "classification_tolerance": 0.1,
+      "max_initial_basis_error": 0.0
+    },
+    {
+      "id": "scale-0-1",
+      "classification_tolerance": 0.1,
+      "max_initial_basis_error": 1.1102230246251565e-16
+    }
+  ],
+  "queries": [
+    {
+      "id": "spatial",
+      "samples_per_guide": 101,
+      "target_classification": [
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 1e-06
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.001
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.01
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.05
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.1
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.2
+        },
+        {
+          "linear": false,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.4082482904638631,
+              0.8164965809277261,
+              0.4082482904638631
+            ],
+            "y": [
+              0.5773502691896258,
+              -0.5773502691896258,
+              0.5773502691896258
+            ],
+            "z": [
+              0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ]
+          },
+          "tolerance": 1.0
+        }
+      ]
+    },
+    {
+      "id": "refined",
+      "samples_per_guide": 101,
+      "target_classification": [
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 1e-06
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.001
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.01
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.05
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.1
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.2
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 1.0
+        }
+      ]
+    },
+    {
+      "id": "rotate-y",
+      "samples_per_guide": 101,
+      "target_classification": [
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 1e-06
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.001
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.01
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.05
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.1
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.2
+        },
+        {
+          "linear": false,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.4082482904638631,
+              0.8164965809277261,
+              -0.4082482904638631
+            ],
+            "y": [
+              0.5773502691896258,
+              -0.5773502691896258,
+              -0.5773502691896258
+            ],
+            "z": [
+              -0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ]
+          },
+          "tolerance": 1.0
+        }
+      ]
+    },
+    {
+      "id": "scale-0-01",
+      "samples_per_guide": 101,
+      "target_classification": [
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 1e-06
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.001
+        },
+        {
+          "linear": false,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.4082482904638631,
+              0.8164965809277261,
+              0.4082482904638631
+            ],
+            "y": [
+              0.5773502691896258,
+              -0.5773502691896258,
+              0.5773502691896258
+            ],
+            "z": [
+              0.7071067811865476,
+              0.0,
+              -0.7071067811865476
+            ]
+          },
+          "tolerance": 0.01
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 0.05
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 0.1
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 0.2
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 1.0
+        }
+      ]
+    },
+    {
+      "id": "scale-0-1",
+      "samples_per_guide": 101,
+      "target_classification": [
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 1e-06
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.001
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.01
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.05
+        },
+        {
+          "linear": false,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.4082482904638631,
+              0.8164965809277261,
+              0.4082482904638631
+            ],
+            "y": [
+              0.5773502691896258,
+              -0.5773502691896258,
+              0.5773502691896258
+            ],
+            "z": [
+              0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ]
+          },
+          "tolerance": 0.1
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 0.2
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 1.0
+        }
+      ]
+    },
+    {
+      "id": "scale-0-2",
+      "samples_per_guide": 101,
+      "target_classification": [
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 1e-06
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.001
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.01
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.05
+        },
+        {
+          "linear": false,
+          "plane": null,
+          "tolerance": 0.1
+        },
+        {
+          "linear": false,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.4082482904638631,
+              0.8164965809277261,
+              0.4082482904638631
+            ],
+            "y": [
+              0.5773502691896258,
+              -0.5773502691896258,
+              0.5773502691896258
+            ],
+            "z": [
+              0.7071067811865475,
+              0.0,
+              -0.7071067811865475
+            ]
+          },
+          "tolerance": 0.2
+        },
+        {
+          "linear": true,
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "y": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "z": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "tolerance": 1.0
+        }
+      ]
+    }
+  ]
+}

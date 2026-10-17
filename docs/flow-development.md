@@ -30,6 +30,7 @@ and actual Flow macros in owned private displays:
 | `flow_grips.json` | 72 | Complete grip owner, group, selection and Undo/Redo workflows across curves, surfaces and meshes |
 | `flow_line.json` | 128 | Actual commands with either or both guides drawn, Copy/Rigid/Stretch, reversals, mixed planes, selected grips and rigid curve owners |
 | `flow_line_orientation.json` | 24 | Twenty actual commands and four SDK diagnostics for opposite, collinear and nearly opposite lines |
+| `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
 
 Of the main 44 maps, 36 match within `1e-6`; eight involving spatial curved
 guides remain unresolved. All 24 command and 16 mixed-plane maps match too:
@@ -107,3 +108,31 @@ directions retains its unique axis, even below the usual angular tolerance.
 The kernel regression includes finite results when subtracting large guide
 origins would otherwise overflow. All 152 retained Line observations match
 within `1e-6`; maximum coordinate error is `8.341061175087816e-11`.
+
+The [spatial diagnostic report](../tools/rhino_oracle/observations/flow_spatial_report_20261016.json)
+and [capture record](flow-spatial-validation.json) retain 101 normalized-length
+queries on both guides of six recipes. Their SDK point maps exactly reproduce
+the earlier captures. On the dense cubic witness, native Flow centers differ
+from the precise public `NormalizedLengthParameter` query by up to
+`0.00012836943112159993`. Public fractional length tolerances of `1e-2`, `1e-4`,
+`1e-6` and `1e-8` also fail to reproduce the Flow centers. A simple change to
+the arc-length solver's tolerance is therefore insufficient for this witness.
+
+At corresponding normalized lengths, the single and batch public perpendicular
+frame queries differ from Flow by up to `15.49` degrees after aligning their
+initial roll. Two small-scale initial frame modes are reproduced by frames
+constructed from the public `TryGetPlane(0.1)` result. This is diagnostic evidence
+for a classification rule, not qualification of a complete spatial policy.
+Neither returned native frames nor candidate classification normals feed the
+kernel. The eight original spatial mismatches and command guard remain.
+
+Regenerate this analysis without launching Rhino:
+
+```sh
+python3 -m tools.rhino_oracle.flow_spatial_report tools/rhino_oracle/fixtures/flow_length_frames.json tools/rhino_oracle/observations/flow_length_frames_rhino_20261016.json /tmp/flow-spatial-report.json
+python3 -m unittest tools.rhino_oracle.test_flow_spatial
+```
+
+The next implementation work must account for both the spatial frame policy
+and Flow's position lookup. Replacing the initial frame alone, or merely
+loosening the precise shared arc-length sampler, does not match this evidence.
