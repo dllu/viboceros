@@ -146,12 +146,15 @@ pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
+mod conic;
 mod curvature_graph;
+mod curve_primitive;
 mod flow;
 mod flow_grips;
 mod flow_line;
 mod rectangle;
 mod surface_flow;
+pub use conic::Fixture as ConicCommandFixture;
 pub use rectangle::Fixture as RectangleFixture;
 pub use surface_flow::Fixture as SurfaceFlowFixture;
 mod flow_roadlike;
@@ -1729,6 +1732,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: FlowRoadlikeFixture,
     },
+    ConicCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: ConicCommandFixture,
+    },
     Rectangle {
         id: String,
         #[serde(flatten)]
@@ -2804,6 +2812,7 @@ impl Operation {
             | Self::OrientSurface { id, .. }
             | Self::OrientSurfaceGrips { id, .. }
             | Self::FlowGrips { id, .. }
+            | Self::ConicCommand { id, .. }
             | Self::Rectangle { id, .. }
             | Self::SurfaceFlow { id, .. }
             | Self::FlowLine { id, .. }
@@ -6046,6 +6055,7 @@ fn execute(
         Operation::FlowRoadlike { fixture, .. } => {
             flow_roadlike::run(fixture, iterations, tolerance)?
         }
+        Operation::ConicCommand { fixture, .. } => conic::run(fixture, iterations, tolerance)?,
         Operation::Rectangle { fixture, .. } => rectangle::run(fixture, iterations, tolerance)?,
         Operation::SurfaceFlow { fixture, .. } => {
             surface_flow::run(fixture, iterations, tolerance)?

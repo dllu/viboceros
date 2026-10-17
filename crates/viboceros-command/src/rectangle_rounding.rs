@@ -1,9 +1,7 @@
 //! Rectangle corner construction uses the shared fillet and rational kernels.
 use crate::rectangle_input::RectangleDefinition;
 use viboceros_document::Geometry;
-use viboceros_geometry::{
-    CurveSegment3, GeometryError, NurbsCurve, Point3, PolyCurve3, Real, Tolerance, WeightedPoint3,
-};
+use viboceros_geometry::{CurveSegment3, GeometryError, Point3, PolyCurve3, Real, Tolerance};
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Kind {
     #[default]
@@ -266,22 +264,15 @@ impl RectangleDefinition {
                 if !rho.is_finite() || rho <= 0. || rho >= 1. {
                     return Err(invalid("rectangle conic rho"));
                 }
-                let weight = rho / (1. - rho);
                 let midpoint = |i: usize| self.corners[i].midpoint(self.corners[(i + 1) % 4]);
                 let mut pieces = Vec::with_capacity(4);
                 for i in 0..4 {
                     let corner = self.corners[(i + 1) % 4];
                     let start = midpoint(i)?;
                     let end = midpoint((i + 1) % 4)?;
-                    let controls = [(start, 1.), (corner, weight), (end, 1.)]
-                        .into_iter()
-                        .map(|(p, w)| WeightedPoint3::try_new(p, w))
-                        .collect::<Result<Vec<_>, _>>()?;
-                    pieces.push(CurveSegment3::NurbsCurve(NurbsCurve::try_new_rational(
-                        2,
-                        controls,
-                        vec![0., 0., 0., 1., 1., 1.],
-                    )?));
+                    pieces.push(CurveSegment3::NurbsCurve(
+                        viboceros_geometry::NurbsCurve::try_conic(start, corner, end, rho)?,
+                    ));
                 }
                 Ok(Geometry::PolyCurve(PolyCurve3::try_new(pieces)?))
             }

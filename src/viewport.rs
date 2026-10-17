@@ -342,6 +342,8 @@ pub struct ViewportInput<'a> {
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
     pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
+    pub conic_input: Option<viboceros_command::conic::Input>,
+    pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
     pub flow_preview: Option<FlowPreview<'a>>,
     pub flow_local_preview: Option<FlowLocalPreview>,
@@ -428,6 +430,8 @@ impl Default for ViewportInput<'_> {
             translation_preview: None,
             affine_preview: None,
             surface_flow_preview: None,
+            conic_input: None,
+            conic_reference: None,
             rectangle_input: None,
             flow_preview: None,
             flow_local_preview: None,
@@ -2123,6 +2127,31 @@ impl Viewport {
                     && input.taper_preview.is_none()
                     && input.maelstrom_preview.is_none(),
             );
+        }
+        if let Some(getter) = input.conic_input {
+            let point = edge_cursor
+                .and_then(|c| input.edge_curve?.evaluate(c.parameter).ok())
+                .or(drafting_cursor.map(|c| c.point));
+            let curve = point.and_then(|point| {
+                input.conic_reference.map_or_else(
+                    || getter.preview(point),
+                    |r| {
+                        r.preview(
+                            getter,
+                            point,
+                            self.construction_plane().z_axis(),
+                            document.tolerance(),
+                        )
+                    },
+                )
+            });
+            if let Some(curve) = curve {
+                let mut projected = ProjectedPrimitives::default();
+                self.add_projected_nurbs_curve(&mut projected, rect, &curve);
+                for segment in projected.segments {
+                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+                }
+            }
         }
         if let Some(rectangle) = input
             .rectangle_input

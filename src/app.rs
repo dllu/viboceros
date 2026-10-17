@@ -149,6 +149,7 @@ mod block_manager;
 mod blocks;
 mod boolean_solids;
 mod boolean_two;
+mod conic;
 mod construction_plane;
 mod contour;
 mod curvature_graph;
@@ -505,6 +506,9 @@ enum InteractiveCommand {
     InterpCrv {
         options: viboceros_geometry::CurveInterpolationOptions,
     },
+    Conic {
+        anchor: Option<Point3>,
+    },
     Rectangle {
         first: Option<Point3>,
     },
@@ -831,6 +835,7 @@ impl InteractiveCommand {
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
             Self::InterpCrv { .. } => "InterpCrv",
+            Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
             Self::SelBox { .. } => "SelBox",
@@ -1208,6 +1213,9 @@ impl InteractiveCommand {
             }
             Self::InterpCrv { .. } => {
                 "InterpCrv: pick curve points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
+            }
+            Self::Conic { .. } => {
+                "Conic: pick start, end, apex and curvature point or rho (Esc cancels)"
             }
             Self::Rectangle { first: None } => {
                 "Rectangle: pick the first corner in the viewport (Esc to cancel)"
@@ -1798,6 +1806,7 @@ impl InteractiveCommand {
             | Self::Polyline
             | Self::Curve { .. }
             | Self::InterpCrv { .. }
+            | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
             | Self::Box { base: None, .. }
             | Self::SelBox { base: None, .. }
@@ -1892,6 +1901,7 @@ impl InteractiveCommand {
             | Self::CircleTwoPoint { first: start }
             | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
+            | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
             | Self::Box { base: start, .. }
             | Self::SelBox { base: start, .. }
@@ -2228,6 +2238,7 @@ pub struct VibocerosApp {
     orient_curve_session: Option<orient_curve::Session>,
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
+    conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     orient_points_session: Option<orient_points::Session>,
     orient_surface_session: Option<orient_surface::Session>,
@@ -2346,6 +2357,7 @@ impl VibocerosApp {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            conic_session: None,
             rectangle_session: None,
             orient_points_session: None,
             orient_surface_session: None,
@@ -2553,6 +2565,7 @@ impl VibocerosApp {
         if self.try_continue_orient_surface(&input)
             || self.try_continue_orient_points(&input)
             || self.try_continue_orient_curve(&input)
+            || self.try_continue_conic(&input)
             || self.try_continue_rectangle(&input)
             || self.try_continue_surface_flow(&input)
             || self.try_continue_flow(&input)
@@ -3147,6 +3160,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_conic(input) {
+            return true;
+        }
         if self.try_start_rectangle(input) {
             return true;
         }
@@ -5538,6 +5554,7 @@ impl VibocerosApp {
         }
         self.flow_session = None;
         self.surface_flow_session = None;
+        self.conic_session = None;
         self.rectangle_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
@@ -5597,6 +5614,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_conic_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_rectangle_point(point) {
             return accepted;
         }
@@ -5645,6 +5665,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Conic { .. }
             | InteractiveCommand::Rectangle { .. }
             | InteractiveCommand::SurfaceFlow { .. }
             | InteractiveCommand::Flow { .. }
@@ -8366,6 +8387,9 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.pick_conic_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_rectangle_curve(click.object_id, None) {
             return;
         }
@@ -9081,6 +9105,7 @@ impl VibocerosApp {
             if self.picking_subcurve_edge()
                 || self.picking_orient_curve()
                 || self.picking_flow_guide()
+                || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
             {
                 self.accept_component_click(crate::viewport::ComponentClick {
@@ -9103,7 +9128,8 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_rectangle_parameter(parameter)
+            if self.accept_conic_parameter(parameter)
+                || self.accept_rectangle_parameter(parameter)
                 || self.accept_orient_curve_parameter(parameter)
             {
             } else if self.move_normal_curve().is_some() {
@@ -9368,6 +9394,7 @@ impl eframe::App for VibocerosApp {
         self.validate_orient_surface();
         self.validate_flow_guides();
         self.validate_surface_flow();
+        self.validate_conic_curve();
         self.validate_rectangle_curve();
         self.validate_blend_surface();
         self.validate_tween_surfaces();
@@ -9427,6 +9454,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_scale_by_plane_object()
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
+                && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
                 && !self.picking_orient_curve()
                 && (self.surface_flow_session.is_none() || self.drawing_surface_flow())
@@ -9684,6 +9712,7 @@ impl eframe::App for VibocerosApp {
             || self.picking_subcurve_edge()
             || self.picking_orient_curve()
             || self.picking_flow_guide()
+            || self.picking_conic_curve()
             || self.picking_rectangle_curve())
             && self.plane_prompt.is_none()
             && model_input_active
@@ -9706,6 +9735,11 @@ impl eframe::App for VibocerosApp {
         let edge_curve = split_selection
             .map(viboceros_command::SplitEdgeSelection::curve)
             .or(normal_curve)
+            .or_else(|| {
+                self.conic_session
+                    .as_ref()
+                    .and_then(conic::Session::cursor_curve)
+            })
             .or_else(|| {
                 self.rectangle_session
                     .as_ref()
@@ -9858,6 +9892,7 @@ impl eframe::App for VibocerosApp {
             && (self.picking_subcurve_edge()
                 || self.picking_orient_curve()
                 || self.picking_flow_guide()
+                || self.picking_conic_curve()
                 || self.picking_rectangle_curve());
         let document = surface_rebuild::viewport_document(
             &self.document,
@@ -9930,9 +9965,17 @@ impl eframe::App for VibocerosApp {
         });
         let angle_plane = angle_plane
             .or_else(|| surface_session.and_then(orient_surface::Session::angle_plane))
-            .or_else(|| self.rectangle_getter().and_then(|s| s.input.mouse_plane()));
+            .or_else(|| self.rectangle_getter().and_then(|s| s.input.mouse_plane()))
+            .or_else(|| {
+                self.conic_session
+                    .as_ref()
+                    .and_then(|s| s.input.mouse_plane())
+            });
         let translation_constraint = model_input_active
-            .then(|| self.translation_constraint())
+            .then(|| {
+                self.translation_constraint()
+                    .or_else(|| self.conic_session.as_ref()?.input.point_constraint())
+            })
             .flatten();
         let curve_points = self
             .plane_prompt
@@ -9956,6 +9999,16 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let viewport_positions = &self.viewport_positions;
+        let conic_input = self
+            .conic_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
+        let conic_reference = self
+            .conic_session
+            .as_ref()
+            .and_then(|s| s.reference.as_ref())
+            .filter(|_| model_input_active);
         let rectangle_input = self
             .rectangle_getter()
             .map(|s| s.input)
@@ -10090,6 +10143,8 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
+                            conic_input,
+                            conic_reference,
                             rectangle_input,
                             surface_flow_preview: self
                                 .surface_flow_session
@@ -10331,6 +10386,7 @@ mod tests {
     mod circle_fit_grips;
     mod circle_fit_points;
     mod command_line;
+    mod conic;
     mod construction_plane;
     mod contour;
     mod coplanar_faces;
@@ -10521,6 +10577,7 @@ mod tests {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            conic_session: None,
             rectangle_session: None,
             orient_points_session: None,
             orient_surface_session: None,

@@ -30,31 +30,6 @@ fn command(actions: &[RectangleAction], guide: Option<ObjectId>) -> String {
     }
     words.join(" ")
 }
-fn snapshot(
-    doc: &Document,
-    guide: Option<ObjectId>,
-    original: Option<&Geometry>,
-) -> Result<Value, ProbeError> {
-    let mut outputs = Vec::new();
-    for object in doc.objects().filter(|o| Some(o.id()) != guide) {
-        let geometry = object.geometry();
-        let curve = geometry
-            .nurbs_curve_representation()?
-            .ok_or(ProbeError::FixtureInvariant("rectangle must be a curve"))?;
-        let pieces = if let Geometry::PolyCurve(poly) = geometry {
-            poly.segments()
-                .iter()
-                .map(|s| s.to_nurbs())
-                .collect::<Result<Vec<_>, _>>()?
-        } else {
-            vec![curve.clone()]
-        };
-        outputs.push(json!({"selected":doc.is_selected(object.id()),"curve":nurbs_curve_definition_value(&curve),"segments":pieces.iter().map(nurbs_curve_definition_value).collect::<Vec<_>>(),"length":geometry.curve_ref().unwrap().length(doc.tolerance())?,"closed":curve.is_closed()?}));
-    }
-    Ok(
-        json!({"outputs":outputs,"guide_unchanged":guide.is_none_or(|id|doc.object(id).is_some_and(|o|Some(o.geometry())==original))}),
-    )
-}
 pub(super) fn run(
     f: &Fixture,
     iterations: u32,
@@ -85,18 +60,19 @@ pub(super) fn run(
             .as_ref()
             .map(|g| doc.add_geometry(g.clone()))
             .transpose()?;
+        let guides = guide.zip(original).into_iter().collect::<Vec<_>>();
         if let Some(setup) = &f.setup {
             commands.execute_in_context(&mut doc, &command(setup, guide), context)?;
             doc.undo()?;
         }
         doc.clear_history()?;
-        let before = snapshot(&doc, guide, original.as_ref())?;
+        let before = crate::curve_primitive::snapshot(&doc, &guides)?;
         commands.execute_in_context(&mut doc, &command(&f.actions, guide), context)?;
-        let after = snapshot(&doc, guide, original.as_ref())?;
+        let after = crate::curve_primitive::snapshot(&doc, &guides)?;
         let undo_label = doc.undo()?;
-        let undo = snapshot(&doc, guide, original.as_ref())?;
+        let undo = crate::curve_primitive::snapshot(&doc, &guides)?;
         let redo_label = doc.redo()?;
-        let redo = snapshot(&doc, guide, original.as_ref())?;
+        let redo = crate::curve_primitive::snapshot(&doc, &guides)?;
         Ok(
             json!({"command_returned":true,"before":before,"after":after,"undo":undo,"redo":redo,"undo_label":undo_label,"redo_label":redo_label}),
         )

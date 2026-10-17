@@ -278,6 +278,7 @@ use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
 mod circle_fit_points;
 pub mod circle_input;
+pub mod conic;
 mod context;
 mod control_points;
 mod curve_cut;
@@ -453,6 +454,12 @@ pub trait Command: Send + Sync {
         None
     }
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
+        false
+    }
+    fn conic_options(&self) -> Option<conic::Options> {
+        None
+    }
+    fn remember_conic_options(&self, _value: conic::Options) -> bool {
         false
     }
     fn rectangle_options(&self) -> Option<rectangle_rounding::Options> {
@@ -760,6 +767,9 @@ impl CommandRegistry {
             .register(PolylineCommand)
             .expect("unique built-in command");
         registry
+            .register(conic::ConicCommand::default())
+            .expect("unique Conic command");
+        registry
             .register(RectangleCommand::default())
             .expect("unique built-in command");
         registry
@@ -917,9 +927,6 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ConeCommand)
-            .expect("unique built-in command");
-        registry
-            .register(ConicCommand)
             .expect("unique built-in command");
         registry
             .register(ParabolaCommand)
@@ -1991,6 +1998,17 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn conic_options(&self) -> conic::Options {
+        self.lookup
+            .get(&normalize_command_name("Conic"))
+            .and_then(|i| self.commands[*i].conic_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_conic_options(&self, value: conic::Options) -> bool {
+        self.lookup
+            .get(&normalize_command_name("Conic"))
+            .is_some_and(|i| self.commands[*i].remember_conic_options(value))
+    }
     pub fn rectangle_options(&self) -> rectangle_rounding::Options {
         self.lookup
             .get(&normalize_command_name("Rectangle"))
@@ -4972,7 +4990,6 @@ const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center poin
 const PARABOLA_USAGE: &str = "Parabola [Focus] focus direction-point end-point | Parabola Vertex vertex focus end-point [Half=Yes|No] [MarkFocus=Yes|No]";
 const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point third-point [direction-point] [Mode=Focus|ThroughPoint|Vertex] [PickOrder=Default|EndsFirst|EndsLast] [MarkFocus=Yes|No]";
 const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
-const CONIC_USAGE: &str = "Conic [Default] start end apex rho-or-through-point | Conic Apex start apex end rho-or-through-point | Conic start Apex apex end rho-or-through-point";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No] | Spiral AroundCurve start-radius-point end-radius-or-point [PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
@@ -5093,20 +5110,6 @@ struct ParaboloidCommandOptions {
     positionals: ParabolicPositionals,
     mark_focus: bool,
     solid: bool,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum ConicDefinition {
-    Rho(Real),
-    ThroughPoint(Point3),
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct ConicCommandOptions {
-    start: Point3,
-    apex: Point3,
-    end: Point3,
-    definition: ConicDefinition,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -5757,56 +5760,6 @@ fn parse_paraboloid_options(arguments: &[&str]) -> Result<ParaboloidCommandOptio
         positionals,
         mark_focus,
         solid,
-    })
-}
-
-fn parse_conic_options(arguments: &[&str]) -> Result<ConicCommandOptions, CommandError> {
-    let first_argument = arguments.first().ok_or(CommandError::Usage(CONIC_USAGE))?;
-    let mode = first_argument.trim_start_matches('_');
-    let (leading_apex, positional_start) = if mode.eq_ignore_ascii_case("Apex") {
-        (true, 1)
-    } else if mode.eq_ignore_ascii_case("Default") {
-        (false, 1)
-    } else {
-        (false, 0)
-    };
-
-    let (first, first_consumed) = parse_point(&arguments[positional_start..])?;
-    let after_first = positional_start + first_consumed;
-    let inline_apex = arguments
-        .get(after_first)
-        .is_some_and(|argument| option_name_eq(argument, "Apex"));
-    if positional_start != 0 && inline_apex {
-        return Err(CommandError::Usage(CONIC_USAGE));
-    }
-    let apex_first = leading_apex || inline_apex;
-    let second_start = after_first + usize::from(inline_apex);
-    let (second, second_consumed) = parse_point(&arguments[second_start..])?;
-    let third_start = second_start + second_consumed;
-    let (third, third_consumed) = parse_point(&arguments[third_start..])?;
-    let definition_start = third_start + third_consumed;
-    let remaining = &arguments[definition_start..];
-    let definition = if remaining.len() == 1 && !remaining[0].contains(',') {
-        let rho = parse_finite_real(remaining[0])?;
-        if !(0.0..1.0).contains(&rho) {
-            return Err(CommandError::Usage(CONIC_USAGE));
-        }
-        ConicDefinition::Rho(rho)
-    } else {
-        let (through, consumed) = parse_point(remaining)?;
-        require_consumed(remaining, consumed, CONIC_USAGE)?;
-        ConicDefinition::ThroughPoint(through)
-    };
-    let (start, apex, end) = if apex_first {
-        (first, second, third)
-    } else {
-        (first, third, second)
-    };
-    Ok(ConicCommandOptions {
-        start,
-        apex,
-        end,
-        definition,
     })
 }
 
@@ -7329,36 +7282,6 @@ impl Command for ConeCommand {
                 options.height
             ))
         }
-    }
-}
-
-struct ConicCommand;
-
-impl Command for ConicCommand {
-    fn name(&self) -> &'static str {
-        "Conic"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_conic_options(arguments)?;
-        let tolerance = document.tolerance();
-        let curve = match options.definition {
-            ConicDefinition::Rho(rho) => {
-                NurbsCurve::try_conic(options.start, options.apex, options.end, rho)?
-            }
-            ConicDefinition::ThroughPoint(through) => NurbsCurve::try_conic_through_point(
-                options.start,
-                options.apex,
-                options.end,
-                through,
-                tolerance,
-            )?,
-        };
-        let middle_weight = curve.control_points()[1].weight();
-        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
-        Ok(format!(
-            "Added exact NURBS conic {id} (middle weight {middle_weight:.6})"
-        ))
     }
 }
 

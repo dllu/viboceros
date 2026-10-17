@@ -382,26 +382,28 @@
     }
   ],
   "sha256": {
-    "README.md": "1662b0c6d0cdb5a477f3deaca9f129e7ed8733a7feb22f6c9c60e883e754aa56",
-    "crates/viboceros-command/src/lib.rs": "9d2ed7c3bd78f7086ee15c3ac5cf54eb258ccccab8c03793d0a930454f9910ad",
     "crates/viboceros-command/src/plane_primitives.rs": "d9517b406258c31208d3fbdfde2b347d481090ad7aa864663e7d3200224be10c",
     "crates/viboceros-command/src/rectangle_input.rs": "c4a8c773d8558e1741ae06017c20e5a4291cd53ac29a0374db2822dd1761d978",
-    "crates/viboceros-command/src/rectangle_rounding.rs": "cc847c6200806666e4f589ccc1cf16f3434be5f2151b5edfe7e00bcda97fbe4b",
     "crates/viboceros-geometry/src/polyline/fillet.rs": "ce387239bd6cd21b88eee7e0ac2e49b922929594770b934e587a5f8b7b7b331e",
-    "crates/viboceros-oracle/src/lib.rs": "0fc6b37dee7fd7d8ccf92170944db8625f739a063941107be0b7abf80118f317",
-    "crates/viboceros-oracle/src/rectangle.rs": "f44b835034da425eecf73b70c929721f753ebaa7ceb55a4b69a607824db02176",
     "docs/commands/rectangle.md": "b0c96e0ca5504fc4dc69c70aa6e17954ad3963b156b4c8b6c6c1fbe5c58b8a47",
     "docs/construction-planes.md": "b2e410d9500a7fa17cde995b91411e69e36865abcdb4f9fe90d43eff39e29988",
-    "docs/surface-flow-rectangles-validation.json": "8829c5cb7673358404acc64dcc3b3c59cfccb34e6bac4f1b4d57d3c2b000b899",
     "docs/surface-flow-validation.json": "62eade00ea3817df9aa5d95304e34e40794b46c6ad8e5408cd2aafd1b5dd232e",
     "src/app/rectangle.rs": "fa5d3802f4f4a7018bc6aca6f41794cd4a3b66b5e122a62a22f1f032081e6a72",
     "src/app/tests/rectangle.rs": "3333e72fad6286a2490e2f93ec7706e8ef6b81c2136e255e0b9f28fd74fd8a24",
-    "src/viewport.rs": "96c920f67b5106029d97ad6c90f32cf95af49a982a4d124a15e37bc3e4ac5ba0",
     "tools/rhino_oracle/fixtures/rectangle_rounded.json": "f73d3c3793fd617a566fdbb7f0f1634c65adcb49a996d7fb9b450f1dbbd13690",
     "tools/rhino_oracle/observations/rectangle_rounded_rhino_20261017.json": "bbe2fbaf19221ed480f7813b1345551df53084d2cdb6fdf04eb3fc55dff1618f",
-    "tools/rhino_oracle/rectangle_probe.py": "93c26727bc82fcbd319259c61fc36c74942bc1c702cd625144d9996b6de45ced",
-    "tools/rhino_oracle/rhino_worker.py": "8d085d94f4662d592d9ecc24a323e48684c6e2659c3c7bc5dcdcf8495fa7fea5",
-    "tools/rhino_oracle/structural_sdk.py": "3ccc92e5d2cd87a98288715f7141c3bd2ba7024df3d134bdd401932dd3f577dc",
     "tools/rhino_oracle/test_rectangle.py": "88b0b6c0ff532a8cf1b4b66ceb224c1c181fcefd8de6dd8551df50f46ca6712e"
+  },
+  "git_sha256": {
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:README.md": "1662b0c6d0cdb5a477f3deaca9f129e7ed8733a7feb22f6c9c60e883e754aa56",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:crates/viboceros-command/src/lib.rs": "9d2ed7c3bd78f7086ee15c3ac5cf54eb258ccccab8c03793d0a930454f9910ad",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:crates/viboceros-command/src/rectangle_rounding.rs": "cc847c6200806666e4f589ccc1cf16f3434be5f2151b5edfe7e00bcda97fbe4b",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:crates/viboceros-oracle/src/lib.rs": "0fc6b37dee7fd7d8ccf92170944db8625f739a063941107be0b7abf80118f317",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:crates/viboceros-oracle/src/rectangle.rs": "f44b835034da425eecf73b70c929721f753ebaa7ceb55a4b69a607824db02176",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:src/viewport.rs": "96c920f67b5106029d97ad6c90f32cf95af49a982a4d124a15e37bc3e4ac5ba0",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:tools/rhino_oracle/rectangle_probe.py": "93c26727bc82fcbd319259c61fc36c74942bc1c702cd625144d9996b6de45ced",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:tools/rhino_oracle/rhino_worker.py": "8d085d94f4662d592d9ecc24a323e48684c6e2659c3c7bc5dcdcf8495fa7fea5",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:tools/rhino_oracle/structural_sdk.py": "3ccc92e5d2cd87a98288715f7141c3bd2ba7024df3d134bdd401932dd3f577dc",
+    "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:docs/surface-flow-rectangles-validation.json": "8829c5cb7673358404acc64dcc3b3c59cfccb34e6bac4f1b4d57d3c2b000b899"
   }
 }

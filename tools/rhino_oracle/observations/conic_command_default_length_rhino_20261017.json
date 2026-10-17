@@ -1,0 +1,410 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "conic3-apex-past-end",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 12.499998981151322,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 12.499998981151322,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Conic",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          15.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          10.0,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 2,
+                    "domain": [
+                      0.0,
+                      1.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  },
+                  "length": 12.499998981151322,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            15.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            10.0,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 2,
+                      "domain": [
+                        0.0,
+                        1.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Conic\nStart of conic ( Tangent  Perpendicular ): w0.0,0.0,0.0\nEnd of conic ( Apex  Tangent  Perpendicular ): w10.0,0.0,0.0\nApex: w15.0,0.0,0.0\nCurvature point or rho <0.500>: 0.5",
+        "macro": "_Conic w0.0,0.0,0.0 w10.0,0.0,0.0 w15.0,0.0,0.0 0.5",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 12.499998981151322,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        10.0,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

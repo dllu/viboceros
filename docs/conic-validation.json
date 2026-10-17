@@ -1,0 +1,495 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "timezone": "UTC",
+  "base_repository_revision": "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51",
+  "component": "Interactive Conic with rational shape previews, Apex/Vertical, tangent and perpendicular endpoints, curve/edge capture and temporary SubCrv inputs",
+  "fixtures_qualified": true,
+  "matched_native_geometry_cases": 42,
+  "complete_conic_command_qualified": false,
+  "performance_qualified": false,
+  "native_values_used_as_production_geometry_inputs": false,
+  "implementation": [
+    "Replace the old positional-only Conic command with a modular transport-independent input state. Preserve Default and leading/inline Apex script compatibility. Reuse existing exact NurbsCurve::try_conic and try_conic_through_point constructors; remove the rounded-rectangle duplicate rational constructor in favor of the same kernel.",
+    "Support 3D start/end/apex inputs, shape-point projection, numeric rho, an initially absent rho default, remembered successful rho across Undo, and Apex-first input with the end constrained to the apex CPlane-Z line by Vertical.",
+    "Capture immutable source curves or surface edges. Project endpoints onto their source, constrain apexes to tangents or tangent-cross-CPlane-normal lines, and infer a two-constraint apex by line intersection. A zero perpendicular direction leaves the apex free; incompatible lines fail atomically.",
+    "Reuse the common SubCrv point-order and length helpers and directed curve trimming, including the usd-brep backend when enabled. Temporary curves remain outside the document. Free length entry takes a direction confirmation point. Enter and the local FullCurve alias restore the original captured curve.",
+    "Connect viewport curve/edge selection, component choices, constrained point resolution, drafting planes, exact previews and stale-reference validation. Commit one public Conic command; preserve sources, reject invalid rho for correction, and discard failed shape constructions without helper objects.",
+    "Share public curve-primitive capture and exact document-state snapshots with Rectangle. Keep the existing legacy conic oracle operation and fixtures intact; expose the getter/history recipe as conic_command."
+  ],
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "fixture": "tools/rhino_oracle/fixtures/conic_command.json",
+    "observation": "tools/rhino_oracle/observations/conic_command_rhino_20261017.json",
+    "scheme": "VibocerosOracleConicPreciseLength",
+    "main_conic_commands": 42,
+    "setup_conic_commands": 1,
+    "document_epsilon": 1e-06,
+    "epsilon_changed": false,
+    "length_fractional_tolerance": 1e-12,
+    "method": "Fresh authored public Conic commands in an owned private display, public RhinoCommon NURBS/segment and length queries, exact EndCommand success events and macro return, source CRCs, and actual Undo/Redo. No Cancel tail, unknown command or invalid input in qualifying histories. No proprietary implementation inspected or decompiled."
+  },
+  "comparisons": {
+    "epsilon": 1e-06,
+    "geometry": [
+      "degree",
+      "control points",
+      "weights",
+      "original knots and domain",
+      "segment definitions",
+      "closure",
+      "length"
+    ],
+    "document_states": [
+      "before",
+      "EndCommand",
+      "macro return",
+      "Undo",
+      "Redo"
+    ],
+    "document": [
+      "output count",
+      "selection",
+      "source preservation",
+      "single local history edit",
+      "actual native Undo/Redo return and restoration"
+    ]
+  },
+  "independent_length_control": {
+    "observation": "tools/rhino_oracle/observations/conic_command_default_length_rhino_20261017.json",
+    "id": "conic3-apex-past-end",
+    "capture_scope": "Unmodified selected row from the initial 42-workflow capture using the default length query.",
+    "native_default_fractional_tolerance": 1e-08,
+    "native_default_length": 12.499998981151322,
+    "native_precise_length": 12.499999999968738,
+    "analytic_length": 12.5,
+    "derivation": "For x(t)=30t-20t^2, the reversal is at t=3/4, x=11.25. Total variation is 11.25+(11.25-10)=12.5.",
+    "policy": "Retain the original native query as a control. Tighten the public measurement query, preserving the comparison epsilon and exact production geometry."
+  },
+  "coverage": {
+    "native": [
+      "Default and inline Apex pick order",
+      "rho 0.01 through 0.99",
+      "on-plane and off-plane shape points",
+      "remembered rho after setup",
+      "3D controls",
+      "large offsets and small curves",
+      "collinear, repeated and all-coincident controls",
+      "start/end Tangent",
+      "start/end Perpendicular",
+      "both endpoint constraints and mixed kinds",
+      "oblique 3D tangents",
+      "custom Front CPlane",
+      "perpendicular fallback when tangent parallels CPlane Z",
+      "Apex Vertical",
+      "temporary SubCrv point order and numeric length",
+      "circular guide projection and tangents",
+      "closed temporary portion across circle seam"
+    ],
+    "frontend": [
+      "edit-free previews",
+      "calculator rho",
+      "invalid rho retry",
+      "fresh Enter cancellation",
+      "defaults across Undo",
+      "Vertical projection",
+      "temporary source clamping",
+      "stale hidden source",
+      "surface-edge component capture",
+      "shape-point failure",
+      "one undo/redo edit",
+      "yield reference picker to another command"
+    ],
+    "negative_local": [
+      "missing/wrong references",
+      "invalid rho",
+      "outside shape point",
+      "parallel/skew endpoint lines"
+    ]
+  },
+  "limitations": [
+    "The complete Conic command is not qualified. Native surface-edge interactions and locked SubCrv direction remain outside the captured corpus.",
+    "Free numeric temporary length input uses a confirmation point; native interactive cursor-side and selection details are not exhaustively matched. FullCurve is a local alias.",
+    "Automatic acceptance of preselected reference curves and exhaustive snapping, near-degenerate and extreme-scale combinations remain unqualified.",
+    "Performance parity and live dependency history are not claimed."
+  ],
+  "public_references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/conic.htm",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/getlength?version=8.x"
+  ],
+  "historical_provenance": {
+    "preserved_entries": 16,
+    "records": 3,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "checks": [
+    {
+      "name": "geometry-conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "conic"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 21.896863479865715,
+      "log_sha256": "00d193ab7430f6ca2b99775b21d1667459a9a071df12754a69883f4ec57cbba5",
+      "test_results": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 2360 filtered out; finished in 1.05s"
+      ]
+    },
+    {
+      "name": "command-conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "conic"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 39.86788205313496,
+      "log_sha256": "b97281d239a3d38acea86e3f9c2088ee91470b94180ee205ff022b3a3d21b9d6",
+      "test_results": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1451 filtered out; finished in 0.06s"
+      ]
+    },
+    {
+      "name": "oracle-conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--lib",
+        "conic::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 16.205686377128586,
+      "log_sha256": "1b4b9e64f893d66f93edec254a43b268aa37ec4160e3f07abd9a9f80faaa8e2a",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 542 filtered out; finished in 0.17s"
+      ]
+    },
+    {
+      "name": "app-conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::conic::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.15646789502352476,
+      "log_sha256": "dc9cd6829632aa7b026462b87db3f29fd15d804777d08ab396bedd41fa5e03fd",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1321 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "app-components",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "component"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.3572143339551985,
+      "log_sha256": "587812cafe20d7228aa64f49638f63f94075d818d9bcb2161ddd429b5435e2d8",
+      "test_results": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 1307 filtered out; finished in 0.17s"
+      ]
+    },
+    {
+      "name": "native-smlib-conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "conic::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 46.14895455399528,
+      "log_sha256": "01276edb82a540f3707585a81246b65b436df9446a7dc4f46d98532c4bbc87ea",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 563 filtered out; finished in 0.17s"
+      ]
+    },
+    {
+      "name": "geometry-fillet",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "polyline::fillet::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.12426729290746152,
+      "log_sha256": "ef385ac52b750c034ee63dcfc31bd5fb9d7abb0d3b2a9ec4c84705cd96d45ae9",
+      "test_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2364 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "name": "command-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.59436636720784,
+      "log_sha256": "f6059079acd4e0a142da3c4ea553bc3b32ddf7547a27a25448be72a6f6d5f4ef",
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1447 filtered out; finished in 2.47s"
+      ]
+    },
+    {
+      "name": "command-fillet",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "fillet_corners::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1085549199488014,
+      "log_sha256": "fde1de5a11bae6c036d8b358c7d4f9513bcfab021cbf7ce8d140c8a84073a9d3",
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1450 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "oracle-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--lib",
+        "rectangle::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5271653819363564,
+      "log_sha256": "7cc30d51699e15a5222e9a7fa52b057978f2ff85bbe227b01175979c5f233e17",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 542 filtered out; finished in 0.41s"
+      ]
+    },
+    {
+      "name": "oracle-surface-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--lib",
+        "surface_flow::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.99763848609291,
+      "log_sha256": "bc32e7d6804260897f4512e0a64123133959326cbf5aa56d0b69c03969de2b44",
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 536 filtered out; finished in 4.89s"
+      ]
+    },
+    {
+      "name": "app-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.3281316780485213,
+      "log_sha256": "0ac70ff2c32bb000beeb16f7a77cb72503ed0dd975841052ae57cc6fc6113ad1",
+      "test_results": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1305 filtered out; finished in 0.16s"
+      ]
+    },
+    {
+      "name": "app-construction-plane",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::construction_plane::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.24527497589588165,
+      "log_sha256": "a0531cc881f22276f969158a876afe4db750aa5e6a6010e4e56688853134754a",
+      "test_results": [
+        "test result: ok. 44 passed; 0 failed; 0 ignored; 0 measured; 1281 filtered out; finished in 0.11s"
+      ]
+    },
+    {
+      "name": "app-surface-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::surface_flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.24092848715372384,
+      "log_sha256": "98015f4a0c92c82b082de09011c5f448271c0e50ae8e0c840273181c0a9f2880",
+      "test_results": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1318 filtered out; finished in 0.10s"
+      ]
+    },
+    {
+      "name": "viewport-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "flow_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1875007168855518,
+      "log_sha256": "a07f4d8a194e29fa266f38a704df11d18836f33357908aaeb99cadad87b999c4",
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1320 filtered out; finished in 0.04s"
+      ]
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_surface_flow",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.23618764407001436,
+      "log_sha256": "663824c9e47216a481c4b1cd14fcf5a2d9af79ec0d69713964c3a2be5524a1c0",
+      "test_results": [
+        "Ran 12 tests in 0.150s"
+      ]
+    },
+    {
+      "name": "native-smlib-rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "rectangle::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5324139690492302,
+      "log_sha256": "488e7d134b6ad3065a4b7a7110bab8f7574c46f89d2a6be2ebbcb7f26c4052f4",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 563 filtered out; finished in 0.43s"
+      ]
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 31.269271492026746,
+      "log_sha256": "d5f6655956085104d6fdf20f35f25fedeb0eb3aea2b116b86e85a855e7baa120",
+      "test_results": []
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.332407710142434,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    }
+  ],
+  "sha256": {
+    "README.md": "1b3b001f4fbadaea531e231b6c8ffc6acde9f30ad3fdee0838270f9bbf82be47",
+    "crates/viboceros-command/src/conic.rs": "68c70bb6af7a1657ab31cb0203faf6d1685084ca61364e42ce34501fd1bb4b97",
+    "crates/viboceros-command/src/conic/reference.rs": "0d477a4ce24a6f9738e394836ad92e1c8e5fa492f52149edc194e5773cb77742",
+    "crates/viboceros-command/src/lib.rs": "1c1d57978f695fc428ed88122b23a2fd648043db4adcd7737cbd921f605f0964",
+    "crates/viboceros-command/src/rectangle_rounding.rs": "74b3b29a4e97798efa051c5f6f49c2170401455ca46e2391c5da4419d8f3a1bc",
+    "crates/viboceros-oracle/src/conic.rs": "ea22a1baa0547229e6f19e277d1653ffbb04162876e4b15f2c88ac93688fcc48",
+    "crates/viboceros-oracle/src/curve_primitive.rs": "bb8932d6d9eafd9d30b7c7591ca26eb17f268a27f831104ae91b013c22d12673",
+    "crates/viboceros-oracle/src/lib.rs": "ef9f6e587dd08bbfaa19cb597b62fde808bc9a05dae6ab401979a64d399f8615",
+    "crates/viboceros-oracle/src/rectangle.rs": "777777d853680a08a2ee73fa249fc6e06fca956937eefa53f9614b70873ec6a3",
+    "docs/commands/README.md": "1c0d57c5c289683dec9af4d1ed98e7f862d53f1b1198e209f5c3e3e27bcd96a9",
+    "docs/commands/conic.md": "9e7b5943550d85a982333b83f71c0ae787fcc4fdf26ee8707c3c8bab5597eea0",
+    "docs/orient-surface-validation.json": "84e1a0fcaadf8e53679de4a2edbcad4dab03a18a10cb1c8add330dc94f75654a",
+    "docs/rectangle-rounded-validation.json": "d90f02bd9756226a3b848a937be8e5c4e25eff4efe230cd06bbdbabc41b1c70e",
+    "docs/surface-flow-rectangles-validation.json": "2af49301900757d09adf229f12b51231ffc06e2eada3d58ca9d1a7d73d15989a",
+    "src/app.rs": "01f92b28a6fe6cf689b2ad643c806cc89ffedc49bb11248370dd25b3a4bb0fa0",
+    "src/app/component_selection.rs": "3c01f6ba382c457997cd7cd31bb9296301b2a240c656349fc6a07aa949f1da42",
+    "src/app/conic.rs": "d4dc555846613ebdd40ec70dd6912fb56055033fdb4bf8510abc558dff15997c",
+    "src/app/object_selection.rs": "8df0a2b4e20778e0c2fad2d433d21e52f12320fd0bacc6bfed756f91e54dd85a",
+    "src/app/point_input.rs": "ea020b4baebd4799156f163692edffb41ebbef19198ce6b4fd29cd642e05950c",
+    "src/app/tests/conic.rs": "1e5ac022f2f56e7f9f0661073d5cb88fdb0b591fb31e2073230afcd6fdfae1be",
+    "src/viewport.rs": "7620564a769231cf2f3e9518a817fd4fecaba6c3a3fda8df47ba0509b014aec8",
+    "tools/rhino_oracle/conic_probe.py": "3200354dafbfb428dcfdfa80007277e6b6488e4a7a629a08f14cd72a9be1178e",
+    "tools/rhino_oracle/curve_primitive_probe.py": "b493c4316e6dcd2e944b9a9321a04f770b7cc89eb74076a8c93e58a0de640104",
+    "tools/rhino_oracle/fixtures/conic_command.json": "e1c07dc2f13ac066053f6f1defc7cfa5dcb36d8896bbdd56378e71d36ab7e1d9",
+    "tools/rhino_oracle/observations/conic_command_default_length_rhino_20261017.json": "59a5019c166cbf4644ab708e33f47c4c3c8e9b349dbf80a42b56dce4fd2ba386",
+    "tools/rhino_oracle/observations/conic_command_rhino_20261017.json": "f6e6cdf1689ab7317c8c1c20511b69da191db19e46b57814e300044d0e7a8198",
+    "tools/rhino_oracle/rectangle_probe.py": "925ca6e0b499cc75be8f7df8cfa7168d80da87f3bb121c5a6c4e3ff6ab46f7b5",
+    "tools/rhino_oracle/rhino_worker.py": "1724b692968535f33b07328c4c94e9dfd9836593b57c0c3d2715ab751cb4911a",
+    "tools/rhino_oracle/structural_sdk.py": "a4bbc43129705fb7817ddd56d39def1fc8df93191365a68b5fcf99ab6bc7cd52",
+    "tools/rhino_oracle/test_conic.py": "1f6780052dd010bc49419090e014fbd00ef5b7e8ca8e7dae70364bd89470e111"
+  }
+}
