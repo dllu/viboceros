@@ -145,10 +145,12 @@ pub use rail_revolve::Fixture as RailRevolveFixture;
 pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
+mod arc_length_batch;
 mod curvature_graph;
 mod flow;
 mod flow_grips;
 mod flow_line;
+pub use arc_length_batch::Fixture as ArcLengthBatchFixture;
 pub use flow_grips::Fixture as FlowGripsFixture;
 pub use flow_line::Fixture as FlowLineFixture;
 mod orient_on_curve;
@@ -1711,6 +1713,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CurveDeviationFixture,
     },
+    ArcLengthBatch {
+        id: String,
+        #[serde(flatten)]
+        fixture: ArcLengthBatchFixture,
+    },
     FlowLine {
         id: String,
         #[serde(flatten)]
@@ -2777,6 +2784,7 @@ impl Operation {
             | Self::OrientSurfaceGrips { id, .. }
             | Self::FlowGrips { id, .. }
             | Self::FlowLine { id, .. }
+            | Self::ArcLengthBatch { id, .. }
             | Self::OrientOnCurve { id, .. }
             | Self::CurvatureGraph { id, .. }
             | Self::ExtractCurvatureGraph { id, .. }
@@ -6007,6 +6015,9 @@ fn execute(
         )?,
         Operation::CurveDeviation { fixture, .. } => {
             curve_deviation::run(fixture, iterations, tolerance)?
+        }
+        Operation::ArcLengthBatch { fixture, .. } => {
+            arc_length_batch::run(fixture, iterations, tolerance)?
         }
         Operation::FlowLine { fixture, .. } => flow_line::run(fixture, iterations, tolerance)?,
         Operation::FlowGrips { fixture, .. } => flow_grips::run(fixture, iterations, tolerance)?,

@@ -13429,6 +13429,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'curvature_graph':
         from curvature_graph_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'arc_length_batch':
+        from arc_length_batch_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'flow_line':
         from flow_line_probe import run
         return run(operation, globals(), iterations, tolerance)

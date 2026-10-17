@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "6de9e1a6141e20f83dcd772beaafe21fdf39c27d",
+  "component": "Shared independent normalized arc-length batch inversion and Python oracle coverage",
+  "production_kernel_changed": true,
+  "complete_flow_qualified": false,
+  "spatial_flow_qualified": false,
+  "performance_qualified": false,
+  "native_outputs_used_as_kernel_construction_inputs": false,
+  "implementation": "ArcLengthSampler::parameters_at_normalized_lengths validates a bounded batch, sorts query indices, performs each distinct inversion once through the existing precise scalar solver/prepared brackets, and restores input order. Empty batches and duplicate endpoints are supported. The source geometry and prepared tables remain immutable. The Python arc_length_batch operation constructs the same NURBS definition independently and compares parameters, points, length and source domain.",
+  "native_capture": {
+    "scheme": "VibocerosOracleLengthBatch20261016b",
+    "engine_version": "8.32.26160.13001",
+    "method": "Owned private display and public RhinoCommon NURBS geometry, GetLength and NormalizedLengthParameters. Sort/deduplicate fractions before native batch calls and restore requested order. Empty batches do not invoke native inversion. No proprietary implementation inspected.",
+    "cases": 14,
+    "requests": 1815,
+    "sdk_only": true,
+    "actual_commands": 0,
+    "requested_precision": "GetLength fractional tolerance 1e-12. Batch fractional tolerance min(request.relative,1e-12); absolute tolerance max(64*machine_epsilon*length, min(request.absolute*1e-6,request.relative*length), minimum_normal_double).",
+    "capture_note": "The first helper attempt failed because the native Python runtime lacks math.isfinite; the retained capture uses isnan/isinf. Post-capture validation also checks fraction bounds before floating classification, rejecting arbitrarily large integers without overflow. Valid recipe calculations are unchanged; current hashes identify the final validated helper."
+  },
+  "coverage": [
+    "spatial cubic and exact knot refinement",
+    "rational spatial cubic and weighted multispan NURBS",
+    "projective line with nonunit knots and an analytic inverse",
+    "rational quarter/full circles with analytic positions",
+    "stationary endpoint C(t)=(t^2,0,0), compared to t=sqrt(f)",
+    "nonuniform straight cubic and affine native-domain override",
+    "dense 841-fraction batches, unsorted requests, duplicates, signed zero and empty input",
+    "resource/finite/domain preflight failures retain prepared data",
+    "adjacent and unshiftable large native-domain endpoints"
+  ],
+  "results": {
+    "geometry_epsilon": 1e-06,
+    "geometry_matched_cases": 14,
+    "max_geometry_coordinate_error": 1.3299747384995508e-07,
+    "raw_parameter_coordinate_and_length_matched_cases_at_1e_minus_8": 13,
+    "regular_case_max_coordinate_error": 4.9272474988981685e-11,
+    "regular_case_max_parameter_error": 8.256506589532364e-11,
+    "stationary_endpoint_discrepancy": {
+      "id": "stationary-end",
+      "requests": 11,
+      "unique_fractions": 9,
+      "domain_endpoint_duplicate_checks": true,
+      "max_parameter_error": 6.887001068709255e-05,
+      "max_coordinate_error": 1.3299747384995508e-07,
+      "length_error": 0.0,
+      "within_1e_minus_8": false,
+      "geometry_within_document_tolerance": true
+    },
+    "stationary_interpretation": "The independent Rust result follows the analytic square-root inverse. Retain the native parameter discrepancy rather than changing the precise solver to reproduce it. Geometry remains within the requested document tolerance. Tight raw-parameter parity is not claimed for this case."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve::arc_length::",
+      "exit_code": 0,
+      "log_sha256": "0f606e0c7c20900a03c4181786a91ef3fabff5b1d0cbfb96a0aae694e8f4f2cb",
+      "passed_tests": 20
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib arc_length_batch::",
+      "exit_code": 0,
+      "log_sha256": "c03d842ca6756beebc6e0e602bbb88e273b33fadbb864c8abd1bee59ca92dbc5",
+      "passed_tests": 1
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "b7410fbd7b44b417ad78fddc8960521f8e51c10b01b4ed57c0bddc36113838d7",
+      "passed_tests": 3
+    },
+    {
+      "command": "cargo clippy -p viboceros-geometry -p viboceros-oracle --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "8987f610be896773260563e84aa1df62980282e0097e53d7d35fb07b2f7c3135"
+    },
+    {
+      "command": "cargo check -p viboceros",
+      "exit_code": 0,
+      "log_sha256": "f279bdca2c801d4f6190b6720946d1718bb100d29324b5b14f722a7c1bb82f2d"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_arc_length_batch tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_structure",
+      "exit_code": 0,
+      "log_sha256": "f3aaeb597ed5a25cfe9cdc2a0c669277745c4a014d36eb129acfbfb677d0d1a6",
+      "passed_tests": 25
+    },
+    {
+      "command": "python3 -m py_compile tools/rhino_oracle/arc_length_batch_probe.py tools/rhino_oracle/arc_length_batch_comparison.py tools/rhino_oracle/test_arc_length_batch.py",
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "Rhino Flow automatic spatial directions and its approximate inverse-table generation/subdivision policy remain implementation work. Eight original spatial Flow mismatches and the command guard remain.",
+    "This new API preserves the precise scalar inversion policy; it does not reproduce every coarse native batch approximation.",
+    "Returned parameters can quantize in adjacent or unshiftable native domains; use stable distance sampling for geometric points in those cases.",
+    "No native-smlib-specific, full workspace-suite, native performance or GUI/history qualification is claimed by this record."
+  ],
+  "historical_provenance": {
+    "preserved_records": 6,
+    "preserved_entries": 17,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "crates/viboceros-geometry/src/curve/arc_length.rs": "29b882ad0110c13e6b89dceca07ac1fd3fd9dc7c9be5bbed78b6696de01c05f4",
+    "crates/viboceros-geometry/src/curve/arc_length/batch_tests.rs": "62ddcb6ba306573a3eb7d6ef111a3d27096a3b6b1b73a017b9cb3077e1510b6c",
+    "crates/viboceros-geometry/src/error.rs": "fbc521df660226a364a405a1279897a88afe0f4680d7de66dfcc28d0f633770c",
+    "crates/viboceros-oracle/src/arc_length_batch.rs": "403db9b0ea11e046bd8296692737fd9da4c55497ac037e808b5b1d963d77796c",
+    "crates/viboceros-oracle/src/lib.rs": "97c2cd93e88f09f3963326408c37aa3eb740cf95bd647422d942de9ee297570b",
+    "docs/flow-development.md": "8b58a8abaacbb6ca1c594c310d3fdb4e1503b10440b0ffdf2b300a6cbb2db5b6",
+    "docs/flow-grips-validation.json": "a1682bc743d6ae075ad63f0e83f64752c2c4aac642058ac627e479cdcd0866b7",
+    "docs/flow-line-validation.json": "8db1c6ea5b8208490fe7ec5fe00de1165dbe0596e76ef32c21bfe44ee94d9e6b",
+    "docs/flow-spatial-validation.json": "32474b1350b2c323977f0b7e81417dae8ec92e0f0277b68fa41379e30baf9888",
+    "docs/flow-structure-validation.json": "ce6afc559ba211c1126f9c13b96a161cd742bce9801cfce4796f1fb10be7fa84",
+    "docs/orient-on-curve-validation.json": "ab12dc3d0b0156ba290ec36244a93204757bbd18b08e6bf8aaf20055481af910",
+    "docs/prepared-curve-length-validation.json": "add3771421d958cfe8d9c06da37132e1d399bf56d201f542e657fbb41650a4f6",
+    "docs/prepared-curve-length.md": "8fec0549b37393f87221e8bfbea4c6dae76c6458b89b58423d01dd799f96f418",
+    "tools/rhino_oracle/arc_length_batch_comparison.py": "3d1e747472207fa19781a10a80c46f9416f6a0c564b91c674f748e01a8c629b4",
+    "tools/rhino_oracle/arc_length_batch_probe.py": "6c2e62395ca424c608212a7b17ca47659bd15a2993158af448293e0cb357294e",
+    "tools/rhino_oracle/rhino_worker.py": "a0e4225c6209ceb6b7d0a2dfbf5788a3859b500bda51a91ca54cab90d73ec42a",
+    "tools/rhino_oracle/structural_sdk.py": "af99dac0e6b92eb2155aab22deb1ce43e48f4dd000b1dcdbbc553637c0980dca",
+    "tools/rhino_oracle/test_arc_length_batch.py": "a7bd18693abe40d9489239d3c06cda292dbd80394f12fa1efa0232b99c561dce",
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea"
+  },
+  "fixture_sha256": {
+    "tools/rhino_oracle/fixtures/arc_length_batch.json": "0759f45a3d6c7106c603f4f21feac32cf21a15e6316e2e774d4d9decfce20e5b"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/arc_length_batch_comparison_20261016.json": "35cf29f4fefa41f6e9550acd362d5440428dd1acc18cb4bb03cffd398d465fcf",
+    "tools/rhino_oracle/observations/arc_length_batch_rhino_20261016.json": "bc2acde9153d7e07fd200778d816d60485800cf3bdfa80e20931da5838a21f01",
+    "tools/rhino_oracle/observations/arc_length_batch_viboceros_20261016.json": "066361c7abe88e446ffbec83f575348cda51c97d2dd57e9c823d8d863be24bd8"
+  }
+}

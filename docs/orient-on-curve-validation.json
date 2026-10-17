@@ -176,7 +176,6 @@
   "sha256": {
     "crates/viboceros-command/src/copy_options/tests.rs": "b62f1e7b2bc32a62ec4095751d9d4fc35f5a26112346c67bb52e6016f42961c6",
     "crates/viboceros-geometry/src/curve/orientation.rs": "9f11c2d73b4f5efea71a4b5d00c3aefa42ad145aa8ad1ed7ebf01511057209ea",
-    "crates/viboceros-geometry/src/error.rs": "da02514817701563eec277648782be45a813560e321af03e27ad0e750ad7392d",
     "crates/viboceros-opennurbs/build.rs": "5f01ab64457b2114ec4d647f7dec79ea2ff0b15da80cf6bc4c5acf974e490abc",
     "crates/viboceros-opennurbs/native/curve_queries.h": "bcd02dd735babaabe83bca752840ab7c2effb1b3d18462bdf92f89f0780cda95",
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "bba5c23905fc01835dc2deeef5534d0720a98a12d92d98d6e5cfebd24d48856d",
@@ -235,6 +234,7 @@
     "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de:src/app/object_selection.rs": "8bde3a041394ca7726ca9485da7227fc1364dd2c856ea2f8534220d4723c5711",
     "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:docs/set-point-preview-qualification.json": "d42f702495f6e27411d1d16d2b70ebe1ee8cea9874ef915be673c5e375add2e3",
     "df0d2231a50561cc3f126cd6c0792e1c2be553a2:crates/viboceros-geometry/src/curve.rs": "2a0205608c4717fe90303e21cf26b2b9c051cf5b10e7173ce340022c1bdff821",
-    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:docs/curvature-sampling-validation.json": "8d9b7d628d327ada074d3f9b37d42a5396bd4776c8656258c84e0406bc8e64a0"
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:docs/curvature-sampling-validation.json": "8d9b7d628d327ada074d3f9b37d42a5396bd4776c8656258c84e0406bc8e64a0",
+    "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:crates/viboceros-geometry/src/error.rs": "da02514817701563eec277648782be45a813560e321af03e27ad0e750ad7392d"
   }
 }

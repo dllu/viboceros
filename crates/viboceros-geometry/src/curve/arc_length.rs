@@ -9,6 +9,8 @@ mod spans;
 use spans::{LinearSpan, RawSpan, raw_spans};
 
 #[cfg(test)]
+mod batch_tests;
+#[cfg(test)]
 mod rational_line_tests;
 #[cfg(test)]
 mod tests;
@@ -471,6 +473,41 @@ impl<'a> ArcLengthSampler<'a> {
     /// Invert a finite distance in `[0, total_length]` to the source domain.
     pub fn parameter_at_distance(&self, distance: Real) -> Result<Real, GeometryError> {
         self.source_parameter(self.parameter_at_distance_impl(distance, None)?)
+    }
+
+    /// Invert normalized arc lengths to the original source domain in input
+    /// order. Fractions may repeat or arrive unsorted; each distinct fraction
+    /// is inverted once using the existing precision and prepared brackets.
+    /// Empty batches succeed. Validate the complete bounded batch before any
+    /// inversion; a failed query returns no partial result and never changes
+    /// source geometry or cached brackets.
+    pub fn parameters_at_normalized_lengths(
+        &self,
+        fractions: &[Real],
+    ) -> Result<Vec<Real>, GeometryError> {
+        if fractions.len() > MAX_LOOKUP_NODES {
+            return Err(GeometryError::ArcLengthBatchResourceLimit {
+                maximum: MAX_LOOKUP_NODES,
+            });
+        }
+        require_finite(fractions.iter().copied(), "normalized arc-length fractions")?;
+        if let Some(&fraction) = fractions.iter().find(|&&f| !(0. ..=1.).contains(&f)) {
+            return Err(GeometryError::ArcLengthFractionOutOfDomain { fraction });
+        }
+        let mut order = (0..fractions.len()).collect::<Vec<_>>();
+        order.sort_unstable_by(|&a, &b| fractions[a].total_cmp(&fractions[b]));
+        let mut result = vec![0.; fractions.len()];
+        let mut previous = None;
+        for index in order {
+            let fraction = fractions[index];
+            let parameter = match previous {
+                Some((f, parameter)) if f == fraction => parameter,
+                _ => self.parameter_at_distance(fraction * self.total_length)?,
+            };
+            result[index] = parameter;
+            previous = Some((fraction, parameter));
+        }
+        Ok(result)
     }
 
     fn parameter_at_distance_impl(

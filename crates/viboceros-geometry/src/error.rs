@@ -408,6 +408,12 @@ pub enum GeometryError {
     #[error("arc-length lookup requires positive subdivisions and at most {maximum} total nodes")]
     InvalidArcLengthLookupBudget { maximum: usize },
 
+    #[error("normalized arc-length fraction {fraction} is outside [0, 1]")]
+    ArcLengthFractionOutOfDomain { fraction: Real },
+
+    #[error("an arc-length query batch exceeds {maximum} fractions")]
+    ArcLengthBatchResourceLimit { maximum: usize },
+
     #[error("surface pullback did not converge at absolute model tolerance {tolerance}")]
     SurfacePullbackDidNotConverge { tolerance: Real },
 

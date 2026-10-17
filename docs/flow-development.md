@@ -170,3 +170,12 @@ parameters independently from authored geometry, qualify the subdivision policy
 on further curves and directions, and pass all original spatial maps and actual
 command/history workflows. The production kernel and spatial command guard
 remain unchanged by this diagnostic work.
+
+The shared sampler now supplies independent
+[`parameters_at_normalized_lengths`](prepared-curve-length.md) batches with
+input-order preservation, duplicate reuse and full preflight validation.
+The [batch validation record](arc-length-batch-validation.json) retains 14 SDK
+cases, including a stationary-endpoint discrepancy checked against an analytic
+inverse. This is the precise geometry path needed to construct lookup tables;
+the native coarse inverse approximation and automatic spatial direction selector
+remain implementation work.
