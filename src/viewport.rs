@@ -342,6 +342,7 @@ pub struct ViewportInput<'a> {
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
     pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
+    pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
@@ -431,6 +432,7 @@ impl Default for ViewportInput<'_> {
             translation_preview: None,
             affine_preview: None,
             surface_flow_preview: None,
+            hyperbola_input: None,
             parabola_input: None,
             conic_input: None,
             conic_reference: None,
@@ -2129,6 +2131,32 @@ impl Viewport {
                     && input.taper_preview.is_none()
                     && input.maelstrom_preview.is_none(),
             );
+        }
+        if let Some(getter) = input.hyperbola_input {
+            self.paint_draft_points(&painter, rect, &getter.markers());
+            if let Some(preview) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+                if let Some(lines) = preview.asymptotes {
+                    for [a, b] in lines {
+                        if let (Some(a), Some(b)) = (
+                            self.project_selection_point(a, rect),
+                            self.project_selection_point(b, rect),
+                        ) {
+                            painter.line_segment([a, b], Stroke::new(1., Color32::from_gray(130)));
+                        }
+                    }
+                }
+                for curve in preview.curves {
+                    let mut projected = ProjectedPrimitives::default();
+                    self.add_projected_nurbs_curve(&mut projected, rect, &curve);
+                    for segment in projected.segments {
+                        painter.line_segment(
+                            segment,
+                            Stroke::new(2., Color32::from_rgb(20, 115, 190)),
+                        );
+                    }
+                }
+                self.paint_draft_points(&painter, rect, &preview.foci);
+            }
         }
         if let Some(getter) = input.parabola_input {
             self.paint_draft_points(&painter, rect, &getter.markers());

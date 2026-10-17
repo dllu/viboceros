@@ -10,7 +10,13 @@ impl ViewportCurve for NurbsCurve {
     fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
         if let Ok(sampler) = self.parameter_sampler() {
             for span in sampler.spans() {
-                visit_parametric_segments(CURVE_SAMPLES_PER_SPAN, |t| span.evaluate(t), &mut visit);
+                let poles = self.quadratic_pole_fractions();
+                visit_parametric_segments_excluding(
+                    CURVE_SAMPLES_PER_SPAN,
+                    |t| span.evaluate(t),
+                    poles.as_ref().map_or(&[], |p| p.as_slice()),
+                    &mut visit,
+                );
             }
         }
     }
@@ -40,14 +46,25 @@ pub(super) fn visit_parametric_segments(
     evaluate: impl Fn(Real) -> Result<Point3, GeometryError>,
     visit: &mut impl FnMut(Point3, Point3),
 ) {
-    let mut previous = None;
+    visit_parametric_segments_excluding(count, evaluate, &[], visit);
+}
+fn visit_parametric_segments_excluding(
+    count: usize,
+    evaluate: impl Fn(Real) -> Result<Point3, GeometryError>,
+    breaks: &[Real],
+    visit: &mut impl FnMut(Point3, Point3),
+) {
+    let mut previous: Option<(Real, Point3)> = None;
     for sample in 0..=count {
-        let point = evaluate(sample as Real / count as Real).ok();
-        if let (Some(start), Some(end)) = (previous, point) {
+        let t = sample as Real / count as Real;
+        let point = evaluate(t).ok();
+        if let (Some((start_t, start)), Some(end)) = (previous, point)
+            && !breaks.iter().any(|pole| start_t <= *pole && *pole <= t)
+        {
             visit(start, end);
         }
-        // An unevaluable point breaks the polyline; never bridge across it.
-        previous = point;
+        // An unevaluable point or an analytic pole breaks the polyline.
+        previous = point.map(|p| (t, p));
     }
 }
 
@@ -123,5 +140,46 @@ mod tests {
                 .map(|p| [p[0], p[1]])
                 .collect::<Vec<_>>()
         );
+    }
+}
+
+#[cfg(test)]
+mod pole_tests {
+    use super::*;
+    #[test]
+    fn non_dyadic_poles_are_not_bridged_by_finite_samples() {
+        let roots = [0.21132486540518713, 0.7886751345948129];
+        let mut segments = Vec::new();
+        visit_parametric_segments_excluding(
+            64,
+            |t| Point3::try_new(t, 1. / ((t - roots[0]) * (t - roots[1])), 0.),
+            &roots,
+            &mut |a, b| segments.push([a.x(), b.x()]),
+        );
+        assert_eq!(segments.len(), 62);
+        for [a, b] in segments {
+            assert!(!roots.iter().any(|p| a <= *p && *p <= b));
+        }
+    }
+    #[test]
+    fn projective_nurbs_sampling_skips_both_poles_and_preserves_finite_branches() {
+        let points = [
+            Point3::try_new(3.75, -3., 0.).unwrap(),
+            Point3::try_new(-1.65, 0., 0.).unwrap(),
+            Point3::try_new(3.75, 3., 0.).unwrap(),
+        ];
+        let c = NurbsCurve::try_new_rational(
+            2,
+            points
+                .into_iter()
+                .zip([1., -20. / 11., 1.])
+                .map(|(p, w)| viboceros_geometry::WeightedPoint3::try_new(p, w).unwrap())
+                .collect(),
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let mut count = 0;
+        c.visit_segments(|_, _| count += 1);
+        assert_eq!(count, CURVE_SAMPLES_PER_SPAN - 2);
     }
 }

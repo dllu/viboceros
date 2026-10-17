@@ -1,0 +1,168 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-empty-output",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=No",
+        "MarkFoci=No",
+        "ShowAsymptotes=No",
+        [
+          5,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-focus-only-single",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=No",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=No",
+        [
+          5,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-zero-rotated-extent",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=No",
+        "MarkFoci=No",
+        "ShowAsymptotes=No",
+        [
+          5,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-vertex-extent",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=No",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=No",
+        [
+          5,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-world-x-boundary",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=No",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=No",
+        [
+          3,
+          5,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-world-x-past-boundary",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=No",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=No",
+        [
+          3.000000001,
+          5,
+          0
+        ]
+      ]
+    }
+  ]
+}

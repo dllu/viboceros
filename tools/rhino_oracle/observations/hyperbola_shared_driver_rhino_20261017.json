@@ -1,0 +1,2205 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-negative-x-positive-end",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "point": [
+                -5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      -5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -1.7999999999999994,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      -5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        -5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.7999999999999994,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        -5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.7999999999999994,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.7999999999999994,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "point": [
+                -5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      -5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -1.7999999999999994,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      -5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        -5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.7999999999999994,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        -5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.7999999999999994,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.7999999999999994,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "curve_diagnostics": [
+          {
+            "midpoint_valid": true,
+            "valid": true
+          },
+          {
+            "midpoint_valid": true,
+            "valid": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    5.0,
+                    0.0,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "point": [
+                    -5.0,
+                    0.0,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          -5.0,
+                          -5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          -1.7999999999999994,
+                          -0.0,
+                          -0.0
+                        ],
+                        "weight": -1.666666666666667
+                      },
+                      {
+                        "point": [
+                          -5.0,
+                          5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 2,
+                    "domain": [
+                      0.0,
+                      1.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  },
+                  "length": 0.0,
+                  "length_query_failed": true,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            -5.0,
+                            -5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            -1.7999999999999994,
+                            -0.0,
+                            -0.0
+                          ],
+                          "weight": -1.666666666666667
+                        },
+                        {
+                          "point": [
+                            -5.0,
+                            5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 2,
+                      "domain": [
+                        0.0,
+                        1.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          5.0,
+                          -5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          1.7999999999999994,
+                          -0.0,
+                          -0.0
+                        ],
+                        "weight": -1.666666666666667
+                      },
+                      {
+                        "point": [
+                          5.0,
+                          5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 2,
+                    "domain": [
+                      0.0,
+                      1.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  },
+                  "length": 0.0,
+                  "length_query_failed": true,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            5.0,
+                            -5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            1.7999999999999994,
+                            -0.0,
+                            -0.0
+                          ],
+                          "weight": -1.666666666666667
+                        },
+                        {
+                          "point": [
+                            5.0,
+                            5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 2,
+                      "domain": [
+                        0.0,
+                        1.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w-1.0,0.0,0.0\nHyperbola end ( A=1  B=1  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _A=3\nHyperbola end ( A=3  B=1  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _BothBranches=Yes\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=No  ShowAsymptotes=No ): _MarkFoci=Yes\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=No ): _ShowAsymptotes=Yes\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): w5.0,2.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w0.0,0.0,0.0 w-1.0,0.0,0.0 _A=3 _B=4 _BothBranches=Yes _MarkFoci=Yes _ShowAsymptotes=Yes w5.0,2.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "point": [
+                -5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      -5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      -1.7999999999999994,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      -5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        -5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        -1.7999999999999994,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        -5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.7999999999999994,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.7999999999999994,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-gate-end-before-relocated-center",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "point": [
+                15.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      15.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      11.8,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        15.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        11.8,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.200000000000001,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.200000000000001,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "point": [
+                15.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      15.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      11.8,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        15.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        11.8,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.200000000000001,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.200000000000001,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "curve_diagnostics": [
+          {
+            "midpoint_valid": true,
+            "valid": true
+          },
+          {
+            "midpoint_valid": true,
+            "valid": true
+          }
+        ],
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    5.0,
+                    0.0,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "point": [
+                    15.0,
+                    0.0,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          15.0,
+                          5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          11.8,
+                          -0.0,
+                          -0.0
+                        ],
+                        "weight": -1.666666666666667
+                      },
+                      {
+                        "point": [
+                          15.0,
+                          -5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 2,
+                    "domain": [
+                      0.0,
+                      1.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  },
+                  "length": 0.0,
+                  "length_query_failed": true,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            15.0,
+                            5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            11.8,
+                            -0.0,
+                            -0.0
+                          ],
+                          "weight": -1.666666666666667
+                        },
+                        {
+                          "point": [
+                            15.0,
+                            -5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 2,
+                      "domain": [
+                        0.0,
+                        1.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          5.0,
+                          5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          8.200000000000001,
+                          -0.0,
+                          -0.0
+                        ],
+                        "weight": -1.666666666666667
+                      },
+                      {
+                        "point": [
+                          5.0,
+                          -5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 2,
+                    "domain": [
+                      0.0,
+                      1.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  },
+                  "length": 0.0,
+                  "length_query_failed": true,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            5.0,
+                            5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            8.200000000000001,
+                            -0.0,
+                            -0.0
+                          ],
+                          "weight": -1.666666666666667
+                        },
+                        {
+                          "point": [
+                            5.0,
+                            -5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 2,
+                      "domain": [
+                        0.0,
+                        1.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w10.0,0.0,0.0\nHyperbola direction: w11.0,0.0,0.0\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _A=3\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _BothBranches=Yes\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _MarkFoci=Yes\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _ShowAsymptotes=Yes\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): w5.0,2.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w10.0,0.0,0.0 w11.0,0.0,0.0 _A=3 _B=4 _BothBranches=Yes _MarkFoci=Yes _ShowAsymptotes=Yes w5.0,2.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "point": [
+                15.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      15.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      11.8,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      15.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        15.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        11.8,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        15.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      8.200000000000001,
+                      -0.0,
+                      -0.0
+                    ],
+                    "weight": -1.666666666666667
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 0.0,
+              "length_query_failed": true,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        8.200000000000001,
+                        -0.0,
+                        -0.0
+                      ],
+                      "weight": -1.666666666666667
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-number-options-live",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.7999999999999994,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.6666666666666659
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 11.529430829194153,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.7999999999999994,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.6666666666666659
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.7999999999999994,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.6666666666666659
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 11.529430829194153,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.7999999999999994,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.6666666666666659
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    5.0,
+                    0.0,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          5.0,
+                          5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          1.7999999999999994,
+                          0.0,
+                          0.0
+                        ],
+                        "weight": 1.6666666666666659
+                      },
+                      {
+                        "point": [
+                          5.0,
+                          -5.333333333333334,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 2,
+                    "domain": [
+                      0.0,
+                      1.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  },
+                  "length": 11.529430829194153,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            5.0,
+                            5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            1.7999999999999994,
+                            0.0,
+                            0.0
+                          ],
+                          "weight": 1.6666666666666659
+                        },
+                        {
+                          "point": [
+                            5.0,
+                            -5.333333333333334,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 2,
+                      "domain": [
+                        0.0,
+                        1.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _Pause\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w1.0,0.0,0.0\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _A\nNew A coefficient <3>: 3.0\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _B\nNew B coefficient <4>: 4.0\nHyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes ): _BothBranches=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=Yes ): _MarkFoci=Yes\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=Yes ): _ShowAsymptotes=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): w5.0,2.0,0.0",
+        "input_trace": {
+          "completed": 11,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 11,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+            "Hyperbola center",
+            "Hyperbola direction",
+            "Hyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes )",
+            "New A coefficient <3>",
+            "Hyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes )",
+            "New B coefficient <4>",
+            "Hyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes )",
+            "Hyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=Yes )",
+            "Hyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=Yes )",
+            "Hyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+              "token": "_FromCoefficient"
+            },
+            {
+              "action": 1,
+              "prompt": "Hyperbola center",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 2,
+              "prompt": "Hyperbola direction",
+              "token": "w1.0,0.0,0.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Hyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes )",
+              "token": "_A"
+            },
+            {
+              "action": 4,
+              "prompt": "New A coefficient <3>",
+              "token": "3.0"
+            },
+            {
+              "action": 5,
+              "prompt": "Hyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes )",
+              "token": "_B"
+            },
+            {
+              "action": 6,
+              "prompt": "New B coefficient <4>",
+              "token": "4.0"
+            },
+            {
+              "action": 7,
+              "prompt": "Hyperbola end ( A=3  B=4  BothBranches=Yes  MarkFoci=Yes  ShowAsymptotes=Yes )",
+              "token": "_BothBranches=No"
+            },
+            {
+              "action": 8,
+              "prompt": "Hyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=Yes )",
+              "token": "_MarkFoci=Yes"
+            },
+            {
+              "action": 9,
+              "prompt": "Hyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=Yes )",
+              "token": "_ShowAsymptotes=No"
+            },
+            {
+              "action": 10,
+              "prompt": "Hyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No )",
+              "token": "w5.0,2.0,0.0"
+            }
+          ]
+        },
+        "macro": "_Hyperbola _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      5.0,
+                      5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      1.7999999999999994,
+                      0.0,
+                      0.0
+                    ],
+                    "weight": 1.6666666666666659
+                  },
+                  {
+                    "point": [
+                      5.0,
+                      -5.333333333333334,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 11.529430829194153,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        5.0,
+                        5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        1.7999999999999994,
+                        0.0,
+                        0.0
+                      ],
+                      "weight": 1.6666666666666659
+                    },
+                    {
+                      "point": [
+                        5.0,
+                        -5.333333333333334,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

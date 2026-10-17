@@ -1,0 +1,333 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-gate-negative-origin",
+      "actions": [
+        "FromCoefficient",
+        [
+          -10,
+          0,
+          0
+        ],
+        [
+          -9,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -5,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-gate-end-near-relocated-center",
+      "actions": [
+        "FromCoefficient",
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          8,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-gate-end-before-relocated-center",
+      "actions": [
+        "FromCoefficient",
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-gate-world-x-short",
+      "actions": [
+        "FromCoefficient",
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          2,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-gate-positive-origin-short",
+      "actions": [
+        "FromCoefficient",
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.5,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-gate-oblique-negative-origin",
+      "actions": [
+        "FromCoefficient",
+        [
+          -10,
+          0,
+          0
+        ],
+        [
+          -10,
+          1,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -10,
+          5,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-negative-origin",
+      "actions": [
+        [
+          -10,
+          -20,
+          -30
+        ],
+        [
+          -5,
+          -20,
+          -30
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -6.25,
+          -17,
+          -30
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "foci-negative-origin",
+      "actions": [
+        "FromFoci",
+        [
+          -15,
+          -20,
+          -30
+        ],
+        [
+          -5,
+          -20,
+          -30
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -6.25,
+          -17,
+          -30
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "vertex-negative-origin",
+      "actions": [
+        "FromVertex",
+        [
+          -7,
+          -20,
+          -30
+        ],
+        [
+          -5,
+          -20,
+          -30
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -6.25,
+          -17,
+          -30
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-spatial-axis",
+      "actions": [
+        [
+          7,
+          11,
+          13
+        ],
+        [
+          7,
+          11,
+          18
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          10,
+          11,
+          16.75
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "foci-spatial-axis",
+      "actions": [
+        "FromFoci",
+        [
+          7,
+          11,
+          8
+        ],
+        [
+          7,
+          11,
+          18
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          10,
+          11,
+          16.75
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "vertex-spatial-axis",
+      "actions": [
+        "FromVertex",
+        [
+          7,
+          11,
+          16
+        ],
+        [
+          7,
+          11,
+          18
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          10,
+          11,
+          16.75
+        ]
+      ]
+    }
+  ]
+}

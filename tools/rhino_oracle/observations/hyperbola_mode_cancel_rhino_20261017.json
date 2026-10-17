@@ -1,0 +1,221 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "center-switch-fromcoefficient-cancel",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _Pause\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): w0.0,0.0,0.0\nHyperbola focus ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient",
+        "input_trace": {
+          "completed": 2,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 2,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+            "Hyperbola focus ( FromCoefficient  FromFoci  FromVertex )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+              "token": "w0.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "Hyperbola focus ( FromCoefficient  FromFoci  FromVertex )",
+              "token": "_FromCoefficient"
+            }
+          ]
+        },
+        "macro": "_Hyperbola _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "center-switch-fromfoci-cancel",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _Pause\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): w-5.0,0.0,0.0\nHyperbola focus ( FromCoefficient  FromFoci  FromVertex ): _FromFoci",
+        "input_trace": {
+          "completed": 2,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 2,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+            "Hyperbola focus ( FromCoefficient  FromFoci  FromVertex )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+              "token": "w-5.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "Hyperbola focus ( FromCoefficient  FromFoci  FromVertex )",
+              "token": "_FromFoci"
+            }
+          ]
+        },
+        "macro": "_Hyperbola _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "center-switch-fromvertex-cancel",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _Pause\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): w3.0,0.0,0.0\nHyperbola focus ( FromCoefficient  FromFoci  FromVertex ): _FromVertex",
+        "input_trace": {
+          "completed": 2,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 2,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+            "Hyperbola focus ( FromCoefficient  FromFoci  FromVertex )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Hyperbola center ( FromCoefficient  FromFoci  FromVertex )",
+              "token": "w3.0,0.0,0.0"
+            },
+            {
+              "action": 1,
+              "prompt": "Hyperbola focus ( FromCoefficient  FromFoci  FromVertex )",
+              "token": "_FromVertex"
+            }
+          ]
+        },
+        "macro": "_Hyperbola _Pause",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

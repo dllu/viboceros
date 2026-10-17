@@ -1,0 +1,724 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-empty-output",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w0.0,1.0,0.0\nHyperbola end ( A=1  B=1  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _A=3\nHyperbola end ( A=3  B=1  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _BothBranches=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _MarkFoci=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _ShowAsymptotes=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): w5.0,2.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w0.0,0.0,0.0 w0.0,1.0,0.0 _A=3 _B=4 _BothBranches=No _MarkFoci=No _ShowAsymptotes=No w5.0,2.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-focus-only-single",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    0.0,
+                    5.0,
+                    0.0
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w0.0,1.0,0.0\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _A=3\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _BothBranches=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _MarkFoci=Yes\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _ShowAsymptotes=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): w5.0,2.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w0.0,0.0,0.0 w0.0,1.0,0.0 _A=3 _B=4 _BothBranches=No _MarkFoci=Yes _ShowAsymptotes=No w5.0,2.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-zero-rotated-extent",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w0.0,1.0,0.0\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _A=3\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _BothBranches=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _MarkFoci=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _ShowAsymptotes=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): w5.0,0.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w0.0,0.0,0.0 w0.0,1.0,0.0 _A=3 _B=4 _BothBranches=No _MarkFoci=No _ShowAsymptotes=No w5.0,0.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-vertex-extent",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    0.0,
+                    5.0,
+                    0.0
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w0.0,1.0,0.0\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _A=3\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _BothBranches=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=No  ShowAsymptotes=No ): _MarkFoci=Yes\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _ShowAsymptotes=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): w5.0,3.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w0.0,0.0,0.0 w0.0,1.0,0.0 _A=3 _B=4 _BothBranches=No _MarkFoci=Yes _ShowAsymptotes=No w5.0,3.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-world-x-boundary",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w0.0,1.0,0.0\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _A=3\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _BothBranches=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _MarkFoci=Yes\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _ShowAsymptotes=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): w3.0,5.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w0.0,0.0,0.0 w0.0,1.0,0.0 _A=3 _B=4 _BothBranches=No _MarkFoci=Yes _ShowAsymptotes=No w3.0,5.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "coefficient-world-x-past-boundary",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      -5.333333333333334,
+                      5.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.0,
+                      1.7999999999999994,
+                      0.0
+                    ],
+                    "weight": 1.6666666666666659
+                  },
+                  {
+                    "point": [
+                      5.333333333333334,
+                      5.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 11.529430829194153,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        -5.333333333333334,
+                        5.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        1.7999999999999994,
+                        0.0
+                      ],
+                      "weight": 1.6666666666666659
+                    },
+                    {
+                      "point": [
+                        5.333333333333334,
+                        5.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      -5.333333333333334,
+                      5.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.0,
+                      1.7999999999999994,
+                      0.0
+                    ],
+                    "weight": 1.6666666666666659
+                  },
+                  {
+                    "point": [
+                      5.333333333333334,
+                      5.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 11.529430829194153,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        -5.333333333333334,
+                        5.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        1.7999999999999994,
+                        0.0
+                      ],
+                      "weight": 1.6666666666666659
+                    },
+                    {
+                      "point": [
+                        5.333333333333334,
+                        5.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Hyperbola",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": [
+                {
+                  "point": [
+                    0.0,
+                    5.0,
+                    0.0
+                  ],
+                  "selected": false
+                },
+                {
+                  "closed": false,
+                  "curve": {
+                    "control_points": [
+                      {
+                        "point": [
+                          -5.333333333333334,
+                          5.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      },
+                      {
+                        "point": [
+                          0.0,
+                          1.7999999999999994,
+                          0.0
+                        ],
+                        "weight": 1.6666666666666659
+                      },
+                      {
+                        "point": [
+                          5.333333333333334,
+                          5.0,
+                          0.0
+                        ],
+                        "weight": 1.0
+                      }
+                    ],
+                    "degree": 2,
+                    "domain": [
+                      0.0,
+                      1.0
+                    ],
+                    "knots": [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0,
+                      1.0,
+                      1.0
+                    ]
+                  },
+                  "length": 11.529430829194153,
+                  "segments": [
+                    {
+                      "control_points": [
+                        {
+                          "point": [
+                            -5.333333333333334,
+                            5.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        },
+                        {
+                          "point": [
+                            0.0,
+                            1.7999999999999994,
+                            0.0
+                          ],
+                          "weight": 1.6666666666666659
+                        },
+                        {
+                          "point": [
+                            5.333333333333334,
+                            5.0,
+                            0.0
+                          ],
+                          "weight": 1.0
+                        }
+                      ],
+                      "degree": 2,
+                      "domain": [
+                        0.0,
+                        1.0
+                      ],
+                      "knots": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    }
+                  ],
+                  "selected": false
+                }
+              ]
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Hyperbola\nHyperbola center ( FromCoefficient  FromFoci  FromVertex ): _FromCoefficient\nHyperbola center: w0.0,0.0,0.0\nHyperbola direction: w0.0,1.0,0.0\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _A=3\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _B=4\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _BothBranches=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _MarkFoci=Yes\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): _ShowAsymptotes=No\nHyperbola end ( A=3  B=4  BothBranches=No  MarkFoci=Yes  ShowAsymptotes=No ): w3.0000000010000001,5.0,0.0",
+        "macro": "_Hyperbola _FromCoefficient w0.0,0.0,0.0 w0.0,1.0,0.0 _A=3 _B=4 _BothBranches=No _MarkFoci=Yes _ShowAsymptotes=No w3.0000000010000001,5.0,0.0",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": [
+            {
+              "point": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "selected": false
+            },
+            {
+              "closed": false,
+              "curve": {
+                "control_points": [
+                  {
+                    "point": [
+                      -5.333333333333334,
+                      5.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  },
+                  {
+                    "point": [
+                      0.0,
+                      1.7999999999999994,
+                      0.0
+                    ],
+                    "weight": 1.6666666666666659
+                  },
+                  {
+                    "point": [
+                      5.333333333333334,
+                      5.0,
+                      0.0
+                    ],
+                    "weight": 1.0
+                  }
+                ],
+                "degree": 2,
+                "domain": [
+                  0.0,
+                  1.0
+                ],
+                "knots": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              },
+              "length": 11.529430829194153,
+              "segments": [
+                {
+                  "control_points": [
+                    {
+                      "point": [
+                        -5.333333333333334,
+                        5.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    },
+                    {
+                      "point": [
+                        0.0,
+                        1.7999999999999994,
+                        0.0
+                      ],
+                      "weight": 1.6666666666666659
+                    },
+                    {
+                      "point": [
+                        5.333333333333334,
+                        5.0,
+                        0.0
+                      ],
+                      "weight": 1.0
+                    }
+                  ],
+                  "degree": 2,
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "knots": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                  ]
+                }
+              ],
+              "selected": false
+            }
+          ]
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

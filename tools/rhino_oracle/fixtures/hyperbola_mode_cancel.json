@@ -1,0 +1,45 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "hyperbola_command",
+      "id": "center-switch-fromcoefficient-cancel",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "FromCoefficient"
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-switch-fromfoci-cancel",
+      "actions": [
+        [
+          -5,
+          0,
+          0
+        ],
+        "FromFoci"
+      ],
+      "live_getters": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-switch-fromvertex-cancel",
+      "actions": [
+        [
+          3,
+          0,
+          0
+        ],
+        "FromVertex"
+      ],
+      "live_getters": true
+    }
+  ]
+}

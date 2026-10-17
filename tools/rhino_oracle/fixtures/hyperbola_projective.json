@@ -1,0 +1,596 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "hyperbola_command",
+      "id": "center-plane-xy",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.75,
+          3,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-plane-tilted30",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.75,
+          3,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.8660254037844386,
+          0.5
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-plane-tilted60",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.75,
+          3,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.8660254037844386
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-plane-xz",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.75,
+          3,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-plane-xz-negative",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.75,
+          3,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-plane-xy-flipped",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.75,
+          3,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-oblique",
+      "actions": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          0.85,
+          6.8,
+          3
+        ]
+      ],
+      "construction_plane": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "plane-center-slope",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          5.333333333333334,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.8660254037844386,
+          0.5
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "plane-foci-slope",
+      "actions": [
+        "FromFoci",
+        [
+          -5,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          5.333333333333334,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.8660254037844386,
+          0.5
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "plane-vertex-slope",
+      "actions": [
+        "FromVertex",
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          5.333333333333334,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.8660254037844386,
+          0.5
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "plane-center-family4",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          2.25,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.8660254037844386
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "plane-center-family2",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5.385164807134504,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          11.4564392373896,
+          0
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0.8660254037844386,
+          0.5
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "plane-center-rotated-axis",
+      "actions": [
+        [
+          7,
+          11,
+          13
+        ],
+        [
+          10,
+          15,
+          13
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5.733333333333333,
+          18.2,
+          13
+        ]
+      ],
+      "construction_plane": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          -0.6928203230275509,
+          0.5196152422706631,
+          0.5
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "plane-center-spatial-axis",
+      "actions": [
+        [
+          7,
+          11,
+          13
+        ],
+        [
+          7,
+          11,
+          18
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          10,
+          11,
+          16.75
+        ]
+      ],
+      "construction_plane": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0.8660254037844386,
+          0.5,
+          0
+        ]
+      ],
+      "curve_diagnostics": true
+    }
+  ]
+}

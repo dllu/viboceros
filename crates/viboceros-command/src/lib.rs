@@ -106,6 +106,9 @@ use interpolation_options::parse_interp_curve_arguments;
 pub use interpolation_options::{
     format_interp_curve_options, parse_interp_curve_options, update_interp_curve_options,
 };
+pub mod hyperbola;
+#[cfg(test)]
+mod hyperbola_tests;
 mod model_tolerance;
 pub mod named_view;
 pub mod parabola;
@@ -458,6 +461,9 @@ pub trait Command: Send + Sync {
     }
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
         false
+    }
+    fn hyperbola_options(&self) -> Option<hyperbola::Options> {
+        None
     }
     fn parabola_options(&self) -> Option<parabola::Options> {
         None
@@ -944,7 +950,7 @@ impl CommandRegistry {
             .register(ParaboloidCommand)
             .expect("unique built-in command");
         registry
-            .register(HyperbolaCommand)
+            .register(hyperbola::HyperbolaCommand::default())
             .expect("unique built-in command");
         registry
             .register(HelixCommand)
@@ -2004,6 +2010,12 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn hyperbola_options(&self) -> hyperbola::Options {
+        self.lookup
+            .get(&normalize_command_name("Hyperbola"))
+            .and_then(|i| self.commands[*i].hyperbola_options())
+            .unwrap_or_default()
+    }
     pub fn parabola_options(&self, kind: parabola::Kind) -> parabola::Options {
         self.lookup
             .get(&normalize_command_name(kind.name()))
@@ -5093,44 +5105,6 @@ struct ParaboloidCommandOptions {
     solid: bool,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum HyperbolaConstruction {
-    Center,
-    Coefficient,
-    Foci,
-    Vertex,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct HyperbolaPositionals {
-    construction: HyperbolaConstruction,
-    first: Point3,
-    second: Point3,
-    end: Point3,
-    option_start: usize,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct HyperbolaCommandOptions {
-    positionals: HyperbolaPositionals,
-    semi_transverse_axis: Real,
-    semi_conjugate_axis: Real,
-    both_branches: bool,
-    mark_foci: bool,
-    show_asymptotes: bool,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct HyperbolaDefinition {
-    center: Point3,
-    axis: Vector3,
-    radial_direction: Vector3,
-    semi_transverse_axis: Real,
-    semi_conjugate_axis: Real,
-    axial_extent: Real,
-    foci: [Point3; 2],
-}
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum SpiralAdvance {
     Turns(Real),
@@ -5636,89 +5610,6 @@ fn parse_paraboloid_options(arguments: &[&str]) -> Result<ParaboloidCommandOptio
         positionals,
         mark_focus,
         solid,
-    })
-}
-
-fn parse_hyperbola_options(arguments: &[&str]) -> Result<HyperbolaCommandOptions, CommandError> {
-    let first_argument = arguments
-        .first()
-        .ok_or(CommandError::Usage(HYPERBOLA_USAGE))?;
-    let mode = first_argument.trim_start_matches('_');
-    let (construction, positional_start) =
-        if mode.eq_ignore_ascii_case("Default") || mode.eq_ignore_ascii_case("Center") {
-            (HyperbolaConstruction::Center, 1)
-        } else if mode.eq_ignore_ascii_case("FromCoefficient") {
-            (HyperbolaConstruction::Coefficient, 1)
-        } else if mode.eq_ignore_ascii_case("FromFoci") {
-            (HyperbolaConstruction::Foci, 1)
-        } else if mode.eq_ignore_ascii_case("FromVertex") {
-            (HyperbolaConstruction::Vertex, 1)
-        } else {
-            (HyperbolaConstruction::Center, 0)
-        };
-    let (first, first_consumed) = parse_point(&arguments[positional_start..])?;
-    let second_start = positional_start + first_consumed;
-    let (second, second_consumed) = parse_point(&arguments[second_start..])?;
-    let end_start = second_start + second_consumed;
-    let (end, end_consumed) = parse_point(&arguments[end_start..])?;
-    let positionals = HyperbolaPositionals {
-        construction,
-        first,
-        second,
-        end,
-        option_start: end_start + end_consumed,
-    };
-
-    let mut semi_transverse_axis = 1.0;
-    let mut semi_conjugate_axis = 1.0;
-    let mut both_branches = false;
-    let mut mark_foci = false;
-    let mut show_asymptotes = false;
-    let mut a_seen = false;
-    let mut b_seen = false;
-    let mut both_branches_seen = false;
-    let mut mark_foci_seen = false;
-    let mut show_asymptotes_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(HYPERBOLA_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "A")
-            && !a_seen
-            && construction == HyperbolaConstruction::Coefficient
-        {
-            semi_transverse_axis = parse_finite_real(value)?;
-            a_seen = true;
-        } else if option_name_eq(name, "B")
-            && !b_seen
-            && construction == HyperbolaConstruction::Coefficient
-        {
-            semi_conjugate_axis = parse_finite_real(value)?;
-            b_seen = true;
-        } else if option_name_eq(name, "BothBranches") && !both_branches_seen {
-            both_branches = parse_yes_no(value).ok_or(CommandError::Usage(HYPERBOLA_USAGE))?;
-            both_branches_seen = true;
-        } else if option_name_eq(name, "MarkFoci") && !mark_foci_seen {
-            mark_foci = parse_yes_no(value).ok_or(CommandError::Usage(HYPERBOLA_USAGE))?;
-            mark_foci_seen = true;
-        } else if option_name_eq(name, "ShowAsymptotes") && !show_asymptotes_seen {
-            show_asymptotes = parse_yes_no(value).ok_or(CommandError::Usage(HYPERBOLA_USAGE))?;
-            show_asymptotes_seen = true;
-        } else {
-            return Err(CommandError::Usage(HYPERBOLA_USAGE));
-        }
-    }
-    if semi_transverse_axis <= 0.0 || semi_conjugate_axis <= 0.0 {
-        return Err(CommandError::Usage(HYPERBOLA_USAGE));
-    }
-    Ok(HyperbolaCommandOptions {
-        positionals,
-        semi_transverse_axis,
-        semi_conjugate_axis,
-        both_branches,
-        mark_foci,
-        show_asymptotes,
     })
 }
 
@@ -7251,287 +7142,6 @@ impl Command for ParaboloidCommand {
         Ok(format!(
             "Added {} B-rep paraboloid {id}{focus_suffix} (radius {radius:.6}, height {height:.6}, focus distance {focal_distance:.6})",
             if options.solid { "closed" } else { "open" },
-        ))
-    }
-}
-
-fn hyperbola_radial_component(
-    offset: Vector3,
-    axis: Vector3,
-    axial: Real,
-) -> Result<Vector3, GeometryError> {
-    Vector3::try_new(
-        (-axial).mul_add(axis.x(), offset.x()),
-        (-axial).mul_add(axis.y(), offset.y()),
-        (-axial).mul_add(axis.z(), offset.z()),
-    )
-}
-
-fn centered_hyperbola_definition(
-    center: Point3,
-    axis: Vector3,
-    focal_distance: Real,
-    end: Point3,
-    foci: [Point3; 2],
-    tolerance: Tolerance,
-) -> Result<HyperbolaDefinition, CommandError> {
-    let offset = center.vector_to(end)?;
-    let axial_extent = offset.dot(axis)?;
-    let radial_direction = hyperbola_radial_component(offset, axis, axial_extent)?;
-    let radial_extent = radial_direction.length()?;
-    if axial_extent <= tolerance.absolute() || radial_extent <= tolerance.absolute() {
-        return Err(GeometryError::Degenerate {
-            context: "hyperbola",
-        }
-        .into());
-    }
-
-    // The difference in distances to the two foci is 2a. Evaluate that
-    // difference through its conjugate expression to retain accuracy for
-    // endpoints far from the center.
-    let scale = focal_distance.max(axial_extent).max(radial_extent);
-    let normalized_focus = focal_distance / scale;
-    let normalized_axial = axial_extent / scale;
-    let normalized_radial = radial_extent / scale;
-    let distance_to_negative = (normalized_axial + normalized_focus).hypot(normalized_radial);
-    let distance_to_positive = (normalized_axial - normalized_focus).hypot(normalized_radial);
-    let semi_transverse_axis = scale
-        * ((2.0 * normalized_focus * normalized_axial)
-            / (distance_to_negative + distance_to_positive));
-    if !semi_transverse_axis.is_finite()
-        || semi_transverse_axis <= 0.0
-        || semi_transverse_axis >= focal_distance
-    {
-        return Err(GeometryError::Degenerate {
-            context: "hyperbola",
-        }
-        .into());
-    }
-    let semi_conjugate_axis = (focal_distance - semi_transverse_axis).sqrt()
-        * (focal_distance + semi_transverse_axis).sqrt();
-    if !semi_conjugate_axis.is_finite() || semi_conjugate_axis <= 0.0 {
-        return Err(GeometryError::Degenerate {
-            context: "hyperbola",
-        }
-        .into());
-    }
-
-    Ok(HyperbolaDefinition {
-        center,
-        axis,
-        radial_direction,
-        semi_transverse_axis,
-        semi_conjugate_axis,
-        axial_extent,
-        foci,
-    })
-}
-
-fn hyperbola_definition(
-    options: HyperbolaCommandOptions,
-    tolerance: Tolerance,
-) -> Result<HyperbolaDefinition, CommandError> {
-    match options.positionals.construction {
-        HyperbolaConstruction::Center => {
-            let center = options.positionals.first;
-            let to_focus = center.vector_to(options.positionals.second)?;
-            let focal_distance = to_focus.length()?;
-            let axis = to_focus.normalized(tolerance)?.as_vector();
-            let opposite_focus = center.translated(axis.scaled(-focal_distance)?)?;
-            centered_hyperbola_definition(
-                center,
-                axis,
-                focal_distance,
-                options.positionals.end,
-                [opposite_focus, options.positionals.second],
-                tolerance,
-            )
-        }
-        HyperbolaConstruction::Foci => {
-            let first_focus = options.positionals.first;
-            let second_focus = options.positionals.second;
-            let between_foci = first_focus.vector_to(second_focus)?;
-            let focal_distance = 0.5 * between_foci.length()?;
-            let axis = between_foci.normalized(tolerance)?.as_vector();
-            let center = Point3::try_new(
-                0.5 * first_focus.x() + 0.5 * second_focus.x(),
-                0.5 * first_focus.y() + 0.5 * second_focus.y(),
-                0.5 * first_focus.z() + 0.5 * second_focus.z(),
-            )?;
-            centered_hyperbola_definition(
-                center,
-                axis,
-                focal_distance,
-                options.positionals.end,
-                [first_focus, second_focus],
-                tolerance,
-            )
-        }
-        HyperbolaConstruction::Vertex => {
-            let vertex = options.positionals.first;
-            let focus = options.positionals.second;
-            let vertex_to_focus = vertex.vector_to(focus)?;
-            let vertex_focus_distance = vertex_to_focus.length()?;
-            let axis = vertex_to_focus.normalized(tolerance)?.as_vector();
-            let offset = vertex.vector_to(options.positionals.end)?;
-            let beyond_vertex = offset.dot(axis)?;
-            let radial_direction = hyperbola_radial_component(offset, axis, beyond_vertex)?;
-            let radial_extent = radial_direction.length()?;
-            if beyond_vertex <= tolerance.absolute() || radial_extent <= tolerance.absolute() {
-                return Err(GeometryError::Degenerate {
-                    context: "hyperbola",
-                }
-                .into());
-            }
-
-            let scale = vertex_focus_distance.max(beyond_vertex).max(radial_extent);
-            let normalized_focus = vertex_focus_distance / scale;
-            let normalized_beyond = beyond_vertex / scale;
-            let normalized_radial = radial_extent / scale;
-            let denominator =
-                normalized_radial * normalized_radial - 4.0 * normalized_beyond * normalized_focus;
-            let endpoint_to_focus = (normalized_beyond - normalized_focus).hypot(normalized_radial);
-            let numerator = normalized_beyond
-                * normalized_focus
-                * (endpoint_to_focus + normalized_beyond + normalized_focus);
-            if denominator <= 0.0 || numerator <= 0.0 {
-                return Err(GeometryError::Degenerate {
-                    context: "hyperbola",
-                }
-                .into());
-            }
-            let semi_transverse_axis = scale * (numerator / denominator);
-            let focal_distance = semi_transverse_axis + vertex_focus_distance;
-            let semi_conjugate_axis = vertex_focus_distance.sqrt()
-                * (2.0 * semi_transverse_axis + vertex_focus_distance).sqrt();
-            let axial_extent = semi_transverse_axis + beyond_vertex;
-            if ![
-                semi_transverse_axis,
-                focal_distance,
-                semi_conjugate_axis,
-                axial_extent,
-            ]
-            .into_iter()
-            .all(|value| value.is_finite() && value > 0.0)
-            {
-                return Err(GeometryError::Degenerate {
-                    context: "hyperbola",
-                }
-                .into());
-            }
-            let center = vertex.translated(axis.scaled(-semi_transverse_axis)?)?;
-            let opposite_focus = center.translated(axis.scaled(-focal_distance)?)?;
-            Ok(HyperbolaDefinition {
-                center,
-                axis,
-                radial_direction,
-                semi_transverse_axis,
-                semi_conjugate_axis,
-                axial_extent,
-                foci: [opposite_focus, focus],
-            })
-        }
-        HyperbolaConstruction::Coefficient => {
-            let center = options.positionals.first;
-            let axis = center
-                .vector_to(options.positionals.second)?
-                .normalized(tolerance)?
-                .as_vector();
-            let offset = center.vector_to(options.positionals.end)?;
-            let axial_extent = offset.dot(axis)?;
-            let picked_radial = hyperbola_radial_component(offset, axis, axial_extent)?;
-            if axial_extent <= options.semi_transverse_axis
-                || picked_radial.length()? <= tolerance.absolute()
-            {
-                return Err(GeometryError::Degenerate {
-                    context: "hyperbola",
-                }
-                .into());
-            }
-            let radial_direction = picked_radial.scaled(-1.0)?;
-            let focal_distance = options
-                .semi_transverse_axis
-                .hypot(options.semi_conjugate_axis);
-            let negative_focus = center.translated(axis.scaled(-focal_distance)?)?;
-            let positive_focus = center.translated(axis.scaled(focal_distance)?)?;
-            Ok(HyperbolaDefinition {
-                center,
-                axis,
-                radial_direction,
-                semi_transverse_axis: options.semi_transverse_axis,
-                semi_conjugate_axis: options.semi_conjugate_axis,
-                axial_extent,
-                foci: [negative_focus, positive_focus],
-            })
-        }
-    }
-}
-
-fn hyperbola_branch(
-    definition: HyperbolaDefinition,
-    branch_sign: Real,
-    tolerance: Tolerance,
-) -> Result<NurbsCurve, GeometryError> {
-    let frame = Frame3::try_from_directions(
-        definition.center,
-        definition.axis.scaled(branch_sign)?,
-        definition.radial_direction,
-        tolerance,
-    )?;
-    NurbsCurve::try_hyperbola(
-        frame,
-        definition.semi_transverse_axis,
-        definition.semi_conjugate_axis,
-        definition.axial_extent,
-    )
-}
-
-struct HyperbolaCommand;
-
-impl Command for HyperbolaCommand {
-    fn name(&self) -> &'static str {
-        "Hyperbola"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_hyperbola_options(arguments)?;
-        let tolerance = document.tolerance();
-        let definition = hyperbola_definition(options, tolerance)?;
-        let branch_signs: &[Real] = if options.both_branches {
-            &[-1.0, 1.0]
-        } else {
-            &[1.0]
-        };
-        let curves = branch_signs
-            .iter()
-            .map(|sign| hyperbola_branch(definition, *sign, tolerance))
-            .collect::<Result<Vec<_>, _>>()?;
-
-        let mut focus_ids = Vec::new();
-        if options.mark_foci {
-            for sign in branch_signs {
-                let focus = definition.foci[usize::from(*sign > 0.0)];
-                focus_ids.push(document.add_geometry(Geometry::Point(focus))?);
-            }
-        }
-        let mut curve_ids = Vec::with_capacity(curves.len());
-        for curve in curves {
-            curve_ids.push(document.add_geometry(Geometry::NurbsCurve(curve))?);
-        }
-        Ok(format!(
-            "Added {} hyperbola branch{} ({curve_ids:?}){}{}",
-            curve_ids.len(),
-            if curve_ids.len() == 1 { "" } else { "es" },
-            if focus_ids.is_empty() {
-                String::new()
-            } else {
-                format!(" and {} focus point(s) {focus_ids:?}", focus_ids.len())
-            },
-            if options.show_asymptotes {
-                "; asymptotes are preview-only"
-            } else {
-                ""
-            }
         ))
     }
 }
@@ -19612,7 +19222,7 @@ mod tests {
         registry
             .execute(
                 &mut document,
-                "Hyperbola FromVertex 3,0,0 5,0,0 3.75,3,0 MarkFoci=Yes",
+                "Hyperbola FromVertex 3,0,0 5,0,0 3.75,3,0 BothBranches=No MarkFoci=Yes ShowAsymptotes=No",
             )
             .unwrap();
         let mut objects = document.objects();
@@ -19628,7 +19238,10 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
 
         registry
-            .execute(&mut document, "Hyperbola FromVertex 4,0,0 5,0,0 5,2.25,0")
+            .execute(
+                &mut document,
+                "Hyperbola FromVertex 4,0,0 5,0,0 5,2.25,0 MarkFoci=No",
+            )
             .unwrap();
         let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
             panic!("FromVertex must solve a second coefficient family")
@@ -19675,7 +19288,10 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
 
         registry
-            .execute(&mut document, "Hyperbola Center 1,2,3 4,6,3 0.85,6.8,3")
+            .execute(
+                &mut document,
+                "Hyperbola Center 1,2,3 4,6,3 0.85,6.8,3 MarkFoci=No",
+            )
             .unwrap();
         let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
             panic!("an oblique center form must create a NURBS curve")
@@ -19707,13 +19323,14 @@ mod tests {
             "Hyperbola FromVertex 3,0,0 5,0,0 3.75,1,0",
             "Hyperbola FromCoefficient 0,0,0 0,0,0 5,2,0 A=3 B=4",
             "Hyperbola FromCoefficient 0,0,0 1,0,0 2,2,0 A=3 B=4",
-            "Hyperbola FromCoefficient 0,0,0 1,0,0 5,0,0 A=3 B=4",
+            "Hyperbola FromCoefficient 0,0,0 1,0,0 3,0,0 A=3 B=4",
             "Hyperbola FromCoefficient 0,0,0 1,0,0 5,2,0 A=0 B=4",
             "Hyperbola FromCoefficient 0,0,0 1,0,0 5,2,0 A=3 B=-1",
             "Hyperbola 0,0,0 5,0,0 3.75,3,0 A=3",
             "Hyperbola 0,0,0 5,0,0 3.75,3,0 BothBranches=Yes BothBranches=No",
             "Hyperbola 0,0,0 5,0,0 3.75,3,0 ShowAsymptotes=Maybe",
         ] {
+            let registry = CommandRegistry::with_builtins();
             assert!(
                 registry.execute(&mut document, invalid).is_err(),
                 "{invalid}"

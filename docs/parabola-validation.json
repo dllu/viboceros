@@ -225,30 +225,32 @@
     "preexisting_unverifiable_records_unchanged": 69
   },
   "sha256": {
-    "README.md": "bb04826944fa020a9f434277907eaa755d062b10a0dbc3fd1f387bc06a1e5379",
-    "crates/viboceros-command/src/lib.rs": "4761bfb7c71f28b0285e3c8ab3836b9f0909d439251405c21e7f9932f610c196",
     "crates/viboceros-command/src/parabola.rs": "92e1394f3e7b06f95439377f63daf32d2aa111d9c6130a50e0d3c2a5b81728ef",
     "crates/viboceros-command/src/parabola_tests.rs": "20418f55e6aaa7c2f45bce08400287dee2d60256d50a59d23140c636de5322cf",
-    "crates/viboceros-oracle/src/curve_primitive.rs": "8ef4a4f2885b3e89542b3937f3e651c09de8099741ffd6981c4671e06942534e",
-    "crates/viboceros-oracle/src/lib.rs": "2912f92b1eb7f1cdbcd5225bf309d0ceeb31512abd50ad1f776dc95d67ffcca9",
     "crates/viboceros-oracle/src/parabola.rs": "619fd3d20f1c4cb238f615dfeadc15ec339070b496761698240e13bc7f198f6d",
     "docs/commands/README.md": "fb26aa1f5d32b1c5d8030344e7c0d063150bba4081cd0834f6d3b8730bd3a5d2",
-    "docs/commands/curves.md": "076176e226199f0f1acad74060e9c4187317ab7525e1e3e2affb70c3f8bf5915",
     "docs/commands/parabola.md": "64b61a771cf28b62509e96c00a112a5b00aafbd083600ec17a044d09fd112f8e",
-    "docs/conic-getters-validation.json": "5725378e98898cf1a81a8a4895d6c93e97e71b4356d51435c81a549d840d22fe",
     "docs/conic-validation.json": "9fbf419f04ae387167a100c861549ec45820d627cfc37193b7c93bbbaba99eba",
-    "src/app.rs": "67d6b413c5fed1c8f846801c61d08f25ff2bf5cc55106e94952b67854bf8dab8",
     "src/app/parabola.rs": "2334d55d7d30bb6c1322072d137520b5db11ed4ad71b376ed9864b02834bcc2f",
     "src/app/tests/parabola.rs": "d27e4da5acd52621eaa5438fc5e6bb1d2f15183e5798ab7b6f1767afc0b54070",
-    "src/viewport.rs": "b6ac8fb293a0c3136581eeb48ae8c3007a7341cbc40c07acb07f62c5efc0e707",
-    "tools/rhino_oracle/curve_primitive_probe.py": "2363e7fb43329be75768733bb1ba02c52b5ee131507639860553f4222919ddf0",
     "tools/rhino_oracle/fixtures/parabola_command.json": "921cbbb9c78284a379d7f21c197268cb5a8c5b6ddeecec288ff79279d02df41a",
     "tools/rhino_oracle/fixtures/parabola_direction_controls.json": "020f4b79033efaf6f0889db781666d16872cc7253fe0f71e8dbcb8ab0bcc0a89",
     "tools/rhino_oracle/observations/parabola_command_rhino_20261017.json": "0fce24f87f56c3d435d4a3387c54b7a346c2dbbb19bbe78448620c9f52f1eb74",
     "tools/rhino_oracle/observations/parabola_direction_controls_rhino_20261017.json": "b5220e843340a9adbdc69c516306408603d6ff0e3460b736cd08be9a027aadb1",
     "tools/rhino_oracle/parabola_probe.py": "40009afa2cfeb9a24adb2ea57986769c93f4dd55b3dd89353fe64d85f3fc6db1",
-    "tools/rhino_oracle/rhino_worker.py": "f46f985d5118bb4d63680bc5d2165d21544286e3153f2ba563e701e0a931ccb8",
-    "tools/rhino_oracle/structural_sdk.py": "1c6333ad6d356527d4eb96d7d0076c9c041a1be6891f2b002c0e1d6105f7eb73",
     "tools/rhino_oracle/test_parabola.py": "dc8a90cf4ee3cd58eff8e7abf10bfa3e19292524a893811f6607f4db47a2bc00"
+  },
+  "git_sha256": {
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:README.md": "bb04826944fa020a9f434277907eaa755d062b10a0dbc3fd1f387bc06a1e5379",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-command/src/lib.rs": "4761bfb7c71f28b0285e3c8ab3836b9f0909d439251405c21e7f9932f610c196",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-oracle/src/curve_primitive.rs": "8ef4a4f2885b3e89542b3937f3e651c09de8099741ffd6981c4671e06942534e",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-oracle/src/lib.rs": "2912f92b1eb7f1cdbcd5225bf309d0ceeb31512abd50ad1f776dc95d67ffcca9",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/commands/curves.md": "076176e226199f0f1acad74060e9c4187317ab7525e1e3e2affb70c3f8bf5915",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/conic-getters-validation.json": "5725378e98898cf1a81a8a4895d6c93e97e71b4356d51435c81a549d840d22fe",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:src/app.rs": "67d6b413c5fed1c8f846801c61d08f25ff2bf5cc55106e94952b67854bf8dab8",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:src/viewport.rs": "b6ac8fb293a0c3136581eeb48ae8c3007a7341cbc40c07acb07f62c5efc0e707",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:tools/rhino_oracle/curve_primitive_probe.py": "2363e7fb43329be75768733bb1ba02c52b5ee131507639860553f4222919ddf0",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:tools/rhino_oracle/rhino_worker.py": "f46f985d5118bb4d63680bc5d2165d21544286e3153f2ba563e701e0a931ccb8",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:tools/rhino_oracle/structural_sdk.py": "1c6333ad6d356527d4eb96d7d0076c9c041a1be6891f2b002c0e1d6105f7eb73"
   }
 }

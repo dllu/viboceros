@@ -171,6 +171,7 @@ mod extrude_tapered;
 mod flow;
 mod grid_settings;
 mod group_prompt;
+mod hyperbola;
 mod interface;
 mod intersect_two_sets;
 mod iplane;
@@ -507,6 +508,9 @@ enum InteractiveCommand {
     InterpCrv {
         options: viboceros_geometry::CurveInterpolationOptions,
     },
+    Hyperbola {
+        anchor: Option<Point3>,
+    },
     Parabola {
         kind: viboceros_command::parabola::Kind,
         anchor: Option<Point3>,
@@ -840,6 +844,7 @@ impl InteractiveCommand {
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
             Self::InterpCrv { .. } => "InterpCrv",
+            Self::Hyperbola { .. } => "Hyperbola",
             Self::Parabola { kind, .. } => kind.name(),
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
@@ -1220,6 +1225,7 @@ impl InteractiveCommand {
             Self::InterpCrv { .. } => {
                 "InterpCrv: pick curve points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
+            Self::Hyperbola { .. } => "Hyperbola: follow the point prompts (Esc cancels)",
             Self::Parabola { .. } => "Parabola: follow the point prompts (Esc cancels)",
             Self::Conic { .. } => {
                 "Conic: pick start, end, apex and curvature point or rho (Esc cancels)"
@@ -1813,6 +1819,7 @@ impl InteractiveCommand {
             | Self::Polyline
             | Self::Curve { .. }
             | Self::InterpCrv { .. }
+            | Self::Hyperbola { anchor: None }
             | Self::Parabola { anchor: None, .. }
             | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
@@ -1909,6 +1916,7 @@ impl InteractiveCommand {
             | Self::CircleTwoPoint { first: start }
             | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
+            | Self::Hyperbola { anchor: start }
             | Self::Parabola { anchor: start, .. }
             | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
@@ -2247,6 +2255,7 @@ pub struct VibocerosApp {
     orient_curve_session: Option<orient_curve::Session>,
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
+    hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
@@ -2367,6 +2376,7 @@ impl VibocerosApp {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            hyperbola_session: None,
             parabola_session: None,
             conic_session: None,
             rectangle_session: None,
@@ -2493,7 +2503,7 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         // Construction options can share names with snap modes, such as Vertex.
-        if self.try_continue_parabola(&input) {
+        if self.try_continue_hyperbola(&input) || self.try_continue_parabola(&input) {
             return;
         }
         if self.try_one_shot_snap(&input) {
@@ -3042,6 +3052,14 @@ impl VibocerosApp {
     }
 
     fn try_execute_command(&mut self, input: &str) -> bool {
+        self.try_execute_command_with_plane(input, None)
+    }
+    /// A getter may have captured its construction plane before the active view changed.
+    fn try_execute_command_with_plane(
+        &mut self,
+        input: &str,
+        captured_plane: Option<Frame3>,
+    ) -> bool {
         self.dismiss_curve_deviation_for_command(input);
         let input = match self.silhouette_input(input) {
             Ok(input) => input,
@@ -3088,11 +3106,12 @@ impl VibocerosApp {
                     .trim_start_matches(['_', '-'])
                     .eq_ignore_ascii_case("Project")
         });
-        let construction_plane = if self.active_command.is_none() && !finishing_plane {
-            self.drafting_plane.unwrap_or(active_plane)
-        } else {
-            active_plane
-        };
+        let construction_plane =
+            captured_plane.unwrap_or(if self.active_command.is_none() && !finishing_plane {
+                self.drafting_plane.unwrap_or(active_plane)
+            } else {
+                active_plane
+            });
         let draft_angle_command = input.split_whitespace().next().is_some_and(|name| {
             name.trim_start_matches(['_', '-'])
                 .eq_ignore_ascii_case("ExtractMeshFacesByDraftAngle")
@@ -3175,6 +3194,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_hyperbola(input) {
+            return true;
+        }
         if self.try_start_parabola(input) {
             return true;
         }
@@ -5572,6 +5594,7 @@ impl VibocerosApp {
         }
         self.flow_session = None;
         self.surface_flow_session = None;
+        self.hyperbola_session = None;
         self.parabola_session = None;
         self.conic_session = None;
         self.rectangle_session = None;
@@ -5633,6 +5656,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_hyperbola_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_parabola_point(point) {
             return accepted;
         }
@@ -5687,6 +5713,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::Rectangle { .. }
@@ -10022,6 +10049,11 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let viewport_positions = &self.viewport_positions;
+        let hyperbola_input = self
+            .hyperbola_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
         let parabola_input = self
             .parabola_session
             .as_ref()
@@ -10171,6 +10203,7 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
+                            hyperbola_input,
                             parabola_input,
                             conic_input,
                             conic_reference,
@@ -10446,6 +10479,7 @@ mod tests {
     mod geometry_check;
     mod grip_transform;
     mod group_prompt;
+    mod hyperbola;
     mod interface;
     mod intersect_two_sets;
     mod length;
@@ -10607,6 +10641,7 @@ mod tests {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            hyperbola_session: None,
             parabola_session: None,
             conic_session: None,
             rectangle_session: None,

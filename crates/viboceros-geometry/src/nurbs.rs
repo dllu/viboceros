@@ -16,6 +16,7 @@ mod integration_frame;
 mod linear_trim;
 mod parameter_frame;
 pub(crate) mod periodic;
+mod poles;
 mod sampling;
 mod smoothing;
 pub use sampling::{NurbsCurveParameterSampler, NurbsCurveSamplingSpan};

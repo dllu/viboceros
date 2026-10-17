@@ -47,7 +47,6 @@
     "No comparative performance qualification is claimed. Grip/edit-point subobject input, SubD and broader subobject selection remain pending."
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
     "crates/viboceros-geometry/src/curve_edit_points.rs": "8b80112816cca67852196406029b80ece5559160cc08839464ecf79fa8205ad4",
     "crates/viboceros-geometry/src/curve_edit_points/tests.rs": "abad8958a1f58128d79dc97a80e9710cd68155625f07c0a1e2b8ceefc977809f",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
@@ -85,6 +84,7 @@
     "b80f97d6bad11b546a6fe4532bff326f1f82895f:crates/viboceros-geometry/src/surface_pullback.rs": "b7a5c57029f55cfc629d0242bb1caf0a85e01cfa2f1d14d794ffd2ba6e9e828b",
     "b80f97d6bad11b546a6fe4532bff326f1f82895f:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "9d34e2ea1445d9f9eabb2a769a4f66571d899c5318bc766901559638c247131f",
     "d9984b57bb49b755beea6e0d8e3c18072754509b:crates/viboceros-smlib/src/native/knot_refinement.rs": "5ab536a60df85ad1e75a4e44ffdeeb351331b628f21ede15d2243820034f1542",
-    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/project.rs": "e9d06bec5d3422338cdd5dcbe5f52cd3dfbd74f035a722e5959f3903ba702b56"
+    "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:src/app/project.rs": "e9d06bec5d3422338cdd5dcbe5f52cd3dfbd74f035a722e5959f3903ba702b56",
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99"
   }
 }

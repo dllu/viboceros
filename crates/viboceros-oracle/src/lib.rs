@@ -147,6 +147,8 @@ mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
 mod conic;
+mod hyperbola;
+pub use hyperbola::Fixture as HyperbolaCommandFixture;
 mod parabola;
 pub use parabola::Fixture as ParabolaCommandFixture;
 mod curvature_graph;
@@ -1734,6 +1736,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: FlowRoadlikeFixture,
     },
+    HyperbolaCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: HyperbolaCommandFixture,
+    },
     ParabolaCommand {
         id: String,
         #[serde(flatten)]
@@ -2819,6 +2826,7 @@ impl Operation {
             | Self::OrientSurface { id, .. }
             | Self::OrientSurfaceGrips { id, .. }
             | Self::FlowGrips { id, .. }
+            | Self::HyperbolaCommand { id, .. }
             | Self::ParabolaCommand { id, .. }
             | Self::ConicCommand { id, .. }
             | Self::Rectangle { id, .. }
@@ -6062,6 +6070,9 @@ fn execute(
         }
         Operation::FlowRoadlike { fixture, .. } => {
             flow_roadlike::run(fixture, iterations, tolerance)?
+        }
+        Operation::HyperbolaCommand { fixture, .. } => {
+            hyperbola::run(fixture, iterations, tolerance)?
         }
         Operation::ParabolaCommand { fixture, .. } => {
             parabola::run(fixture, iterations, tolerance)?

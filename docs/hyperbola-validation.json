@@ -1,0 +1,432 @@
+{
+  "feature": "Interactive Hyperbola and projective quadratic pole handling",
+  "date": "2026-10-17",
+  "source_base_commit": "b42e2cabaa19a7109c81e026877d1b06558800e8",
+  "absolute_epsilon": 1e-06,
+  "native_engine": "rhino",
+  "native_engine_version": "8.32.26160.13001",
+  "summary": {
+    "unique_hyperbola_cases": 86,
+    "successful_commands": 63,
+    "cancelled_or_rejected_commands": 23,
+    "focus_only_completions": 5,
+    "empty_successful_completions": 2,
+    "projective_curves_with_failed_length_queries": 14
+  },
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_command.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_command_rhino_20261017.json",
+      "rows": 25
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_planes.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_planes_rhino_20261017.json",
+      "rows": 13
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_directions.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_directions_rhino_20261017.json",
+      "rows": 13
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_gates.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_gates_rhino_20261017.json",
+      "rows": 12
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_mode_cancel.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_mode_cancel_rhino_20261017.json",
+      "rows": 3
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_boundaries.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_boundaries_rhino_20261017.json",
+      "rows": 6
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_projective.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_projective_rhino_20261017.json",
+      "rows": 14
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/hyperbola_shared_driver.json",
+      "observation": "tools/rhino_oracle/observations/hyperbola_shared_driver_rhino_20261017.json",
+      "rows": 3
+    }
+  ],
+  "qualifications": [
+    "All four constructions, drawing options, toggles, numeric coefficient/default prompts and successful preference retention",
+    "Captured CPlanes, rotated/spatial axes, negative origins, signed extents, focus-only and empty results",
+    "Exact NURBS controls, weights, degree, full knots, domain, object order, selection, finite lengths and actual undo/redo",
+    "Construction changes at the focus getter: three completed live input traces with native Cancel, no timeout, no injected Cancel",
+    "Projected conic weights across CPlane tilts, coefficient families and spatial opening axes",
+    "Analytic denominator-pole fractions, common weight gauges, reparameterization, fast length rejection and viewport gaps at non-dyadic poles",
+    "Two fresh Conic commands preserve physical hover and edge-pick acknowledgements after sharing the managed input driver"
+  ],
+  "metric_policy": "For a clamped quadratic with weights [1,w,1], w<=-1 proves a denominator pole. Rhino GetLength returns zero for the measured projective cases; the probe tags this SDK failure result with length_query_failed=true. The Rust geometry API returns ZeroWeightAtParameter. These values are not interpreted as zero finite arc lengths. Controls and weights remain unnormalized.",
+  "native_capture_provenance": [
+    {
+      "scheme": "VibocerosOracleHyperbolaGetters20261017",
+      "purpose": "Initial 25 construction workflows; center-oblique later recaptured with explicit projective diagnostics"
+    },
+    {
+      "scheme": "VibocerosOracleHyperbolaPlanes20261017",
+      "purpose": "13 plane/direction recipes and three complete live focus-prompt cancellation controls"
+    },
+    {
+      "scheme": "VibocerosOracleHyperbolaDirections20261017",
+      "purpose": "13 rotated direction and coefficient option recipes"
+    },
+    {
+      "scheme": "VibocerosOracleHyperbolaGates20261017",
+      "purpose": "12 translated-world-X and spatial-axis controls"
+    },
+    {
+      "scheme": "VibocerosOracleHyperbolaBoundaries20261017",
+      "purpose": "Six no-output, focus-only and strict boundary controls"
+    },
+    {
+      "scheme": "VibocerosOracleHyperbolaProjective20261017",
+      "purpose": "14 CPlane projection/validity captures; center-oblique replaces the same input row in the primary observation"
+    },
+    {
+      "scheme": "VibocerosOracleConicSharedDriver20261017",
+      "purpose": "Dedicated Conic request with one real hover and one real edge pick"
+    },
+    {
+      "scheme": "VibocerosOracleHyperbolaSharedDriver20261017",
+      "purpose": "Two signed-extent cases recaptured with explicit query-failure metadata and one complete live numeric coefficient workflow; signed rows replace their identical inputs in the directions/gates observations"
+    }
+  ],
+  "unqualified": [
+    "Near-singular CPlane projection factors and exhaustive numeric extremes",
+    "All snap combinations and complete GUI visual parity",
+    "General NURBS pole certification outside a single clamped quadratic with equal endpoint weights",
+    "All downstream modeling operations on projective curves",
+    "Performance parity"
+  ],
+  "tests": [
+    {
+      "name": "hyperbola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "hyperbola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 53.8,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1335 filtered out; finished in 0.06s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1467 filtered out; finished in 0.04s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 544 filtered out; finished in 0.28s"
+      ],
+      "log_sha256": "7d15f188bfc4aa0a94c5d7bef79f05eeb91f6d473c1f6775f13ae650b59dc8e8"
+    },
+    {
+      "name": "geometry-nurbs",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "nurbs::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 97.591,
+      "test_results": [
+        "test result: ok. 225 passed; 0 failed; 0 ignored; 0 measured; 2143 filtered out; finished in 65.09s"
+      ],
+      "log_sha256": "94f1320c79b2cfd30a32c3ac1f96575a8c785f8fb5d0e2b302cd6736fb13d1ec"
+    },
+    {
+      "name": "geometry-curve-length",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "curve::arc_length"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.439,
+      "test_results": [
+        "test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 2339 filtered out; finished in 0.30s"
+      ],
+      "log_sha256": "22897bee0425c664016e8b2fca57ba6ab16870e880d53b66fc5cdd01735eeba0"
+    },
+    {
+      "name": "viewport-sampling",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::curve_sampling"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.632,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1336 filtered out; finished in 0.01s"
+      ],
+      "log_sha256": "51d31905adac75e8899c75d9173845c22817ef854f49977d129b982d1dd3628e"
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "app::tests::point_input"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.454,
+      "test_results": [
+        "test result: ok. 58 passed; 0 failed; 0 ignored; 0 measured; 1282 filtered out; finished in 0.21s"
+      ],
+      "log_sha256": "d46f90a31b82e4626ba550cb2d6def3f813d35a4859bd6d0f41259434f46d73a"
+    },
+    {
+      "name": "native-hyperbola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "hyperbola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 99.018,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 565 filtered out; finished in 0.29s"
+      ],
+      "log_sha256": "7a4f21b4ed615f386a48acf37aa2e334c4c8a4281fe2db4a56778bf94b517449"
+    },
+    {
+      "name": "parabola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "parabol"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 7.364,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1336 filtered out; finished in 0.04s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1466 filtered out; finished in 0.12s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 542 filtered out; finished in 6.81s"
+      ],
+      "log_sha256": "30a5bad7564fbd70212217be36dda912ffd64a8dcfac73e8d34e52b333f4d0d9"
+    },
+    {
+      "name": "conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "conic"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.562,
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1330 filtered out; finished in 0.14s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1458 filtered out; finished in 0.06s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 542 filtered out; finished in 9.02s"
+      ],
+      "log_sha256": "a2d9b13019fbfa7eb6a127d9287359ab876f79252abc3076c8f6b1ed77bdabc6"
+    },
+    {
+      "name": "rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.593,
+      "test_results": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1320 filtered out; finished in 0.16s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1462 filtered out; finished in 2.52s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 545 filtered out; finished in 5.56s"
+      ],
+      "log_sha256": "58134903cd8354d43385200df986ad61ea862bc41b587952ab80476378b02615"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_client",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.381,
+      "test_results": [
+        "Ran 41 tests in 0.269s"
+      ],
+      "log_sha256": "e39c7b1f228821ff126e28dbe315aef718e4d5db6933300f466ad209ce3cecdd"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 46.036,
+      "test_results": [],
+      "log_sha256": "2286fdea31d2a8979543d8c1f6edab93b05b0fe2129fad84aecd6f5cb5744ff0"
+    },
+    {
+      "name": "geometry-poles",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "nurbs::poles"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 24.132,
+      "test_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2366 filtered out; finished in 1.36s"
+      ],
+      "log_sha256": "d67ce664c180e26b4004ed7cd26ad87b2e8e9ef3feafa101ee1f5f323a87b999"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.637,
+      "test_results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "historical_provenance": {
+    "records": [
+      "docs/automatic-gordon-network-fit-validation.json",
+      "docs/conic-getters-validation.json",
+      "docs/curvature-sampling-validation.json",
+      "docs/exact-isocurve-restriction-validation.json",
+      "docs/flow-poles-validation.json",
+      "docs/local-gordon-curve-clock-validation.json",
+      "docs/network-source-reference-audit-validation.json",
+      "docs/original-network-curve-admission-validation.json",
+      "docs/parabola-validation.json",
+      "docs/prepared-curve-length-validation.json",
+      "docs/prepared-gordon-families-validation.json",
+      "docs/projection-loose-qualification.json",
+      "docs/shared-gordon-curve-fit-validation.json",
+      "docs/surface-flow-validation.json"
+    ],
+    "archived_source_entries": 26,
+    "preexisting_unverifiable_records_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "65bfbd96478acf25859416b095fa31f6158179486f9a86bf4e4d3ec9d1746dc5",
+    "crates/viboceros-command/src/hyperbola.rs": "ac49fcda7fc3691eadeb6cdf657a76074e304eb6b76c37d78ece58dfd159f357",
+    "crates/viboceros-command/src/hyperbola_tests.rs": "a2ed66de3d4373c67739b43c5faa5b2f1e489b99afd0097cbf7a2c2a215c739e",
+    "crates/viboceros-command/src/lib.rs": "af684887b911d62b85200a0eba03b39b270f9cd44a732b4816463cc5341263d9",
+    "crates/viboceros-geometry/src/nurbs.rs": "6050a03ba4cca4a943be70e71f820158c8006f06101931276aef521227f8c3b1",
+    "crates/viboceros-geometry/src/nurbs/arc_length.rs": "e28c3ffc43a55740f8cc79d47925aa6aff0a8afd504505eef486d6be5d3d9382",
+    "crates/viboceros-geometry/src/nurbs/poles.rs": "b1c7e6027e79730eefc3bdc1d58b6bc6fb6cb3768d04c62f1741366d587c9b15",
+    "crates/viboceros-oracle/src/curve_primitive.rs": "72a6d7c012eda6e4a4b440464cdd27ec5b6862d4f1653cb8414914d8a3da427e",
+    "crates/viboceros-oracle/src/hyperbola.rs": "cfcdd9927b272261dd84d52c563625ed95236fff0aa09412394509d70b493eb4",
+    "crates/viboceros-oracle/src/lib.rs": "47a0ea90387ab7f996bef9682c3ce6aa19d0300db7b33851746b435eb0a23c26",
+    "docs/automatic-gordon-network-fit-validation.json": "3460370b5eb342b09cfd72280fbc24800414d28854b71db1a87590bc95eaca8b",
+    "docs/commands/curves.md": "29bb41dbe2885d7025323d88517909ae7fd88597d8f3de9273cc68b336411650",
+    "docs/commands/hyperbola.md": "26ca5230daf8974edecc2463bde3c010d2a7f37def7acd150338254a9d99d2a5",
+    "docs/conic-getters-validation.json": "96a02e70e723c4838489efab7557503ca960add0121c407cb7e027fcb1604626",
+    "docs/curvature-sampling-validation.json": "7f0fb20c4380e2abbe5e01d430620700b24d0d4d6a1fd14908a463114dd83b36",
+    "docs/exact-isocurve-restriction-validation.json": "6f9812f5ee1aad709a4d0888ba21989043cf9ea650e5a32e9eb75e89d4ae22c9",
+    "docs/flow-poles-validation.json": "ecac59fd84672a1c05f25a6b4b9b630b1dd4544d2af3520addb3c488cb737db1",
+    "docs/local-gordon-curve-clock-validation.json": "a402faa2802253252465097195e058f23728f96e406ef28e42aff266c78b607b",
+    "docs/network-source-reference-audit-validation.json": "1633812bd433ef125f379912cb488fbd99d77e317a7186bfcef57a2ab15214fb",
+    "docs/original-network-curve-admission-validation.json": "071992c0aa417adfdfe4958b9f0503ee10d83a1ea8499b0e99b218735546410f",
+    "docs/parabola-validation.json": "a0bad0bc00f4ec693eb12a2286e085c20efc6d8cd836b1cf9a4bfe20f0cbd282",
+    "docs/prepared-curve-length-validation.json": "eb3805a9eaeb8f81d330abc59ac106d97429a93bc7979c80f8665b4e57ce6d77",
+    "docs/prepared-gordon-families-validation.json": "0e69b0949d4f4c712d88c0ae6741388660c5e24079611bdc515194b5fdb0b8a9",
+    "docs/projection-loose-qualification.json": "4a4d6b8060d5cbd056ddbada89921ecb16146e8ac165121fd240408d172dd660",
+    "docs/shared-gordon-curve-fit-validation.json": "1631008547774fec9fb46a7bd328272fad73b4b8a1e3fd398cfdfefa6e6402ce",
+    "docs/surface-flow-validation.json": "0957dcec744703877ef7ea94ad4953309a9e96c430b58816c61665fdd062a0ee",
+    "src/app.rs": "1739f0027245deee209172d1ed027a307e9ce7d4760f541f550cfd7b282ac6cc",
+    "src/app/hyperbola.rs": "fadb185f906dbdb87a515536a693dbda38dca0332f2906dc24ef25fb0d16300b",
+    "src/app/tests/hyperbola.rs": "b35a7e3c1b4f3c6232f20b26236115e1884226133b62d31f19d14fbd1ab81787",
+    "src/viewport.rs": "f98897a79baa085a8c9e844f02a8a25795832a2a51125e60885de8fcc41610ed",
+    "src/viewport/curve_sampling.rs": "dc2a727fc083ebedcc2b3a071724d0a9637e89f2299494a64137e7672aeabac2",
+    "tools/rhino_oracle/client.py": "7afbe29cad64234ce29c038a08e87d839a32a49ac24f2d520951135dfe34553b",
+    "tools/rhino_oracle/conic_getter_input.py": "1e20de4a2658ca0bd28deaec879d514a52e1383e78bd2ab313fee37cf6475c2e",
+    "tools/rhino_oracle/curve_primitive_probe.py": "edaf791ecc92dea033eaf21b5ef0bd588c601e985869132557acb34deaa222f6",
+    "tools/rhino_oracle/fixtures/conic_shared_driver.json": "1fac82751abb536a85f7f331b0b3fa2e64905ec0114e823970f04e7164d3432b",
+    "tools/rhino_oracle/fixtures/hyperbola_boundaries.json": "2c60f752c88c0c5c83f6588d324c62becedd83def70e35224fd49296756ddae3",
+    "tools/rhino_oracle/fixtures/hyperbola_command.json": "c66e66f7501d9bb4afac5f96a7e356c9c30d60392dc49ce00aeb39b7cafeacfb",
+    "tools/rhino_oracle/fixtures/hyperbola_directions.json": "be03959c941be149e16c665443dc6912b980ebfac4d7034d12fb6d87d78a2933",
+    "tools/rhino_oracle/fixtures/hyperbola_gates.json": "d5b2ebee1fffd797f954714de5facab449569767a315aa006a6770562ff51cd2",
+    "tools/rhino_oracle/fixtures/hyperbola_mode_cancel.json": "19fbac6a545c8f2ee502d1fc0c06e1d33d66a31eca50d9f9398022a5d1e3e152",
+    "tools/rhino_oracle/fixtures/hyperbola_planes.json": "6d68a54db7ae124a6311ab2dafee564c78c501539071737742bc556c8f9a65bf",
+    "tools/rhino_oracle/fixtures/hyperbola_projective.json": "04a1a33baffdffad76928fbef764c2cb423620a3ab4004af29cf833309175b03",
+    "tools/rhino_oracle/fixtures/hyperbola_shared_driver.json": "b57008b6122a5fb4b8ea9636db717e6565c049e0fc96b18a4808bcb9521b6591",
+    "tools/rhino_oracle/hyperbola_probe.py": "202188ce221203989a54ee6ea04a5f19d13262074fb90be2641d178cb057f7fd",
+    "tools/rhino_oracle/observations/conic_shared_driver_rhino_20261017.json": "15f93f17b94668b17d24367c956712aed5b145dcaa3b6b4759d2902c22010949",
+    "tools/rhino_oracle/observations/hyperbola_boundaries_rhino_20261017.json": "86725765f6dfd9030cd0ec55d043fd685e41269c75face832114c3a302533e12",
+    "tools/rhino_oracle/observations/hyperbola_command_rhino_20261017.json": "9e23aef0e07ed826e28339d39e1a36b6d5d0a237399a2026b343f866b45d6a2e",
+    "tools/rhino_oracle/observations/hyperbola_directions_rhino_20261017.json": "c595e848c6a028ce77cfb0349d6e0d156805f408ec867c75ba24209c7a08cf8e",
+    "tools/rhino_oracle/observations/hyperbola_gates_rhino_20261017.json": "cc89a901ca4cc52081c055f6b4e6b35b8d93c71fcd244276ed68e6748e99b6ba",
+    "tools/rhino_oracle/observations/hyperbola_mode_cancel_rhino_20261017.json": "1517ee4b87ef3feec5af8a7d3a8eca6ca4ac52f0b2e953f09d21215ab6519f1b",
+    "tools/rhino_oracle/observations/hyperbola_planes_rhino_20261017.json": "b4ea50df9ebd9b9accd086f05146f2e72073a6a47b9797869d3abab16f4e0b49",
+    "tools/rhino_oracle/observations/hyperbola_projective_rhino_20261017.json": "b7f8c4c7797fabc9777f1d9bf5258ed33ff95d36aae35c650c6375d2f1d0d682",
+    "tools/rhino_oracle/observations/hyperbola_shared_driver_rhino_20261017.json": "338106e1b910df3fd94376e8c567049ddcc148df2b922c9d53986b0a90a5db94",
+    "tools/rhino_oracle/rhino_worker.py": "61da3c0b3a44bb00929db5203b5ae4d1a91297f34e9266abf130aea034727bf7",
+    "tools/rhino_oracle/structural_sdk.py": "f637718f2bbca671bfa20cc1668d8df6f69ef4450db0738631cc802f3d24b41b",
+    "tools/rhino_oracle/test_hyperbola.py": "9057d66c6f2a2cacd349345e3cc030befab96e32a9652a9c9c29ee0c8cdf7136"
+  }
+}

@@ -1,7 +1,8 @@
 """Managed UI delegates drive bounded public getters while Python awaits RunScript."""
 import json,os
 
-def drive(op,host,guides):
+def drive(op,host,guides,command="Conic"):
+    if command not in ("Conic","Hyperbola"):raise ValueError("unsupported managed curve getter command")
     R,S=host['Rhino'],host['System'];doc=R.RhinoDoc.ActiveDoc;view=doc.Views.ActiveView;vp=view.ActiveViewport
     from snap_environment import environment
     import clr
@@ -28,7 +29,8 @@ def drive(op,host,guides):
     def send_token(token):return call(None,send,[E.Constant(token),E.Constant(True)])
     def log(message):return call(None,append,[E.Constant(progress),E.Constant(message)])
     def point(p):return 'w'+','.join(repr(float(x))for x in p)
-    base=either([call(prompt,starts,[E.Constant(p)])for p in ('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')])
+    prefixes=('Hyperbola','New A coefficient','New B coefficient')if command=='Hyperbola'else('Start of conic','End of conic','Apex','Curvature point or rho','Select curve','Start of curve','Current length')
+    base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[]
@@ -51,7 +53,7 @@ def drive(op,host,guides):
             elif isinstance(a,list):token=point(a);gate=base
             elif isinstance(a,str):token='_'+a;gate=length if a in('D','Direction=Locked','Direction=Free')else base
             else:token=repr(float(a));gate=base
-            body=E.IfThen(gate,block(advance+[log('\nConic input %s %d: %s\n'%(op['id'],i,token)),send_token(token)]));tokens.append(token)
+            body=E.IfThen(gate,block(advance+[log('\n%s input %s %d: %s\n'%(command,op['id'],i,token)),send_token(token)]));tokens.append(token)
         branches.append(body)
     done=E.Label();body=[]
     for i,branch in enumerate(branches):body.append(E.IfThen(E.Equal(stage,integer(i)),block([branch,E.Goto(done)])))
@@ -72,11 +74,15 @@ def drive(op,host,guides):
             condition=E.AndAlso(E.Equal(stage,integer(i)),E.AndAlso(E.GreaterThan(item(counts,i),integer(0)),E.AndAlso(same_view,E.AndAlso(length,near))))
             handlers.append(E.IfThen(condition,block([E.Assign(item(counts,i),integer(7)),call(None,write,[E.Constant(ready+'.tmp'),E.Constant(json.dumps(marker))]),call(None,move,[E.Constant(ready+'.tmp'),E.Constant(ready)])]+advance)))
         return E.Lambda(delegate,E.IfThen(active,block(handlers)),S.Array[ParameterExpression]([event])).Compile()
-    mouse=create(mouse_handler,host);mouse.Enabled=True
+    mouse=create(mouse_handler,host)if mouse_steps else None
+    if mouse is not None:mouse.Enabled=True
     timer=S.Threading.Timer(callback(action),None,100,100);timeout=S.Threading.Timer(callback(cancel),None,1000,500)
     try:
-        with environment(dict(persistent_snaps=[]),host):returned=R.RhinoApp.RunScript('_Conic _Pause',True)
-    finally:state[1]=0;timer.Dispose();timeout.Dispose();mouse.Enabled=False
-    errors=['owned Conic input timeout']if state[2]else[]
-    if state[0]!=len(actions):errors.append('incomplete owned Conic input')
-    return bool(returned),dict(completed=int(state[0]),expected=len(actions),errors=errors,prompts=list(observed),sent=[dict(action=i,token=tokens[i],prompt=observed[i])for i in range(state[0])if tokens[i]is not None],motion=[dict(h,acknowledged=counts[h['action']]>6)for h in hovers],edge_picks=[dict(p,acknowledged=observed[p['action']]is not None)for p in picks],motion_acknowledgement='Rhino MouseCallback.OnEndMouseMove in the owned active viewport, matching the requested source projection; the callback is a managed delegate.')
+        with environment(dict(persistent_snaps=[]),host):
+            returned=R.RhinoApp.RunScript('_'+command+' _Pause',True)
+    finally:
+        state[1]=0;timer.Dispose();timeout.Dispose()
+        if mouse is not None:mouse.Enabled=False
+    errors=['owned '+command+' input timeout']if state[2]else[]
+    if state[0]!=len(actions):errors.append('incomplete owned '+command+' input')
+    return bool(returned),dict(completed=int(state[0]),expected=len(actions),errors=errors,prompts=list(observed),sent=[dict(action=i,token=tokens[i],prompt=observed[i])for i in range(state[0])if tokens[i]is not None],motion=[dict(h,acknowledged=counts[h['action']]>6)for h in hovers],edge_picks=[dict(p,acknowledged=observed[p['action']]is not None)for p in picks],motion_acknowledgement='No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.'if command=='Hyperbola'else'Rhino MouseCallback.OnEndMouseMove in the owned active viewport, matching the requested source projection; the callback is a managed delegate.')

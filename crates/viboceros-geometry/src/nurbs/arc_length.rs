@@ -16,6 +16,9 @@ impl NurbsCurve {
             }
             return sum.total();
         }
+        if self.quadratic_pole_fractions().is_some() {
+            return Err(GeometryError::ZeroWeightAtParameter);
+        }
         let curve = self.for_integration()?;
         let absolute_per_span = tolerance.absolute() / curve.spans().count() as Real;
         if absolute_per_span <= 0.0 {

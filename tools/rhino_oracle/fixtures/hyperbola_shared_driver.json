@@ -1,0 +1,92 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-negative-x-positive-end",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          2,
+          0
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-gate-end-before-relocated-center",
+      "actions": [
+        "FromCoefficient",
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          2,
+          0
+        ]
+      ],
+      "curve_diagnostics": true
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-number-options-live",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        "A",
+        3,
+        "B",
+        4,
+        "BothBranches=No",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=No",
+        [
+          5,
+          2,
+          0
+        ]
+      ],
+      "live_getters": true
+    }
+  ]
+}

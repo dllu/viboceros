@@ -464,6 +464,12 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='hyperbola_command' and op.get('live_getters') for op in request.get('operations',[])):
+            operations=request['operations']
+            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')!='hyperbola_command'for op in operations):
+                raise OracleProtocolError('Hyperbola live input requires a private dedicated one-iteration request')
+            if not 1<=len(operations)<=128 or len({op['id']for op in operations})!=len(operations):
+                raise OracleProtocolError('Hyperbola live input requires uniquely named bounded cases')
         if any(op.get('op')=='conic_command' and any(isinstance(a,dict)and('hover'in a or'edge'in a)for a in op.get('actions',[]))for op in request.get('operations',[])):
             if self.settings_scheme is None or request.get('iterations',1)!=1 or any(op.get('op')!='conic_command'for op in request.get('operations',[])):
                 raise OracleProtocolError('Conic hover input requires a private dedicated one-iteration request')

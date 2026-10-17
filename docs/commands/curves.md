@@ -213,7 +213,9 @@ previews](parabola.md), with settings remembered after success.
 `Hyperbola` supports Rhino's center, coefficient, two-focus, and vertex input
 modes. Each branch is one exact normalized rational quadratic span;
 `BothBranches=Yes` and `MarkFoci=Yes` preserve Rhino's object ordering.
-`ShowAsymptotes=Yes` is accepted as a preview-only option.
+`ShowAsymptotes=Yes` displays temporary guides. All four modes also support
+[interactive picking and previews](hyperbola.md), with remembered coefficients,
+CPlane-dependent rational charts and pole-aware drawing.
 
 `Helix` creates a non-rational uniform cubic along an explicit axis. Numeric or
 picked radii, arbitrary axis directions, fractional `Turns=`, `Mode=Pitch`,

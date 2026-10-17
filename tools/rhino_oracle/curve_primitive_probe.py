@@ -29,7 +29,13 @@ def run(op,host,iterations,tolerance,command,driver=None):
         def curve_value(curve):
             pieces=list(curve.DuplicateSegments())if isinstance(curve,G.PolyCurve)else[curve.DuplicateCurve()]
             try:
-                return dict(curve=host['_nurbs_curve_definition'](curve),segments=[host['_nurbs_curve_definition'](p)for p in pieces],length=float(curve.GetLength(tolerance["relative"])if command=="Conic"else curve.GetLength()),closed=bool(curve.IsClosed))
+                value=dict(curve=host['_nurbs_curve_definition'](curve),segments=[host['_nurbs_curve_definition'](p)for p in pieces],length=float(curve.GetLength(tolerance["relative"])if command=="Conic"else curve.GetLength()),closed=bool(curve.IsClosed))
+                controls=value['curve']['control_points']
+                if command=='Hyperbola'and value['length']==0. and value['curve']['degree']==2 and len(controls)==3 and controls[0]['weight']==controls[2]['weight']==1. and controls[1]['weight']<=-1.:
+                    # The quadratic denominator has roots inside its domain.
+                    # Zero is Rhino's failed GetLength query result, not an arc length.
+                    value['length_query_failed']=True
+                return value
             finally:
                 for p in pieces:p.Dispose()
         def snapshot():
@@ -66,6 +72,8 @@ def run(op,host,iterations,tolerance,command,driver=None):
         if driver is not None:macro='_'+command+' _Pause'
         ok,after,events=observe_command(R.Commands.Command,command,execute,snapshot,lambda:[],True)
         result=dict(command_returned=bool(ok),before=seed,after=after,after_script=snapshot(),events=events,macro=macro,history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip())
+        if op.get('curve_diagnostics'):
+            result['curve_diagnostics']=[dict(valid=bool(obj.Geometry.IsValid),midpoint_valid=bool(obj.Geometry.PointAt(0.5*(obj.Geometry.Domain.T0+obj.Geometry.Domain.T1)).IsValid))for obj in doc.Objects if obj.Id not in before and obj.Id not in guides and isinstance(obj.Geometry,G.Curve)]
         if input_trace:result['input_trace']=input_trace[0]
         result['undo_returned']=bool(R.RhinoApp.RunScript('_Undo',False));result['undo']=snapshot()
         result['redo_returned']=bool(R.RhinoApp.RunScript('_Redo',False));result['redo']=snapshot()

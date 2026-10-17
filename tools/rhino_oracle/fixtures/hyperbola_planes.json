@@ -1,0 +1,399 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-end-on-axis",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-end-off-plane",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-axis-parallel-normal",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          2,
+          3,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-negative-axis",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -5,
+          2,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-spatial-axis",
+      "actions": [
+        "FromCoefficient",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          2,
+          4,
+          6
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3,
+          5,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-front-plane",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          20,
+          -3
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-custom-parallel-normal",
+      "actions": [
+        "FromCoefficient",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          3,
+          3
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          2,
+          7,
+          6
+        ]
+      ],
+      "construction_plane": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-mirrored-plane",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "center-negative-end",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -3.75,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "foci-negative-end",
+      "actions": [
+        "FromFoci",
+        [
+          -5,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -3.75,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "foci-reversed",
+      "actions": [
+        "FromFoci",
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          -5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          3.75,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "vertex-before-vertex",
+      "actions": [
+        "FromVertex",
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          2.25,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "hyperbola_command",
+      "id": "coefficient-negative-end",
+      "actions": [
+        "FromCoefficient",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        "A=3",
+        "B=4",
+        "BothBranches=Yes",
+        "MarkFoci=Yes",
+        "ShowAsymptotes=Yes",
+        [
+          -5,
+          2,
+          0
+        ]
+      ]
+    }
+  ]
+}
