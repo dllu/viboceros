@@ -7,7 +7,7 @@ pub use chord_division::CurveDivisionPoint;
 mod area;
 mod orientation;
 pub(crate) use arc_length::ArcLengthKink;
-pub use arc_length::ArcLengthSampler;
+pub use arc_length::{ArcLengthCheckpoint, ArcLengthSampler};
 
 use crate::{
     Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, ParameterSide, Point3,

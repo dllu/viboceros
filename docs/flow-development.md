@@ -34,6 +34,7 @@ and actual Flow macros in owned private displays:
 | `flow_roadlike_diagnostics.json` | 12 | Eight formerly blocked in-plane cases now match; four native Automatic cases remain rejected |
 | `flow_roadlike_poles.json` | 40 | Thirty-six matching pole/rigid/grip/plane workflows and four retained curved-NURBS lookup rejections |
 | `flow_pole_lookup.json` | 2 | Precise-kernel versus native positions and public 840-interval batch diagnostics for two rational quarter circles |
+| `flow_integration.json` | 3 | Five-tolerance forward integration and prefix lengths, scalar inverses and four batch densities for rational and spatial NURBS |
 | `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
 | `flow_density.json`, `flow_coupled_frames.json`, `flow_up_lookup.json` | 13 | Dense spatial positions/bases, equivalent straight guide types, batch length lookups, degree elevation and changed spatial shapes |
 
@@ -255,3 +256,31 @@ Public sources used for the reusable arc behavior:
 [OpenNURBS arc-curve evaluator](https://github.com/mcneel/opennurbs/blob/8.x/opennurbs_arccurve.cpp),
 [three-point circle construction](https://github.com/mcneel/opennurbs/blob/8.x/opennurbs_circle.cpp),
 and [Rhino3dm's arc wrapper](https://github.com/mcneel/rhino3dm/blob/main/src/librhino3dm_native/on_arc.cpp).
+
+The [integration record](flow-integration-validation.json) isolates the forward
+quadrature stage. The shared sampler now exposes accepted Cash–Karp 5/4
+checkpoints, normalized speed error control, span boundaries and local error
+estimates. Three fresh SDK recipes retain a rational quarter circle, a spatial
+cubic and its exact knot refinement. Across both guides and five tolerances,
+all 30 full-length integrals agree with Rhino; the maximum relative difference
+is below `7.26e-15`. Prefix lengths are retained as further diagnostics.
+
+These captures also compare public scalar inverses with batch densities of
+2, 16, 100 and 840 intervals. Changing density changes returned midpoint
+parameters. Twelve exactly linear runs in the `1e-4`, 840-interval inverse
+queries each pass through an independently generated `1e-6` integration
+checkpoint, with normalized-distance residuals below `1.6e-12`. This is evidence
+for shared checkpoints in native inversion; the refinement rule remains open.
+Direct linear inversion of the coarse Rust checkpoints differs
+from the native 840-interval batch by more than `0.003` in parameter on every
+target. Matching forward quadrature therefore does not finish native inversion.
+No native parameters initialize the Rust trace, and curved NURBS guide guards
+remain until the inverse and frame policies are implemented and qualified.
+See [the comparison](../tools/rhino_oracle/observations/flow_integration_report_20261016.json)
+and [the sampler API](prepared-curve-length.md).
+
+The public [NormalizedLengthParameters documentation](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Curve_NormalizedLengthParameters_3.htm)
+distinguishes a segment's fractional precision from an optional absolute
+length constraint. The Flow diagnostics deliberately retain the native
+zero-absolute-tolerance batch calls separately from the existing tightly
+constrained batch qualification.

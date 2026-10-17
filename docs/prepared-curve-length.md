@@ -79,3 +79,41 @@ python3 -m tools.rhino_oracle.arc_length_batch_comparison tools/rhino_oracle/fix
 This supplies precise independent batch inversion for future guide lookup
 construction. Rhino Flow's approximate lookup policy and automatic spatial
 direction selection remain unfinished.
+
+`integration_checkpoints(fractional_tolerance)` returns accepted Cash–Karp 5/4
+integration checkpoints. Each `ArcLengthCheckpoint` exposes the original source
+parameter, approximate cumulative distance and embedded local error estimate.
+The trace splits at native span boundaries, evaluates the interior derivative
+on each side of a join, and scales speed by each span's precise length before
+adaptive error control. Constant-speed and linear spans reuse their existing
+lengths. Shifted or very narrow source domains can quantize checkpoint
+parameters while integration retains its normalized domain.
+
+The tolerance must be finite and strictly between zero and one. A trace permits
+65,536 attempted adaptive steps across all spans and at most 1,048,576 returned
+checkpoints; failures return no partial result. The embedded error is an
+estimate. Linear interpolation between these checkpoints has no geometric
+accuracy guarantee and does not replace precise inversion or its brackets.
+
+The [integration comparison](../tools/rhino_oracle/observations/flow_integration_report_20261016.json)
+retains 30 public Rhino SDK length queries: both guides of a rational quarter
+circle, a spatial cubic and its exact knot refinement, at five fractional
+tolerances. All forward integrals agree within `1e-10 * max(1, length)`; the
+observed maximum relative difference is `7.26e-15`. The same captures retain
+prefix lengths, scalar inverses and four batch densities. Their inverse
+differences remain visible and do not qualify a complete native lookup policy.
+Twelve observed linear inverse runs coincide with independently generated
+integration checkpoints to below `1.6e-12` in normalized distance. These fitted
+lines are diagnostic report outputs only.
+
+```sh
+cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_integration.json /tmp/flow-integration-local.json
+python3 -m tools.rhino_oracle.flow_integration_report tools/rhino_oracle/fixtures/flow_integration.json /tmp/flow-integration-local.json tools/rhino_oracle/observations/flow_integration_rhino_20261016.json /tmp/flow-integration-report.json
+```
+
+The scalar rule uses the standard Cash–Karp tableau and the step controller
+also present in the Apache-2.0
+[usd-brep integrator](../third_party/usd-brep/source/SMLib/src/SmIntegrator.cpp).
+This Rust diagnostic path remains available without the optional native kernel.
+Rhino observations are comparison expectations; neither native parameters nor
+fitted coefficients construct its checkpoints.

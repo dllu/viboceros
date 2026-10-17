@@ -402,6 +402,11 @@ pub enum GeometryError {
     #[error("adaptive numerical integration did not converge at the requested tolerance")]
     NumericalIntegrationDidNotConverge,
 
+    #[error(
+        "arc-length integration requires a finite fractional tolerance strictly between zero and one"
+    )]
+    InvalidArcLengthIntegrationTolerance,
+
     #[error("numerical accumulation exceeded the supported term count")]
     NumericalAccumulationCapacityExceeded,
 

@@ -6,7 +6,7 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 def validate(op):
-    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','diagnostic_length_batches','diagnostic_length_batch_divisions','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
+    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','diagnostic_length_batches','diagnostic_length_batch_divisions','diagnostic_integrals','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid Flow id')
     for key in ('base','target'):
         if not isinstance(op[key],dict)or op[key].get('type')not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('Flow requires curve guides')
@@ -23,6 +23,7 @@ def validate(op):
         if type(op.get(k,False))is not bool:raise ValueError('invalid Flow capture flag')
     if 'diagnostic_length_samples'in op and(type(op['diagnostic_length_samples'])is not int or not 2<=op['diagnostic_length_samples']<=129 or not op.get('diagnostics')):raise ValueError('invalid Flow length diagnostic count')
     if 'diagnostic_length_batches'in op and(type(op['diagnostic_length_batches'])is not bool or not op.get('diagnostic_length_samples')):raise ValueError('invalid Flow batch length diagnostics')
+    if 'diagnostic_integrals'in op and(type(op['diagnostic_integrals'])is not bool or not op.get('diagnostic_length_samples')):raise ValueError('invalid Flow integral diagnostics')
     if 'diagnostic_length_batch_divisions'in op:
         counts=op['diagnostic_length_batch_divisions']
         if not op.get('diagnostic_length_batches')or not isinstance(counts,list)or not 1<=len(counts)<=8 or any(type(n)is not int or not 1<=n<=4096 for n in counts)or len(set(counts))!=len(counts):raise ValueError('invalid Flow batch division counts')
@@ -73,6 +74,19 @@ def run(op,host,iterations,tolerance):
                     batch=c.GetPerpendicularFrames(host['System'].Array[host['System'].Double](parameters))
                     if batch is None or len(batch)!=len(rows):raise ValueError('public length batch frames failed')
                     result['length_rows']=rows;result['length_batch']=[plane(p)for p in batch]
+                    if op.get('diagnostic_integrals'):
+                        integrals=[]
+                        for error in (1e-2,1e-4,1e-6,1e-8,1e-12):
+                            prefixes=[]
+                            for i in range(op['diagnostic_length_samples']):
+                                t=c.Domain.ParameterAt(float(i)/(op['diagnostic_length_samples']-1))
+                                length=0. if i==0 else c.GetLength(error,G.Interval(c.Domain.T0,t))
+                                if math.isnan(length)or math.isinf(length)or length<0:raise ValueError('public prefix length failed')
+                                prefixes.append(dict(t=t,length=length))
+                            length=c.GetLength(error)
+                            if math.isnan(length)or math.isinf(length)or length<=0:raise ValueError('public curve length failed')
+                            integrals.append(dict(fractional_tolerance=error,length=length,prefixes=prefixes))
+                        result['integrals']=integrals
                     classifications=[]
                     for error in (1e-6,.001,.01,.05,.1,.2,1.):
                         success,frame=c.TryGetPlane(error)

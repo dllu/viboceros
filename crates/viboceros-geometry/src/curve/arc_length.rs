@@ -6,7 +6,9 @@ use crate::{
     integration::integrate_adaptive, parameter::scaled_ratio, require_finite,
 };
 mod spans;
+mod trace;
 use spans::{LinearSpan, RawSpan, raw_spans};
+pub use trace::ArcLengthCheckpoint;
 
 #[cfg(test)]
 mod batch_tests;

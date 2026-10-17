@@ -64,7 +64,6 @@
   ],
   "diagnostic_scope": "The roundoff-before log records a rejected intermediate early-stop guard; its exact intermediate source was not archived. The original recursive integrator and its failures are retained separately.",
   "source_sha256": {
-    "crates/viboceros-geometry/src/integration.rs": "317de4530ea675dbe081d205922cba76ba18fd729d6407d85cdeabfdd259be85",
     "crates/viboceros-geometry/src/finite_sum.rs": "d56fa845aa7e65cfffb75453280012a7f8447bd1da1102cdc8cd15f497d061d0",
     "crates/viboceros-oracle/tests/divide_turnaround.rs": "33d5ee8349efbe7058c795434d67ea838a7ca4a1ba8f882a97041687088b7385",
     "tools/rhino_oracle/fixtures/divide_turnaround.json": "180ceb4dd40032c194bb0b0ece40297bd2a8f23b194c93353294c50765a90753",
@@ -84,5 +83,8 @@
     "docs/rational-line-prior-source/tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de",
     "docs/divide-preferences-prior-source/tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
     "docs/divide-preferences-prior-source/tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57"
+  },
+  "source_git_sha256": {
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:crates/viboceros-geometry/src/integration.rs": "317de4530ea675dbe081d205922cba76ba18fd729d6407d85cdeabfdd259be85"
   }
 }

@@ -113,7 +113,6 @@
     "preexisting_unverifiable_records_left_unchanged": 69
   },
   "sha256": {
-    "crates/viboceros-oracle/src/flow.rs": "27535e30bc5abe7bbe37b34c86dd0f531d0b86cc1b2c15d96a531cfd566d97c2",
     "crates/viboceros-oracle/src/flow_grips.rs": "eb695c689727ec859b64eed398d1fcc01d450f71fcbb92ed15af28710fb33c86",
     "crates/viboceros-oracle/src/lib.rs": "5d56b3e9ae92e5917c007ce82605f8adf8dc4c10621351e840e9ec802af431cd",
     "src/app.rs": "7910a41d2e562d5143cffea1ece087c97bbd332cef09fd456881ac3cd8dd2fd0",
@@ -141,6 +140,7 @@
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:tools/rhino_oracle/observations/flow_roadlike_diagnostics_viboceros_20261016.json": "dc85ff795fb9ae32afc0a8b209fab9dc62032fc859f1d75198a367a61ec07f06",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:README.md": "bedefe9d72498037868f59197e1c4c292e5ab16274d9c263850d5db33553cb49",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/commands/flow.md": "c9c124359fe3b62cd067641de60d51042e739baf4f5c2655afb325e9afec4369",
-    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/flow-development.md": "2c33907e56430531cdc3ba8a06c7d53a92c45023e47a25b05c2ca15cc573b3d7"
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/flow-development.md": "2c33907e56430531cdc3ba8a06c7d53a92c45023e47a25b05c2ca15cc573b3d7",
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:crates/viboceros-oracle/src/flow.rs": "27535e30bc5abe7bbe37b34c86dd0f531d0b86cc1b2c15d96a531cfd566d97c2"
   }
 }

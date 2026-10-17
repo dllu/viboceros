@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9",
+  "component": "Shared adaptive curve-length integration checkpoints and native forward-quadrature qualification",
+  "production_kernel_changed": true,
+  "production_flow_command_behavior_changed": false,
+  "complete_native_inverse_qualified": false,
+  "complete_flow_qualified": false,
+  "performance_qualified": false,
+  "native_values_used_as_kernel_inputs": false,
+  "implementation": "ArcLengthSampler exposes accepted Cash-Karp 5/4 integration checkpoints, cumulative model-space distance and embedded local error estimates. Reuse existing span decomposition, normalized source domains, precise span lengths and scale-safe products. Evaluate each span endpoint on its interior derivative side. Normalize speed by the precise span length before adaptive error control. Constant-speed and linear spans reuse existing lengths. Limit work to 65,536 attempted adaptive steps across all spans and 1,048,576 returned checkpoints. Reject invalid tolerances, nonfinite values and exhausted budgets without partial results. Checkpoints are numerical diagnostics and do not define an accurate inverse by linear interpolation.",
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "scheme": "VibocerosOracleIntegration20261016a",
+    "sdk_operations": 3,
+    "actual_commands": 0,
+    "method": "Owned private display and public RhinoCommon FlowSpaceMorph, GetLength at five fractional tolerances, prefix lengths, scalar normalized length queries and zero-absolute-tolerance batch inverses. Retain the complete raw response. No proprietary implementation inspected.",
+    "curves": [
+      "rational unit quarter circle",
+      "spatial cubic Bezier",
+      "exactly knot-refined spatial cubic"
+    ],
+    "roles": [
+      "base",
+      "target"
+    ],
+    "fractional_tolerances": [
+      0.01,
+      0.0001,
+      1e-06,
+      1e-08,
+      1e-12
+    ],
+    "batch_divisions": [
+      2,
+      16,
+      100,
+      840
+    ],
+    "forward_integrals": 30,
+    "matched_forward_integrals": 30,
+    "numeric_epsilon": "1e-10 * max(1, native_length)",
+    "max_relative_forward_length_error": 7.251702204511755e-15,
+    "prefixes_retained": true,
+    "prefix_parity_claimed": false,
+    "native_batch_lookup_parity_claimed": false
+  },
+  "coverage": [
+    "analytic polynomial and rational-circle integration",
+    "accepted and rejected adaptive steps and bounded failure",
+    "unit and shifted source domains",
+    "model scales 1e-200 through 1e200",
+    "adjacent representable source-domain endpoints",
+    "repeated knots with distinct one-sided speeds",
+    "unchanged precise scalar and batch inverses after diagnostic integration",
+    "30 independent forward-length expectations and retained inverse mismatches",
+    "existing Flow maps, drawn guides, Roadlike poles, owner states and atomic unsupported-mode rejections"
+  ],
+  "inverse_evidence": "Twelve exactly linear native inverse runs each coincide with an independently generated 1e-6 integration checkpoint to below 1.6e-12 in normalized distance. Fitted lines are diagnostic outputs only. Scalar and batch APIs retain different midpoint parameters, and batch results vary with density. Direct linear inversion of accepted coarse Rust checkpoints differs from native dense inversion by more than 0.003 in parameter for every target. Matching the forward integrator does not finish the native inverse policy.",
+  "checks": [
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve::arc_length::",
+      "exit_code": 0,
+      "log_sha256": "68bc3451e1f25ddfd78e85ce531881ed551da727ba9c32f39228026eb0df1c9d",
+      "passed_tests": 24
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib integration::cash_karp::",
+      "exit_code": 0,
+      "log_sha256": "e124dda47e560ed8a9fa3035885434509addec9194d90027769450fd1729e2e1",
+      "passed_tests": 3
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "9cc757f5f8f1ab75c3db65555ddcb7c20f8b60af8581d97f1a327d3366958f03",
+      "passed_tests": 8
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_integration tools.rhino_oracle.test_flow_roadlike tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_structure tools.rhino_oracle.test_arc_length_batch tools.rhino_oracle.test_structural_sdk",
+      "exit_code": 0,
+      "log_sha256": "a6d2bbe8bcd7449b40e80c2d96ccbe18d038cea96d7e76788dccc84985151a70",
+      "passed_tests": 39
+    },
+    {
+      "command": "cargo clippy -p viboceros-geometry -p viboceros-oracle -p viboceros --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "3a835c26d693a3e21ef3a523e7396abb81d533c2541b7f1bb37aebbfe40536e6"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m py_compile tools/rhino_oracle/flow_probe.py tools/rhino_oracle/flow_integration_report.py tools/rhino_oracle/test_flow_integration.py tools/rhino_oracle/test_flow_spatial.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_integration_report REQUEST LOCAL NATIVE OUTPUT",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "No new Flow mode is enabled by this numerical diagnostic API. Native curved-NURBS inverse lookup and automatic spatial frames remain unfinished and guarded.",
+    "Embedded step errors are estimates. Linear interpolation between checkpoints has no geometric accuracy guarantee.",
+    "No full workspace test-suite, native-smlib runtime, cross-platform runtime or performance parity is claimed."
+  ],
+  "historical_provenance": {
+    "preserved_records": 6,
+    "preserved_entries": 15,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "acc2e94ead6830862bacb51cf3139e1d3ad2b0dcda62c7fb7e2eb8dd6bbce79d",
+    "crates/viboceros-geometry/src/curve.rs": "468516c4323083067ca3965201632f559ff63f8cf3c759c34456a9f0d5998419",
+    "crates/viboceros-geometry/src/curve/arc_length.rs": "d47876913f53b68d7097df9881be01687469f688f196618031a31a67729c8b1c",
+    "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "86dd9195cb31657d2e0bef43f5728c5c20c27f27d5297927819523ee42b220aa",
+    "crates/viboceros-geometry/src/error.rs": "c1ef34b0f02cdf6a2c07dbb906161cd075f5208aad638a9549b4f135081842e5",
+    "crates/viboceros-geometry/src/integration.rs": "9640f8c158cdb93b33d6ef2bcb0b88161d08a8948fa04c9e65b08cba4f899e35",
+    "crates/viboceros-geometry/src/integration/cash_karp.rs": "48fc397c8ecbab908d5aaa2189931c476d8cd64eb1bca76fd85de201316c630f",
+    "crates/viboceros-geometry/src/lib.rs": "2c9979f507f1ad8c156867f762923e4f98730179ee11744d1912caef39f088f8",
+    "crates/viboceros-oracle/src/flow.rs": "b655f20d4c64a65462f5843a6857e7f739157872daca01735004f07f12e9abe1",
+    "docs/arc-length-batch-validation.json": "1f5d6fc100e8aba33568148fa45c55323d670ddf496532485dc026a3cfd9cdd0",
+    "docs/arc-length-cusp-provenance.json": "d25b8c591492d28f957d14c09cc4dc6c3f3af71712dbe698179d8fb4e9723112",
+    "docs/flow-command-validation.json": "eeb837781a25db0669c28d581ea82923b7c8483967f7cf3121e16fe6c3ca6ae4",
+    "docs/flow-development.md": "aefa98a9e490cf67553d2ef5e7911d350940a35acbdcb873c7e9928bfc288669",
+    "docs/flow-poles-validation.json": "8d2b54900919010f7aea8a620c7635b478188c30a10af3178ac1118d3bcf1f7c",
+    "docs/flow-roadlike-validation.json": "bddd3ba5199095a839e639a171d1468df357fdbc269a94c326ce7c3741b8d4bf",
+    "docs/flow-structure-validation.json": "de1766796d0c7631098f9c4bd9d2e2a258b3343aace1a1c71e3fe7252aab2846",
+    "docs/prepared-curve-length.md": "9a4360db8727cab46a9448d83c2c31da920997c85d495de1befb7f99a44bfe9a",
+    "tools/rhino_oracle/fixtures/flow_integration.json": "d6d965569f5374b8c8db5fd6cb10c6f40586b783a4e4c242fc9437ba7c95c131",
+    "tools/rhino_oracle/flow_integration_report.py": "a0851fb3f192bc2b4576fb53107e51f187e9e150f1e017377fe9304c456bcc35",
+    "tools/rhino_oracle/flow_probe.py": "26f3938afa915c81754c1e692dd5d5d464021d2a22a0c07ee03c6f2035691027",
+    "tools/rhino_oracle/observations/flow_integration_report_20261016.json": "7c1b3b526592f90d9f085591c3a3847aca8c8af20859d10795b72175315f5543",
+    "tools/rhino_oracle/observations/flow_integration_rhino_20261016.json": "62108bb9d3ec0d1f67d0b24224c3d7827ba79f452194fcfa6002d4e7cde2c8ef",
+    "tools/rhino_oracle/observations/flow_integration_viboceros_20261016.json": "7e7a15bbd4b13d3de0e45b890e606922080fbdc4992a1dace69b68e285a3f786",
+    "tools/rhino_oracle/test_flow_integration.py": "cb146e6e2fda5213fe73eb5d62270ddd8fd7716734c9be6e1321f0ee5e47ba56",
+    "tools/rhino_oracle/test_flow_spatial.py": "d8816a259e2dbb51fd921c083c7332b65a77d66a8842ce1aae74bf29ebade678"
+  }
+}

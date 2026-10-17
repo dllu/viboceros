@@ -34,6 +34,14 @@ class FlowSpatialTests(TestCase):
         del op['diagnostic_length_batch_divisions'];op['diagnostic_length_batches']=1
         with self.assertRaises(ValueError):validate(op)
 
+    def test_integral_queries_require_bounded_length_diagnostics(self):
+        q,_=self.inputs();op=copy.deepcopy(q['operations'][0]);op['diagnostic_integrals']=True;validate(op)
+        for value in (0,1,None,'yes'):
+            op['diagnostic_integrals']=value
+            with self.assertRaises(ValueError):validate(op)
+        op['diagnostic_integrals']=True;del op['diagnostic_length_samples']
+        with self.assertRaises(ValueError):validate(op)
+
     def test_precise_length_and_seed_aligned_public_frames_do_not_reproduce_flow(self):
         q,n=self.inputs();r=report(q,n)
         self.assertEqual(r,self.read('observations/flow_spatial_report_20261016.json'))

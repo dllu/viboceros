@@ -1,6 +1,8 @@
 use crate::{FiniteSum, GeometryError, Real, require_finite, vector::product_three};
 use std::{cmp::Ordering, collections::BinaryHeap};
 
+pub(crate) mod cash_karp;
+
 const MAX_ADAPTIVE_INTERVALS: usize = 65_536;
 
 // Positive abscissae and weights for the embedded Gauss 7 / Kronrod 15 rule.

@@ -150,13 +150,11 @@
     "preexisting_unverifiable_records_left_unchanged": 69
   },
   "sha256": {
-    "README.md": "ac2e7f8c4bc8c97628688f9016c3997ccf3522cc307933446c5d76c62304c45a",
     "crates/viboceros-command/src/flow.rs": "8bc5816dd6a58a1ae03c17d1018bc9247c9992ef4fa9e79154197a9205ab1efb",
     "crates/viboceros-command/src/flow/tests.rs": "5b6a2627e49c8b4da74e81ebc5fc43a4e47a49e697f23ab29dba5e141ccddf83",
     "crates/viboceros-command/src/lib.rs": "c7fd248cad63dc6582f4cb54c34ecfc08ab00dd7770e502cddac56466c60a666",
     "crates/viboceros-geometry/src/circle_curve.rs": "8f95987035ade21be75a5fc258800f5b670ca72b838a521b9770acafd100693e",
     "crates/viboceros-geometry/src/circular.rs": "dc2b9956b9eb90fd6466a37959a02061cc9bc36d17e6b8afca9c8a68c38dab36",
-    "crates/viboceros-geometry/src/curve.rs": "3996f40ffff56644281fa02b6e35e673e93d68cd6349ceb5a2943b9d9e82b345",
     "crates/viboceros-geometry/src/curve_evaluate.rs": "a8c6b3575df5a56b22da798736def93ba8ac9979a7733aa8f5291eb5347f37a1",
     "crates/viboceros-geometry/src/morph/flow.rs": "32dd141e0571610cf6a5acd04391c1fc1097f1abd19153ebc5fb65b3f1cbf394",
     "crates/viboceros-opennurbs/native/CMakeLists.txt": "e5ccc9ca0f1af545cec98a1ec343b7e9f8396346ec31e0cb1b58fecdb5ebbd71",
@@ -166,17 +164,12 @@
     "crates/viboceros-opennurbs/src/lib.rs": "5612e871fcd0c1b826191748094abc457dcc1ce42e3877536a879680f062dccd",
     "crates/viboceros-oracle/src/flow_line.rs": "266108e222a31c373d2baee77af3b9dcd858bd85ea4267ad1e13fedcceeafebe",
     "crates/viboceros-oracle/src/flow_roadlike.rs": "c4be80297eabac7ef6e30d0a285c19b48d304b4f8b7a940ab1d070406a375c7e",
-    "docs/arc-length-batch-validation.json": "59a554a2253de4bafde16f9d09c343b7a20a5fe41f0cde9b59776c24e543a427",
     "docs/commands/flow.md": "9fa3ab295a3c1bff36ceb878e64a42c436d1003439be126a15107f2c582c0b89",
     "docs/coplanar-mesh-qualification.json": "d58a927867dad99adf096b554982d1ef59d308241414cad4ad00757c5687dd42",
     "docs/cull-degenerate-mesh-faces-qualification.json": "294bd5769c989b37497e9bd962b53998f6d79d443ef8f7b207e8f7bc47fccbad",
-    "docs/flow-command-validation.json": "05d0e0c247a80ecfe3fd8dc94acf9a6bea70773f62ca2c2f1b14c9062d9c726d",
-    "docs/flow-development.md": "c15d106a486bb10d3a06349859e956bd717e9a078e3ea7a6d54e8b77fcf736a7",
     "docs/flow-grips-validation.json": "25dbde1a9c0f5d3967db28996e2d0307400c01a2fbaee9f2bd87dbc26d928b70",
     "docs/flow-line-validation.json": "99b1970171a2f46f66d55b67fdc36980d3034c0edfea7c09a03a3972dfafc581",
-    "docs/flow-roadlike-validation.json": "0bfe23ed2af8ce086e03530ac30d44372b19af7f3a11dd9d9fa9d87aa05392dd",
     "docs/flow-spatial-validation.json": "0d31714f9a392fd7051afda076b54dbd6901b604592c063dfb3e29ab8b9b81c0",
-    "docs/flow-structure-validation.json": "650fadf1f6fee219841dce733a3246e8c7ed0387cfb160acaca8f79dc7197edb",
     "docs/geometry-check-qualification.json": "bca0e86f44f9a630087de83c1aca4a6efb21cc9bc74cc2e94abc364bb3e78173",
     "docs/orient-on-curve-edge-validation.json": "a95958578b622162ca3d63a1e44f6f7f94b607742e56bbf649e2c400dacf2b7a",
     "docs/orient-on-curve-validation.json": "e2c67c9de4e535ea1344689752e5afb194dadb0d94748da25f2f9faba14ed6c0",
@@ -196,5 +189,14 @@
     "tools/rhino_oracle/observations/flow_roadlike_poles_rhino_20261016.json": "198ebb0025b41b0516b746afca87dd0d65ad8569d0073b00733ecf8a9da43232",
     "tools/rhino_oracle/observations/flow_roadlike_poles_viboceros_20261016.json": "43d24d9991196a1b3c637e15de7422b8d0232ccdacee7f58d2a629a40a97cda2",
     "tools/rhino_oracle/test_flow_roadlike.py": "a405d29277ca15c43c18b2d00b8d16489b2fbd5939e940452ea81f3e5c412607"
+  },
+  "git_sha256": {
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:README.md": "ac2e7f8c4bc8c97628688f9016c3997ccf3522cc307933446c5d76c62304c45a",
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:crates/viboceros-geometry/src/curve.rs": "3996f40ffff56644281fa02b6e35e673e93d68cd6349ceb5a2943b9d9e82b345",
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/arc-length-batch-validation.json": "59a554a2253de4bafde16f9d09c343b7a20a5fe41f0cde9b59776c24e543a427",
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-command-validation.json": "05d0e0c247a80ecfe3fd8dc94acf9a6bea70773f62ca2c2f1b14c9062d9c726d",
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-development.md": "c15d106a486bb10d3a06349859e956bd717e9a078e3ea7a6d54e8b77fcf736a7",
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-roadlike-validation.json": "0bfe23ed2af8ce086e03530ac30d44372b19af7f3a11dd9d9fa9d87aa05392dd",
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:docs/flow-structure-validation.json": "650fadf1f6fee219841dce733a3246e8c7ed0387cfb160acaca8f79dc7197edb"
   }
 }

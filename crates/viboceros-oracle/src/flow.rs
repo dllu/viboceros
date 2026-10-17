@@ -64,6 +64,8 @@ pub struct Fixture {
     pub command: bool,
     #[serde(default)]
     pub group: bool,
+    #[serde(default)]
+    pub diagnostic_integrals: bool,
 }
 impl Fixture {
     pub fn guides(&self, tolerance: Tolerance) -> Result<[Geometry; 2], ProbeError> {
@@ -89,6 +91,26 @@ pub(super) fn run(
             .curve_ref()
             .ok_or(ProbeError::FixtureInvariant("Flow target must be a curve"))?
             .to_owned();
+        let integration_traces = if f.diagnostic_integrals {
+            let mut roles = serde_json::Map::new();
+            for (role, curve) in [("base", &a), ("target", &b)] {
+                let sampler =
+                    viboceros_geometry::ArcLengthSampler::try_new(curve.as_ref(), tolerance)?;
+                let mut traces = Vec::new();
+                for fractional in [1e-2, 1e-4, 1e-6, 1e-8, 1e-12] {
+                    let trace = sampler.integration_checkpoints(fractional)?;
+                    traces.push(json!({
+                        "fractional_tolerance":fractional,
+                        "length":trace.last().unwrap().distance(),
+                        "checkpoints":trace.iter().map(|n| json!({"t":n.parameter(),"length":n.distance(),"estimated_step_error":n.estimated_step_error()})).collect::<Vec<_>>()
+                    }));
+                }
+                roles.insert(role.into(), json!(traces));
+            }
+            Some(roles)
+        } else {
+            None
+        };
         let morph = CurveFlowPointMorph::try_new(a, b, f.options.geometry(), tolerance)?;
         let points = f
             .points
@@ -152,15 +174,61 @@ pub(super) fn run(
         } else {
             Value::Null
         };
-        Ok(
-            json!({"sdk_points":points,"base_length":morph.base_length(),"target_length":morph.target_length(),"command":command}),
-        )
+        let mut result = json!({"sdk_points":points,"base_length":morph.base_length(),"target_length":morph.target_length(),"command":command});
+        if let Some(traces) = integration_traces {
+            result["integration_traces"] = Value::Object(traces);
+        }
+        Ok(result)
     })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn integration_traces_match_thirty_public_native_length_queries() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/flow_integration.json"
+        ))
+        .unwrap();
+        let native: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/flow_integration_rhino_20261016.json"
+        ))
+        .unwrap();
+        let actual = run_request(&request).unwrap();
+        assert_eq!(actual.results.len(), 3);
+        let mut compared = 0;
+        for (a, n) in actual
+            .results
+            .iter()
+            .zip(native["results"].as_array().unwrap())
+        {
+            assert_eq!(a.id, n["id"]);
+            for role in ["base", "target"] {
+                let traces = a.value["integration_traces"][role].as_array().unwrap();
+                let integrals = n["value"]["diagnostics"][role]["integrals"]
+                    .as_array()
+                    .unwrap();
+                assert_eq!(traces.len(), 5);
+                assert_eq!(integrals.len(), 5);
+                for (trace, integral) in traces.iter().zip(integrals) {
+                    assert_eq!(
+                        trace["fractional_tolerance"],
+                        integral["fractional_tolerance"]
+                    );
+                    let expected = integral["length"].as_f64().unwrap();
+                    let length = trace["length"].as_f64().unwrap();
+                    assert!(
+                        (length - expected).abs() <= 1e-11 * expected.max(1.),
+                        "{} {role}: {length} != {expected}",
+                        a.id
+                    );
+                    compared += 1;
+                }
+            }
+        }
+        assert_eq!(compared, 30);
+    }
     fn near(a: &Value, b: &Value, label: &str) {
         let a = a.as_array().unwrap();
         let b = b.as_array().unwrap();
