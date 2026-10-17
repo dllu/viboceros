@@ -1,4 +1,6 @@
 mod curve_fit;
+mod surface_flow;
+pub use surface_flow::{SurfaceFlowFrame, SurfaceFlowOptions, SurfaceFlowPointMorph};
 mod flow;
 pub use flow::{
     CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph, CurveFlowTargetSurface,

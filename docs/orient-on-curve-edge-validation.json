@@ -228,7 +228,6 @@
     "src/app/subcurve_preview.rs": "6480e483e8ad97f4cb5e512d5566b8a407e907ee9cd8a578a805c89b1d1c2d50",
     "src/app/tests/orient_curve_edge.rs": "fb6050752924f8804e504a21f5d8ec4a319db4d2d6f7d2b8ee474477db9e50ce",
     "src/viewport/edge_picking/tests.rs": "8beb166c815a80e2f16c2e4fbed227debcaafa684a7c8c4042af3747aff5bc5e",
-    "tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6",
     "tools/rhino_oracle/fixtures/orient_on_curve_edge.json": "3cc48f9c6dc944a6d990a4f30596a1951c4b677d9950a4522b9e84d50ebeaed6",
     "tools/rhino_oracle/fixtures/orient_on_curve_edge_click_discovery.json": "756935a70540f2e97231dabffae5f1db3388b368319974d73d5f4523ef80bf2f",
     "tools/rhino_oracle/fixtures/orient_on_curve_edge_delegate_array_discovery.json": "756935a70540f2e97231dabffae5f1db3388b368319974d73d5f4523ef80bf2f",
@@ -271,6 +270,7 @@
     "aa789b472f3bd269656c0d5d42dcb9c00e4dc2de:docs/selected-coplanar-faces-qualification.json": "f1c46ffc38fc4bdb18b2a611640be8874e14f7d676879fe7c252e9ee8d92cfa8",
     "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:docs/curvature-graph-validation.json": "58480128c9a839aa60396ec02e7dba399d7178f06d1bb1a8da7afc3feace4ff0",
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/app/component_selection.rs": "b65d49b7d37136dcfe1ccae6803bfcfc8e5d541ab2a0c497f8e2eaab1dc8ae37",
-    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/coplanar-mesh-qualification.json": "66812d8d4582bca11e0cf916e1ccee7aed283ac7846aae87db19c1492ba2bb4f"
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/coplanar-mesh-qualification.json": "66812d8d4582bca11e0cf916e1ccee7aed283ac7846aae87db19c1492ba2bb4f",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6"
   }
 }

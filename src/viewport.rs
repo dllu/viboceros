@@ -41,6 +41,8 @@ pub(crate) mod bend_preview;
 pub(crate) mod orient_surface_preview;
 pub(crate) use orient_surface_preview::{OrientSurfacePreview, OrientSurfacePreviewCache};
 mod flow_preview;
+mod surface_flow_preview;
+pub(crate) use surface_flow_preview::{SurfaceFlowPreview, SurfaceFlowPreviewCache};
 pub(crate) mod maelstrom_preview;
 mod morph_preview;
 pub(crate) use flow_preview::{FlowLocalPreview, FlowPreview, FlowPreviewCache};
@@ -339,6 +341,7 @@ pub struct ViewportInput<'a> {
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
+    pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
     pub flow_preview: Option<FlowPreview<'a>>,
     pub flow_local_preview: Option<FlowLocalPreview>,
     pub twist_preview: Option<TwistPreview<'a>>,
@@ -423,6 +426,7 @@ impl Default for ViewportInput<'_> {
             mirror_preview: None,
             translation_preview: None,
             affine_preview: None,
+            surface_flow_preview: None,
             flow_preview: None,
             flow_local_preview: None,
             twist_preview: None,
@@ -1168,6 +1172,9 @@ impl Viewport {
                         .0
                 })
             });
+        let surface_flow_image = input
+            .surface_flow_preview
+            .and_then(|p| p.resolve(document, &self.display_cache));
         let flow_image = input
             .flow_preview
             .and_then(|p| p.resolve(document, &self.display_cache));
@@ -1189,9 +1196,14 @@ impl Viewport {
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
-                flow_image.as_ref().map(|p| {
-                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
-                })
+                surface_flow_image
+                    .as_ref()
+                    .or(flow_image.as_ref())
+                    .map(|p| {
+                        object_preview::ObjectPreview::Deformed(
+                            p.objects_for_mode(self.display_mode),
+                        )
+                    })
             })
             .or_else(|| {
                 previous_twist
@@ -1773,9 +1785,14 @@ impl Viewport {
             .or(affine_preview)
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
-                flow_image.as_ref().map(|p| {
-                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
-                })
+                surface_flow_image
+                    .as_ref()
+                    .or(flow_image.as_ref())
+                    .map(|p| {
+                        object_preview::ObjectPreview::Deformed(
+                            p.objects_for_mode(self.display_mode),
+                        )
+                    })
             })
             .or_else(|| {
                 twist_preview
@@ -1914,6 +1931,12 @@ impl Viewport {
                 .as_ref()
                 .zip(input.orient_surface_preview)
                 .map(|(image, p)| (&image.grips, p.placement.options.copy))
+                .or_else(|| {
+                    surface_flow_image
+                        .as_ref()
+                        .zip(input.surface_flow_preview)
+                        .map(|(image, p)| (&image.grips, p.options.copy))
+                })
                 .or_else(|| {
                     flow_image
                         .as_ref()

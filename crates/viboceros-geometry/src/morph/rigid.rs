@@ -7,6 +7,13 @@ pub(crate) fn forward_transform(
     morph: &(impl PointMorph + ?Sized),
     center: Point3,
 ) -> Result<AffineTransform3, GeometryError> {
+    fn direction_or_zero(vector: Vector3) -> Result<Vector3, GeometryError> {
+        if vector.to_array() == [0.; 3] {
+            Ok(vector)
+        } else {
+            Ok(vector.normalized_nonzero()?.as_vector())
+        }
+    }
     let scale = center
         .to_array()
         .into_iter()
@@ -18,10 +25,9 @@ pub(crate) fn forward_transform(
     for (i, direction) in directions.iter_mut().enumerate() {
         let mut offset = [0.; 3];
         offset[i] = step;
-        *direction = mapped
-            .vector_to(morph.morph_point(center.translated(Vector3::try_from(offset)?)?)?)?
-            .normalized_nonzero()?
-            .as_vector();
+        *direction = direction_or_zero(
+            mapped.vector_to(morph.morph_point(center.translated(Vector3::try_from(offset)?)?)?)?,
+        )?;
     }
     let [x, y, z] = directions;
     let sum = |a: Vector3, b: Vector3| {
@@ -39,8 +45,8 @@ pub(crate) fn forward_transform(
     let (x, y) = if orthogonal {
         (x, y)
     } else {
-        let normal_x = y.cross(z)?.normalized_nonzero()?.as_vector();
-        let normal_y = z.cross(x)?.normalized_nonzero()?.as_vector();
+        let normal_x = direction_or_zero(y.cross(z)?)?;
+        let normal_y = direction_or_zero(z.cross(x)?)?;
         // A reflected derivative can cancel one averaged direction exactly.
         // Retain that forward direction while averaging the other axis.
         let averaged_x = sum(x, normal_x)?;

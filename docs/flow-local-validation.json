@@ -240,12 +240,6 @@
   "sha256": {
     "crates/viboceros-geometry/src/error.rs": "cbc51590502845de644a0b43734f710dfd488d46f55a5e8ab02538265af752ea",
     "crates/viboceros-geometry/src/morph/flow/local.rs": "ca2e77f662067dede79514c5e33cf1a52c4ff6caafacda32a7e309f53cde6f2b",
-    "crates/viboceros-geometry/src/morph/rigid.rs": "c959c467f0cb67c673d306c3f273cc7466586d25d65182880a30e04c8d2dac1c",
-    "docs/flow-grips-validation.json": "a3fc84cb815f01cb9d0766506af489b9954890d99911d2bc62cb2d2635598486",
-    "docs/flow-integration-validation.json": "026917313f3a02291db1968a0c29c8065fbc244b3e21e9fd79993a6f4430ca9a",
-    "docs/flow-poles-validation.json": "d30c630d54bbe7e0bcc874cac783a52b0f2a839cf3782faaa6dbd031981a9508",
-    "docs/flow-roadlike-validation.json": "6a608523aac6f4959272d179d9906f7b6b0b04acba912c9423beca5364f26186",
-    "src/viewport.rs": "e1dca52c2b926cac2a5285460a9660c9305b808338101df981c94e5167207ba3",
     "src/viewport/maelstrom_preview.rs": "a1b6c622edc6c4ce9c196d7ae52aec4d68f6e26074cffe9f7a06ff853e016f57",
     "tools/rhino_oracle/fixtures/flow_local.json": "22a8fa429705725eee6e0d0b22ad6d24365b880eebd3b857699f8706cfab8b39",
     "tools/rhino_oracle/fixtures/flow_local_edges.json": "3f9a8f560cf93292c848a37c1e48e28fd71f4267f52fd56bb974f1d6acec42bf",
@@ -281,6 +275,12 @@
     "76ae3d7a661bd54636a2b05e7e11a716523d1210:docs/flow-auto-direction-validation.json": "12b8178111e511f7a6214130fed8be5fe2cd96de7d00fc2837bdd27c10ef4950",
     "76ae3d7a661bd54636a2b05e7e11a716523d1210:docs/flow-nurbs-validation.json": "7001a629ae8bdbce7fec0dfb20d59da1c045dfa68dafc20e2752a236a4370fd5",
     "76ae3d7a661bd54636a2b05e7e11a716523d1210:src/viewport/flow_preview.rs": "3091c9adc525c1ae181d6f2a9bbc0e0c453103c1307ca25459853ac10f636b37",
-    "76ae3d7a661bd54636a2b05e7e11a716523d1210:src/viewport/morph_preview.rs": "070ec691b00aa8aa5af563f62a1f204475ced017f3ee5415c17be723a953592e"
+    "76ae3d7a661bd54636a2b05e7e11a716523d1210:src/viewport/morph_preview.rs": "070ec691b00aa8aa5af563f62a1f204475ced017f3ee5415c17be723a953592e",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:crates/viboceros-geometry/src/morph/rigid.rs": "c959c467f0cb67c673d306c3f273cc7466586d25d65182880a30e04c8d2dac1c",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/flow-grips-validation.json": "a3fc84cb815f01cb9d0766506af489b9954890d99911d2bc62cb2d2635598486",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/viewport.rs": "e1dca52c2b926cac2a5285460a9660c9305b808338101df981c94e5167207ba3",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/flow-integration-validation.json": "026917313f3a02291db1968a0c29c8065fbc244b3e21e9fd79993a6f4430ca9a",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/flow-roadlike-validation.json": "6a608523aac6f4959272d179d9906f7b6b0b04acba912c9423beca5364f26186",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/flow-poles-validation.json": "d30c630d54bbe7e0bcc874cac783a52b0f2a839cf3782faaa6dbd031981a9508"
   }
 }

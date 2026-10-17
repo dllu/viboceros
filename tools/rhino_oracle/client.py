@@ -464,6 +464,13 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='surface_flow' and op.get('mouse') for op in request.get('operations', [])):
+            if self.settings_scheme is None:
+                raise OracleProtocolError('surface Flow mouse capture requires a private settings scheme')
+            if any(op.get('op') != 'surface_flow' for op in request.get('operations', [])):
+                raise OracleProtocolError('surface Flow mouse capture requires a dedicated request')
+            from .group_picking import IdlePicker
+            interaction = IdlePicker()
         if any(op.get('op') == 'surface_retrim_profile' for op in request.get('operations', [])):
             from .surface_retrim_profile_probe import validate_request
             if self.settings_scheme is None:

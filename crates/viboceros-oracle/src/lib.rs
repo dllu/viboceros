@@ -150,6 +150,8 @@ mod curvature_graph;
 mod flow;
 mod flow_grips;
 mod flow_line;
+mod surface_flow;
+pub use surface_flow::Fixture as SurfaceFlowFixture;
 mod flow_roadlike;
 pub use arc_length_batch::Fixture as ArcLengthBatchFixture;
 pub use flow_grips::Fixture as FlowGripsFixture;
@@ -1725,6 +1727,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: FlowRoadlikeFixture,
     },
+    SurfaceFlow {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceFlowFixture,
+    },
     FlowLine {
         id: String,
         #[serde(flatten)]
@@ -2790,6 +2797,7 @@ impl Operation {
             | Self::OrientSurface { id, .. }
             | Self::OrientSurfaceGrips { id, .. }
             | Self::FlowGrips { id, .. }
+            | Self::SurfaceFlow { id, .. }
             | Self::FlowLine { id, .. }
             | Self::FlowRoadlike { id, .. }
             | Self::ArcLengthBatch { id, .. }
@@ -6029,6 +6037,9 @@ fn execute(
         }
         Operation::FlowRoadlike { fixture, .. } => {
             flow_roadlike::run(fixture, iterations, tolerance)?
+        }
+        Operation::SurfaceFlow { fixture, .. } => {
+            surface_flow::run(fixture, iterations, tolerance)?
         }
         Operation::FlowLine { fixture, .. } => flow_line::run(fixture, iterations, tolerance)?,
         Operation::FlowGrips { fixture, .. } => flow_grips::run(fixture, iterations, tolerance)?,

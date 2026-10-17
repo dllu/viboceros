@@ -1,0 +1,499 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "timezone": "UTC",
+  "base_repository_revision": "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21",
+  "component": "FlowAlongSrf regular surface mapping, interactive references, and shared staged edits",
+  "production_kernel_changed": true,
+  "production_command_behavior_changed": true,
+  "fixtures_qualified": true,
+  "full_command_qualified": false,
+  "performance_qualified": false,
+  "native_values_used_as_production_morph_inputs": false,
+  "implementation": [
+    "Find bounded base UV with the existing closest-point kernel. Decompose residuals through a skew-aware differential basis, map normalized foot coordinates, then continue exterior residuals with native target parameter derivatives. Retain native parameter-domain scaling and normal heights.",
+    "Prepare signed and exchanged parameter frames for corner/edge picks. Keep SDK corner-only orientation distinct from actual command edge orientation. Explicit command normal directions are unitized; the public point API retains vector magnitude.",
+    "Capture selectable immutable surface/face references. AutoAdjust uses the shared B-rep shrink interval policy and delegates exact restriction to the existing surface_segments backend (usd-brep when native-smlib is enabled). Native UV normals ignore B-rep face reversal.",
+    "Share curve/surface fitting, rigid pose generation, grip-owner precedence, group bounds and atomic document edit paths with Flow. Preserve zero cofactor directions when averaging a tangent-constrained rigid frame. Retain complete owner/grip/group/selection state through Undo and Redo.",
+    "Register FlowAlongSrf and FlowAlongSurface. Support script references, explicit face indices, frame overrides, Plane input, normal constraints, remembered options, copy preferences, source-first selection, grip selection, and one history edit.",
+    "Use shared immutable preview cages/cache for objects and grips. Interactive surface/face picks, two-corner or three-point temporary planes, target-view CPlane normal defaults, reference invalidation, cancellation and commit leave geometry staging in the command layer."
+  ],
+  "native_capture": {
+    "captures": [
+      {
+        "fixture": "surface_flow",
+        "cases": 27,
+        "commands": 0,
+        "engine_version": "8.32.26160.13001"
+      },
+      {
+        "fixture": "surface_flow_command",
+        "cases": 68,
+        "commands": 68,
+        "engine_version": "8.32.26160.13001"
+      },
+      {
+        "fixture": "surface_flow_picks",
+        "cases": 16,
+        "commands": 16,
+        "engine_version": "8.32.26160.13001"
+      },
+      {
+        "fixture": "surface_flow_faces",
+        "cases": 14,
+        "commands": 14,
+        "engine_version": "8.32.26160.13001"
+      },
+      {
+        "fixture": "surface_flow_groups",
+        "cases": 8,
+        "commands": 8,
+        "engine_version": "8.32.26160.13001"
+      }
+    ],
+    "actual_commands": 106,
+    "sdk_only_operations": 27,
+    "sdk_operations_including_command_recipes": 133,
+    "authored_point_queries": 2421,
+    "method": "Public RhinoCommon SporphSpaceMorph point maps and complete actual FlowAlongSrf commands in separately owned private displays. Authored recipes supply all geometry; native UVs, frames and outputs remain expectations. No proprietary implementation was inspected or decompiled.",
+    "all_commands_completed_with_success": true,
+    "all_undo_redo_returned_success": true,
+    "all_macros_without_cancel_unknown_or_invalid_tokens": true,
+    "document_epsilon": 1e-06,
+    "committed_state": "Macro return; complete EndCommand snapshots are also retained. Temporary reference selection at EndCommand is released when the native getter returns. Output states agree at both boundaries."
+  },
+  "comparisons": {
+    "point_maps_and_preserved_structure_epsilon": 1e-06,
+    "refit_curve_epsilon": 1.1e-05,
+    "refit_surface_epsilon": 5e-06,
+    "refit_exceptions": [
+      "owner-nurbs-0-0000",
+      "owner-nurbs-0-0100",
+      "owner-surface-0-0000",
+      "owner-surface-0-0100"
+    ],
+    "refit_method": "Complete native and local NURBS definitions are retained in observations/computed tests. Only the four nonlinear refit witnesses permit different nets; compare 1025 curve and 65-by-65 surface samples at matching parameters. All owner metadata and all other structures use the strict comparison.",
+    "observed_refit_curve_max_sampled_distance": 1.0094681318704056e-05,
+    "observed_refit_surface_max_sampled_distance": 4.227514921310545e-06,
+    "all_133_point_map_recipes_and_106_command_workflows_pass": true
+  },
+  "coverage": {
+    "recipes": 133,
+    "actual_commands": 106,
+    "selected_grip_workflows": 36,
+    "rigid_workflows": 38,
+    "plane_workflows": 3,
+    "real_mouse_orientation_workflows": 16,
+    "trimmed_and_reversed_face_workflows": 14,
+    "rigid_group_and_grip_context_workflows": 8,
+    "source_families": [
+      "point_cloud",
+      "nurbs",
+      "surface",
+      "mesh"
+    ],
+    "states": [
+      "before",
+      "EndCommand",
+      "macro return",
+      "real Undo",
+      "real Redo"
+    ],
+    "app": "Four application tests cover picks, alias, preview/cancellation, one Undo/Redo, temporary plane input, explicit orientation, invalidation, command-first sources, and target-view normal defaults. Shared viewport test covers control/edit/mesh grips, rigid/group poses, cache sharing and unchanged documents."
+  },
+  "limitations": [
+    "Regular reference surfaces are qualified for the retained fixtures. A singular derivative can reject the operation before editing the document; poles and every closed-surface seam convention are not qualified.",
+    "Plane supports corner and three-point input. Other Rectangle modes and alternative GroupFrameOrigin settings are not implemented.",
+    "Nonlinear native refits are approximate and can choose different knots/control nets. Four observed refit witnesses exceed the document epsilon at corresponding parameters; their larger explicit comparison bounds do not apply to point maps, preserved structures, grips, or metadata.",
+    "Live Rhino dependency history, full workspace/cross-platform runtime, and native performance parity are not claimed."
+  ],
+  "public_references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/flowalongsrf.htm",
+    "https://developer.rhino3d.com/api/RhinoCommon/html/T_Rhino_Geometry_Morphs_SporphSpaceMorph.htm"
+  ],
+  "historical_provenance": {
+    "preserved_entries": 25,
+    "records": 9,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "checks": [
+    {
+      "name": "geometry-surface",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "morph::surface_flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 26.268091464182362,
+      "log_sha256": "e5622989380e7bad9ddd62465253980ee1dbf675c10f44b4408504c0bb3c509e",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2363 filtered out; finished in 0.06s"
+      ]
+    },
+    {
+      "name": "geometry-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "morph::flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.17336231609806418,
+      "log_sha256": "8f32ed8284f3afdb4922437d7388f5a02e376053f4b217854e993d76c49516b2",
+      "test_results": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 2357 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "geometry-bend",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "bend::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.21699692797847092,
+      "log_sha256": "7f1b954c6540cd7c2500fe61309b9f0ef16c2c5fc20321c0e0cb2a5184308cdb",
+      "test_results": [
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 2358 filtered out; finished in 0.09s"
+      ]
+    },
+    {
+      "name": "geometry-twist",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "twist::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1575926321092993,
+      "log_sha256": "878ef7bba6c6180193358913dcd7d28ff73407c7fd59337fdf1e1eedbf6b8675",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2363 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "geometry-shrink",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "brep::shrink::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1620408978778869,
+      "log_sha256": "a2f618f37d194c3fc03110b07f55247d982e227adb486cbd6e8f88e50f371293",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2363 filtered out; finished in 0.03s"
+      ]
+    },
+    {
+      "name": "command-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "flow::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.8106281070504338,
+      "log_sha256": "feb23a7107ca67d1fd41c01108f00011f52af52b5235f4e2fa78d9727e81ddd9",
+      "test_results": [
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 1433 filtered out; finished in 0.58s"
+      ]
+    },
+    {
+      "name": "oracle-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--lib",
+        "flow",
+        "--",
+        "--skip",
+        "workflow"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 114.71690079011023,
+      "log_sha256": "89913202a11897ab873d1ffb905271a5c2d137466e843d41bf116c29fe1e21da",
+      "test_results": [
+        "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 522 filtered out; finished in 114.50s"
+      ]
+    },
+    {
+      "name": "app-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.5733014328870922,
+      "log_sha256": "aa0d370296a218d50ed02308adf0ce35c1c9c2312823321d10dcc0e75f06e6ad",
+      "test_results": [
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1296 filtered out; finished in 2.18s"
+      ]
+    },
+    {
+      "name": "app-surface",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::surface_flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.27069293591193855,
+      "log_sha256": "c4049ca5b0bce7414d5e857e2f854e589ecec637e59dabcf7ec87dab505b3a0e",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1307 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "viewport-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "flow_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.3262503321748227,
+      "log_sha256": "4d8633e31a7d96541b6e03d17e6ccffddd39633b6ab72bc9f18cc13384fd6071",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1307 filtered out; finished in 0.04s"
+      ]
+    },
+    {
+      "name": "viewport-bend",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::bend_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.9466475120279938,
+      "log_sha256": "e274613514d853878904808822d9aaebc7eff35028a4f7809a002d17cbe2c66c",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1307 filtered out; finished in 0.71s"
+      ]
+    },
+    {
+      "name": "viewport-twist",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::twist_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.8718640690203756,
+      "log_sha256": "001b480bddebbf7fb7f50aa9f614e7f9285978c97cb0c2752d0eba333733fc65",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 1306 filtered out; finished in 0.59s"
+      ]
+    },
+    {
+      "name": "viewport-taper",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::taper_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.8279252760112286,
+      "log_sha256": "0cf23b0c7866fb18c2898c143af52eaff4858bb75b3207e1c0052f6d52213817",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1308 filtered out; finished in 0.53s"
+      ]
+    },
+    {
+      "name": "viewport-maelstrom",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::maelstrom_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.946145606925711,
+      "log_sha256": "d0dea1d21f4f5a6555152434bce7cb963716f32114661a2d64cf4f3e3b96aead",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1307 filtered out; finished in 0.66s"
+      ]
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_surface_flow",
+        "tools.rhino_oracle.test_structural_sdk",
+        "tools.rhino_oracle.test_flow_capture",
+        "tools.rhino_oracle.test_flow_line",
+        "tools.rhino_oracle.test_flow_grips",
+        "tools.rhino_oracle.test_flow_structure",
+        "tools.rhino_oracle.test_flow_spatial",
+        "tools.rhino_oracle.test_flow_target_surface",
+        "tools.rhino_oracle.test_flow_roadlike",
+        "tools.rhino_oracle.test_flow_nurbs",
+        "tools.rhino_oracle.test_flow_local",
+        "tools.rhino_oracle.test_flow_auto_direction",
+        "tools.rhino_oracle.test_arc_length_batch",
+        "tools.rhino_oracle.test_flow_integration"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.248059599893168,
+      "log_sha256": "08aa68a44f9298b8e53e4a092222162bfcfc1ed9fbc6d4cb178d2bc8116b1433",
+      "test_results": [
+        "Ran 61 tests in 4.903s"
+      ]
+    },
+    {
+      "name": "native-smlib-faces",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "surface_flow_trimmed_and_reversed_references"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 87.14359869295731,
+      "log_sha256": "f9d5a2b26265f3ef7dd311a47fae20a041b233b22fb4c3896727956da8646ebf",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 559 filtered out; finished in 0.32s"
+      ]
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 17.470953156938776,
+      "log_sha256": "4dbd002559b11551813a162e96b1219d99c9728b18f57f4fdfb333587c799afe",
+      "test_results": []
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.736250514863059,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    }
+  ],
+  "sha256": {
+    "README.md": "ffa576879326af9a706f3b96a38a8ebd662384eb585f7ff92ae2bd886c6a9d1a",
+    "crates/viboceros-command/src/flow.rs": "460561828409c88784f7600f701ab781dd4bf7c7b806501ac391a1f47ee52185",
+    "crates/viboceros-command/src/lib.rs": "637c278d6183d0268ae7934b2d2030a5112e32fccabd21c1003cdaaf09084b14",
+    "crates/viboceros-command/src/morph_edit.rs": "53abe7d971a3c19b1e8ee2a7062822f79caad2356f004f95d42dfa381fbd4a7f",
+    "crates/viboceros-command/src/surface_flow.rs": "181c3173fa4262e00528379cd4608d5eef14361d8fb00607b2222d94d80ee367",
+    "crates/viboceros-geometry/src/brep/shrink.rs": "fdbba501cf03cf9fba82324f8be54cf6c798b377f91439a1c2ca3f7d1e4cdd03",
+    "crates/viboceros-geometry/src/lib.rs": "746280e1272364022098da8d0c568522bc750db546c4ddda96f34b9768f3c452",
+    "crates/viboceros-geometry/src/morph.rs": "83af5748a6b4846816607bbbee55b32851b4dbb9851c078801931cd10e97cd3e",
+    "crates/viboceros-geometry/src/morph/rigid.rs": "f991aee484cd6a5fb1c2e61d27b6b73fd4df9c7f8c394aec3fad40796cf7edfe",
+    "crates/viboceros-geometry/src/morph/surface_flow.rs": "0827783711a3fd18673a319af10c4211d2b920a52e5450430108d53ab6356ab4",
+    "crates/viboceros-oracle/src/lib.rs": "444f8165be05bb59b24d98762d3127095aba0d9a6d0b2dfc004930b2503ea1f9",
+    "crates/viboceros-oracle/src/surface_flow.rs": "9d8b8d91ef0ca0fb07e0cafd79ff8afd370768fda44d06bae5599b2719efeeae",
+    "docs/commands/flow-along-surface.md": "3ba19575dc418c91fc80fd0291e46e8f53381114a5d368d173d2136b13586622",
+    "docs/flow-grips-validation.json": "531304131e60328841a95a34bb543e1cca3c2ca2d87ff82efa4f7e14d70fc1c3",
+    "docs/flow-integration-validation.json": "8e359e17c54d0bfd1aa082de3286e7ba5e32fe83f53113b63016f3ba804bb4d3",
+    "docs/flow-local-validation.json": "9611d98df2dbc54bd3a6bbe99f00278f85ca220986d3a1c96db0ce769229af6a",
+    "docs/flow-poles-validation.json": "555ba358a3600ecf86c9c43ee1d2637861da052f57d4496089228dccb1e40d31",
+    "docs/flow-roadlike-validation.json": "46e1466903ad6a24a8d721f5ba4e22ce41140dc740523e288c93fdd9a8d604d7",
+    "docs/flow-spatial-validation.json": "78a054eeb13ca993db084b1a721b6e453c53247b5fad8e30cff770d3eeb15701",
+    "docs/flow-structure-validation.json": "16c61acc1a0d1bb510dd91e360c9d725b8cc9b1987477babad0d26d1632751e0",
+    "docs/flow-target-surface-validation.json": "ff40d407bd6415ffa545c4617527f63fc7031c8cd0911a136112b011ebdf97fe",
+    "docs/orient-on-curve-edge-validation.json": "614ac8739113d81b368c3f106909cf9f63fc86c229f98e54a558a7e62e60d24d",
+    "src/app.rs": "9510a40b9b953aa914194fc87a46aa090f2f69e5098997d1254ac632822499c4",
+    "src/app/mesh_face_prompt.rs": "44a9aa3a1bd2b76f42092ebc00ab7595e0da664655c080a261b7fc15505a7d62",
+    "src/app/object_selection.rs": "2162d1c79529af88888009c6172263584091a2d4a41a44171b432c0cc75282ca",
+    "src/app/surface_flow.rs": "2bd487107074059068aef70cec2f36ecb87bdf22389d4292a77d7975f746d639",
+    "src/app/tests/surface_flow.rs": "d09ad065770cd5287b41bc171eeb6bc710c0e4886d4f758c7e1ffa5bf09583fe",
+    "src/app/transform_sources.rs": "3251ad35896c44a4222910e4a3607d82e84fc742419276a90374ba3c346923a7",
+    "src/viewport.rs": "179a5f96a3dcbece02f15de38034436bc813f8b82ad3e8c6167c2ee970a46df3",
+    "src/viewport/surface_flow_preview.rs": "55f45539089d41ba58e09622e470e4173cea88500a1cbc34a55b977c59ff8d03",
+    "tools/rhino_oracle/client.py": "db57c26d2f45e3d412d34828fa24c643669f92b67473a9602cdaf94e90e43fa5",
+    "tools/rhino_oracle/fixtures/surface_flow.json": "85d9250a297351da2b42d15e2db06583810d9321fe06ee1e413a03b6839b5321",
+    "tools/rhino_oracle/fixtures/surface_flow_command.json": "edc99e530fa281a5522d475fb9b860201c5679fd7aa9534726f35977d28e6db0",
+    "tools/rhino_oracle/fixtures/surface_flow_faces.json": "bb0520a89acc707ae9943259be1b1224876096cca68b6f73943f29caf4cc5271",
+    "tools/rhino_oracle/fixtures/surface_flow_groups.json": "cfa32350439330b7128075b170ae200ef70932cc909d8e0f149c4d20c47cf70d",
+    "tools/rhino_oracle/fixtures/surface_flow_picks.json": "3b939bf4dc06a4e8607e4cc880978a0fd821766397658e038521339159a13f31",
+    "tools/rhino_oracle/observations/surface_flow_command_rhino_20261017.json": "cfa1a222226c32e74dc87ab11d78f02c29d204104d96656d9cd327931cf25704",
+    "tools/rhino_oracle/observations/surface_flow_faces_rhino_20261017.json": "7dbbe1d87ac58053068f140621f6d807f05158be09c7774d685cc92879221a1c",
+    "tools/rhino_oracle/observations/surface_flow_groups_rhino_20261017.json": "3845e58897dd8c6f6d09bfeaa820e8b78804baedacaac237c15e0a0b0de9ede2",
+    "tools/rhino_oracle/observations/surface_flow_picks_rhino_20261017.json": "32aaa2495dada7b50a507c570ae4b705359331cbacdf0d6dbe46bed317fbf150",
+    "tools/rhino_oracle/observations/surface_flow_rhino_20261017.json": "64b667ba172774ce1a2bd7de48230352b5f6afe6180b09e6d9933bf3016abaab",
+    "tools/rhino_oracle/rhino_worker.py": "7770e1c1d2e9c1e2a7b458bc857f9e2a5085d4d911b8a4ffec509cca2f98ac0e",
+    "tools/rhino_oracle/structural_sdk.py": "f35e2ca05ae66e6e93b9a8866c5eb2d0076bc27d306743d0cb4a54c1d767c1ad",
+    "tools/rhino_oracle/surface_flow_probe.py": "dacdc969b277c19b521febee24c4185271e0186118cda755c4b6639977e32c86",
+    "tools/rhino_oracle/test_surface_flow.py": "8c2dae82e1cbad551b27ec30cc8fdd1f7bfecb4795b1ee24210e32c915b42597"
+  }
+}

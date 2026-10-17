@@ -1,10 +1,7 @@
 //! Staged curve-to-curve Flow edits using the shared length and morph kernels.
 use super::*;
-use std::collections::BTreeMap;
 use viboceros_document::{ControlPointId, CopyGroupPolicy, ReplacementHistory};
-use viboceros_geometry::{
-    BoundingBox3, CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph,
-};
+use viboceros_geometry::{CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph};
 
 pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [TargetSurface=id|None] [TargetSurfaceFace=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No] [Roadlike=Yes|No] [BaseUp=x,y,z] [TargetUp=x,y,z] [Local=Yes|No] [LocalRadii=inner,outer]";
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -412,66 +409,20 @@ pub fn deformed_with_grips(
     morph: &CurveFlowPointMorph,
     options: Options,
 ) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
-    let grip_owners = grips.iter().map(|g| g.object).collect::<BTreeSet<_>>();
-    let context = ids
-        .iter()
-        .copied()
-        .chain(grip_owners.iter().copied())
-        .collect::<BTreeSet<_>>();
-    let ordinary = ids
-        .iter()
-        .copied()
-        .filter(|id| !grip_owners.contains(id))
-        .collect::<Vec<_>>();
-    let mut bounds = BTreeMap::new();
-    // Bounds select a placement pose, not an approximate output enclosure.
-    // A model-tolerance error in the center can be amplified by Local's
-    // displacement derivative. Refine the existing bound kernel numerically.
-    let pose_tolerance = Tolerance::NUMERICAL_VALIDATION;
-    if options.rigid && options.rigid_groups && !ordinary.is_empty() {
-        for id in &context {
-            let o = doc.object(*id).ok_or(DocumentError::ObjectNotFound(*id))?;
-            if let Some(group) = o.top_group() {
-                let b = o.geometry().tight_bounds(pose_tolerance)?;
-                let next = if let Some(prior) = bounds.get(&group) {
-                    BoundingBox3::union(*prior, b)?
-                } else {
-                    b
-                };
-                bounds.insert(group, next);
-            }
-        }
-    }
-    let transforms = bounds
-        .into_iter()
-        .map(|(id, b)| Ok((id, morph.rigid_transform(b.center()?)?)))
-        .collect::<Result<BTreeMap<_, _>, GeometryError>>()?;
-    ordinary
-        .iter()
-        .map(|id| {
-            let o = doc.object(*id).ok_or(DocumentError::ObjectNotFound(*id))?;
-            let geometry = if options.rigid {
-                let transform = if options.rigid_groups
-                    && let Some(group) = o.top_group()
-                {
-                    transforms[&group]
-                } else {
-                    morph.rigid_transform(o.geometry().tight_bounds(pose_tolerance)?.center()?)?
-                };
-                o.geometry().transformed(transform, doc.tolerance())?
-            } else {
-                // Polysurfaces use the existing shared-edge fitting path.
-                let morph = if matches!(o.geometry(),Geometry::Brep(b)if b.faces().len()>1) {
-                    morph.clone().with_preserve_structure(false)
-                } else {
-                    morph.clone()
-                };
-                o.geometry().morphed(&morph, doc.tolerance())?
-            };
-            Ok((*id, geometry))
-        })
-        .collect()
+    crate::morph_edit::deformed(doc, ids, grips, morph, options.rigid, options.rigid_groups)
 }
+impl crate::morph_edit::ObjectMorph for CurveFlowPointMorph {
+    fn rigid_pose(
+        &self,
+        center: Point3,
+    ) -> Result<viboceros_geometry::AffineTransform3, GeometryError> {
+        self.rigid_transform(center)
+    }
+    fn preserving(self, preserve: bool) -> Self {
+        self.with_preserve_structure(preserve)
+    }
+}
+
 #[derive(Default)]
 pub(super) struct FlowCommand(remembered::Remembered<Options>);
 impl Command for FlowCommand {

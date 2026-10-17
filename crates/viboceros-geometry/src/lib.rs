@@ -273,7 +273,8 @@ pub use morph::{
     CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph, CurveFlowTargetSurface,
     CurvePreviewCage, MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS,
     MAX_MORPH_SURFACE_SAMPLES, MorphInterpolationSolver, MorphPreviewOperations, PointMorph,
-    SurfacePointMorph, SurfacePreviewCage,
+    SurfaceFlowFrame, SurfaceFlowOptions, SurfaceFlowPointMorph, SurfacePointMorph,
+    SurfacePreviewCage,
 };
 pub use nurbs::{
     ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,

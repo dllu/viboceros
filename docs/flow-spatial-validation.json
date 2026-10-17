@@ -96,8 +96,7 @@
   },
   "sha256": {
     "tools/rhino_oracle/flow_spatial_report.py": "3b134f7e3c1fce326a969f66711bf68573ae3585c8c8c65dcd4164d46d33f2d5",
-    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
-    "tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6"
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea"
   },
   "fixture_sha256": {
     "tools/rhino_oracle/fixtures/flow_length_frames.json": "2f8abe2105fbf7ad165e929811eb1982335a0ca370a6edb752dfbef7bd888481"
@@ -116,6 +115,7 @@
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:crates/viboceros-geometry/src/curve/arc_length.rs": "a9e271f0cba81d4ccab4eeb3d39a44ad99284640f8d126ac2d2b7d85080ba7a9",
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/flow-grips-validation.json": "853d6651e738f66c55f69f523394b8ea075e19b9f141f646647a4c549969bd5c",
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:docs/flow-command-validation.json": "f90cf4cf85c43839a12fbba009c218c9f6eb96387ca69f124f92d322ce9d8d24",
-    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5"
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6"
   }
 }

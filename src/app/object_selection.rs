@@ -274,6 +274,11 @@ impl VibocerosApp {
                 .picking_orient_surface()
                 .then_some(ObjectSelectionFilter::SurfaceComponents);
         }
+        if self.surface_flow_session.is_some() {
+            return self
+                .picking_surface_flow()
+                .then_some(ObjectSelectionFilter::SurfaceComponents);
+        }
         if self.flow_session.is_some() {
             if self.picking_flow_surface() {
                 return Some(ObjectSelectionFilter::SurfaceComponents);

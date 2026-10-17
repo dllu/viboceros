@@ -162,8 +162,7 @@
   "sha256": {
     "tools/rhino_oracle/flow_structure_report.py": "dce4026f7b7ae3b22be66030e8290dc891a87235a291b9e9d85aa3a69385d64d",
     "tools/rhino_oracle/test_flow_structure.py": "f78f4d6e701d6f75020b3775006f4d61c4ca4def4c544d4e5f0cd912e3f8501d",
-    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
-    "tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6"
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea"
   },
   "fixture_sha256": {
     "tools/rhino_oracle/fixtures/flow_coupled_frames.json": "16af86cb323a451eedd08ff4b39307f1a4587c64f7a82f46ad59b6779e87134e",
@@ -184,6 +183,7 @@
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:tools/rhino_oracle/structural_sdk.py": "80e436b8738b00ac98cc35b31ed858c70b6aa73fafac79b8ebfc13cb3fa54c5d",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5",
     "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:tools/rhino_oracle/flow_probe.py": "03d51bc16b9bdbd3dc4f8a9de8f507e8d5c9645e9008cd765843bdb6b2a34ac4",
-    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:tools/rhino_oracle/test_flow_spatial.py": "d425379ac6599a2e250d9e3d4d33e12d04185e385f1b91a35e86e2efc6ef02ba"
+    "e742bf1c74f2b9262271bc5ece3d83bc0e9f45d9:tools/rhino_oracle/test_flow_spatial.py": "d425379ac6599a2e250d9e3d4d33e12d04185e385f1b91a35e86e2efc6ef02ba",
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6"
   }
 }

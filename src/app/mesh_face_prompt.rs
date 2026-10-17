@@ -21,6 +21,9 @@ impl VibocerosApp {
             self.accept_orient_surface(object, Some(face));
             return;
         }
+        if self.pick_surface_flow(Some(object), Some(face), point) {
+            return;
+        }
         if self.pick_flow_surface(Some(object), Some(face)) {
             return;
         }

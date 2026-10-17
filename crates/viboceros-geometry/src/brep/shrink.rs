@@ -31,7 +31,7 @@ impl Brep {
         mode: BrepSurfaceShrinkMode,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        self.shrink_surfaces(mode, tolerance, None)
+        self.shrink_surfaces(mode, tolerance, None, &mut |s, u, v| s.try_trimmed(u, v))
     }
 
     /// Restrict only the indexed faces, preserving every unselected face and
@@ -43,6 +43,23 @@ impl Brep {
         mode: BrepSurfaceShrinkMode,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_shrunk_surface_faces_with_extractor(faces, mode, tolerance, &mut |s, u, v| {
+            s.try_trimmed(u, v)
+        })
+    }
+
+    /// Share shrink bounds and topology while delegating exact surface restriction.
+    pub fn try_shrunk_surface_faces_with_extractor<E: From<GeometryError>>(
+        &self,
+        faces: &[usize],
+        mode: BrepSurfaceShrinkMode,
+        tolerance: Tolerance,
+        extract: &mut impl FnMut(
+            &NurbsSurface,
+            std::ops::RangeInclusive<Real>,
+            std::ops::RangeInclusive<Real>,
+        ) -> Result<NurbsSurface, E>,
+    ) -> Result<Self, E> {
         let mut selected = vec![false; self.faces.len()];
         for &face in faces {
             let entry = selected
@@ -53,15 +70,20 @@ impl Brep {
                 })?;
             *entry = true;
         }
-        self.shrink_surfaces(mode, tolerance, Some(&selected))
+        self.shrink_surfaces(mode, tolerance, Some(&selected), extract)
     }
 
-    fn shrink_surfaces(
+    fn shrink_surfaces<E: From<GeometryError>>(
         &self,
         mode: BrepSurfaceShrinkMode,
         tolerance: Tolerance,
         selected: Option<&[bool]>,
-    ) -> Result<Self, GeometryError> {
+        extract: &mut impl FnMut(
+            &NurbsSurface,
+            std::ops::RangeInclusive<Real>,
+            std::ops::RangeInclusive<Real>,
+        ) -> Result<NurbsSurface, E>,
+    ) -> Result<Self, E> {
         let mut result = self.clone();
         let mut changed = false;
         for (index, face) in result.faces.iter_mut().enumerate() {
@@ -107,7 +129,7 @@ impl Brep {
             else {
                 continue;
             };
-            face.surface = face.surface.try_trimmed(u[0]..=u[1], v[0]..=v[1])?;
+            face.surface = extract(&face.surface, u[0]..=u[1], v[0]..=v[1])?;
             for trim in face
                 .loops
                 .iter_mut()
