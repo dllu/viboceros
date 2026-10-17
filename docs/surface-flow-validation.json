@@ -463,12 +463,8 @@
     "docs/flow-roadlike-validation.json": "46e1466903ad6a24a8d721f5ba4e22ce41140dc740523e288c93fdd9a8d604d7",
     "docs/flow-spatial-validation.json": "78a054eeb13ca993db084b1a721b6e453c53247b5fad8e30cff770d3eeb15701",
     "docs/flow-structure-validation.json": "16c61acc1a0d1bb510dd91e360c9d725b8cc9b1987477babad0d26d1632751e0",
-    "docs/orient-on-curve-edge-validation.json": "614ac8739113d81b368c3f106909cf9f63fc86c229f98e54a558a7e62e60d24d",
-    "src/app.rs": "9510a40b9b953aa914194fc87a46aa090f2f69e5098997d1254ac632822499c4",
     "src/app/mesh_face_prompt.rs": "44a9aa3a1bd2b76f42092ebc00ab7595e0da664655c080a261b7fc15505a7d62",
-    "src/app/object_selection.rs": "2162d1c79529af88888009c6172263584091a2d4a41a44171b432c0cc75282ca",
     "src/app/transform_sources.rs": "3251ad35896c44a4222910e4a3607d82e84fc742419276a90374ba3c346923a7",
-    "src/viewport.rs": "179a5f96a3dcbece02f15de38034436bc813f8b82ad3e8c6167c2ee970a46df3",
     "tools/rhino_oracle/client.py": "db57c26d2f45e3d412d34828fa24c643669f92b67473a9602cdaf94e90e43fa5",
     "tools/rhino_oracle/fixtures/surface_flow.json": "85d9250a297351da2b42d15e2db06583810d9321fe06ee1e413a03b6839b5321",
     "tools/rhino_oracle/fixtures/surface_flow_command.json": "edc99e530fa281a5522d475fb9b860201c5679fd7aa9534726f35977d28e6db0",
@@ -496,6 +492,10 @@
     "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:src/app/tests/surface_flow.rs": "d09ad065770cd5287b41bc171eeb6bc710c0e4886d4f758c7e1ffa5bf09583fe",
     "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:src/viewport/surface_flow_preview.rs": "55f45539089d41ba58e09622e470e4173cea88500a1cbc34a55b977c59ff8d03",
     "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:tools/rhino_oracle/surface_flow_probe.py": "dacdc969b277c19b521febee24c4185271e0186118cda755c4b6639977e32c86",
-    "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:tools/rhino_oracle/test_surface_flow.py": "8c2dae82e1cbad551b27ec30cc8fdd1f7bfecb4795b1ee24210e32c915b42597"
+    "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:tools/rhino_oracle/test_surface_flow.py": "8c2dae82e1cbad551b27ec30cc8fdd1f7bfecb4795b1ee24210e32c915b42597",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/orient-on-curve-edge-validation.json": "614ac8739113d81b368c3f106909cf9f63fc86c229f98e54a558a7e62e60d24d",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/app.rs": "9510a40b9b953aa914194fc87a46aa090f2f69e5098997d1254ac632822499c4",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/app/object_selection.rs": "2162d1c79529af88888009c6172263584091a2d4a41a44171b432c0cc75282ca",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/viewport.rs": "179a5f96a3dcbece02f15de38034436bc813f8b82ad3e8c6167c2ee970a46df3"
   }
 }

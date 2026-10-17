@@ -7,7 +7,7 @@ else:
 
 
 def validate(op):
-    allowed={'op','id','base','target','points','base_uv','target_uv','normal','command','source','options','selected','edit','group','plane','mouse','base_trim','target_trim','base_reversed','target_reversed','peer','diagnose_frames','object_frames','peer_count'}
+    allowed={'op','id','base','target','points','base_uv','target_uv','normal','command','source','options','selected','edit','group','plane','mouse','base_trim','target_trim','base_reversed','target_reversed','peer','diagnose_frames','object_frames','peer_count','plane_inputs','rectangle_diagnostics','plane_curve','construction_plane'}
     if not isinstance(op,dict)or op.get('op')!='surface_flow'or set(op)-allowed or not {'id','base','target','points'}<=set(op):raise ValueError('invalid surface Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid surface Flow id')
     for role in ('base','target'):
@@ -27,14 +27,26 @@ def validate(op):
         if op['source'].get('type')not in('point_cloud','nurbs','surface','mesh'):raise ValueError('unsupported surface Flow owner')
     if selected and op.get('source',{}).get('type')not in('nurbs','surface','mesh'):raise ValueError('surface Flow grips need a grip owner')
     if op.get('edit')and(not selected or op.get('source',{}).get('type')!='nurbs'):raise ValueError('surface Flow edit grips need a curve')
+    if 'plane_inputs'in op:
+        if 'plane'in op or not isinstance(op['plane_inputs'],list)or not 1<=len(op['plane_inputs'])<=16:raise ValueError('invalid rectangle inputs')
+        for item in op['plane_inputs']:
+            if isinstance(item,str):
+                if item not in('3Point','Center','Vertical','EdgeMidpoint','AroundCurve','Enter'):raise ValueError('invalid rectangle option')
+            elif isinstance(item,list):
+                if not vector(item,3):raise ValueError('invalid rectangle point')
+            elif type(item)not in(int,float)or math.isnan(item)or math.isinf(item)or abs(item)>1e6:raise ValueError('invalid rectangle length')
+    if 'construction_plane'in op and(not isinstance(op['construction_plane'],list)or len(op['construction_plane'])!=3 or any(not vector(p,3)for p in op['construction_plane'])):raise ValueError('invalid rectangle construction plane')
+    if 'plane_curve'in op:
+        validate_source(dict(op='geometry_validity',id=op['id'],source=op['plane_curve']))
+        if op['plane_curve'].get('type')not in('line','nurbs','polyline','polycurve','arc','circle'):raise ValueError('rectangle reference must be a curve')
     for name in ('base_uv','target_uv'):
         if name in op and not vector(op[name],2):raise ValueError('invalid surface Flow pick')
     if ('base_uv'in op)!=('target_uv'in op):raise ValueError('surface Flow needs both orientation picks')
     if 'normal'in op and(not vector(op['normal'],3)or not any(op['normal'])):raise ValueError('invalid surface Flow normal')
-    for flag in ('command','edit','group','mouse','base_reversed','target_reversed','peer','diagnose_frames'):
+    for flag in ('command','edit','group','mouse','base_reversed','target_reversed','peer','diagnose_frames','rectangle_diagnostics'):
         if type(op.get(flag,False))is not bool:raise ValueError('invalid surface Flow flag')
     if type(op.get('peer_count',1))is not int or not 1<=op.get('peer_count',1)<=4 or 'peer_count'in op and not op.get('peer'):raise ValueError('invalid surface Flow peer count')
-    if op.get('mouse')and(not op.get('command')or 'base_uv'not in op or 'plane'in op):raise ValueError('surface Flow mouse capture requires two surface picks')
+    if op.get('mouse')and(not op.get('command')or 'base_uv'not in op or 'plane'in op or 'plane_inputs'in op):raise ValueError('surface Flow mouse capture requires two surface picks')
     options=op.get('options',{})
     if not isinstance(options,dict)or set(options)-{'copy','rigid','rigid_groups','auto_adjust','preserve_structure','group_frame_origin'}or any(type(v)is not bool for k,v in options.items()if k!='group_frame_origin'):raise ValueError('invalid surface Flow options')
     if options.get('group_frame_origin','BoundingBoxCenter')not in('BoundingBoxCenter','ObjectFrameAverage'):raise ValueError('invalid surface Flow group frame origin')
@@ -68,10 +80,16 @@ def run_command(op,host,tolerance):
     before=set(obj.Id for obj in doc.Objects);groups=set(g.Index for g in doc.Groups if not g.IsDeleted)
     surfaces=[host['_object_source'](op[role],tolerance)for role in('base','target')]
     geometry=host['_object_source'](op.get('source',dict(type='point_cloud',points=op['points'])),tolerance)
+    curve_geometry=None;vp=doc.Views.ActiveView.ActiveViewport;saved_plane=vp.GetConstructionPlane()
     try:
+        if 'construction_plane'in op:
+            origin,x,y=op['construction_plane'];frame=G.Plane(G.Point3d(*origin),G.Vector3d(*x),G.Vector3d(*y))
+            if not frame.IsValid:raise ValueError('invalid rectangle construction frame')
+            vp.SetConstructionPlane(frame)
+        else:vp.SetConstructionPlane(G.Plane.WorldXY)
         guides=[]
         for role,surface in zip(('base','target'),surfaces):
-            if role=='base'and 'plane'in op:continue
+            if role=='base'and('plane'in op or 'plane_inputs'in op):continue
             trim=op.get(role+'_trim');reversed_=op.get(role+'_reversed',False)
             if trim is not None:
                 (u0,u1),(v0,v1)=trim
@@ -98,6 +116,9 @@ def run_command(op,host,tolerance):
                     if not guide.IsValid:raise ValueError('surface Flow reference invalid')
                     guides.append(doc.Objects.AddBrep(guide))
                 finally:guide.Dispose()
+        surface_guides=list(guides);plane_curve=None;curve_geometry=None
+        if 'plane_curve'in op:
+            curve_geometry=host['_object_source'](op['plane_curve'],tolerance);plane_curve=doc.Objects.AddCurve(curve_geometry);guides.append(plane_curve)
         source=doc.Objects.Add(geometry)
         peers=[]
         if op.get('peer'):
@@ -117,8 +138,32 @@ def run_command(op,host,tolerance):
         if op.get('group'):doc.Groups.Add('Owned FlowAlongSrf',[source]+peers)
         def definition(key):
             g=doc.Objects.FindId(key).Geometry
+            if isinstance(g,G.Curve):return dict(curve=host['_nurbs_curve_definition'](g.ToNurbsCurve()),crc=int(g.DataCRC(0)))
             return dict(surface=host['_nurbs_surface_definition'](g.Faces[0].UnderlyingSurface().ToNurbsSurface()),reversed=bool(g.Faces[0].OrientationIsReversed),crc=int(g.DataCRC(0)))
         originals={key:definition(key)for key in guides};doc.Objects.UnselectAll()
+        point=lambda p:'w'+','.join(repr(float(v))for v in p)
+        def rectangle_tokens():
+            if 'plane_inputs'in op:
+                tokens=[]
+                for i in op['plane_inputs']:
+                    tokens.append('_'+i if isinstance(i,str)else point(i)if isinstance(i,list)else repr(float(i)))
+                    if isinstance(i,str)and i=='AroundCurve'and plane_curve:tokens.append(" '_-SelID "+str(plane_curve))
+                return ' '.join(tokens)
+            return ('_3Point 'if len(op['plane'])==3 else'')+' '.join(point(p)for p in op['plane'])
+        rectangle_diagnostics=None
+        if op.get('rectangle_diagnostics'):
+            seen=set(obj.Id for obj in doc.Objects);marker='Owned Rectangle '+str(host['System'].Guid.NewGuid());R.RhinoApp.WriteLine(marker)
+            macro='_Rectangle '+rectangle_tokens()
+            ok,after,events=observe_command(R.Commands.Command,'Rectangle',lambda:R.RhinoApp.RunScript(macro,True),lambda:None,lambda:[],True)
+            outlines=[]
+            for obj in list(doc.Objects):
+                if obj.Id not in seen:
+                    success,line=obj.Geometry.TryGetPolyline()
+                    if not success:raise ValueError('rectangle witness must be a polyline')
+                    outlines.append([host['_xyz'](p)for p in line]);doc.Objects.Delete(obj.Id,True)
+            rectangle_diagnostics=dict(returned=bool(ok),macro=macro,history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip(),events=events,outlines=outlines)
+            doc.Objects.UnselectAll()
+
         if op.get('selected'):
             obj=doc.Objects.FindId(source)
             if op.get('edit'):
@@ -148,8 +193,8 @@ def run_command(op,host,tolerance):
         flags+=' _ConstrainNormal=_'+('Yes'if 'normal'in op else'No')
         point=lambda p:'w'+','.join(repr(float(v))for v in p)
         macro='_FlowAlongSrf '+flags
-        if 'plane'in op:macro+=' _Plane '+('_3Point 'if len(op['plane'])==3 else'')+' '.join(point(p)for p in op['plane'])
-        macro+=(' _Pause _Pause'if op.get('mouse')else''.join(" '_-SelID "+str(key)for key in guides))
+        if 'plane'in op or 'plane_inputs'in op:macro+=' _Plane '+rectangle_tokens()
+        macro+=(' _Pause _Pause'if op.get('mouse')else''.join(" '_-SelID "+str(key)for key in surface_guides))
         if 'normal'in op:macro+=' '+point([0,0,0])+' '+point(op['normal'])
         marker='Owned FlowAlongSrf '+str(host['System'].Guid.NewGuid());R.RhinoApp.WriteLine(marker);host['_record_progress'](op['id']+' macro: '+macro)
         interaction=None
@@ -157,6 +202,7 @@ def run_command(op,host,tolerance):
             (success,after,events),interaction=invoke_with_picks(op,host,surfaces,macro,snapshot)
         else:success,after,events=observe_command(R.Commands.Command,'FlowAlongSrf',lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
         result=dict(before=seed,after=after,after_script=snapshot(),events=events,command_returned=bool(success),macro=macro,history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip())
+        if rectangle_diagnostics is not None:result['rectangle_diagnostics']=rectangle_diagnostics
         if op.get('diagnose_frames'):result['frame_diagnostics']=frame_diagnostics
         if interaction is not None:result['interaction']=interaction
         result['undo_command_returned']=bool(R.RhinoApp.RunScript('_Undo',False));result['undo']=snapshot()
@@ -169,6 +215,8 @@ def run_command(op,host,tolerance):
                 doc.Objects.Delete(obj.Id,True)
         for g in list(doc.Groups):
             if not g.IsDeleted and g.Index not in groups:doc.Groups.Delete(g.Index)
+        vp.SetConstructionPlane(saved_plane)
+        if curve_geometry is not None:curve_geometry.Dispose()
         geometry.Dispose()
         for s in surfaces:s.Dispose()
 

@@ -12,12 +12,12 @@ struct Pick {
 pub(super) struct Session {
     sources: Vec<ObjectId>,
     grips: Vec<viboceros_document::ControlPointId>,
-    postselected: bool,
+    pub(super) postselected: bool,
     options: Options,
-    base: Option<BaseInput>,
+    pub(super) base: Option<BaseInput>,
     base_pick: Option<Pick>,
     target: Option<Pick>,
-    plane: Option<(bool, Vec<Point3>, Frame3)>,
+    pub(super) plane: Option<super::rectangle::InputSession>,
     morph: Option<Arc<SurfaceFlowPointMorph>>,
     cache: RefCell<crate::viewport::SurfaceFlowPreviewCache>,
 }
@@ -192,7 +192,11 @@ impl VibocerosApp {
         let s = self.surface_flow_session.as_mut().unwrap();
         s.base = None;
         s.base_pick = None;
-        s.plane = Some((three, Vec::new(), frame));
+        let mut getter = super::rectangle::InputSession::new(frame);
+        if three {
+            getter.input.option("3Point");
+        }
+        s.plane = Some(getter);
         s.morph = None;
         self.drafting_plane = Some(frame);
         self.active_command = Some(InteractiveCommand::SurfaceFlow { start: None });
@@ -203,47 +207,15 @@ impl VibocerosApp {
         if !self.drawing_surface_flow() {
             return None;
         }
+        if self
+            .surface_flow_session
+            .as_ref()
+            .is_some_and(|s| s.plane.is_some())
+        {
+            return self.accept_rectangle_point(point);
+        }
         let s = self.surface_flow_session.as_mut().unwrap();
-        if let Some((three, points, frame)) = &mut s.plane {
-            let mut next = points.clone();
-            next.push(point);
-            let required = if *three { 3 } else { 2 };
-            if next.len() == required {
-                let result = (|| -> Result<_, viboceros_command::CommandError> {
-                    if *three {
-                        let p = [next[0], next[1], next[2]];
-                        solver::plane_surface(p)?;
-                        return Ok(p);
-                    }
-                    let a = frame.coordinates_of(next[0])?;
-                    let b = frame.coordinates_of(next[1])?;
-                    let p = [
-                        frame.point_at([a[0].min(b[0]), a[1].min(b[1]), a[2]])?,
-                        frame.point_at([a[0].max(b[0]), a[1].min(b[1]), a[2]])?,
-                        frame.point_at([a[0].min(b[0]), a[1].max(b[1]), a[2]])?,
-                    ];
-                    solver::plane_surface(p)?;
-                    Ok(p)
-                })();
-                match result {
-                    Ok(p) => {
-                        s.base = Some(BaseInput::Plane(p));
-                        s.plane = None;
-                        self.point_filter = None;
-                        self.point_constraint = None;
-                        self.drafting_plane = None;
-                        self.prepare_surface_flow();
-                    }
-                    Err(e) => {
-                        self.push_log(format!("Error: {e}"));
-                        return Some(false);
-                    }
-                }
-            } else {
-                *points = next;
-                self.active_command = Some(InteractiveCommand::SurfaceFlow { start: Some(point) });
-            }
-        } else {
+        {
             let Some(InteractiveCommand::SurfaceFlow { start }) = self.active_command else {
                 return Some(false);
             };
@@ -267,7 +239,7 @@ impl VibocerosApp {
         self.surface_flow_prompt();
         Some(true)
     }
-    fn prepare_surface_flow(&mut self) {
+    pub(super) fn prepare_surface_flow(&mut self) {
         let s = self.surface_flow_session.as_mut().unwrap();
         s.morph = None;
         let (Some(base), Some(target)) = (s.base, &s.target) else {
@@ -300,17 +272,12 @@ impl VibocerosApp {
             Err(e) => self.push_log(format!("Error: {e}")),
         }
     }
-    fn surface_flow_prompt(&mut self) {
+    pub(super) fn surface_flow_prompt(&mut self) {
         let Some(s) = &self.surface_flow_session else {
             return;
         };
-        let phase = if let Some((three, points, _)) = &s.plane {
-            match (three, points.len()) {
-                (_, 0) => "first plane corner",
-                (true, 1) => "end of plane X edge",
-                (true, _) => "plane width point",
-                _ => "opposite plane corner",
-            }
+        let phase = if let Some(plane) = &s.plane {
+            plane.input.prompt()
         } else if s.base.is_none() {
             "select base surface near a corner and edge, or Plane"
         } else if s.target.is_none() {
@@ -363,6 +330,9 @@ impl VibocerosApp {
             return false;
         }
         self.validate_surface_flow();
+        if self.try_continue_rectangle(input) {
+            return true;
+        }
         let word = input.trim().trim_start_matches(['_', '-']);
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);

@@ -287,6 +287,7 @@ pub mod mirror;
 mod plane_primitives;
 mod plane_transforms;
 pub mod point_transform;
+pub mod rectangle_input;
 use mirror::MirrorCommand;
 pub mod set_point;
 pub mod set_view;

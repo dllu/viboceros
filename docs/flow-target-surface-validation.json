@@ -241,10 +241,8 @@
     "crates/viboceros-oracle/src/flow_line.rs": "22ce157420876ff9b28321694233af588bcb675aedfe694417cda8bbbf706135",
     "docs/commands/flow.md": "0e2ce2cabe2377a992609421c8a2f377a1557a11da4bb818230ba6a10dd52f80",
     "docs/flow-auto-direction-validation.json": "86ad0e2cfb129be7866e59104ea6ac137d020cccea911711750d98f185db67a1",
-    "docs/flow-command-validation.json": "43f9f815233afa4f9eb891645117123c85fdaf5fd94d67edbf0f744330dbfbf2",
     "docs/flow-development.md": "48e5750f3e560351f3945843dc08fe9c3cfe1e2294c287d17ddd03a38b2831c9",
     "docs/flow-nurbs-validation.json": "46ed14a25e1a56719bf02f90c2ca2b76686b58a088c68e2ebed55b448c97fad0",
-    "docs/orient-surface-validation.json": "ea75a5a3ad8030645bd5b0d8fd0c7d6ad046d5b3d812a4d755d429a3615df16a",
     "src/app/flow.rs": "9a0ae4172fba8595118b38502b64886871bbdfb5a09a1fbc34a327e24f6ab728",
     "src/app/tests/flow.rs": "481cae7f07d11562c758698e7228da8c54f8520d5cb35d2729b971a54a11e042",
     "src/viewport/flow_preview.rs": "0deb37859cfcc94b55645bdf412f34e89a48f077d59f21ab863a77323ff671a0",
@@ -278,6 +276,8 @@
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/app.rs": "ef283484e5292fb85d51635962e5590bc7be01c7f5944eff8fe507e76cf5fbd8",
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/app/mesh_face_prompt.rs": "8acd37a14ea9f46dfb396665d6ecd7194d25a563ce47131abac95e2c86add631",
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/app/object_selection.rs": "b5484ab7707104c13cb43552c0cf0505b5de41a28b2ced1e032dd3b0c45493a0",
-    "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:src/viewport/morph_preview.rs": "e05e9e85b2e46ed8a24afe8c46779345b5527c69e1097454e2283e9c638deca3"
+    "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:src/viewport/morph_preview.rs": "e05e9e85b2e46ed8a24afe8c46779345b5527c69e1097454e2283e9c638deca3",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/flow-command-validation.json": "43f9f815233afa4f9eb891645117123c85fdaf5fd94d67edbf0f744330dbfbf2",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/orient-surface-validation.json": "ea75a5a3ad8030645bd5b0d8fd0c7d6ad046d5b3d812a4d755d429a3615df16a"
   }
 }

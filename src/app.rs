@@ -194,6 +194,7 @@ mod project;
 mod project_plane;
 mod radius;
 mod rail_revolve;
+mod rectangle;
 mod replace_block;
 mod scale_by_plane;
 mod scale_nu;
@@ -2227,6 +2228,7 @@ pub struct VibocerosApp {
     orient_curve_session: Option<orient_curve::Session>,
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
+    rectangle_session: Option<rectangle::InputSession>,
     orient_points_session: Option<orient_points::Session>,
     orient_surface_session: Option<orient_surface::Session>,
     surface_extrusion_sources: Option<extrude_surface::SurfaceExtrusionSources>,
@@ -2344,6 +2346,7 @@ impl VibocerosApp {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            rectangle_session: None,
             orient_points_session: None,
             orient_surface_session: None,
             surface_extrusion_sources: None,
@@ -2550,6 +2553,7 @@ impl VibocerosApp {
         if self.try_continue_orient_surface(&input)
             || self.try_continue_orient_points(&input)
             || self.try_continue_orient_curve(&input)
+            || self.try_continue_rectangle(&input)
             || self.try_continue_surface_flow(&input)
             || self.try_continue_flow(&input)
             || self.try_continue_translation(&input)
@@ -3143,6 +3147,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_rectangle(input) {
+            return true;
+        }
         if self.try_start_surface_tapered_input(input)
             || self.try_start_surface_apex_input(input)
             || self.try_start_surface_path_input(input)
@@ -5178,7 +5185,6 @@ impl VibocerosApp {
                     first_axis: None,
                 },
                 "polyline" | "pline" => InteractiveCommand::Polyline,
-                "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
                 "box" => InteractiveCommand::Box {
                     base: None,
                     opposite: None,
@@ -5532,6 +5538,7 @@ impl VibocerosApp {
         }
         self.flow_session = None;
         self.surface_flow_session = None;
+        self.rectangle_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_taper_session(false);
@@ -5590,6 +5597,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_rectangle_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_surface_flow_point(point) {
             return accepted;
         }
@@ -5635,6 +5645,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Rectangle { .. }
             | InteractiveCommand::SurfaceFlow { .. }
             | InteractiveCommand::Flow { .. }
             | InteractiveCommand::OrientOnSurface { .. }
@@ -6746,32 +6757,6 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
                 self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Rectangle { first: None } => {
-                let command = InteractiveCommand::Rectangle { first: Some(point) };
-                self.active_command = Some(command);
-                self.push_log(format!("First corner: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Rectangle { first: Some(first) } => {
-                if !plane_rectangle_exceeds_tolerance(
-                    plane,
-                    first,
-                    point,
-                    self.document.tolerance(),
-                ) {
-                    self.push_log(
-                        "Error: rectangle width and height must both exceed model tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Rectangle {} {}",
-                    format_model_point(first),
-                    format_model_point(point)
-                ));
             }
             InteractiveCommand::MeshPlane {
                 first: None,
@@ -8381,6 +8366,9 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.pick_rectangle_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_surface_flow(click.object_id, None, None) {
             return;
         }
@@ -9093,6 +9081,7 @@ impl VibocerosApp {
             if self.picking_subcurve_edge()
                 || self.picking_orient_curve()
                 || self.picking_flow_guide()
+                || self.picking_rectangle_curve()
             {
                 self.accept_component_click(crate::viewport::ComponentClick {
                     picks: picks
@@ -9114,7 +9103,9 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_orient_curve_parameter(parameter) {
+            if self.accept_rectangle_parameter(parameter)
+                || self.accept_orient_curve_parameter(parameter)
+            {
             } else if self.move_normal_curve().is_some() {
                 self.accept_move_normal_curve_parameter(parameter);
             } else {
@@ -9377,6 +9368,7 @@ impl eframe::App for VibocerosApp {
         self.validate_orient_surface();
         self.validate_flow_guides();
         self.validate_surface_flow();
+        self.validate_rectangle_curve();
         self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9435,6 +9427,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_scale_by_plane_object()
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()
+                && !self.picking_rectangle_curve()
                 && !self.picking_orient_curve()
                 && (self.surface_flow_session.is_none() || self.drawing_surface_flow())
                 && (self.flow_session.is_none()
@@ -9690,7 +9683,8 @@ impl eframe::App for VibocerosApp {
                 .is_some_and(blend_surface::Prompt::selecting)
             || self.picking_subcurve_edge()
             || self.picking_orient_curve()
-            || self.picking_flow_guide())
+            || self.picking_flow_guide()
+            || self.picking_rectangle_curve())
             && self.plane_prompt.is_none()
             && model_input_active
             && !end_analysis_picking;
@@ -9712,6 +9706,12 @@ impl eframe::App for VibocerosApp {
         let edge_curve = split_selection
             .map(viboceros_command::SplitEdgeSelection::curve)
             .or(normal_curve)
+            .or_else(|| {
+                self.rectangle_session
+                    .as_ref()
+                    .or_else(|| self.surface_flow_session.as_ref()?.plane.as_ref())
+                    .and_then(rectangle::InputSession::cursor_curve)
+            })
             .or_else(|| {
                 self.orient_curve_session
                     .as_ref()
@@ -9857,7 +9857,8 @@ impl eframe::App for VibocerosApp {
         let curve_or_edge_pick = edge_pick
             && (self.picking_subcurve_edge()
                 || self.picking_orient_curve()
-                || self.picking_flow_guide());
+                || self.picking_flow_guide()
+                || self.picking_rectangle_curve());
         let document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
@@ -9927,8 +9928,9 @@ impl eframe::App for VibocerosApp {
                 .and_then(|p| p.circle_getter)
                 .and_then(viboceros_command::circle_input::CircleInput::mouse_plane)
         });
-        let angle_plane =
-            angle_plane.or_else(|| surface_session.and_then(orient_surface::Session::angle_plane));
+        let angle_plane = angle_plane
+            .or_else(|| surface_session.and_then(orient_surface::Session::angle_plane))
+            .or_else(|| self.rectangle_getter().and_then(|s| s.input.mouse_plane()));
         let translation_constraint = model_input_active
             .then(|| self.translation_constraint())
             .flatten();
@@ -9954,6 +9956,10 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let viewport_positions = &self.viewport_positions;
+        let rectangle_input = self
+            .rectangle_getter()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
@@ -10084,6 +10090,7 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
+                            rectangle_input,
                             surface_flow_preview: self
                                 .surface_flow_session
                                 .as_ref()
@@ -10386,6 +10393,7 @@ mod tests {
     mod radius;
     mod rail_revolve;
     mod rebuild_preview;
+    mod rectangle;
     mod rhino_curve_prompt;
     mod scale_by_plane;
     mod scale_by_plane_curve;
@@ -10513,6 +10521,7 @@ mod tests {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            rectangle_session: None,
             orient_points_session: None,
             orient_surface_session: None,
             surface_extrusion_sources: None,

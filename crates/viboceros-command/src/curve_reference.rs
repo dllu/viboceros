@@ -45,3 +45,55 @@ pub fn resolve(
         _ => None,
     }
 }
+
+/// A selectable curve/edge and its immutable parent during a point getter.
+#[derive(Clone, Debug)]
+pub struct CapturedCurve {
+    id: ObjectId,
+    edge: Option<usize>,
+    curve: std::sync::Arc<NurbsCurve>,
+    parent: viboceros_document::GeometrySnapshot,
+    tolerance: Tolerance,
+}
+impl CapturedCurve {
+    pub fn capture(
+        doc: &viboceros_document::Document,
+        id: ObjectId,
+        edge: Option<usize>,
+    ) -> Result<Self, crate::CommandError> {
+        let object = doc
+            .object(id)
+            .filter(|_| doc.is_object_selectable(id))
+            .ok_or(viboceros_document::DocumentError::ObjectNotFound(id))?;
+        let curve = resolve(object.geometry(), edge, doc.tolerance())
+            .ok_or(crate::CommandError::Usage("Select a curve or surface edge"))?
+            .curve()
+            .to_nurbs()?;
+        Ok(Self {
+            id,
+            edge,
+            curve: std::sync::Arc::new(curve),
+            parent: object.geometry_snapshot().clone(),
+            tolerance: doc.tolerance(),
+        })
+    }
+    pub fn curve(&self) -> &NurbsCurve {
+        &self.curve
+    }
+    /// Preserve analytic evaluation for frame construction. Converting an arc
+    /// to NURBS can perturb tangent components at a normal-frame axis tie.
+    pub fn curve_ref(&self) -> CurveRef<'_> {
+        if self.edge.is_none() {
+            self.parent.curve_ref().expect("captured ordinary curve")
+        } else {
+            CurveRef::NurbsCurve(&self.curve)
+        }
+    }
+    pub fn current(&self, doc: &viboceros_document::Document) -> bool {
+        self.tolerance == doc.tolerance()
+            && doc.is_object_selectable(self.id)
+            && doc
+                .object(self.id)
+                .is_some_and(|o| self.parent.shares_storage_with(o.geometry_snapshot()))
+    }
+}

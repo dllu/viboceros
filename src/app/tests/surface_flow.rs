@@ -262,3 +262,112 @@ fn surface_flow_group_origin_options_change_preview_and_survive_one_commit() {
     );
     enter(&mut app, "Cancel");
 }
+
+#[test]
+fn surface_flow_rectangle_options_keep_first_pick_and_preview_without_helper_objects() {
+    for actions in [
+        vec!["Center", "1,2,3", "3Point", "4,6,8", "5", "7,-1,3"],
+        vec!["3Point", "EdgeMidpoint", "1,2,3", "4,6,8", "", "7,-1,3"],
+        vec!["Vertical", "1,2,3", "4,6,8", "5", "7,-1,3"],
+        vec!["1,2,3", "3Point", "4,6,8", "7,-1,3"],
+        vec!["Center", "1,2,3", "10", "6"],
+    ] {
+        let (mut app, source, [_, target]) = setup();
+        let before = format!("{:?}", app.document);
+        enter(&mut app, "FlowAlongSrf Plane Copy=No PreserveStructure=Yes");
+        for action in actions {
+            enter(&mut app, action);
+        }
+        assert!(app.picking_surface_flow(), "{:?}", app.command_log);
+        assert!(app.rectangle_getter().is_none());
+        assert_eq!(format!("{:?}", app.document), before);
+        app.pick_surface_flow(Some(target), None, None);
+        let preview = app
+            .surface_flow_session
+            .as_ref()
+            .unwrap()
+            .preview()
+            .unwrap();
+        let original = app.document.object(source).unwrap().geometry().clone();
+        let expected = original
+            .morphed(&**preview.morph, app.document.tolerance())
+            .unwrap();
+        assert_eq!(format!("{:?}", app.document), before);
+        enter(&mut app, "");
+        assert_eq!(app.document.object(source).unwrap().geometry(), &expected);
+        assert_eq!(app.document.objects().count(), 3);
+        app.document.undo().unwrap();
+        assert_eq!(app.document.object(source).unwrap().geometry(), &original);
+        assert!(app.document.undo().unwrap().is_none());
+    }
+}
+
+#[test]
+fn surface_flow_around_curve_shares_capture_invalidation_and_cancel() {
+    let (mut app, source, [_, target]) = setup();
+    let guide = app
+        .document
+        .add_geometry(Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                point(0., 0., 0.),
+                point(0., 0., 10.),
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "FlowAlongSrf Plane");
+    enter(&mut app, "AroundCurve");
+    assert!(app.picking_rectangle_curve());
+    assert_eq!(
+        app.viewport_object_filter(),
+        Some(viboceros_command::ObjectSelectionFilter::Curves)
+    );
+    enter(&mut app, &format!("Curve={guide}"));
+    assert!(!app.picking_rectangle_curve());
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "0,0,5");
+    enter(&mut app, "8");
+    enter(&mut app, "6");
+    assert!(app.picking_surface_flow());
+    app.pick_surface_flow(Some(target), None, None);
+    assert!(
+        app.surface_flow_session
+            .as_ref()
+            .unwrap()
+            .preview()
+            .is_some()
+    );
+    enter(&mut app, "Cancel");
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "FlowAlongSrf Plane Copy=No");
+    enter(&mut app, "AroundCurve");
+    enter(&mut app, &format!("Curve={guide}"));
+    enter(&mut app, "0,0,5");
+    enter(&mut app, "8");
+    enter(&mut app, "6");
+    app.pick_surface_flow(Some(target), None, None);
+    let expected = app
+        .document
+        .object(source)
+        .unwrap()
+        .geometry()
+        .morphed(
+            &**app
+                .surface_flow_session
+                .as_ref()
+                .unwrap()
+                .preview()
+                .unwrap()
+                .morph,
+            app.document.tolerance(),
+        )
+        .unwrap();
+    enter(&mut app, "");
+    assert_eq!(app.document.object(source).unwrap().geometry(), &expected);
+    assert!(!app.document.is_selected(source));
+    app.document.undo().unwrap();
+    assert!(!app.document.is_selected(source));
+    assert!(app.document.undo().unwrap().is_none());
+}

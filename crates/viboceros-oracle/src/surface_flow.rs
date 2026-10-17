@@ -25,6 +25,13 @@ impl Default for Options {
         }
     }
 }
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum RectangleAction {
+    Point([Real; 3]),
+    Number(Real),
+    Option(String),
+}
 fn one() -> usize {
     1
 }
@@ -57,6 +64,12 @@ pub struct Fixture {
     pub peer_count: usize,
     #[serde(default)]
     pub plane: Option<Vec<[Real; 3]>>,
+    #[serde(default)]
+    pub plane_inputs: Option<Vec<RectangleAction>>,
+    #[serde(default)]
+    pub plane_curve: Option<ObjectSource>,
+    #[serde(default)]
+    pub construction_plane: Option<[[Real; 3]; 3]>,
     #[serde(default)]
     pub mouse: bool,
     #[serde(default)]
@@ -162,30 +175,69 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
         guide(&f.target, f.target_trim, f.target_reversed)?,
     ];
     let mut guides = Vec::new();
-    let base = if let Some(points) = &f.plane {
-        let p = points
-            .iter()
-            .map(|p| Point3::try_from(*p))
-            .collect::<Result<Vec<_>, _>>()?;
-        let plane = match p.as_slice() {
-            [a, b] => {
-                let a = a.to_array();
-                let b = b.to_array();
-                let origin = Point3::try_new(a[0].min(b[0]), a[1].min(b[1]), a[2])?;
-                [
-                    origin,
-                    Point3::try_new(a[0].max(b[0]), a[1].min(b[1]), a[2])?,
-                    Point3::try_new(a[0].min(b[0]), a[1].max(b[1]), a[2])?,
-                ]
+    let plane_curve = f
+        .plane_curve
+        .as_ref()
+        .map(|s| s.geometry(tolerance))
+        .transpose()?;
+    let construction_plane = if let Some([origin, x, y]) = f.construction_plane {
+        viboceros_geometry::Frame3::try_from_directions(
+            Point3::try_from(origin)?,
+            Vector3::try_from(x)?,
+            Vector3::try_from(y)?,
+            tolerance,
+        )?
+    } else {
+        viboceros_command::CommandContext::default().construction_plane
+    };
+    let mut rectangle = None;
+    let has_plane = f.plane.is_some() || f.plane_inputs.is_some();
+    let base = if has_plane {
+        use viboceros_command::rectangle_input::RectangleInput;
+        let mut input = RectangleInput::new(construction_plane);
+        let actions = if let Some(actions) = &f.plane_inputs {
+            actions.clone()
+        } else {
+            let points = f.plane.as_ref().unwrap();
+            let mut actions = Vec::new();
+            if points.len() == 3 {
+                actions.push(RectangleAction::Option("3Point".into()));
             }
-            [a, b, c] => [*a, *b, *c],
-            _ => {
-                return Err(ProbeError::FixtureInvariant(
-                    "surface Flow plane needs two or three points",
-                ));
-            }
+            actions.extend(points.iter().copied().map(RectangleAction::Point));
+            actions
         };
-        BaseInput::Plane(plane)
+        for action in actions {
+            if rectangle.is_some() {
+                return Err(ProbeError::FixtureInvariant("rectangle has trailing input"));
+            }
+            match action {
+                RectangleAction::Option(word) => {
+                    if word == "Enter" {
+                        rectangle = input.enter()?;
+                    } else if !input.option(&word) {
+                        return Err(ProbeError::FixtureInvariant("unsupported rectangle option"));
+                    }
+                }
+                RectangleAction::Number(value) => rectangle = input.number(value)?,
+                RectangleAction::Point(p) => {
+                    let p = Point3::try_from(p)?;
+                    if input.requests_curve() {
+                        let curve = plane_curve
+                            .as_ref()
+                            .and_then(Geometry::curve_ref)
+                            .ok_or(ProbeError::FixtureInvariant("AroundCurve needs a curve"))?;
+                        input.around_curve(RectangleInput::curve_frame(curve, p)?);
+                    } else {
+                        rectangle = input.point(p)?;
+                    }
+                }
+            }
+        }
+        BaseInput::Plane(
+            rectangle
+                .ok_or(ProbeError::FixtureInvariant("incomplete rectangle"))?
+                .plane_points(),
+        )
     } else {
         let id = doc.add_geometry(geometry[0].clone())?;
         guides.push(id);
@@ -196,6 +248,60 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
         face: None,
     };
     guides.push(target.id);
+    if let Some(curve) = plane_curve {
+        guides.push(doc.add_geometry(curve)?);
+    }
+    let guide_geometry = guides
+        .iter()
+        .map(|id| (*id, doc.object(*id).unwrap().geometry_snapshot().clone()))
+        .collect::<Vec<_>>();
+    let mut rectangle_command_outline = None;
+    if let Some(actions) = &f.plane_inputs {
+        let mut words = vec!["Rectangle".to_owned()];
+        for action in actions {
+            match action {
+                RectangleAction::Point([x, y, z]) => words.push(format!("{x},{y},{z}")),
+                RectangleAction::Number(n) => words.push(n.to_string()),
+                RectangleAction::Option(option) => {
+                    words.push(option.clone());
+                    if option == "AroundCurve" {
+                        words.push(format!("Curve={}", guides.last().unwrap()));
+                    }
+                }
+            }
+        }
+        doc.clear_history()?;
+        let commands = CommandRegistry::with_builtins();
+        commands.execute_in_context(
+            &mut doc,
+            &words.join(" "),
+            viboceros_command::CommandContext { construction_plane },
+        )?;
+        let added = doc
+            .objects()
+            .filter(|o| !guides.contains(&o.id()))
+            .collect::<Vec<_>>();
+        if let [object] = added.as_slice() {
+            let Geometry::Polyline(line) = object.geometry() else {
+                return Err(ProbeError::FixtureInvariant("Rectangle output"));
+            };
+            rectangle_command_outline = Some(json!(
+                line.vertices()
+                    .iter()
+                    .map(|p| p.to_array())
+                    .collect::<Vec<_>>()
+            ));
+        } else {
+            return Err(ProbeError::FixtureInvariant("Rectangle output count"));
+        }
+        if doc.undo()?.as_deref() != Some("Rectangle") || doc.undo()?.is_some() {
+            return Err(ProbeError::FixtureInvariant("Rectangle history"));
+        }
+        // Object IDs are allowed to advance across a transaction; compare live geometry.
+        if doc.objects().count() != guides.len() {
+            return Err(ProbeError::FixtureInvariant("Rectangle undo"));
+        }
+    }
     let original = f.source_geometry(tolerance)?;
     let source = doc.add_geometry(original.clone())?;
     let peers = if f.peer {
@@ -256,10 +362,11 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
         }
         v["object_count"] = json!(doc.objects().count());
         v["guide_selected"] = json!(guides.iter().any(|id| doc.is_selected(*id)));
-        v["guide_unchanged"] = json!(guides.iter().enumerate().all(|(i, id)| {
-            doc.object(*id)
-                .is_some_and(|o| o.geometry() == &geometry[i + usize::from(f.plane.is_some())])
-        }));
+        v["guide_unchanged"] = json!(
+            guide_geometry
+                .iter()
+                .all(|(id, g)| doc.object(*id).is_some_and(|o| o.geometry() == &**g))
+        );
         Ok(v)
     };
     let mut options = solver::Options {
@@ -294,7 +401,32 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
     }
     doc.clear_history()?;
     let before = observe(&doc)?;
-    let picks = if grips.is_empty() {
+    let around_curve = f.plane_curve.is_some();
+    let picks = if around_curve {
+        format!(
+            " PickedSources={} {}",
+            grips
+                .is_empty()
+                .then_some(source)
+                .into_iter()
+                .chain(peers.iter().copied())
+                .map(|id| id.to_string())
+                .collect::<Vec<_>>()
+                .join(","),
+            if grips.is_empty() {
+                String::new()
+            } else {
+                format!(
+                    "PickedGripSources={}",
+                    grips
+                        .iter()
+                        .map(|g| format!("{}:{}", g.object, g.index))
+                        .collect::<Vec<_>>()
+                        .join(",")
+                )
+            }
+        )
+    } else if grips.is_empty() {
         String::new()
     } else {
         format!(
@@ -339,9 +471,19 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
     let redo_restores_outputs = after_geometry
         .iter()
         .all(|(id, g)| doc.object(*id).is_some_and(|o| o.geometry() == g));
-    Ok(
-        json!({"before":before,"after":after,"undo":undo,"redo":redo,"command_returned":error.is_none(),"error":error,"undo_label":undo_label,"redo_label":redo_label,"undo_restores_source":undo_restores_source,"redo_restores_outputs":redo_restores_outputs}),
-    )
+    let mut value = json!({"before":before,"after":after,"undo":undo,"redo":redo,"command_returned":error.is_none(),"error":error,"undo_label":undo_label,"redo_label":redo_label,"undo_restores_source":undo_restores_source,"redo_restores_outputs":redo_restores_outputs});
+    if let Some(rectangle) = rectangle {
+        value["rectangle_command_outline"] = rectangle_command_outline.unwrap_or(Value::Null);
+        value["rectangle_outline"] = json!(
+            rectangle
+                .corners
+                .into_iter()
+                .chain([rectangle.corners[0]])
+                .map(Point3::to_array)
+                .collect::<Vec<_>>()
+        );
+    }
+    Ok(value)
 }
 
 #[cfg(test)]
@@ -430,6 +572,29 @@ mod tests {
             }
             let x = &a.value["command"];
             let y = &n["value"]["command"];
+            if let Some(diagnostic) = y.get("rectangle_diagnostics") {
+                assert_eq!(diagnostic["returned"], true, "{} Rectangle returned", a.id);
+                assert_eq!(diagnostic["outlines"].as_array().unwrap().len(), 1);
+                for key in ["rectangle_outline", "rectangle_command_outline"] {
+                    assert!(
+                        close(&x[key], &diagnostic["outlines"][0], 1e-6),
+                        "{} {key}: {} != {}",
+                        a.id,
+                        x[key],
+                        diagnostic["outlines"][0]
+                    );
+                }
+                let events = diagnostic["events"].as_array().unwrap();
+                assert_eq!(
+                    events.iter().filter(|e| e["name"] == "Rectangle").count(),
+                    1
+                );
+                assert!(events.iter().all(|e| e["result"] == "Success"));
+                let history = diagnostic["history"].as_str().unwrap();
+                for text in ["_Cancel", "Unknown command", "Invalid"] {
+                    assert!(!history.contains(text), "{} Rectangle {history}", a.id);
+                }
+            }
             assert_eq!(y["command_returned"], true, "{}", a.id);
             assert_eq!(y["undo_command_returned"], true);
             assert_eq!(y["redo_command_returned"], true);
@@ -539,6 +704,38 @@ mod tests {
                 );
             }
         }
+    }
+    #[test]
+    fn surface_flow_rectangles_match_sixty_native_rectangle_and_morph_commands() {
+        let request: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/surface_flow_rectangles.json"
+        ))
+        .unwrap();
+        let native: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/surface_flow_rectangles_rhino_20261017.json"
+        ))
+        .unwrap();
+        assert_eq!(request["operations"].as_array().unwrap().len(), 60);
+        assert_eq!(native["results"].as_array().unwrap().len(), 60);
+        let mut failures = Vec::new();
+        for (operation, result) in request["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(native["results"].as_array().unwrap())
+        {
+            let mut q = request.clone();
+            q["operations"] = json!([operation]);
+            let mut n = native.clone();
+            n["results"] = json!([result]);
+            if std::panic::catch_unwind(|| compare(&q.to_string(), &n.to_string(), 1)).is_err() {
+                failures.push(operation["id"].clone());
+            }
+        }
+        assert!(
+            failures.is_empty(),
+            "rectangle witnesses differ: {failures:?}"
+        );
     }
     #[test]
     fn surface_flow_public_point_maps_match_twenty_seven_native_cases() {

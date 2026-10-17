@@ -386,23 +386,25 @@
     }
   ],
   "sha256": {
-    "README.md": "0fd4ecdc842f16a8b37e8e69adfcb81d3bee30b4838bf5b6bcb768664489bcd5",
     "crates/viboceros-command/src/flow.rs": "2fc0d92f63baecf0d46434c9c1c99230338fda3656d4206ff7bcc830da6a5d8f",
-    "crates/viboceros-command/src/lib.rs": "d88e6903f26cbfbfb43e8bc040af7c52c866bec7440ac417d5ffff3f5536c1b2",
     "crates/viboceros-command/src/morph_edit.rs": "61def1f6cdce09c35e0c243bcabdb89cd486c9add053f57ffbcaf6372ec86458",
     "crates/viboceros-command/src/rigid_groups.rs": "65f16c8249a48df4acfef062061b815a5c0333001c93d402879d80d3126f1e2a",
     "crates/viboceros-command/src/surface_flow.rs": "a28366ab73700b38990fa1c81006656ea3f5c63b0163d178752fe7b84a981e26",
-    "crates/viboceros-oracle/src/surface_flow.rs": "3199b2662c2bb798daba15ed14a201f9d6849d0d4b06383b21ee386f60819280",
-    "docs/commands/flow-along-surface.md": "a374076f6a3ffacf41678ba2b5473e21f1061c19967b9d7d22fc007f9eb805ae",
-    "docs/flow-target-surface-validation.json": "cd06067d2d0d0b1638389f1716e5d632dfaf9fe0cdb04d9dac5c80e4dd2f5d02",
-    "docs/surface-flow-validation.json": "fb773cda1317a8aa3224d93037610acde7794e4330d92f215492f7e22c24305e",
-    "src/app/surface_flow.rs": "778ce89c64a74ee355aaee2bf5daa61bcad15f6edc871207005180b2076d6c8c",
-    "src/app/tests/surface_flow.rs": "c63182ae95d7b76cbfbe854575f2c256b4834777117bac22020b4e95258d71cd",
     "src/viewport/morph_preview.rs": "c2eb579249510a2a517ee56d2aeeac613cf12d6e6ff181db5135e83262ac6625",
     "src/viewport/surface_flow_preview.rs": "eb084612735351a4ebbe71210432f0c07f6619cb5db14dd8b05eb74d113bf738",
     "tools/rhino_oracle/fixtures/surface_flow_group_origins.json": "c7288f342665f3c6da43ee0a94b7fffd285b3f439b16438936a1245143459d24",
-    "tools/rhino_oracle/observations/surface_flow_group_origins_rhino_20261017.json": "9e0e57f7bab0aa92c32b080befef4387dd73c7f830647feeda9e31b510d261a4",
-    "tools/rhino_oracle/surface_flow_probe.py": "7d97bc498466032fb9bc0c8749c0369ee4452fe249637135bceb348a06a383fa",
-    "tools/rhino_oracle/test_surface_flow.py": "797fd1993592d44d953131d2236e34b37839a6107e39cd08c817224adb74fc9e"
+    "tools/rhino_oracle/observations/surface_flow_group_origins_rhino_20261017.json": "9e0e57f7bab0aa92c32b080befef4387dd73c7f830647feeda9e31b510d261a4"
+  },
+  "git_sha256": {
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:README.md": "0fd4ecdc842f16a8b37e8e69adfcb81d3bee30b4838bf5b6bcb768664489bcd5",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:crates/viboceros-command/src/lib.rs": "d88e6903f26cbfbfb43e8bc040af7c52c866bec7440ac417d5ffff3f5536c1b2",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:crates/viboceros-oracle/src/surface_flow.rs": "3199b2662c2bb798daba15ed14a201f9d6849d0d4b06383b21ee386f60819280",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/commands/flow-along-surface.md": "a374076f6a3ffacf41678ba2b5473e21f1061c19967b9d7d22fc007f9eb805ae",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/flow-target-surface-validation.json": "cd06067d2d0d0b1638389f1716e5d632dfaf9fe0cdb04d9dac5c80e4dd2f5d02",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/app/surface_flow.rs": "778ce89c64a74ee355aaee2bf5daa61bcad15f6edc871207005180b2076d6c8c",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/app/tests/surface_flow.rs": "c63182ae95d7b76cbfbe854575f2c256b4834777117bac22020b4e95258d71cd",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:tools/rhino_oracle/surface_flow_probe.py": "7d97bc498466032fb9bc0c8749c0369ee4452fe249637135bceb348a06a383fa",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:tools/rhino_oracle/test_surface_flow.py": "797fd1993592d44d953131d2236e34b37839a6107e39cd08c817224adb74fc9e",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/surface-flow-validation.json": "fb773cda1317a8aa3224d93037610acde7794e4330d92f215492f7e22c24305e"
   }
 }

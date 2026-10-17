@@ -20,10 +20,10 @@ completed primitive is one undo step.
   radius uses the full 3D displacement and tilts the construction frame toward
   the pick. Circle supports a purely normal pick using the plane's Y direction;
   Polygon requires a nonzero in-plane component.
-- Rectangle normalizes the two corners to increasing plane X/Y coordinates,
+- Rectangle [supports additional construction modes](commands/rectangle.md). Its two-corner form normalizes the two corners to increasing plane X/Y coordinates,
   starts at the lower-left corner, and traverses counterclockwise. Rectangle
   and Polygon use chord-length native parameters, not vertex-index parameters.
-- Rectangle, MeshPlane, Box, and MeshBox project the opposite base corner onto
+- Two-corner Rectangle, MeshPlane, Box, and MeshBox project the opposite base corner onto
   the plane through the first corner. Box height is a signed displacement along
   its normal; the picked height's tangential coordinates do not affect it.
 - MeshBox retains its base grid first and produces an outward-oriented solid

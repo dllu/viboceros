@@ -16,6 +16,7 @@ Rhino's complete command set is still a work in progress.
 - [BlockResetScale](block-reset-scale.md)
 - [In-place BlockEdit](block-edit.md)
 
+- [Rectangle construction modes and numeric dimensions](rectangle.md)
 - [Curve creation and editing](curves.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)
 - [Analytic curve offsets](offset.md)

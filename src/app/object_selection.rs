@@ -269,6 +269,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.picking_rectangle_curve() {
+            return Some(ObjectSelectionFilter::Curves);
+        }
         if self.orient_surface_session.is_some() {
             return self
                 .picking_orient_surface()

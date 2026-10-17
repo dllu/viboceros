@@ -214,7 +214,6 @@
   },
   "sha256": {
     "crates/viboceros-command/src/curve_domain.rs": "a6a1b6d8dd9f63f4abfca584c57067481429034a3ef6512ba6b870006dd8ff9d",
-    "crates/viboceros-command/src/curve_reference.rs": "01ec0902b95a76519da3f7476c6416210a1aae9416a797b598811bf87713a2d7",
     "crates/viboceros-command/src/orient_curve.rs": "46a450e2b8dd936a73196d92e4d8b11e83445e0d661bb2d306f6368203f7610a",
     "crates/viboceros-geometry/src/brep.rs": "d6d4d9109c9cc70f39d1e8a590bec7515ddc270f2ad2384f163a9f69f7eabee2",
     "crates/viboceros-oracle/src/orient_on_curve.rs": "199a812e2b1e436b0443a78f690efe0b43fb36716db43b7eca9f198c492b9d42",
@@ -271,6 +270,7 @@
     "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:docs/curvature-graph-validation.json": "58480128c9a839aa60396ec02e7dba399d7178f06d1bb1a8da7afc3feace4ff0",
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/app/component_selection.rs": "b65d49b7d37136dcfe1ccae6803bfcfc8e5d541ab2a0c497f8e2eaab1dc8ae37",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/coplanar-mesh-qualification.json": "66812d8d4582bca11e0cf916e1ccee7aed283ac7846aae87db19c1492ba2bb4f",
-    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6"
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6",
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:crates/viboceros-command/src/curve_reference.rs": "01ec0902b95a76519da3f7476c6416210a1aae9416a797b598811bf87713a2d7"
   }
 }

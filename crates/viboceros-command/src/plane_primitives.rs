@@ -322,43 +322,17 @@ impl Command for RectangleCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let plane = context.construction_plane;
-        let (first, first_consumed) = parse_point(arguments)?;
-        let (opposite, opposite_consumed) = parse_point(&arguments[first_consumed..])?;
-        require_consumed(
+        let definition = crate::rectangle_input::from_arguments(
+            document,
             arguments,
-            first_consumed + opposite_consumed,
-            "Rectangle first-corner opposite-corner",
+            context.construction_plane,
         )?;
-        let polyline = plane_rectangle(plane, first, opposite, document.tolerance())?;
+        let polyline = definition.polyline(document.tolerance())?;
         let width = polyline.vertices()[0].distance_to(polyline.vertices()[1])?;
         let height = polyline.vertices()[1].distance_to(polyline.vertices()[2])?;
         let id = document.add_geometry(Geometry::Polyline(polyline))?;
         Ok(format!("Added rectangle {id} ({width:.6} × {height:.6})"))
     }
-}
-
-fn plane_rectangle(
-    plane: Frame3,
-    first: Point3,
-    opposite: Point3,
-    tolerance: Tolerance,
-) -> Result<Polyline3, GeometryError> {
-    let plane = plane.with_origin(first);
-    let [x, y, _] = plane.coordinates_of(opposite)?;
-    let [x0, x1] = [x.min(0.0), x.max(0.0)];
-    let [y0, y1] = [y.min(0.0), y.max(0.0)];
-    let vertices = [
-        [x0, y0, 0.0],
-        [x1, y0, 0.0],
-        [x1, y1, 0.0],
-        [x0, y1, 0.0],
-        [x0, y0, 0.0],
-    ]
-    .into_iter()
-    .map(|p| plane.point_at(p))
-    .collect::<Result<Vec<_>, _>>()?;
-    Polyline3::try_new(vertices, tolerance)?.try_chord_length_parameterized()
 }
 
 pub(super) struct PolygonCommand;

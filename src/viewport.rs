@@ -342,6 +342,7 @@ pub struct ViewportInput<'a> {
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
     pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
+    pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
     pub flow_preview: Option<FlowPreview<'a>>,
     pub flow_local_preview: Option<FlowLocalPreview>,
     pub twist_preview: Option<TwistPreview<'a>>,
@@ -427,6 +428,7 @@ impl Default for ViewportInput<'_> {
             translation_preview: None,
             affine_preview: None,
             surface_flow_preview: None,
+            rectangle_input: None,
             flow_preview: None,
             flow_local_preview: None,
             twist_preview: None,
@@ -2121,6 +2123,21 @@ impl Viewport {
                     && input.taper_preview.is_none()
                     && input.maelstrom_preview.is_none(),
             );
+        }
+        if let Some(rectangle) = input
+            .rectangle_input
+            .and_then(|getter| getter.preview(drafting_cursor?.point))
+        {
+            for index in 0..4 {
+                if let Some(segment) = self.project_segment(
+                    rectangle.corners[index],
+                    rectangle.corners[(index + 1) % 4],
+                    rect,
+                ) {
+                    painter
+                        .line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
+                }
+            }
         }
         if let Some(preview) = input.bend_preview {
             self.paint_bend_guide(&painter, rect, preview, bend_preview.as_deref());

@@ -53,3 +53,25 @@ class SurfaceFlowTests(TestCase):
                 if op.get('mouse'):self.assertEqual(c['interaction']['completed'],2)
                 total+=1
         self.assertEqual(total,106)
+
+    def test_rectangle_getters_have_completed_rectangle_and_surface_flow_witnesses(self):
+        q=self.read('fixtures/surface_flow_rectangles.json');n=self.read('observations/surface_flow_rectangles_rhino_20261017.json')
+        self.assertEqual(len(q['operations']),60);self.assertEqual(len(n['results']),60)
+        modes=set()
+        for op,row in zip(q['operations'],n['results']):
+            validate(op);self.assertEqual(op['id'],row['id']);c=row['value']['command'];d=c['rectangle_diagnostics']
+            modes.update(x for x in op['plane_inputs']if isinstance(x,str))
+            for name,data in [('FlowAlongSrf',c),('Rectangle',d)]:
+                self.assertEqual([e['result']for e in data['events']if e['name']==name],['Success'])
+                for text in ['_Cancel','Unknown command','Invalid']:self.assertNotIn(text,data['history'])
+            self.assertIs(d['returned'],True);self.assertEqual(len(d['outlines']),1);self.assertEqual(len(d['outlines'][0]),5)
+            self.assertEqual(d['outlines'][0][0],d['outlines'][0][-1])
+            for field in ['command_returned','undo_command_returned','redo_command_returned']:self.assertIs(c[field],True)
+            for state in ['before','after_script','undo','redo']:self.assertIs(c[state]['guide_unchanged'],True)
+        self.assertEqual(modes,{'Center','Vertical','3Point','EdgeMidpoint','AroundCurve','Enter'})
+        seed=q['operations'][0]
+        for key,value in [('plane_inputs',[]),('plane_inputs',['Rounded']),('plane_inputs',[True]),('plane_inputs',[float('inf')]),('plane_inputs',[[1,2,float('nan')]]),('plane_inputs',['Enter']*17),('plane_curve',dict(type='point',point=[0,0,0])),('construction_plane',[[0,0,0],[1,0,0],[0,1,float('nan')]])]:
+            op=copy.deepcopy(seed);op[key]=value
+            with self.assertRaises(ValueError,msg=key):validate(op)
+        op=copy.deepcopy(seed);op['plane']=[[0,0,0],[10,10,0]]
+        with self.assertRaises(ValueError):validate(op)
