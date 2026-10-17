@@ -445,14 +445,13 @@ fn box_command_and_contour_use_native_topology_and_closed_seams() {
 }
 
 #[test]
-fn circle_deform_invalid_layout_is_atomic_and_exact_output_resets_each_command() {
+fn circle_deform_invalid_options_are_atomic_and_exact_output_resets_each_command() {
     let commands = CommandRegistry::with_builtins();
     let mut doc = Document::default();
     let preferences = commands.circle_preferences();
     for text in [
         "Circle Deformable Degree=1 0,0,0 3",
         "Circle Deformable Degree=3 PointCount=4 0,0,0 3",
-        "Circle Deformable Degree=2 PointCount=4 Degree=8 0,0,0 3",
         "Circle Deformable PointCount=1001 0,0,0 3",
     ] {
         assert!(commands.execute(&mut doc, text).is_err(), "{text}");

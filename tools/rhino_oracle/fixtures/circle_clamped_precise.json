@@ -1,0 +1,42 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n10-precise",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=10",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ],
+      "precise_length": true
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n10-precise",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=10",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ],
+      "precise_length": true
+    }
+  ]
+}

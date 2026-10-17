@@ -11,7 +11,11 @@ def validate(op):
     if operation=='circle_deform':
         options.update({'Deformable','Deformable=Yes','Deformable=No','PointCount','Degree','Vertical','FitPoints'})
         pattern=r'\A(?:Degree=[0-9]{1,2}|PointCount=(?:[0-9]{1,3}|1000))\Z'
-    validate_recipe(op,operation,options,pattern,numeric_options={'Radius','Diameter','Circumference','Area'},allow_points=operation=='circle_deform')
+    recipe=op
+    if 'precise_length'in op:
+        if operation!='circle_deform' or type(op['precise_length'])is not bool:raise ValueError('invalid Circle length accuracy flag')
+        recipe=dict(op);recipe.pop('precise_length')
+    validate_recipe(recipe,operation,options,pattern,numeric_options={'Radius','Diameter','Circumference','Area'},allow_points=operation=='circle_deform')
     if not op.get('live_getters'):raise ValueError('Circle getters require owned live input')
 
 

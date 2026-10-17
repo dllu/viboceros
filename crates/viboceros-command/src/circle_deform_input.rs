@@ -44,9 +44,12 @@ impl Output {
         }
     }
     pub fn command_prefix(self) -> String {
+        if !self.deformable {
+            return "Circle".to_owned();
+        }
         let d = self.deformation;
-        if d.point_count == d.degree + 1 {
-            // Native accepts this layout when Degree is raised after a lower
+        if d.point_count < d.degree + 2 {
+            // Native accepts these counts when Degree is raised after a lower
             // degree's PointCount getter. Preserve that legal option order.
             return format!(
                 "Circle Deformable Degree=2 PointCount={} Degree={}",
@@ -199,18 +202,6 @@ impl Input {
     pub fn point(&mut self, point: Point3) -> Result<Option<Circle3>, CommandError> {
         if self.integer_pending() {
             return Err(CommandError::Usage("Enter an integer setting"));
-        }
-        if self.output.deformable {
-            let d = self.output.deformation;
-            let minimum = viboceros_geometry::circle_deformable_minimum_points(d.degree)?;
-            if d.point_count < minimum {
-                return Err(GeometryError::InvalidCircleDeformPointCount {
-                    actual: d.point_count,
-                    minimum,
-                    maximum: 1000,
-                }
-                .into());
-            }
         }
         let mut candidate = *self;
         let definition = candidate.getter.point(point)?;

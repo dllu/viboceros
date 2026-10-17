@@ -328,8 +328,8 @@ mod cancellation_tests {
 mod deform_tests {
     use super::*;
     #[test]
-    fn circle_deform_native_clamped_layouts_are_rejected_atomically() {
-        let q: ProbeRequest = serde_json::from_str(include_str!(
+    fn circle_deform_native_historical_clamped_layouts_match_full_geometry_and_history() {
+        let mut q: Value = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/circle_deform_diagnostics.json"
         ))
         .unwrap();
@@ -337,62 +337,25 @@ mod deform_tests {
             "../../../tools/rhino_oracle/observations/circle_deform_diagnostics_rhino_20261017.json"
         ))
         .unwrap();
-        let mut checked = 0;
-        for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
-            if !row["value"]["input_trace"]["errors"]
-                .as_array()
-                .unwrap()
-                .is_empty()
-                || row["value"]["history"]
-                    .as_str()
-                    .unwrap()
-                    .contains("Unknown command")
-            {
-                continue;
-            }
-            let Operation::CircleDeform { id, fixture } = op else {
-                panic!()
-            };
-            let tokens = fixture
-                .actions
-                .iter()
-                .map(|a| match a {
-                    Action::Option(s) => s.to_owned(),
-                    Action::Number(n) => n.to_string(),
-                    Action::Point([x, y, z]) => format!("{x},{y},{z}"),
-                    _ => panic!(),
-                })
-                .collect::<Vec<_>>();
-            let mut doc = Document::default();
-            let commands = CommandRegistry::with_builtins();
-            let preferences = commands.circle_preferences();
-            assert!(
-                commands
-                    .execute(&mut doc, &format!("Circle {}", tokens.join(" ")))
-                    .is_err(),
-                "{id}"
-            );
-            assert_eq!(doc.objects().len(), 0, "{id}");
-            assert!(doc.undo_label().is_none());
-            assert_eq!(commands.circle_preferences(), preferences);
-            checked += 1;
-        }
-        assert!(checked >= 6);
-    }
-
-    #[test]
-    fn circle_deform_native_cancellations_have_no_output_or_history() {
-        let q: ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/circle_deform_controls.json"
-        ))
-        .unwrap();
-        let n: Value = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/observations/circle_deform_controls_rhino_20261017.json"
-        ))
-        .unwrap();
-        let actual = run_request(&q).unwrap();
-        assert_eq!(actual.results.len(), 4);
-        for (a, b) in actual.results.iter().zip(n["results"].as_array().unwrap()) {
+        let indexes = n["results"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .enumerate()
+            .filter_map(|(i, r)| {
+                let v = &r["value"];
+                (v["input_trace"]["errors"].as_array().unwrap().is_empty()
+                    && !v["history"].as_str().unwrap().contains("Unknown command"))
+                .then_some(i)
+            })
+            .collect::<Vec<_>>();
+        let ops = q["operations"].as_array().unwrap();
+        q["operations"] = json!(indexes.iter().map(|i| ops[*i].clone()).collect::<Vec<_>>());
+        let actual = run_request(&serde_json::from_value(q).unwrap()).unwrap();
+        assert_eq!(actual.results.len(), 8);
+        for (a, i) in actual.results.iter().zip(indexes) {
+            let b = &n["results"][i];
+            assert_eq!(a.id, b["id"]);
             for stage in ["before", "after", "undo", "redo"] {
                 crate::curve_getters::assert_close(
                     &a.value[stage],
@@ -401,11 +364,51 @@ mod deform_tests {
                     } else {
                         stage
                     }],
-                    &a.id,
+                    &format!("{}/{stage}", a.id),
                 );
             }
-            assert!(a.value["undo_label"].is_null());
-            assert!(a.value["redo_label"].is_null());
+            assert_eq!(a.value["undo_label"], "Circle");
+            assert_eq!(a.value["redo_label"], "Circle");
+        }
+    }
+
+    #[test]
+    fn circle_deform_native_cancellations_have_no_output_or_history() {
+        for (q, n, count) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_deform_controls.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_deform_controls_rhino_20261017.json"
+                ),
+                4,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_controls.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_clamped_controls_rhino_20261017.json"
+                ),
+                1,
+            ),
+        ] {
+            let q: ProbeRequest = serde_json::from_str(q).unwrap();
+            let n: Value = serde_json::from_str(n).unwrap();
+            let actual = run_request(&q).unwrap();
+            assert_eq!(actual.results.len(), count);
+            for (a, b) in actual.results.iter().zip(n["results"].as_array().unwrap()) {
+                for stage in ["before", "after", "undo", "redo"] {
+                    crate::curve_getters::assert_close(
+                        &a.value[stage],
+                        &b["value"][if stage == "after" {
+                            "after_script"
+                        } else {
+                            stage
+                        }],
+                        &a.id,
+                    );
+                }
+                assert!(a.value["undo_label"].is_null());
+                assert!(a.value["redo_label"].is_null());
+            }
         }
     }
 
@@ -446,6 +449,27 @@ mod deform_tests {
                     "../../../tools/rhino_oracle/observations/circle_deform_boundaries_rhino_20261017.json"
                 ),
                 17,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_grid.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_clamped_grid_rhino_20261017.json"
+                ),
+                43,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_modes.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_clamped_modes_rhino_20261017.json"
+                ),
+                14,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_precise.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_clamped_precise_rhino_20261017.json"
+                ),
+                2,
             ),
         ] {
             let q: ProbeRequest = serde_json::from_str(q).unwrap();

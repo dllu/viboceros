@@ -1,0 +1,737 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d4-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=4",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d5-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=5",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d5-n5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=5",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d6-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=6",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d6-n5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=6",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d6-n6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=6",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d7-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d7-n5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d7-n6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d7-n7",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=7",
+        "Degree=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d7-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=8",
+        "Degree=7",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d8-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d8-n5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d8-n6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d8-n7",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=7",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d8-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=8",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d8-n9",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=9",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n7",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=7",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=8",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n9",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=9",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n10",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=10",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d9-n11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=11",
+        "Degree=9",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n7",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=7",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=8",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n9",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=9",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=11",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d10-n12",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=12",
+        "Degree=10",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n4",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n5",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n6",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n7",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=7",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n8",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=8",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n9",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=9",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n11",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=11",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n12",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=12",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n13",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=13",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-d11-n14",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=14",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ]
+    }
+  ]
+}

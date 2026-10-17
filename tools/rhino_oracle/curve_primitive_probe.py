@@ -40,7 +40,7 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
         def curve_value(curve):
             pieces=list(curve.DuplicateSegments())if isinstance(curve,G.PolyCurve)else[curve.DuplicateCurve()]
             try:
-                value=dict(curve=host['_nurbs_curve_definition'](curve),segments=[host['_nurbs_curve_definition'](p)for p in pieces],length=float(curve.GetLength(tolerance["relative"])if command=="Conic"else curve.GetLength()),closed=bool(curve.IsClosed))
+                value=dict(curve=host['_nurbs_curve_definition'](curve),segments=[host['_nurbs_curve_definition'](p)for p in pieces],length=float(curve.GetLength(tolerance["relative"])if command=="Conic"or op.get('precise_length')else curve.GetLength()),closed=bool(curve.IsClosed))
                 controls=value['curve']['control_points']
                 if command=='Hyperbola'and value['length']==0. and value['curve']['degree']==2 and len(controls)==3 and controls[0]['weight']==controls[2]['weight']==1. and controls[1]['weight']<=-1.:
                     # The quadratic denominator has roots inside its domain.

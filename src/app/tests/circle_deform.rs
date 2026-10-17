@@ -43,6 +43,27 @@ fn circle_deform_native_frontend_construction_and_history() {
                 ),
                 17,
             ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_grid.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_clamped_grid_rhino_20261017.json"
+                ),
+                43,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_modes.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_clamped_modes_rhino_20261017.json"
+                ),
+                14,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_precise.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/circle_clamped_precise_rhino_20261017.json"
+                ),
+                2,
+            ),
         ],
     );
 }
@@ -201,46 +222,156 @@ fn circle_deform_point_getters_use_common_filters_and_distance_constraints() {
 
 #[test]
 fn circle_deform_native_cancelled_getters_leave_no_model_history() {
-    let q: viboceros_oracle::ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/circle_deform_controls.json"
-    ))
-    .unwrap();
-    let n: serde_json::Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/circle_deform_controls_rhino_20261017.json"
-    ))
-    .unwrap();
-    assert_eq!(q.operations.len(), 4);
-    for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
-        let viboceros_oracle::Operation::CircleDeform { id, fixture } = op else {
-            panic!()
-        };
-        let mut app = test_app();
-        enter(&mut app, "Circle");
-        super::ellipse::actions(&mut app, &fixture.actions);
-        assert!(app.circle_deform_session.is_none());
-        assert!(app.active_command.is_none());
-        super::catenary::assert_model_excluding(&app, &row["value"]["after_script"], id, &[]);
-        assert!(app.document.undo().unwrap().is_none());
-        assert!(app.document.redo().unwrap().is_none());
+    for (q, n, count) in [
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_deform_controls.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/circle_deform_controls_rhino_20261017.json"
+            ),
+            4,
+        ),
+        (
+            include_str!("../../../tools/rhino_oracle/fixtures/circle_clamped_controls.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/circle_clamped_controls_rhino_20261017.json"
+            ),
+            1,
+        ),
+    ] {
+        let q: viboceros_oracle::ProbeRequest = serde_json::from_str(q).unwrap();
+        let n: serde_json::Value = serde_json::from_str(n).unwrap();
+        assert_eq!(q.operations.len(), count);
+        for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
+            let viboceros_oracle::Operation::CircleDeform { id, fixture } = op else {
+                panic!()
+            };
+            let mut app = test_app();
+            enter(&mut app, "Circle");
+            super::ellipse::actions(&mut app, &fixture.actions);
+            assert!(app.circle_deform_session.is_none());
+            assert!(app.active_command.is_none());
+            super::catenary::assert_model_excluding(&app, &row["value"]["after_script"], id, &[]);
+            assert!(app.document.undo().unwrap().is_none());
+            assert!(app.document.redo().unwrap().is_none());
+        }
     }
 }
 
 #[test]
-fn circle_deform_unsupported_layout_can_be_corrected_before_any_point_is_accepted() {
+fn circle_deform_low_count_previews_commit_and_degree_above_count_are_supported() {
+    for (degree, count, controls) in [(11, 13, 14), (8, 4, 9)] {
+        let mut app = test_app();
+        for word in [
+            "Circle Deformable".into(),
+            "Degree=2".into(),
+            format!("PointCount={count}"),
+            format!("Degree={degree}"),
+            "w0,0,0".into(),
+        ] {
+            enter(&mut app, &word);
+        }
+        let input = app.circle_deform_session.as_ref().unwrap().input;
+        let point = Point3::try_new(3., 4., 5.).unwrap();
+        let preview = input.preview(point).unwrap();
+        assert_eq!(preview.degree(), degree);
+        assert_eq!(preview.control_points().len(), controls);
+        assert!(!preview.is_periodic());
+        assert_eq!(app.document.objects().len(), 0);
+        assert!(app.document.undo_label().is_none());
+        enter(&mut app, "w3,4,5");
+        assert!(app.circle_deform_session.is_none(), "{:?}", app.command_log);
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(curve, &preview);
+        let prefs = app.commands.circle_preferences();
+        assert_eq!(prefs.deformation.degree, degree);
+        assert_eq!(prefs.deformation.point_count, count);
+        assert_eq!(app.document.undo().unwrap().as_deref(), Some("Circle"));
+        assert_eq!(app.commands.circle_preferences(), prefs);
+        assert_eq!(app.document.redo().unwrap().as_deref(), Some("Circle"));
+    }
+}
+#[test]
+fn circle_deform_native_historical_clamped_frontend_geometry_and_history() {
+    let mut q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/circle_deform_diagnostics.json"
+    ))
+    .unwrap();
+    let mut n: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/circle_deform_diagnostics_rhino_20261017.json"
+    ))
+    .unwrap();
+    let indexes = n["results"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+        .filter_map(|(i, r)| {
+            let v = &r["value"];
+            (v["input_trace"]["errors"].as_array().unwrap().is_empty()
+                && !v["history"].as_str().unwrap().contains("Unknown command"))
+            .then_some(i)
+        })
+        .collect::<Vec<_>>();
+    let ops = q["operations"].as_array().unwrap();
+    q["operations"] =
+        serde_json::json!(indexes.iter().map(|i| ops[*i].clone()).collect::<Vec<_>>());
+    let rows = n["results"].as_array().unwrap();
+    n["results"] = serde_json::json!(indexes.iter().map(|i| rows[*i].clone()).collect::<Vec<_>>());
+    super::ellipse_around::assert_native_profiles_for(
+        "Circle",
+        &[(&q.to_string(), &n.to_string(), 8)],
+    );
+}
+
+#[test]
+fn circle_deform_inline_integer_settings_and_guide_mode_preserve_low_counts() {
     let mut app = test_app();
-    for word in ["Circle Deformable", "Degree=11", "PointCount=13", "w0,0,0"] {
-        enter(&mut app, word);
+    let id = app
+        .document
+        .add_geometry(Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(0., 0., 10.).unwrap(),
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "C Deformable Degree 2 PointCount 4 Degree 8 AroundCurve",
+    );
+    assert!(app.picking_circle_around_curve(), "{:?}", app.command_log);
+    assert_eq!(
+        app.circle_around_session
+            .as_ref()
+            .unwrap()
+            .output
+            .unwrap()
+            .deformation
+            .degree,
+        8
+    );
+    for word in [format!("Curve={id}"), "w0,0,5".into(), "3".into()] {
+        enter(&mut app, &word);
     }
-    assert!(app.circle_deform_session.as_ref().unwrap().input.at_start());
-    assert_eq!(app.document.objects().len(), 0);
-    assert!(app.document.undo_label().is_none());
-    for word in ["PointCount=16", "w0,0,0", "3"] {
-        enter(&mut app, word);
-    }
-    assert!(app.circle_deform_session.is_none(), "{:?}", app.command_log);
-    let Geometry::NurbsCurve(c) = app.document.objects().next().unwrap().geometry() else {
+    assert!(app.circle_around_session.is_none(), "{:?}", app.command_log);
+    let Geometry::NurbsCurve(c) = app
+        .document
+        .objects()
+        .find(|o| o.id() != id)
+        .unwrap()
+        .geometry()
+    else {
         panic!()
     };
-    assert_eq!(c.degree(), 11);
-    assert_eq!(c.control_points().len(), 27);
+    assert_eq!(c.degree(), 8);
+    assert_eq!(c.control_points().len(), 9);
+    assert!(!c.is_periodic());
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Circle"));
+    assert_eq!(app.document.objects().len(), 1);
+    assert_eq!(app.document.redo().unwrap().as_deref(), Some("Circle"));
 }

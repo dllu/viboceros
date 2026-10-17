@@ -1,0 +1,455 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-picked-size",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=9",
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-two-point",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=8",
+        "2Point",
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-three-point",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=11",
+        "3Point",
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        [
+          -3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-three-radius",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=10",
+        "3Point",
+        [
+          -2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        "Radius",
+        3,
+        [
+          0,
+          4,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-vertical",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=8",
+        "Vertical",
+        [
+          0,
+          0,
+          0
+        ],
+        3,
+        [
+          3,
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-orientation",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=13",
+        "Degree=11",
+        [
+          1,
+          2,
+          3
+        ],
+        "Orientation",
+        [
+          4,
+          6,
+          8
+        ],
+        3
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-plane",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=8",
+        "Degree=9",
+        [
+          1,
+          2,
+          3
+        ],
+        3
+      ],
+      "construction_plane": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          0.6,
+          0.8,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-around",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=8",
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          1,
+          2,
+          4
+        ],
+        3
+      ],
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-edge",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=5",
+        "Degree=9",
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0.96,
+            0.64
+          ]
+        },
+        [
+          5,
+          1.5,
+          1
+        ],
+        [
+          5,
+          4,
+          1
+        ]
+      ],
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                3,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                13,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 3,
+          "control_point_count_v": 2
+        }
+      ],
+      "guide_selection": true
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-fit",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=11",
+        "FitPoints"
+      ],
+      "curves": [
+        {
+          "type": "point",
+          "point": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            3,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            -3,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            0,
+            -3,
+            0
+          ]
+        }
+      ],
+      "preselect_all": true,
+      "guide_selection": true
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-circumference",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=8",
+        [
+          0,
+          0,
+          0
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-area",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=6",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        "Area",
+        28.274333882308138
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-memory",
+      "live_getters": true,
+      "setup": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        3
+      ],
+      "actions": [
+        "Deformable",
+        [
+          1,
+          2,
+          3
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_deform",
+      "id": "circle-clamped-diameter",
+      "live_getters": true,
+      "actions": [
+        "Deformable",
+        "Degree=2",
+        "PointCount=4",
+        "Degree=11",
+        [
+          0,
+          0,
+          0
+        ],
+        "Diameter",
+        6
+      ]
+    }
+  ]
+}

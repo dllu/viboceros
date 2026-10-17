@@ -21,11 +21,19 @@ Circle Deformable Degree=3 PointCount=8 AroundCurve Curve=<id> 0,0,5 3
 Circle Deformable Degree=5 PointCount=12 FitPoints
 ```
 
-The output is a closed, non-rational periodic curve, with an angular domain
-`[0,2*pi]`. PointCount counts unique controls; the stored NURBS repeats Degree
-controls at the seam. Equal-angle interpolation uses the shared periodic
-B-spline basis and a linear-time first-harmonic solve. Even degrees interpolate
-the seam stations, unlike the general Rebuild command’s half-span stations.
+The output is a closed, non-rational NURBS curve with an angular domain
+`[0,2*pi]`. At or above the counts in the table below, it is periodic:
+PointCount counts unique controls, with Degree controls repeated at the seam.
+The shared periodic basis uses a linear-time first-harmonic solve. Even degrees
+interpolate the seam stations; Rebuild uses half-span stations instead.
+
+Smaller counts create a clamped approximation with
+`max(PointCount,Degree)+1` controls. It interpolates `PointCount+1` equal-angle
+samples at clamped Greville parameters. When Degree exceeds PointCount, the
+curve is interpolated at PointCount degree and then elevated exactly. This
+reuses the existing normalized interpolation and degree-elevation code.
+Small-count approximations can deviate visibly from an analytic circle and
+have a kink at the seam, matching Rhino’s construction.
 
 The initial settings are degree 5 and 10 points. Successful constructions
 remember degree and point count per command registry, across model Undo/Redo.
@@ -51,21 +59,30 @@ branch has these measured minimum counts:
 | 10 | 13 |
 | 11 | 15 |
 
-Rhino uses a different, nonperiodic approximation below these limits. That
-branch is not implemented. The ordinary Circle getter rejects those settings
-before accepting a point, allowing PointCount to be increased in the same
-session. AroundCurve and FitPoints also reject these layouts without creating
-output.
+Both branches work with the same construction modes, previews, guide picking,
+FitPoints and Undo/Redo. Low-count command examples use the same setting order
+as Rhino’s integer getters:
+
+```text
+Circle Deformable Degree=2 PointCount=4 Degree=11 0,0,0 3
+Circle Deformable Degree=2 PointCount=4 Degree=8 AroundCurve
+```
+
+The second example opens the guide picker. Inline settings also accept bare
+integer getters, for example `C Deformable Degree 2 PointCount 4 Degree 8`.
+
 Tangent construction and native preference updates after cancellation remain
 unimplemented or unqualified. There is no performance-parity claim.
 
-[Validation](../circle-deform-validation.json) compares 57 successful Rhino 8.32
-workflows (56 periodic curves and one exact-output reset), plus four clean
-cancellations. It records full native NURBS,
-selection and actual Undo/Redo comparisons through command and frontend paths
-on both backends, together with local preview, input and regression checks.
-Unsupported attempts and incomplete input receipts stay outside the qualified
-corpus.
+[Periodic-output validation](../circle-deform-validation.json) records the
+original 57 successful workflows and four cancellations. The
+[clamped-output validation](../circle-clamped-validation.json) covers every
+small-count layout, construction modes, saved defaults, guide/edge and FitPoints
+selection, previews and actual history on both backends at absolute `1e-6`.
+Eight earlier clamped observations now replay successfully. Two default native
+length estimates are retained separately; explicit-accuracy recaptures verify
+their geometry and length at the same comparison threshold.
 
-References: McNeel’s [Circle command](https://docs.mcneel.com/rhino/8/help/en-us/commands/circle.htm)
-and public [CreateFromCircle API](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_NurbsCurve_CreateFromCircle_1.htm).
+References: McNeel’s [Circle command](https://docs.mcneel.com/rhino/8/help/en-us/commands/circle.htm),
+the public [CreateFromCircle API](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_NurbsCurve_CreateFromCircle_1.htm),
+and [GetLength accuracy overloads](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/getlength?version=8.x).

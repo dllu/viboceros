@@ -1,0 +1,380 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "baseline_commit": "e5306e2d4f1cacca91526c18cee0da26789428fa",
+  "feature": "Clamped deformable Circle approximation, elevation and interactive input",
+  "engine": {
+    "name": "rhino",
+    "version": "8.32.26160.13001"
+  },
+  "absolute_comparison_tolerance": 1e-06,
+  "new_successful_native_workflows": 59,
+  "new_clean_native_cancellations": 1,
+  "promoted_historical_clamped_workflows": 8,
+  "previous_periodic_or_reset_workflows": 57,
+  "total_successful_deformable_circle_workflows": 124,
+  "unique_clamped_layouts": 45,
+  "new_acknowledged_native_edge_picks": 1,
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_clamped_grid.json",
+      "observation": "tools/rhino_oracle/observations/circle_clamped_grid_rhino_20261017.json",
+      "rows": 43,
+      "qualified": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_clamped_modes.json",
+      "observation": "tools/rhino_oracle/observations/circle_clamped_modes_rhino_20261017.json",
+      "rows": 14,
+      "qualified": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_clamped_precise.json",
+      "observation": "tools/rhino_oracle/observations/circle_clamped_precise_rhino_20261017.json",
+      "rows": 2,
+      "qualified": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_clamped_controls.json",
+      "observation": "tools/rhino_oracle/observations/circle_clamped_controls_rhino_20261017.json",
+      "rows": 1,
+      "qualified": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/circle_clamped_length_diagnostics.json",
+      "observation": "tools/rhino_oracle/observations/circle_clamped_length_diagnostics_rhino_20261017.json",
+      "rows": 2,
+      "qualified": false
+    }
+  ],
+  "claims": [
+    "Every valid small-count layout from Degree 2..11 and PointCount >=4 is now supported through Circle: all 45 combinations below the measured periodic thresholds are captured and compared.",
+    "Clamped uniform interpolation places equal-angle unit-circle targets at Greville parameters. If Degree exceeds PointCount, interpolation uses PointCount degree, followed by existing exact degree elevation. Stored control count is max(Degree,PointCount)+1 and the domain is [0,2*pi].",
+    "The existing normalized rebuild collocation and degree-elevation routines are reused. Solving in the unit circle frame before mapping controls avoids translation and scale contamination of the interpolation targets.",
+    "All 59 newly qualified successful native workflows compare full controls, weights, knots, domain, length, closed status, source geometry, returned selection and actual Undo/Redo in command and frontend paths on both backends at absolute 1e-6.",
+    "Fourteen mode workflows cover picked 3D sizes, 2Point, 3Point, 3Point Radius, Vertical, Orientation, a rotated CPlane, all size modes, AroundCurve, one acknowledged curved-surface edge click, preselected FitPoints and remembered low point counts.",
+    "One new native low-count cancellation leaves no output or history; the four previous native cancellation controls remain regression coverage.",
+    "Eight clean clamped native rows previously retained as diagnostics now compare fully through command and frontend. Their original input and observation files and historical non-SHA outcomes are unchanged.",
+    "Canonical command serialization uses a legal lower-degree PointCount getter before restoring a larger Degree. Inline startup also accepts bare integer settings and opens AroundCurve while retaining all output settings.",
+    "Local checks verify spatial-frame sample interpolation for every clamped layout, exact-preview/commit equality, elevated parameters, unchanged model state during previews, preference lifetime through Undo/Redo and inline integer/guide input.",
+    "Previous periodic Circle, Circle AroundCurve, Ellipse, common point input, viewport drafting and component selection regressions pass on both backends. Full-workspace lint, formatting and Python checks also pass."
+  ],
+  "historical_promotions": {
+    "fixture": "tools/rhino_oracle/fixtures/circle_deform_diagnostics.json",
+    "observation": "tools/rhino_oracle/observations/circle_deform_diagnostics_rhino_20261017.json",
+    "qualified_rows": [
+      "circle-deform-min-d11",
+      "circle-deform-degree-raised-11",
+      "circle-deform-degree-raised-fallback",
+      "circle-deform-layout-d9-n11",
+      "circle-deform-layout-d10-n12",
+      "circle-deform-layout-d11-n14",
+      "circle-deform-layout-d7-n8",
+      "circle-deform-layout-d8-n9"
+    ],
+    "excluded_rows": [
+      "circle-deform-bare",
+      "circle-deform-reset"
+    ]
+  },
+  "length_metric_policy": {
+    "qualified_absolute_tolerance": 1e-06,
+    "precise_native_relative_tolerance": 1e-12,
+    "default_native_relative_tolerance": 1e-08,
+    "diagnostics": [
+      {
+        "default_row": "circle-clamped-d10-n10",
+        "precise_row": "circle-clamped-d10-n10-precise",
+        "default_length": 18.84951509276445,
+        "precise_length": 18.84951386847578,
+        "change": -1.2242886704427747e-06
+      },
+      {
+        "default_row": "circle-clamped-d11-n10",
+        "precise_row": "circle-clamped-d11-n10-precise",
+        "default_length": 18.849515092777605,
+        "precise_length": 18.849513868475736,
+        "change": -1.2243018687740914e-06
+      }
+    ],
+    "explanation": "Two default GetLength estimates differ from explicit-accuracy recaptures by about 1.224e-6. Their full geometry is identical. Original values remain separate diagnostics; GetLength(request relative tolerance) recaptures qualify both cases without changing the 1e-6 comparison threshold."
+  },
+  "native_capture_provenance": [
+    {
+      "scheme": "VibocerosOracleCircleClampedGrid20261017",
+      "purpose": "All 45 clamped layouts. Forty-three original rows qualify fully; two default-length metrics are preserved as diagnostics."
+    },
+    {
+      "scheme": "VibocerosOracleCircleClampedModes20261017",
+      "purpose": "Fourteen successful construction/selection/default workflows and one clean cancellation."
+    },
+    {
+      "scheme": "VibocerosOracleCircleClampedPrecise20261017",
+      "purpose": "Explicit fractional-tolerance GetLength recapture of two otherwise identical layouts."
+    }
+  ],
+  "limitations": [
+    "Small-count clamped approximations can depart visibly from an analytic circle and have a seam kink, matching the captured native construction.",
+    "Circle Tangent remains unimplemented; native preference updates after cancellation, ProjectOsnap switching, exhaustive physical snapping, perspective/aperture behavior, extreme ranges, physical area-unit suffixes and performance parity remain unqualified.",
+    "PointCount is bounded at 1000; its integer getter retains Degree+2 minimum semantics even when a smaller saved count can be retained by raising Degree."
+  ],
+  "references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/circle.htm",
+    "https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_NurbsCurve_CreateFromCircle_1.htm",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/getlength?version=8.x"
+  ],
+  "tests": [
+    {
+      "name": "circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "circle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 53.55,
+      "test_results": [
+        "test result: ok. 38 passed; 0 failed; 0 ignored; 0 measured; 1340 filtered out; finished in 1.34s",
+        "test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 1464 filtered out; finished in 0.41s",
+        "test result: ok. 63 passed; 0 failed; 0 ignored; 0 measured; 2312 filtered out; finished in 9.88s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 550 filtered out; finished in 6.30s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.69s"
+      ],
+      "log_sha256": "3c8a21369739126f2d09910b87cf505322c892972b2dd2ab65f0c05e5c0a81e3"
+    },
+    {
+      "name": "ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.81,
+      "test_results": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1364 filtered out; finished in 0.17s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1483 filtered out; finished in 0.15s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 558 filtered out; finished in 0.60s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.61s"
+      ],
+      "log_sha256": "25a35cb1ca814dd4b67ded78da34ebcba23399dc66acfae96fb1beb67c361cbb"
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-drafting",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 11.01,
+      "test_results": [
+        "test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 1316 filtered out; finished in 0.19s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 156 filtered out; finished in 0.00s"
+      ],
+      "log_sha256": "0f91bb08242791cf085eab9d210afb11afc0405e8ee26a3afa8f425dbc2385ba"
+    },
+    {
+      "name": "viewport-drafting",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::tests::drafting"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.23,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1373 filtered out; finished in 0.05s"
+      ],
+      "log_sha256": "e2797bfd0fcca6e4f38f75983f1b897b526af15232d5be1aea08b2fabb78d733"
+    },
+    {
+      "name": "components",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "component"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.36,
+      "test_results": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 1360 filtered out; finished in 0.17s"
+      ],
+      "log_sha256": "b9cb07dbaaef7037cb5a63e1198132cdfb6a27e2ad1c2af00d6dd3952459a9d6"
+    },
+    {
+      "name": "native-circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "circle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 76.6,
+      "test_results": [
+        "test result: ok. 38 passed; 0 failed; 0 ignored; 0 measured; 1352 filtered out; finished in 1.34s",
+        "test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 1540 filtered out; finished in 0.41s",
+        "test result: ok. 63 passed; 0 failed; 0 ignored; 0 measured; 2312 filtered out; finished in 9.58s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 571 filtered out; finished in 6.60s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.68s"
+      ],
+      "log_sha256": "4b107e3ec581566b184069924a080f1a1797aa14aae86593330d0d82e65edb0a"
+    },
+    {
+      "name": "native-ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.58,
+      "test_results": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1376 filtered out; finished in 0.17s",
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1559 filtered out; finished in 0.17s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 579 filtered out; finished in 0.59s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 8.32s"
+      ],
+      "log_sha256": "1bdf17a3d5d93eda5c9b54a5a4c17af8468b2a054f38712c1a39af0d2dc359a2"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 25.91,
+      "test_results": [],
+      "log_sha256": "b2f672d0a6655d24c8fa4a288d59705dc55695cba968e9e69dac1ac8f6ca9059"
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.21,
+      "test_results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_circle_clamped",
+        "tools.rhino_oracle.test_circle_deform",
+        "tools.rhino_oracle.test_circle_around",
+        "tools.rhino_oracle.test_ellipse_deform",
+        "tools.rhino_oracle.test_ellipse_around",
+        "tools.rhino_oracle.test_ellipse",
+        "tools.rhino_oracle.test_catenary_command",
+        "tools.rhino_oracle.test_catenary_point_picker",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_point_snap_input",
+        "tools.rhino_oracle.test_client"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.69,
+      "test_results": [
+        "Ran 78 tests in 0.587s"
+      ],
+      "log_sha256": "5b685931f58dcfb1ba9295bcd4fecc00e9cdec6b11434c202a9af908b5a7d3cb"
+    }
+  ],
+  "prior_provenance": {
+    "records_preserved": 1,
+    "hash_entries_archived": 12,
+    "preexisting_unverifiable_records_unchanged": 69,
+    "records": [
+      "docs/circle-deform-validation.json"
+    ]
+  },
+  "historical_input_sha256": {
+    "tools/rhino_oracle/fixtures/circle_deform_diagnostics.json": "7b781a4f7c3d2ca032bcbf560ec6254025648358b5632f8b03f627f25359fefa",
+    "tools/rhino_oracle/observations/circle_deform_diagnostics_rhino_20261017.json": "e9956d7be3bbea1c38bc6eba3cc37344d37702a5f23f67dd3e91dcc1b870c0d3"
+  },
+  "sha256": {
+    "README.md": "d6e5d01cf19bf34405c9f12a237861638c606bf7b81759e490ded184b88f4181",
+    "crates/viboceros-command/src/circle_deform_input.rs": "5d32da1f0870ef191962d1730df562265f171a75cb6d99181080f039e943091d",
+    "crates/viboceros-command/src/plane_primitives/tests.rs": "557a8e34b937b91d8a934cd1e97c7d712496bc0e72adb6567fe42388ca52d036",
+    "crates/viboceros-geometry/src/circle_deform.rs": "a5106d36befa35a081338d5c12303cb71c90a13a686051a1865fe8ccea4343a3",
+    "crates/viboceros-geometry/src/curve_rebuild.rs": "78242f61015b5534cbed45ab52dd0d7fb9d7e60b5fb8c3756a9fb4cf59de2634",
+    "crates/viboceros-geometry/src/error.rs": "cded868ae8c84963f956b2cbe123ce4e2b5a4e901f27d31ac57e9682bbe41f18",
+    "crates/viboceros-oracle/src/circle_around.rs": "9936e5c3b0280e29c1d8774b831f07aaa3c4a8f7a2096818cb5af88301df18f5",
+    "docs/circle-deform-validation.json": "55006a9145ed7248e6d01ded3af692c5de0f94fbbaa013043d44e550e1d8de25",
+    "docs/commands/circle-deformable.md": "1ae19da0f3559b7156f20686c21034fa09442a2811c25f5ffaad66e84a1fb665",
+    "src/app/circle_deform.rs": "560ca083f2de2ff2601a50c0fa8fe8fc2432a9b769950c820d97edc64c131a93",
+    "src/app/tests/circle_deform.rs": "4468296a7e60aa528a217bb760aefd26a312afef119d06e53be37833b1e613e1",
+    "tools/rhino_oracle/circle_around_probe.py": "6c183afdbeb081731700d3f762e90f64cd09a9b8fe6e1aa0900340715f5164eb",
+    "tools/rhino_oracle/curve_primitive_probe.py": "e0e696bfd3da21c180ab4a5792c530e477e88d23be6baaabd75d46f78a587c66",
+    "tools/rhino_oracle/fixtures/circle_clamped_controls.json": "8ff60a692b66bfe2ba2e9e6dfa54ff714ac5ed5b3af22471c35dde8befe6ca4e",
+    "tools/rhino_oracle/fixtures/circle_clamped_grid.json": "493f1f53ed2c01d97ad156dd6a0c1807934350a9001aac396b405634cf59fba5",
+    "tools/rhino_oracle/fixtures/circle_clamped_length_diagnostics.json": "29376c5f263c45703adbb9aed5945339016917854e64d51c4a237765b8f35d75",
+    "tools/rhino_oracle/fixtures/circle_clamped_modes.json": "302a24f111deb64617acfa15372708a96df5b3fbe46c9855691b8bb68d4c7248",
+    "tools/rhino_oracle/fixtures/circle_clamped_precise.json": "31dbec7225fbabe6071d0e509b021e936f28a77b428342aa009e085d62306d41",
+    "tools/rhino_oracle/observations/circle_clamped_controls_rhino_20261017.json": "519df9f58a06704a25713ebde09f1dc58cafe29739c2373f467324e7f5200cca",
+    "tools/rhino_oracle/observations/circle_clamped_grid_rhino_20261017.json": "d0be292ed36e3ce425970c40617ee1ffbda5f8f66349bd4145ba238e3d448304",
+    "tools/rhino_oracle/observations/circle_clamped_length_diagnostics_rhino_20261017.json": "4f27a4cc9c9211d693b7d59a5a3b3b2ca3e6429f941bca70330e6261e03105eb",
+    "tools/rhino_oracle/observations/circle_clamped_modes_rhino_20261017.json": "4930bb1391eb7cbeb47fc5c0d05bb974309e463a7b1c7d08886532aaf8aa2f09",
+    "tools/rhino_oracle/observations/circle_clamped_precise_rhino_20261017.json": "fae61e41edef37afa070ac67a7e5c8385024e90ee69f4882d0289bbd464e1052",
+    "tools/rhino_oracle/test_circle_clamped.py": "687ec45c8daa0d675750c7d4ff62d0ac62dc5d42eb56018da45c728e938801d4"
+  }
+}

@@ -21,9 +21,31 @@ impl VibocerosApp {
             self.document.tolerance(),
         );
         let mut tokens = Vec::new();
-        // Complete invocations are executed by the command backend. Starting
-        // an interactive getter accepts only its initial output settings.
-        for word in &words[1..] {
+        // Complete point constructions execute in the backend. Initial
+        // settings can also open an integer getter or guide picker.
+        for (index, word) in words.iter().enumerate().skip(1) {
+            if input.integer_pending() {
+                let accepted = if word.trim_start_matches('_').eq_ignore_ascii_case("Enter") {
+                    input.default_value().is_ok()
+                } else {
+                    word.parse::<f64>()
+                        .ok()
+                        .is_some_and(|n| input.number(n).is_ok())
+                };
+                if !accepted {
+                    return false;
+                }
+                continue;
+            }
+            if index + 1 == words.len()
+                && input.at_start()
+                && word
+                    .trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("AroundCurve")
+            {
+                self.start_circle_around_with_output(Some(input.output()));
+                return true;
+            }
             let key = word
                 .trim_start_matches(['_', '-'])
                 .split('=')

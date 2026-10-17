@@ -246,6 +246,42 @@ fn solve_rebuild_targets<E: From<GeometryError>>(
         .collect::<Result<_, _>>()?)
 }
 
+/// Interpolate supplied targets at a clamped uniform basis's Greville sites.
+/// Circle's low-count approximation samples angles by index rather than by
+/// these parameters; retain the shared normalized collocation and solve.
+pub(crate) fn interpolate_clamped_greville_targets(
+    degree: usize,
+    targets: &[Point3],
+) -> Result<NurbsCurve, GeometryError> {
+    if degree == 0 || degree > MAX_CURVE_REBUILD_DEGREE {
+        return Err(GeometryError::InvalidCurveRebuildDegree {
+            actual: degree,
+            maximum: MAX_CURVE_REBUILD_DEGREE,
+        });
+    }
+    if targets.len() <= degree || targets.len() > MAX_CURVE_REBUILD_POINT_COUNT + 1 {
+        return Err(GeometryError::InvalidControlNet {
+            context: "clamped Greville interpolation target count",
+        });
+    }
+    let knots = clamped_uniform_knots(degree, targets.len(), targets.len() - degree);
+    let parameters = (0..targets.len())
+        .map(|i| greville_parameter(&knots, degree, i))
+        .collect::<Vec<_>>();
+    let mut controls = solve_rebuild_targets(
+        degree,
+        &knots,
+        &parameters,
+        false,
+        targets,
+        &mut solve_portable_rebuild,
+    )?;
+    controls[0] = targets[0];
+    let last = controls.len() - 1;
+    controls[last] = targets[last];
+    NurbsCurve::try_new(degree, controls, knots)
+}
+
 fn solve_portable_rebuild(
     input: &CurveRebuildInterpolation<'_>,
 ) -> Result<Vec<[Real; 3]>, GeometryError> {
