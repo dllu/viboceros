@@ -203,22 +203,7 @@ impl Viewport {
         cursor: Option<Point3>,
     ) {
         for (frame, radius) in preview.circles(cursor) {
-            if !radius.is_finite() || radius <= 0. {
-                continue;
-            }
-            let points = (0..=128)
-                .filter_map(|i| {
-                    let angle = std::f64::consts::TAU * i as Real / 128.;
-                    frame
-                        .point_at([radius * angle.cos(), radius * angle.sin(), 0.])
-                        .ok()
-                })
-                .collect::<Vec<_>>();
-            for pair in points.windows(2) {
-                if let Some(line) = self.project_segment(pair[0], pair[1], rect) {
-                    painter.line_segment(line, Stroke::new(1., Color32::BLACK));
-                }
-            }
+            self.paint_morph_radius_circle(painter, rect, frame, radius);
         }
         let marker = preview
             .initial

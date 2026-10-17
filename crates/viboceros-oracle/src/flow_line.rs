@@ -23,6 +23,8 @@ pub struct Fixture {
     pub group: bool,
     #[serde(default)]
     pub options: super::flow_grips::Options,
+    #[serde(default)]
+    pub local_radii: Option<[f64; 2]>,
 }
 impl Fixture {
     pub fn source_geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
@@ -78,8 +80,14 @@ pub(super) fn run_with_options(
     f: &Fixture,
     iterations: u32,
     tolerance: Tolerance,
-    options: viboceros_command::flow::Options,
+    mut options: viboceros_command::flow::Options,
 ) -> Result<(Value, u64), ProbeError> {
+    if let Some([inner, outer]) = f.local_radii {
+        options.local = true;
+        options.local_radii = Some(viboceros_geometry::CurveFlowLocalRadii::try_from_pair([
+            inner, outer,
+        ])?);
+    }
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let mut doc = Document::new(tolerance);
         let geometry = f.guide_geometries(tolerance)?;
@@ -247,6 +255,28 @@ mod tests {
             60,
         );
     }
+    #[test]
+    fn local_flow_matches_native_falloff_owners_grips_folded_rigid_poses_and_history() {
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_local.json"),
+            include_str!("../../../tools/rhino_oracle/observations/flow_local_rhino_20261017.json"),
+            50,
+        );
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_local_owners.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_local_owners_rhino_20261017.json"
+            ),
+            76,
+        );
+        compare_native(
+            include_str!("../../../tools/rhino_oracle/fixtures/flow_local_edges.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/flow_local_edges_rhino_20261017.json"
+            ),
+            42,
+        );
+    }
     fn compare_native(request: &str, native: &str, cases: usize) {
         let request: ProbeRequest = serde_json::from_str(request).unwrap();
         let actual = run_request(&request).unwrap();
@@ -278,8 +308,29 @@ mod tests {
             ] {
                 assert_eq!(a.value[key], true, "{} {key}: {}", a.id, a.value);
             }
-            assert_eq!(a.value["undo_label"], "Flow");
-            assert_eq!(a.value["redo_label"], "Flow");
+            // Native's object count excludes moved grips. Confirm the full
+            // captured state before accepting an empty Local edit history.
+            let no_op = n["value"]["macro"]
+                .as_str()
+                .unwrap()
+                .contains("_Local=_Yes")
+                && n["value"]["before"] == n["value"]["after_script"]
+                && n["value"]["history"]
+                    .as_str()
+                    .unwrap()
+                    .contains("Morphed 0 objects.");
+            if no_op {
+                assert_eq!(
+                    n["value"]["before"], n["value"]["after_script"],
+                    "{} native no-op",
+                    a.id
+                );
+                assert!(a.value["undo_label"].is_null(), "{} no-op Undo", a.id);
+                assert!(a.value["redo_label"].is_null(), "{} no-op Redo", a.id);
+            } else {
+                assert_eq!(a.value["undo_label"], "Flow", "{} Undo", a.id);
+                assert_eq!(a.value["redo_label"], "Flow", "{} Redo", a.id);
+            }
             for stage in ["before", "after", "undo", "redo"] {
                 let x = &a.value[stage];
                 let y = &n["value"][if stage == "after" {

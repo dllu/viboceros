@@ -40,6 +40,29 @@ impl MorphPreviewKey for Key {
     }
 }
 pub(crate) type FlowPreviewCache = MorphPreviewCache<Key>;
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct FlowLocalPreview {
+    pub getter: viboceros_command::circle_input::CircleInput,
+    pub inner: Option<Real>,
+}
+impl FlowLocalPreview {
+    pub(crate) fn circles(self, cursor: Option<Point3>) -> Vec<(Frame3, Real)> {
+        let mut circles = self
+            .inner
+            .filter(|r| *r > 0.)
+            .and_then(|r| {
+                let mut getter = self.getter;
+                getter.number(r).ok().flatten()
+            })
+            .map(|circle| (circle.frame, circle.radius))
+            .into_iter()
+            .collect::<Vec<_>>();
+        if let Some(circle) = cursor.and_then(|p| self.getter.preview(p)) {
+            circles.push((circle.frame, circle.radius));
+        }
+        circles
+    }
+}
 #[derive(Clone, Copy)]
 pub(crate) struct FlowPreview<'a> {
     pub sources: &'a [ObjectId],

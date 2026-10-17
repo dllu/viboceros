@@ -2,9 +2,11 @@
 use super::*;
 use std::collections::BTreeMap;
 use viboceros_document::{ControlPointId, CopyGroupPolicy, ReplacementHistory};
-use viboceros_geometry::{BoundingBox3, CurveFlowOptions, CurveFlowPointMorph};
+use viboceros_geometry::{
+    BoundingBox3, CurveFlowLocalRadii, CurveFlowOptions, CurveFlowPointMorph,
+};
 
-pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No] [Roadlike=Yes|No] [BaseUp=x,y,z] [TargetUp=x,y,z]";
+pub const USAGE: &str = "Flow (Base=id|BaseLine=start;end) (Target=id|TargetLine=start;end) [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No] [Roadlike=Yes|No] [BaseUp=x,y,z] [TargetUp=x,y,z] [Local=Yes|No] [LocalRadii=inner,outer]";
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub copy: bool,
@@ -17,6 +19,8 @@ pub struct Options {
     pub roadlike: bool,
     pub base_up: Option<Vector3>,
     pub target_up: Option<Vector3>,
+    pub local: bool,
+    pub local_radii: Option<CurveFlowLocalRadii>,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -31,6 +35,8 @@ impl Default for Options {
             roadlike: false,
             base_up: None,
             target_up: None,
+            local: false,
+            local_radii: None,
         }
     }
 }
@@ -49,6 +55,7 @@ impl Options {
                 self.target_up
                     .unwrap_or(Vector3::try_new(0., 0., 1.).unwrap())
             }),
+            local_radii: self.local.then_some(self.local_radii).flatten(),
         }
     }
     /// Resolve the CPlane Z picker preset into explicit directions.
@@ -72,6 +79,13 @@ impl Options {
             yes(self.reverse_target),
             yes(self.roadlike)
         );
+        arguments.push_str(&format!(" Local={}", yes(self.local)));
+        if self.local
+            && let Some(radii) = self.local_radii
+        {
+            let [inner, outer] = radii.radii();
+            arguments.push_str(&format!(" LocalRadii={inner},{outer}"));
+        }
         if self.roadlike {
             for (name, up) in [("BaseUp", self.base_up), ("TargetUp", self.target_up)] {
                 if let Some(up) = up {
@@ -178,6 +192,12 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
             *args.get(i).ok_or(CommandError::Usage(USAGE))?
         };
         match key.as_str() {
+            "localradii" => {
+                let (a, b) = value.split_once(',').ok_or(CommandError::Usage(USAGE))?;
+                let a = a.parse().map_err(|_| CommandError::Usage(USAGE))?;
+                let b = b.parse().map_err(|_| CommandError::Usage(USAGE))?;
+                options.local_radii = Some(CurveFlowLocalRadii::try_from_pair([a, b])?);
+            }
             "baseline" | "targetline" => {
                 let input = GuideInput::Line(line_pair(value)?);
                 if key.starts_with("base") {
@@ -230,7 +250,7 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
                 }
             }
             "copy" | "rigid" | "rigidgroups" | "stretch" | "preservestructure" | "reversebase"
-            | "reversetarget" | "roadlike" => {
+            | "reversetarget" | "roadlike" | "local" => {
                 let value = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
                 match key.as_str() {
                     "copy" => options.copy = value,
@@ -241,16 +261,14 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
                     "reversebase" => options.reverse_base = value,
                     "reversetarget" => options.reverse_target = value,
                     "roadlike" => options.roadlike = value,
+                    "local" => options.local = value,
                     _ => unreachable!(),
                 }
             }
-            "local" | "stairlike" => {
+            "stairlike" => {
                 let enabled = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
                 if enabled {
-                    return Err(CommandError::FlowOptionNotSupported(match key.as_str() {
-                        "local" => "Local",
-                        _ => "Stairlike",
-                    }));
+                    return Err(CommandError::FlowOptionNotSupported("Stairlike"));
                 }
             }
             "targetsurface" => return Err(CommandError::FlowOptionNotSupported("TargetSurface")),
@@ -275,6 +293,26 @@ fn guide(doc: &Document, input: GuideInput) -> Result<Curve3, CommandError> {
         .ok_or(CommandError::FlowGuideNotCurve)?;
     Ok(curve.curve().to_owned())
 }
+/// Plane used by the interactive local-influence Circle getters.
+pub fn local_radius_frame(
+    doc: &Document,
+    base: GuideInput,
+    reverse: bool,
+) -> Result<viboceros_geometry::Frame3, CommandError> {
+    let curve = guide(doc, base)?;
+    let curve = curve.as_ref();
+    let t = if reverse {
+        *curve.domain().end()
+    } else {
+        *curve.domain().start()
+    };
+    let sample = curve.evaluate_with_tangent(t)?;
+    Ok(viboceros_geometry::Frame3::try_from_normal(
+        sample.point(),
+        sample.tangent().as_vector(),
+        Tolerance::NUMERICAL_VALIDATION,
+    )?)
+}
 pub fn prepare(
     doc: &Document,
     base: impl Into<GuideInput>,
@@ -283,6 +321,9 @@ pub fn prepare(
 ) -> Result<CurveFlowPointMorph, CommandError> {
     let base = guide(doc, base.into())?;
     let target = guide(doc, target.into())?;
+    if options.local && options.local_radii.is_none() {
+        return Err(CommandError::FlowLocalRadiiRequired);
+    }
     if options.roadlike && (options.base_up.is_none() || options.target_up.is_none()) {
         return Err(CommandError::FlowRoadlikeAxesRequired);
     }
@@ -389,6 +430,7 @@ impl Command for FlowCommand {
             copy: true,
             base_up: None,
             target_up: None,
+            local_radii: None,
             ..value
         });
         true
@@ -415,9 +457,29 @@ impl Command for FlowCommand {
         }
         let morph = prepare(doc, base, target, options)?;
         let staged = deformed_with_grips(doc, &sources.ids, &sources.grips, &morph, options)?;
+        let mut active_grips = sources.grips.clone();
+        if options.local {
+            // Preserve the original grip-owner context while staging whole
+            // objects. A simultaneously selected parent must not become an
+            // ordinary source when its selected grips are outside the tube.
+            let mut filtered = Vec::new();
+            for grip in &sources.grips {
+                let point = doc
+                    .control_point_locations(grip.object)
+                    .and_then(|p| p.get(grip.index).copied())
+                    .ok_or(DocumentError::InvalidControlPointSelection {
+                        object: grip.object,
+                        index: grip.index,
+                    })?;
+                if morph.local_influence_at(point)? != 0. {
+                    filtered.push(*grip);
+                }
+            }
+            active_grips = filtered;
+        }
+        let staged_ids = staged.iter().map(|(id, _)| *id).collect::<Vec<_>>();
         let count = staged.len()
-            + sources
-                .grips
+            + active_grips
                 .iter()
                 .map(|g| g.object)
                 .collect::<BTreeSet<_>>()
@@ -430,10 +492,10 @@ impl Command for FlowCommand {
                 doc.clear_selection();
             }
         }
-        if !sources.grips.is_empty() {
+        if !active_grips.is_empty() {
             doc.morph_grips_with_object_geometries(
                 staged,
-                sources.grips.iter().copied(),
+                active_grips.iter().copied(),
                 &morph,
                 options.copy,
                 CopyGroupPolicy::Preserve,
@@ -445,7 +507,7 @@ impl Command for FlowCommand {
                 staged,
                 ReplacementHistory::EveryReplacement,
             )?;
-            doc.move_objects_to_end_in_order(sources.ids.iter().copied())?;
+            doc.move_objects_to_end_in_order(staged_ids)?;
         }
         doc.select_objects_direct(sources.ids.iter().copied(), SelectionMode::Replace)?;
         if sources.postselected {

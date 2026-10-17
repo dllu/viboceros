@@ -11,6 +11,33 @@ use viboceros_geometry::{
     AffineTransform3, BoundingBox3, BrepWireCage, PointMorph, SurfacePreviewCage,
 };
 
+impl Viewport {
+    pub(super) fn paint_morph_radius_circle(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        frame: Frame3,
+        radius: Real,
+    ) {
+        if !radius.is_finite() || radius <= 0. {
+            return;
+        }
+        let points = (0..=128)
+            .filter_map(|i| {
+                let angle = std::f64::consts::TAU * i as Real / 128.;
+                frame
+                    .point_at([radius * angle.cos(), radius * angle.sin(), 0.])
+                    .ok()
+            })
+            .collect::<Vec<_>>();
+        for pair in points.windows(2) {
+            if let Some(line) = self.project_segment(pair[0], pair[1], rect) {
+                painter.line_segment(line, Stroke::new(1., Color32::BLACK));
+            }
+        }
+    }
+}
+
 pub(crate) trait MorphPreviewKey: Clone + PartialEq {
     type Morph: PointMorph;
     fn morph(&self, tolerance: Tolerance)

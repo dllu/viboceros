@@ -2,7 +2,7 @@
 
 Flow is registered in the command API and application. Its current supported
 subset has a two-guide getter, direction reversal, cached preview, staged edits,
-Copy, Rigid/RigidGroups, Stretch, PreserveStructure, temporary Line guides,
+Copy, Rigid/RigidGroups, Stretch, PreserveStructure, Local radii, temporary Line guides,
 NURBS/composite guides, explicit spatial Roadlike axes, selected control/edit grips, option memory and one-step
 local Undo/Redo. See [usage and current limits](commands/flow.md).
 
@@ -42,6 +42,9 @@ and actual Flow macros in owned private displays:
 | `flow_nurbs_spatial.json` | 60 | Spatial Roadlike base/target/both-guide workflows with Copy, Stretch, reversals, Rigid poses and Undo/Redo |
 | `flow_inverse_queries.json`, `flow_inverse_nodes.json` | 4 | Public query order, density, tolerances, curve lifetime and checkpoint snap windows |
 | `flow_auto_directions.json` | 38 | Automatic spatial direction under translations, base length, scaling, reversal, refinement, control changes and quarter turns |
+| `flow_local.json` | 50 | Local falloff, finite end caps, Copy/Stretch/reversals, straight-guide orientations and a spatial Roadlike workflow |
+| `flow_local_owners.json` | 76 | NURBS/composite and spatial guide roles, local Rigid poses, control/edit grips and complete owner/history states |
+| `flow_local_edges.json` | 42 | Zero/reversed radii, reflected derivative frames, unchanged whole owners and outside grips |
 | `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
 | `flow_density.json`, `flow_coupled_frames.json`, `flow_up_lookup.json` | 13 | Dense spatial positions/bases, equivalent straight guide types, batch length lookups, degree elevation and changed spatial shapes |
 
@@ -61,8 +64,8 @@ scaling, while authored point order and the SDK QuickPreview/Tolerance settings
 do not change point results. These diagnostic observations are retained to guide
 further independent implementation; automatic spatial orientation is not qualified.
 
-Remaining scope includes all retained spatial point maps, Local
-input, Roadlike Automatic, Stairlike and TargetSurface orientation, native option
+Remaining scope includes all retained automatic spatial point maps,
+Roadlike Automatic, Stairlike and TargetSurface orientation, native option
 memory and history details, multiple-object rigid group qualification, fitted
 owner geometry, further closed/periodic guides, preview appearance and performance.
 
@@ -337,4 +340,36 @@ It does not supply that selector. Automatic spatial Flow remains guarded.
 ```sh
 python3 -m tools.rhino_oracle.flow_auto_direction_report /tmp/flow-auto-direction-report.json
 python3 -m unittest tools.rhino_oracle.test_flow_auto_direction
+```
+
+The [Local validation record](flow-local-validation.json) qualifies source
+distance falloff independently of the frame selector. The kernel reuses the
+same prepared guide and closest-point query; the clamped cubic blend is the
+one used by the open-source OpenNURBS `ON_Localizer`. Distance includes the
+full endpoint residual, giving finite end caps. Points outside return before
+evaluating a potentially unrepresentable full deformation. Convex coordinate
+blending reuses the shared scale-safe scalar interpolator.
+
+Both radius orders and a zero first radius match actual native commands. A
+typed radius pair normalizes into validated inner/outer bounds. Interactive
+input reuses the existing Circle getter, drafting plane, snapping and shared
+radius-circle painting. Changing radii retains the prepared guide data; preview
+and commit use the same point map. Partial, invalid or cancelled getters do not
+edit the document. New commands retain the Local toggle but ask for radii again.
+
+Local exposed two existing edge cases. A reflected numerical derivative can
+cancel one averaged rigid-frame axis exactly. Retaining its forward direction
+while averaging the other axis matches native poses, including all three world
+axis permutations. The shared rigid producer now handles this case. Outside
+grips are filtered without changing the original grip-owner precedence or
+ordinary rigid-group context. Native skips their unchanged owner, while whole
+objects still receive Copy even when unchanged. All 168 retained workflows
+compare complete owner, selection, group, guide and real Undo/Redo states.
+Further fitted owner geometry, mixed rigid groups and automatic spatial
+orientation still require qualification.
+
+```sh
+cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/flow_local_owners.json /tmp/flow-local-owners.json
+python3 -m tools.rhino_oracle.flow_line_comparison tools/rhino_oracle/fixtures/flow_local_owners.json /tmp/flow-local-owners.json tools/rhino_oracle/observations/flow_local_owners_rhino_20261017.json /tmp/flow-local-owners-report.json
+python3 -m unittest tools.rhino_oracle.test_flow_local
 ```

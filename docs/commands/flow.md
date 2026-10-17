@@ -1,9 +1,9 @@
 # Flow
 
 Select source objects and enter `Flow`. Pick the base and target curves near
-corresponding ends. The preview appears after both guides and any Roadlike axes
-are supplied; Enter
-applies it and Escape cancels without editing the document. Change an option
+corresponding ends. The preview appears after both guides, any Roadlike axes
+and any Local radii are supplied. Enter applies it and Escape cancels without
+editing the document. Change an option
 before applying, or enter `Base` / `Target` to select that guide again.
 
 At either guide prompt, enter `Line` and pick two endpoints instead of selecting
@@ -18,7 +18,7 @@ guide getter. Guides must be separate from the sources. Hidden, locked, deleted,
 or replaced guides invalidate the preview and must be selected again.
 
 Supported options are `Copy`, `Rigid`, `RigidGroups`, `Stretch`,
-`PreserveStructure`, `ReverseBase`, `ReverseTarget`, and `Roadlike`, with `Yes` / `No` values.
+`PreserveStructure`, `ReverseBase`, `ReverseTarget`, `Roadlike`, and `Local`, with `Yes` / `No` values.
 Entering an option name alone toggles it during interactive input. Initial
 settings are Copy=Yes, Rigid=No, RigidGroups=Yes, Stretch=No and
 PreserveStructure=No. Successful commands remember deformation settings; Copy
@@ -33,6 +33,7 @@ Flow BaseEdge=12,0 Target=17 Rigid=Yes RigidGroups=No
 Flow BaseLine=0,0,0;10,0,0 TargetLine=5,3,0;5,23,0 Copy=No
 Flow Line 0,0,0 10,0,0 Target=17 Stretch=Yes
 Flow Base=12 Target=17 Roadlike=Yes BaseUp=0,0,1 TargetUp=0,1,0
+Flow Base=12 Target=17 Local=Yes LocalRadii=1,3 Copy=No
 ```
 
 Use the actual IDs from the current document. `BaseEdge` and `TargetEdge` refer
@@ -70,6 +71,21 @@ again. Scripted commands require both `BaseUp=x,y,z` and `TargetUp=x,y,z` in
 world coordinates. Preview and commit use the same chosen axes. A new
 interactive command asks for axes again.
 
+With Local enabled, enter or pick two radii after the guides and Roadlike axes.
+Circle guides show the accepted first radius and the current second radius.
+Either radius can be entered first; zero is allowed and the radii must differ.
+The smaller radius receives full deformation. Beyond the larger radius points
+stay fixed, and the wall blends the displacement with cubic smoothstep.
+Distance is measured to the finite base curve, including its endpoints, so the
+influence also fades beyond either end. Stretch leaves these source radii unchanged.
+
+Scripted input supplies `Local=Yes LocalRadii=first,second`. Enter `LocalRadii`
+or `Radii` during preview to pick the circles again, or supply a new pair directly.
+`Local=No` removes the falloff. Each new interactive command asks for radii again.
+Outside grips stay fixed and do not create copied owners or an empty Undo step
+when all selected grips are outside. Ordinary objects still follow Copy,
+including when the resulting geometry is unchanged.
+
 NURBS curves and polycurves can supply either or both guides. For spatial
 curved guides, enable Roadlike and choose both axes; `CPlaneZ` supplies a
 convenient explicit direction. Planar curved guides also work with Roadlike off.
@@ -82,7 +98,7 @@ share the command's staged owner/grip edit and preview paths. Native Roadlike
 `Automatic` remains unimplemented; `CPlaneZ` explicitly chooses a direction.
 
 The registered command rejects automatic orientation of general spatial curved
-guides. Local, Stairlike and TargetSurface remain unfinished. Unsupported modes
+guides. Stairlike and TargetSurface remain unfinished. Unsupported modes
 fail before editing.
 
 The native comparison covers 76 point maps and 43 actual grouped point-cloud
@@ -127,3 +143,10 @@ with direction reversal, Copy, Stretch, groups and real Undo/Redo. Spatial NURBS
 guides use explicit Roadlike axes; the spatial matrix also checks Rigid poses.
 All comparisons retain the document's `1e-6` tolerance. Automatic spatial
 orientation and native Roadlike Automatic remain open requirements.
+
+The [Local validation record](../flow-local-validation.json) covers another 168
+actual command workflows at the same `1e-6` tolerance. It compares finite end
+caps, both reversals, Copy/Stretch, NURBS and composite guide roles, explicit
+spatial Roadlike, Rigid poses, control/edit grips, unchanged whole owners,
+groups, guide lifetime and real Undo/Redo. App tests cover picked and typed
+circles, live previews, radius changes, cancellation, stale guides and one Undo.

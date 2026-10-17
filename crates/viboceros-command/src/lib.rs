@@ -16672,6 +16672,10 @@ fn format_point(point: Point3) -> String {
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error(
+        "Flow Local requires LocalRadii=inner,outer; interactive input can enter or pick both radii"
+    )]
+    FlowLocalRadiiRequired,
     #[error("Silhouette requires the native kernel; build with --features native-smlib")]
     SilhouetteRequiresNativeKernel,
     #[error("ExtrudeCrvTapered requires the native kernel; build with --features native-smlib")]

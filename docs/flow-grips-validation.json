@@ -110,8 +110,6 @@
     "crates/viboceros-document/src/control_points/morph_tests.rs": "aa509c62a7f14ef4ba6a5577cef72c0e392afd05b63eef404d14f35db83dc15f",
     "crates/viboceros-document/src/control_points/transform.rs": "a5cd0dc55cc755367dd42903b55cf9d384a4bdffde45f5733e832fc13a30a4bd",
     "src/app/transform_sources.rs": "9d85f6c5e0693ce766b57b8ed2acfa6d958416779fad8b69d8b7ecc444ad0d42",
-    "src/viewport.rs": "8614ca527111fc658f4bc8f051a01276637f21dbedeb930cbb53d93d70cda934",
-    "src/viewport/flow_preview.rs": "2b14500b2743b439f03eda291f0f9b5637bdd8eb830b32a997ce853985817611",
     "tools/rhino_oracle/flow_grips_comparison.py": "c1774f5a912bd9d71cdd77e57fa30ae66cbf31b3d1bfdd5a293b60ac24cb2e65",
     "tools/rhino_oracle/flow_grips_probe.py": "1bf1f5f5448dee43d9bdf15610758c1d8df0e331993e1dfd82966c885c5c7974",
     "tools/rhino_oracle/test_flow_grips.py": "5d136380b760f650a9124d91ba0603b2d7beb574c479b19816e7a1a06502f4c0",
@@ -145,6 +143,8 @@
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/prepared-curve-length-validation.json": "8af171ab27d6a8d3f819a613d4485d61bcaddffafd99aaae0b10b7030a25a6f2",
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:crates/viboceros-oracle/src/flow_grips.rs": "faa8646faf8f2b587aeaffa406779e123d6d37645e067b755bc0a71828f8eaaf",
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:crates/viboceros-command/src/lib.rs": "01e7f653a28366374ce7a0d30b6ab0a39c4a1c298c892ce7ca20f9b2781148fd",
-    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/orient-surface-grips-validation.json": "fc2b021b05ba2beebbcece6ef77e59d08eeb315b63c5e9f8e265174bb2856f0e"
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/orient-surface-grips-validation.json": "fc2b021b05ba2beebbcece6ef77e59d08eeb315b63c5e9f8e265174bb2856f0e",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:src/viewport.rs": "8614ca527111fc658f4bc8f051a01276637f21dbedeb930cbb53d93d70cda934",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:src/viewport/flow_preview.rs": "2b14500b2743b439f03eda291f0f9b5637bdd8eb830b32a997ce853985817611"
   }
 }

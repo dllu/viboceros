@@ -2,6 +2,8 @@
 use super::*;
 use crate::{Curve3, CurveRef, FrameTransportOptions, ParameterSide, curve::ArcLengthSampler};
 use std::sync::Arc;
+mod local;
+pub use local::CurveFlowLocalRadii;
 
 const FLOW_LOOKUP_INTERVALS: usize = 840;
 const FLOW_INVERSE_TOLERANCE: Real = 1e-6;
@@ -15,6 +17,7 @@ pub struct CurveFlowOptions {
     pub preserve_structure: bool,
     pub base_up: Option<Vector3>,
     pub target_up: Option<Vector3>,
+    pub local_radii: Option<CurveFlowLocalRadii>,
 }
 impl Default for CurveFlowOptions {
     fn default() -> Self {
@@ -25,6 +28,7 @@ impl Default for CurveFlowOptions {
             preserve_structure: false,
             base_up: None,
             target_up: None,
+            local_radii: None,
         }
     }
 }
@@ -481,13 +485,62 @@ impl PointMorph for CurveFlowPointMorph {
         self.interpolation_solver
     }
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
-        if let Some(map) = self.linear_mapping {
-            return map.transform_point(point);
+        let parameter = if self.linear_mapping.is_none() || self.options.local_radii.is_some() {
+            Some(
+                self.base
+                    .curve()
+                    .closest_parameter(point, self.base.tolerance)?,
+            )
+        } else {
+            None
+        };
+        let weight = parameter
+            .map(|t| self.local_weight(point, t))
+            .transpose()?
+            .unwrap_or(1.);
+        if weight == 0. {
+            return Ok(point);
         }
-        let parameter = self
-            .base
-            .curve()
-            .closest_parameter(point, self.base.tolerance)?;
+        let mapped = if let Some(map) = self.linear_mapping {
+            map.transform_point(point)?
+        } else {
+            self.flow_point_at_parameter(point, parameter.unwrap())?
+        };
+        if let Some(radii) = self.options.local_radii {
+            radii.blend(point, mapped, weight)
+        } else {
+            Ok(mapped)
+        }
+    }
+    fn morph_nurbs_curve(
+        &self,
+        curve: &NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve, GeometryError> {
+        if self.options.preserve_structure {
+            self.morph_nurbs_curve_controls(curve)
+        } else {
+            super::fit_curve(self, curve, tolerance)
+        }
+    }
+    fn morph_nurbs_surface(
+        &self,
+        surface: &NurbsSurface,
+        tolerance: Tolerance,
+    ) -> Result<NurbsSurface, GeometryError> {
+        if self.options.preserve_structure {
+            self.morph_nurbs_surface_controls(surface)
+        } else {
+            super::fit_surface(self, surface, tolerance)
+        }
+    }
+}
+impl CurveFlowPointMorph {
+    fn flow_point_at_parameter(
+        &self,
+        point: Point3,
+        parameter: Real,
+    ) -> Result<Point3, GeometryError> {
         let source = self.base.frame(parameter)?;
         let offset = source.origin.vector_to(point)?;
         let along = offset.dot(source.axes[0])?;
@@ -511,28 +564,6 @@ impl PointMorph for CurveFlowPointMorph {
             .translated(Vector3::try_from(std::array::from_fn(|i| {
                 a[i] + b[i] + c[i]
             }))?)
-    }
-    fn morph_nurbs_curve(
-        &self,
-        curve: &NurbsCurve,
-        tolerance: Tolerance,
-    ) -> Result<NurbsCurve, GeometryError> {
-        if self.options.preserve_structure {
-            self.morph_nurbs_curve_controls(curve)
-        } else {
-            super::fit_curve(self, curve, tolerance)
-        }
-    }
-    fn morph_nurbs_surface(
-        &self,
-        surface: &NurbsSurface,
-        tolerance: Tolerance,
-    ) -> Result<NurbsSurface, GeometryError> {
-        if self.options.preserve_structure {
-            self.morph_nurbs_surface_controls(surface)
-        } else {
-            super::fit_surface(self, surface, tolerance)
-        }
     }
 }
 

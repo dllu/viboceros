@@ -1,0 +1,2591 @@
+{
+  "cases": 76,
+  "matched_cases": 76,
+  "native_table_enumeration_order_compared": false,
+  "results": [
+    {
+      "id": "local-rational-base-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0667911826421914e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0667911826421914e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-base-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0667911826421914e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0667911826421914e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-base-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3176659763303178e-10,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3176659763303178e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-base-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3176659763303178e-10,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.3176659763303178e-10,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-target-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.0020430585864233e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.0020430585864233e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-target-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.0020430585864233e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.0020430585864233e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-target-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.1175062531474396e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.1175062531474396e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-target-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.1175062531474396e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.1175062531474396e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-both-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-both-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-both-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rational-both-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.396394276933279e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-base-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.3859139370615594e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.3859139370615594e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-base-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.3859139370615594e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.3859139370615594e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-base-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.1823431123048067e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.1823431123048067e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-base-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.1823431123048067e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.1823431123048067e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-target-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.623767952376511e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.623767952376511e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-target-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.623767952376511e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.623767952376511e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-target-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.3092638912203256e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.3092638912203256e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-target-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.3092638912203256e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.3092638912203256e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-both-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-both-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-both-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-cubic-both-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 6.750155989720952e-14,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-base-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0616397478079307e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0616397478079307e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-base-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0616397478079307e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.0616397478079307e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-base-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 8.030021092508832e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 8.030021092508832e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-base-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 8.030021092508832e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 8.030021092508832e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-target-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.8030021919912542e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.8030021919912542e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-target-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.8030021919912542e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.8030021919912542e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-target-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.161826273550105e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.161826273550105e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-target-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.161826273550105e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.161826273550105e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-both-False-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-both-False-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-both-True-False-False-copy-0",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-polycurve-both-True-False-False-copy-1",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.2808421817899216e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-base-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.072209319223475e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.072209319223475e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-base-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 5.072209319223475e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 5.072209319223475e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-target-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 4.871658632055187e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 4.871658632055187e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-target-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 4.871658632055187e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 4.871658632055187e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-both-False-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-both-True-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-base-False-False-False-no-stretch",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.107913926214678e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.107913926214678e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-base-True-False-False-no-stretch",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.107913926214678e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.107913926214678e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-target-False-False-False-no-stretch",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 4.742872761198669e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 4.742872761198669e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-target-True-False-False-no-stretch",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 4.742872761198669e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 4.742872761198669e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-both-False-False-False-no-stretch",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-both-True-False-False-no-stretch",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 1.4566126083082054e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-translation-00",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-translation-01",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-translation-10",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-translation-11",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.184918912462308e-13,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-rotation-00",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 4.363176486776865e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 4.363176486776865e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-rotation-01",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 9.2157392828085e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 9.2157392828085e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-rotation-10",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 4.363176486776865e-11,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 4.363176486776865e-11,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-rigid-rotation-11",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 9.2157392828085e-12,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 9.2157392828085e-12,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-rigid-base-False-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-rigid-base-False-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-rigid-base-True-False",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-spatial-rigid-base-True-True",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-000",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-001",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-010",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-011",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-100",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-101",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-110",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-nurbs-111",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 2.220446049250313e-16,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-surface-000",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-surface-001",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-surface-010",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-surface-011",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 3.552713678800501e-15,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-mesh-000",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-mesh-001",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-mesh-010",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    },
+    {
+      "id": "local-grips-mesh-011",
+      "within_1e_minus_6": true,
+      "stages": [
+        {
+          "stage": "before",
+          "native_stage": "before",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "after",
+          "native_stage": "after_script",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "undo",
+          "native_stage": "undo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        },
+        {
+          "stage": "redo",
+          "native_stage": "redo",
+          "metadata_match": true,
+          "max_coordinate_error": 0.0,
+          "within_1e_minus_6": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,9 @@
 //! Two immutable guides, a shared preview, and one staged Flow edit.
 use super::*;
 use std::{cell::RefCell, sync::Arc};
+use viboceros_command::circle_input::CircleInput;
 use viboceros_command::flow::{self as solver, GuideInput, GuideReference, Options};
-use viboceros_geometry::CurveFlowPointMorph;
+use viboceros_geometry::{CurveFlowLocalRadii, CurveFlowPointMorph};
 
 struct Guide {
     input: GuideInput,
@@ -39,11 +40,19 @@ pub(super) struct Session {
     target: Option<Guide>,
     line: Option<Role>,
     axis: Option<Role>,
+    local_circle: Option<CircleInput>,
+    local_inner: Option<f64>,
     morph: Option<Arc<CurveFlowPointMorph>>,
     pick_pointer: Option<(usize, egui::Pos2)>,
     cache: RefCell<crate::viewport::FlowPreviewCache>,
 }
 impl Session {
+    pub(super) fn local_preview(&self) -> Option<crate::viewport::FlowLocalPreview> {
+        Some(crate::viewport::FlowLocalPreview {
+            getter: self.local_circle?,
+            inner: self.local_inner,
+        })
+    }
     pub(super) fn preview(&self) -> Option<crate::viewport::FlowPreview<'_>> {
         Some(crate::viewport::FlowPreview {
             sources: &self.sources,
@@ -65,6 +74,39 @@ impl VibocerosApp {
     }
     pub(super) fn drawing_flow_axis(&self) -> bool {
         self.flow_session.as_ref().is_some_and(|s| s.axis.is_some())
+    }
+    pub(super) fn drawing_flow_radius(&self) -> bool {
+        self.flow_session
+            .as_ref()
+            .is_some_and(|s| s.local_circle.is_some())
+    }
+    fn accept_flow_radius(&mut self, radius: f64) -> bool {
+        let s = self.flow_session.as_mut().unwrap();
+        let result = if let Some(inner) = s.local_inner {
+            CurveFlowLocalRadii::try_from_pair([inner, radius]).map(Some)
+        } else if radius.is_finite() && radius >= 0. {
+            s.local_inner = Some(radius);
+            Ok(None)
+        } else {
+            Err(viboceros_geometry::GeometryError::InvalidFlowLocalRadii)
+        };
+        match result {
+            Ok(Some(radii)) => {
+                s.options.local_radii = Some(radii);
+                s.local_circle = None;
+                s.local_inner = None;
+                self.point_filter = None;
+                self.point_constraint = None;
+                self.prepare_flow_preview();
+            }
+            Ok(None) => {}
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                return false;
+            }
+        }
+        self.flow_prompt();
+        true
     }
     fn accept_flow_axis(&mut self, up: viboceros_geometry::Vector3) {
         let s = self.flow_session.as_mut().unwrap();
@@ -90,6 +132,9 @@ impl VibocerosApp {
         };
         s.line = Some(role);
         s.axis = None;
+        s.local_circle = None;
+        s.local_inner = None;
+        self.drafting_plane = None;
         s.morph = None;
         s.pick_pointer = None;
         self.active_command = Some(InteractiveCommand::Flow { start: None });
@@ -97,6 +142,17 @@ impl VibocerosApp {
         self.flow_prompt();
     }
     pub(super) fn accept_flow_point(&mut self, point: Point3) -> Option<bool> {
+        if self.drawing_flow_radius() {
+            let mut getter = self.flow_session.as_ref()?.local_circle?;
+            return Some(match getter.point(point) {
+                Ok(Some(circle)) => self.accept_flow_radius(circle.radius),
+                Ok(None) => false,
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            });
+        }
         if self.drawing_flow_axis() {
             let Some(InteractiveCommand::Flow { start }) = self.active_command else {
                 return Some(false);
@@ -229,6 +285,8 @@ impl VibocerosApp {
             target: None,
             line: None,
             axis: None,
+            local_circle: None,
+            local_inner: None,
             morph: None,
             pick_pointer: None,
             cache: RefCell::default(),
@@ -333,6 +391,8 @@ impl VibocerosApp {
     fn prepare_flow_preview(&mut self) {
         let s = self.flow_session.as_mut().unwrap();
         s.morph = None;
+        s.local_circle = None;
+        self.drafting_plane = None;
         let (Some(a), Some(b)) = (&s.base, &s.target) else {
             return;
         };
@@ -347,6 +407,20 @@ impl VibocerosApp {
             self.active_command = Some(InteractiveCommand::Flow { start: None });
             return;
         }
+        if s.options.local && s.options.local_radii.is_none() {
+            match solver::local_radius_frame(&self.document, a.input, s.options.reverse_base) {
+                Ok(frame) => {
+                    s.local_circle = Some(CircleInput::at_center(frame, frame.origin()));
+                    self.drafting_plane = Some(frame);
+                    self.active_command = Some(InteractiveCommand::Flow {
+                        start: Some(frame.origin()),
+                    });
+                }
+                Err(e) => self.push_log(format!("Error: {e}")),
+            }
+            return;
+        }
+        self.active_command = Some(InteractiveCommand::Flow { start: None });
         match solver::prepare(&self.document, a.input, b.input, s.options) {
             Ok(m) => s.morph = Some(Arc::new(m)),
             Err(e) => self.push_log(format!("Error: {e}")),
@@ -354,7 +428,13 @@ impl VibocerosApp {
     }
     fn flow_prompt(&mut self) {
         let Some(s) = &self.flow_session else { return };
-        let phase = if let Some(role) = s.axis {
+        let phase = if s.local_circle.is_some() {
+            if s.local_inner.is_some() {
+                "enter or pick the second radius of influence"
+            } else {
+                "enter or pick the first radius of influence"
+            }
+        } else if let Some(role) = s.axis {
             let start = matches!(
                 self.active_command,
                 Some(InteractiveCommand::Flow { start: Some(_) })
@@ -414,6 +494,9 @@ impl VibocerosApp {
             }
             s.morph = None;
             s.axis = None;
+            s.local_circle = None;
+            s.local_inner = None;
+            self.drafting_plane = None;
             self.active_command = Some(InteractiveCommand::Flow { start: None });
             self.component_selection.clear_choices();
             self.push_log("Flow guide changed or became unavailable; select it again".into());
@@ -429,6 +512,39 @@ impl VibocerosApp {
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
             return true;
+        }
+        if self.drawing_flow_radius() {
+            if let Ok(radius) = input.trim().parse() {
+                self.accept_flow_radius(radius);
+                return true;
+            }
+            if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
+                self.flow_prompt();
+                return true;
+            }
+            if !word.contains('=')
+                && !matches!(
+                    word.to_ascii_lowercase().as_str(),
+                    "local"
+                        | "localradii"
+                        | "radii"
+                        | "roadlike"
+                        | "baseup"
+                        | "targetup"
+                        | "base"
+                        | "target"
+                        | "line"
+                        | "copy"
+                        | "rigid"
+                        | "rigidgroups"
+                        | "stretch"
+                        | "preservestructure"
+                        | "reversebase"
+                        | "reversetarget"
+                )
+            {
+                return false;
+            }
         }
         if self.drawing_flow_axis() {
             if input.is_empty()
@@ -458,6 +574,8 @@ impl VibocerosApp {
                         | "preservestructure"
                         | "reversebase"
                         | "reversetarget"
+                        | "local"
+                        | "localradii"
                 )
             {
                 return false;
@@ -474,6 +592,15 @@ impl VibocerosApp {
         }
         if word.eq_ignore_ascii_case("Line") {
             self.begin_flow_line();
+            return true;
+        }
+        if word.eq_ignore_ascii_case("LocalRadii") || word.eq_ignore_ascii_case("Radii") {
+            let s = self.flow_session.as_mut().unwrap();
+            s.options.local = true;
+            s.options.local_radii = None;
+            s.local_inner = None;
+            self.prepare_flow_preview();
+            self.flow_prompt();
             return true;
         }
         if word.eq_ignore_ascii_case("BaseUp") || word.eq_ignore_ascii_case("TargetUp") {
@@ -530,6 +657,9 @@ impl VibocerosApp {
             }
             s.morph = None;
             s.axis = None;
+            s.local_circle = None;
+            s.local_inner = None;
+            self.drafting_plane = None;
             s.pick_pointer = None;
             self.active_command = Some(InteractiveCommand::Flow { start: None });
             self.flow_prompt();
@@ -576,6 +706,7 @@ impl VibocerosApp {
                 "reversebase" => Some(prior.reverse_base),
                 "reversetarget" => Some(prior.reverse_target),
                 "roadlike" => Some(prior.roadlike),
+                "local" => Some(prior.local),
                 _ => None,
             };
             value
@@ -587,13 +718,19 @@ impl VibocerosApp {
         match solver::options(&args.split_whitespace().collect::<Vec<_>>(), prior) {
             Ok((options, refs)) if refs.base.is_none() && refs.target.is_none() => {
                 self.flow_session.as_mut().unwrap().options = options;
+                if !options.local || options.local_radii.is_some() {
+                    self.flow_session.as_mut().unwrap().local_inner = None;
+                }
                 if options.geometry() != prior.geometry()
+                    || options.local != prior.local
                     || options.base_up != prior.base_up
                     || options.target_up != prior.target_up
                 {
                     let mut prior_geometry = prior.geometry();
                     prior_geometry.preserve_structure = options.preserve_structure;
+                    prior_geometry.local_radii = options.geometry().local_radii;
                     let same_guides = prior_geometry == options.geometry()
+                        && (!options.local || options.local_radii.is_some())
                         && options.base_up == prior.base_up
                         && options.target_up == prior.target_up;
                     let s = self.flow_session.as_mut().unwrap();
@@ -601,7 +738,8 @@ impl VibocerosApp {
                         s.morph = Some(Arc::new(
                             (**morph)
                                 .clone()
-                                .with_preserve_structure(options.preserve_structure),
+                                .with_preserve_structure(options.preserve_structure)
+                                .with_local_radii(options.geometry().local_radii),
                         ));
                     } else {
                         self.prepare_flow_preview();

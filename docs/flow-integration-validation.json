@@ -120,11 +120,8 @@
     "crates/viboceros-geometry/src/curve.rs": "468516c4323083067ca3965201632f559ff63f8cf3c759c34456a9f0d5998419",
     "crates/viboceros-geometry/src/integration.rs": "9640f8c158cdb93b33d6ef2bcb0b88161d08a8948fa04c9e65b08cba4f899e35",
     "crates/viboceros-geometry/src/integration/cash_karp.rs": "48fc397c8ecbab908d5aaa2189931c476d8cd64eb1bca76fd85de201316c630f",
-    "crates/viboceros-geometry/src/lib.rs": "2c9979f507f1ad8c156867f762923e4f98730179ee11744d1912caef39f088f8",
     "docs/arc-length-batch-validation.json": "1f5d6fc100e8aba33568148fa45c55323d670ddf496532485dc026a3cfd9cdd0",
     "docs/arc-length-cusp-provenance.json": "d25b8c591492d28f957d14c09cc4dc6c3f3af71712dbe698179d8fb4e9723112",
-    "docs/flow-command-validation.json": "eeb837781a25db0669c28d581ea82923b7c8483967f7cf3121e16fe6c3ca6ae4",
-    "docs/flow-roadlike-validation.json": "bddd3ba5199095a839e639a171d1468df357fdbc269a94c326ce7c3741b8d4bf",
     "docs/flow-structure-validation.json": "de1766796d0c7631098f9c4bd9d2e2a258b3343aace1a1c71e3fe7252aab2846",
     "tools/rhino_oracle/test_flow_spatial.py": "d8816a259e2dbb51fd921c083c7332b65a77d66a8842ce1aae74bf29ebade678"
   },
@@ -143,6 +140,9 @@
     "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_integration_rhino_20261016.json": "62108bb9d3ec0d1f67d0b24224c3d7827ba79f452194fcfa6002d4e7cde2c8ef",
     "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_integration_viboceros_20261016.json": "7e7a15bbd4b13d3de0e45b890e606922080fbdc4992a1dace69b68e285a3f786",
     "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/test_flow_integration.py": "cb146e6e2fda5213fe73eb5d62270ddd8fd7716734c9be6e1321f0ee5e47ba56",
-    "0a30c30ed56d3b5f99344b10036de96f7c28117b:docs/flow-poles-validation.json": "8d2b54900919010f7aea8a620c7635b478188c30a10af3178ac1118d3bcf1f7c"
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:docs/flow-poles-validation.json": "8d2b54900919010f7aea8a620c7635b478188c30a10af3178ac1118d3bcf1f7c",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:crates/viboceros-geometry/src/lib.rs": "2c9979f507f1ad8c156867f762923e4f98730179ee11744d1912caef39f088f8",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-command-validation.json": "eeb837781a25db0669c28d581ea82923b7c8483967f7cf3121e16fe6c3ca6ae4",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-roadlike-validation.json": "bddd3ba5199095a839e639a171d1468df357fdbc269a94c326ce7c3741b8d4bf"
   }
 }

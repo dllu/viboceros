@@ -126,6 +126,11 @@ fn flow_invalid_inputs_are_atomic_and_do_not_change_successful_preferences() {
         format!("Base={a} Target={b} Roadlike=Yes BaseUp=0,0,0"),
         format!("Base={a} Target={b} Roadlike=Yes BaseUp=1,0,0"),
         format!("Base={a} Target={b} Local=Yes"),
+        format!("Base={a} Target={b} Local=Yes LocalRadii=1,1"),
+        format!("Base={a} Target={b} Local=Yes LocalRadii=-1,3"),
+        format!("Base={a} Target={b} Local=Yes LocalRadii=NaN,3"),
+        format!("Base={a} Target={b} Local=Yes LocalRadii=1,inf"),
+        format!("Base={a} Target={b} Local=Yes LocalRadii=1,3 LocalRadii=2,4"),
         format!("Base={a} Target={b} TargetSurface={a}"),
         format!("Base={a} TargetEdge={a},999"),
     ] {
@@ -148,6 +153,83 @@ fn flow_invalid_inputs_are_atomic_and_do_not_change_successful_preferences() {
     assert!(r.flow_options().preserve_structure);
     r.execute(&mut d, "Undo").unwrap();
     assert!(r.flow_options().stretch);
+}
+#[test]
+fn flow_local_radii_round_trip_leave_exterior_points_fixed_and_are_not_remembered() {
+    let (r, mut d, [a, b], ids) = setup();
+    let original = ids
+        .iter()
+        .map(|id| d.object(*id).unwrap().geometry().clone())
+        .collect::<Vec<_>>();
+    let opts = Options {
+        local: true,
+        local_radii: Some(CurveFlowLocalRadii::try_new(0.5, 1.5).unwrap()),
+        copy: false,
+        stretch: true,
+        ..Default::default()
+    };
+    assert_eq!(
+        options(
+            &opts.arguments().split_whitespace().collect::<Vec<_>>(),
+            Options::default()
+        )
+        .unwrap()
+        .0,
+        opts
+    );
+    r.execute(
+        &mut d,
+        &format!("Flow Base={a} Target={b} {}", opts.arguments()),
+    )
+    .unwrap();
+    assert_ne!(d.object(ids[0]).unwrap().geometry(), &original[0]);
+    assert_eq!(d.object(ids[1]).unwrap().geometry(), &original[1]);
+    assert!(r.flow_options().local);
+    assert!(r.flow_options().local_radii.is_none());
+    assert_eq!(d.undo().unwrap().as_deref(), Some("Flow"));
+    assert!(d.undo().unwrap().is_none());
+    for (id, g) in ids.iter().zip(original) {
+        assert_eq!(d.object(*id).unwrap().geometry(), &g);
+    }
+}
+#[test]
+fn flow_local_outside_grips_do_not_copy_or_morph_a_simultaneously_selected_parent() {
+    let (r, mut d, [a, b], _) = setup();
+    d.clear_selection();
+    let curve = NurbsCurve::try_new(
+        3,
+        vec![
+            p(1., 100., 0.),
+            p(3., 102., 1.),
+            p(7., 101., 2.),
+            p(9., 100., 0.),
+        ],
+        vec![0., 0., 0., 0., 1., 1., 1., 1.],
+    )
+    .unwrap();
+    let owner = d.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+    d.select_objects_direct([owner], SelectionMode::Replace)
+        .unwrap();
+    d.enable_control_points([owner]).unwrap();
+    d.select_control_points(
+        [1, 2].map(|index| viboceros_document::ControlPointId {
+            object: owner,
+            index,
+        }),
+        SelectionMode::Add,
+    )
+    .unwrap();
+    d.clear_history().unwrap();
+    let before = format!("{d:?}");
+    let message = r
+        .execute(
+            &mut d,
+            &format!("Flow Base={a} Target={b} Local=Yes LocalRadii=3,1 Copy=Yes"),
+        )
+        .unwrap();
+    assert!(message.contains("Flowed 0 object(s)"));
+    assert_eq!(format!("{d:?}"), before);
+    assert!(d.undo().unwrap().is_none());
 }
 #[test]
 fn flow_roadlike_explicit_axes_round_trip_and_preserve_history() {

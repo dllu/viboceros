@@ -125,19 +125,23 @@
     "preexisting_unverifiable_records_left_unchanged": 69
   },
   "reference_sources_sha256": {
-    "crates/viboceros-geometry/src/morph/flow.rs": "910ccae76c6f7ddf9b59e66a3079261373d099eaa390559d191d8edc52b3509f",
     "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "5b566778f28cc47d52109a7f474443a05795e1b4ce8102bd116fd1c4340ac086",
-    "crates/viboceros-command/src/flow.rs": "b7d8c05b0697c8eb6ea13f2975bb3f14cf10d38a4a41c9b90ab99fd563826b6c",
     "tools/rhino_oracle/flow_probe.py": "eb3f7c53789ec04e5675121a640f98a281b2db92a0cf55ee14ea8ba6b011e7f8"
   },
   "sha256": {
-    "docs/flow-development.md": "e1973c246de9455385c0b8d92b642453f6edf1d1ae92795b29e76eb15872b604",
-    "docs/flow-nurbs-validation.json": "b6a569e6bd5a3f395c05a7caac3c42a2f2274c3c37d09575825e3987eab1405a",
     "tools/rhino_oracle/fixtures/flow_auto_directions.json": "9ec5d77545e3a2bf9325c999ee830afad6b04d5efe53fb82b39e0137bac4aca8",
     "tools/rhino_oracle/flow_auto_direction_report.py": "d904a62652643c3ca39ac1e809079fa31f4e4fd1fa919c3145e4ef4ce5cdb231",
     "tools/rhino_oracle/observations/flow_auto_direction_report_20261017.json": "853d49ce1a3001ea5f9b9e1092c6203015af6f3c507831500a639bd8870e9703",
     "tools/rhino_oracle/observations/flow_auto_directions_rhino_20261017.json": "c05cc655f2649ca3e2674f69f989f545be1406453eb3c04cc08517101d4875aa",
     "tools/rhino_oracle/observations/flow_auto_directions_viboceros_20261017.json": "14de7e685ceea3c1b2f4754c16155a0f0156defe60c3578b232843e16caec74f",
     "tools/rhino_oracle/test_flow_auto_direction.py": "9596f3fd2a618af9453d1f450102d414fe8b9d3f0e994d55a45fcc5a8403c11d"
+  },
+  "reference_sources_git_sha256": {
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:crates/viboceros-geometry/src/morph/flow.rs": "910ccae76c6f7ddf9b59e66a3079261373d099eaa390559d191d8edc52b3509f",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:crates/viboceros-command/src/flow.rs": "b7d8c05b0697c8eb6ea13f2975bb3f14cf10d38a4a41c9b90ab99fd563826b6c"
+  },
+  "git_sha256": {
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-development.md": "e1973c246de9455385c0b8d92b642453f6edf1d1ae92795b29e76eb15872b604",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-nurbs-validation.json": "b6a569e6bd5a3f395c05a7caac3c42a2f2274c3c37d09575825e3987eab1405a"
   }
 }

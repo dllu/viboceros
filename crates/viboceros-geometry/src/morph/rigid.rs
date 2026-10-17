@@ -41,7 +41,22 @@ pub(crate) fn forward_transform(
     } else {
         let normal_x = y.cross(z)?.normalized_nonzero()?.as_vector();
         let normal_y = z.cross(x)?.normalized_nonzero()?.as_vector();
-        (sum(x, normal_x)?, sum(y, normal_y)?)
+        // A reflected derivative can cancel one averaged direction exactly.
+        // Retain that forward direction while averaging the other axis.
+        let averaged_x = sum(x, normal_x)?;
+        let averaged_y = sum(y, normal_y)?;
+        (
+            if averaged_x.to_array() == [0.; 3] {
+                x
+            } else {
+                averaged_x
+            },
+            if averaged_y.to_array() == [0.; 3] {
+                y
+            } else {
+                averaged_y
+            },
+        )
     };
     let frame =
         Frame3::try_from_directions(mapped, x, y, Tolerance::try_new(1e-14, 1e-14, 1e-14)?)?;

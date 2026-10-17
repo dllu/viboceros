@@ -50,6 +50,172 @@ fn setup() -> (
     (app, source, a, b, native["results"][i]["value"].clone())
 }
 #[test]
+fn flow_local_circle_getters_preview_native_falloff_and_commit_one_undo() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/flow_local.json"
+    ))
+    .unwrap();
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/flow_local_rhino_20261017.json"
+    ))
+    .unwrap();
+    let fixture: viboceros_oracle::FlowLineFixture =
+        serde_json::from_value(request["operations"][0].clone()).unwrap();
+    let mut app = test_app();
+    let [a, b] = fixture
+        .guide_geometries(app.document.tolerance())
+        .unwrap()
+        .map(|g| app.document.add_geometry(g).unwrap());
+    let original = fixture.source_geometry(app.document.tolerance()).unwrap();
+    let source = app.document.add_geometry(original.clone()).unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Flow Copy=No Stretch=Yes Local=Yes");
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    assert!(app.drawing_flow_radius());
+    assert!(app.flow_session.as_ref().unwrap().preview().is_none());
+    enter(&mut app, "-1");
+    assert!(app.drawing_flow_radius());
+    assert!(app.apply_drafting_point(point(0., 1., 0.)));
+    let circles = app
+        .flow_session
+        .as_ref()
+        .unwrap()
+        .local_preview()
+        .unwrap()
+        .circles(Some(point(0., 0., 3.)));
+    assert_eq!(circles.len(), 2);
+    assert_eq!(circles.iter().map(|c| c.1).collect::<Vec<_>>(), [1., 3.]);
+    enter(&mut app, "1");
+    assert!(app.drawing_flow_radius());
+    enter(&mut app, "3");
+    assert!(!app.drawing_flow_radius());
+    let expected = native["results"][0]["value"]["after_script"]["outputs"][0]["points"]
+        .as_array()
+        .unwrap();
+    let Geometry::PointCloud(cloud) = &original else {
+        panic!()
+    };
+    assert_eq!(cloud.points().len(), expected.len());
+    let morph = app
+        .flow_session
+        .as_ref()
+        .unwrap()
+        .preview()
+        .unwrap()
+        .morph
+        .clone();
+    for (p, n) in cloud.points().iter().zip(expected) {
+        let xyz: [f64; 3] = serde_json::from_value(n.clone()).unwrap();
+        assert!(
+            morph
+                .morph_point(*p)
+                .unwrap()
+                .distance_to(Point3::try_from(xyz).unwrap())
+                .unwrap()
+                < 1e-6
+        );
+    }
+    enter(&mut app, "LocalRadii=0.5,2");
+    let changed = app
+        .flow_session
+        .as_ref()
+        .unwrap()
+        .preview()
+        .unwrap()
+        .morph
+        .clone();
+    assert!(!std::sync::Arc::ptr_eq(&morph, &changed));
+    assert!(
+        changed
+            .morph_point(point(5., 1.5, 0.))
+            .unwrap()
+            .distance_to(point(5., 1.5 + 10. * 7. / 27., 0.))
+            .unwrap()
+            < 1e-12
+    );
+    enter(&mut app, "LocalRadii=1,3");
+    enter(&mut app, "LocalRadii");
+    enter(&mut app, "3");
+    enter(&mut app, "1");
+    assert_eq!(
+        app.flow_session
+            .as_ref()
+            .unwrap()
+            .preview()
+            .unwrap()
+            .options
+            .local_radii
+            .unwrap()
+            .radii(),
+        [1., 3.]
+    );
+    enter(&mut app, "LocalRadii=0,3");
+    let zero = app
+        .flow_session
+        .as_ref()
+        .unwrap()
+        .preview()
+        .unwrap()
+        .morph
+        .clone();
+    assert!(
+        zero.morph_point(point(5., 1., 0.))
+            .unwrap()
+            .distance_to(point(5., 1. + 10. * 20. / 27., 0.))
+            .unwrap()
+            < 1e-12
+    );
+    enter(&mut app, "LocalRadii=1,3");
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "");
+    let committed = app.document.object(source).unwrap().geometry().clone();
+    let Geometry::PointCloud(cloud) = &committed else {
+        panic!()
+    };
+    for (p, n) in cloud.points().iter().zip(expected) {
+        let xyz: [f64; 3] = serde_json::from_value(n.clone()).unwrap();
+        assert!(p.distance_to(Point3::try_from(xyz).unwrap()).unwrap() < 1e-6);
+    }
+    assert_eq!(app.document.objects().count(), 3);
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Flow"));
+    assert_eq!(app.document.object(source).unwrap().geometry(), &original);
+    assert!(app.document.undo().unwrap().is_none());
+    assert_eq!(app.document.redo().unwrap().as_deref(), Some("Flow"));
+    assert_eq!(app.document.object(source).unwrap().geometry(), &committed);
+}
+#[test]
+fn flow_local_partial_radii_cancel_and_stale_guides_leave_the_document_intact() {
+    let (mut app, _, a, b, _) = setup();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Flow Local=Yes");
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    enter(&mut app, "1");
+    enter(&mut app, "NaN");
+    assert!(app.drawing_flow_radius());
+    enter(&mut app, "Cancel");
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "Flow Local=Yes");
+    app.pick_flow_guide(Some(a), None);
+    app.pick_flow_guide(Some(b), None);
+    enter(&mut app, "1");
+    app.document
+        .replace_object_geometries([(b, Geometry::Point(point(0., 0., 0.)))])
+        .unwrap();
+    app.validate_flow_guides();
+    assert!(!app.drawing_flow_radius());
+    assert!(app.picking_flow_guide());
+    assert!(app.drafting_plane.is_none());
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "Cancel");
+    assert_eq!(format!("{:?}", app.document), before);
+}
+#[test]
 fn flow_picks_guides_previews_native_points_and_commits_one_undo() {
     let (mut app, source, a, b, expected) = setup();
     let original = app.document.object(source).unwrap().geometry().clone();

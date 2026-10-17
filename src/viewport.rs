@@ -43,7 +43,7 @@ pub(crate) use orient_surface_preview::{OrientSurfacePreview, OrientSurfacePrevi
 mod flow_preview;
 pub(crate) mod maelstrom_preview;
 mod morph_preview;
-pub(crate) use flow_preview::{FlowPreview, FlowPreviewCache};
+pub(crate) use flow_preview::{FlowLocalPreview, FlowPreview, FlowPreviewCache};
 mod object_preview;
 #[cfg(test)]
 mod preview_test_support;
@@ -340,6 +340,7 @@ pub struct ViewportInput<'a> {
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
     pub flow_preview: Option<FlowPreview<'a>>,
+    pub flow_local_preview: Option<FlowLocalPreview>,
     pub twist_preview: Option<TwistPreview<'a>>,
     pub bend_preview: Option<BendPreview<'a>>,
     pub orient_surface_preview: Option<OrientSurfacePreview<'a>>,
@@ -423,6 +424,7 @@ impl Default for ViewportInput<'_> {
             translation_preview: None,
             affine_preview: None,
             flow_preview: None,
+            flow_local_preview: None,
             twist_preview: None,
             bend_preview: None,
             orient_surface_preview: None,
@@ -2102,6 +2104,11 @@ impl Viewport {
         }
         if let Some(preview) = input.maelstrom_preview {
             self.paint_maelstrom_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));
+        }
+        if let Some(preview) = input.flow_local_preview {
+            for (frame, radius) in preview.circles(drafting_cursor.map(|c| c.point)) {
+                self.paint_morph_radius_circle(&painter, rect, frame, radius);
+            }
         }
         if let Some(preview) = input.taper_preview {
             self.paint_taper_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));

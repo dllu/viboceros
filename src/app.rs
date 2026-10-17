@@ -9409,7 +9409,8 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_orient_curve()
                 && (self.flow_session.is_none()
                     || self.drawing_flow_line()
-                    || self.drawing_flow_axis())
+                    || self.drawing_flow_axis()
+                    || self.drawing_flow_radius())
                 && !self.picking_orient_surface()
                 && !self.selecting_move_normal_reference()
                 && (self.set_view_prompt.is_none() || self.plane_prompt.is_some())
@@ -10055,6 +10056,11 @@ impl eframe::App for VibocerosApp {
                                 .flow_session
                                 .as_ref()
                                 .and_then(flow::Session::preview)
+                                .filter(|_| model_input_active),
+                            flow_local_preview: self
+                                .flow_session
+                                .as_ref()
+                                .and_then(flow::Session::local_preview)
                                 .filter(|_| model_input_active),
                             twist_preview,
                             bend_preview,

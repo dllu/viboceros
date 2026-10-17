@@ -150,7 +150,6 @@
     "preexisting_unverifiable_records_left_unchanged": 69
   },
   "sha256": {
-    "crates/viboceros-command/src/flow/tests.rs": "5b6a2627e49c8b4da74e81ebc5fc43a4e47a49e697f23ab29dba5e141ccddf83",
     "crates/viboceros-geometry/src/circle_curve.rs": "8f95987035ade21be75a5fc258800f5b670ca72b838a521b9770acafd100693e",
     "crates/viboceros-geometry/src/circular.rs": "dc2b9956b9eb90fd6466a37959a02061cc9bc36d17e6b8afca9c8a68c38dab36",
     "crates/viboceros-geometry/src/curve_evaluate.rs": "a8c6b3575df5a56b22da798736def93ba8ac9979a7733aa8f5291eb5347f37a1",
@@ -161,7 +160,6 @@
     "crates/viboceros-opennurbs/src/lib.rs": "5612e871fcd0c1b826191748094abc457dcc1ce42e3877536a879680f062dccd",
     "docs/coplanar-mesh-qualification.json": "d58a927867dad99adf096b554982d1ef59d308241414cad4ad00757c5687dd42",
     "docs/cull-degenerate-mesh-faces-qualification.json": "294bd5769c989b37497e9bd962b53998f6d79d443ef8f7b207e8f7bc47fccbad",
-    "docs/flow-grips-validation.json": "25dbde1a9c0f5d3967db28996e2d0307400c01a2fbaee9f2bd87dbc26d928b70",
     "docs/flow-line-validation.json": "99b1970171a2f46f66d55b67fdc36980d3034c0edfea7c09a03a3972dfafc581",
     "docs/flow-spatial-validation.json": "0d31714f9a392fd7051afda076b54dbd6901b604592c063dfb3e29ab8b9b81c0",
     "docs/geometry-check-qualification.json": "bca0e86f44f9a630087de83c1aca4a6efb21cc9bc74cc2e94abc364bb3e78173",
@@ -197,6 +195,8 @@
     "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_pole_report_20261016.json": "90accfebb1956ae4a4d305a10f0ca47934b2b4e5433e00a93e8e229a5decae28",
     "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_roadlike_poles_comparison_20261016.json": "3d3f31448125ce36dc98f161b743bec96f220634768294af84a74c1d0f058934",
     "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/observations/flow_roadlike_poles_viboceros_20261016.json": "43d24d9991196a1b3c637e15de7422b8d0232ccdacee7f58d2a629a40a97cda2",
-    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/test_flow_roadlike.py": "a405d29277ca15c43c18b2d00b8d16489b2fbd5939e940452ea81f3e5c412607"
+    "0a30c30ed56d3b5f99344b10036de96f7c28117b:tools/rhino_oracle/test_flow_roadlike.py": "a405d29277ca15c43c18b2d00b8d16489b2fbd5939e940452ea81f3e5c412607",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:crates/viboceros-command/src/flow/tests.rs": "5b6a2627e49c8b4da74e81ebc5fc43a4e47a49e697f23ab29dba5e141ccddf83",
+    "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-grips-validation.json": "25dbde1a9c0f5d3967db28996e2d0307400c01a2fbaee9f2bd87dbc26d928b70"
   }
 }
