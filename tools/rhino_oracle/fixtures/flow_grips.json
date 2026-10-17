@@ -1,0 +1,7983 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "flow_grips",
+      "id": "control-copyFalse-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-copyFalse-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-parent-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-postselected-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-copyFalse-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-copyFalse-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-parent-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-postselected-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-preserve-copyFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-copyTrue-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-copyTrue-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-parent-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-postselected-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-copyTrue-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-copyTrue-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-parent-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-postselected-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "control-preserve-copyTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyFalse-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyFalse-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-parent-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-postselected-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": true,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyFalse-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyFalse-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-parent-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-postselected-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": true,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-preserve-copyFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyTrue-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyTrue-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-parent-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-postselected-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": true,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyTrue-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-copyTrue-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-parent-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-postselected-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "edit": true,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "edit-preserve-copyTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              9,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "selected": [
+        1,
+        2
+      ],
+      "edit": true,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyFalse-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyFalse-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-parent-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-postselected-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyFalse-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyFalse-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-parent-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-postselected-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-preserve-copyFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyTrue-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyTrue-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-parent-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-postselected-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyTrue-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-copyTrue-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-parent-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-postselected-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "surface-preserve-copyTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "surface",
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              1,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              7,
+              0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1,
+              1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              1,
+              0.25
+            ],
+            "weight": 1.125
+          },
+          {
+            "point": [
+              7,
+              1,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              1,
+              2,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4,
+              2,
+              0.5
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              2,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "selected": [
+        1,
+        4
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyFalse-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyFalse-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-parent-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-postselected-copyFalse-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyFalse-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyFalse-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-parent-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-postselected-copyFalse-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-preserve-copyFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": false,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyTrue-rigidFalse-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyTrue-rigidFalse-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-parent-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-postselected-copyTrue-rigidFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyTrue-rigidTrue-groupsFalse",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-copyTrue-rigidTrue-groupsTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      }
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-parent-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": false,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "parent": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-postselected-copyTrue-rigidTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "edit": false,
+      "peer": false,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": true,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": false
+      },
+      "postselected": true
+    },
+    {
+      "op": "flow_grips",
+      "id": "mesh-preserve-copyTrue",
+      "base": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          10,
+          0,
+          0
+        ]
+      },
+      "target": {
+        "type": "arc",
+        "points": [
+          [
+            30,
+            0,
+            0
+          ],
+          [
+            27.071067811865476,
+            7.071067811865475,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ]
+        ]
+      },
+      "source": {
+        "type": "mesh",
+        "vertices": [
+          [
+            8.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            2,
+            0
+          ],
+          [
+            2.0,
+            0,
+            0
+          ],
+          [
+            5.0,
+            -2,
+            0
+          ],
+          [
+            8.0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            2,
+            3
+          ]
+        ]
+      },
+      "selected": [
+        0,
+        2
+      ],
+      "edit": false,
+      "peer": true,
+      "group": true,
+      "options": {
+        "copy": true,
+        "rigid": false,
+        "rigid_groups": true,
+        "stretch": true,
+        "preserve_structure": true
+      }
+    }
+  ]
+}

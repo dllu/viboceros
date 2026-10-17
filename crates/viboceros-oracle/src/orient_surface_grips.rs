@@ -49,9 +49,18 @@ pub(super) fn snapshot(
     peer: Option<ObjectId>,
     guide: ObjectId,
 ) -> Result<Value, ProbeError> {
+    snapshot_excluding(doc, source, peer, &[guide])
+}
+pub(super) fn snapshot_excluding(
+    doc: &Document,
+    source: ObjectId,
+    peer: Option<ObjectId>,
+    guides: &[ObjectId],
+) -> Result<Value, ProbeError> {
+    let guide = guides[0];
     let groups = doc.groups().map(|g| g.id()).collect::<Vec<_>>();
     let mut outputs = Vec::new();
-    for o in doc.objects().filter(|o| o.id() != guide) {
+    for o in doc.objects().filter(|o| !guides.contains(&o.id())) {
         let mut row = json!({"original":o.id()==source,"peer":Some(o.id())==peer,"selected":doc.is_selected(o.id()),"group_count":o.group_ids().len(),"groups":o.group_ids().iter().filter_map(|g|groups.iter().position(|v|v==g)).collect::<Vec<_>>(),"grips_on":doc.grip_mode(o.id()).is_some(),"grips":doc.control_points().filter(|(id,_,_)|id.object==o.id()).map(|(id,p,selected)|json!({"index":id.index,"point":p.to_array(),"selected":selected})).collect::<Vec<_>>()});
         match o.geometry() {
             Geometry::Point(p) => row["point"] = json!(p.to_array()),

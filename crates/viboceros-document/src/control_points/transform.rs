@@ -21,7 +21,7 @@ impl Document {
             copy,
             group_policy,
             GripEditKind::Affine(transform == AffineTransform3::identity()),
-            |geometry, selected, mode, tolerance| {
+            |_, geometry, selected, mode, tolerance| {
                 if let Some(selected) = selected {
                     geometry.with_transformed_grips_in_mode(selected, transform, tolerance, mode)
                 } else {
@@ -49,11 +49,43 @@ impl Document {
             copy,
             group_policy,
             GripEditKind::Morph,
-            |geometry, selected, mode, tolerance| {
+            |_, geometry, selected, mode, tolerance| {
                 if let Some(selected) = selected {
                     geometry.with_morphed_grips_in_mode(selected, morph, tolerance, mode)
                 } else {
                     geometry.morphed(morph, tolerance)
+                }
+            },
+        )
+    }
+
+    /// Combine already-staged whole-object geometry with selected grip morphs.
+    /// All owners and grip reconstructions are validated before committing.
+    /// Grip owners take precedence; duplicate staged IDs use the last geometry.
+    /// Copies follow the ordinary morph group and grip-selection policies.
+    pub fn morph_grips_with_object_geometries(
+        &mut self,
+        objects: impl IntoIterator<Item = (ObjectId, Geometry)>,
+        grips: impl IntoIterator<Item = ControlPointId>,
+        morph: &(impl viboceros_geometry::PointMorph + ?Sized),
+        copy: bool,
+        group_policy: CopyGroupPolicy,
+    ) -> Result<(Vec<ObjectId>, Vec<ObjectId>), DocumentError> {
+        let mut staged = objects.into_iter().collect::<BTreeMap<_, _>>();
+        let ids = staged.keys().copied().collect::<Vec<_>>();
+        self.map_objects_and_grips(
+            ids,
+            grips,
+            copy,
+            group_policy,
+            GripEditKind::Morph,
+            |id, geometry, selected, mode, tolerance| {
+                if let Some(selected) = selected {
+                    geometry.with_morphed_grips_in_mode(selected, morph, tolerance, mode)
+                } else {
+                    Ok(staged
+                        .remove(&id)
+                        .expect("ordinary owner has staged geometry"))
                 }
             },
         )
@@ -66,7 +98,8 @@ impl Document {
         copy: bool,
         group_policy: CopyGroupPolicy,
         kind: GripEditKind,
-        map: impl Fn(
+        mut map: impl FnMut(
+            ObjectId,
             &Geometry,
             Option<&BTreeSet<usize>>,
             GripMode,
@@ -117,6 +150,7 @@ impl Document {
             .map(|index| {
                 let source = &self.objects[index];
                 let geometry = map(
+                    source.id,
                     &source.geometry,
                     picks.get(&source.id),
                     self.control_points

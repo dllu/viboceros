@@ -160,3 +160,112 @@ fn flow_surface_edge_reference_does_not_select_or_deform_the_parent() {
     assert!(!app.document.is_selected(parent));
     assert!(app.document.is_selected(source));
 }
+
+#[test]
+fn flow_control_and_edit_grips_preview_copy_rigid_and_command_first_getters() {
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/flow_grips.json"
+    ))
+    .unwrap();
+    for edit in [false, true] {
+        for copy in [false, true] {
+            for postselected in [false, true] {
+                let name = format!(
+                    "{}-{}copy{}-rigidTrue{}",
+                    if edit { "edit" } else { "control" },
+                    if postselected { "postselected-" } else { "" },
+                    if copy { "True" } else { "False" },
+                    if postselected { "" } else { "-groupsTrue" }
+                );
+                let op = request["operations"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .find(|v| v["id"] == name)
+                    .unwrap();
+                let f: viboceros_oracle::FlowGripsFixture =
+                    serde_json::from_value(op.clone()).unwrap();
+                let mut app = test_app();
+                let geometry = f.source_geometry(app.document.tolerance()).unwrap();
+                let [a, b] = f.guides(app.document.tolerance()).unwrap();
+                let a = app.document.add_geometry(a).unwrap();
+                let b = app.document.add_geometry(b).unwrap();
+                let source = app.document.add_geometry(geometry.clone()).unwrap();
+                if edit {
+                    app.document.enable_edit_points([source]).unwrap();
+                } else {
+                    app.document.enable_control_points([source]).unwrap();
+                }
+                let picks = f
+                    .selected
+                    .iter()
+                    .map(|&index| viboceros_document::ControlPointId {
+                        object: source,
+                        index,
+                    })
+                    .collect::<Vec<_>>();
+                if !postselected {
+                    app.document
+                        .select_control_points(picks.iter().copied(), SelectionMode::Add)
+                        .unwrap();
+                }
+                app.document.clear_history().unwrap();
+                enter(
+                    &mut app,
+                    &format!("Flow {}", f.options.command().arguments()),
+                );
+                if postselected {
+                    assert!(app.object_prompt.is_some());
+                    app.handle_viewport_action(ViewportOutput {
+                        control_point_selection: Some(crate::viewport::ControlPointSelection {
+                            picks: picks.clone(),
+                            mode: SelectionMode::Add,
+                        }),
+                        ..Default::default()
+                    });
+                    enter(&mut app, "");
+                }
+                assert!(app.picking_flow_guide(), "{name}: {:?}", app.command_log);
+                enter(&mut app, &format!("SelID {a}"));
+                enter(&mut app, &format!("SelID {b}"));
+                let preview = app.flow_session.as_ref().unwrap().preview().unwrap();
+                assert_eq!(preview.grips, picks);
+                assert_eq!(app.document.object(source).unwrap().geometry(), &geometry);
+                let expected = geometry
+                    .with_morphed_grips_in_mode(
+                        &picks.iter().map(|g| g.index).collect(),
+                        &**preview.morph,
+                        app.document.tolerance(),
+                        f.mode(),
+                    )
+                    .unwrap();
+                enter(&mut app, "");
+                assert!(
+                    app.active_command.is_none(),
+                    "{name}: {:?}",
+                    app.command_log
+                );
+                let result = if copy {
+                    app.document
+                        .objects()
+                        .find(|o| ![a, b, source].contains(&o.id()))
+                        .unwrap()
+                        .id()
+                } else {
+                    source
+                };
+                assert_eq!(
+                    app.document.object(result).unwrap().geometry(),
+                    &expected,
+                    "{name}"
+                );
+                if copy {
+                    assert_eq!(app.document.object(source).unwrap().geometry(), &geometry);
+                }
+                app.document.undo().unwrap();
+                assert_eq!(app.document.object(source).unwrap().geometry(), &geometry);
+                assert!(app.document.undo().unwrap().is_none());
+            }
+        }
+    }
+}

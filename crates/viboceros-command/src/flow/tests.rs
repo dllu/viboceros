@@ -192,7 +192,7 @@ fn flow_rigid_groups_use_a_shared_pose_and_picked_sources_release_selection() {
 }
 
 #[test]
-fn flow_spatial_guides_and_grips_fail_before_document_changes() {
+fn flow_spatial_guides_and_guide_grips_fail_before_document_changes() {
     let (r, mut d, [a, b], _) = setup();
     let spatial = d
         .add_geometry(Geometry::NurbsCurve(
@@ -223,7 +223,7 @@ fn flow_spatial_guides_and_grips_fail_before_document_changes() {
     let before = format!("{d:?}");
     assert!(matches!(
         r.execute(&mut d, &format!("Flow Base={a} Target={b} Copy=No")),
-        Err(CommandError::FlowGripsNotSupported)
+        Err(CommandError::Usage(_))
     ));
     assert_eq!(format!("{d:?}"), before);
 }

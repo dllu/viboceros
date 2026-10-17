@@ -149,3 +149,84 @@ fn failed_mixed_nonlinear_grips_preserve_geometry_selection_groups_history_and_r
         assert_eq!(format!("{d:?}"), before);
     }
 }
+
+#[test]
+fn staged_geometry_and_grip_reconstruction_commit_atomically_without_remapping_objects() {
+    struct Failing;
+    impl PointMorph for Failing {
+        fn morph_point(&self, _: Point3) -> Result<Point3, GeometryError> {
+            Err(GeometryError::Degenerate {
+                context: "injected grip reconstruction failure",
+            })
+        }
+    }
+    for copy in [false, true] {
+        let mut d = Document::default();
+        let id = d.add_geometry(curve()).unwrap();
+        let p = d
+            .add_geometry(Geometry::Point(Point3::try_new(1., 0., 0.).unwrap()))
+            .unwrap();
+        d.enable_control_points([id]).unwrap();
+        let grip = ControlPointId {
+            object: id,
+            index: 2,
+        };
+        d.select_control_points([grip], SelectionMode::Add).unwrap();
+        d.add_group(None, [id, p]).unwrap();
+        d.add_geometry(Geometry::Point(Point3::try_new(100., 0., 0.).unwrap()))
+            .unwrap();
+        d.undo().unwrap();
+        let before = format!("{d:?}");
+        let mapped = Geometry::Point(Point3::try_new(20., 2., 3.).unwrap());
+        assert!(
+            d.morph_grips_with_object_geometries(
+                [(p, mapped.clone())],
+                [grip],
+                &Failing,
+                copy,
+                CopyGroupPolicy::Preserve
+            )
+            .is_err()
+        );
+        assert_eq!(format!("{d:?}"), before);
+        let original = d.object(id).unwrap().geometry().clone();
+        let (owners, copies) = d
+            .morph_grips_with_object_geometries(
+                [
+                    (p, mapped.clone()),
+                    (id, Geometry::Point(Point3::try_new(999., 0., 0.).unwrap())),
+                ],
+                [grip],
+                &Warp,
+                copy,
+                CopyGroupPolicy::Preserve,
+            )
+            .unwrap();
+        let result = |id| {
+            if copy {
+                copies[owners.iter().position(|o| *o == id).unwrap()]
+            } else {
+                id
+            }
+        };
+        assert_eq!(d.object(result(p)).unwrap().geometry(), &mapped);
+        assert_eq!(
+            d.object(result(id)).unwrap().geometry(),
+            &original
+                .with_morphed_grips_in_mode(
+                    &BTreeSet::from([2]),
+                    &Warp,
+                    d.tolerance(),
+                    GripMode::Control
+                )
+                .unwrap()
+        );
+        if copy {
+            assert_eq!(d.object(id).unwrap().geometry(), &original);
+        }
+        d.undo().unwrap();
+        assert_eq!(d.object(id).unwrap().geometry(), &original);
+        d.redo().unwrap();
+        assert_eq!(d.object(result(p)).unwrap().geometry(), &mapped);
+    }
+}

@@ -43,6 +43,7 @@ pub(crate) type FlowPreviewCache = MorphPreviewCache<Key>;
 #[derive(Clone, Copy)]
 pub(crate) struct FlowPreview<'a> {
     pub sources: &'a [ObjectId],
+    pub grips: &'a [viboceros_document::ControlPointId],
     pub morph: &'a Arc<CurveFlowPointMorph>,
     pub options: Options,
     pub cache: &'a RefCell<FlowPreviewCache>,
@@ -63,8 +64,9 @@ impl FlowPreview<'_> {
     ) -> Option<Rc<MorphPreviewImage>> {
         self.cache
             .borrow_mut()
-            .get(
+            .get_with_grips(
                 self.sources,
+                self.grips,
                 Key {
                     morph: self.morph.clone(),
                     options: self.options,
@@ -150,6 +152,7 @@ mod tests {
             );
             let preview = FlowPreview {
                 sources: &ids,
+                grips: &[],
                 morph: &morph,
                 options,
                 cache: &cache,
@@ -183,6 +186,113 @@ mod tests {
                 v.flow_pick_reversed(&g, None, pointer, Tolerance::default()),
                 Some(reverse)
             );
+        }
+    }
+}
+
+#[cfg(test)]
+mod grip_tests {
+    use super::*;
+    use viboceros_document::ControlPointId;
+    #[test]
+    fn flow_grip_previews_share_preparation_follow_group_poses_and_keep_the_document_readonly() {
+        let request: serde_json::Value = serde_json::from_str(include_str!(
+            "../../tools/rhino_oracle/fixtures/flow_grips.json"
+        ))
+        .unwrap();
+        for family in ["control", "edit", "surface", "mesh"] {
+            let name = format!("{family}-copyFalse-rigidTrue-groupsTrue");
+            let op = request["operations"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|o| o["id"] == name)
+                .unwrap();
+            let f: viboceros_oracle::FlowGripsFixture = serde_json::from_value(op.clone()).unwrap();
+            let mut d = Document::default();
+            let [a, b] = f.guides(d.tolerance()).unwrap();
+            let a = d.add_geometry(a).unwrap();
+            let b = d.add_geometry(b).unwrap();
+            let source = d
+                .add_geometry(f.source_geometry(d.tolerance()).unwrap())
+                .unwrap();
+            let peer = d
+                .add_geometry(Geometry::Point(Point3::try_new(6., 1., 0.).unwrap()))
+                .unwrap();
+            d.add_group(None, [source, peer]).unwrap();
+            if f.edit {
+                d.enable_edit_points([source]).unwrap();
+            } else {
+                d.enable_control_points([source]).unwrap();
+            }
+            let grips = f
+                .selected
+                .iter()
+                .map(|&index| ControlPointId {
+                    object: source,
+                    index,
+                })
+                .collect::<Vec<_>>();
+            d.select_control_points(grips.iter().copied(), SelectionMode::Add)
+                .unwrap();
+            d.clear_history().unwrap();
+            let original = format!("{d:?}");
+            let options = f.options.command();
+            let morph = Arc::new(
+                viboceros_command::flow::prepare(
+                    &d,
+                    viboceros_command::flow::GuideReference { id: a, edge: None },
+                    viboceros_command::flow::GuideReference { id: b, edge: None },
+                    options,
+                )
+                .unwrap(),
+            );
+            let display = RefCell::new(DisplayCache::default());
+            let cache = RefCell::new(FlowPreviewCache::default());
+            let ids = [peer];
+            let preview = FlowPreview {
+                sources: &ids,
+                grips: &grips,
+                morph: &morph,
+                options,
+                cache: &cache,
+            };
+            let image = preview.resolve(&d, &display).unwrap();
+            assert!(Rc::ptr_eq(&image, &preview.resolve(&d, &display).unwrap()));
+            let copy = FlowPreview {
+                options: viboceros_command::flow::Options {
+                    copy: true,
+                    ..options
+                },
+                ..preview
+            };
+            assert!(Rc::ptr_eq(&image, &copy.resolve(&d, &display).unwrap()));
+            let selected = f.selected.iter().copied().collect();
+            let expected = d
+                .object(source)
+                .unwrap()
+                .geometry()
+                .with_morphed_grips_in_mode(&selected, &*morph, d.tolerance(), f.mode())
+                .unwrap();
+            assert_eq!(&*image.objects[&source].geometry.geometry, &expected);
+            for (g, p) in image.grips.iter() {
+                assert_eq!(*p, expected.grip_locations(f.mode()).unwrap()[g.index]);
+            }
+            let ordinary =
+                viboceros_command::flow::deformed_with_grips(&d, &ids, &grips, &morph, options)
+                    .unwrap();
+            let object = &image.objects[&peer];
+            assert_eq!(
+                object
+                    .geometry
+                    .geometry
+                    .transformed(object.transform.unwrap(), d.tolerance())
+                    .unwrap(),
+                ordinary[0].1
+            );
+            assert_eq!(format!("{d:?}"), original);
+            d.disable_control_points();
+            assert!(preview.resolve(&d, &display).is_none());
         }
     }
 }

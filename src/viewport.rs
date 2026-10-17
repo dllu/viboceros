@@ -1911,7 +1911,13 @@ impl Viewport {
             surface_preview
                 .as_ref()
                 .zip(input.orient_surface_preview)
-                .map(|(image, p)| (&image.grips, p.placement.options.copy)),
+                .map(|(image, p)| (&image.grips, p.placement.options.copy))
+                .or_else(|| {
+                    flow_image
+                        .as_ref()
+                        .zip(input.flow_preview)
+                        .map(|(image, p)| (&image.grips, p.options.copy))
+                }),
         );
         if let Some((filter, _)) = component_hover_mode
             && let Some(pointer) = response.hover_pos()

@@ -1,7 +1,7 @@
 //! Staged curve-to-curve Flow edits using the shared length and morph kernels.
 use super::*;
 use std::collections::BTreeMap;
-use viboceros_document::{CopyGroupPolicy, ReplacementHistory};
+use viboceros_document::{ControlPointId, CopyGroupPolicy, ReplacementHistory};
 use viboceros_geometry::{BoundingBox3, CurveFlowOptions, CurveFlowPointMorph};
 
 pub const USAGE: &str = "Flow Base=id Target=id [BaseEdge=parent,index] [TargetEdge=parent,index] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [Stretch=Yes|No] [PreserveStructure=Yes|No] [ReverseBase=Yes|No] [ReverseTarget=Yes|No]";
@@ -172,9 +172,31 @@ pub fn deformed_geometries(
     morph: &CurveFlowPointMorph,
     options: Options,
 ) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
+    deformed_with_grips(doc, ids, &[], morph, options)
+}
+/// Rigid ordinary objects include selected grip owners in their group bounds.
+/// Each selected grip itself always follows the point map.
+pub fn deformed_with_grips(
+    doc: &Document,
+    ids: &[ObjectId],
+    grips: &[ControlPointId],
+    morph: &CurveFlowPointMorph,
+    options: Options,
+) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
+    let grip_owners = grips.iter().map(|g| g.object).collect::<BTreeSet<_>>();
+    let context = ids
+        .iter()
+        .copied()
+        .chain(grip_owners.iter().copied())
+        .collect::<BTreeSet<_>>();
+    let ordinary = ids
+        .iter()
+        .copied()
+        .filter(|id| !grip_owners.contains(id))
+        .collect::<Vec<_>>();
     let mut bounds = BTreeMap::new();
-    if options.rigid && options.rigid_groups {
-        for id in ids {
+    if options.rigid && options.rigid_groups && !ordinary.is_empty() {
+        for id in &context {
             let o = doc.object(*id).ok_or(DocumentError::ObjectNotFound(*id))?;
             if let Some(group) = o.top_group() {
                 let b = o.geometry().tight_bounds(doc.tolerance())?;
@@ -191,7 +213,8 @@ pub fn deformed_geometries(
         .into_iter()
         .map(|(id, b)| Ok((id, morph.rigid_transform(b.center()?)?)))
         .collect::<Result<BTreeMap<_, _>, GeometryError>>()?;
-    ids.iter()
+    ordinary
+        .iter()
         .map(|id| {
             let o = doc.object(*id).ok_or(DocumentError::ObjectNotFound(*id))?;
             let geometry = if options.rigid {
@@ -239,27 +262,49 @@ impl Command for FlowCommand {
         true
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        // Grips need separate native copy/rigid policies; never deform a
-        // selected owner as a substitute for its selected grips.
-        if doc.selected_control_points().next().is_some() {
-            return Err(CommandError::FlowGripsNotSupported);
-        }
-        let (args, mut sources) = transform_arguments(doc, args, USAGE)?;
+        let (args, mut sources) = affine_transform_arguments(doc, args, USAGE)?;
         let (options, refs) = options(&args, self.0.get())?;
         let base = refs.base.ok_or(CommandError::Usage(USAGE))?;
         let target = refs.target.ok_or(CommandError::Usage(USAGE))?;
         sources.ids.retain(|id| *id != base.id && *id != target.id);
-        if sources.ids.is_empty() {
+        if sources
+            .grips
+            .iter()
+            .any(|g| g.object == base.id || g.object == target.id)
+        {
+            return Err(CommandError::Usage(
+                "Flow guides cannot supply source grips",
+            ));
+        }
+        if sources.ids.is_empty() && sources.grips.is_empty() {
             return Err(CommandError::NoObjectsSelected);
         }
         let morph = prepare(doc, base, target, options)?;
-        let staged = deformed_geometries(doc, &sources.ids, &morph, options)?;
-        let count = staged.len();
+        let staged = deformed_with_grips(doc, &sources.ids, &sources.grips, &morph, options)?;
+        let count = staged.len()
+            + sources
+                .grips
+                .iter()
+                .map(|g| g.object)
+                .collect::<BTreeSet<_>>()
+                .len();
         if sources.release_on_replay {
             doc.release_command_selection_on_history_replay(sources.ids.iter().copied())?;
-            doc.clear_selection();
+            // Postselected grip replacements restore the getter's selected
+            // grips on Undo. Copy records their released source selection.
+            if options.copy || sources.grips.is_empty() {
+                doc.clear_selection();
+            }
         }
-        if options.copy {
+        if !sources.grips.is_empty() {
+            doc.morph_grips_with_object_geometries(
+                staged,
+                sources.grips.iter().copied(),
+                &morph,
+                options.copy,
+                CopyGroupPolicy::Preserve,
+            )?;
+        } else if options.copy {
             doc.copy_object_geometries_with_groups(staged, CopyGroupPolicy::Preserve)?;
         } else {
             doc.replace_object_geometries_with_history(

@@ -211,11 +211,8 @@
     "crates/viboceros-command/src/history_policy.rs": "372c755474936f9ee93b506e641b43a2099618babe67f27e081d77cfbf570d20",
     "crates/viboceros-document/src/control_points.rs": "7e71a5e40e7ad861c39c05678e60ebaafee7590801e475d060df21928714be0b",
     "crates/viboceros-document/src/control_points/geometry.rs": "06aa7665a2bd7e6406df9cacc77d2bac534674ed04f4822971dac625243e8e0c",
-    "crates/viboceros-document/src/control_points/morph_tests.rs": "557b24a4446b827fa1fdd232022597c5cffd99229d3f820da7ead629087bb552",
-    "crates/viboceros-document/src/control_points/transform.rs": "56bf85e17272f8d7b070240218305166486b7ae515497846bdab93689050d6b0",
     "crates/viboceros-geometry/src/nurbs/grips.rs": "81281ce283b192913ac66354644c74ab22e4fde6d01aae5e58f522f34e4bec0f",
     "crates/viboceros-geometry/src/nurbs_surface/grips.rs": "1432ed9695c5448544ba2e023d2a95b44b4e4f829411b4f049a6610c620f99bc",
-    "crates/viboceros-oracle/src/orient_surface_grips.rs": "a534ec494f6199e586d81dce365f8c9e18d702dad70eb0560ee3758c6f34baef",
     "docs/curvature-graph-validation.json": "21617a612175f7165b4d4146d0d4316c7f60200f7ab3b046daf48d1fc158375e",
     "docs/edit-points-qualification.json": "42c67c74abc8bc872cf26c4b4d54db1621f6cb8305daaf677dde97acfd5afbe5",
     "docs/line-through-points-validation.json": "0d175866fb3fe7c882d438a4197ea21c90bb8014771e28a444d141c4ee4df76d",
@@ -225,7 +222,6 @@
     "docs/set-point-grips-qualification.json": "03b9f00005a9e14ae4035471650b4cca6fb5a9c934d9c8fb1bfc70a209ec77df",
     "docs/set-point-preview-qualification.json": "6adb46f577442a2e62eb112ef509fb5ea2f59386a7a475ef493cfd897336d340",
     "docs/sphere-fit-points-validation.json": "8f3c2c8ca53e5627120e48d7c1241691df5364829577759954ebae06f966431d",
-    "src/app/transform_sources.rs": "5d17f42b1a372aea9b8b0e336b54ec3229a0cf687e1dc93f886919ab8146cb21",
     "src/viewport/control_points.rs": "658e373410ff90a76ba3f438642a5fe1d1773809ca5b496957a94a451903cf5c",
     "src/viewport/orient_surface_preview.rs": "0f44c3e4ee2253d3d10b350267f7180dcb07e95183493cee26ecb69a1d182ec2",
     "tools/rhino_oracle/fixtures/orient_surface_grips.json": "4f8bea67fab006ef0589beb9537e309b4e08830f0a9d7ef6bc7d07b8795bce44",
@@ -250,6 +246,10 @@
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:docs/orient-on-curve-edge-validation.json": "37ba40e33f8d0555aec109654d04d6c621db68a78dea1d05d3a0908581f6c6a9",
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/app.rs": "a10fddf22aa452e9bb3f8d9ea9b1051acd7d8279928b802fda538985513e61d1",
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/viewport.rs": "ede5a973ff57ff90727e2dd69f8510e30c5cd824b48e11e2d784fc9c4339e652",
-    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/viewport/morph_preview.rs": "5a62a9d5f93b2b269da1287e50bc32feb2177d08033194f79195e6c6d32089f5"
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:src/viewport/morph_preview.rs": "5a62a9d5f93b2b269da1287e50bc32feb2177d08033194f79195e6c6d32089f5",
+    "329f872a16919c12f94566186d7d2248db675ed1:crates/viboceros-document/src/control_points/morph_tests.rs": "557b24a4446b827fa1fdd232022597c5cffd99229d3f820da7ead629087bb552",
+    "329f872a16919c12f94566186d7d2248db675ed1:crates/viboceros-document/src/control_points/transform.rs": "56bf85e17272f8d7b070240218305166486b7ae515497846bdab93689050d6b0",
+    "329f872a16919c12f94566186d7d2248db675ed1:crates/viboceros-oracle/src/orient_surface_grips.rs": "a534ec494f6199e586d81dce365f8c9e18d702dad70eb0560ee3758c6f34baef",
+    "329f872a16919c12f94566186d7d2248db675ed1:src/app/transform_sources.rs": "5d17f42b1a372aea9b8b0e336b54ec3229a0cf687e1dc93f886919ab8146cb21"
   }
 }

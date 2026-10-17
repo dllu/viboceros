@@ -16748,8 +16748,6 @@ pub enum CommandError {
     FlowSpatialFramesNotSupported,
     #[error("Flow option {0} is not implemented yet")]
     FlowOptionNotSupported(&'static str),
-    #[error("Flow of control/edit grips is not implemented yet")]
-    FlowGripsNotSupported,
     #[error("enter a command")]
     EmptyInput,
 

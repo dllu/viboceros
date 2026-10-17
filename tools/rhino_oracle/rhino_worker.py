@@ -13429,6 +13429,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'curvature_graph':
         from curvature_graph_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'flow_grips':
+        from flow_grips_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'flow':
         from flow_probe import run
         return run(operation, globals(), iterations, tolerance)
@@ -17443,6 +17446,10 @@ def _main(at_idle=False):
         if not at_idle and any(op.get('op') == 'smlib_reference' for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
+        if not at_idle and any(op.get('op')=='flow_grips' for op in request.get('operations',[])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino,lambda:_main(True))
             return
         if not at_idle and any(op.get('op')=='divide_preferences' for op in request.get('operations',[])):
             import merge_edges_probe

@@ -20,6 +20,7 @@ impl Guide {
 }
 pub(super) struct Session {
     sources: Vec<ObjectId>,
+    grips: Vec<viboceros_document::ControlPointId>,
     postselected: bool,
     options: Options,
     base: Option<Guide>,
@@ -32,6 +33,7 @@ impl Session {
     pub(super) fn preview(&self) -> Option<crate::viewport::FlowPreview<'_>> {
         Some(crate::viewport::FlowPreview {
             sources: &self.sources,
+            grips: &self.grips,
             morph: self.morph.as_ref()?,
             options: self.options,
             cache: &self.cache,
@@ -80,21 +82,23 @@ impl VibocerosApp {
         }) {
             options.copy = copy;
         }
-        if self.document.selected_control_points().next().is_some() {
-            self.push_log("Error: Flow of selected grips is not implemented yet".into());
-            return true;
-        }
         let sources = picked.map_or_else(
             || self.document.selected_object_ids().collect(),
             |p| p.to_vec(),
         );
-        if sources.is_empty() {
+        let grips = self
+            .document
+            .selected_control_points()
+            .map(|(id, _)| id)
+            .collect::<Vec<_>>();
+        if sources.is_empty() && grips.is_empty() {
             self.start_transform_source_prompt("Flow");
             self.object_prompt.as_mut().unwrap().command_override = Some(input.into());
             return true;
         }
         self.flow_session = Some(Session {
             sources,
+            grips,
             postselected: picked.is_some(),
             options,
             base: None,
@@ -119,7 +123,7 @@ impl VibocerosApp {
     }
     fn capture_flow_guide(&self, r: GuideReference) -> Result<Guide, String> {
         let s = self.flow_session.as_ref().unwrap();
-        if s.sources.contains(&r.id) {
+        if s.sources.contains(&r.id) || s.grips.iter().any(|g| g.object == r.id) {
             return Err("Flow guides must be separate from the source objects".into());
         }
         let o = self
@@ -243,7 +247,7 @@ impl VibocerosApp {
                     None => format!("{name}={}", r.id),
                 };
                 let command = format!(
-                    "Flow {} {} {} {}={}",
+                    "Flow {} {} {} {}={} {}",
                     reference("Base", a.reference),
                     reference("Target", b.reference),
                     s.options.arguments(),
@@ -256,7 +260,8 @@ impl VibocerosApp {
                         .iter()
                         .map(ToString::to_string)
                         .collect::<Vec<_>>()
-                        .join(",")
+                        .join(","),
+                    super::transform_sources::grip_argument(&s.grips, s.postselected)
                 );
                 match self.commands.execute(&mut self.document, &command) {
                     Ok(message) => {

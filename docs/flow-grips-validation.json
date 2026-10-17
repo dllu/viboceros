@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "329f872a16919c12f94566186d7d2248db675ed1",
+  "component": "Flow selected control/edit grips, shared staged mixed edits and immutable previews",
+  "complete_flow_qualified": false,
+  "performance_qualified": false,
+  "native_frames_or_owner_outputs_used_as_construction_inputs": false,
+  "implementation": "Accept active control/edit grip IDs in Flow, use the existing grip reconstruction/copy/group/history paths, and supply precomputed ordinary object geometry to a shared staged document edit. Each grip follows the point map regardless of Rigid. Ordinary rigid peers use group bounds including grip owners. Copies of grip owners join their source groups. The shared display cages preview the same source basis and group poses without document mutation.",
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "scheme": "VibocerosOracleFlowGrips20261016d",
+    "method": "Owned private display and public RhinoCommon geometry, command and EndCommand APIs. Run the worker at Rhino idle outside the RunPythonScript undo record. Record before, EndCommand, completed macro, Undo and Redo separately. Compare completed macro state after temporary guide and postselection cleanup. No trailing Cancel tokens. Undo must actually change owner outputs, not merely return a successful macro status.",
+    "actual_command_workflows": 72,
+    "epsilon": 1e-06,
+    "max_coordinate_error": 5.503153488461976e-12,
+    "compared_stages": [
+      "before",
+      "after_script",
+      "undo",
+      "redo"
+    ],
+    "raw_object_table_enumeration_order_compared": false,
+    "capture_note": "Earlier discovery probes inside the script undo record or with trailing Cancel were rejected for history qualification. The retained capture contains the successful complete macros and real history transitions."
+  },
+  "coverage": {
+    "families": [
+      "rational NURBS curve control grips",
+      "rational NURBS curve Greville edit grips",
+      "weighted NURBS surface controls",
+      "mesh vertex grips"
+    ],
+    "core_cases": 32,
+    "simultaneously_selected_parent_cases": 16,
+    "command_first_grip_getter_cases": 16,
+    "preserve_structure_cases": 8,
+    "checks": [
+      "complete owner control nets/knots/weights/degrees or mesh vertices/faces/normals",
+      "active grip modes and selected grip positions/indices",
+      "group memberships and counts, original/copy identity, ordinary point peers",
+      "unchanged unselected guide objects",
+      "Undo/Redo geometry, group and grip selection states",
+      "local staged failures retain geometry, selection, history and redo",
+      "interactive preselection and command-first grip getters, Copy, Rigid and one-step Undo",
+      "shared read-only previews across all four families and rigid ordinary peers",
+      "existing 76 point maps and 43 whole point-cloud commands",
+      "existing 30 OrientOnSrf grip cases after reusing its snapshot helper"
+    ]
+  },
+  "checks": [
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-oracle flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "4154bb8c97de607a97b877ea34f5673f4a0ce525eb5fe2a40bfdd59fac5a8d2a",
+      "passed_rust_tests": 34
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib flow_grips::",
+      "exit_code": 0,
+      "log_sha256": "536f559e8f13241a52c827f60116d937052560672fbcfca8570bd304dd297ad6",
+      "passed_rust_tests": 1
+    },
+    {
+      "command": "cargo test -p viboceros-document --lib control_points::",
+      "exit_code": 0,
+      "log_sha256": "eee033e1e64a2e06992ed7268ab6aedb622b95187e581659970ebfc9d3087433",
+      "passed_rust_tests": 14
+    },
+    {
+      "command": "cargo test -p viboceros-oracle --lib orient_surface_grips::",
+      "exit_code": 0,
+      "log_sha256": "a8614c7efe222a1b24a3d42e0cd5fd4f77d6d45b4be74ff9a015b1065957b636",
+      "passed_rust_tests": 1
+    },
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-document -p viboceros-oracle --features native-smlib flow -- --skip workflow",
+      "exit_code": 0,
+      "log_sha256": "1851d4a49b9d94a6b556ec8b548b2b892e28397b63e6f2ce6c60566b99aeb1ce",
+      "passed_rust_tests": 38
+    },
+    {
+      "command": "cargo test -p viboceros -p viboceros-command -p viboceros-document -p viboceros-oracle --features native-smlib flow_grips::",
+      "exit_code": 0,
+      "log_sha256": "136664796555cd4cb17777803f5dfb7d0dbea98548ffdf50b0a865a7d10b82da",
+      "passed_rust_tests": 1
+    },
+    {
+      "command": "cargo clippy -p viboceros -p viboceros-command -p viboceros-document -p viboceros-oracle --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "898fc6697b1b10deb03dc4d922d228f02ea8110c6c3615ae58625b4f4d4615e9"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_grips tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_orient_surface_grips tools.rhino_oracle.test_orient_surface_options tools.rhino_oracle.test_orient_surface tools.rhino_oracle.test_orient_points tools.rhino_oracle.test_orient_on_curve tools.rhino_oracle.test_grip_transform tools.rhino_oracle.test_grip_alias",
+      "exit_code": 0,
+      "log_sha256": "690a6afe436d796fdd615044068fb95f40f24d129483548f01998d1cc0703ec6",
+      "passed_python_tests": 36
+    }
+  ],
+  "limitations": [
+    "General spatial curved guides, Line, Local, Roadlike/Stairlike and TargetSurface remain Flow implementation work.",
+    "General fitted owner geometry, planar NURBS/closed guides, periodic/seam/alias native grip cases and additional group graphs need further native qualification.",
+    "No native preview-appearance or performance parity is claimed. No full workspace-suite claim."
+  ],
+  "sha256": {
+    "README.md": "c880e6ba5e3b9222454cf86f0caa81c6be932e0fdb497de677543c52f6d5dc32",
+    "crates/viboceros-command/src/flow.rs": "79f291f7e5154c5ae50e84cb1ddbf62a22477345f0d72c49f1607d074eed263b",
+    "crates/viboceros-command/src/flow/tests.rs": "9ca04a0105dd5ff0071330c0e6923e009147c6897cbe98efda4c1cbecedf9f35",
+    "crates/viboceros-command/src/lib.rs": "01e7f653a28366374ce7a0d30b6ab0a39c4a1c298c892ce7ca20f9b2781148fd",
+    "crates/viboceros-document/src/control_points/morph_tests.rs": "aa509c62a7f14ef4ba6a5577cef72c0e392afd05b63eef404d14f35db83dc15f",
+    "crates/viboceros-document/src/control_points/transform.rs": "a5cd0dc55cc755367dd42903b55cf9d384a4bdffde45f5733e832fc13a30a4bd",
+    "crates/viboceros-oracle/src/flow_grips.rs": "faa8646faf8f2b587aeaffa406779e123d6d37645e067b755bc0a71828f8eaaf",
+    "crates/viboceros-oracle/src/lib.rs": "ae41901d5efe86aa516a838d3ac9234f891cfda53290a9f578eb75b3a092ea69",
+    "crates/viboceros-oracle/src/orient_surface_grips.rs": "2f1cb0a1770900c39aa68ff53a31da33463dfd4dbc892876a1f6c0e658fa5e96",
+    "docs/commands/flow.md": "76b506473ca85bcb758d73a3661ac288caf64c569c9006aa5288bc744e5966ad",
+    "docs/flow-command-validation.json": "6613d2b2b9d434d0a9c5c3102ac3d2de8917357f9f758eca758603c9233163f3",
+    "docs/flow-development.md": "0c84fa8f152d70ae4de1479facfa832cac4fbb8c3d0d10775ec71e9a458df9e0",
+    "docs/orient-surface-grips-validation.json": "fc2b021b05ba2beebbcece6ef77e59d08eeb315b63c5e9f8e265174bb2856f0e",
+    "docs/prepared-curve-length-validation.json": "8af171ab27d6a8d3f819a613d4485d61bcaddffafd99aaae0b10b7030a25a6f2",
+    "src/app/flow.rs": "28b3f6a9203f94775bfdc38f191143a9cc1a091fae487093ccac885512ee9a07",
+    "src/app/tests/flow.rs": "cfb3804ab95bb023adc03729e0fca125e8022eec2ffe9062a9aa5616c204a23b",
+    "src/app/transform_sources.rs": "9d85f6c5e0693ce766b57b8ed2acfa6d958416779fad8b69d8b7ecc444ad0d42",
+    "src/viewport.rs": "8614ca527111fc658f4bc8f051a01276637f21dbedeb930cbb53d93d70cda934",
+    "src/viewport/flow_preview.rs": "2b14500b2743b439f03eda291f0f9b5637bdd8eb830b32a997ce853985817611",
+    "tools/rhino_oracle/flow_grips_comparison.py": "c1774f5a912bd9d71cdd77e57fa30ae66cbf31b3d1bfdd5a293b60ac24cb2e65",
+    "tools/rhino_oracle/flow_grips_probe.py": "1bf1f5f5448dee43d9bdf15610758c1d8df0e331993e1dfd82966c885c5c7974",
+    "tools/rhino_oracle/rhino_worker.py": "1679d1f6ebc7ba719bf4d1fda0606ad4a6b9f98d31d069d1be4f5d64958f3a0a",
+    "tools/rhino_oracle/structural_sdk.py": "adc064f3cf5cadbb1293aca80a984e17a2499e87085d75201bb920550b7153af",
+    "tools/rhino_oracle/test_flow_grips.py": "5d136380b760f650a9124d91ba0603b2d7beb574c479b19816e7a1a06502f4c0",
+    "tools/rhino_oracle/flow_probe.py": "b45f31fe28ae0ef2648dd0283a53dae07234d7e5479a20f458322a91f3e1227e",
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/orient_surface_grips_comparison.py": "7820fe60cd3c72fc5c62dbc892c2eb511adc7d757a967170a1804da32920970d"
+  },
+  "fixture_sha256": {
+    "tools/rhino_oracle/fixtures/flow_grips.json": "505755807deddeaec231a6ae7a95ecd560e52446a0b78094c0b94fce0ffd1bc5"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/flow_grips_comparison_20261016.json": "5a2fe6762b6bba6dc72f85ab4841ec7aa75f8720030be29b64c7bf08647a13a5",
+    "tools/rhino_oracle/observations/flow_grips_rhino_20261016.json": "7461063804faf5d7bc0eb669541eebddda546d67641cb46f2a54d867d14d06d8",
+    "tools/rhino_oracle/observations/flow_grips_viboceros_20261016.json": "e0484c3b2f756ce60626e51c5e9b2c3dcab729506d171fe9a24b2c24f792f3c2"
+  }
+}

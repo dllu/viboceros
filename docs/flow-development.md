@@ -2,7 +2,7 @@
 
 Flow is registered in the command API and application. Its current supported
 subset has a two-guide getter, direction reversal, cached preview, staged edits,
-Copy, Rigid/RigidGroups, Stretch, PreserveStructure, option memory and one-step
+Copy, Rigid/RigidGroups, Stretch, PreserveStructure, selected control/edit grips, option memory and one-step
 local Undo/Redo. See [usage and current limits](commands/flow.md).
 
 The implementation owns shared prepared guide geometry and reuses the existing
@@ -25,6 +25,7 @@ and actual Flow macros in owned private displays:
 | `flow_planes.json` | 16 | Actual commands and SDK maps across XY/XZ/YZ planes, straight/curved bases and both reversals |
 | `flow_equivalence.json` | 19 | Domain changes, exact knot insertion, rotation, scaling, spatial polylines and identity diagnostics |
 | `flow_precision.json` | 19 | Point order, SDK precision settings and scale diagnostics |
+| `flow_grips.json` | 72 | Complete grip owner, group, selection and Undo/Redo workflows across curves, surfaces and meshes |
 
 Of the main 44 maps, 36 match within `1e-6`; eight involving spatial curved
 guides remain unresolved. All 24 command and 16 mixed-plane maps match too:
@@ -42,7 +43,7 @@ scaling, while authored point order and the SDK QuickPreview/Tolerance settings
 do not change point results. These diagnostic observations are retained to guide
 further independent implementation; no spatial parity is claimed.
 
-Remaining scope includes all retained spatial point maps, selected grips, Line
+Remaining scope includes all retained spatial point maps, Line
 and Local input, Roadlike/Stairlike and TargetSurface orientation, native option
 memory and history details, multiple-object rigid group qualification, fitted
 owner geometry, planar NURBS and closed-guide qualification, preview appearance and performance.
@@ -68,3 +69,19 @@ python3 -m tools.rhino_oracle rhino tools/rhino_oracle/fixtures/flow_command.jso
 References: [Rhino Flow command](https://docs.mcneel.com/rhino/8/help/en-us/commands/flow.htm)
 and [public FlowSpaceMorph constructor](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Morphs_FlowSpaceMorph__ctor_1.htm).
 Captures inspect no proprietary implementation code.
+
+The [grip qualification](flow-grips-validation.json) additionally compares 72
+actual commands, including mixed ordinary objects and grip owners. Grips always
+follow the point map; Rigid/RigidGroups govern ordinary peers. Copied grip owners
+stay in source groups. Reuse the document's shared grip reconstruction and morph
+copy paths while accepting prepared ordinary geometries, so the complete mixed
+edit stages before geometry changes. The existing display cache previews the
+same grip basis and group poses without editing the document.
+
+The native grip driver runs at Rhino idle outside RunPythonScript's undo record.
+It records EndCommand, the completed macro, Undo and Redo separately. Temporary
+guide selection and postselection cleanup still appear at EndCommand; comparisons
+use the completed macro's state. Complete macros have no trailing Cancel token.
+Earlier discovery captures inside the script's undo record or with an extra
+Cancel are not qualified. Further grip-family, seam/alias and preview appearance
+qualification remains open.
