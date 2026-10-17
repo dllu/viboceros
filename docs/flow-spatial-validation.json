@@ -96,12 +96,9 @@
   },
   "sha256": {
     "docs/flow-command-validation.json": "f90cf4cf85c43839a12fbba009c218c9f6eb96387ca69f124f92d322ce9d8d24",
-    "docs/flow-development.md": "50edebc4dd96b526f5a7ec65ee1023be46c3bb99e1a0c7901f32fe4ee0081550",
     "docs/flow-grips-validation.json": "853d6651e738f66c55f69f523394b8ea075e19b9f141f646647a4c549969bd5c",
     "docs/flow-line-validation.json": "40d88994848f756f5eb021a21756771529de4ae6dd8dc7f9262852174bebc1f6",
-    "tools/rhino_oracle/flow_probe.py": "a46216322dde37b00f4a578f1e4c7cd227f949b54e0b3c8f8cc84168273783d9",
     "tools/rhino_oracle/flow_spatial_report.py": "3b134f7e3c1fce326a969f66711bf68573ae3585c8c8c65dcd4164d46d33f2d5",
-    "tools/rhino_oracle/test_flow_spatial.py": "bb6bc19b830d509431a8c67b68cf981be0e2bf2356fb97a7c71b9e37ec4df6b7",
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
     "tools/rhino_oracle/rhino_worker.py": "3debec12cb1ccd465a0410e37b0056e58a89ae73f1b71878e6768e2a8da9455e",
     "tools/rhino_oracle/structural_sdk.py": "80e436b8738b00ac98cc35b31ed858c70b6aa73fafac79b8ebfc13cb3fa54c5d",
@@ -115,5 +112,10 @@
   "observation_sha256": {
     "tools/rhino_oracle/observations/flow_length_frames_rhino_20261016.json": "47c0344f55fd2d02896584b8a7ff2d7575cdfaa3dfb55b0f22136534c716ea7c",
     "tools/rhino_oracle/observations/flow_spatial_report_20261016.json": "3c2334307ef19c1b16577aece63f37aab67ea6769e733a8fcd12769d5d7be093"
+  },
+  "git_sha256": {
+    "48d7d5f3b9d2fa7898bc16b5d8ed980cf9b93a99:docs/flow-development.md": "50edebc4dd96b526f5a7ec65ee1023be46c3bb99e1a0c7901f32fe4ee0081550",
+    "48d7d5f3b9d2fa7898bc16b5d8ed980cf9b93a99:tools/rhino_oracle/flow_probe.py": "a46216322dde37b00f4a578f1e4c7cd227f949b54e0b3c8f8cc84168273783d9",
+    "48d7d5f3b9d2fa7898bc16b5d8ed980cf9b93a99:tools/rhino_oracle/test_flow_spatial.py": "bb6bc19b830d509431a8c67b68cf981be0e2bf2356fb97a7c71b9e37ec4df6b7"
   }
 }

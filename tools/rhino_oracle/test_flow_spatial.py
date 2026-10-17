@@ -22,6 +22,18 @@ class FlowSpatialTests(TestCase):
         op=copy.deepcopy(q['operations'][0]);op['diagnostics']=False
         with self.assertRaises(ValueError):validate(op)
 
+    def test_bounded_batch_length_queries(self):
+        q,_=self.inputs();op=copy.deepcopy(q['operations'][0]);op['diagnostic_length_batches']=True
+        for counts in ([1],[840],[4096],[100,840]):
+            op['diagnostic_length_batch_divisions']=counts;validate(op)
+        for counts in ([],[0],[4097],[1,1],[True],[840.],[[840]],{},list(range(1,10))):
+            op['diagnostic_length_batch_divisions']=counts
+            with self.assertRaises(ValueError,msg=str(counts)):validate(op)
+        op['diagnostic_length_batch_divisions']=[840];op['diagnostic_length_batches']=False
+        with self.assertRaises(ValueError):validate(op)
+        del op['diagnostic_length_batch_divisions'];op['diagnostic_length_batches']=1
+        with self.assertRaises(ValueError):validate(op)
+
     def test_precise_length_and_seed_aligned_public_frames_do_not_reproduce_flow(self):
         q,n=self.inputs();r=report(q,n)
         self.assertEqual(r,self.read('observations/flow_spatial_report_20261016.json'))

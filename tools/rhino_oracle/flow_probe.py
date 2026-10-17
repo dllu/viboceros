@@ -6,7 +6,7 @@ else:
     from geometry_validity_probe import validate as validate_source
 
 def validate(op):
-    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
+    if not isinstance(op,dict)or op.get('op')!='flow' or not {'op','id','base','target','points'}<=set(op) or set(op)-{'op','id','base','target','points','options','command','group','diagnostics','diagnostic_length_samples','diagnostic_length_batches','diagnostic_length_batch_divisions','morph_tolerance','quick_preview','roadlike_syntax'}:raise ValueError('invalid Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid Flow id')
     for key in ('base','target'):
         if not isinstance(op[key],dict)or op[key].get('type')not in ('line','arc','circle','ellipse','nurbs','polyline','polycurve'):raise ValueError('Flow requires curve guides')
@@ -22,6 +22,10 @@ def validate(op):
     for k in ('command','group','diagnostics','quick_preview'):
         if type(op.get(k,False))is not bool:raise ValueError('invalid Flow capture flag')
     if 'diagnostic_length_samples'in op and(type(op['diagnostic_length_samples'])is not int or not 2<=op['diagnostic_length_samples']<=129 or not op.get('diagnostics')):raise ValueError('invalid Flow length diagnostic count')
+    if 'diagnostic_length_batches'in op and(type(op['diagnostic_length_batches'])is not bool or not op.get('diagnostic_length_samples')):raise ValueError('invalid Flow batch length diagnostics')
+    if 'diagnostic_length_batch_divisions'in op:
+        counts=op['diagnostic_length_batch_divisions']
+        if not op.get('diagnostic_length_batches')or not isinstance(counts,list)or not 1<=len(counts)<=8 or any(type(n)is not int or not 1<=n<=4096 for n in counts)or len(set(counts))!=len(counts):raise ValueError('invalid Flow batch division counts')
 
 def run(op,host,iterations,tolerance):
     validate(op)
@@ -74,6 +78,17 @@ def run(op,host,iterations,tolerance):
                         success,frame=c.TryGetPlane(error)
                         classifications.append(dict(tolerance=error,linear=bool(c.IsLinear(error)),plane=plane(frame)if success else None))
                     result['tolerance_classification']=classifications
+                    if op.get('diagnostic_length_batches'):
+                        batches=[]
+                        for count in op.get('diagnostic_length_batch_divisions',[len(rows)-1]):
+                            fractions=host['System'].Array[host['System'].Double]([float(i)/count for i in range(count+1)])
+                            for error in (1e-2,1e-4,1e-6,1e-8,1e-12):
+                                values=c.NormalizedLengthParameters(fractions,0.,error)
+                                if values is None or len(values)!=count+1:raise ValueError('public batch length lookup failed')
+                                row=dict(fractional_tolerance=error,parameters=list(values),points=[host['_xyz'](c.PointAt(t))for t in values])
+                                if 'diagnostic_length_batch_divisions'in op:row['divisions']=count
+                                batches.append(row)
+                        result['length_batches']=batches
                 return result
             result['diagnostics']=dict(base=frames(base),target=frames(target))
         if not op.get('command'):return result,0

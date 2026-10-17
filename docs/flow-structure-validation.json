@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-16",
+  "base_repository_revision": "48d7d5f3b9d2fa7898bc16b5d8ed980cf9b93a99",
+  "component": "Flow dense spatial lookup, batch inverse and shared fixed-direction structure",
+  "complete_flow_qualified": false,
+  "spatial_flow_qualified": false,
+  "production_kernel_changed": false,
+  "performance_qualified": false,
+  "native_outputs_used_as_kernel_construction_inputs": false,
+  "implementation": "Bound optional public batch-length queries, retain dense SDK observations and analyze their structure. Use public batch parameters as a diagnostic table and fit constant directions by NumPy SVD on selected native basis sections. Predictions compare separate observations and held-out sections. Neither fitted directions nor captured inverse tables enter production Rust morph construction.",
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "method": "Owned private displays and public RhinoCommon FlowSpaceMorph and NormalizedLengthParameters. SDK-only observations; no actual command, GUI or history qualification in these new recipes. No proprietary implementation inspected.",
+    "parts": [
+      {
+        "scheme": "VibocerosOracleFlowDensity20261016a",
+        "fixture": "flow_density.json",
+        "cases": 2,
+        "points": [
+          2048,
+          2046
+        ]
+      },
+      {
+        "scheme": "VibocerosOracleFlowCoupledFrames20261016a",
+        "fixture": "flow_coupled_frames.json",
+        "cases": 7
+      },
+      {
+        "scheme": "VibocerosOracleFlowUpLookup20261016a",
+        "fixture": "flow_up_lookup.json",
+        "cases": 4
+      }
+    ],
+    "capture_note": "The completed density capture was followed by a combined batch/type capture and a batch/changed-shape/degree-elevation capture. Two initial parallel batch/type jobs terminated at the runner deadline before worker progress and contributed no retained expectations; rerun only after terminal handles and exited owned processes were confirmed. An earlier polyline discovery used the wrong recipe key and was corrected to vertices before the retained type capture. The batch-count option was added between the combined and final captures; valid earlier recipes preserve their behavior. The current validator additionally rejects malformed count types before duplicate detection. Current source hashes identify this validated driver, not byte-identical staging files for every earlier capture."
+  },
+  "findings": {
+    "lookup": {
+      "observed_intervals": 840,
+      "public_batch_fractional_tolerance": 0.0001,
+      "comparisons": [
+        {
+          "id": "dense-centers",
+          "samples": 2048,
+          "max_coordinate_error": 9.769962616701378e-15
+        },
+        {
+          "id": "dense-basis",
+          "samples": 682,
+          "max_coordinate_error": 8.881784197001252e-15
+        },
+        {
+          "id": "elevated-centers",
+          "samples": 2048,
+          "max_coordinate_error": 2.007283228522283e-13
+        }
+      ]
+    },
+    "max_lookup_coordinate_error": 2.007283228522283e-13,
+    "fixed_direction_candidates": [
+      {
+        "id": "dense-basis",
+        "fitted_direction": [
+          -0.35872281647729254,
+          0.8630500046126364,
+          -0.3556158467739128
+        ],
+        "training_sections": 17,
+        "checked_sections": 682,
+        "cross_coefficient_parallel_error": 1.191874962812805e-15,
+        "max_shared_direction_basis_error": 1.942890293094024e-15
+      },
+      {
+        "id": "variant-z",
+        "fitted_direction": [
+          -0.34117771372498684,
+          0.8773530743249182,
+          -0.33741569410744016
+        ],
+        "training_sections": 9,
+        "checked_sections": 17,
+        "cross_coefficient_parallel_error": 5.2550650972042546e-14,
+        "max_shared_direction_basis_error": 2.9976021664879227e-15
+      },
+      {
+        "id": "variant-wide",
+        "fitted_direction": [
+          0.028193325504034212,
+          0.999167535521022,
+          0.029485120957369722
+        ],
+        "training_sections": 9,
+        "checked_sections": 17,
+        "cross_coefficient_parallel_error": 2.6976230811441996e-12,
+        "max_shared_direction_basis_error": 1.0680345496894006e-13
+      }
+    ],
+    "max_shared_direction_basis_error": 1.0680345496894006e-13,
+    "guide_representation_comparisons": [
+      {
+        "id": "base-nurbs1",
+        "max_coordinate_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "base-nurbs3",
+        "max_coordinate_error": 3.552713678800501e-15
+      },
+      {
+        "id": "base-polyline",
+        "max_coordinate_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "target-nurbs1",
+        "max_coordinate_error": 0.0
+      },
+      {
+        "id": "target-nurbs3",
+        "max_coordinate_error": 0.0
+      },
+      {
+        "id": "target-polyline",
+        "max_coordinate_error": 0.0
+      }
+    ],
+    "interpretation": "For the retained cubic, interpolating 841 public batch inverse parameters at fractional tolerance 1e-4 reproduces 2048 dense centers, 682 further centers and 2048 centers on the exact degree-elevated curve. A 100-interval batch fails. Native transverse bases on three shapes admit a shared fixed direction projected into both guide normal planes. The direction is fitted from selected observations and predicts held-out sections, but varies by shape; its geometry-derived selector is not implemented."
+  },
+  "checks": [
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_flow_structure tools.rhino_oracle.test_flow_spatial tools.rhino_oracle.test_flow_capture tools.rhino_oracle.test_flow_line tools.rhino_oracle.test_flow_grips",
+      "exit_code": 0,
+      "passed_tests": 20,
+      "skipped_tests": 0,
+      "log_sha256": "36de6a9aa921cb5749c2403ad8c1d7400f6db9dfe8735acd8714556d8c2fc912"
+    },
+    {
+      "command": "python3 -m py_compile tools/rhino_oracle/flow_probe.py tools/rhino_oracle/flow_structure_report.py tools/rhino_oracle/test_flow_structure.py tools/rhino_oracle/test_flow_spatial.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m tools.rhino_oracle.flow_structure_report tools/rhino_oracle/observations/flow_structure_report_20261016.json",
+      "exit_code": 0
+    }
+  ],
+  "analysis_dependencies": {
+    "python": "3.12.3",
+    "numpy": "1.26.4",
+    "note": "NumPy is optional and used only by the standalone SVD structure report. Core oracle execution and ordinary checks retain their standard-library dependency policy."
+  },
+  "limitations": [
+    "No production spatial policy or native command parity is claimed. Eight original spatial mismatches and the command guard remain.",
+    "The 840-interval count is established for one cubic and its exact degree elevation, not as a universal guide subdivision policy.",
+    "Public batch inverse values are diagnostic data. Their independent generator and the automatic direction selector still need implementation.",
+    "The fixed-direction model uses native tangent/basis observations for fitting and verification; it is not an independent curve-to-frame construction.",
+    "No GUI/history, performance or full workspace-suite claim for these new SDK-only cases."
+  ],
+  "historical_provenance": {
+    "preserved_records": 1,
+    "preserved_entries": 3,
+    "preexisting_unverifiable_records_left_unchanged": 69
+  },
+  "sha256": {
+    "docs/flow-development.md": "d7054c0ab4132549ed217491381aec8bd3a1caa926e97aa88f5e032240403faf",
+    "docs/flow-spatial-validation.json": "adc91a52ad3603bba46955595e59db8899a7a1520b191ef12d9d1520ed70b137",
+    "tools/rhino_oracle/flow_probe.py": "03d51bc16b9bdbd3dc4f8a9de8f507e8d5c9645e9008cd765843bdb6b2a34ac4",
+    "tools/rhino_oracle/flow_structure_report.py": "dce4026f7b7ae3b22be66030e8290dc891a87235a291b9e9d85aa3a69385d64d",
+    "tools/rhino_oracle/test_flow_spatial.py": "d425379ac6599a2e250d9e3d4d33e12d04185e385f1b91a35e86e2efc6ef02ba",
+    "tools/rhino_oracle/test_flow_structure.py": "f78f4d6e701d6f75020b3775006f4d61c4ca4def4c544d4e5f0cd912e3f8501d",
+    "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
+    "tools/rhino_oracle/rhino_worker.py": "3debec12cb1ccd465a0410e37b0056e58a89ae73f1b71878e6768e2a8da9455e",
+    "tools/rhino_oracle/structural_sdk.py": "80e436b8738b00ac98cc35b31ed858c70b6aa73fafac79b8ebfc13cb3fa54c5d",
+    "tools/rhino_oracle/client.py": "025fc46f97373af30b111358e13b7d819ce9c90c39c1612663c0a21aaa9afba6",
+    "crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5"
+  },
+  "fixture_sha256": {
+    "tools/rhino_oracle/fixtures/flow_coupled_frames.json": "16af86cb323a451eedd08ff4b39307f1a4587c64f7a82f46ad59b6779e87134e",
+    "tools/rhino_oracle/fixtures/flow_density.json": "44d1a6db321f60f48c7881f8932ba9b072c8d625f69267de1a1e7618d703f9a2",
+    "tools/rhino_oracle/fixtures/flow_up_lookup.json": "8c8aa34f86ceef57ef13dcaff912f8ed19ea16d544a239b0478a81e31d5cd106"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/flow_coupled_frames_rhino_20261016.json": "5abe7e25f4de2c1747c49f07d34b85560bc902103dd446ac69b50bc95e63a557",
+    "tools/rhino_oracle/observations/flow_density_rhino_20261016.json": "eca81465c12e17762b9837b42b7cd432cf72018029f1d44c86ea7391072a4e36",
+    "tools/rhino_oracle/observations/flow_structure_report_20261016.json": "e4d7281e2a017b02108d61d043782a1a49b0ec4e41021462501b5003c4ad37f3",
+    "tools/rhino_oracle/observations/flow_up_lookup_rhino_20261016.json": "8a3cb60e5e5150bd209d6ea9a62eb9f2400970642eb4c9cbeb5744567993f17a",
+    "tools/rhino_oracle/observations/flow_frames_rhino_20261016.json": "ca81823eadd4b49de7be7f2533f9bd8f22c10def72de383681bea71d424c7946"
+  }
+}

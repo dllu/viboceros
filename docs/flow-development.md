@@ -31,6 +31,7 @@ and actual Flow macros in owned private displays:
 | `flow_line.json` | 128 | Actual commands with either or both guides drawn, Copy/Rigid/Stretch, reversals, mixed planes, selected grips and rigid curve owners |
 | `flow_line_orientation.json` | 24 | Twenty actual commands and four SDK diagnostics for opposite, collinear and nearly opposite lines |
 | `flow_length_frames.json` | 6 | Public length/frame and tolerance-classification queries for a spatial cubic, exact refinement, rotation and three scales |
+| `flow_density.json`, `flow_coupled_frames.json`, `flow_up_lookup.json` | 13 | Dense spatial positions/bases, equivalent straight guide types, batch length lookups, degree elevation and changed spatial shapes |
 
 Of the main 44 maps, 36 match within `1e-6`; eight involving spatial curved
 guides remain unresolved. All 24 command and 16 mixed-plane maps match too:
@@ -136,3 +137,36 @@ python3 -m unittest tools.rhino_oracle.test_flow_spatial
 The next implementation work must account for both the spatial frame policy
 and Flow's position lookup. Replacing the initial frame alone, or merely
 loosening the precise shared arc-length sampler, does not match this evidence.
+
+The [structure report](../tools/rhino_oracle/observations/flow_structure_report_20261016.json)
+and [capture record](flow-structure-validation.json) isolate two further rules.
+For the retained cubic, linear interpolation of 841 public
+`NormalizedLengthParameters` values at fractional tolerance `1e-4` predicts
+2,048 native Flow centers and 682 additional centers to below `1e-14`.
+The same table predicts 2,048 centers on the exact degree-elevated curve to
+below `3e-13`. A 100-interval public batch does not match. This establishes an
+840-interval lookup for this geometry, not a universal subdivision count.
+
+For three spatial shapes, a shared fixed direction projected into the base
+and target tangent-normal planes reproduces the native transverse bases to
+below `2e-13`. Directions fitted on 17 of the dense witness's 682 sections
+also predict the other 665 sections; the two changed shapes use nine fitted
+and eight held-out sections each. The fitted direction varies by shape.
+It is diagnostic evidence for the frame family, not a geometry-derived
+selection algorithm. None of these fitted directions or native inverse tables
+initialize Rust morphs. The six equivalent line/NURBS/polyline guide pairs
+agree to below `4e-15`, ruling out that representation difference in these cases.
+
+The optional structure analysis uses NumPy for SVD; the core Python oracle
+and its ordinary checks continue to use the standard library.
+
+```sh
+python3 -m tools.rhino_oracle.flow_structure_report /tmp/flow-structure-report.json
+python3 -m unittest tools.rhino_oracle.test_flow_structure
+```
+
+Remaining spatial work is to generate the automatic directions and bulk inverse
+parameters independently from authored geometry, qualify the subdivision policy
+on further curves and directions, and pass all original spatial maps and actual
+command/history workflows. The production kernel and spatial command guard
+remain unchanged by this diagnostic work.
