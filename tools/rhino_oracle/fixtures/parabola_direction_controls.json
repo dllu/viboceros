@@ -1,0 +1,113 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "parabola_command",
+      "id": "three-throughpoint-default",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=Default",
+        "MarkFocus=Yes",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ],
+        [
+          1,
+          0,
+          1.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-throughpoint-endslast",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=EndsLast",
+        "MarkFocus=Yes",
+        [
+          1,
+          0,
+          0.25
+        ],
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ],
+        [
+          1,
+          0,
+          1.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-through-oblique",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=Default",
+        "MarkFocus=Yes",
+        [
+          7,
+          -1,
+          0.25
+        ],
+        [
+          7,
+          1,
+          0.25
+        ],
+        [
+          7,
+          3,
+          2.25
+        ],
+        [
+          7,
+          1,
+          1.25
+        ]
+      ],
+      "construction_plane": [
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    }
+  ]
+}

@@ -342,6 +342,7 @@ pub struct ViewportInput<'a> {
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
     pub surface_flow_preview: Option<SurfaceFlowPreview<'a>>,
+    pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
@@ -430,6 +431,7 @@ impl Default for ViewportInput<'_> {
             translation_preview: None,
             affine_preview: None,
             surface_flow_preview: None,
+            parabola_input: None,
             conic_input: None,
             conic_reference: None,
             rectangle_input: None,
@@ -2127,6 +2129,17 @@ impl Viewport {
                     && input.taper_preview.is_none()
                     && input.maelstrom_preview.is_none(),
             );
+        }
+        if let Some(getter) = input.parabola_input {
+            self.paint_draft_points(&painter, rect, &getter.markers());
+            if let Some(definition) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+                let mut projected = ProjectedPrimitives::default();
+                self.add_projected_nurbs_curve(&mut projected, rect, &definition.curve);
+                for segment in projected.segments {
+                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+                }
+                self.paint_draft_points(&painter, rect, &[definition.focus]);
+            }
         }
         if let Some(getter) = input.conic_input {
             let point = edge_cursor

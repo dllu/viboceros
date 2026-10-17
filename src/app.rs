@@ -184,6 +184,7 @@ mod object_selection;
 mod orient_curve;
 mod orient_points;
 mod orient_surface;
+mod parabola;
 mod planar_boolean;
 mod plane_primitives;
 mod point_deviation;
@@ -505,6 +506,10 @@ enum InteractiveCommand {
     },
     InterpCrv {
         options: viboceros_geometry::CurveInterpolationOptions,
+    },
+    Parabola {
+        kind: viboceros_command::parabola::Kind,
+        anchor: Option<Point3>,
     },
     Conic {
         anchor: Option<Point3>,
@@ -835,6 +840,7 @@ impl InteractiveCommand {
             Self::Polyline => "Polyline",
             Self::Curve { .. } => "Curve",
             Self::InterpCrv { .. } => "InterpCrv",
+            Self::Parabola { kind, .. } => kind.name(),
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Box { .. } => "Box",
@@ -1214,6 +1220,7 @@ impl InteractiveCommand {
             Self::InterpCrv { .. } => {
                 "InterpCrv: pick curve points; Close/Sharp closes; Undo removes last point; Enter finishes (Esc cancels)"
             }
+            Self::Parabola { .. } => "Parabola: follow the point prompts (Esc cancels)",
             Self::Conic { .. } => {
                 "Conic: pick start, end, apex and curvature point or rho (Esc cancels)"
             }
@@ -1806,6 +1813,7 @@ impl InteractiveCommand {
             | Self::Polyline
             | Self::Curve { .. }
             | Self::InterpCrv { .. }
+            | Self::Parabola { anchor: None, .. }
             | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
             | Self::Box { base: None, .. }
@@ -1901,6 +1909,7 @@ impl InteractiveCommand {
             | Self::CircleTwoPoint { first: start }
             | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
+            | Self::Parabola { anchor: start, .. }
             | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
             | Self::Box { base: start, .. }
@@ -2238,6 +2247,7 @@ pub struct VibocerosApp {
     orient_curve_session: Option<orient_curve::Session>,
     flow_session: Option<flow::Session>,
     surface_flow_session: Option<surface_flow::Session>,
+    parabola_session: Option<parabola::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     orient_points_session: Option<orient_points::Session>,
@@ -2357,6 +2367,7 @@ impl VibocerosApp {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            parabola_session: None,
             conic_session: None,
             rectangle_session: None,
             orient_points_session: None,
@@ -2480,6 +2491,10 @@ impl VibocerosApp {
             && viboceros_command::interface::parse(&input).is_none()
         {
             self.lasso_selection = None;
+        }
+        // Construction options can share names with snap modes, such as Vertex.
+        if self.try_continue_parabola(&input) {
+            return;
         }
         if self.try_one_shot_snap(&input) {
             return;
@@ -3160,6 +3175,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.try_start_parabola(input) {
+            return true;
+        }
         if self.try_start_conic(input) {
             return true;
         }
@@ -5554,6 +5572,7 @@ impl VibocerosApp {
         }
         self.flow_session = None;
         self.surface_flow_session = None;
+        self.parabola_session = None;
         self.conic_session = None;
         self.rectangle_session = None;
         self.twist_session = None;
@@ -5614,6 +5633,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_parabola_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_conic_point(point) {
             return accepted;
         }
@@ -5665,6 +5687,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
+            | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::Rectangle { .. }
             | InteractiveCommand::SurfaceFlow { .. }
@@ -9999,6 +10022,11 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
         let viewport_positions = &self.viewport_positions;
+        let parabola_input = self
+            .parabola_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active);
         let conic_input = self
             .conic_session
             .as_ref()
@@ -10143,6 +10171,7 @@ impl eframe::App for VibocerosApp {
                             mirror_preview,
                             translation_preview,
                             affine_preview,
+                            parabola_input,
                             conic_input,
                             conic_reference,
                             rectangle_input,
@@ -10437,6 +10466,7 @@ mod tests {
     mod orient_points;
     mod orient_surface;
     mod orient_surface_grips;
+    mod parabola;
     mod planar_boolean;
     mod plane_arrays;
     mod plane_through_points;
@@ -10577,6 +10607,7 @@ mod tests {
             orient_curve_session: None,
             flow_session: None,
             surface_flow_session: None,
+            parabola_session: None,
             conic_session: None,
             rectangle_session: None,
             orient_points_session: None,

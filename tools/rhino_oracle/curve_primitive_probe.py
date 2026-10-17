@@ -33,7 +33,10 @@ def run(op,host,iterations,tolerance,command,driver=None):
             finally:
                 for p in pieces:p.Dispose()
         def snapshot():
-            return dict(outputs=[dict(selected=bool(obj.IsSelected(False)),**curve_value(obj.Geometry))for obj in doc.Objects if obj.Id not in before and obj.Id not in guides],guide_unchanged=all(doc.Objects.FindId(key).Geometry.DataCRC(0)==crc for key,crc in zip(guides,guide_crcs)))
+            def output(obj):
+                value = dict(point=host['_xyz'](obj.Geometry.Location)) if isinstance(obj.Geometry,G.Point) else curve_value(obj.Geometry)
+                return dict(selected=bool(obj.IsSelected(False)),**value)
+            return dict(outputs=[output(obj)for obj in doc.Objects if obj.Id not in before and obj.Id not in guides],guide_unchanged=all(doc.Objects.FindId(key).Geometry.DataCRC(0)==crc for key,crc in zip(guides,guide_crcs)))
         def macro_for(actions):
             tokens=['_'+command]
             for action in actions:

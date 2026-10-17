@@ -568,7 +568,6 @@
     }
   ],
   "sha256": {
-    "README.md": "5ed0a5fd5e104c1430412fded515aa4e484b019c4a8797a0cf951947b082c871",
     "crates/viboceros-command/src/conic.rs": "bdf40f05747118860c071f1e1120f9f3d3a19cba7b52d454eb66c8deea612c0b",
     "crates/viboceros-command/src/conic/reference.rs": "af91f5bbde7fd8a34f514a527f3da5c4d5e46ea19ce5007cd5e80a605f00737c",
     "crates/viboceros-command/src/conic/reference/tests.rs": "10f6f5fad7a89eb231992c614c3b43af1c174f7694ce98012a09c57f95ddf50a",
@@ -576,7 +575,6 @@
     "crates/viboceros-command/src/subcurve_input.rs": "4536a8795a1cfa51c8418c8d11ceb91060b4029ff1623e67f199e668e1203660",
     "crates/viboceros-oracle/src/conic.rs": "6aa3e03139fb45d65b63aa570679618a61e8d38adcc9218b1c9219a0f6873786",
     "docs/commands/conic.md": "bf0e54cadccf16b41eef03627f3c974ae4b92236dee370ffce21db74fb6466d8",
-    "docs/conic-validation.json": "81f20f448054a398605e97f2a8f99f5fc9d0ef1c336754c8c1853545b92d3188",
     "docs/curve-deviation-subcurves-validation.json": "98747e393042d184011c6006e5cb3c20f539b8d872f18019f516274fdd97023a",
     "docs/orient-on-curve-edge-validation.json": "17e0b700d75db34abf018c9b355c99cc6f0edc352f226773eb80ab18669664ad",
     "docs/orient-on-curve-subcurve-validation.json": "8df336d738d674bd0fcae2e138f1728171fe9807e1e6335931ce59d1f85df745",
@@ -593,12 +591,16 @@
     "tools/rhino_oracle/conic_getter_input.py": "b974e534d3404cbc26bedeb7e345bb64da34ffea2f393718f33450a4b3786f29",
     "tools/rhino_oracle/conic_getter_picker.py": "b9266956e8963c0ab8eb7cb8c100f3694152219d0e82ea9e2ad885602ea7a0c7",
     "tools/rhino_oracle/conic_probe.py": "71ddd83ae9f661df198c073a7dcf9f6dc3bc1c114d9491ef9d1e27da8d04f8f1",
-    "tools/rhino_oracle/curve_primitive_probe.py": "c3800c38dacc39012d01583a6d540590bcaf371d682f00b7bfbc5ed5ff432077",
     "tools/rhino_oracle/fixtures/conic_getters.json": "164d41b247704e36bc5da375c9ebd02e0e4ed9a53e448476d7c4c37fe1284416",
     "tools/rhino_oracle/managed_mouse_callback.py": "ddc930d72bb0125ac12189fb87b7148d25aee6bd10e6911e31320e69bfac1ca2",
     "tools/rhino_oracle/observations/conic_getters_rhino_20261017.json": "3208da32a08e1fbf0d007d5387388c8b457311e0f797a0ba09b758179a600f98",
-    "tools/rhino_oracle/structural_sdk.py": "adbadfd099b155f331ffa06cd2341b124c8f0cae93246899e83e8c99a8f1202a",
     "tools/rhino_oracle/test_conic.py": "951efc6ae6d08b5f72baf4f9353cb707ed1b5783b8609f1ffa612498e527e5b5",
     "tools/rhino_oracle/test_conic_getters.py": "88d2092651112db311a08b390f056e48f4aa11e98a5b57d103e42870368cc405"
+  },
+  "git_sha256": {
+    "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:README.md": "5ed0a5fd5e104c1430412fded515aa4e484b019c4a8797a0cf951947b082c871",
+    "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:tools/rhino_oracle/curve_primitive_probe.py": "c3800c38dacc39012d01583a6d540590bcaf371d682f00b7bfbc5ed5ff432077",
+    "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:tools/rhino_oracle/structural_sdk.py": "adbadfd099b155f331ffa06cd2341b124c8f0cae93246899e83e8c99a8f1202a",
+    "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be:docs/conic-validation.json": "81f20f448054a398605e97f2a8f99f5fc9d0ef1c336754c8c1853545b92d3188"
   }
 }

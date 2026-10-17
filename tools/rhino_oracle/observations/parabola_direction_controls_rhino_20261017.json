@@ -1,0 +1,134 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "three-throughpoint-default",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Parabola3Pt",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Parabola3Pt\nParabola vertex ( Mode=Vertex  PickOrder=EndsLast  MarkFocus=Yes ): _Mode=ThroughPoint\nPoint on parabola ( Mode=ThroughPoint  PickOrder=EndsLast  MarkFocus=Yes ): _PickOrder=Default\nParabola start ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): _MarkFocus=Yes\nParabola start ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): w-1.0,0.0,0.25\nPoint on parabola ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): w1.0,0.0,0.25\nParabola end ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): w3.0,0.0,2.25\nParabola direction ( MarkFocus=Yes ): w1.0,0.0,1.25",
+        "macro": "_Parabola3Pt _Mode=ThroughPoint _PickOrder=Default _MarkFocus=Yes w-1.0,0.0,0.25 w1.0,0.0,0.25 w3.0,0.0,2.25 w1.0,0.0,1.25",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-throughpoint-endslast",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Parabola3Pt",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Parabola3Pt\nParabola start ( Mode=ThroughPoint  PickOrder=EndsFirst  MarkFocus=Yes ): _Mode=ThroughPoint\nParabola start ( Mode=ThroughPoint  PickOrder=EndsFirst  MarkFocus=Yes ): _PickOrder=EndsLast\nPoint on parabola ( Mode=ThroughPoint  PickOrder=EndsLast  MarkFocus=Yes ): _MarkFocus=Yes\nPoint on parabola ( Mode=ThroughPoint  PickOrder=EndsLast  MarkFocus=Yes ): w1.0,0.0,0.25\nParabola start ( Mode=ThroughPoint  PickOrder=EndsLast  MarkFocus=Yes ): w-1.0,0.0,0.25\nParabola end ( Mode=ThroughPoint  PickOrder=EndsLast  MarkFocus=Yes ): w3.0,0.0,2.25\nParabola direction ( MarkFocus=Yes ): w1.0,0.0,1.25",
+        "macro": "_Parabola3Pt _Mode=ThroughPoint _PickOrder=EndsLast _MarkFocus=Yes w1.0,0.0,0.25 w-1.0,0.0,0.25 w3.0,0.0,2.25 w1.0,0.0,1.25",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "three-through-oblique",
+      "value": {
+        "after": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": true,
+        "events": [
+          {
+            "name": "Parabola3Pt",
+            "objects": {
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Parabola3Pt\nParabola start ( Mode=Focus  PickOrder=Default  MarkFocus=Yes ): _Mode=ThroughPoint\nParabola start ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): _PickOrder=Default\nParabola start ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): _MarkFocus=Yes\nParabola start ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): w7.0,-1.0,0.25\nPoint on parabola ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): w7.0,1.0,0.25\nParabola end ( Mode=ThroughPoint  PickOrder=Default  MarkFocus=Yes ): w7.0,3.0,2.25\nParabola direction ( MarkFocus=Yes ): w7.0,1.0,1.25",
+        "macro": "_Parabola3Pt _Mode=ThroughPoint _PickOrder=Default _MarkFocus=Yes w7.0,-1.0,0.25 w7.0,1.0,0.25 w7.0,3.0,2.25 w7.0,1.0,1.25",
+        "redo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

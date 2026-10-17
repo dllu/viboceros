@@ -13432,6 +13432,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'arc_length_batch':
         from arc_length_batch_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'parabola_command':
+        from parabola_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'conic_command':
         from conic_probe import run
         return run(operation, globals(), iterations, tolerance)
@@ -17465,7 +17468,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op')in('flow_grips','flow_line','flow_roadlike','surface_flow','rectangle','conic_command') for op in request.get('operations',[])):
+        if not at_idle and any(op.get('op')in('flow_grips','flow_line','flow_roadlike','surface_flow','rectangle','conic_command','parabola_command') for op in request.get('operations',[])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino,lambda:_main(True))
             return

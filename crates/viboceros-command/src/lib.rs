@@ -108,6 +108,9 @@ pub use interpolation_options::{
 };
 mod model_tolerance;
 pub mod named_view;
+pub mod parabola;
+#[cfg(test)]
+mod parabola_tests;
 pub use curve_options::{parse_curve_closure, parse_curve_degree};
 mod model_units;
 use interchange::{
@@ -455,6 +458,9 @@ pub trait Command: Send + Sync {
     }
     fn remember_orient_point_scale(&self, _value: orient_points::Scale) -> bool {
         false
+    }
+    fn parabola_options(&self) -> Option<parabola::Options> {
+        None
     }
     fn conic_options(&self) -> Option<conic::Options> {
         None
@@ -929,10 +935,10 @@ impl CommandRegistry {
             .register(ConeCommand)
             .expect("unique built-in command");
         registry
-            .register(ParabolaCommand)
+            .register(parabola::ParabolaCommand::new(parabola::Kind::Axis))
             .expect("unique built-in command");
         registry
-            .register(ParabolaThreePointCommand)
+            .register(parabola::ParabolaCommand::new(parabola::Kind::ThreePoint))
             .expect("unique built-in command");
         registry
             .register(ParaboloidCommand)
@@ -1998,6 +2004,12 @@ impl CommandRegistry {
             .is_some_and(|i| self.commands[*i].remember_orient_point_scale(value))
     }
 
+    pub fn parabola_options(&self, kind: parabola::Kind) -> parabola::Options {
+        self.lookup
+            .get(&normalize_command_name(kind.name()))
+            .and_then(|i| self.commands[*i].parabola_options())
+            .unwrap_or_default()
+    }
     pub fn conic_options(&self) -> conic::Options {
         self.lookup
             .get(&normalize_command_name("Conic"))
@@ -5075,37 +5087,6 @@ struct ParabolicPositionals {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-struct ParabolaCommandOptions {
-    positionals: ParabolicPositionals,
-    half: bool,
-    mark_focus: bool,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum ParabolaThreePointMode {
-    Focus,
-    ThroughPoint,
-    Vertex,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum ParabolaThreePointPickOrder {
-    Default,
-    EndsFirst,
-    EndsLast,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct ParabolaThreePointOptions {
-    mode: ParabolaThreePointMode,
-    start: Point3,
-    special: Point3,
-    end: Point3,
-    direction_point: Option<Point3>,
-    mark_focus: bool,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
 struct ParaboloidCommandOptions {
     positionals: ParabolicPositionals,
     mark_focus: bool,
@@ -5627,111 +5608,6 @@ fn parse_parabolic_positionals(
         second,
         end,
         option_start: end_start + end_consumed,
-    })
-}
-
-fn parse_parabola_options(arguments: &[&str]) -> Result<ParabolaCommandOptions, CommandError> {
-    let positionals = parse_parabolic_positionals(arguments, PARABOLA_USAGE)?;
-    let mut half = false;
-    let mut mark_focus = false;
-    let mut half_seen = false;
-    let mut mark_focus_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(PARABOLA_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "Half") && !half_seen {
-            half = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLA_USAGE))?;
-            half_seen = true;
-        } else if option_name_eq(name, "MarkFocus") && !mark_focus_seen {
-            mark_focus = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLA_USAGE))?;
-            mark_focus_seen = true;
-        } else {
-            return Err(CommandError::Usage(PARABOLA_USAGE));
-        }
-    }
-    Ok(ParabolaCommandOptions {
-        positionals,
-        half,
-        mark_focus,
-    })
-}
-
-fn parse_parabola_three_point_options(
-    arguments: &[&str],
-) -> Result<ParabolaThreePointOptions, CommandError> {
-    let mut mode = ParabolaThreePointMode::ThroughPoint;
-    let mut pick_order = ParabolaThreePointPickOrder::Default;
-    let mut mark_focus = false;
-    let mut mode_seen = false;
-    let mut pick_order_seen = false;
-    let mut mark_focus_seen = false;
-    let mut positionals = Vec::new();
-
-    for argument in arguments {
-        let Some((name, value)) = argument.split_once('=') else {
-            positionals.push(*argument);
-            continue;
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "Mode") && !mode_seen {
-            mode = if value.eq_ignore_ascii_case("Focus") {
-                ParabolaThreePointMode::Focus
-            } else if value.eq_ignore_ascii_case("ThroughPoint") {
-                ParabolaThreePointMode::ThroughPoint
-            } else if value.eq_ignore_ascii_case("Vertex") {
-                ParabolaThreePointMode::Vertex
-            } else {
-                return Err(CommandError::Usage(PARABOLA_THREE_POINT_USAGE));
-            };
-            mode_seen = true;
-        } else if option_name_eq(name, "PickOrder") && !pick_order_seen {
-            pick_order = if value.eq_ignore_ascii_case("Default") {
-                ParabolaThreePointPickOrder::Default
-            } else if value.eq_ignore_ascii_case("EndsFirst") {
-                ParabolaThreePointPickOrder::EndsFirst
-            } else if value.eq_ignore_ascii_case("EndsLast") {
-                ParabolaThreePointPickOrder::EndsLast
-            } else {
-                return Err(CommandError::Usage(PARABOLA_THREE_POINT_USAGE));
-            };
-            pick_order_seen = true;
-        } else if option_name_eq(name, "MarkFocus") && !mark_focus_seen {
-            mark_focus =
-                parse_yes_no(value).ok_or(CommandError::Usage(PARABOLA_THREE_POINT_USAGE))?;
-            mark_focus_seen = true;
-        } else {
-            return Err(CommandError::Usage(PARABOLA_THREE_POINT_USAGE));
-        }
-    }
-
-    let (first, first_consumed) = parse_point(&positionals)?;
-    let (second, second_consumed) = parse_point(&positionals[first_consumed..])?;
-    let third_start = first_consumed + second_consumed;
-    let (third, third_consumed) = parse_point(&positionals[third_start..])?;
-    let mut consumed = third_start + third_consumed;
-    let direction_point = if mode == ParabolaThreePointMode::ThroughPoint {
-        let (point, point_consumed) = parse_point(&positionals[consumed..])?;
-        consumed += point_consumed;
-        Some(point)
-    } else {
-        None
-    };
-    require_consumed(&positionals, consumed, PARABOLA_THREE_POINT_USAGE)?;
-
-    let (start, special, end) = match pick_order {
-        ParabolaThreePointPickOrder::Default => (first, second, third),
-        ParabolaThreePointPickOrder::EndsFirst => (first, third, second),
-        ParabolaThreePointPickOrder::EndsLast => (second, first, third),
-    };
-    Ok(ParabolaThreePointOptions {
-        mode,
-        start,
-        special,
-        end,
-        direction_point,
-        mark_focus,
     })
 }
 
@@ -7288,7 +7164,7 @@ impl Command for ConeCommand {
 fn parabolic_frame_and_dimensions(
     positionals: ParabolicPositionals,
     tolerance: Tolerance,
-) -> Result<(Frame3, Real, Real, Point3, Real), CommandError> {
+) -> Result<(Frame3, Real, Real, Point3, Real), GeometryError> {
     let (vertex, focus, axis, focal_distance, end_offset) = match positionals.construction {
         ParabolicConstruction::Focus => {
             let focus = positionals.first;
@@ -7348,87 +7224,6 @@ fn parabolic_frame_and_dimensions(
         focus,
         focal_distance,
     ))
-}
-
-struct ParabolaCommand;
-
-impl Command for ParabolaCommand {
-    fn name(&self) -> &'static str {
-        "Parabola"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_parabola_options(arguments)?;
-        let (frame, radius, height, focus, focal_distance) =
-            parabolic_frame_and_dimensions(options.positionals, document.tolerance())?;
-        let parabola = NurbsCurve::try_parabola(frame, radius, height, options.half)?;
-        let focus_id = if options.mark_focus {
-            Some(document.add_geometry(Geometry::Point(focus))?)
-        } else {
-            None
-        };
-        let id = document.add_geometry(Geometry::NurbsCurve(parabola))?;
-        let focus_suffix = focus_id
-            .map(|focus_id| format!(" and focus point {focus_id}"))
-            .unwrap_or_default();
-        Ok(format!(
-            "Added {} NURBS parabola {id}{focus_suffix} (radius {radius:.6}, height {height:.6}, focus distance {focal_distance:.6})",
-            if options.half { "half" } else { "full" },
-        ))
-    }
-}
-
-struct ParabolaThreePointCommand;
-
-impl Command for ParabolaThreePointCommand {
-    fn name(&self) -> &'static str {
-        "Parabola3Pt"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_parabola_three_point_options(arguments)?;
-        let tolerance = document.tolerance();
-        let curve = match options.mode {
-            ParabolaThreePointMode::Focus => NurbsCurve::try_parabola_from_focus(
-                options.special,
-                options.start,
-                options.end,
-                tolerance,
-            )?,
-            ParabolaThreePointMode::ThroughPoint => {
-                let direction_point = options
-                    .direction_point
-                    .expect("through-point options include a direction point");
-                NurbsCurve::try_parabola_through_point(
-                    options.start,
-                    options.special,
-                    options.end,
-                    options.special.vector_to(direction_point)?,
-                    tolerance,
-                )?
-            }
-            ParabolaThreePointMode::Vertex => NurbsCurve::try_parabola_from_vertex(
-                options.special,
-                options.start,
-                options.end,
-                tolerance,
-            )?,
-        };
-        let focus = curve.try_parabola_focus(tolerance)?;
-        let focus_id = if options.mark_focus {
-            Some(document.add_geometry(Geometry::Point(focus))?)
-        } else {
-            None
-        };
-        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
-        let focus_suffix = focus_id
-            .map(|focus_id| format!(" and focus point {focus_id}"))
-            .unwrap_or_default();
-        Ok(format!(
-            "Added three-point NURBS parabola {id}{focus_suffix} (focus {})",
-            format_point(focus)
-        ))
-    }
 }
 
 struct ParaboloidCommand;
@@ -19661,7 +19456,7 @@ mod tests {
         let result = registry
             .execute(
                 &mut document,
-                "Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 1,0,1.25 MarkFocus=Yes",
+                "Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 3,0,3.25 Mode=ThroughPoint PickOrder=Default MarkFocus=Yes",
             )
             .unwrap();
         assert!(result.contains("three-point NURBS parabola"));
@@ -19695,7 +19490,7 @@ mod tests {
         registry
             .execute(
                 &mut document,
-                "Parabola3Pt Mode=Focus PickOrder=EndsFirst -1,0,0.25 3,0,2.25 0,0,1",
+                "Parabola3Pt Mode=Focus PickOrder=EndsFirst -1,0,0.25 3,0,2.25 0,0,1 MarkFocus=No",
             )
             .unwrap();
         let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
@@ -19711,9 +19506,9 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
 
         let vertex_forms = [
-            "Parabola3Pt -1,0,0.25 0,0,0 3,0,2.25 Mode=Vertex",
-            "Parabola3Pt -1,0,0.25 3,0,2.25 0,0,0 Mode=Vertex PickOrder=EndsFirst",
-            "Parabola3Pt 0,0,0 -1,0,0.25 3,0,2.25 Mode=Vertex PickOrder=EndsLast",
+            "Parabola3Pt -1,0,0.25 0,0,0 3,0,2.25 Mode=Vertex PickOrder=Default MarkFocus=No",
+            "Parabola3Pt -1,0,0.25 3,0,2.25 0,0,0 Mode=Vertex PickOrder=EndsFirst MarkFocus=No",
+            "Parabola3Pt 0,0,0 -1,0,0.25 3,0,2.25 Mode=Vertex PickOrder=EndsLast MarkFocus=No",
         ];
         for command in vertex_forms {
             registry.execute(&mut document, command).unwrap();
@@ -19750,6 +19545,7 @@ mod tests {
             "Parabola3Pt 0,0,0 1,0,0 2,0,0 Mode=Vertex Mode=Focus",
             "Parabola3Pt 0,0,0 1,0,0 2,0,0 Mode=Vertex MarkFocus=Yes MarkFocus=No",
         ] {
+            let registry = CommandRegistry::with_builtins();
             assert!(
                 registry.execute(&mut document, invalid).is_err(),
                 "{invalid}"

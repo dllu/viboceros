@@ -10,6 +10,10 @@ pub(super) fn snapshot(
         .filter(|o| !guides.iter().any(|(id, _)| *id == o.id()))
     {
         let geometry = object.geometry();
+        if let Geometry::Point(point) = geometry {
+            outputs.push(json!({"selected":doc.is_selected(object.id()),"point":point.to_array()}));
+            continue;
+        }
         let curve = geometry
             .nurbs_curve_representation()?
             .ok_or(ProbeError::FixtureInvariant("primitive must be a curve"))?;

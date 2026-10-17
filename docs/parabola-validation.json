@@ -1,0 +1,254 @@
+{
+  "feature": "Interactive Parabola and Parabola3Pt",
+  "date": "2026-10-17",
+  "source_base_commit": "8b12dc9ef41bc6cfc4ecad5f944dfb6d1e88f6be",
+  "absolute_epsilon": 1e-06,
+  "native_engine": "rhino",
+  "native_engine_version": "8.32.26160.13001",
+  "qualified_native_workflows": 24,
+  "qualification": [
+    "Parabola Focus and Vertex; Half and MarkFocus combinations",
+    "All nine Parabola3Pt mode/pick-order combinations",
+    "Options changed between point picks",
+    "Settings retained after successful setup",
+    "Oblique points and construction planes",
+    "Exact controls, weights, knots, domains, lengths, focus object order, selection, actual undo/redo",
+    "Frontend replays authored inputs; pure previews, failed point retry, cancellation, command interruption and Vertex snap-option priority",
+    "Default and native-smlib oracle comparison"
+  ],
+  "native_jobs": [
+    {
+      "scheme": "VibocerosOracleParabolaGetters20261017",
+      "retained_successful_rows": 21,
+      "retained_success_without_output_controls": 3
+    },
+    {
+      "scheme": "VibocerosOracleParabolaDirection20261017",
+      "retained_successful_rows": 3,
+      "ids": [
+        "three-throughpoint-default",
+        "three-throughpoint-endslast",
+        "three-through-oblique"
+      ]
+    }
+  ],
+  "direction_input": "Opening direction starts at the last of the three picked points, not invariably the special point. The prior scripted implementation used the special point for every pick order.",
+  "known_behavior_differences": [
+    "Three retained wrong-origin direction controls report native Success with no output. Viboceros rejects these directions without editing the document and permits a corrected pick."
+  ],
+  "unqualified": [
+    "Changing PickOrder after the first point",
+    "Changing Parabola Focus/Vertex construction after the first point",
+    "Off-plane typed direction projection",
+    "Exhaustive snap interactions",
+    "Live GUI robot or screenshot qualification",
+    "Performance parity"
+  ],
+  "tests": [
+    {
+      "name": "parabola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "parabol"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 66.765,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1329 filtered out; finished in 0.06s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1462 filtered out; finished in 0.11s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 539 filtered out; finished in 6.93s"
+      ],
+      "log_sha256": "52089f7e81a827ece2590748fc068998c1e8cffd632024e37a93771301952780"
+    },
+    {
+      "name": "geometry-parabola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "parabola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.451,
+      "test_results": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 2360 filtered out; finished in 0.18s"
+      ],
+      "log_sha256": "ed7e12e51173ce5642d8c8e64b482fc1d6ab4914d665dbc2e2a5d0ab166d0797"
+    },
+    {
+      "name": "native-parabola",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "parabola"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 99.649,
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 563 filtered out; finished in 0.10s"
+      ],
+      "log_sha256": "1cce2d59f288bd4caf0549f22114c4eb4866bce2b5b7f288a1b002500d49d1d8"
+    },
+    {
+      "name": "conic",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "conic"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 10.513,
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1323 filtered out; finished in 0.18s",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1454 filtered out; finished in 0.08s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 540 filtered out; finished in 9.71s"
+      ],
+      "log_sha256": "58cf0e78bdb80291ad6a248bc3b3559d9bef9a77c6efb34ea1d9f584b48e3ccd"
+    },
+    {
+      "name": "rectangle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "rectangle"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.964,
+      "test_results": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 1313 filtered out; finished in 0.21s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1458 filtered out; finished in 2.56s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 542 filtered out; finished in 5.83s"
+      ],
+      "log_sha256": "f37f888623f8b9061880c5aa7ccd0dab9d9ed93d2433cffe955f4bc7100b960c"
+    },
+    {
+      "name": "snapping",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "app::snapping::tests"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.325,
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1323 filtered out; finished in 0.02s"
+      ],
+      "log_sha256": "e17cced1ea6847b6f95b7881a439a0757d5839d50dd7f61ee24dbfb07550cc50"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 51.421,
+      "test_results": [],
+      "log_sha256": "9df5ea0e27b1023604be8e666e71d5d9a1c92203fd0328d3b55dca89f1f15ff6"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.864,
+      "test_results": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_client",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.316,
+      "test_results": [
+        "Ran 36 tests in 0.234s"
+      ],
+      "log_sha256": "f474fabb64ea2e2ae2a6e51449153ad506aa0d2fe7e76005f9747bda36083654"
+    }
+  ],
+  "historical_provenance": {
+    "records": [
+      "docs/conic-getters-validation.json",
+      "docs/conic-validation.json"
+    ],
+    "archived_source_entries": 11,
+    "preexisting_unverifiable_records_unchanged": 69
+  },
+  "sha256": {
+    "README.md": "bb04826944fa020a9f434277907eaa755d062b10a0dbc3fd1f387bc06a1e5379",
+    "crates/viboceros-command/src/lib.rs": "4761bfb7c71f28b0285e3c8ab3836b9f0909d439251405c21e7f9932f610c196",
+    "crates/viboceros-command/src/parabola.rs": "92e1394f3e7b06f95439377f63daf32d2aa111d9c6130a50e0d3c2a5b81728ef",
+    "crates/viboceros-command/src/parabola_tests.rs": "20418f55e6aaa7c2f45bce08400287dee2d60256d50a59d23140c636de5322cf",
+    "crates/viboceros-oracle/src/curve_primitive.rs": "8ef4a4f2885b3e89542b3937f3e651c09de8099741ffd6981c4671e06942534e",
+    "crates/viboceros-oracle/src/lib.rs": "2912f92b1eb7f1cdbcd5225bf309d0ceeb31512abd50ad1f776dc95d67ffcca9",
+    "crates/viboceros-oracle/src/parabola.rs": "619fd3d20f1c4cb238f615dfeadc15ec339070b496761698240e13bc7f198f6d",
+    "docs/commands/README.md": "fb26aa1f5d32b1c5d8030344e7c0d063150bba4081cd0834f6d3b8730bd3a5d2",
+    "docs/commands/curves.md": "076176e226199f0f1acad74060e9c4187317ab7525e1e3e2affb70c3f8bf5915",
+    "docs/commands/parabola.md": "64b61a771cf28b62509e96c00a112a5b00aafbd083600ec17a044d09fd112f8e",
+    "docs/conic-getters-validation.json": "5725378e98898cf1a81a8a4895d6c93e97e71b4356d51435c81a549d840d22fe",
+    "docs/conic-validation.json": "9fbf419f04ae387167a100c861549ec45820d627cfc37193b7c93bbbaba99eba",
+    "src/app.rs": "67d6b413c5fed1c8f846801c61d08f25ff2bf5cc55106e94952b67854bf8dab8",
+    "src/app/parabola.rs": "2334d55d7d30bb6c1322072d137520b5db11ed4ad71b376ed9864b02834bcc2f",
+    "src/app/tests/parabola.rs": "d27e4da5acd52621eaa5438fc5e6bb1d2f15183e5798ab7b6f1767afc0b54070",
+    "src/viewport.rs": "b6ac8fb293a0c3136581eeb48ae8c3007a7341cbc40c07acb07f62c5efc0e707",
+    "tools/rhino_oracle/curve_primitive_probe.py": "2363e7fb43329be75768733bb1ba02c52b5ee131507639860553f4222919ddf0",
+    "tools/rhino_oracle/fixtures/parabola_command.json": "921cbbb9c78284a379d7f21c197268cb5a8c5b6ddeecec288ff79279d02df41a",
+    "tools/rhino_oracle/fixtures/parabola_direction_controls.json": "020f4b79033efaf6f0889db781666d16872cc7253fe0f71e8dbcb8ab0bcc0a89",
+    "tools/rhino_oracle/observations/parabola_command_rhino_20261017.json": "0fce24f87f56c3d435d4a3387c54b7a346c2dbbb19bbe78448620c9f52f1eb74",
+    "tools/rhino_oracle/observations/parabola_direction_controls_rhino_20261017.json": "b5220e843340a9adbdc69c516306408603d6ff0e3460b736cd08be9a027aadb1",
+    "tools/rhino_oracle/parabola_probe.py": "40009afa2cfeb9a24adb2ea57986769c93f4dd55b3dd89353fe64d85f3fc6db1",
+    "tools/rhino_oracle/rhino_worker.py": "f46f985d5118bb4d63680bc5d2165d21544286e3153f2ba563e701e0a931ccb8",
+    "tools/rhino_oracle/structural_sdk.py": "1c6333ad6d356527d4eb96d7d0076c9c041a1be6891f2b002c0e1d6105f7eb73",
+    "tools/rhino_oracle/test_parabola.py": "dc8a90cf4ee3cd58eff8e7abf10bfa3e19292524a893811f6607f4db47a2bc00"
+  }
+}

@@ -1,0 +1,700 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "parabola_command",
+      "id": "focus-no-no",
+      "command": "Parabola",
+      "actions": [
+        "Focus",
+        "Half=No",
+        "MarkFocus=No",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "focus-no-yes",
+      "command": "Parabola",
+      "actions": [
+        "Focus",
+        "Half=No",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "focus-yes-no",
+      "command": "Parabola",
+      "actions": [
+        "Focus",
+        "Half=Yes",
+        "MarkFocus=No",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "focus-yes-yes",
+      "command": "Parabola",
+      "actions": [
+        "Focus",
+        "Half=Yes",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "vertex-no-no",
+      "command": "Parabola",
+      "actions": [
+        "Vertex",
+        "Half=No",
+        "MarkFocus=No",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          4,
+          0,
+          99
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "vertex-no-yes",
+      "command": "Parabola",
+      "actions": [
+        "Vertex",
+        "Half=No",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          4,
+          0,
+          99
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "vertex-yes-no",
+      "command": "Parabola",
+      "actions": [
+        "Vertex",
+        "Half=Yes",
+        "MarkFocus=No",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          4,
+          0,
+          99
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "vertex-yes-yes",
+      "command": "Parabola",
+      "actions": [
+        "Vertex",
+        "Half=Yes",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          4,
+          0,
+          99
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "focus-options-after-axis",
+      "command": "Parabola",
+      "actions": [
+        "Focus",
+        "Half=No",
+        "MarkFocus=No",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        "Half=Yes",
+        "MarkFocus=Yes",
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "vertex-options-after-first",
+      "command": "Parabola",
+      "actions": [
+        "Vertex",
+        "Half=No",
+        "MarkFocus=No",
+        [
+          0,
+          0,
+          0
+        ],
+        "Half=Yes",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "focus-oblique",
+      "command": "Parabola",
+      "actions": [
+        "Focus",
+        "Half=No",
+        "MarkFocus=Yes",
+        [
+          7,
+          12,
+          13
+        ],
+        [
+          7,
+          13,
+          13
+        ],
+        [
+          7,
+          12,
+          17
+        ]
+      ],
+      "construction_plane": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-focus-default",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=Focus",
+        "PickOrder=Default",
+        "MarkFocus=Yes",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          3,
+          0,
+          2.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-focus-endsfirst",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=Focus",
+        "PickOrder=EndsFirst",
+        "MarkFocus=Yes",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-focus-endslast",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=Focus",
+        "PickOrder=EndsLast",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-vertex-default",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=Vertex",
+        "PickOrder=Default",
+        "MarkFocus=Yes",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          2.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-vertex-endsfirst",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=Vertex",
+        "PickOrder=EndsFirst",
+        "MarkFocus=Yes",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-vertex-endslast",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=Vertex",
+        "PickOrder=EndsLast",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-throughpoint-default",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=Default",
+        "MarkFocus=Yes",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ],
+        [
+          3,
+          0,
+          3.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-throughpoint-endsfirst",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=EndsFirst",
+        "MarkFocus=Yes",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ],
+        [
+          1,
+          0,
+          0.25
+        ],
+        [
+          1,
+          0,
+          1.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-throughpoint-endslast",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=EndsLast",
+        "MarkFocus=Yes",
+        [
+          1,
+          0,
+          0.25
+        ],
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ],
+        [
+          3,
+          0,
+          3.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-options-after-first",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=Default",
+        "MarkFocus=No",
+        [
+          -1,
+          0,
+          0.25
+        ],
+        "Mode=Focus",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          3,
+          0,
+          2.25
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "three-through-oblique",
+      "command": "Parabola3Pt",
+      "actions": [
+        "Mode=ThroughPoint",
+        "PickOrder=Default",
+        "MarkFocus=Yes",
+        [
+          7,
+          -1,
+          0.25
+        ],
+        [
+          7,
+          1,
+          0.25
+        ],
+        [
+          7,
+          3,
+          2.25
+        ],
+        [
+          7,
+          3,
+          3.25
+        ]
+      ],
+      "construction_plane": [
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "remember-parabola-options",
+      "command": "Parabola",
+      "actions": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "setup": [
+        "Focus",
+        "Half=Yes",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "parabola_command",
+      "id": "remember-three-options",
+      "command": "Parabola3Pt",
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ]
+      ],
+      "setup": [
+        "Mode=Vertex",
+        "PickOrder=EndsLast",
+        "MarkFocus=Yes",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -1,
+          0,
+          0.25
+        ],
+        [
+          3,
+          0,
+          2.25
+        ]
+      ]
+    }
+  ]
+}

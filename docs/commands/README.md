@@ -212,7 +212,7 @@ Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
 Conic 0,0,0 10,0,0 5,5,0 0.4
 Parabola Vertex 0,0,0 0,0,1 4,0,0 Half=No MarkFocus=Yes
-Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 1,0,1.25 MarkFocus=Yes
+Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 3,0,3.25 Mode=ThroughPoint PickOrder=Default MarkFocus=Yes
 Hyperbola 0,0,0 5,0,0 3.75,3,0 BothBranches=Yes MarkFoci=Yes
 Helix 0,0,0 0,0,10 2 Turns=3 ReverseTwist=No
 Spiral 0,0,0 0,0,6 1 4 Turns=2 ReverseTwist=No

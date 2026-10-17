@@ -206,7 +206,9 @@ axis in vertex mode, and supports `Half=Yes` and `MarkFocus=Yes`.
 `Parabola3Pt` creates the exact normalized quadratic from two endpoints and a
 focus, through-point, or vertex. It matches Rhino's `ThroughPoint` default,
 all three `PickOrder` forms, the additional through-point opening-direction
-pick, and `MarkFocus=Yes`.
+pick, and `MarkFocus=Yes`. The direction starts at the last of the three
+picked points. Both parabola commands support [interactive getters and live
+previews](parabola.md), with settings remembered after success.
 
 `Hyperbola` supports Rhino's center, coefficient, two-focus, and vertex input
 modes. Each branch is one exact normalized rational quadratic span;
