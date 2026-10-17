@@ -1,0 +1,208 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-cancel-selection",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-cancel-center",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-cancel-first-axis",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-cancel-second-axis",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          3,
+          0,
+          5
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-cancel-preselected",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": true,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        [
+          0,
+          0,
+          5
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-failed-second-axis",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          3,
+          0,
+          5
+        ],
+        [
+          4,
+          0,
+          5
+        ]
+      ]
+    }
+  ]
+}

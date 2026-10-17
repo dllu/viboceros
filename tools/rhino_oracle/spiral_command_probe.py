@@ -1,6 +1,5 @@
 """Bounded public Helix/Spiral recipes using the shared history witness."""
 import math
-import json
 import re
 
 def validate(op):
@@ -17,10 +16,6 @@ def validate(op):
     curves = op.get('curves', [])
     if not isinstance(curves, list) or len(curves) > 4:
         raise ValueError('invalid spiral rails')
-    if globals().get('__package__'):
-        from .geometry_validity_probe import validate as source_validator
-    else:
-        from geometry_validity_probe import validate as source_validator
     if type(op.get('live_getters', False)) is not bool:
         raise ValueError('invalid spiral getter flag')
 
@@ -30,56 +25,11 @@ def validate(op):
     def point(p):
         return isinstance(p, list) and len(p) == 3 and all((finite(v) for v in p))
 
-    def bound_source(curve, depth=0):
-        if depth > 8 or not isinstance(curve, dict):
-            raise ValueError('invalid spiral source nesting')
-        kind = curve.get('type')
-        if depth and kind in ('surface', 'box_brep'):
-            raise ValueError('curve segment required')
-        if kind not in ('line', 'nurbs', 'arc', 'circle', 'ellipse', 'polyline', 'polycurve', 'surface', 'box_brep'):
-            raise ValueError('invalid spiral rail source')
-        source_validator(dict(op='geometry_validity', id=op['id'], source=curve))
-        if len(json.dumps(curve)) > 65536:
-            raise ValueError('spiral source size limit')
-
-        def coordinates(node):
-            if isinstance(node, dict):
-                for value in node.values():
-                    coordinates(value)
-            elif isinstance(node, list):
-                for value in node:
-                    coordinates(value)
-            elif type(node) in (int, float) and (not finite(node)):
-                raise ValueError('spiral source coordinate limit')
-        coordinates(curve)
-        if kind in ('surface', 'nurbs'):
-            controls = curve.get('control_points')
-            if not isinstance(controls, list) or not 2 <= len(controls) <= 4096 or any((not isinstance(c, dict) or not point(c.get('point')) or (not finite(c.get('weight', 1.0))) or (c.get('weight', 1.0) <= 0) for c in controls)):
-                raise ValueError('invalid spiral source controls')
-            axes = ('u', 'v') if kind == 'surface' else ('',)
-            counts = []
-            for axis in axes:
-                suffix = '_' + axis if axis else ''
-                degree = curve.get('degree' + suffix)
-                count = curve.get('control_point_count' + suffix) if axis else len(controls)
-                knots = curve.get('knots' + suffix)
-                if type(degree) is not int or not 1 <= degree <= 16 or type(count) is not int or (not degree < count <= 64) or (not isinstance(knots, list)) or (len(knots) != count + degree + 1) or (not all((finite(k) for k in knots))) or any((a > b for a, b in zip(knots, knots[1:]))):
-                    raise ValueError('invalid spiral source chart')
-                counts.append(count)
-            if kind == 'surface' and len(controls) != counts[0] * counts[1]:
-                raise ValueError('spiral surface control layout')
-        if kind == 'polyline' and (not isinstance(curve.get('vertices'), list) or not 2 <= len(curve['vertices']) <= 4096 or (not all((point(p) for p in curve['vertices'])))):
-            raise ValueError('invalid spiral polyline')
-        if kind == 'box_brep' and (not point(curve.get('min')) or not point(curve.get('max')) or any((a >= b for a, b in zip(curve['min'], curve['max'])))):
-            raise ValueError('invalid spiral box')
-        if kind == 'polycurve':
-            segments = curve.get('segments')
-            if not isinstance(segments, list) or not 1 <= len(segments) <= 16:
-                raise ValueError('invalid spiral polycurve')
-            for segment in segments:
-                bound_source(segment, depth + 1)
-    for curve in curves:
-        bound_source(curve)
+    if globals().get('__package__'):
+        from .curve_source_bounds import validate as validate_sources
+    else:
+        from curve_source_bounds import validate as validate_sources
+    validate_sources(curves, op['id'])
     if 'prior_point' in op and (not point(op['prior_point'])):
         raise ValueError('invalid spiral prior point')
     words = {'AroundCurve', 'Vertical', 'Flat', 'Diameter', 'Radius', 'Mode', 'Turns', 'Pitch', 'NumPointsPerTurn', 'ReverseTwist', 'Enter'}

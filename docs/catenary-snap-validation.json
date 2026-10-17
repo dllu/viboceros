@@ -378,10 +378,8 @@
     "crates/viboceros-command/src/catenary_input/tests.rs": "f293f93b96795f11a9066d02aeaabc796e3d9c6b54bcd2fdda7db7c26c0c42ef",
     "crates/viboceros-oracle/src/catenary_command.rs": "07f438e6959947053a0243ad7692c71aaa4629cbef0475c1809b060ef329380c",
     "docs/commands/catenary.md": "0440f952a9665ed93dd11c034437d80f0c00fe9c34f27453a76c735fb7200364",
-    "docs/conic-getters-validation.json": "bcb7ea73cf56c1ef5a5898bfc294f8abdc4547be77ad7e908500c256f0dcd462",
     "docs/hyperbola-validation.json": "d665fc270a6a1fb8b1bc93fdec7289af3a642a9a7861f5890df06a4d5728add4",
     "src/app/catenary.rs": "991e11b73e8f84190d5337bdc8bc07f1c1c646e7a8e4a8201b224394f094066e",
-    "src/app/point_input.rs": "83bf83573bf51baedf4a97b332fcef17858ff46a61e13451b16bf1b89693a4db",
     "tools/rhino_oracle/catenary_command_probe.py": "26e17a22a7cfa390687c42e0115285f829002cb8b3e30f0e56d0baa362099df4",
     "tools/rhino_oracle/catenary_point_picker.py": "c7bb281a55133ed149b8e516a8978cd37817a4ada5b23f250cadf30c5d08367a",
     "tools/rhino_oracle/curve_primitive_probe.py": "47c4c1fb3085b28ccc62a9ca835ce960464ae72b82fa2adb6079e80422d8fbbe",
@@ -406,6 +404,8 @@
     "2bac54482aab156bddaa5d06215f4c267019408c:tools/rhino_oracle/client.py": "ea0eeae2c33a448fd1b8a9cb2ea071e90e74881b7e706bdbfe31097a8f40b7fb",
     "2bac54482aab156bddaa5d06215f4c267019408c:tools/rhino_oracle/conic_getter_input.py": "c8adf6e12e7ebe64c8537f2d75b39f0c16a9e45022a07a5eefb14bbd797a7a0f",
     "2bac54482aab156bddaa5d06215f4c267019408c:docs/catenary-validation.json": "b7f2ee989545f6615b90585338a32539c88ea8efddcab8fb5b95a0b3c8aff6f5",
-    "2bac54482aab156bddaa5d06215f4c267019408c:docs/spiral-around-validation.json": "168df2df17d3be3be6d09a038878477fc046d5edd46134d0db81ca21b745dedd"
+    "2bac54482aab156bddaa5d06215f4c267019408c:docs/spiral-around-validation.json": "168df2df17d3be3be6d09a038878477fc046d5edd46134d0db81ca21b745dedd",
+    "dbb6bf38e387d24a920d7452e338284261d24406:src/app/point_input.rs": "83bf83573bf51baedf4a97b332fcef17858ff46a61e13451b16bf1b89693a4db",
+    "dbb6bf38e387d24a920d7452e338284261d24406:docs/conic-getters-validation.json": "bcb7ea73cf56c1ef5a5898bfc294f8abdc4547be77ad7e908500c256f0dcd462"
   }
 }

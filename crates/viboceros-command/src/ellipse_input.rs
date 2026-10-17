@@ -9,6 +9,7 @@ pub enum Mode {
     Corner,
     Diameter,
     FromFoci,
+    AroundCurve,
 }
 impl Mode {
     pub const fn name(self) -> &'static str {
@@ -18,6 +19,7 @@ impl Mode {
             Self::Corner => "Corner",
             Self::Diameter => "Diameter",
             Self::FromFoci => "FromFoci",
+            Self::AroundCurve => "AroundCurve",
         }
     }
 }
@@ -80,6 +82,26 @@ impl Input {
     }
     pub fn options(self) -> Options {
         self.options
+    }
+    pub fn requests_curve(self) -> bool {
+        self.mode == Mode::AroundCurve && self.points[0].is_none()
+    }
+    /// Latch the guide center and normal before the two axis getters.
+    pub fn around_curve(&mut self, plane: Frame3) {
+        self.mode = Mode::AroundCurve;
+        self.plane = plane;
+        self.points = [Some(plane.origin()), None, None];
+        self.length = None;
+        self.result = None;
+    }
+    /// AroundCurve's axes lie in its captured normal plane.
+    pub fn resolve_point(self, point: Point3) -> Result<Point3, GeometryError> {
+        if self.mode == Mode::AroundCurve && !self.requests_curve() {
+            let [x, y, _] = self.plane.coordinates_of(point)?;
+            self.plane.point_at([x, y, 0.])
+        } else {
+            Ok(point)
+        }
     }
     pub fn slot(self) -> Slot {
         if self.result.is_some() {
@@ -189,6 +211,7 @@ impl Input {
                 Mode::Corner,
                 Mode::Diameter,
                 Mode::FromFoci,
+                Mode::AroundCurve,
             ]
             .into_iter()
             .find(|m| m.name().eq_ignore_ascii_case(key))
@@ -198,9 +221,6 @@ impl Input {
             self.centered_corner = false;
             self.length = None;
             return Ok(true);
-        }
-        if key.eq_ignore_ascii_case("AroundCurve") {
-            return Err(invalid("Ellipse AroundCurve is not supported yet"));
         }
         Ok(false)
     }
@@ -248,6 +268,10 @@ impl Input {
         }
     }
     pub fn point(&mut self, point: Point3) -> Result<Option<Definition>, GeometryError> {
+        if self.requests_curve() {
+            return Err(invalid("select an ellipse guide and center on it"));
+        }
+        let point = self.resolve_point(point)?;
         let mut next = *self;
         let ellipse = match self.slot() {
             Slot::First => {
@@ -357,6 +381,41 @@ impl Input {
         *self = next;
         Ok(result)
     }
+    /// Retain guide selection and replay policy for AroundCurve completion.
+    pub fn command_with_guide(
+        self,
+        id: viboceros_document::ObjectId,
+        edge: Option<usize>,
+        postselected: bool,
+    ) -> Result<String, GeometryError> {
+        let e = self
+            .result
+            .ok_or_else(|| invalid("ellipse is incomplete"))?
+            .ellipse;
+        if self.mode != Mode::AroundCurve {
+            return Err(invalid("ellipse has no curve construction"));
+        }
+        let q = e.quadrants()?;
+        let reference = edge.map_or_else(
+            || {
+                format!(
+                    "{}={id}",
+                    if postselected { "PickedCurve" } else { "Curve" }
+                )
+            },
+            |edge| format!("Edge={id},{edge}"),
+        );
+        let point = |p: Point3| {
+            let [x, y, z] = p.to_array();
+            format!("{x},{y},{z}")
+        };
+        Ok(format!(
+            "Ellipse AroundCurve {reference} {} {} {}",
+            point(e.center()),
+            point(q[0]),
+            point(q[1])
+        ))
+    }
     /// Emit the completed analytic construction, so history has one command owner.
     pub fn command(self) -> Result<String, GeometryError> {
         let result = self
@@ -421,15 +480,63 @@ impl crate::Command for EllipseCommand {
             .count()
             == 9
             && !arguments.iter().any(|w| w.contains(','));
+        let mut guide = None;
+        let mut source_selection = None;
         while consumed < arguments.len() {
             let word = arguments[consumed];
+            let prior_mode = input.mode();
             if input.option(word)? {
+                if input.mode() != prior_mode {
+                    guide = None;
+                    source_selection = None;
+                }
+                consumed += 1;
+                continue;
+            }
+            if input.requests_curve() && guide.is_none() {
+                let (key, value) = word.split_once('=').ok_or(crate::CommandError::Usage(
+                    "Ellipse AroundCurve Curve=id|Edge=id,index center axis-end axis-end",
+                ))?;
+                let (id, edge) = if key.eq_ignore_ascii_case("Curve")
+                    || key.eq_ignore_ascii_case("PickedCurve")
+                {
+                    (
+                        value
+                            .parse()
+                            .map_err(|_| crate::CommandError::Usage("invalid ellipse curve"))?,
+                        None,
+                    )
+                } else if key.eq_ignore_ascii_case("Edge") {
+                    let (id, index) = crate::curve_reference::parse_edge(value)
+                        .ok_or(crate::CommandError::Usage("invalid ellipse edge"))?;
+                    (id, Some(index))
+                } else {
+                    return Err(crate::CommandError::Usage(
+                        "select an ellipse curve or surface edge",
+                    ));
+                };
+                guide = Some(crate::curve_reference::CapturedCurve::capture(
+                    document, id, edge,
+                )?);
+                if edge.is_none() {
+                    source_selection = Some((
+                        id,
+                        key.eq_ignore_ascii_case("PickedCurve") || !document.is_selected(id),
+                    ));
+                }
                 consumed += 1;
                 continue;
             }
             if word.contains(',') || input.slot() == Slot::First || triples {
                 let (point, count) = crate::parse_point(&arguments[consumed..])?;
-                input.point(point)?;
+                if let Some(guide) = guide.take() {
+                    input.around_curve(crate::curve_reference::perpendicular_frame(
+                        guide.curve_ref(),
+                        point,
+                    )?);
+                } else {
+                    input.point(point)?;
+                }
                 consumed += count;
             } else {
                 let value =
@@ -445,6 +552,14 @@ impl crate::Command for EllipseCommand {
         let result = input.definition_value().ok_or(crate::CommandError::Usage(
             "Ellipse requires complete construction points",
         ))?;
+        if let Some((id, postselected)) = source_selection {
+            if postselected {
+                document.release_command_selection_on_history_replay([id])?;
+                document.select_command_results([])?;
+            } else {
+                document.select_command_results([id])?;
+            }
+        }
         if let Some(foci) = result.foci {
             for point in foci {
                 document.add_geometry(Geometry::Point(point))?;

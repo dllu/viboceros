@@ -44,6 +44,18 @@ fn length_parser_preserves_point_angle_and_command_routing() {
         "2<45",
         "Line",
         "Line 1,2 3,4",
+        ".x",
+        ".y",
+        ".z",
+        ".xy",
+        ".xz",
+        ".yz",
+        ".wx",
+        ".wY",
+        ".wz",
+        ".wxy",
+        ".wxz",
+        ".wyz",
     ] {
         assert!(
             PointInput::parse_length_with_units(text, &LengthUnitSystem::Millimeters).is_none(),

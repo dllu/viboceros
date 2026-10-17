@@ -29,6 +29,7 @@ fn actions(app: &mut VibocerosApp, actions: &[viboceros_oracle::EllipseCommandAc
     use viboceros_oracle::EllipseCommandAction as Action;
     for action in actions {
         match action {
+            Action::Pick { .. } => panic!("guide scenarios use source-pick replay"),
             Action::Point([x, y, z]) => enter(app, &format!("w{x},{y},{z}")),
             Action::Relative {
                 relative: [x, y, z],
@@ -167,6 +168,10 @@ fn ellipse_enter_accepts_the_current_locked_preview_and_filters_preserve_perpend
     assert_eq!(app.document.objects().len(), 0);
     for word in ["Ellipse", "w0,0,0", "w6,0,0", ".y", "w0,3,0", "w2,99,0"] {
         enter(&mut app, word);
+        if word == ".y" || word == "w0,3,0" {
+            assert!(app.ellipse_session.is_some());
+            assert!(app.point_filter.is_some());
+        }
     }
     assert!(app.ellipse_session.is_none());
     let Geometry::Ellipse(e) = app.document.objects().next().unwrap().geometry() else {

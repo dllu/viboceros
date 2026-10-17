@@ -187,13 +187,7 @@ impl RectangleInput {
         curve: viboceros_geometry::CurveRef<'_>,
         pick: Point3,
     ) -> Result<Frame3, GeometryError> {
-        let t = curve.closest_parameter(pick, Tolerance::NUMERICAL_VALIDATION)?;
-        let sample = curve.evaluate_with_tangent(t)?;
-        Frame3::try_from_normal(
-            sample.point(),
-            sample.tangent().as_vector(),
-            Tolerance::NUMERICAL_VALIDATION,
-        )
+        crate::curve_reference::perpendicular_frame(curve, pick)
     }
     pub fn around_curve(&mut self, plane: Frame3) {
         self.plane = plane;

@@ -1,13 +1,25 @@
 //! Ellipse point/numeric getters and complete document/history snapshots.
 use super::*;
-use viboceros_command::ellipse_input::Input;
+use viboceros_command::{
+    curve_reference::{CapturedCurve, perpendicular_frame},
+    ellipse_input::Input,
+};
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum Action {
     Point([f64; 3]),
     Number(f64),
     Option(String),
-    Relative { relative: [f64; 3] },
+    Relative {
+        relative: [f64; 3],
+    },
+    Pick {
+        curve: usize,
+        #[serde(default)]
+        edge: Option<usize>,
+        #[serde(default)]
+        pick: Option<[f64; 3]>,
+    },
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
@@ -18,6 +30,20 @@ pub struct Fixture {
     pub setup: Option<Vec<Action>>,
     #[serde(default)]
     pub prior_point: Option<[f64; 3]>,
+    #[serde(default)]
+    pub curves: Vec<crate::object_source::ObjectSource>,
+    #[serde(default)]
+    pub preselect: bool,
+    #[serde(default)]
+    pub guide_selection: bool,
+}
+impl Fixture {
+    pub fn source_geometries(&self, tolerance: Tolerance) -> Result<Vec<Geometry>, ProbeError> {
+        self.curves
+            .iter()
+            .map(|source| source.geometry(tolerance))
+            .collect()
+    }
 }
 fn enter(
     doc: &mut Document,
@@ -25,21 +51,91 @@ fn enter(
     plane: Frame3,
     actions: &[Action],
     last_point: &mut Option<Point3>,
+    guides: &[(ObjectId, Geometry)],
 ) -> Result<(), ProbeError> {
     let mut input = Input::new(commands.ellipse_options(), plane, doc.tolerance());
+    let mut guide: Option<CapturedCurve> = None;
+    let mut postselected = false;
     for action in actions {
+        let previous = *last_point;
+        let mut accept = |point: Point3| -> Result<(), ProbeError> {
+            if let Some(curve) = &guide
+                && input.requests_curve()
+            {
+                let frame = perpendicular_frame(curve.curve_ref(), point)?;
+                input.around_curve(frame);
+                *last_point = Some(frame.origin());
+            } else {
+                let point = input.resolve_point(point)?;
+                input.point(point)?;
+                *last_point = Some(point);
+            }
+            Ok(())
+        };
         match action {
             Action::Point(p) => {
                 let point = Point3::try_from(*p)?;
-                input.point(point)?;
-                *last_point = Some(point);
+                accept(point)?;
+            }
+            Action::Pick { curve, edge, pick } => {
+                if !input.requests_curve() {
+                    return Err(ProbeError::FixtureInvariant(
+                        "Ellipse is not selecting a curve",
+                    ));
+                }
+                let (id, geometry) = guides
+                    .get(*curve)
+                    .ok_or(ProbeError::FixtureInvariant("missing Ellipse guide"))?;
+                if let (Some(edge), Some(point)) = (edge, pick) {
+                    let resolved = viboceros_command::curve_reference::resolve(
+                        geometry,
+                        Some(*edge),
+                        doc.tolerance(),
+                    )
+                    .ok_or(ProbeError::FixtureInvariant("missing Ellipse edge"))?;
+                    let p = Point3::try_from(*point)?;
+                    let c = resolved.curve();
+                    let t = c.closest_parameter(p, doc.tolerance())?;
+                    if c.evaluate(t)?.distance_to(p)? > doc.tolerance().absolute() {
+                        return Err(ProbeError::FixtureInvariant(
+                            "Ellipse pick must lie on the named edge",
+                        ));
+                    }
+                }
+                guide = Some(CapturedCurve::capture(doc, *id, *edge)?);
+                postselected = edge.is_none() && !doc.is_selected(*id);
+                if edge.is_none() {
+                    doc.select_object(*id, viboceros_document::SelectionMode::Add)?;
+                }
             }
             Action::Number(value) => {
                 input.number(*value)?;
             }
             Action::Option(word) => {
+                let prior_mode = input.mode();
                 if !input.option(word)? {
                     return Err(ProbeError::FixtureInvariant("unsupported Ellipse option"));
+                }
+                if input.mode() != prior_mode {
+                    if postselected && let Some(curve) = &guide {
+                        doc.select_object(
+                            curve.object_id(),
+                            viboceros_document::SelectionMode::Remove,
+                        )?;
+                    }
+                    guide = None;
+                    postselected = false;
+                }
+                if input.requests_curve() && guide.is_none() {
+                    let selected = doc.selected_object_ids().collect::<Vec<_>>();
+                    if let [id] = selected.as_slice()
+                        && doc
+                            .object(*id)
+                            .is_some_and(|o| o.geometry().curve_ref().is_some())
+                    {
+                        guide = Some(CapturedCurve::capture(doc, *id, None)?);
+                        postselected = false;
+                    }
                 }
             }
             Action::Relative {
@@ -48,16 +144,20 @@ fn enter(
                 let point = viboceros_drafting::PointInput::parse(&format!("r{x},{y},{z}"))
                     .unwrap()
                     .map_err(|_| ProbeError::FixtureInvariant("invalid relative ellipse point"))?
-                    .resolve(plane, *last_point)
+                    .resolve(plane, previous)
                     .map_err(|_| {
                         ProbeError::FixtureInvariant("relative ellipse point requires a base")
                     })?;
-                input.point(point)?;
-                *last_point = Some(point);
+                accept(point)?;
             }
         }
     }
-    commands.execute(doc, &input.command()?)?;
+    let command = if let Some(guide) = guide {
+        input.command_with_guide(guide.object_id(), guide.source().1, postselected)?
+    } else {
+        input.command()?
+    };
+    commands.execute(doc, &command)?;
     Ok(())
 }
 pub(super) fn run(
@@ -78,16 +178,44 @@ pub(super) fn run(
         } else {
             viboceros_command::CommandContext::default().construction_plane
         };
+        let guides = f
+            .source_geometries(tolerance)?
+            .into_iter()
+            .map(|g| {
+                let id = doc.add_geometry(g.clone())?;
+                Ok((id, g))
+            })
+            .collect::<Result<Vec<_>, ProbeError>>()?;
+        if f.preselect
+            && let Some((id, _)) = guides.first()
+        {
+            doc.select_object(*id, viboceros_document::SelectionMode::Replace)?;
+        }
         let mut last = f.prior_point.map(Point3::try_from).transpose()?;
         if let Some(actions) = &f.setup {
-            enter(&mut doc, &commands, plane, actions, &mut last)?;
-            let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
+            enter(&mut doc, &commands, plane, actions, &mut last, &guides)?;
+            let ids = doc
+                .objects()
+                .filter(|o| !guides.iter().any(|(id, _)| *id == o.id()))
+                .map(|o| o.id())
+                .collect::<Vec<_>>();
             doc.delete_objects(ids)?;
         }
         doc.clear_history()?;
-        let snapshot = |d: &Document| crate::curve_primitive::snapshot(d, &[]);
+        let snapshot = |d: &Document| -> Result<Value, ProbeError> {
+            let mut value = crate::curve_primitive::snapshot(d, &guides)?;
+            if f.guide_selection {
+                value["guide_selected"] = json!(
+                    guides
+                        .iter()
+                        .map(|(id, _)| d.is_selected(*id))
+                        .collect::<Vec<_>>()
+                );
+            }
+            Ok(value)
+        };
         let before = snapshot(&doc)?;
-        enter(&mut doc, &commands, plane, &f.actions, &mut last)?;
+        enter(&mut doc, &commands, plane, &f.actions, &mut last, &guides)?;
         let after = snapshot(&doc)?;
         let undo_label = doc.undo()?;
         let undo = snapshot(&doc)?;
@@ -121,6 +249,46 @@ mod tests {
                 }
             }
             _ => assert_eq!(a, b, "{path}"),
+        }
+    }
+    #[test]
+    fn ellipse_around_curve_native_geometry_source_selection_and_history() {
+        for (q, n, count) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/ellipse_around_command.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/ellipse_around_command_rhino_20261017.json"
+                ),
+                8,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/ellipse_around_extended.json"),
+                include_str!(
+                    "../../../tools/rhino_oracle/observations/ellipse_around_extended_rhino_20261017.json"
+                ),
+                19,
+            ),
+        ] {
+            let q: ProbeRequest = serde_json::from_str(q).unwrap();
+            let n: Value = serde_json::from_str(n).unwrap();
+            let actual = run_request(&q).unwrap();
+            assert_eq!(actual.results.len(), count);
+            for (a, b) in actual.results.iter().zip(n["results"].as_array().unwrap()) {
+                assert_eq!(a.id, b["id"]);
+                for stage in ["before", "after", "undo", "redo"] {
+                    close(
+                        &a.value[stage],
+                        &b["value"][if stage == "after" {
+                            "after_script"
+                        } else {
+                            stage
+                        }],
+                        &format!("{}/{stage}", a.id),
+                    );
+                }
+                assert_eq!(a.value["undo_label"], "Ellipse");
+                assert_eq!(a.value["redo_label"], "Ellipse");
+            }
         }
     }
     #[test]

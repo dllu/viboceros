@@ -25,7 +25,7 @@ class SpiralCommandTests(TestCase):
         with tempfile.TemporaryDirectory() as directory:
             job = Path(directory)
             stage_helpers(q, BASE, job)
-            self.assertEqual({p.name for p in job.iterdir()}, {'geometry_validity_probe.py', 'spiral_command_probe.py', 'curve_primitive_probe.py', 'join_probe.py', 'merge_edges_probe.py', 'conic_getter_input.py', 'managed_mouse_callback.py', 'snap_environment.py'})
+            self.assertEqual({p.name for p in job.iterdir()}, {'curve_source_bounds.py', 'geometry_validity_probe.py', 'spiral_command_probe.py', 'curve_primitive_probe.py', 'join_probe.py', 'merge_edges_probe.py', 'conic_getter_input.py', 'managed_mouse_callback.py', 'snap_environment.py'})
             subprocess.run([sys.executable, '-I', '-c', 'import sys,json;sys.path.insert(0,sys.argv[1]);import spiral_command_probe;spiral_command_probe.validate(json.loads(sys.argv[2]))', str(job), json.dumps(q['operations'][0])], check=True, capture_output=True)
 
     def test_native_getter_receipts_curve_layout_and_real_undo_redo(self):

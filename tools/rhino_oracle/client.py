@@ -474,6 +474,9 @@ class OracleClient:
                 raise OracleProtocolError('Ellipse getters require 1 through 64 uniquely named cases')
             for operation in operations:
                 validate(operation)
+            if any(isinstance(a,dict) and 'edge' in a for op in operations for a in op.get('actions',[])):
+                from .conic_getter_picker import ConicGetterPicker
+                interaction=ConicGetterPicker(request)
         if any(op.get('op') == 'catenary_command' for op in request.get('operations', [])):
             from .catenary_command_probe import validate
             operations = request['operations']

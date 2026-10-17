@@ -1,0 +1,121 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "ellipse-around-failed-first-axis",
+      "value": {
+        "after": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Ellipse",
+            "objects": {
+              "guide_selected": [
+                true
+              ],
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Ellipse\nEllipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _Pause\nEllipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve ): _AroundCurve\nSelect curve: '_-SelID\nSelect curve: 6cd39c80-cc64-4b62-b532-c735cd45a60c\n1 curve added to selection.\nCenter of ellipse: w0.0,0.0,5.0\nEnd of first axis: w0.0,0.0,9.0\nEnd of second axis: _Cancel\nEnd of second axis",
+        "input_trace": {
+          "completed": 4,
+          "edge_picks": [],
+          "errors": [
+            "owned Ellipse input timeout"
+          ],
+          "expected": 4,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Ellipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+            "Select curve",
+            "Center of ellipse",
+            "End of first axis"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Ellipse center ( Deformable  Vertical  Corner  Diameter  FromFoci  AroundCurve )",
+              "token": "_AroundCurve"
+            },
+            {
+              "action": 1,
+              "prompt": "Select curve",
+              "token": "'_-SelID 6cd39c80-cc64-4b62-b532-c735cd45a60c"
+            },
+            {
+              "action": 2,
+              "prompt": "Center of ellipse",
+              "token": "w0.0,0.0,5.0"
+            },
+            {
+              "action": 3,
+              "prompt": "End of first axis",
+              "token": "w0.0,0.0,9.0"
+            }
+          ]
+        },
+        "macro": "_Ellipse _Pause",
+        "redo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

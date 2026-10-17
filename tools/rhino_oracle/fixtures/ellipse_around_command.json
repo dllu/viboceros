@@ -1,0 +1,355 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-line",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          3,
+          0,
+          5
+        ],
+        [
+          0,
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-preselect",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": true,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          3,
+          0,
+          5
+        ],
+        [
+          0,
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-offplane",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          3,
+          0,
+          9
+        ],
+        [
+          0,
+          2,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-offrail",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          2,
+          3,
+          5
+        ],
+        [
+          3,
+          0,
+          5
+        ],
+        [
+          0,
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-spatial",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            10,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          5,
+          5,
+          5
+        ],
+        [
+          9,
+          5,
+          5
+        ],
+        [
+          6,
+          7,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-reverse",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            10
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          3,
+          0,
+          5
+        ],
+        [
+          0,
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-numeric",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        6,
+        [
+          2,
+          0,
+          8
+        ],
+        3,
+        [
+          2,
+          4,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "ellipse_command",
+      "id": "ellipse-around-circle",
+      "curves": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 10,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          13,
+          5,
+          0
+        ],
+        [
+          10,
+          8,
+          2
+        ]
+      ]
+    }
+  ]
+}

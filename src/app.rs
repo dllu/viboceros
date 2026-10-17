@@ -5595,6 +5595,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.release_ellipse_picks();
         self.commands.clear_curve_deviation();
         self.set_point_sources = None;
         self.surface_extrusion_sources = None;
@@ -8451,6 +8452,9 @@ impl VibocerosApp {
         if self.pick_conic_curve(click.object_id, None) {
             return;
         }
+        if self.pick_ellipse_curve(click.object_id, None) {
+            return;
+        }
         if self.pick_rectangle_curve(click.object_id, None) {
             return;
         }
@@ -9175,6 +9179,7 @@ impl VibocerosApp {
                 || self.picking_spiral_rail()
                 || self.picking_conic_curve()
                 || self.picking_rectangle_curve()
+                || self.picking_ellipse_curve()
             {
                 self.accept_component_click(crate::viewport::ComponentClick {
                     picks: picks
@@ -9198,6 +9203,7 @@ impl VibocerosApp {
         } else if let Some(parameter) = output.edge_parameter {
             if self.accept_conic_parameter(parameter)
                 || self.accept_rectangle_parameter(parameter)
+                || self.accept_ellipse_parameter(parameter)
                 || self.accept_orient_curve_parameter(parameter)
             {
             } else if self.move_normal_curve().is_some() {
@@ -9465,6 +9471,7 @@ impl eframe::App for VibocerosApp {
         self.validate_spiral_rail();
         self.validate_conic_curve();
         self.validate_rectangle_curve();
+        self.validate_ellipse_curve();
         self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9526,6 +9533,7 @@ impl eframe::App for VibocerosApp {
                 && !self.picking_spiral_rail()
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
+                && !self.picking_ellipse_curve()
                 && !self.picking_orient_curve()
                 && (self.surface_flow_session.is_none() || self.drawing_surface_flow())
                 && (self.flow_session.is_none()
@@ -9784,7 +9792,8 @@ impl eframe::App for VibocerosApp {
             || self.picking_flow_guide()
             || self.picking_spiral_rail()
             || self.picking_conic_curve()
-            || self.picking_rectangle_curve())
+            || self.picking_rectangle_curve()
+            || self.picking_ellipse_curve())
             && self.plane_prompt.is_none()
             && model_input_active
             && !end_analysis_picking;
@@ -9810,6 +9819,11 @@ impl eframe::App for VibocerosApp {
                 self.conic_session
                     .as_ref()
                     .and_then(conic::Session::cursor_curve)
+            })
+            .or_else(|| {
+                self.ellipse_session
+                    .as_ref()
+                    .and_then(ellipse::Session::cursor_curve)
             })
             .or_else(|| {
                 self.rectangle_session
@@ -9965,7 +9979,8 @@ impl eframe::App for VibocerosApp {
                 || self.picking_flow_guide()
                 || self.picking_spiral_rail()
                 || self.picking_conic_curve()
-                || self.picking_rectangle_curve());
+                || self.picking_rectangle_curve()
+                || self.picking_ellipse_curve());
         let document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
@@ -10508,6 +10523,7 @@ mod tests {
     mod edge_fillet;
     mod edit_points;
     mod ellipse;
+    mod ellipse_around;
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_curvature_graph;

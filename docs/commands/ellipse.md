@@ -18,6 +18,7 @@ Invalid picks leave the current getter available for correction.
 | Corner | Two bounding-box corners, projected into the CPlane through the first corner. The seam follows positive CPlane X. |
 | Corner after center | Choose `Corner` after the default center pick to retain that center and pick a bounding-box corner. |
 | FromFoci | Two distinct foci and a point on the ellipse. A collinear point beyond the foci uses the CPlane to resolve the plane. A point between them cannot define a finite ellipse. |
+| AroundCurve | Select a curve or surface/B-rep edge, pick its center on the guide, then two axis ends in the plane perpendicular to the guide tangent. |
 
 At either axis getter, a positive length locks the size; pick a direction to
 continue. A replacement number changes the lock. Default and Vertical numbers
@@ -30,6 +31,18 @@ Enter with a locked length accepts the current viewport preview. Move the
 pointer over the viewport first; without a current hover, the getter remains
 available. Enter without a lock cancels. Escape and `Cancel` always cancel.
 Relative coordinates use the last accepted point and active CPlane vector axes.
+For AroundCurve, the accepted center is the closest point on the guide and axis
+picks are projected into its normal plane before becoming the relative base.
+
+AroundCurve accepts one preselected curve, a viewport curve/edge pick, or
+`Curve=<object-id>` / `Edge=<object-id>,<edge-index>`. Both axis getters support
+numeric radius locks and live previews. The source remains untouched. A guide
+that changes, disappears, or becomes hidden/locked must be selected again, as
+must a guide captured before a document tolerance change, even after its center
+has been picked. This freshness check is local robustness behavior.
+Cancellation creates no helper objects.
+Postselected guides are released when the command returns; preselected guides
+remain selected. Each completed ellipse forms one Undo/Redo operation.
 
 `FromFoci` offers `MarkFoci=Yes|No`; bare `MarkFoci` toggles it. The two markers
 are added before the curve, in second-focus/first-focus order. This setting is
@@ -66,7 +79,19 @@ relative coordinates, collinear focal fallbacks and remembered focus markers.
 Kernel tests also preserve a thin ellipse whose major radius rounds to its
 focal distance; its minor radius is computed without subtracting squared lengths.
 
-Five clean native failures and three cancellations are separate diagnostics.
+[AroundCurve validation](../ellipse-around-validation.json) adds 27 successful
+native workflows at `1e-6`, including analytic/NURBS/polyline guides, endpoints,
+off-guide centers, projected and locked axes, rotated relative input, and four
+owned surface/B-rep edge clicks. Command and frontend checks compare complete
+NURBS geometry, lengths, unchanged sources, selection and actual Undo/Redo.
+Returned-state selection uses the native `after_script` snapshot: Rhino's
+earlier EndCommand snapshot temporarily retains a postselected guide.
+Five clean cancellations and one failure are separate controls; a timed-out
+zero-axis retry remains an excluded diagnostic. Local tests additionally cover
+source freshness, point filters, parameter picks and cancellation cleanup.
+
+The earlier mode validation retains five clean native failures and three
+cancellations as separate diagnostics.
 Six additional cases have incomplete input receipts, uncontrolled cursor-based
 Enter input, negative numeric behavior, or an implicit preference dependency;
 they do not qualify successful geometry replay. Local locked-preview Enter is
@@ -74,7 +99,7 @@ covered by frontend tests. Native failure termination and preference updates on
 cancellation are not claimed: local invalid picks allow retries and pending
 options save only after success.
 
-`AroundCurve` and deformable output remain unimplemented. Negative numeric
+Deformable output remains unimplemented. Negative numeric
 sizes are rejected. Exhaustive physical mouse/snap, extreme-range and performance
 parity remain unqualified.
 

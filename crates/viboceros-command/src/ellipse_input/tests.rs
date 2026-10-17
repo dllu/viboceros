@@ -155,3 +155,103 @@ fn ellipse_focal_replay_preserves_the_captured_plane_without_an_ambient_cplane()
         assert!(a.distance_to(b).unwrap() < 1e-12);
     }
 }
+
+#[test]
+fn ellipse_around_projects_axes_and_retains_native_source_selection_replay_policy() {
+    use viboceros_document::SelectionMode;
+    use viboceros_geometry::LineSegment;
+    for preselected in [false, true] {
+        let mut doc = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        let source = doc
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(p(0., 0., 0.), p(0., 0., 10.), doc.tolerance()).unwrap(),
+            ))
+            .unwrap();
+        let saved = doc.object(source).unwrap().clone();
+        if preselected {
+            doc.select_object(source, SelectionMode::Replace).unwrap();
+        }
+        doc.clear_history().unwrap();
+        registry
+            .execute(
+                &mut doc,
+                &format!("Ellipse AroundCurve Curve={source} 2,3,5 3,0,9 0,2,8"),
+            )
+            .unwrap();
+        let Geometry::Ellipse(e) = doc.objects().find(|o| o.id() != source).unwrap().geometry()
+        else {
+            panic!()
+        };
+        assert_eq!(e.center(), p(0., 0., 5.));
+        assert_eq!((e.radius_x(), e.radius_y()), (3., 2.));
+        assert_eq!(doc.is_selected(source), preselected);
+        assert_eq!(doc.undo().unwrap().as_deref(), Some("Ellipse"));
+        assert_eq!(doc.objects().len(), 1);
+        assert_eq!(doc.is_selected(source), preselected);
+        assert_eq!(doc.redo().unwrap().as_deref(), Some("Ellipse"));
+        assert_eq!(doc.is_selected(source), preselected);
+        assert_eq!(doc.object(source).unwrap(), &saved);
+        assert!(
+            saved
+                .geometry_snapshot()
+                .shares_storage_with(doc.object(source).unwrap().geometry_snapshot())
+        );
+        let mut input = input();
+        input.option("AroundCurve").unwrap();
+        assert!(input.requests_curve());
+        assert!(input.point(p(0., 0., 5.)).is_err());
+        input.around_curve(
+            crate::curve_reference::perpendicular_frame(
+                saved.geometry().curve_ref().unwrap(),
+                p(1., 2., 5.),
+            )
+            .unwrap(),
+        );
+        let before = input;
+        assert!(input.point(p(0., 0., 8.)).is_err());
+        assert_eq!(input, before);
+        input.number(6.).unwrap();
+        input.point(p(2., 0., 9.)).unwrap();
+        input.number(3.).unwrap();
+        let before = input;
+        let preview = input.preview(p(2., 4., 8.)).unwrap();
+        assert_eq!(input, before);
+        assert_eq!(input.point(p(2., 4., 8.)).unwrap(), Some(preview));
+        assert_eq!(
+            (preview.ellipse.radius_x(), preview.ellipse.radius_y()),
+            (6., 3.)
+        );
+    }
+}
+
+#[test]
+fn ellipse_switch_from_around_curve_discards_the_pending_guide() {
+    let mut doc = Document::default();
+    let guide = doc
+        .add_geometry(Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                p(0., 0., 0.),
+                p(0., 0., 10.),
+                doc.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    doc.clear_history().unwrap();
+    CommandRegistry::with_builtins()
+        .execute(
+            &mut doc,
+            &format!("Ellipse AroundCurve Curve={guide} Default 1,2,3 4,2,3 1,4,3"),
+        )
+        .unwrap();
+    let Geometry::Ellipse(ellipse) = doc.objects().find(|o| o.id() != guide).unwrap().geometry()
+    else {
+        panic!()
+    };
+    assert_eq!(ellipse.center(), p(1., 2., 3.));
+    assert_eq!((ellipse.radius_x(), ellipse.radius_y()), (3., 2.));
+    assert!(!doc.is_selected(guide));
+    assert_eq!(doc.undo().unwrap().as_deref(), Some("Ellipse"));
+    assert_eq!(doc.objects().len(), 1);
+}

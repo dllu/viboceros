@@ -76,7 +76,10 @@ impl PointInput {
         units: &LengthUnitSystem,
     ) -> Option<Result<Real, PointInputError>> {
         let text = text.trim();
-        if text.contains([',', '<']) || text.starts_with(['w', 'W', 'r', 'R', '@']) {
+        if text.contains([',', '<'])
+            || text.starts_with(['w', 'W', 'r', 'R', '@'])
+            || crate::PointFilter::parse(text).is_some()
+        {
             return None;
         }
         match Self::parse_with_units(text, units)? {

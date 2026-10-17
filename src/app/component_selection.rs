@@ -196,6 +196,7 @@ impl VibocerosApp {
             && !self.picking_spiral_rail()
             && !self.picking_conic_curve()
             && !self.picking_rectangle_curve()
+            && !self.picking_ellipse_curve()
         {
             if self
                 .hole_prompt
@@ -240,6 +241,7 @@ impl VibocerosApp {
             || self.picking_spiral_rail()
             || self.picking_conic_curve()
             || self.picking_rectangle_curve()
+            || self.picking_ellipse_curve()
         {
             click
                 .picks
@@ -315,6 +317,12 @@ impl VibocerosApp {
         if self.picking_conic_curve() {
             if let [pick] = picks.as_slice() {
                 self.pick_conic_curve(Some(pick.object), Some(pick.index));
+            }
+            return;
+        }
+        if self.picking_ellipse_curve() {
+            if let [pick] = picks.as_slice() {
+                self.pick_ellipse_curve(Some(pick.object), Some(pick.index));
             }
             return;
         }

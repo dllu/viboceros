@@ -1,6 +1,17 @@
 //! Resolve ordinary curves or immutable surface edges without temporary objects.
 use viboceros_document::{Geometry, ObjectId};
-use viboceros_geometry::{Brep, CurveRef, NurbsCurve, Tolerance};
+use viboceros_geometry::{Brep, CurveRef, Frame3, GeometryError, NurbsCurve, Point3, Tolerance};
+
+/// The shared normal plane at the closest location on a construction guide.
+pub fn perpendicular_frame(curve: CurveRef<'_>, pick: Point3) -> Result<Frame3, GeometryError> {
+    let parameter = curve.closest_parameter(pick, Tolerance::NUMERICAL_VALIDATION)?;
+    let sample = curve.evaluate_with_tangent(parameter)?;
+    Frame3::try_from_normal(
+        sample.point(),
+        sample.tangent().as_vector(),
+        Tolerance::NUMERICAL_VALIDATION,
+    )
+}
 
 pub type EdgeReference = (ObjectId, usize);
 
@@ -79,6 +90,9 @@ impl CapturedCurve {
     }
     pub fn source(&self) -> (&viboceros_document::GeometrySnapshot, Option<usize>) {
         (&self.parent, self.edge)
+    }
+    pub fn object_id(&self) -> ObjectId {
+        self.id
     }
     pub fn curve(&self) -> &NurbsCurve {
         &self.curve
