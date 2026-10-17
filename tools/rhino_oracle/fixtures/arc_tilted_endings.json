@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-length-points",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        [
+          7,
+          8,
+          9
+        ],
+        [
+          10,
+          12,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-length-direction",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        "Direction=Clockwise",
+        6.283185307179586
+      ]
+    }
+  ]
+}

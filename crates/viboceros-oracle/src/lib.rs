@@ -145,6 +145,7 @@ pub use rail_revolve::Fixture as RailRevolveFixture;
 pub use two_rail_sweep::Fixture as TwoRailSweepFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
+mod arc_command;
 mod arc_length_batch;
 mod arc_tangent;
 mod catenary_command;
@@ -1757,6 +1758,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: CircleDeformFixture,
     },
+    ArcCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: CircleDeformFixture,
+    },
     CircleTangent {
         id: String,
         #[serde(flatten)]
@@ -2885,6 +2891,7 @@ impl Operation {
             | Self::SpiralLayout { id, .. }
             | Self::CatenaryCommand { id, .. }
             | Self::ArcTangent { id, .. }
+            | Self::ArcCommand { id, .. }
             | Self::CircleTangent { id, .. }
             | Self::CircleDeform { id, .. }
             | Self::CircleAround { id, .. }
@@ -6146,6 +6153,7 @@ fn execute(
             )
         }
         Operation::ArcTangent { fixture, .. } => arc_tangent::run(fixture, iterations, tolerance)?,
+        Operation::ArcCommand { fixture, .. } => arc_command::run(fixture, iterations, tolerance)?,
         Operation::CircleTangent { fixture, .. } => {
             circle_tangent::run(fixture, iterations, tolerance)?
         }

@@ -250,7 +250,12 @@ impl VibocerosApp {
         let plane = self.viewports[self.active_viewport].construction_plane();
         if self.apply_drafting_point_with_snap(point, snap.filter(|s| s.point() == point)) {
             self.snaps.model_override = None;
-            if self.active_command.is_some() {
+            if self.active_command.is_some()
+                && self
+                    .arc_tilted_session
+                    .as_ref()
+                    .is_none_or(|s| !s.input.requests_orientation() && !s.input.requests_length())
+            {
                 self.drafting_plane.get_or_insert(plane);
             }
             self.last_point = Some(point);

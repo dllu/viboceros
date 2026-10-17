@@ -118,6 +118,7 @@ mod tests {
             "Arc Tangent Point 3,0,0 Point 0,4,0 Enter",
             "Arc Tangent Point 3,0,0 Point 0,4,0 Enter 1.5,2,0",
             "Arc Tangent Point 3,0,0 0 Point 0,4,0 0,0,0",
+            "Arc Tangent Point 3,0,0 -3 Point 0,4,0 0,0,0",
             "Arc Tangent Point 3,0,0 Point 0,4,0 Enter 0,0,0 trailing",
         ] {
             assert!(registry.execute(&mut doc, command).is_err(), "{command}");

@@ -292,7 +292,10 @@ impl Input {
             let (p, count) = crate::parse_point(args)?;
             Ok((count, self.point(p)?))
         } else {
-            Ok((1, self.number(crate::parse_finite_real(word)?)?))
+            Ok((
+                1,
+                self.number(crate::parse_finite_real(args[0].trim_start_matches('_'))?)?,
+            ))
         }
     }
     pub(crate) fn arc_line_pair(&self) -> Result<Option<[usize; 2]>, CommandError> {

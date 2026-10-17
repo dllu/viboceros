@@ -85,6 +85,10 @@ tangencies and free points, then previews the chosen arc interval. It shares
 contact input with Circle, supports radius locks and FromFirstPoint, and
 preserves source geometry and selection.
 
+[Arc Tilted](arc-tilted.md) defines an arc plane from the center, start and an
+orientation point. It supports signed angles, length measurements and a live
+orientation rectangle and endpoint preview.
+
 Picked radii can tilt Circle/Polygon out of that plane. Rectangle normalizes
 corner order; Rectangle and Polygon retain chord-length native domains.
 `Circle 2Point first second` uses the two world points as opposite ends of a

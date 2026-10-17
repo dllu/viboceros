@@ -316,12 +316,9 @@
     "policy": "Historical non-SHA outcomes are unchanged; changed source bytes are archived against the full baseline commit."
   },
   "sha256": {
-    "crates/viboceros-oracle/src/ellipse_command.rs": "033e2d07e463aae09012a07b6f459b2a072c24ec9605aed04335c8268c227063",
-    "docs/ellipse-deform-validation.json": "5210d335e18d0f30e0e432f37d2492554a06dcf8efdfe83af59948158efa9192",
     "docs/ellipse-validation.json": "11469255088f6d70ae0b2ba41d3572fa460cefe273d5e7bc8891ec098fc3e2c6",
     "docs/rectangle-rounded-validation.json": "74d50cab68ce8363a6bc31d416c6ec4902e4220ac12e6fdd6eebb576ee236052",
     "docs/sphere-fit-points-validation.json": "5cf601a2059873f282af660888cb082c11894648add5e657386e0fd5aa6ad9d0",
-    "src/app/point_input.rs": "c68e7bf77980b2ebcdcc111768325784d5fdb5174989342ccd62d993ccde9dab",
     "tools/rhino_oracle/ellipse_probe.py": "a9115d21bf141928028ed561a5bb18ccbcb3ae99fb59afb1151917e5c3f1b97b",
     "tools/rhino_oracle/fixtures/circle_around_command.json": "bf213eb2dccac9237c6e8684546614fb4a6604be2dfb10749d29689fd7827bf8",
     "tools/rhino_oracle/fixtures/circle_around_controls.json": "3f660f379e2e597014936bf844d85482cf56593b973bc276240675250a44e8e8",
@@ -365,6 +362,9 @@
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/flow-poles-validation.json": "1cc64a0c18f8664a385eab07e31d51fa475f64514c5a076b48e858fa59583eb9",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/hyperbola-validation.json": "196724eea6d967a0b8269e9b859a9686f1aafd8bb913f151a7cb5dfbc5bb4282",
     "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:src/app/component_selection.rs": "494de6cb87a45e3eb132e2248781ad27e1aa068c1d1a733ee23e6924840c6d26",
-    "7fd899f6a0c5b54892b256b00166a1528f578c9b:docs/commands/curves.md": "d1d687c12f3680c521ddf544d9d50c28fdb9a8d550bd35a808e8b747dae8ee83"
+    "7fd899f6a0c5b54892b256b00166a1528f578c9b:docs/commands/curves.md": "d1d687c12f3680c521ddf544d9d50c28fdb9a8d550bd35a808e8b747dae8ee83",
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:crates/viboceros-oracle/src/ellipse_command.rs": "033e2d07e463aae09012a07b6f459b2a072c24ec9605aed04335c8268c227063",
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:src/app/point_input.rs": "c68e7bf77980b2ebcdcc111768325784d5fdb5174989342ccd62d993ccde9dab",
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/ellipse-deform-validation.json": "5210d335e18d0f30e0e432f37d2492554a06dcf8efdfe83af59948158efa9192"
   }
 }

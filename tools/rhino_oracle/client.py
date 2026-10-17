@@ -464,6 +464,16 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op')=='arc_command'for op in request.get('operations',[])):
+            from .arc_command_probe import validate
+            operations=request['operations']
+            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')!='arc_command'for op in operations):raise OracleProtocolError('Arc construction requires a private dedicated one-iteration capture')
+            names=[op.get('id')for op in operations]
+            if not 1<=len(names)<=64 or any(not isinstance(n,str)for n in names)or len(set(names))!=len(names):raise OracleProtocolError('Arc construction requires 1 through 64 unique cases')
+            for op in operations:validate(op)
+            if any(isinstance(a,dict)and'click'in a for op in operations for a in op['actions']):
+                from .arc_point_picker import ArcPointPicker
+                interaction=ArcPointPicker(request)
         if any(op.get('op')=='arc_tangent'for op in request.get('operations',[])):
             from .arc_tangent_probe import validate
             from .catenary_point_picker import CatenaryPointPicker

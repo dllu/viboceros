@@ -1,0 +1,385 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-positive",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        [
+          0,
+          7,
+          7
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-negative",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        [
+          0,
+          -7,
+          -7
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-angle-negative",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        -90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-angle-major",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        270
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-angle-overfull",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        450
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-length-positive",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        6.283185307179586
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-length-negative",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        -6.283185307179586
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-end-out-of-plane",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        [
+          0,
+          7,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-axial-component",
+      "live_getters": true,
+      "actions": [
+        [
+          2,
+          -1,
+          5
+        ],
+        "Tilted",
+        [
+          6,
+          -1,
+          5
+        ],
+        [
+          13,
+          2,
+          8
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-start-off-cplane",
+      "live_getters": true,
+      "actions": [
+        [
+          2,
+          -1,
+          5
+        ],
+        "Tilted",
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        135
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-orientation-negative",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          -3,
+          -3
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-orientation-axis-retry",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-start-center-retry",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-cancel-orientation",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        "Cancel"
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-cancel-end",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Cancel"
+      ]
+    }
+  ]
+}

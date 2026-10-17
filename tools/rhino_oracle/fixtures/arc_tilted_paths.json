@@ -1,0 +1,504 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-pos-0",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-neg-0",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            -3,
+            -3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-out-0",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            6,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-major-0",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            -3,
+            -3,
+            -3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-pos-1",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-neg-1",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            -3,
+            -3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-out-1",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            6,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-path-major-1",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            -3,
+            -3,
+            -3
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-orientation-size-1",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        1,
+        [
+          0,
+          1,
+          3
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-orientation-size-15",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        15,
+        [
+          0,
+          1,
+          3
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-orientation-size-90",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        90,
+        [
+          0,
+          1,
+          3
+        ],
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-memory-length",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        6.283185307179586
+      ],
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        "Direction=Clockwise",
+        6.283185307179586
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-memory-angle",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        90
+      ],
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        "Direction=Clockwise",
+        6.283185307179586
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-numeric-zero-retry",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        0,
+        90
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-length-zero-retry",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        "Length",
+        0,
+        5
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-spatial-plane",
+      "live_getters": true,
+      "actions": [
+        [
+          2,
+          3,
+          4
+        ],
+        "Tilted",
+        [
+          2,
+          3,
+          8
+        ],
+        [
+          5,
+          6,
+          9
+        ],
+        135
+      ],
+      "construction_plane": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    }
+  ]
+}

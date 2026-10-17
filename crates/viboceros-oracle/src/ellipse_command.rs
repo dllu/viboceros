@@ -33,6 +33,11 @@ fn enter(
             Ok(())
         };
         match action {
+            Action::Click { .. } | Action::Hover { .. } => {
+                return Err(ProbeError::FixtureInvariant(
+                    "Ellipse requires explicit points or source picks",
+                ));
+            }
             Action::Point(p) => {
                 let point = Point3::try_from(*p)?;
                 accept(point)?;

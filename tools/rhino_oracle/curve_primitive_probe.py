@@ -19,10 +19,10 @@ def run(op,host,iterations,tolerance,command,driver=None,setup_driver=None):
             vp.SetProjection(R.Display.DefinedViewportProjection.Top,'Owned conic edge input',False)
             bounds=G.BoundingBox.Empty
             for g in geometries:bounds.Union(g.GetBoundingBox(True))
-            if command=='Catenary'and any(isinstance(a,dict)and'click'in a for a in op['actions']):
+            if command in('Catenary','Arc')and any(isinstance(a,dict)and'click'in a for a in op['actions']):
                 for a in op['actions']:
                     if isinstance(a,list):bounds.Union(G.Point3d(*a))
-                    elif isinstance(a,dict)and'click'in a:bounds.Union(G.Point3d(*a['click']))
+                    elif isinstance(a,dict)and('click'in a or'hover'in a):bounds.Union(G.Point3d(*a.get('click',a.get('hover'))))
             bounds.Inflate(5.);
             if edge_input:vp.SetCameraDirection(G.Vector3d(-1.,1.,-1.),True);vp.CameraUp=G.Vector3d(0.,0.,1.)
             vp.ZoomBoundingBox(bounds);vp.SetConstructionPlane(plane if'construction_plane'in op else G.Plane.WorldXY);doc.Views.Redraw()

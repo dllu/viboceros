@@ -286,6 +286,7 @@ pub mod construction_plane;
 use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
 pub mod arc_tangent_input;
+pub mod arc_tilted_input;
 pub mod circle_around_input;
 pub mod circle_deform_input;
 mod circle_fit_points;
@@ -2464,6 +2465,19 @@ impl Command for ArcCommand {
             let arguments = &arguments[1..];
             let (center, center_count) = parse_point(arguments)?;
             let after_center = &arguments[center_count..];
+            if after_center
+                .first()
+                .is_some_and(|w| option_name_eq(w, "Tilted"))
+            {
+                let arc = arc_tilted_input::from_arguments(
+                    center,
+                    &after_center[1..],
+                    document.tolerance(),
+                )?;
+                let sweep = arc.sweep_radians().to_degrees();
+                let id = document.add_geometry(Geometry::Arc(arc))?;
+                return Ok(format!("Added arc {id} (sweep {sweep:.6}°)"));
+            }
             if after_center
                 .first()
                 .is_some_and(|option| option_name_eq(option, "Midpoint"))

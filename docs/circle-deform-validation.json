@@ -359,7 +359,6 @@
     "crates/viboceros-command/src/circle_fit_points.rs": "38ec62ad923b8c853c7c3fff2e8e9c3bd4743f03d5f5be36339361cb88e07bb3",
     "crates/viboceros-command/src/circle_input.rs": "22702442dc65e0a9892477f0baf73883f2c35c0a329af1a8780b7e9ec86b339a",
     "crates/viboceros-geometry/src/circular.rs": "bbff38ac7476920b375ff44c3156a58d81eaea24df406a6d0a072117a45a03d7",
-    "crates/viboceros-oracle/src/curve_getters.rs": "2b5f5eb96ed437451513cca05a64319935cd0fa97d9fd99a650c0b83f3b597dc",
     "docs/catenary-snap-validation.json": "0d2c846c063d569aa1300756a84b0f1927d173816d691489b28f26f5fbb29f87",
     "docs/ellipse-around-validation.json": "e11aee07e7e09f972f782c958ee6ad435b472c8be3daf395432c11ca3a3d5cb6",
     "docs/flow-local-validation.json": "f4713b6fad15ddc29ff5ebb912d357106f1142383d9e29a6057295271d2cf946",
@@ -415,6 +414,7 @@
     "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:tools/rhino_oracle/rhino_worker.py": "2d050aa5b609677310036b610c19f06123f6d607500075a79497b63c49a3b5d6",
     "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:tools/rhino_oracle/structural_sdk.py": "9905d04cd49058807f2971dc38cd5e9992ecd6296b50874e7c17283f7555d8ed",
     "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:docs/commands/README.md": "936031f4ead25d3367b925451f4ed61c1c1d95dc2d0fa0f8191539e66e0bb32b",
-    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:docs/commands/circle-around-curve.md": "6691c3658978553a3df7f9aaa365fbb795b6d69cf8b271e09270c377445deff3"
+    "f0fe9c4b24d75124d1499a61e0cf98f4a7fc798c:docs/commands/circle-around-curve.md": "6691c3658978553a3df7f9aaa365fbb795b6d69cf8b271e09270c377445deff3",
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:crates/viboceros-oracle/src/curve_getters.rs": "2b5f5eb96ed437451513cca05a64319935cd0fa97d9fd99a650c0b83f3b597dc"
   }
 }

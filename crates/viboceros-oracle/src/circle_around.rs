@@ -40,6 +40,11 @@ fn enter(
             !ordinary.accepts_default()
         };
         match action {
+            Action::Click { .. } | Action::Hover { .. } => {
+                return Err(ProbeError::FixtureInvariant(
+                    "Circle requires explicit points or source picks",
+                ));
+            }
             Action::Option(word)
                 if word.eq_ignore_ascii_case("Cancel")
                     || (word.eq_ignore_ascii_case("Enter") && enter_cancels) =>

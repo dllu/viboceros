@@ -263,7 +263,6 @@
     "crates/viboceros-geometry/src/ellipse.rs": "a60c3f7739870be8e8d0f9bdb0aecf5df8e7c8223e4c0f47f551d5ea86b737c5",
     "docs/commands/ellipse.md": "26a79e483861b40f1734a9fddc9ca5e74f8ce1f4360e20b77e48168e153beb20",
     "src/app/ellipse.rs": "5a4b555904be978bba71afb4c4ab69041c4b3baeafc29dd4b49cde97208b953c",
-    "src/app/tests/ellipse.rs": "bb94cff9583925e24b52be30ed571a2933cc4591e2517a5b2ec9c68b3417f0a8",
     "src/app/tests/ellipse_deform.rs": "a91eaae24b8b709cf4e368e7a147ea1c235a8ca5b53a30a81b1b76d8db3033b3",
     "tools/rhino_oracle/fixtures/ellipse_deform_controls.json": "543ca0cfa5ae71fecd6d584a40f40d370cefc07ceaa20dcbdec535c805e8ac01",
     "tools/rhino_oracle/fixtures/ellipse_deform_counts.json": "f4ca96e03ca55155e47a5f2b06c5a02de5cb881a7534610d3617b34419dfa0c1",
@@ -288,6 +287,7 @@
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/viewport.rs": "0a45bd19d3ae5a1edc4e1daef5dfeb0306414c32d557e3ed33b2f4683b1a54cf",
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/conic_getter_input.py": "550ffa634df069d82b141e94c58bbb97dc05646cbb8477b5f29b6b771452c872",
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/ellipse_probe.py": "ac7a7aa4b8e73b99bb25be5772d4b7f5e034ffd57e37d4887c9603d7960ad85e",
-    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/ellipse-validation.json": "6127385061ef71ad64a28ef41aa6bf45466541f8c181811bcd3dddb26b92c55c"
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/ellipse-validation.json": "6127385061ef71ad64a28ef41aa6bf45466541f8c181811bcd3dddb26b92c55c",
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:src/app/tests/ellipse.rs": "bb94cff9583925e24b52be30ed571a2933cc4591e2517a5b2ec9c68b3417f0a8"
   }
 }

@@ -30,6 +30,9 @@ pub(super) fn actions(app: &mut VibocerosApp, actions: &[viboceros_oracle::Ellip
     for action in actions {
         match action {
             Action::Pick { .. } => panic!("guide scenarios use source-pick replay"),
+            Action::Click { .. } | Action::Hover { .. } => {
+                panic!("click scenarios use pointer replay")
+            }
             Action::Point([x, y, z]) => enter(app, &format!("w{x},{y},{z}")),
             Action::Relative {
                 relative: [x, y, z],

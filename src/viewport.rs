@@ -89,6 +89,7 @@ mod curvature_graph;
 mod curve_sampling;
 mod edge_picking;
 pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
+mod arc_tilted;
 mod tangent;
 pub use tangent::TangentPreview;
 mod edge_point;
@@ -349,6 +350,7 @@ pub struct ViewportInput<'a> {
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub ellipse_input: Option<viboceros_command::ellipse_input::Input>,
     pub tangent: Option<TangentPreview<'a>>,
+    pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
@@ -447,6 +449,7 @@ impl Default for ViewportInput<'_> {
             parabola_input: None,
             ellipse_input: None,
             tangent: None,
+            arc_tilted_input: None,
             circle_around_input: None,
             circle_around_output: None,
             circle_deform_input: None,
@@ -2237,6 +2240,9 @@ impl Viewport {
                 response.hover_pos(),
                 drafting_cursor.map(|c| c.point),
             );
+        }
+        if let Some(getter) = input.arc_tilted_input {
+            self.paint_tilted_arc(&painter, rect, getter, drafting_cursor.map(|c| c.point));
         }
         if let Some(getter) = input.circle_around_input {
             self.paint_draft_points(&painter, rect, &[getter.center()]);

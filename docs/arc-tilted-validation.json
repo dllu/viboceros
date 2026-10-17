@@ -1,0 +1,444 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "baseline_commit": "771c31cac4aa5535a6a96aedfbeab15544a0c117",
+  "feature": "Arc Tilted spatial construction, orientation rectangle, signed sweeps, length measurements and cursor-dependent endpoints",
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "absolute_comparison_tolerance": 1e-06,
+  "successful_native_workflows": 30,
+  "clean_native_cancellations": 3,
+  "acknowledged_native_clicks": 12,
+  "acknowledged_native_hovers": 24,
+  "captured_initial_cursor_inputs": 12,
+  "profiles": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tilted_initial.json",
+      "observation": "tools/rhino_oracle/observations/arc_tilted_initial_rhino_20261017.json",
+      "rows": 2
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tilted_modes.json",
+      "observation": "tools/rhino_oracle/observations/arc_tilted_modes_rhino_20261017.json",
+      "rows": 11
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tilted_endings.json",
+      "observation": "tools/rhino_oracle/observations/arc_tilted_endings_rhino_20261017.json",
+      "rows": 2
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tilted_spatial.json",
+      "observation": "tools/rhino_oracle/observations/arc_tilted_spatial_rhino_20261017.json",
+      "rows": 6
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/arc_tilted_cursor.json",
+      "observation": "tools/rhino_oracle/observations/arc_tilted_cursor_rhino_20261017.json",
+      "rows": 12
+    }
+  ],
+  "claims": [
+    "Arc Center center Tilted start orientation constructs its frame using existing Frame3 and CircularArc3 geometry. The orientation radial component is removed; the spatial center-to-start distance defines the radius. No geometry kernel or circle solver was duplicated.",
+    "The shared edit-free getter covers orientation points, numeric orientation-rectangle height, signed angles, full/overfull angles, signed lengths, explicit length direction and two arbitrary world distance points. Native setup captures show length direction resets to Counterclockwise for each construction.",
+    "Full controls, weights, knots, domains, lengths, closed status, output selection, complete snapshot fields and actual Undo/Redo agree for all 30 successful native workflows and three native cancellations through command and frontend paths on default and native-smlib backends at absolute 1e-6.",
+    "Twelve cursor workflows include planar and tilted minor/major sweeps in both directions and direct endpoint clicks. Public input receipts include the initial cursor, 24 acknowledged hovers and 12 acknowledged clicks. Initial cursor side seeds winding; crossing the start ray with both samples on the start side of the center changes direction, while jumps across the opposite half preserve it. This is an inference tested against behavior, not a claim about proprietary implementation.",
+    "Frontend preview uses the same getter as final construction. ViewportOutput.drafting_hover updates cursor state, and final canonical arguments preserve its direction. Orientation and distance input can use other viewport planes; endpoint picking uses the fitted plane. Typed coordinates continue to use the viewport construction plane.",
+    "A partial Arc Center point Tilted prefix establishes the relative point base. Common world/relative coordinate input, unit-aware lengths and point filters have direct frontend coverage. Invalid orientation/cursor inputs preserve state; cancellation, interruption and previews add no temporary geometry or history.",
+    "Successful construction adds one Arc history entry and leaves the independent Tangent radius unchanged. Native cancellations cover start, orientation and final endpoint stages.",
+    "A sign-parsing regression is corrected: numeric tangent arguments retain their leading minus and are rejected as invalid radii. Arc Tilted negative sweeps are also parsed with their signs intact; native negative-angle/length captures and an atomic tangent-command regression cover these cases."
+  ],
+  "input_calibration": {
+    "method": "Public viewport ClientToWorld rays intersect the plane derived solely from authored center, start and orientation inputs. Cursor.Position is read by a managed delegate before each requested move and converted with public ScreenToClient and ClientToWorld. No expected output geometry is used to derive inputs.",
+    "replay": "Command tests calibrate authored hover/click targets with their projected input points and insert the captured initial cursor as an initial hover. Frontend tests feed the same initial and subsequent points through ViewportOutput.drafting_hover and picked_point. Raw requests and observations remain unchanged.",
+    "scope": "Physical viewport aperture, exact seam boundaries and exhaustive camera/snap parity remain unqualified."
+  },
+  "raw_capture_policy": [
+    "Initial contains one successful numeric construction and one cancellation, both qualified unchanged.",
+    "The original 15-row modes batch is preserved as diagnostics. Eleven rows qualify unchanged. Three typed endpoint tokens time out without creating geometry, and a zero-radius start terminates unsuccessfully.",
+    "The original eight-row endings batch is preserved as endings_diagnostics. Length measurement and explicit clockwise length qualify unchanged. Four direct endpoint captures motivated cursor-state investigation; orientation numeric size is qualified independently in spatial. The exact-radius typed endpoint also times out.",
+    "Paths preserves eight repeated physical endpoints, three orientation sizes, two preference setups, two zero-value failures and a spatial plane. Six numeric/spatial cases qualify unchanged as spatial.",
+    "Endpoint_radius preserves sixteen successful physical endpoints, and drag preserves eight successful motion sequences. These earlier captures lack initial cursor receipts and remain diagnostic. The complete twelve-row cursor capture includes that missing input and qualifies in full; no cursor rows are excluded."
+  ],
+  "limitations": [
+    "Arc Deformable and Extension modes remain pending.",
+    "Typed endpoint tokens did not complete the native Tilted getter; endpoint parity is qualified with physical input, while the local command API also permits a direction point and explicit sweep direction.",
+    "Native zero-radius and zero-angle/length failure recipes remain diagnostic. Local interactive invalid input reprompts for correction; exact native error/termination behavior is not claimed.",
+    "All camera orientations, exact seams, degenerate or opposite-angle jumps, every snapping/filter combination, numeric orientation-size bounds and performance parity remain unqualified."
+  ],
+  "owned_native_jobs": [
+    {
+      "scheme": "VibocerosOracleArcTiltedInitial20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTiltedModes20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTiltedEndings20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTiltedPaths20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTiltedEndpointRadius20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTiltedDrag20261017",
+      "exit_code": 0
+    },
+    {
+      "scheme": "VibocerosOracleArcTiltedCursor20261017",
+      "exit_code": 0
+    }
+  ],
+  "excluded_baseline_test": {
+    "name": "join_command::tests::surfaces::original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+    "backend": "native-smlib",
+    "reason": "The broad arc filter also selects archive in this unrelated test name. The preceding commit records its failure on both candidate and baseline. This turn leaves Join code and assertions unchanged and excludes exactly this test from the native arc filter.",
+    "evidence_git_ref": "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/arc-tangent-validation.json"
+  },
+  "historical_source_policy": {
+    "preserved_records": [
+      "docs/arc-tangent-validation.json",
+      "docs/circle-around-validation.json",
+      "docs/circle-clamped-validation.json",
+      "docs/circle-deform-validation.json",
+      "docs/circle-tangent-validation.json",
+      "docs/ellipse-deform-validation.json"
+    ],
+    "preserved_baseline_references": 26,
+    "preexisting_unverifiable_records_unchanged": 69,
+    "method": "Previously verifiable SHA references to changed files are pinned to full baseline Git blobs. Historical non-SHA outcomes are unchanged."
+  },
+  "checks": [
+    {
+      "name": "tilted",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "tilted"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-tilted.log",
+      "elapsed_seconds": 34.02,
+      "log_sha256": "13ed95e0d99e9c37f493c0885a1271e3ddd20b2907d5a812d6e118bb03ed49b7",
+      "rust_tests_passed": 14
+    },
+    {
+      "name": "arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "arc"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-arc.log",
+      "elapsed_seconds": 108.87,
+      "log_sha256": "e077d75de2e02b2ddce15700a8c4b78ca323913e54cd4e4eaaa13e929489e035",
+      "rust_tests_passed": 212
+    },
+    {
+      "name": "circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-circle.log",
+      "elapsed_seconds": 18.05,
+      "log_sha256": "6d2cd79af80e0b6ef8456c984b545c6d5622a5d657addd9363a9b2b1d7b85e1d",
+      "rust_tests_passed": 163
+    },
+    {
+      "name": "ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-ellipse.log",
+      "elapsed_seconds": 9.36,
+      "log_sha256": "c4e7201f24129f179045e437f590b47bfbdb760cf6b8d61ffff7bd87a0b4beed",
+      "rust_tests_passed": 36
+    },
+    {
+      "name": "point-input",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-drafting",
+        "-p",
+        "viboceros",
+        "point_input"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-point-input.log",
+      "elapsed_seconds": 7.77,
+      "log_sha256": "54c72aec45a2ded1b7660bf8b6c41b6241da71742eac2d30839948e77f4bad2b",
+      "rust_tests_passed": 76
+    },
+    {
+      "name": "viewport-drafting",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "viewport::tests::drafting"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-viewport-drafting.log",
+      "elapsed_seconds": 0.19,
+      "log_sha256": "d73daacee1960338c8f154f4acbc7defa261022d8f3c89c79ecbde9840ccaeb7",
+      "rust_tests_passed": 5
+    },
+    {
+      "name": "components",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "component"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-components.log",
+      "elapsed_seconds": 0.31,
+      "log_sha256": "5e3b6f724232b69621f0fb7cbf8c278e2a8a136b4b91468daf15fae909d773aa",
+      "rust_tests_passed": 18
+    },
+    {
+      "name": "native-arc",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "arc",
+        "--",
+        "--skip",
+        "original_discrepancy_archive_tracks_resolved_partial_and_gap_joins"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-native-arc.log",
+      "elapsed_seconds": 184.13,
+      "log_sha256": "4f7bc9826c50d503796a297737d0a15a77e00df3e90ff0327d6dc275af8f2eba",
+      "rust_tests_passed": 211
+    },
+    {
+      "name": "native-circle",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "circle"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-native-circle.log",
+      "elapsed_seconds": 18.97,
+      "log_sha256": "ad133acc09c31fe55d47da6aa78726ae45606c6a2d106d16e6ffc9896fe652e9",
+      "rust_tests_passed": 163
+    },
+    {
+      "name": "native-ellipse",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "ellipse"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-native-ellipse.log",
+      "elapsed_seconds": 9.57,
+      "log_sha256": "a24884373182557d94b2e06581fbc6073040401eeead1c7c7b0f3813acb6f559",
+      "rust_tests_passed": 36
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-clippy.log",
+      "elapsed_seconds": 26.3,
+      "log_sha256": "ee35eec9fb6d38d9cb7674192c323fc483d9e2541b4a1674f8188ddb90434825",
+      "rust_tests_passed": 0
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-format.log",
+      "elapsed_seconds": 4.65,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rust_tests_passed": 0
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_arc_command",
+        "tools.rhino_oracle.test_arc_tangent",
+        "tools.rhino_oracle.test_circle_tangent",
+        "tools.rhino_oracle.test_circle_clamped",
+        "tools.rhino_oracle.test_circle_deform",
+        "tools.rhino_oracle.test_circle_around",
+        "tools.rhino_oracle.test_ellipse_deform",
+        "tools.rhino_oracle.test_ellipse_around",
+        "tools.rhino_oracle.test_ellipse",
+        "tools.rhino_oracle.test_catenary_command",
+        "tools.rhino_oracle.test_catenary_point_picker",
+        "tools.rhino_oracle.test_spiral_command",
+        "tools.rhino_oracle.test_rectangle",
+        "tools.rhino_oracle.test_conic",
+        "tools.rhino_oracle.test_conic_getters",
+        "tools.rhino_oracle.test_parabola",
+        "tools.rhino_oracle.test_hyperbola",
+        "tools.rhino_oracle.test_point_snap_input",
+        "tools.rhino_oracle.test_client"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/viboceros-arc-tilted-final-python.log",
+      "elapsed_seconds": 0.71,
+      "log_sha256": "e4219943d62201008084e3719b9e2072c4eff5bfae5b18753bd878f7ebaaa7b4",
+      "rust_tests_passed": 0,
+      "python_tests_passed": 89
+    }
+  ],
+  "sha256": {
+    "README.md": "652512b9defe495ac88182462beb6d933729d695f4738597a05e29192f96f3fe",
+    "crates/viboceros-command/src/arc_tangent_input.rs": "630fd21d7632ed1fa7d658c518feb24b5b4b1a3a6b466573ff8d3cc03937a02a",
+    "crates/viboceros-command/src/arc_tilted_input.rs": "199501736b01aa98e40bcd8c9821ba35d8ba85f7bb89e8afb3bcaf826d30efc8",
+    "crates/viboceros-command/src/circle_tangent_input.rs": "a378193c6fd6bbf22546a7ad5d6c74305d0b4a8a138d8a7d97b934aee8807cf9",
+    "crates/viboceros-command/src/lib.rs": "0696eba543a81d665085eef6fc3223ac2b6f2f47b0c6ce228e66ca8fe5d482f3",
+    "crates/viboceros-oracle/src/arc_command.rs": "101c5691f176593a88672ffc75893ec30becf5d4823ead0395266bdb03602be9",
+    "crates/viboceros-oracle/src/circle_around.rs": "60d0017e524726e071606b6fb874e448b1ab2d801715e6f9b55f4f15d20b7bc4",
+    "crates/viboceros-oracle/src/curve_getters.rs": "2b7377192b0f2aa862a068830f97e2dfdd73d2a16b19608c99c5d0be78abe87a",
+    "crates/viboceros-oracle/src/ellipse_command.rs": "1259c9eecef6ca2cd38824d84a41ba8d1f658055b9be2ab705bd495b7c2accd9",
+    "crates/viboceros-oracle/src/lib.rs": "196738b27c966c1ddfd46907b4d743007f089c9c39c26367abc583032c0f6c90",
+    "docs/arc-tangent-validation.json": "7d5268b4753c850745de403bf05ba81951155be2e83b9951b59cef6214629a2b",
+    "docs/circle-around-validation.json": "0698d9fa1b84345bee80086258bc799a032b03f86c6ea366eaa3494a149a7b83",
+    "docs/circle-clamped-validation.json": "9ab9577713ad79ff85495df07d03cd7c82d7391b6ea4b15dc22f33bfe5f12132",
+    "docs/circle-deform-validation.json": "ba558e8ca62be5e6b3ba5b81be1ffe85a77ef93e384774f95226e8dc57507dcc",
+    "docs/circle-tangent-validation.json": "8ba6be600c464f51d075ea9e579de420130a2202395e7465e4e841af9cd8998b",
+    "docs/commands/README.md": "312616a6eb1ffed783536e6fde33ae09961bd3212789d0d9761c7deda0e93168",
+    "docs/commands/arc-tangent.md": "9597f32c6476e695e4ba58f55c135db7cebf69813baab7e1067cb6a5e2bc7abc",
+    "docs/commands/arc-tilted.md": "953bbc6f378dd7e8a1e33f3c469e84eccd65287555f5ba39121f47ff9c77c6c1",
+    "docs/commands/curves.md": "c979e9badf817024dbc5b5060ba562995ab3ab61b653db7518abe95b67157bbd",
+    "docs/ellipse-deform-validation.json": "2edabdbaa33602407a610175372eaeabe7289b3c7a81be7a28cd22db5b569cd4",
+    "src/app.rs": "a8c626f99e8ed796e89ec27dd471828c3c2b586615302b12b584d8f6ccc2384f",
+    "src/app/arc_tilted.rs": "cbd5baddd412727e1800246978b0f5639c48802017add0c3a5b1400a9812367b",
+    "src/app/point_input.rs": "e88cf6aa42a75b780f85a8c97ca821ec47163aa24f50085ea2249520faab6036",
+    "src/app/tests/arc_tilted.rs": "64a459cde806f7307a4de343ca777bc777d2f477df0d2651154e8c3a7205ebee",
+    "src/app/tests/ellipse.rs": "7e59e8b04dd095e1d5bb8dd620bdb12230b84e34344fb36b01301553735c31a1",
+    "src/app/tests/ellipse_around.rs": "f4d0ade0b2afee1ee01054678f928fe8622f969424f0e536d30c2e7639c6e9d9",
+    "src/viewport.rs": "e2534bc4d1fafe0300d4d91fed620ca6a6fce6849f604b70009606cb7821635d",
+    "src/viewport/arc_tilted.rs": "17af332427f9b10117c2b2b87f0b39e828743469f0d23fb5474e8a05592b0ece",
+    "tools/rhino_oracle/arc_command_probe.py": "8c145dfe6b38563171964485ff812eabf19fc052221e1abcb2c959b4a030838a",
+    "tools/rhino_oracle/arc_point_picker.py": "212251d82b3571d355a861172ad6bcd19df13493a28df5a2827e72215b6d85a3",
+    "tools/rhino_oracle/client.py": "f1bafcaa05132d973c7a40181b9d4092e84ff2a6b9c2f0af2b9140a011d23da0",
+    "tools/rhino_oracle/conic_getter_input.py": "16fbd577bd06cb07d4c2d97d0770ddc2db88ba9dfa4ac3b5fa4059fcdee8a68d",
+    "tools/rhino_oracle/curve_primitive_probe.py": "d4a18646e427775859434ea07467e71bddb8fa197b30ead786e840a32efac534",
+    "tools/rhino_oracle/fixtures/arc_tilted_cursor.json": "524bb8ba4d95e246579764a6f187e8582d7ac490b669bfc63640a4cf505501ea",
+    "tools/rhino_oracle/fixtures/arc_tilted_diagnostics.json": "03ae4827e088bbc4ef588924b11f57215d9908fe3a2259bc4c1fd0c40571f631",
+    "tools/rhino_oracle/fixtures/arc_tilted_drag.json": "f44449c3cdbe2632a6739d22652cca0772d35a898d1de80f42c4826643bc3323",
+    "tools/rhino_oracle/fixtures/arc_tilted_endings.json": "e6a3e98eca6a29a3682721624f204c7fb02ce555c7ff416286e4f16e78f37065",
+    "tools/rhino_oracle/fixtures/arc_tilted_endings_diagnostics.json": "c5e5b15ff67aab21e60b44fae61bd1730cffd201c8647c5470bf05bb7df87b86",
+    "tools/rhino_oracle/fixtures/arc_tilted_endpoint_radius.json": "48e720292ad64239d50c148750cdc85a1d7cf3cbc98673f39c7185b4d961e596",
+    "tools/rhino_oracle/fixtures/arc_tilted_initial.json": "6de0e3b38b915611edbbf0fdc85111502ce47e8fe3f9a373b5c6d8ecac9a0d1e",
+    "tools/rhino_oracle/fixtures/arc_tilted_modes.json": "e83380594ca5c542a53c9ebb4a37e4b9576f4f58284373b3f8f8910b7eee9ade",
+    "tools/rhino_oracle/fixtures/arc_tilted_paths.json": "fe0d5ccb9f28fd165c7dc82fcdced2005a95b7dc756aefc3cf8bac71507f4be7",
+    "tools/rhino_oracle/fixtures/arc_tilted_spatial.json": "b888425aa052aa358b9197dac3f541a64959198f23120fc9738772ab2c4f184d",
+    "tools/rhino_oracle/observations/arc_tilted_cursor_rhino_20261017.json": "13fbfa50401800ffcca62f044d20bca9431526e34b5c7e0425bf4905e4e67c64",
+    "tools/rhino_oracle/observations/arc_tilted_diagnostics_rhino_20261017.json": "43f4cc606ff4b8cc6f5b21b544469e894b3345216989f2eab1e7579bcc29b1f2",
+    "tools/rhino_oracle/observations/arc_tilted_drag_rhino_20261017.json": "83ff12d0f3313f5a75e4b8ceee2ad6cafe5e7eb948f0643edc5834737a622392",
+    "tools/rhino_oracle/observations/arc_tilted_endings_diagnostics_rhino_20261017.json": "767ea852fd3ee43a39fdfa7df21852128b88d66cfa0564c162c7c0bb94f25cd5",
+    "tools/rhino_oracle/observations/arc_tilted_endings_rhino_20261017.json": "c48065402b9149afe6236f3ad45c30f13d38c0d9b9910ada3db341f5ddbdfb30",
+    "tools/rhino_oracle/observations/arc_tilted_endpoint_radius_rhino_20261017.json": "8151c11edacf2ed9abe93dcfb45547e4f193ba19c237ebfdcfe1acfebe37edbe",
+    "tools/rhino_oracle/observations/arc_tilted_initial_rhino_20261017.json": "c4b4562a0f40a03d53e87091416c4a487060adc47c173fee9b3a6de20f88f76a",
+    "tools/rhino_oracle/observations/arc_tilted_modes_rhino_20261017.json": "75f1d138ed1489404c6caeeb7ec3825821f62500a14dc93de4e0347b21e1f5ae",
+    "tools/rhino_oracle/observations/arc_tilted_paths_rhino_20261017.json": "471a6e380b612a2514e52b12a0f9aec6e0f870ca514b3cb25232d15e6ebb23ad",
+    "tools/rhino_oracle/observations/arc_tilted_spatial_rhino_20261017.json": "e568a4cfa10a996a6e576ddeb90f540680d24ae41d39f9785219164453e1a2d4",
+    "tools/rhino_oracle/rhino_worker.py": "02b2de8f1cadfa5fb45b0852e3bf922388133bce97349127df15c50227abdecf",
+    "tools/rhino_oracle/structural_sdk.py": "720bf53dda3042dca6fe0373f6478de12b304ad0bafc0b42b9547e3e06447146",
+    "tools/rhino_oracle/test_arc_command.py": "c3daf462312e5619671db71f4f91f5b1a8aaa64d2cde31c838219ab52e379694"
+  },
+  "baseline_git_sha256": {
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/arc-tangent-validation.json": "bc3ea35584827f2621f9f852b0f1c3bdc7e6658ffc5e608025dfed7f5a6b0dfb"
+  }
+}

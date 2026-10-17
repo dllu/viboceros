@@ -1,0 +1,486 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-0",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-1",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            2,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-2",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            2.8,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-3",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-4",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            3.5,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-5",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            4,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-6",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            4.5,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-7",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            6,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-8",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            2,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-9",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            2,
+            4,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-10",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            -1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-tilt-11",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          3
+        ],
+        {
+          "click": [
+            0,
+            -6,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-flat-0",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "click": [
+            0,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-flat-1",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "click": [
+            0,
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-flat-2",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "click": [
+            0,
+            4.5,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "arc_command",
+      "id": "arc-tilted-endpoint-radius-flat-3",
+      "live_getters": true,
+      "actions": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Tilted",
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        {
+          "click": [
+            0,
+            6,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

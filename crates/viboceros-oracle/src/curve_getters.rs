@@ -6,6 +6,12 @@ pub enum Action {
     Point([f64; 3]),
     Number(f64),
     Option(String),
+    Click {
+        click: [f64; 3],
+    },
+    Hover {
+        hover: [f64; 3],
+    },
     Relative {
         relative: [f64; 3],
     },

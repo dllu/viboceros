@@ -40,22 +40,37 @@ def drive(op,host,guides,command="Conic"):
     if command=='Catenary':prefixes=('Start of catenary','End of catenary','Catenary','Direction','Point','Mode','Output','Number','Length','Parameter','Apex')
     if command=='Ellipse':prefixes=('Deformable point count','Select curve','Ellipse','Center','End','Start','First','Second','Corner','Opposite','Point','Distance','Radius','Focus','Degree','Number','Direction','Length')
     if command=='Circle':prefixes=('Degree','PointCount','Point','Deformable','Select curve','Circle','Center','First','Second','Third','Start','End','Radius','Diameter','Circumference','Area','Direction','Orientation')
-    if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Radius','Direction','Angle')
+    if command=='Arc':prefixes=('Degree','PointCount','Point','Deformable','Select','Choose','Arc','Center','First','Second','Third','Start','End','Radius','Direction','Angle','Length','Distance')
     base=either([call(prompt,starts,[E.Constant(p)])for p in prefixes])
     length=call(prompt,contains,[E.Constant('curve length')]);selection=call(prompt,starts,[E.Constant('Select curve')])
     def acknowledged(marker):return E.AndAlso(call(None,exists,[E.Constant(ack)]),E.Equal(call(None,read,[E.Constant(ack)]),E.Constant(json.dumps(marker))))
     branches=[];tokens=[];picks=[];hovers=[];mouse_steps=[];clicks=[]
+    arc_pointer_path=S.Array[S.Int32]([0]*384);arc_pointer_count=S.Array[S.Int32]([0])
+    arc_pointer_initial=S.Array[S.Int32]([0]*(2*len(actions)))
+    def pointer_request(i,marker,screen):
+        receipt=[]
+        if op.get('op')=='arc_command':
+            from System.Windows.Forms import Cursor
+            position=E.Property(None,clr.GetClrType(Cursor).GetProperty('Position'))
+            receipt=[E.Assign(item(arc_pointer_initial,2*i),E.Property(position,'X')),E.Assign(item(arc_pointer_initial,2*i+1),E.Property(position,'Y'))]
+        return E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1))]+receipt+[log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
     for i,a in enumerate(actions):
         advance=[E.Assign(item(observed,i),prompt),E.Assign(stage,integer(i+1)),E.Assign(item(last,0),now)]
         located=command in('Circle','Arc')and op.get('op')in('circle_tangent','arc_tangent')and isinstance(a,dict)and'curve'in a and'pick'in a
         if isinstance(a,dict)and('click'in a or located):
             aim=a['pick']if located else a['click'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker='@catenary-click:'+name
-            request=E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1)),log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
+            request=pointer_request(i,marker,screen)
             ready=os.path.join(root,'catenary-click-ready-'+name+'.json')
             body=E.IfThen(base,request)
             mouse_steps.append((i,marker,pixel,ready,[],base))
             clicks.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]));tokens.append(None)
+            if op.get('op')=='arc_command':
+                tilt=actions.index('Tilted');center=[p for p in actions[:tilt]if isinstance(p,list)][0]
+                plane=R.Geometry.Plane(R.Geometry.Point3d(*center),R.Geometry.Point3d(*actions[tilt+1]),R.Geometry.Point3d(*actions[tilt+2]))
+                ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,plane)
+                if ok:clicks[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
             if located:
                 clicks[-1]['curve']=a['curve'];clicks[-1]['edge']=a.get('edge')
                 if 'edge'not in a:
@@ -71,12 +86,19 @@ def drive(op,host,guides,command="Conic"):
         elif isinstance(a,dict)and('hover'in a or'edge'in a):
             hover='hover'in a;aim=a['hover']if hover else a['pick'];pixel=vp.WorldToClient(R.Geometry.Point3d(*aim));screen=view.ClientToScreen(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
             name=op['id']+'-'+str(i);marker=('@subcurve-direction:'if hover else'@conic-edge:')+name
-            request=E.IfThen(E.Equal(item(counts,i),integer(0)),block([E.Assign(item(counts,i),integer(1)),log('\nPICK %s %d %d\n'%(marker,screen.X,screen.Y))]))
+            request=pointer_request(i,marker,screen)
             if hover:
                 ready=os.path.join(root,'subcurve-direction-ready-'+name+'.json')
-                body=E.IfThen(length,request)
-                mouse_steps.append((i,marker,pixel,ready,advance,length))
+                hover_gate=base if op.get('op')=='arc_command'else length
+                body=E.IfThen(hover_gate,request)
+                mouse_steps.append((i,marker,pixel,ready,advance,hover_gate))
                 hovers.append(dict(action=i,marker=marker,aim=aim,pixel=[int(pixel.X),int(pixel.Y)]))
+                if op.get('op')=='arc_command':
+                    tilt=actions.index('Tilted');center=[p for p in actions[:tilt]if isinstance(p,list)][0]
+                    plane=R.Geometry.Plane(R.Geometry.Point3d(*center),R.Geometry.Point3d(*actions[tilt+1]),R.Geometry.Point3d(*actions[tilt+2]))
+                    ray=vp.ClientToWorld(S.Drawing.Point(int(pixel.X),int(pixel.Y)))
+                    ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,plane)
+                    if ok:hovers[-1]['projected_point']=host['_xyz'](ray.PointAt(t))
             else:
                 body=block([E.IfThen(selection,request),E.IfThen(acknowledged(marker),block(advance))]);picks.append(dict(action=i,marker=marker,pick=aim,authored_edge=a['edge']))
             tokens.append(None)
@@ -101,6 +123,11 @@ def drive(op,host,guides,command="Conic"):
         event=E.Parameter(argument,'event');pixel=E.Property(event,'ViewportPoint');viewport=E.Property(E.Property(E.Property(event,'View'),'ActiveViewport'),'Id')
         same_view=E.Equal(viewport,E.Constant(vp.Id,clr.GetClrType(S.Guid)))
         handlers=[]
+        if op.get('op')=='arc_command':
+            index=item(arc_pointer_count,0)
+            values=[stage,E.Property(pixel,'X'),E.Property(pixel,'Y')]
+            slots=[E.ArrayAccess(E.Constant(arc_pointer_path),array([E.Add(E.Multiply(index,integer(3)),integer(k))]))for k in range(3)]
+            handlers.append(E.IfThen(E.AndAlso(same_view,E.LessThan(index,integer(128))),block([E.Assign(slot,value)for slot,value in zip(slots,values)]+[E.Assign(index,E.Add(index,integer(1)))])))
         for i,marker,target,ready,advance,gate in mouse_steps:
             x=E.Property(pixel,'X');y=E.Property(pixel,'Y')
             near=E.AndAlso(E.AndAlso(E.GreaterThanOrEqual(x,integer(int(target.X)-1)),E.LessThanOrEqual(x,integer(int(target.X)+1))),E.AndAlso(E.GreaterThanOrEqual(y,integer(int(target.Y)-1)),E.LessThanOrEqual(y,integer(int(target.Y)+1))))
@@ -141,5 +168,12 @@ def drive(op,host,guides,command="Conic"):
     if clicks:
         trace['clicks']=[dict(c,motion_acknowledged=counts[c['action']]>=7,click_acknowledged=counts[c['action']]==9)for c in clicks]
         trace['snap_settings']=snap_settings
+        if op.get('op')=='arc_command':trace['pointer_path']=[dict(action=int(arc_pointer_path[3*i]),pixel=[int(arc_pointer_path[3*i+1]),int(arc_pointer_path[3*i+2])])for i in range(arc_pointer_count[0])]
+        if op.get('op')=='arc_command':
+            for c in trace['clicks']+trace['motion']:
+                i=c['action'];initial=view.ScreenToClient(S.Drawing.Point(arc_pointer_initial[2*i],arc_pointer_initial[2*i+1]))
+                ray=vp.ClientToWorld(initial);ok,t=R.Geometry.Intersect.Intersection.LinePlane(ray,plane)
+                c['initial_pixel']=[int(initial.X),int(initial.Y)]
+                if ok:c['initial_projected_point']=host['_xyz'](ray.PointAt(t))
         trace['motion_acknowledgement']='Public Rhino MouseCallback.OnEndMouseMove in the owned viewport precedes each public OnMouseDown acknowledgement of a physical left click.'
     return bool(returned),trace

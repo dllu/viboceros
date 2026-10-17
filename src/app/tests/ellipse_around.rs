@@ -35,6 +35,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
             let (id, f) = match op {
                 viboceros_oracle::Operation::EllipseCommand { id, fixture }
                 | viboceros_oracle::Operation::ArcTangent { id, fixture }
+                | viboceros_oracle::Operation::ArcCommand { id, fixture }
                 | viboceros_oracle::Operation::CircleTangent { id, fixture }
                 | viboceros_oracle::Operation::CircleDeform { id, fixture }
                 | viboceros_oracle::Operation::CircleAround { id, fixture } => (id, fixture),
@@ -87,8 +88,76 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
                 app.document.clear_history().unwrap();
             }
             enter(&mut app, command);
+            let mut initial_arc_cursor = false;
             for (action_index, action) in f.actions.iter().enumerate() {
+                if !initial_arc_cursor
+                    && matches!(op, viboceros_oracle::Operation::ArcCommand { .. })
+                    && matches!(action, Action::Hover { .. } | Action::Click { .. })
+                {
+                    let field = if matches!(action, Action::Hover { .. }) {
+                        "motion"
+                    } else {
+                        "clicks"
+                    };
+                    let c = row["value"]["input_trace"][field]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .find(|c| c["action"] == action_index)
+                        .unwrap();
+                    if c["initial_projected_point"].is_array() {
+                        let p: [f64; 3] =
+                            serde_json::from_value(c["initial_projected_point"].clone()).unwrap();
+                        app.handle_viewport_action(ViewportOutput {
+                            drafting_hover: Some(Point3::try_from(p).unwrap()),
+                            ..Default::default()
+                        });
+                    }
+                    initial_arc_cursor = true;
+                }
                 match action {
+                    Action::Click { click } => {
+                        let c = row["value"]["input_trace"]["clicks"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .find(|c| c["action"] == action_index)
+                            .unwrap();
+                        assert_eq!(
+                            serde_json::from_value::<[f64; 3]>(c["aim"].clone()).unwrap(),
+                            *click
+                        );
+                        let p: [f64; 3] =
+                            serde_json::from_value(c["projected_point"].clone()).unwrap();
+                        let p = Point3::try_from(p).unwrap();
+                        assert!(
+                            app.handle_viewport_action(ViewportOutput {
+                                drafting_hover: Some(p),
+                                picked_point: Some(p),
+                                ..Default::default()
+                            }),
+                            "{id}"
+                        );
+                    }
+                    Action::Hover { hover } => {
+                        let c = row["value"]["input_trace"]["motion"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .find(|c| c["action"] == action_index)
+                            .unwrap();
+                        assert_eq!(
+                            serde_json::from_value::<[f64; 3]>(c["aim"].clone()).unwrap(),
+                            *hover
+                        );
+                        assert_eq!(c["acknowledged"], true);
+                        let p: [f64; 3] =
+                            serde_json::from_value(c["projected_point"].clone()).unwrap();
+                        app.handle_viewport_action(ViewportOutput {
+                            drafting_hover: Some(Point3::try_from(p).unwrap()),
+                            ..Default::default()
+                        });
+                    }
                     Action::Pick { curve, edge, .. } => {
                         if matches!(
                             op,
@@ -142,6 +211,7 @@ pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str,
             assert!(
                 app.ellipse_session.is_none()
                     && app.tangent_session.is_none()
+                    && app.arc_tilted_session.is_none()
                     && app.circle_around_session.is_none()
                     && app.circle_deform_session.is_none(),
                 "{id}: {:?}",
