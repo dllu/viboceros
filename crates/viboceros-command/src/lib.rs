@@ -21,6 +21,7 @@ pub mod orient_points;
 pub mod orient_surface;
 pub mod point_deviation;
 pub mod replace_block;
+pub mod rigid_groups;
 pub mod section;
 pub mod surface_flow;
 pub mod surface_reference;

@@ -1,14 +1,16 @@
 //! FlowAlongSrf reference preparation and one staged document edit.
 use super::*;
+pub use crate::rigid_groups::GroupFrameOrigin;
 use std::sync::Arc;
 use viboceros_document::{ControlPointId, CopyGroupPolicy, ReplacementHistory};
 use viboceros_geometry::{SurfaceFlowFrame, SurfaceFlowOptions, SurfaceFlowPointMorph};
-pub const USAGE: &str = "FlowAlongSrf (Base=id|BasePlane=origin;xcorner;widthpoint) Target=id [BaseFace=parent,index] [TargetFace=parent,index] [BaseCorner=0..3] [TargetCorner=0..3] [BaseSwap=Yes|No] [TargetSwap=Yes|No] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [AutoAdjust=Yes|No] [ConstrainNormal=Yes|No] [Normal=x,y,z] [PreserveStructure=Yes|No]";
+pub const USAGE: &str = "FlowAlongSrf (Base=id|BasePlane=origin;xcorner;widthpoint) Target=id [BaseFace=parent,index] [TargetFace=parent,index] [BaseCorner=0..3] [TargetCorner=0..3] [BaseSwap=Yes|No] [TargetSwap=Yes|No] [Copy=Yes|No] [Rigid=Yes|No] [RigidGroups=Yes|No] [GroupFrameOrigin=BoundingBoxCenter|ObjectFrameAverage] [AutoAdjust=Yes|No] [ConstrainNormal=Yes|No] [Normal=x,y,z] [PreserveStructure=Yes|No]";
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub copy: bool,
     pub rigid: bool,
     pub rigid_groups: bool,
+    pub group_frame_origin: GroupFrameOrigin,
     pub auto_adjust: bool,
     pub constrain_normal: bool,
     pub normal: Option<Vector3>,
@@ -22,6 +24,7 @@ impl Default for Options {
             copy: true,
             rigid: false,
             rigid_groups: true,
+            group_frame_origin: GroupFrameOrigin::BoundingBoxCenter,
             auto_adjust: true,
             constrain_normal: false,
             normal: None,
@@ -51,10 +54,11 @@ impl Options {
     pub fn arguments(self) -> String {
         let yes = |v| if v { "Yes" } else { "No" };
         let mut args = format!(
-            "Copy={} Rigid={} RigidGroups={} AutoAdjust={} ConstrainNormal={} PreserveStructure={}",
+            "Copy={} Rigid={} RigidGroups={} GroupFrameOrigin={} AutoAdjust={} ConstrainNormal={} PreserveStructure={}",
             yes(self.copy),
             yes(self.rigid),
             yes(self.rigid_groups),
+            self.group_frame_origin.name(),
             yes(self.auto_adjust),
             yes(self.constrain_normal),
             yes(self.preserve_structure)
@@ -218,6 +222,10 @@ pub fn options(args: &[&str], mut options: Options) -> Result<(Options, Referenc
                 swaps[usize::from(key.starts_with("target"))] =
                     Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
             }
+            "groupframeorigin" => {
+                options.group_frame_origin =
+                    GroupFrameOrigin::from_token(value).ok_or(CommandError::Usage(USAGE))?
+            }
             "normal" => {
                 let (p, n) = parse_point(&[value])?;
                 if n != 1 {
@@ -374,7 +382,15 @@ pub fn deformed_with_grips(
     morph: &SurfaceFlowPointMorph,
     options: Options,
 ) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
-    crate::morph_edit::deformed(doc, ids, grips, morph, options.rigid, options.rigid_groups)
+    crate::morph_edit::deformed(
+        doc,
+        ids,
+        grips,
+        morph,
+        options.rigid,
+        options.rigid_groups,
+        options.group_frame_origin,
+    )
 }
 #[derive(Default)]
 pub(super) struct SurfaceFlowCommand(remembered::Remembered<Options>);
@@ -561,5 +577,36 @@ mod tests {
         assert!(o.normal.is_none());
         assert_eq!(o.base_frame, SurfaceFlowFrame::default());
         assert_eq!(d.undo_label(), Some("FlowAlongSrf"));
+    }
+    #[test]
+    fn surface_flow_group_origin_options_round_trip_and_invalid_values_are_atomic() {
+        for token in [
+            "_ObjectFrameAverage",
+            "objectframeaverage",
+            "BoundingBoxCenter",
+        ] {
+            let (o, _) = options(&["GroupFrameOrigin", token], Options::default()).unwrap();
+            assert_eq!(
+                options(
+                    &o.arguments().split_whitespace().collect::<Vec<_>>(),
+                    Options::default()
+                )
+                .unwrap()
+                .0,
+                o
+            );
+        }
+        let (r, mut d, [a, b], _) = setup();
+        for tail in [
+            "GroupFrameOrigin=bad",
+            "GroupFrameOrigin=BoundingBoxCenter GroupFrameOrigin=ObjectFrameAverage",
+        ] {
+            let before = format!("{d:?}");
+            assert!(
+                r.execute(&mut d, &format!("FlowAlongSrf Base={a} Target={b} {tail}"))
+                    .is_err()
+            );
+            assert_eq!(format!("{d:?}"), before);
+        }
     }
 }

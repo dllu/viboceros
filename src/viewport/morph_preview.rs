@@ -7,9 +7,7 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::rc::Rc;
 use viboceros_document::{ControlPointId, GeometrySnapshot, GripMode, GroupId};
-use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, BrepWireCage, PointMorph, SurfacePreviewCage,
-};
+use viboceros_geometry::{AffineTransform3, BrepWireCage, PointMorph, SurfacePreviewCage};
 
 impl Viewport {
     pub(super) fn paint_morph_radius_circle(
@@ -46,6 +44,9 @@ pub(crate) trait MorphPreviewKey: Clone + PartialEq {
     fn preserve(&self) -> bool;
     fn rigid_groups(&self) -> bool {
         true
+    }
+    fn group_frame_origin(&self) -> viboceros_command::rigid_groups::GroupFrameOrigin {
+        Default::default()
     }
     fn rigid_bounds_tolerance(&self, tolerance: Tolerance) -> Tolerance {
         tolerance
@@ -211,37 +212,34 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
         if self.key.as_ref() == Some(&key) {
             return Ok(self.image.as_ref().unwrap().clone());
         }
+        if self
+            .key
+            .as_ref()
+            .is_some_and(|prior| prior.group_frame_origin() != key.group_frame_origin())
+        {
+            self.centers = None;
+        }
         let morph = key.morph(document.tolerance())?;
         if key.rigid() && self.centers.is_none() {
-            let bounds = self
-                .sources
-                .iter()
-                .map(|s| {
-                    s.snapshot
-                        .tight_bounds(key.rigid_bounds_tolerance(document.tolerance()))
-                })
-                .collect::<Result<Vec<_>, _>>()?;
-            let mut groups = BTreeMap::<GroupId, BoundingBox3>::new();
-            for (source, bounds) in self.sources.iter().zip(&bounds) {
-                if let Some(group) = source.group {
-                    let merged = groups
-                        .get(&group)
-                        .map_or(Ok(*bounds), |b| b.union(*bounds))?;
-                    groups.insert(group, merged);
-                }
-            }
+            let groups = viboceros_command::rigid_groups::group_origins(
+                document,
+                self.sources.iter().map(|s| s.id),
+                key.group_frame_origin(),
+                key.rigid_bounds_tolerance(document.tolerance()),
+            )?;
             self.centers = Some(
                 self.sources
                     .iter()
-                    .zip(bounds)
-                    .map(|(s, b)| {
-                        s.group
-                            .and_then(|g| groups.get(&g))
-                            .copied()
-                            .unwrap_or(b)
-                            .center()
+                    .map(|s| {
+                        if let Some(center) = s.group.and_then(|g| groups.get(&g)) {
+                            Ok(*center)
+                        } else {
+                            Ok(s.snapshot
+                                .tight_bounds(key.rigid_bounds_tolerance(document.tolerance()))?
+                                .center()?)
+                        }
                     })
-                    .collect::<Result<Vec<_>, _>>()?,
+                    .collect::<Result<Vec<_>, viboceros_geometry::GeometryError>>()?,
             );
         }
         let mut objects = BTreeMap::new();

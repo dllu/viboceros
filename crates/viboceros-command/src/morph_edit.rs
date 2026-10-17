@@ -1,8 +1,8 @@
 //! Whole-object staging shared by curve and surface Flow, with grip precedence.
 use super::*;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 use viboceros_document::ControlPointId;
-use viboceros_geometry::{AffineTransform3, BoundingBox3, PointMorph};
+use viboceros_geometry::{AffineTransform3, PointMorph};
 pub(super) trait ObjectMorph: PointMorph + Clone {
     fn rigid_pose(&self, center: Point3) -> Result<AffineTransform3, GeometryError>;
     fn preserving(self, preserve: bool) -> Self;
@@ -14,6 +14,7 @@ pub(super) fn deformed<M: ObjectMorph>(
     morph: &M,
     rigid: bool,
     rigid_groups: bool,
+    origin: crate::rigid_groups::GroupFrameOrigin,
 ) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
     let grip_owners = grips.iter().map(|g| g.object).collect::<BTreeSet<_>>();
     let context = ids
@@ -26,27 +27,20 @@ pub(super) fn deformed<M: ObjectMorph>(
         .copied()
         .filter(|id| !grip_owners.contains(id))
         .collect::<Vec<_>>();
-    let mut bounds = BTreeMap::new();
-    if rigid && rigid_groups && !ordinary.is_empty() {
-        for id in &context {
-            let object = doc.object(*id).ok_or(DocumentError::ObjectNotFound(*id))?;
-            if let Some(group) = object.top_group() {
-                let b = object
-                    .geometry()
-                    .tight_bounds(Tolerance::NUMERICAL_VALIDATION)?;
-                let next = if let Some(prior) = bounds.get(&group) {
-                    BoundingBox3::union(*prior, b)?
-                } else {
-                    b
-                };
-                bounds.insert(group, next);
-            }
-        }
-    }
-    let transforms = bounds
+    let origins = if rigid && rigid_groups && !ordinary.is_empty() {
+        crate::rigid_groups::group_origins(
+            doc,
+            context.iter().copied(),
+            origin,
+            Tolerance::NUMERICAL_VALIDATION,
+        )?
+    } else {
+        Default::default()
+    };
+    let transforms = origins
         .into_iter()
-        .map(|(id, b)| Ok((id, morph.rigid_pose(b.center()?)?)))
-        .collect::<Result<BTreeMap<_, _>, GeometryError>>()?;
+        .map(|(id, center)| Ok((id, morph.rigid_pose(center)?)))
+        .collect::<Result<std::collections::BTreeMap<_, _>, GeometryError>>()?;
     ordinary
         .iter()
         .map(|id| {

@@ -9,6 +9,7 @@ pub struct Options {
     pub copy: bool,
     pub rigid: bool,
     pub rigid_groups: bool,
+    pub group_frame_origin: String,
     pub auto_adjust: bool,
     pub preserve_structure: bool,
 }
@@ -18,10 +19,14 @@ impl Default for Options {
             copy: true,
             rigid: false,
             rigid_groups: true,
+            group_frame_origin: "BoundingBoxCenter".into(),
             auto_adjust: false,
             preserve_structure: false,
         }
     }
+}
+fn one() -> usize {
+    1
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
@@ -48,6 +53,8 @@ pub struct Fixture {
     pub group: bool,
     #[serde(default)]
     pub peer: bool,
+    #[serde(default = "one")]
+    pub peer_count: usize,
     #[serde(default)]
     pub plane: Option<Vec<[Real; 3]>>,
     #[serde(default)]
@@ -191,22 +198,32 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
     guides.push(target.id);
     let original = f.source_geometry(tolerance)?;
     let source = doc.add_geometry(original.clone())?;
-    let peer = if f.peer {
-        Some(
-            doc.add_geometry(Geometry::PointCloud(PointCloud3::try_new(
-                f.points
-                    .iter()
-                    .map(|p| Point3::try_new(p[0] + 4., p[1] + 1., p[2] + 2.))
-                    .collect::<Result<Vec<_>, _>>()?,
-            )?))?,
-        )
+    let peers = if f.peer {
+        (1..=f.peer_count)
+            .map(|j| {
+                doc.add_geometry(Geometry::PointCloud(PointCloud3::try_new(
+                    f.points
+                        .iter()
+                        .map(|p| {
+                            Point3::try_new(
+                                p[0] + 4. * j as Real,
+                                p[1] + j as Real,
+                                p[2] + 2. * j as Real,
+                            )
+                        })
+                        .collect::<Result<Vec<_>, _>>()?,
+                )?))
+                .map_err(ProbeError::from)
+            })
+            .collect::<Result<Vec<_>, ProbeError>>()?
     } else {
-        None
+        Vec::new()
     };
+    let peer = peers.first().copied();
     if f.group {
         doc.add_group(
             Some("Owned FlowAlongSrf".into()),
-            std::iter::once(source).chain(peer),
+            std::iter::once(source).chain(peers.iter().copied()),
         )?;
     }
     let grips = f
@@ -227,11 +244,16 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
         }
         doc.select_control_points(grips.iter().copied(), SelectionMode::Add)?;
     }
-    if let Some(peer) = peer {
-        doc.select_objects_direct([peer], SelectionMode::Add)?;
-    }
+    doc.select_objects_direct(peers.iter().copied(), SelectionMode::Add)?;
     let observe = |doc: &Document| -> Result<Value, ProbeError> {
         let mut v = super::orient_surface_grips::snapshot_excluding(doc, source, peer, &guides)?;
+        for (object, row) in doc
+            .objects()
+            .filter(|o| !guides.contains(&o.id()))
+            .zip(v["outputs"].as_array_mut().unwrap())
+        {
+            row["peer"] = json!(peers.contains(&object.id()));
+        }
         v["object_count"] = json!(doc.objects().count());
         v["guide_selected"] = json!(guides.iter().any(|id| doc.is_selected(*id)));
         v["guide_unchanged"] = json!(guides.iter().enumerate().all(|(i, id)| {
@@ -244,6 +266,8 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
         copy: f.options.copy,
         rigid: f.options.rigid,
         rigid_groups: f.options.rigid_groups,
+        group_frame_origin: solver::GroupFrameOrigin::from_token(&f.options.group_frame_origin)
+            .ok_or(ProbeError::FixtureInvariant("invalid group frame origin"))?,
         auto_adjust: f.options.auto_adjust,
         preserve_structure: f.options.preserve_structure,
         constrain_normal: f.normal.is_some(),
@@ -275,7 +299,11 @@ fn run_command(f: &Fixture, tolerance: Tolerance) -> Result<Value, ProbeError> {
     } else {
         format!(
             " Sources={} GripSources={}",
-            peer.map(|id| id.to_string()).unwrap_or_default(),
+            peers
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(","),
             grips
                 .iter()
                 .map(|g| format!("{}:{}", g.object, g.index))
@@ -443,48 +471,67 @@ mod tests {
                     stage
                 }]
                 .clone();
-                for v in [&mut aa, &mut nn] {
-                    v["outputs"].as_array_mut().unwrap().sort_by_key(|r| {
-                        (
-                            r["original"].as_bool(),
-                            r["peer"].as_bool(),
-                            r.get("curve").is_some(),
-                            r.get("surface").is_some(),
-                            r.get("points").is_some(),
-                        )
-                    });
-                }
-                for (a, n) in aa["outputs"]
-                    .as_array_mut()
-                    .unwrap()
-                    .iter_mut()
-                    .zip(nn["outputs"].as_array_mut().unwrap().iter_mut())
-                {
-                    for family in ["curve", "surface"] {
-                        if a.get(family).is_some() && !close(&a[family], &n[family], 1e-6) {
-                            // Refitting can choose different knots. Only the four
-                            // authored refit witnesses allow geometric comparison.
-                            assert!(
-                                matches!(
-                                    actual_id.as_str(),
-                                    "owner-nurbs-0-0000"
-                                        | "owner-nurbs-0-0100"
-                                        | "owner-surface-0-0000"
-                                        | "owner-surface-0-0100"
-                                ) && matches!(stage, "after" | "redo"),
-                                "{actual_id} {stage} unexpected structural difference"
-                            );
-                            sampled_fit(
-                                &a[family],
-                                &n[family],
-                                family,
-                                &format!("{actual_id} {stage}"),
-                            );
-                            a.as_object_mut().unwrap().remove(family);
-                            n.as_object_mut().unwrap().remove(family);
-                        }
+                // Native and local object tables can enumerate copies in different
+                // orders. Require a bijection of complete owner records.
+                let expected = nn["outputs"].as_array().unwrap().clone();
+                let rows = aa["outputs"].as_array_mut().unwrap();
+                assert_eq!(
+                    rows.len(),
+                    expected.len(),
+                    "{actual_id} {stage} owner count"
+                );
+                let mut used = BTreeSet::new();
+                let mut paired = Vec::new();
+                for row in rows {
+                    if let Some((index, n)) = expected
+                        .iter()
+                        .enumerate()
+                        .find(|(index, n)| !used.contains(index) && close(row, n, 1e-6))
+                    {
+                        used.insert(index);
+                        paired.push(n.clone());
+                        continue;
                     }
+                    let allow_refit = matches!(
+                        actual_id.as_str(),
+                        "owner-nurbs-0-0000"
+                            | "owner-nurbs-0-0100"
+                            | "owner-surface-0-0000"
+                            | "owner-surface-0-0100"
+                    ) && matches!(stage, "after" | "redo");
+                    assert!(allow_refit, "{actual_id} {stage} unmatched owner: {row}");
+                    let family = if row.get("curve").is_some() {
+                        "curve"
+                    } else {
+                        "surface"
+                    };
+                    let mut attributes = row.clone();
+                    attributes.as_object_mut().unwrap().remove(family);
+                    let (index, n) = expected
+                        .iter()
+                        .enumerate()
+                        .find(|(i, n)| {
+                            if used.contains(i) || n.get(family).is_none() {
+                                return false;
+                            }
+                            let mut a = (*n).clone();
+                            a.as_object_mut().unwrap().remove(family);
+                            close(&attributes, &a, 1e-6)
+                        })
+                        .unwrap_or_else(|| panic!("{actual_id} {stage} refit metadata differs"));
+                    sampled_fit(
+                        &row[family],
+                        &n[family],
+                        family,
+                        &format!("{actual_id} {stage}"),
+                    );
+                    let mut n = n.clone();
+                    n.as_object_mut().unwrap().remove(family);
+                    *row = attributes;
+                    used.insert(index);
+                    paired.push(n);
                 }
+                nn["outputs"] = json!(paired);
                 assert!(
                     close(&aa, &nn, 1e-6),
                     "{} {stage} owner or document state differs",
@@ -541,6 +588,16 @@ mod tests {
                 "../../../tools/rhino_oracle/observations/surface_flow_groups_rhino_20261017.json"
             ),
             8,
+        );
+    }
+    #[test]
+    fn surface_flow_group_origins_match_sixty_eight_native_commands() {
+        compare(
+            include_str!("../../../tools/rhino_oracle/fixtures/surface_flow_group_origins.json"),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/surface_flow_group_origins_rhino_20261017.json"
+            ),
+            68,
         );
     }
 }

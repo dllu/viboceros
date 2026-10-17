@@ -409,7 +409,15 @@ pub fn deformed_with_grips(
     morph: &CurveFlowPointMorph,
     options: Options,
 ) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
-    crate::morph_edit::deformed(doc, ids, grips, morph, options.rigid, options.rigid_groups)
+    crate::morph_edit::deformed(
+        doc,
+        ids,
+        grips,
+        morph,
+        options.rigid,
+        options.rigid_groups,
+        crate::rigid_groups::GroupFrameOrigin::BoundingBoxCenter,
+    )
 }
 impl crate::morph_edit::ObjectMorph for CurveFlowPointMorph {
     fn rigid_pose(

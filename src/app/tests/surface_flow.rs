@@ -182,3 +182,83 @@ fn surface_flow_command_first_sources_and_target_view_normal_are_retained() {
     assert!(!app.document.is_selected(source));
     assert_eq!(app.document.undo_label(), Some("FlowAlongSrf"));
 }
+
+#[test]
+fn surface_flow_group_origin_options_change_preview_and_survive_one_commit() {
+    use viboceros_command::surface_flow::GroupFrameOrigin;
+    let (mut app, source, [base, target]) = setup();
+    let peer = app
+        .document
+        .add_geometry(Geometry::Point(Point3::try_new(18., 7., 3.).unwrap()))
+        .unwrap();
+    app.document.add_group(None, [source, peer]).unwrap();
+    app.document
+        .select_objects_direct([source, peer], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "FlowAlongSrf Copy=No Rigid=Yes AutoAdjust=No");
+    app.pick_surface_flow(Some(base), None, None);
+    app.pick_surface_flow(Some(target), None, None);
+    enter(&mut app, "GroupFrameOrigin");
+    let p = app
+        .surface_flow_session
+        .as_ref()
+        .unwrap()
+        .preview()
+        .unwrap();
+    assert_eq!(
+        p.options.group_frame_origin,
+        GroupFrameOrigin::ObjectFrameAverage
+    );
+    let expected = viboceros_command::surface_flow::deformed_with_grips(
+        &app.document,
+        p.sources,
+        p.grips,
+        p.morph,
+        p.options,
+    )
+    .unwrap();
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "");
+    assert!(app.surface_flow_session.is_none());
+    for (id, g) in expected {
+        assert_eq!(app.document.object(id).unwrap().geometry(), &g);
+    }
+    assert_eq!(
+        app.commands.surface_flow_options().group_frame_origin,
+        GroupFrameOrigin::ObjectFrameAverage
+    );
+    assert_eq!(
+        app.document.undo().unwrap().as_deref(),
+        Some("FlowAlongSrf")
+    );
+    assert!(app.document.undo().unwrap().is_none());
+    app.document.redo().unwrap();
+    enter(&mut app, "FlowAlongSurface");
+    assert!(app.picking_surface_flow());
+    app.pick_surface_flow(Some(base), None, None);
+    app.pick_surface_flow(Some(target), None, None);
+    assert_eq!(
+        app.surface_flow_session
+            .as_ref()
+            .unwrap()
+            .preview()
+            .unwrap()
+            .options
+            .group_frame_origin,
+        GroupFrameOrigin::ObjectFrameAverage
+    );
+    enter(&mut app, "GroupFrameOrigin=BoundingBoxCenter");
+    assert_eq!(
+        app.surface_flow_session
+            .as_ref()
+            .unwrap()
+            .preview()
+            .unwrap()
+            .options
+            .group_frame_origin,
+        GroupFrameOrigin::BoundingBoxCenter
+    );
+    enter(&mut app, "Cancel");
+}

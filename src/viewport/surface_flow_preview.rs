@@ -15,6 +15,7 @@ impl PartialEq for Key {
         Arc::ptr_eq(&self.morph, &rhs.morph)
             && self.options.rigid == rhs.options.rigid
             && self.options.rigid_groups == rhs.options.rigid_groups
+            && self.options.group_frame_origin == rhs.options.group_frame_origin
     }
 }
 impl MorphPreviewKey for Key {
@@ -27,6 +28,9 @@ impl MorphPreviewKey for Key {
     }
     fn rigid_groups(&self) -> bool {
         self.options.rigid_groups
+    }
+    fn group_frame_origin(&self) -> viboceros_command::rigid_groups::GroupFrameOrigin {
+        self.options.group_frame_origin
     }
     fn rigid_bounds_tolerance(&self, _: Tolerance) -> Tolerance {
         Tolerance::NUMERICAL_VALIDATION
@@ -213,5 +217,109 @@ mod tests {
             d.disable_control_points();
             assert!(preview.resolve(&d, &display).is_none());
         }
+    }
+}
+
+#[cfg(test)]
+mod group_origin_tests {
+    use super::*;
+    use viboceros_command::surface_flow::{GroupFrameOrigin, Reference};
+    #[test]
+    fn surface_flow_origin_toggle_invalidates_cached_centers_and_matches_staging() {
+        let q: serde_json::Value = serde_json::from_str(include_str!(
+            "../../tools/rhino_oracle/fixtures/surface_flow_group_origins.json"
+        ))
+        .unwrap();
+        let f: viboceros_oracle::SurfaceFlowFixture =
+            serde_json::from_value(q["operations"][0].clone()).unwrap();
+        let mut doc = Document::default();
+        let guides = f
+            .surfaces(doc.tolerance())
+            .unwrap()
+            .map(|s| doc.add_geometry(Geometry::NurbsSurface(s)).unwrap());
+        let source = doc
+            .add_geometry(f.source_geometry(doc.tolerance()).unwrap())
+            .unwrap();
+        let peer = doc
+            .add_geometry(Geometry::Point(Point3::try_new(18., 7., 3.).unwrap()))
+            .unwrap();
+        doc.add_group(None, [source, peer]).unwrap();
+        doc.clear_history().unwrap();
+        let before = format!("{doc:?}");
+        let options = Options {
+            rigid: true,
+            copy: false,
+            auto_adjust: false,
+            ..Default::default()
+        };
+        let morph = Arc::new(
+            viboceros_command::surface_flow::prepare(
+                &doc,
+                Reference {
+                    id: guides[0],
+                    face: None,
+                },
+                Reference {
+                    id: guides[1],
+                    face: None,
+                },
+                options,
+            )
+            .unwrap(),
+        );
+        let cache = RefCell::new(SurfaceFlowPreviewCache::default());
+        let display = RefCell::new(DisplayCache::default());
+        let ids = [source, peer];
+        let mut prior: Option<Rc<MorphPreviewImage>> = None;
+        for mode in [
+            GroupFrameOrigin::BoundingBoxCenter,
+            GroupFrameOrigin::ObjectFrameAverage,
+            GroupFrameOrigin::BoundingBoxCenter,
+        ] {
+            let options = Options {
+                group_frame_origin: mode,
+                ..options
+            };
+            let preview = SurfaceFlowPreview {
+                sources: &ids,
+                grips: &[],
+                morph: &morph,
+                options,
+                cache: &cache,
+            };
+            let image = preview.resolve(&doc, &display).unwrap();
+            let expected = viboceros_command::surface_flow::deformed_with_grips(
+                &doc,
+                &ids,
+                &[],
+                &morph,
+                options,
+            )
+            .unwrap();
+            for (id, geometry) in expected {
+                let object = &image.objects[&id];
+                assert_eq!(
+                    object
+                        .geometry
+                        .geometry
+                        .transformed(object.transform.unwrap(), doc.tolerance())
+                        .unwrap(),
+                    geometry
+                );
+            }
+            assert!(Rc::ptr_eq(
+                &image,
+                &preview.resolve(&doc, &display).unwrap()
+            ));
+            if let Some(prior) = &prior {
+                assert!(!Rc::ptr_eq(prior, &image));
+                assert_ne!(
+                    prior.objects[&source].transform,
+                    image.objects[&source].transform
+                );
+            }
+            prior = Some(image);
+        }
+        assert_eq!(format!("{doc:?}"), before);
     }
 }

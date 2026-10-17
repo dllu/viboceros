@@ -248,7 +248,6 @@
     "src/app/flow.rs": "9a0ae4172fba8595118b38502b64886871bbdfb5a09a1fbc34a327e24f6ab728",
     "src/app/tests/flow.rs": "481cae7f07d11562c758698e7228da8c54f8520d5cb35d2729b971a54a11e042",
     "src/viewport/flow_preview.rs": "0deb37859cfcc94b55645bdf412f34e89a48f077d59f21ab863a77323ff671a0",
-    "src/viewport/morph_preview.rs": "e05e9e85b2e46ed8a24afe8c46779345b5527c69e1097454e2283e9c638deca3",
     "tools/rhino_oracle/fixtures/flow_target_surface.json": "db3b468f73647bcff0f443d0375fb2094854cf9ddc914f34ebf1bceb49f3f54a",
     "tools/rhino_oracle/fixtures/flow_target_surface_corner.json": "db1c1b20848527586d3e1b7f429bdba3193a948b031bf71abc6f002d48f34cbc",
     "tools/rhino_oracle/fixtures/flow_target_surface_lookup.json": "714302f5ec0ade9c996431fb1c3b15376fd96815a3541ed03e3dc2bc6d2a5156",
@@ -278,6 +277,7 @@
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/flow-local-validation.json": "770ce8723a5ef6997e125dcb8742e275136c1f43a7496f4374db0de111d9b2bc",
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/app.rs": "ef283484e5292fb85d51635962e5590bc7be01c7f5944eff8fe507e76cf5fbd8",
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/app/mesh_face_prompt.rs": "8acd37a14ea9f46dfb396665d6ecd7194d25a563ce47131abac95e2c86add631",
-    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/app/object_selection.rs": "b5484ab7707104c13cb43552c0cf0505b5de41a28b2ced1e032dd3b0c45493a0"
+    "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:src/app/object_selection.rs": "b5484ab7707104c13cb43552c0cf0505b5de41a28b2ced1e032dd3b0c45493a0",
+    "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69:src/viewport/morph_preview.rs": "e05e9e85b2e46ed8a24afe8c46779345b5527c69e1097454e2283e9c638deca3"
   }
 }

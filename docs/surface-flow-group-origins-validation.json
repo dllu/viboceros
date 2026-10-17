@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "timezone": "UTC",
+  "base_repository_revision": "d9bf3fc45269126ae9c24f4dfcba99bf4498fb69",
+  "component": "FlowAlongSrf GroupFrameOrigin, shared selected-member origins and preview invalidation",
+  "fixtures_qualified": true,
+  "complete_flow_along_surface_qualified": false,
+  "performance_qualified": false,
+  "native_values_used_as_production_morph_inputs": false,
+  "implementation": [
+    "Add GroupFrameOrigin=BoundingBoxCenter/ObjectFrameAverage to command options, script parsing, arguments, remembered preferences, interactive toggles and usage. Keep BoundingBoxCenter as the default; placement mode applies with Rigid and RigidGroups enabled.",
+    "Share selected-group origin calculation across object staging and all morph previews. BoundingBoxCenter unions member tight bounds; ObjectFrameAverage averages their individual tight-box centers before evaluating the existing rigid point map. Each selected object or grip owner contributes once; ungrouped objects use their individual tight bounds.",
+    "Use the existing FiniteSum mean to avoid intermediate overflow, loss of subnormal coordinates, and accumulation-order changes. Source bounds continue to use the existing geometry kernels and the caller's placement tolerance.",
+    "Include the origin mode in the surface preview key and clear cached centers on mode changes. Preserve curve Flow's default placement policy, shared grip precedence, copies, groups, selection and single Undo/Redo behavior.",
+    "Extend authored public oracle recipes with bounded multiple-peer fixtures and explicit frame controls. Native diagnostic frames and bounds are expectations only. Compare complete owner records bijectively so copy enumeration order does not affect the result; retain the previous four refit exceptions without widening their bounds."
+  ],
+  "inferred_native_rule": {
+    "group_frame_average": "Arithmetic mean of individual tight-box centers, followed by the existing rigid point map at that origin.",
+    "custom_frame_controls": "Public SetObjectFrame/ObjectFrame queries confirm distinct stored custom origins. These edits do not change the captured command placements. Public object frames can also have loose-box origins that differ from the tight centers used by this command.",
+    "diagnostics_are_expectations_only": true
+  },
+  "native_capture": {
+    "engine_version": "8.32.26160.13001",
+    "scheme": "VibocerosOracleSurfaceGroupOrigins",
+    "fixture": "tools/rhino_oracle/fixtures/surface_flow_group_origins.json",
+    "observation": "tools/rhino_oracle/observations/surface_flow_group_origins_rhino_20261017.json",
+    "actual_commands": 68,
+    "sdk_point_maps": 68,
+    "document_epsilon": 1e-06,
+    "epsilon_changed": false,
+    "all_command_undo_redo_events_succeeded": true,
+    "all_commands_completed_without_cancel_invalid_or_unknown_tokens": true,
+    "method": "Public RhinoCommon point maps, object-frame/bounds queries, and actual FlowAlongSrf macros in an owned private display. Captures include complete EndCommand and macro-return states plus real Undo and Redo. No proprietary implementation inspected or decompiled."
+  },
+  "comparisons": {
+    "matched_workflows": 68,
+    "point_map_epsilon": 1e-06,
+    "complete_owner_structure_epsilon": 1e-06,
+    "states": [
+      "before",
+      "EndCommand outputs",
+      "macro return",
+      "Undo",
+      "Redo"
+    ],
+    "checked": [
+      "geometry",
+      "original/copy identity",
+      "owner and grip selection",
+      "control/edit grip mode",
+      "group memberships",
+      "reference preservation/selection",
+      "object count",
+      "Undo/Redo restoration"
+    ],
+    "previous_refit_exceptions_changed": false
+  },
+  "coverage": {
+    "three_member_groups": 56,
+    "selected_grip_workflows": 34,
+    "copy_workflows": 28,
+    "custom_frame_controls": 4,
+    "source_families": [
+      "rational NURBS curves",
+      "curve edit grips",
+      "rational NURBS surfaces",
+      "mesh controls",
+      "point-cloud peers"
+    ],
+    "origin_modes": [
+      "BoundingBoxCenter",
+      "ObjectFrameAverage"
+    ],
+    "additional_cases": [
+      "single member",
+      "ungrouped sources",
+      "RigidGroups=No",
+      "multiple copied peers"
+    ],
+    "unit_invariants": [
+      "duplicate source/grip-owner deduplication",
+      "unselected group members excluded",
+      "single-member mean",
+      "unweighted three-member mean",
+      "extreme finite coordinates",
+      "subnormal coordinates",
+      "order independence"
+    ],
+    "app": "Interactive option toggle and explicit value, unchanged preview document, preference retention, one commit and Undo/Redo. Preview changes modes through the same prepared morph and verifies cache invalidation and exact staging agreement."
+  },
+  "limitations": [
+    "The complete FlowAlongSrf command remains unqualified: other Rectangle input modes, singular/closed reference conventions, live dependency history and performance parity remain outside this change.",
+    "Stored custom object-frame editing/serialization is not added to the document model. Native custom-frame inputs are controls establishing that this command's placement origin does not depend on those attributes.",
+    "Native cases use the existing regular surface fixtures. This adds coverage for group origin selection without claiming exhaustive coverage of every combination of reference surface and mapping option."
+  ],
+  "public_references": [
+    "https://discourse.mcneel.com/t/rhino-8-service-release-available/169739/14",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.docobjects.rhinoobject/objectframe?overload=2",
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/flowalongsrf.htm"
+  ],
+  "historical_provenance": {
+    "preserved_entries": 14,
+    "records": 2,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "checks": [
+    {
+      "name": "command-origins",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "rigid_groups::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 34.722022583941,
+      "log_sha256": "eda4dfb86f8394c1162df58479fb0b8a1ed66a0f224fde7d8c446139e55d67c1",
+      "test_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1447 filtered out; finished in 0.01s"
+      ]
+    },
+    {
+      "name": "command-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "flow::tests::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.7998159620910883,
+      "log_sha256": "41360d50aa08e6b91a7009869f79b5a529328a711c96d073074cf567dc1f3fe9",
+      "test_results": [
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 1435 filtered out; finished in 0.61s"
+      ]
+    },
+    {
+      "name": "oracle-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--lib",
+        "flow",
+        "--",
+        "--skip",
+        "workflow"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 145.56432249280624,
+      "log_sha256": "f59b2e97a7f00e0c26077a9d1cb25d846ff2366fe0f3530c6010d38451ee365e",
+      "test_results": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 522 filtered out; finished in 114.27s"
+      ]
+    },
+    {
+      "name": "app-surface",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::surface_flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 32.29305842798203,
+      "log_sha256": "111eed1b900d60857075ffca5d4cff8e601e159284bbc7a18c7c7216609bd862",
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1308 filtered out; finished in 0.04s"
+      ]
+    },
+    {
+      "name": "app-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "app::tests::flow::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.43069546087645,
+      "log_sha256": "f91cb2f06d25a8c89dcc0dd8cf6ad40fdb7e9fb08926fdc5383cc1b439609f24",
+      "test_results": [
+        "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 1298 filtered out; finished in 2.18s"
+      ]
+    },
+    {
+      "name": "viewport-flow",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "flow_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.31454194197431207,
+      "log_sha256": "c8820f06b884089a91541856c14aa85d23cd50c31555257eb528f3d07049a3df",
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1308 filtered out; finished in 0.03s"
+      ]
+    },
+    {
+      "name": "viewport-bend",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::bend_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.0035518631339073,
+      "log_sha256": "cecf3c17b68541884ad83daaea10a3a8816639054c3e87319830029d71d3d955",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1309 filtered out; finished in 0.74s"
+      ]
+    },
+    {
+      "name": "viewport-twist",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::twist_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.8468626220710576,
+      "log_sha256": "5f609eca906c94d14afb3f30ed291fdc93411ee6d888c0f9382b444f9cd1c75c",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 1308 filtered out; finished in 0.61s"
+      ]
+    },
+    {
+      "name": "viewport-taper",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::taper_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.8007061849348247,
+      "log_sha256": "aac0c654eabcffebaafa668f780c351d3eb7ceacce5b00d09871ffb2650cd6a4",
+      "test_results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1310 filtered out; finished in 0.52s"
+      ]
+    },
+    {
+      "name": "viewport-maelstrom",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::maelstrom_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.9454718641936779,
+      "log_sha256": "d045c15ffd5a5ecb716d6a29dfc085e1ad5c64b7a6ac72281457ef0321fcd2fd",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1309 filtered out; finished in 0.67s"
+      ]
+    },
+    {
+      "name": "viewport-orient-surface",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "viewport::orient_surface_preview::"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.6865602370817214,
+      "log_sha256": "910addb06b609baa08aef3ff2ce87e865027728432f90329e08d6dedff476ea1",
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1309 filtered out; finished in 0.43s"
+      ]
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_surface_flow",
+        "tools.rhino_oracle.test_structural_sdk",
+        "tools.rhino_oracle.test_flow_capture",
+        "tools.rhino_oracle.test_flow_line",
+        "tools.rhino_oracle.test_flow_grips",
+        "tools.rhino_oracle.test_flow_structure",
+        "tools.rhino_oracle.test_flow_spatial",
+        "tools.rhino_oracle.test_flow_target_surface",
+        "tools.rhino_oracle.test_flow_roadlike",
+        "tools.rhino_oracle.test_flow_nurbs",
+        "tools.rhino_oracle.test_flow_local",
+        "tools.rhino_oracle.test_flow_auto_direction",
+        "tools.rhino_oracle.test_arc_length_batch",
+        "tools.rhino_oracle.test_flow_integration"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.158358841901645,
+      "log_sha256": "6eb8643066068674912e29d27069bb20681b4898b60d56633244219375982fc0",
+      "test_results": [
+        "Ran 62 tests in 4.941s"
+      ]
+    },
+    {
+      "name": "native-smlib-origins",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "surface_flow_group_origins"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 75.9354629041627,
+      "log_sha256": "b544461701a28b99e2c4f669461d1a96e1cb0b6df81eb56b9ce8fb18f10e7741",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 560 filtered out; finished in 1.01s"
+      ]
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "viboceros-command",
+        "-p",
+        "viboceros-oracle",
+        "-p",
+        "viboceros",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.42674089199863374,
+      "log_sha256": "32d47f791eadf1ea833d9f8c84fbfea5cab1f438e113e93be05bd5b908e1c2ac",
+      "test_results": []
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.3908614329993725,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": []
+    }
+  ],
+  "sha256": {
+    "README.md": "0fd4ecdc842f16a8b37e8e69adfcb81d3bee30b4838bf5b6bcb768664489bcd5",
+    "crates/viboceros-command/src/flow.rs": "2fc0d92f63baecf0d46434c9c1c99230338fda3656d4206ff7bcc830da6a5d8f",
+    "crates/viboceros-command/src/lib.rs": "d88e6903f26cbfbfb43e8bc040af7c52c866bec7440ac417d5ffff3f5536c1b2",
+    "crates/viboceros-command/src/morph_edit.rs": "61def1f6cdce09c35e0c243bcabdb89cd486c9add053f57ffbcaf6372ec86458",
+    "crates/viboceros-command/src/rigid_groups.rs": "65f16c8249a48df4acfef062061b815a5c0333001c93d402879d80d3126f1e2a",
+    "crates/viboceros-command/src/surface_flow.rs": "a28366ab73700b38990fa1c81006656ea3f5c63b0163d178752fe7b84a981e26",
+    "crates/viboceros-oracle/src/surface_flow.rs": "3199b2662c2bb798daba15ed14a201f9d6849d0d4b06383b21ee386f60819280",
+    "docs/commands/flow-along-surface.md": "a374076f6a3ffacf41678ba2b5473e21f1061c19967b9d7d22fc007f9eb805ae",
+    "docs/flow-target-surface-validation.json": "cd06067d2d0d0b1638389f1716e5d632dfaf9fe0cdb04d9dac5c80e4dd2f5d02",
+    "docs/surface-flow-validation.json": "fb773cda1317a8aa3224d93037610acde7794e4330d92f215492f7e22c24305e",
+    "src/app/surface_flow.rs": "778ce89c64a74ee355aaee2bf5daa61bcad15f6edc871207005180b2076d6c8c",
+    "src/app/tests/surface_flow.rs": "c63182ae95d7b76cbfbe854575f2c256b4834777117bac22020b4e95258d71cd",
+    "src/viewport/morph_preview.rs": "c2eb579249510a2a517ee56d2aeeac613cf12d6e6ff181db5135e83262ac6625",
+    "src/viewport/surface_flow_preview.rs": "eb084612735351a4ebbe71210432f0c07f6619cb5db14dd8b05eb74d113bf738",
+    "tools/rhino_oracle/fixtures/surface_flow_group_origins.json": "c7288f342665f3c6da43ee0a94b7fffd285b3f439b16438936a1245143459d24",
+    "tools/rhino_oracle/observations/surface_flow_group_origins_rhino_20261017.json": "9e0e57f7bab0aa92c32b080befef4387dd73c7f830647feeda9e31b510d261a4",
+    "tools/rhino_oracle/surface_flow_probe.py": "7d97bc498466032fb9bc0c8749c0369ee4452fe249637135bceb348a06a383fa",
+    "tools/rhino_oracle/test_surface_flow.py": "797fd1993592d44d953131d2236e34b37839a6107e39cd08c817224adb74fc9e"
+  }
+}

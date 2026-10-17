@@ -468,10 +468,17 @@ impl VibocerosApp {
             "preservestructure" => Some(prior.preserve_structure),
             _ => None,
         };
-        let args = flag.map_or_else(
-            || input.to_owned(),
-            |v| format!("{word}={}", if v { "No" } else { "Yes" }),
-        );
+        let args = if word.eq_ignore_ascii_case("GroupFrameOrigin") {
+            format!(
+                "GroupFrameOrigin={}",
+                prior.group_frame_origin.toggled().name()
+            )
+        } else {
+            flag.map_or_else(
+                || input.to_owned(),
+                |v| format!("{word}={}", if v { "No" } else { "Yes" }),
+            )
+        };
         let words = args.split_whitespace().collect::<Vec<_>>();
         if self.drawing_surface_flow()
             && !words

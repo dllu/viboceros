@@ -7,7 +7,7 @@ else:
 
 
 def validate(op):
-    allowed={'op','id','base','target','points','base_uv','target_uv','normal','command','source','options','selected','edit','group','plane','mouse','base_trim','target_trim','base_reversed','target_reversed','peer'}
+    allowed={'op','id','base','target','points','base_uv','target_uv','normal','command','source','options','selected','edit','group','plane','mouse','base_trim','target_trim','base_reversed','target_reversed','peer','diagnose_frames','object_frames','peer_count'}
     if not isinstance(op,dict)or op.get('op')!='surface_flow'or set(op)-allowed or not {'id','base','target','points'}<=set(op):raise ValueError('invalid surface Flow recipe')
     if not isinstance(op['id'],str)or re.match(r'\A[A-Za-z0-9_-]{1,100}\Z',op['id'])is None:raise ValueError('invalid surface Flow id')
     for role in ('base','target'):
@@ -31,11 +31,14 @@ def validate(op):
         if name in op and not vector(op[name],2):raise ValueError('invalid surface Flow pick')
     if ('base_uv'in op)!=('target_uv'in op):raise ValueError('surface Flow needs both orientation picks')
     if 'normal'in op and(not vector(op['normal'],3)or not any(op['normal'])):raise ValueError('invalid surface Flow normal')
-    for flag in ('command','edit','group','mouse','base_reversed','target_reversed','peer'):
+    for flag in ('command','edit','group','mouse','base_reversed','target_reversed','peer','diagnose_frames'):
         if type(op.get(flag,False))is not bool:raise ValueError('invalid surface Flow flag')
+    if type(op.get('peer_count',1))is not int or not 1<=op.get('peer_count',1)<=4 or 'peer_count'in op and not op.get('peer'):raise ValueError('invalid surface Flow peer count')
     if op.get('mouse')and(not op.get('command')or 'base_uv'not in op or 'plane'in op):raise ValueError('surface Flow mouse capture requires two surface picks')
     options=op.get('options',{})
-    if not isinstance(options,dict)or set(options)-{'copy','rigid','rigid_groups','auto_adjust','preserve_structure'}or any(type(v)is not bool for v in options.values()):raise ValueError('invalid surface Flow options')
+    if not isinstance(options,dict)or set(options)-{'copy','rigid','rigid_groups','auto_adjust','preserve_structure','group_frame_origin'}or any(type(v)is not bool for k,v in options.items()if k!='group_frame_origin'):raise ValueError('invalid surface Flow options')
+    if options.get('group_frame_origin','BoundingBoxCenter')not in('BoundingBoxCenter','ObjectFrameAverage'):raise ValueError('invalid surface Flow group frame origin')
+    if 'object_frames'in op and(not isinstance(op['object_frames'],list)or len(op['object_frames'])!=2 or any(p is not None and not vector(p,3)for p in op['object_frames'])):raise ValueError('invalid surface Flow authored object frames')
     if op.get('command')and'source'in op:validate_source(dict(op='geometry_validity',id=op['id'],source=op['source']))
 
 
@@ -96,12 +99,22 @@ def run_command(op,host,tolerance):
                     guides.append(doc.Objects.AddBrep(guide))
                 finally:guide.Dispose()
         source=doc.Objects.Add(geometry)
-        peer=None
+        peers=[]
         if op.get('peer'):
-            cloud=G.PointCloud([G.Point3d(p[0]+4,p[1]+1,p[2]+2)for p in op['points']])
-            try:peer=doc.Objects.AddPointCloud(cloud)
-            finally:cloud.Dispose()
-        if op.get('group'):doc.Groups.Add('Owned FlowAlongSrf',[source]+([peer]if peer else[]))
+            for j in range(1,op.get('peer_count',1)+1):
+                cloud=G.PointCloud([G.Point3d(p[0]+4*j,p[1]+j,p[2]+2*j)for p in op['points']])
+                try:peers.append(doc.Objects.AddPointCloud(cloud))
+                finally:cloud.Dispose()
+        peer=peers[0]if peers else None
+        for key,origin in zip((source,peer),op.get('object_frames',[None,None])):
+            if key and origin is not None:doc.Objects.FindId(key).SetObjectFrame(G.Plane(G.Point3d(*origin),G.Vector3d.ZAxis))
+        frame_diagnostics=[]
+        if op.get('diagnose_frames'):
+            for key in[source]+peers:
+                if not key:continue
+                obj=doc.Objects.FindId(key);frame=obj.ObjectFrame();attributes=obj.Attributes.ObjectFrame()
+                frame_diagnostics.append(dict(peer=key in peers,object_frame=host['_xyz'](frame.Origin)if frame.IsValid else None,attribute_frame=host['_xyz'](attributes.Origin)if attributes.IsValid else None,tight_center=host['_xyz'](obj.Geometry.GetBoundingBox(True).Center),loose_center=host['_xyz'](obj.Geometry.GetBoundingBox(False).Center)))
+        if op.get('group'):doc.Groups.Add('Owned FlowAlongSrf',[source]+peers)
         def definition(key):
             g=doc.Objects.FindId(key).Geometry
             return dict(surface=host['_nurbs_surface_definition'](g.Faces[0].UnderlyingSurface().ToNurbsSurface()),reversed=bool(g.Faces[0].OrientationIsReversed),crc=int(g.DataCRC(0)))
@@ -115,12 +128,12 @@ def run_command(op,host,tolerance):
             if any(i>=len(grips)for i in op['selected']):raise ValueError('FlowAlongSrf grip index missing')
             for i in op['selected']:grips[i].Select(True)
         else:doc.Objects.Select(source,True)
-        if peer:doc.Objects.Select(peer,True)
+        for key in peers:doc.Objects.Select(key,True)
         def snapshot():
             outputs=[];objects=[obj for obj in doc.Objects if obj.Id not in before];active=sorted(g.Index for g in doc.Groups if not g.IsDeleted and g.Index not in groups)
             for obj in objects:
                 if obj.Id in originals:continue
-                g=obj.Geometry;row=dict(original=obj.Id==source,peer=obj.Id==peer,selected=bool(obj.IsSelected(False)),group_count=obj.GroupCount,groups=sorted(active.index(i)for i in(obj.GetGroupList()or[])if i in active),grips_on=bool(obj.GripsOn),grips=[dict(index=int(p.Index),point=host['_xyz'](p.CurrentLocation),selected=bool(p.IsSelected(False)))for p in(obj.GetGrips()or[])])
+                g=obj.Geometry;row=dict(original=obj.Id==source,peer=obj.Id in peers,selected=bool(obj.IsSelected(False)),group_count=obj.GroupCount,groups=sorted(active.index(i)for i in(obj.GetGroupList()or[])if i in active),grips_on=bool(obj.GripsOn),grips=[dict(index=int(p.Index),point=host['_xyz'](p.CurrentLocation),selected=bool(p.IsSelected(False)))for p in(obj.GetGrips()or[])])
                 if isinstance(g,G.PointCloud):row['points']=[host['_xyz'](p.Location)for p in g]
                 elif isinstance(g,G.Curve):row['curve']=host['_nurbs_curve_definition'](g.ToNurbsCurve())
                 elif isinstance(g,G.Brep)and g.Faces.Count==1:row['surface']=host['_nurbs_surface_definition'](g.Faces[0].UnderlyingSurface().ToNurbsSurface())
@@ -131,6 +144,7 @@ def run_command(op,host,tolerance):
         doc.ClearUndoRecords(True);seed=snapshot()
         flags=' '.join('_'+name+'=_'+('Yes'if o.get(field,default)else'No')for name,field,default in [('Copy','copy',True),('Rigid','rigid',False),('AutoAdjust','auto_adjust',False),('PreserveStructure','preserve_structure',False)])
         if o.get('rigid'):flags+=' _RigidGroups=_'+('Yes'if o.get('rigid_groups',True)else'No')
+        if o.get('rigid')and o.get('rigid_groups',True):flags+=' _GroupFrameOrigin=_'+o.get('group_frame_origin','BoundingBoxCenter')
         flags+=' _ConstrainNormal=_'+('Yes'if 'normal'in op else'No')
         point=lambda p:'w'+','.join(repr(float(v))for v in p)
         macro='_FlowAlongSrf '+flags
@@ -143,6 +157,7 @@ def run_command(op,host,tolerance):
             (success,after,events),interaction=invoke_with_picks(op,host,surfaces,macro,snapshot)
         else:success,after,events=observe_command(R.Commands.Command,'FlowAlongSrf',lambda:R.RhinoApp.RunScript(macro,True),snapshot,lambda:[],True)
         result=dict(before=seed,after=after,after_script=snapshot(),events=events,command_returned=bool(success),macro=macro,history=R.RhinoApp.CommandHistoryWindowText.split(marker,1)[-1].strip())
+        if op.get('diagnose_frames'):result['frame_diagnostics']=frame_diagnostics
         if interaction is not None:result['interaction']=interaction
         result['undo_command_returned']=bool(R.RhinoApp.RunScript('_Undo',False));result['undo']=snapshot()
         result['redo_command_returned']=bool(R.RhinoApp.RunScript('_Redo',False));result['redo']=snapshot()
