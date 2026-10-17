@@ -130,7 +130,6 @@
     "crates/viboceros-oracle/src/plane_through_points.rs": "c73845cc7c79d6052b3ef10519326d9de9e08a59f45715350aff0bf43016dc58",
     "docs/commands/sphere-fit-points.md": "70294bd877ad879b5cde8efdd9003fa7c06035e2d2a943532c0182c88be7ec0b",
     "docs/commands/surfaces.md": "b0ba2013574ac84e7536f5a9bbc9a3c12621bd8d1a0447dcd4d3d0bd7a3c2d04",
-    "src/app/circle.rs": "068c2ca364ef50305ce8823c851016c96275a5ae2bea183935e8d8c5d557eee2",
     "src/app/tests/sphere_fit_points.rs": "39619dc277e6acb4aa8f2df96f4668b17c6537368b8d6268d011d49e985168d8",
     "tools/rhino_oracle/line_through_points_probe.py": "a7c3f9054f725b270e3c9a490b39cf21be5f06c3da2d26e66fd2b0fede91fc32",
     "tools/rhino_oracle/plane_through_points_probe.py": "5194c3fc159ca82f9f4ae13ec644980ce4ff7d2aba4b2cf6525334822b9a0878",
@@ -167,6 +166,7 @@
     "9e820ecc73876b45801fbbfdf18bd5710c46bfcd:src/app/object_selection.rs": "1765954136aa1cc5bd5fcec9a67f818ff9936994df8ba03b1fce4764aaed4250",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:crates/viboceros-geometry/src/error.rs": "518022cce3800809aa22690c514bf59b85b1c31c4ac02e733161314002f52919",
     "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
-    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/circle_curve.rs": "014c0491e2cacd5d8b13beed4b7e4ad48cf6464d3bb84ad6a23fc0375889bf30"
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/circle_curve.rs": "014c0491e2cacd5d8b13beed4b7e4ad48cf6464d3bb84ad6a23fc0375889bf30",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/app/circle.rs": "068c2ca364ef50305ce8823c851016c96275a5ae2bea183935e8d8c5d557eee2"
   }
 }

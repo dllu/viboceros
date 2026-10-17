@@ -258,24 +258,13 @@
     "policy": "Historical non-SHA outcomes are unchanged; changed source bytes are archived against the full baseline commit."
   },
   "sha256": {
-    "README.md": "feb63c7540d2ae92e43c22509599932ed74426d96f798417df6670bab0474e94",
     "crates/viboceros-command/src/ellipse_input.rs": "5a90f561279866202f9fdaee87ad9de6d52d2abace8ef8c19cb1903a3f664d4c",
     "crates/viboceros-command/src/ellipse_input/tests.rs": "6a26dae60cbd7c64473722f9afc7717d8fac47a5d57e36eff7bd2de6028a0a19",
     "crates/viboceros-geometry/src/ellipse.rs": "a60c3f7739870be8e8d0f9bdb0aecf5df8e7c8223e4c0f47f551d5ea86b737c5",
-    "crates/viboceros-oracle/src/ellipse_command.rs": "717bf7ea07c2a8df10af476e6c557b4cd65af746049bbcf091d999c6a0a2479d",
-    "docs/commands/README.md": "0c92526b6e8403073c75f4347810203e8a9ef01031b2bfe3083b76f70ca2cef1",
-    "docs/commands/curves.md": "0c2ea4cbbcd6be8559ba0ca3d09c03ff59644880a46bb188620ead5a1f775300",
     "docs/commands/ellipse.md": "26a79e483861b40f1734a9fddc9ca5e74f8ce1f4360e20b77e48168e153beb20",
-    "docs/ellipse-around-validation.json": "ea2c703ed0a1f56569d6bb3c430bd7b7a01be7dcc506209c75b450bdcb6cdf41",
-    "docs/ellipse-validation.json": "6127385061ef71ad64a28ef41aa6bf45466541f8c181811bcd3dddb26b92c55c",
-    "src/app.rs": "e0223eb98756755f52c3d44d1027f78ad8dc6dbc0a49537e02d2b350e9da8274",
     "src/app/ellipse.rs": "5a4b555904be978bba71afb4c4ab69041c4b3baeafc29dd4b49cde97208b953c",
     "src/app/tests/ellipse.rs": "bb94cff9583925e24b52be30ed571a2933cc4591e2517a5b2ec9c68b3417f0a8",
-    "src/app/tests/ellipse_around.rs": "ae26a6ee89e4ff435d4ee80cf879e110e594edf86ba0f2a9585d72be0f1c8570",
     "src/app/tests/ellipse_deform.rs": "a91eaae24b8b709cf4e368e7a147ea1c235a8ca5b53a30a81b1b76d8db3033b3",
-    "src/viewport.rs": "0a45bd19d3ae5a1edc4e1daef5dfeb0306414c32d557e3ed33b2f4683b1a54cf",
-    "tools/rhino_oracle/conic_getter_input.py": "550ffa634df069d82b141e94c58bbb97dc05646cbb8477b5f29b6b771452c872",
-    "tools/rhino_oracle/ellipse_probe.py": "ac7a7aa4b8e73b99bb25be5772d4b7f5e034ffd57e37d4887c9603d7960ad85e",
     "tools/rhino_oracle/fixtures/ellipse_deform_controls.json": "543ca0cfa5ae71fecd6d584a40f40d370cefc07ceaa20dcbdec535c805e8ac01",
     "tools/rhino_oracle/fixtures/ellipse_deform_counts.json": "f4ca96e03ca55155e47a5f2b06c5a02de5cb881a7534610d3617b34419dfa0c1",
     "tools/rhino_oracle/fixtures/ellipse_deform_diagnostics.json": "c406c0fb4ba2b098a18dd1ff84eecd6bc923869d9a4df6c67eecfc64facd0eb1",
@@ -287,5 +276,18 @@
     "tools/rhino_oracle/observations/ellipse_deform_modes_rhino_20261017.json": "8054c70ecaf3540773e384ce81f0b423ff636a7f25b6e83e82a4cd4a1623653c",
     "tools/rhino_oracle/observations/ellipse_deform_shapes_rhino_20261017.json": "927f46d93db543d03b56a006b1a2ca786a8134e72c06494f1ee351c91ad3ccec",
     "tools/rhino_oracle/test_ellipse_deform.py": "972c5675af80e218d5b662f33114daafd12c6c364ca92d6d6e3d257f113c240e"
+  },
+  "git_sha256": {
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:README.md": "feb63c7540d2ae92e43c22509599932ed74426d96f798417df6670bab0474e94",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:crates/viboceros-oracle/src/ellipse_command.rs": "717bf7ea07c2a8df10af476e6c557b4cd65af746049bbcf091d999c6a0a2479d",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/commands/README.md": "0c92526b6e8403073c75f4347810203e8a9ef01031b2bfe3083b76f70ca2cef1",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/commands/curves.md": "0c2ea4cbbcd6be8559ba0ca3d09c03ff59644880a46bb188620ead5a1f775300",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/ellipse-around-validation.json": "ea2c703ed0a1f56569d6bb3c430bd7b7a01be7dcc506209c75b450bdcb6cdf41",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/app.rs": "e0223eb98756755f52c3d44d1027f78ad8dc6dbc0a49537e02d2b350e9da8274",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/app/tests/ellipse_around.rs": "ae26a6ee89e4ff435d4ee80cf879e110e594edf86ba0f2a9585d72be0f1c8570",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/viewport.rs": "0a45bd19d3ae5a1edc4e1daef5dfeb0306414c32d557e3ed33b2f4683b1a54cf",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/conic_getter_input.py": "550ffa634df069d82b141e94c58bbb97dc05646cbb8477b5f29b6b771452c872",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/ellipse_probe.py": "ac7a7aa4b8e73b99bb25be5772d4b7f5e034ffd57e37d4887c9603d7960ad85e",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/ellipse-validation.json": "6127385061ef71ad64a28ef41aa6bf45466541f8c181811bcd3dddb26b92c55c"
   }
 }

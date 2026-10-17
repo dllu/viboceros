@@ -464,6 +464,17 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'circle_around' for op in request.get('operations', [])):
+            from .circle_around_probe import validate
+            operations=request['operations']
+            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1 or any(op.get('op')!='circle_around'for op in operations):
+                raise OracleProtocolError('Circle getters require a private dedicated one-iteration capture')
+            names=[op.get('id')for op in operations]
+            if not 1<=len(names)<=64 or any(not isinstance(n,str)for n in names)or len(set(names))!=len(names):raise OracleProtocolError('Circle getters require 1 through 64 uniquely named cases')
+            for op in operations:validate(op)
+            if any(isinstance(a,dict)and'edge'in a for op in operations for a in op.get('actions',[])):
+                from .conic_getter_picker import ConicGetterPicker
+                interaction=ConicGetterPicker(request)
         if any(op.get('op') == 'ellipse_command' for op in request.get('operations', [])):
             from .ellipse_probe import validate
             operations = request['operations']

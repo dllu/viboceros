@@ -1,0 +1,529 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "circle-around-cancel-selection",
+      "value": {
+        "after": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": {
+              "guide_selected": [
+                false
+              ],
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _Pause\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _AroundCurve\nSelect curve: _Enter\nSelect curve",
+        "input_trace": {
+          "completed": 2,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 2,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+            "Select curve"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+              "token": "_AroundCurve"
+            },
+            {
+              "action": 1,
+              "prompt": "Select curve",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Circle _Pause",
+        "redo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-around-cancel-center",
+      "value": {
+        "after": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": {
+              "guide_selected": [
+                true
+              ],
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _Pause\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _AroundCurve\nSelect curve: '_-SelID\nSelect curve: 826a4446-8823-47fd-8785-1ff042731395\n1 curve added to selection.\nCenter of circle: _Enter\nCenter of circle",
+        "input_trace": {
+          "completed": 3,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 3,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+            "Select curve",
+            "Center of circle"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+              "token": "_AroundCurve"
+            },
+            {
+              "action": 1,
+              "prompt": "Select curve",
+              "token": "'_-SelID 826a4446-8823-47fd-8785-1ff042731395"
+            },
+            {
+              "action": 2,
+              "prompt": "Center of circle",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Circle _Pause",
+        "redo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-around-cancel-radius",
+      "value": {
+        "after": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": {
+              "guide_selected": [
+                true
+              ],
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _Pause\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _AroundCurve\nSelect curve: '_-SelID\nSelect curve: ce3774ca-aaf1-4f06-be78-0f580afc6c66\n1 curve added to selection.\nCenter of circle: w0.0,0.0,5.0\nRadius <3.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes ): _Cancel\nRadius <3.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes )",
+        "input_trace": {
+          "completed": 4,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 4,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+            "Select curve",
+            "Center of circle",
+            "Radius <3.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes )"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+              "token": "_AroundCurve"
+            },
+            {
+              "action": 1,
+              "prompt": "Select curve",
+              "token": "'_-SelID ce3774ca-aaf1-4f06-be78-0f580afc6c66"
+            },
+            {
+              "action": 2,
+              "prompt": "Center of circle",
+              "token": "w0.0,0.0,5.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Radius <3.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes )",
+              "token": "_Cancel"
+            }
+          ]
+        },
+        "macro": "_Circle _Pause",
+        "redo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-around-cancel-preselected",
+      "value": {
+        "after": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": {
+              "guide_selected": [
+                true
+              ],
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _Pause\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _AroundCurve\nCenter of circle: _Cancel\nCenter of circle",
+        "input_trace": {
+          "completed": 2,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 2,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+            "Center of circle"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+              "token": "_AroundCurve"
+            },
+            {
+              "action": 1,
+              "prompt": "Center of circle",
+              "token": "_Cancel"
+            }
+          ]
+        },
+        "macro": "_Circle _Pause",
+        "redo": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-around-circ-enter",
+      "value": {
+        "after": {
+          "guide_selected": [
+            true
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "after_script": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "before": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "command_returned": false,
+        "events": [
+          {
+            "name": "Pause",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "SelID",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Enter",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": {
+              "guide_selected": [
+                true
+              ],
+              "guide_unchanged": true,
+              "outputs": []
+            },
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _Pause\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _AroundCurve\nSelect curve: '_-SelID\nSelect curve: ab3d9621-b825-4094-b5f4-f48ddbd39413\n1 curve added to selection.\nCenter of circle: w0.0,0.0,5.0\nRadius <3.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes ): _Circumference\nCircle circumference: _Enter\nCircle circumference",
+        "input_trace": {
+          "completed": 5,
+          "edge_picks": [],
+          "errors": [],
+          "expected": 5,
+          "motion": [],
+          "motion_acknowledgement": "No mouse input was requested; public RhinoApp.SendKeystrokes delivered typed tokens.",
+          "prompts": [
+            "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+            "Select curve",
+            "Center of circle",
+            "Radius <3.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes )",
+            "Circle circumference"
+          ],
+          "sent": [
+            {
+              "action": 0,
+              "prompt": "Center of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints )",
+              "token": "_AroundCurve"
+            },
+            {
+              "action": 1,
+              "prompt": "Select curve",
+              "token": "'_-SelID ab3d9621-b825-4094-b5f4-f48ddbd39413"
+            },
+            {
+              "action": 2,
+              "prompt": "Center of circle",
+              "token": "w0.0,0.0,5.0"
+            },
+            {
+              "action": 3,
+              "prompt": "Radius <3.000> ( Diameter  Circumference  Area  ProjectOsnap=Yes )",
+              "token": "_Circumference"
+            },
+            {
+              "action": 4,
+              "prompt": "Circle circumference",
+              "token": "_Enter"
+            }
+          ]
+        },
+        "macro": "_Circle _Pause",
+        "redo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "redo_returned": true,
+        "undo": {
+          "guide_selected": [
+            false
+          ],
+          "guide_unchanged": true,
+          "outputs": []
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

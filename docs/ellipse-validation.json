@@ -526,8 +526,6 @@
     "policy": "Historical outcomes are unchanged; changed sources are archived against the full baseline commit."
   },
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "a920a9b8cea67a0ae3d4b3570d8d35ddaade9d76414949c1d9fcb42e80bb8ed2",
-    "crates/viboceros-oracle/src/lib.rs": "f067356242750c74a4313e1f2177302a7ebd81a6d149ae134150f6f8ab6072f0",
     "docs/catenary-validation.json": "f2564f50b5030ec4b4c80a1f197d3222506cbac0ec83375146ce627bebcb480f",
     "docs/parabola-validation.json": "e8d66316163b8b1b24efed4d6910fc6c4a3ae02dcb65c956b1fc154c5ccaaec5",
     "tools/rhino_oracle/fixtures/ellipse_command.json": "07bf97ab7e81ad783a038c41ea02218a89af14c9a93a28e10e8e4a08f2c36741",
@@ -545,8 +543,7 @@
     "tools/rhino_oracle/observations/ellipse_final_rhino_20261017.json": "7dedaa8ee248a00ccd32a7939bbd688d8bd5e1c7c407da1b778fce80f4e79f11",
     "tools/rhino_oracle/observations/ellipse_locks_rhino_20261017.json": "86464dc555048104f7d88052a54ab967740f67c631fbfad3a0dbdd41dbdb195f",
     "tools/rhino_oracle/observations/ellipse_planes_rhino_20261017.json": "3d70add5fd48eb5d8addd473ad45df8efd963fee72358995c00e0ca4a40a98e4",
-    "tools/rhino_oracle/observations/ellipse_rejections_rhino_20261017.json": "8e1d37e998b44ea35247750ddba123c98d501c96930e4885cc9834172d6cfdd6",
-    "tools/rhino_oracle/rhino_worker.py": "e03429cb2685990582b8e32d9dd28b09a4133f141a17429caf59a963aad2f590"
+    "tools/rhino_oracle/observations/ellipse_rejections_rhino_20261017.json": "8e1d37e998b44ea35247750ddba123c98d501c96930e4885cc9834172d6cfdd6"
   },
   "git_sha256": {
     "dbb6bf38e387d24a920d7452e338284261d24406:README.md": "bd30aeb1508049c5e9d283e07f321e86b457cd65daa5ab6cdf9aa88ca77cb1e9",
@@ -568,6 +565,9 @@
     "dbb6bf38e387d24a920d7452e338284261d24406:tools/rhino_oracle/test_ellipse.py": "4b60c072b2dc7a12f02ef02affc23e413f1957ae6b074debb9d618102352933d",
     "dbb6bf38e387d24a920d7452e338284261d24406:docs/spiral-around-validation.json": "bc72e460f328ff7964e76ea08b7ab518cff425b3916462caaf6271a769777afc",
     "464e326ad7f528d99f25ef510f78345535c31067:crates/viboceros-geometry/src/ellipse.rs": "f4b00164c128f4a1261355a251d0f47418c95e5fbc507506f64aff17c1793d50",
-    "464e326ad7f528d99f25ef510f78345535c31067:src/viewport.rs": "9159c1eb592b59615cc9fc7f52c5c2be903cb23f541adca9bd516dc90d6812b2"
+    "464e326ad7f528d99f25ef510f78345535c31067:src/viewport.rs": "9159c1eb592b59615cc9fc7f52c5c2be903cb23f541adca9bd516dc90d6812b2",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:crates/viboceros-command/src/lib.rs": "a920a9b8cea67a0ae3d4b3570d8d35ddaade9d76414949c1d9fcb42e80bb8ed2",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:crates/viboceros-oracle/src/lib.rs": "f067356242750c74a4313e1f2177302a7ebd81a6d149ae134150f6f8ab6072f0",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/rhino_worker.py": "e03429cb2685990582b8e32d9dd28b09a4133f141a17429caf59a963aad2f590"
   }
 }

@@ -147,10 +147,13 @@ mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod arc_length_batch;
 mod catenary_command;
+mod circle_around;
 mod conic;
+mod curve_getters;
 mod ellipse_command;
 pub use catenary_command::{Action as CatenaryCommandAction, Fixture as CatenaryCommandFixture};
-pub use ellipse_command::{Action as EllipseCommandAction, Fixture as EllipseCommandFixture};
+pub use curve_getters::{Action as EllipseCommandAction, Fixture as EllipseCommandFixture};
+pub use curve_getters::{Action as CircleAroundAction, Fixture as CircleAroundFixture};
 mod spiral_command;
 pub use spiral_command::{Action as SpiralCommandAction, Fixture as SpiralCommandFixture};
 mod hyperbola;
@@ -1746,6 +1749,11 @@ pub enum Operation {
         id: String,
         turns: f64,
     },
+    CircleAround {
+        id: String,
+        #[serde(flatten)]
+        fixture: CircleAroundFixture,
+    },
     EllipseCommand {
         id: String,
         #[serde(flatten)]
@@ -2858,6 +2866,7 @@ impl Operation {
             | Self::FlowGrips { id, .. }
             | Self::SpiralLayout { id, .. }
             | Self::CatenaryCommand { id, .. }
+            | Self::CircleAround { id, .. }
             | Self::EllipseCommand { id, .. }
             | Self::HelixCommand { id, .. }
             | Self::SpiralCommand { id, .. }
@@ -6114,6 +6123,9 @@ fn execute(
                 json!({"degree":c.degree(),"control_count":c.control_points().len(),"full_knot_count":c.knots().len()}),
                 elapsed,
             )
+        }
+        Operation::CircleAround { fixture, .. } => {
+            circle_around::run(fixture, iterations, tolerance)?
         }
         Operation::EllipseCommand { fixture, .. } => {
             ellipse_command::run(fixture, iterations, tolerance)?

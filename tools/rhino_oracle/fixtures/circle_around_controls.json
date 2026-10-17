@@ -1,0 +1,156 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_around",
+      "id": "circle-around-cancel-selection",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "actions": [
+        "AroundCurve",
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-cancel-center",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-cancel-radius",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Cancel"
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-cancel-preselected",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": true,
+      "actions": [
+        "AroundCurve",
+        "Cancel"
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-circ-enter",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Circumference",
+        "Enter"
+      ]
+    }
+  ]
+}

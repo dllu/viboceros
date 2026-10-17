@@ -6,7 +6,8 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
-    'ellipse_command': ('ellipse_probe', ('curve_source_bounds','geometry_validity_probe','curve_primitive_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
+    'ellipse_command': ('ellipse_probe', ('getter_recipe','curve_source_bounds','geometry_validity_probe','curve_primitive_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
+    'circle_around': ('circle_around_probe', ('getter_recipe','curve_source_bounds','geometry_validity_probe','curve_primitive_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
     'catenary_command': ('catenary_command_probe', ('curve_primitive_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),
     'spiral_layout': ('spiral_layout_probe', ()),
     'helix_command': ('spiral_command_probe', ('curve_source_bounds','geometry_validity_probe','curve_primitive_probe','join_probe','merge_edges_probe','conic_getter_input','managed_mouse_callback','snap_environment')),

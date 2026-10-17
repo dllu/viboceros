@@ -132,6 +132,11 @@ normal-based seam. The
 [three picked-size](../circle-orientation-size-picks-rhino-reference.json) Rhino
 records match the native sampled curves and domains within `1e-10`.
 
+[Circle AroundCurve](circle-around-curve.md) selects a curve or surface/B-rep
+edge, constrains the center and size picks to the guide's normal plane, and
+supports Radius, Diameter, Circumference and Area with live previews and one
+Undo/Redo operation.
+
 `InterpCrv` defaults to an open, degree-three, chord-knot curve through the
 input points.
 It also supports `Degree=1`, `Knots=Uniform|SqrtChrd`, smooth periodic or sharp

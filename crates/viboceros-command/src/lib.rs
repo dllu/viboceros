@@ -285,6 +285,7 @@ pub mod construction_plane;
 #[cfg(test)]
 use arrays::{ARRAY_POLAR_USAGE, ARRAY_USAGE};
 use arrays::{ArrayCommand, ArrayLinearCommand, ArrayPolarCommand};
+pub mod circle_around_input;
 mod circle_fit_points;
 pub mod circle_input;
 pub mod conic;
@@ -466,6 +467,9 @@ pub trait Command: Send + Sync {
         false
     }
     fn ellipse_options(&self) -> Option<ellipse_input::Options> {
+        None
+    }
+    fn circle_preferences(&self) -> Option<circle_around_input::Preferences> {
         None
     }
     fn catenary_options(&self) -> Option<catenary_input::Options> {
@@ -782,7 +786,7 @@ impl CommandRegistry {
             .register(LineCommand)
             .expect("unique built-in command");
         registry
-            .register(CircleCommand)
+            .register(CircleCommand::default())
             .expect("unique built-in command");
         registry
             .register(ArcCommand)
@@ -2032,6 +2036,12 @@ impl CommandRegistry {
         self.lookup
             .get(&normalize_command_name("Ellipse"))
             .and_then(|i| self.commands[*i].ellipse_options())
+            .unwrap_or_default()
+    }
+    pub fn circle_preferences(&self) -> circle_around_input::Preferences {
+        self.lookup
+            .get(&normalize_command_name("Circle"))
+            .and_then(|i| self.commands[*i].circle_preferences())
             .unwrap_or_default()
     }
     pub fn catenary_options(&self) -> catenary_input::Options {

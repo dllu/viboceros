@@ -346,6 +346,7 @@ pub struct ViewportInput<'a> {
     pub spiral_input: Option<&'a viboceros_command::spiral_input::Input>,
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub ellipse_input: Option<viboceros_command::ellipse_input::Input>,
+    pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
@@ -440,6 +441,7 @@ impl Default for ViewportInput<'_> {
             hyperbola_input: None,
             parabola_input: None,
             ellipse_input: None,
+            circle_around_input: None,
             conic_input: None,
             conic_reference: None,
             rectangle_input: None,
@@ -2216,6 +2218,18 @@ impl Viewport {
                     }
                 }
                 self.paint_draft_points(&painter, rect, &preview.foci);
+            }
+        }
+        if let Some(getter) = input.circle_around_input {
+            self.paint_draft_points(&painter, rect, &[getter.center()]);
+            if let Some(circle) = drafting_cursor.and_then(|c| getter.preview(c.point))
+                && let Ok(curve) = circle.to_nurbs()
+            {
+                let mut projected = ProjectedPrimitives::default();
+                self.add_projected_nurbs_curve(&mut projected, rect, &curve);
+                for segment in projected.segments {
+                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+                }
             }
         }
         if let Some(getter) = input.ellipse_input {

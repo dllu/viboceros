@@ -233,6 +233,13 @@ impl VibocerosApp {
                 return false;
             }
         };
+        let point = match self.resolve_circle_around_point(point) {
+            Ok(point) => point,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                return false;
+            }
+        };
         let point = match self.resolve_ellipse_point(point) {
             Ok(point) => point,
             Err(error) => {

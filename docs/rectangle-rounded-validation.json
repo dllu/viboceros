@@ -382,7 +382,6 @@
     }
   ],
   "sha256": {
-    "crates/viboceros-command/src/plane_primitives.rs": "d9517b406258c31208d3fbdfde2b347d481090ad7aa864663e7d3200224be10c",
     "crates/viboceros-geometry/src/polyline/fillet.rs": "ce387239bd6cd21b88eee7e0ac2e49b922929594770b934e587a5f8b7b7b331e",
     "docs/commands/rectangle.md": "b0c96e0ca5504fc4dc69c70aa6e17954ad3963b156b4c8b6c6c1fbe5c58b8a47",
     "docs/construction-planes.md": "b2e410d9500a7fa17cde995b91411e69e36865abcdb4f9fe90d43eff39e29988",
@@ -404,6 +403,7 @@
     "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:tools/rhino_oracle/structural_sdk.py": "3ccc92e5d2cd87a98288715f7141c3bd2ba7024df3d134bdd401932dd3f577dc",
     "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:docs/surface-flow-rectangles-validation.json": "8829c5cb7673358404acc64dcc3b3c59cfccb34e6bac4f1b4d57d3c2b000b899",
     "04f7e1923710f12ee4228b34083f8b10048d068d:docs/surface-flow-validation.json": "62eade00ea3817df9aa5d95304e34e40794b46c6ad8e5408cd2aafd1b5dd232e",
-    "dbb6bf38e387d24a920d7452e338284261d24406:crates/viboceros-command/src/rectangle_input.rs": "c4a8c773d8558e1741ae06017c20e5a4291cd53ac29a0374db2822dd1761d978"
+    "dbb6bf38e387d24a920d7452e338284261d24406:crates/viboceros-command/src/rectangle_input.rs": "c4a8c773d8558e1741ae06017c20e5a4291cd53ac29a0374db2822dd1761d978",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:crates/viboceros-command/src/plane_primitives.rs": "d9517b406258c31208d3fbdfde2b347d481090ad7aa864663e7d3200224be10c"
   }
 }

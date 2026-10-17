@@ -1,0 +1,441 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_around",
+      "id": "circle-around-reverse-numeric",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            10
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-spatial-numeric",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            20,
+            30
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          2,
+          3,
+          7
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-arc-numeric",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              3.5355339059327373,
+              3.5355339059327373,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          3.5355339059327373,
+          3.5355339059327373,
+          0
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-ellipse-numeric",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "radius_x": 6,
+          "radius_y": 3
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          4,
+          3,
+          0
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-cubic-numeric",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -1,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          5,
+          0.375,
+          3
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-kink-numeric",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5
+            ],
+            [
+              5,
+              0,
+              5
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-curved-edge-numeric",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                3,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                13,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 3,
+          "control_point_count_v": 2
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0.96,
+            0.64
+          ]
+        },
+        [
+          5,
+          1.5,
+          1
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-box-edge-numeric",
+      "curves": [
+        {
+          "type": "box_brep",
+          "min": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            10,
+            10,
+            4
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          5,
+          0,
+          0
+        ],
+        "Circumference",
+        18.84955592153876
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-zero-retry",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        0,
+        3
+      ]
+    }
+  ]
+}

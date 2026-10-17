@@ -5,7 +5,10 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-pub(super) struct CircleCommand;
+#[derive(Default)]
+pub(super) struct CircleCommand(
+    crate::remembered::Remembered<crate::circle_around_input::Preferences>,
+);
 
 #[derive(Clone, Copy)]
 enum CircleSizeMode {
@@ -54,6 +57,9 @@ fn circle_numeric_radius(arguments: &[&str]) -> Result<Option<f64>, CommandError
 }
 
 impl Command for CircleCommand {
+    fn circle_preferences(&self) -> Option<crate::circle_around_input::Preferences> {
+        Some(self.0.get())
+    }
     fn name(&self) -> &'static str {
         "Circle"
     }
@@ -102,6 +108,30 @@ impl Command for CircleCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        if arguments
+            .first()
+            .is_some_and(|w| option_name_eq(w, "AroundCurve"))
+        {
+            let d = crate::circle_around_input::from_arguments(
+                document,
+                &arguments[1..],
+                self.0.get(),
+            )?;
+            if d.edge.is_none() {
+                if d.postselected {
+                    document.release_command_selection_on_history_replay([d.source])?;
+                    document.select_command_results([])?;
+                } else {
+                    document.select_command_results([d.source])?;
+                }
+            }
+            let id = document.add_geometry(Geometry::Circle(d.circle))?;
+            self.0.set(d.preferences);
+            return Ok(format!(
+                "Added circle {id} (radius {:.6})",
+                d.circle.radius()
+            ));
+        }
         if arguments
             .first()
             .is_some_and(|option| option_name_eq(option, "FitPoints"))
@@ -297,6 +327,26 @@ impl Command for CircleCommand {
         };
         let radius = circle.radius();
         let id = document.add_geometry(Geometry::Circle(circle))?;
+        let mut preferences = self.0.get();
+        let point_construction = arguments
+            .first()
+            .is_some_and(|w| option_name_eq(w, "3Point") || option_name_eq(w, "2Point"));
+        let radius_option = arguments
+            .iter()
+            .any(|w| option_name_eq(w.split_once('=').map_or(*w, |(k, _)| k), "Radius"));
+        // Diameter endpoints and plain three-point constructions do not use
+        // the radius getter; the three-point Radius option does.
+        if !point_construction || radius_option {
+            preferences.radius = radius;
+        }
+        for word in arguments {
+            match CircleSizeMode::parse(word.split_once('=').map_or(*word, |(k, _)| k)) {
+                Some(CircleSizeMode::Radius) => preferences.diameter = false,
+                Some(CircleSizeMode::Diameter) => preferences.diameter = true,
+                _ => {}
+            }
+        }
+        self.0.set(preferences);
         Ok(format!("Added circle {id} (radius {radius:.6})"))
     }
 }

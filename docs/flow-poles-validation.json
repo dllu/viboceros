@@ -164,7 +164,6 @@
     "docs/geometry-check-qualification.json": "bca0e86f44f9a630087de83c1aca4a6efb21cc9bc74cc2e94abc364bb3e78173",
     "docs/orient-on-curve-validation.json": "e2c67c9de4e535ea1344689752e5afb194dadb0d94748da25f2f9faba14ed6c0",
     "docs/orient-surface-grips-validation.json": "1e2300070732faff295d9265282d16e3862209137e076d5bf68fd6c5ab4ccbc8",
-    "docs/sphere-fit-points-validation.json": "a051aa46072c32826f416e47c6144047264d8b330e1cc12366a6b0607a19bbc3",
     "tools/rhino_oracle/fixtures/flow_pole_lookup.json": "37c5f6866a54e21d789f494d70f0941a3bf601f1aece5e03dc3b6132dc1c5efd",
     "tools/rhino_oracle/fixtures/flow_roadlike_poles.json": "a80964a16595b6cd8b6947cd0813c560b875848bfed474e50615bffdf1b9712f",
     "tools/rhino_oracle/observations/flow_pole_lookup_rhino_20261016.json": "fec75434cc95226dfbe2bf87fd5e38d2de8f1d74fd78dfd0359c0d945cc8855a",
@@ -197,6 +196,7 @@
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-grips-validation.json": "25dbde1a9c0f5d3967db28996e2d0307400c01a2fbaee9f2bd87dbc26d928b70",
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/flow-spatial-validation.json": "0d31714f9a392fd7051afda076b54dbd6901b604592c063dfb3e29ab8b9b81c0",
     "bd81b837ebcc4083ed0d0b21fcb7bffd068aea21:docs/orient-on-curve-edge-validation.json": "a95958578b622162ca3d63a1e44f6f7f94b607742e56bbf649e2c400dacf2b7a",
-    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/prepared-curve-length-validation.json": "3673d2340740d708c8317e23282b5b3650324604a7dfdc9fee529bfacd43209f"
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/prepared-curve-length-validation.json": "3673d2340740d708c8317e23282b5b3650324604a7dfdc9fee529bfacd43209f",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/sphere-fit-points-validation.json": "a051aa46072c32826f416e47c6144047264d8b330e1cc12366a6b0607a19bbc3"
   }
 }

@@ -102,6 +102,11 @@ impl VibocerosApp {
         }
         if state == (InteractiveCommand::Circle { center: None }) {
             let option = input.trim().trim_start_matches('_');
+            if option.eq_ignore_ascii_case("AroundCurve") {
+                self.start_circle_around();
+                self.command_input.clear();
+                return true;
+            }
             if option.eq_ignore_ascii_case("FitPoints") {
                 self.cancel_interactive_command(false);
                 if !self.try_start_object_prompt("Circle FitPoints") {

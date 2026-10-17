@@ -1,0 +1,1078 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_around",
+      "id": "circle-around-remember-threepoint",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Enter"
+      ],
+      "setup": [
+        "3Point",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-remember-radius",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Enter"
+      ],
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        4
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-remember-diameter",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        4
+      ],
+      "setup": [
+        [
+          0,
+          0,
+          0
+        ],
+        "Diameter",
+        8
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-reverse",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            10
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          0,
+          3,
+          8
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-spatial",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            20,
+            30
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          2,
+          3,
+          7
+        ],
+        [
+          4,
+          3,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-x-axis",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-arc",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              3.5355339059327373,
+              3.5355339059327373,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          3.5355339059327373,
+          3.5355339059327373,
+          0
+        ],
+        [
+          3.5355339059327373,
+          3.5355339059327373,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-arc-start",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              3.5355339059327373,
+              3.5355339059327373,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-arc-end",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              3.5355339059327373,
+              3.5355339059327373,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          5,
+          0
+        ],
+        [
+          0,
+          5,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-arc-offrail",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              3.5355339059327373,
+              3.5355339059327373,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          4,
+          4,
+          2
+        ],
+        [
+          4,
+          4,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-ellipse",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ],
+          "radius_x": 6,
+          "radius_y": 3
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          4,
+          3,
+          0
+        ],
+        [
+          4,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-cubic",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                -1,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          5,
+          0.375,
+          3
+        ],
+        [
+          5,
+          4,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-polyline",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5
+            ],
+            [
+              5,
+              0,
+              5
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          2
+        ],
+        [
+          3,
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-kink",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5
+            ],
+            [
+              5,
+              0,
+              5
+            ]
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          0,
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-line-start",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          -2
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-line-end",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          15
+        ],
+        [
+          3,
+          0,
+          10
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-relative",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        {
+          "relative": [
+            0,
+            0,
+            5
+          ]
+        },
+        {
+          "relative": [
+            3,
+            0,
+            0
+          ]
+        }
+      ],
+      "prior_point": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-relative-tilted",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "preselect": false,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        {
+          "relative": [
+            2,
+            3,
+            0
+          ]
+        }
+      ],
+      "construction_plane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-surface-edge",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 2,
+          "control_point_count_v": 2
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-curved-edge",
+      "curves": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                3,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                13,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_point_count_u": 3,
+          "control_point_count_v": 2
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0.96,
+            0.64
+          ]
+        },
+        [
+          5,
+          1.5,
+          1
+        ],
+        [
+          5,
+          4,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-box-edge",
+      "curves": [
+        {
+          "type": "box_brep",
+          "min": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            10,
+            10,
+            4
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "live_getters": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0,
+          "edge": 0,
+          "pick": [
+            2,
+            0,
+            0
+          ]
+        },
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          5,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-diameter-point",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          0,
+          4,
+          9
+        ]
+      ]
+    }
+  ]
+}

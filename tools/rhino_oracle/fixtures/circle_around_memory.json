@@ -1,0 +1,105 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_around",
+      "id": "circle-around-remember-twopoint",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "setup": [
+        "2Point",
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Enter"
+      ]
+    },
+    {
+      "op": "circle_around",
+      "id": "circle-around-remember-threepoint-radius",
+      "live_getters": true,
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            10
+          ]
+        }
+      ],
+      "guide_selection": true,
+      "setup": [
+        "3Point",
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        "Radius",
+        3,
+        [
+          2,
+          3,
+          0
+        ]
+      ],
+      "actions": [
+        "AroundCurve",
+        {
+          "curve": 0
+        },
+        [
+          0,
+          0,
+          5
+        ],
+        "Enter"
+      ]
+    }
+  ]
+}

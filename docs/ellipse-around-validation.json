@@ -451,14 +451,9 @@
     "crates/viboceros-command/src/rectangle_input.rs": "90d01f5f04b1bb38bd3088a32b3766486420f3dc5b31cc992c6731762678660e",
     "crates/viboceros-drafting/src/point_input.rs": "b53d3b5f3c863f89ee27441244d570e1205f45b98ef3ebfc90a2b934c2b8b3ef",
     "crates/viboceros-drafting/src/point_input/length_quantity_tests.rs": "dcb0ebbe0727d151af8283f5449d85069d126156de0c82b2547753c2dd7abd4a",
-    "docs/catenary-snap-validation.json": "e7d6fc94fb87884e90f1f864ce25afbe3578ea7b65e94efcedd6f4c668fc2284",
     "docs/conic-getters-validation.json": "d60c1a4cf26d320b820b530200e1c2fbcd731e6cbdab8ace7aad2fada3dd48b5",
-    "docs/rectangle-rounded-validation.json": "0dc8154cec3e82e448fd5826ae3835d934939cb6a0a8b1a908f363005e13b99f",
     "docs/spiral-around-validation.json": "1850b6cb920b601a1256f94ba59bff3ab3cabf944f6d72dfc2f81b2145568479",
-    "src/app/component_selection.rs": "55595250d33fc9268096287cf9c411ac495784040eafdc04cf17ff17fb35ca70",
-    "src/app/point_input.rs": "2d8abe2773e352ab78bde9cb93553d2e6d46e6a0a05f69df95198a8bf3ae3071",
     "src/app/tests/catenary.rs": "67de1ed24344243482fd67fcdcc79c0c93634b15debd4973e8ffc106aa6d1304",
-    "tools/rhino_oracle/client.py": "2da84644a3e5ceebcfadf88cea2df5a99ea19be32e3a48cbd2f2d879fa858d4a",
     "tools/rhino_oracle/curve_source_bounds.py": "defa47b86b1e9cf2f0e053d574644c9e06f82ba15ec8b5158cda987292b94cdf",
     "tools/rhino_oracle/fixtures/ellipse_around_command.json": "0891fd4ced86ba88b746233c1b8376c896769ec22a332658fd0902850ea62906",
     "tools/rhino_oracle/fixtures/ellipse_around_controls.json": "4d191f07d7a672b43cf72fa3549679b69255d31daf8ebc9be745a441c1139eed",
@@ -469,8 +464,6 @@
     "tools/rhino_oracle/observations/ellipse_around_diagnostics_rhino_20261017.json": "1a18ecb28c2526f6db9330774cab03ebee3d220079f756afea6fbbaf59faab8e",
     "tools/rhino_oracle/observations/ellipse_around_extended_rhino_20261017.json": "dd6a264fbfbdc5c32e5ae4bcd95fa432a7b115773a9b31c8b205ac7d2abf1a75",
     "tools/rhino_oracle/spiral_command_probe.py": "e645da6b18f66a3108582d1a0756a0f5db9bc00918213de146e9306607b8266e",
-    "tools/rhino_oracle/structural_sdk.py": "bc07a4c19ced1976f03dc34cdea61c52cf5335e38cc99496f8f631b061fb2df1",
-    "tools/rhino_oracle/test_ellipse.py": "4a48c46be29a25be980cc4b98f0307ca680cb6ba57f40eda95658f091aca3aa8",
     "tools/rhino_oracle/test_ellipse_around.py": "91493d1f9a93e0bd0db5473c3f0bc4db692cd703e0d7d1bb70907392c204152c",
     "tools/rhino_oracle/test_spiral_command.py": "f84579fb7d19e8b3cd6467acc693b3a0b62eab6314c610dafcbb2dcefb774faa"
   },
@@ -488,6 +481,13 @@
     "464e326ad7f528d99f25ef510f78345535c31067:src/app/tests/ellipse_around.rs": "42738374cc9341bdeb5785762fc21364a474b5fa72d3ced9b13d38afa6800a2c",
     "464e326ad7f528d99f25ef510f78345535c31067:tools/rhino_oracle/conic_getter_input.py": "9b16719fd451e1dd654637b42d0d979db33f069fa4bd761d8682f3e1e3a3fce5",
     "464e326ad7f528d99f25ef510f78345535c31067:tools/rhino_oracle/ellipse_probe.py": "008abcb15d9155d2308942b1ca3fbd27142336d8d501144eb5a8f518767e7d2d",
-    "464e326ad7f528d99f25ef510f78345535c31067:docs/ellipse-validation.json": "dba4dbc2b9258273d1e9110573ea7564d6111656bef33b4019be0dbe0bf14e37"
+    "464e326ad7f528d99f25ef510f78345535c31067:docs/ellipse-validation.json": "dba4dbc2b9258273d1e9110573ea7564d6111656bef33b4019be0dbe0bf14e37",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/app/component_selection.rs": "55595250d33fc9268096287cf9c411ac495784040eafdc04cf17ff17fb35ca70",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/app/point_input.rs": "2d8abe2773e352ab78bde9cb93553d2e6d46e6a0a05f69df95198a8bf3ae3071",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/client.py": "2da84644a3e5ceebcfadf88cea2df5a99ea19be32e3a48cbd2f2d879fa858d4a",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/structural_sdk.py": "bc07a4c19ced1976f03dc34cdea61c52cf5335e38cc99496f8f631b061fb2df1",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:tools/rhino_oracle/test_ellipse.py": "4a48c46be29a25be980cc4b98f0307ca680cb6ba57f40eda95658f091aca3aa8",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/rectangle-rounded-validation.json": "0dc8154cec3e82e448fd5826ae3835d934939cb6a0a8b1a908f363005e13b99f",
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/catenary-snap-validation.json": "e7d6fc94fb87884e90f1f864ce25afbe3578ea7b65e94efcedd6f4c668fc2284"
   }
 }

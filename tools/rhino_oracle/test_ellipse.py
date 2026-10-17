@@ -58,7 +58,7 @@ class EllipseTests(TestCase):
             with self.assertRaises(ValueError,msg=(field,value)):validate(dict(op,**{field:value}))
         with tempfile.TemporaryDirectory()as directory:
             job=Path(directory);stage_helpers(q,BASE,job)
-            self.assertEqual({p.name for p in job.iterdir()},{'ellipse_probe.py','curve_source_bounds.py','geometry_validity_probe.py','curve_primitive_probe.py','join_probe.py','merge_edges_probe.py','conic_getter_input.py','managed_mouse_callback.py','snap_environment.py'})
+            self.assertEqual({p.name for p in job.iterdir()},{'ellipse_probe.py','getter_recipe.py','curve_source_bounds.py','geometry_validity_probe.py','curve_primitive_probe.py','join_probe.py','merge_edges_probe.py','conic_getter_input.py','managed_mouse_callback.py','snap_environment.py'})
             subprocess.run([sys.executable,'-I','-c','import sys,json;sys.path.insert(0,sys.argv[1]);import ellipse_probe;ellipse_probe.validate(json.loads(sys.argv[2]))',str(job),json.dumps(op)],check=True,capture_output=True)
         with mock.patch.dict(os.environ,dict(DISPLAY=':301',VIBOCEROS_ORACLE_HEADLESS=':301'),clear=True),mock.patch('tools.rhino_oracle.client._run_logged')as launch:
             for i,request in enumerate([q,dict(q,iterations=2),dict(q,iterations=True),dict(q,operations=[op,op]),dict(q,operations=[op,dict(op='line',id='foreign')])]):

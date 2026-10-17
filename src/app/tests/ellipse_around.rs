@@ -23,14 +23,19 @@ fn ellipse_around_native_frontend_sources_edges_relative_points_and_history() {
     ]);
 }
 pub(super) fn assert_native_profiles(profiles: &[(&str, &str, usize)]) {
+    assert_native_profiles_for("Ellipse", profiles);
+}
+pub(super) fn assert_native_profiles_for(command: &str, profiles: &[(&str, &str, usize)]) {
     use viboceros_oracle::EllipseCommandAction as Action;
     for &(q, n, count) in profiles {
         let q: viboceros_oracle::ProbeRequest = serde_json::from_str(q).unwrap();
         let n: serde_json::Value = serde_json::from_str(n).unwrap();
         assert_eq!(q.operations.len(), count);
         for (op, row) in q.operations.iter().zip(n["results"].as_array().unwrap()) {
-            let viboceros_oracle::Operation::EllipseCommand { id, fixture: f } = op else {
-                panic!()
+            let (id, f) = match op {
+                viboceros_oracle::Operation::EllipseCommand { id, fixture }
+                | viboceros_oracle::Operation::CircleAround { id, fixture } => (id, fixture),
+                _ => panic!(),
             };
             assert_eq!(id, row["id"].as_str().unwrap());
             let mut app = test_app();
@@ -63,7 +68,7 @@ pub(super) fn assert_native_profiles(profiles: &[(&str, &str, usize)]) {
                 );
             }
             if let Some(setup) = &f.setup {
-                enter(&mut app, "Ellipse");
+                enter(&mut app, command);
                 super::ellipse::actions(&mut app, setup);
                 let output = app
                     .document
@@ -74,7 +79,7 @@ pub(super) fn assert_native_profiles(profiles: &[(&str, &str, usize)]) {
                 app.document.delete_objects(output).unwrap();
                 app.document.clear_history().unwrap();
             }
-            enter(&mut app, "Ellipse");
+            enter(&mut app, command);
             for action in &f.actions {
                 match action {
                     Action::Pick { curve, edge, .. } => {
@@ -106,7 +111,11 @@ pub(super) fn assert_native_profiles(profiles: &[(&str, &str, usize)]) {
                 }
                 assert!(app.command_input.is_empty(), "{id}: {:?}", app.command_log);
             }
-            assert!(app.ellipse_session.is_none(), "{id}: {:?}", app.command_log);
+            assert!(
+                app.ellipse_session.is_none() && app.circle_around_session.is_none(),
+                "{id}: {:?}",
+                app.command_log
+            );
             for (stage, replay) in [("after", None), ("undo", Some(false)), ("redo", Some(true))] {
                 if let Some(redo) = replay {
                     let label = if redo {
@@ -115,7 +124,7 @@ pub(super) fn assert_native_profiles(profiles: &[(&str, &str, usize)]) {
                         app.document.undo()
                     }
                     .unwrap();
-                    assert_eq!(label.as_deref(), Some("Ellipse"));
+                    assert_eq!(label.as_deref(), Some(command));
                 }
                 let reference = if stage == "after" {
                     "after_script"
