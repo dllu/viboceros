@@ -1,0 +1,260 @@
+--- a/SmSurfaceDropLib.cpp
++++ b/SmSurfaceDropLib.cpp
+@@ -23,6 +23,9 @@
+ #include <SmOffsetSurface.h>
+ #include <SmAssertArray.h>
+ #include <SmSurfaceDropCurve.h>
++#include <SmLine.h>
++#include <algorithm>
++#include <memory>
+ 
+ #ifdef SM_DEBUG_CODE
+ #include <SmBrep.h>
+@@ -35,6 +38,65 @@
+ //   Local static routines for DropCurve().
+ // 
+ // **********************************************************************
++
++// Keep crossings as test stations, without the interval classification's
++// merging of nearby boundaries. A short UV span may cover a large 3D feature.
++static SmStatus sm_DropTestBreaks(SmHermiteCurve &hermite, const SmSurface &surface,
++                                  const SmContext &context, SmTArray<double> &breaks)
++{
++  SmBSplineCurve *rawUV = NULL;
++  SER(SmBSplineCurve::CreateFromHermiteCurve(context, hermite, rawUV, 0.0, 1.0));
++  std::unique_ptr<SmBSplineCurve> ownedUV(rawUV);
++  const SmCurve &uv = *ownedUV;
++  SER(uv.GetKnots(breaks));
++  const SmExtent1d interval = uv.GetNaturalInterval();
++  const SmExtent2d domain = surface.GetNaturalUVDomain();
++  SmPoint3d controls[4];
++  hermite.GetBezierPoints(controls[0], controls[1], controls[2], controls[3]);
++  for (int axis = 0; axis < 2; ++axis)
++    {
++      double minimum = controls[0][axis], maximum = minimum;
++      for (int c = 1; c < 4; ++c)
++        {
++          minimum = std::min(minimum, controls[c][axis]);
++          maximum = std::max(maximum, controls[c][axis]);
++        }
++      SmTArray<double> knots;
++      SER(surface.GetKnots(axis == 0 ? SM_SP_U : SM_SP_V, knots));
++      for (ULONG i = 1; i + 1 < knots.GetSize(); ++i)
++        {
++          const double k = knots[i];
++          if (k <= minimum || k >= maximum) continue;
++          SmPoint3d a(axis == 0 ? k : domain.GetMin().x,
++                       axis == 0 ? domain.GetMin().y : k, 0);
++          SmPoint3d b(axis == 0 ? k : domain.GetMax().x,
++                       axis == 0 ? domain.GetMax().y : k, 0);
++          SmLine *raw = NULL;
++          SER(SmLine::CreateLineSegment(context, 2, a, b, raw));
++          std::unique_ptr<SmLine> line(raw);
++          SmSolutionArray solutions;
++          SmBoolean more = TRUE;
++          SER(uv.IntersectWithLine(interval, *line, line->GetNaturalInterval(),
++                                   SmTol::GetEffZeroParam(), more, solutions));
++          if (more)
++            SER(uv.GlobalCurveIntersect(interval, *line, line->GetNaturalInterval(),
++                                        SmTol::GetEffZeroParam(), solutions));
++          for (ULONG j = 0; j < solutions.GetSize(); ++j)
++            {
++              const double t = solutions[j].m_vStart[0];
++              if (interval.GetMin() < t && t < interval.GetMax()) breaks.Add(t);
++            }
++        }
++    }
++  if (breaks.GetSize() < 2) return SM_ERR_NOT_WITHIN_TOLERANCE;
++  std::sort(&breaks[0], &breaks[0] + breaks.GetSize());
++  // Remove exact duplicates only; nearby crossings may bound a real feature.
++  ULONG count = 1;
++  for (ULONG i = 1; i < breaks.GetSize(); ++i)
++    if (breaks[i] > breaks[count - 1]) breaks[count++] = breaks[i];
++  breaks.SetSize(count);
++  return SM_SUCCESS;
++}
+ 
+ /*******************************************************************//**
+ PURPOSE: Standardize DropCurve() Debug drawing blocks
+@@ -765,8 +827,7 @@
+                                            //                                and CrvPts are not on associated SrfNormals 
+    double             dUVTolX,             // NotUsed: in : UV tol in the u dir
+    double             dUVTolY,             // NotUsed: in : UV tol in the v dir
+-   SmBoolean        & rbSpanPassesTest,    // out: TRUE = span is good - spans shorter than sIvl/1000.0
+-                                           //                            all sample CrvPts within sApproxTol3d of SrfPt Normals 
++   SmBoolean        & rbSpanPassesTest,    // out: TRUE = all sample CrvPts within sApproxTol3d of SrfPt Normals 
+                                            //      FALSE= span is bad  - spans that leave srfBdry by more than sApproxTol3d
+                                            //                            sample CrvPt not within sApproxTol3d of SrfPt Normal
+    double           & rdMaxDropToSurf,     // out: largest seen SurfacePt to CurvePt distance
+@@ -818,19 +879,14 @@
+   // current parameter step size
+   double dDeltaT = rEnd.m_dT - crStart.m_dT;
+ 
+-  // Don't let the parameter step get too small
+-  if (dDeltaT < rIvl.GetLength()/1000.0)
+-    {
+-      rbSpanPassesTest = TRUE;
+-      return SM_SUCCESS;
+-    }
++  if (!(dDeltaT > 0.0)) return SM_ERR_NOT_WITHIN_TOLERANCE;
+ 
+   // Cubic Hermite approximation to UVCurve 
+   //  (note: scale tangents as if 3DCurve from crStart.m_dT to rEnd.m_dT were scaled from 0 to 1)
+   SmHermiteCurve sHermite( crStart.m_UVPD[0],
+                            crStart.m_UVPD[1] * dDeltaT, 
+                            rEnd.m_UVPD[0],   
+-                           rEnd.m_UVPD[1] * dDeltaT );
++                           rEnd.m_UVPD[1] * dDeltaT, 2 );
+ #ifdef SM_DEBUG_CODE
+   if(bDebugMe)  // draw curve and sample pts of cr3dCurve and hermite curve on surface
+     {
+@@ -889,7 +945,13 @@
+ #endif // SM_DEBUG_CODE
+ 
+   // locals
+-  ULONG ii, lNumTestPoints = 3;
++  // Partition the candidate at surface-knot crossings. A narrow surface
++  // feature can lie entirely between the three uniform span samples.
++  SmTArray<double> sBreaks;
++  SmContext sTestContext;
++  SER(sm_DropTestBreaks(sHermite, crSurface, sTestContext, sBreaks));
++  const ULONG lNumTestPoints = 3 + 3 * (sBreaks.GetSize() - 1);
++  ULONG ii;
+   SmPoint3d sHermPnt, sSurfPnt, sCrvPnt[2] ;
+   SmPoint2d sUV ;
+ 
+@@ -897,7 +959,13 @@
+   for(ii=0;ii<lNumTestPoints;ii++)
+     {
+       // Eval HermiteUVSpanCurve to get next sample UV point
+-      double dNormalizedT = (ii+1.0) / (lNumTestPoints+1.0);
++      double dNormalizedT = (ii + 1.0) / 4.0;
++      if (ii >= 3)
++        {
++          const ULONG lPiece = (ii - 3) / 3;
++          dNormalizedT = sBreaks[lPiece]
++            + (sBreaks[lPiece + 1] - sBreaks[lPiece]) * ((ii % 3) + 1.0) / 4.0;
++        }
+       SER( sHermite.EvaluatePoint( dNormalizedT, sHermPnt ));
+       sUV.Set( sHermPnt.x, sHermPnt.y );
+ 
+@@ -5818,53 +5886,8 @@
+ //      #endif // SM_DEBUG_CODE
+ //                      } // end try a G1 Span to save a failing C1 Span approx that did not pass tol check
+                               
+-              // stop subdivision - just accept very short spans
+-              if(   !bSpanPassesTest                    //     span contains out of tol sample pts
+-                 && (  smos_Fabs(sEnd.m_dT-sStart.m_dT) // and the interval is very short
+-                     < sInterval.GetLength()/8000.0))  
+-                 // && !bLeavingDomain)                    // The bLeavingDomain feature is not currently being used.
+-                {
+-                  // pass this short problem interval to stop further subdivision on spans
+-                  // that just don't converge.  Passing this span builds a 'mostly' valid 
+-                  // UVTrimCurve with just this small span out of tolerance.
+-                  bSpanPassesTest = TRUE;
+-                                         
+-                  // - GWC: we should review all the prog_test cases that come down this 
+-                  //        branch and see if DropCurve can be improved to handle them.  
+-                  //        I've temporarily added a sm_RefineSpan1stDerivs() above to experiment
+-                  //          with trying to find a G1 span that replaces C1 spans that fail to converge.
+-                  //        I've also added the call p3dCurve->DrawInspectUVTrimCurve(crSurface, *pCubic, &rIvl, 75, (0 | 1 | 2));
+-                  //          to dump and draw the gap functions between the UVTrimCurve, surface and 3d curve.  Use
+-                  //          these for helpful analysis in debug mode.
+-                  //        1. I know that rapidly changing parameter speed creates spans
+-                  //           that don't converge with further subdivision.
+-                  //             I believe something might be done about regularizing the speed changes
+-                  //             across a span by splitting the span on both curve (already done) and
+-                  //             surface (not yet done) knot boundaries.  I've checked some of the
+-                  //             failing cases and they have not been caused by crossing surface knot boundaries.
+-                  //             and so splitting at surface knots won't be of help.
+-                  //           I've added the function sm_RefineSpan1stDerivs to have a place to try
+-                  //             fitting the span with a variety of various different cubics
+-                  //             a.) fit cubic to interpolate start, stop, and mid points while being G1 with 1st Derivs.
+-                  //                     (didn't help)
+-                  //             b.) set cubic to constant speed while interpolating start and stop points while
+-                  //                      being G1 with 1st Derivs.  (didn't help)
+-                  //             c.) optimize the square distance between cubic and span
+-                  //                     Min( Integral( 3dCurve(m_dT) - Surface(UVTrimCubic(m_dT)) dt) over span [sStart.m_dT sEnd.m_dT] 
+-                  //                      not yet tried
+-                  //        2. Also it's suspected self-intersecting surfaces may prevent convergence here
+-                  //             although I've never seen that. 
+-
+-                } // end if didn't pass, not leaving domain, and small step.
+-
+-              // if span passes tol check - add dropped hermite approx seg to sCtrlPoly and sKnots and popStack
+-              if(bSpanPassesTest)  // GWC: section handles the 4 cases
+-                                   //     case pass and long: addToCurve  (DONE)
+-                                   //     case pass and short: addToCurve and merge with last span if it is a seam artifact, don't merge if it's a subdivision arrtifact
+-                                   //           post process out real short steps - remove that attempt from this code
+-                                   //     case NoPass and long: subdivide and iteration  (DONE)
+-                                   //     case NoPass and short: not needed - previous test labels these spans as
+-                                   //              acceptable under the 'get what you can' philosophy of UVTrimCurve generation.               
++              // Accept only spans that pass the model-space accuracy test.
++              if(bSpanPassesTest)
+                 {
+                   // save max DropDist and ApproxDeviation
+                   if( dMaxDropToSurf < dDropToSurf ) { dMaxDropToSurf = dDropToSurf ;
+@@ -5934,7 +5957,14 @@
+                   for(kk=0;kk<6;kk++)
+                     {
+                       // subdivide the problem span - set sEnd.m_dT to current Span midPoint
+-                      sEnd.m_dT = (sStart.m_dT + sEnd.m_dT) / 2.0 ;
++                      const double dOldEnd = sEnd.m_dT;
++                      const double dMid = 0.5 * sStart.m_dT + 0.5 * dOldEnd;
++                      if (!(sStart.m_dT < dMid && dMid < dOldEnd))
++                        {
++                          eRetStatus = SM_ERR_NOT_WITHIN_TOLERANCE;
++                          break;
++                        }
++                      sEnd.m_dT = dMid;
+ 
+                       // drop curvePoint(sEnd.m_dT) to find Surface sEnd.m_UVPD and all other sEnd property values
+                       eRetStatus = sStart.GetNextPoint
+@@ -5969,7 +5999,12 @@
+ 
+                       // done when GetNextPoint can drop current split point 
+                       if(eRetStatus == SM_SUCCESS)
+-                        { 
++                        {
++                          if (!(sStart.m_dT < sEnd.m_dT && sEnd.m_dT < dOldEnd))
++                            {
++                              eRetStatus = SM_ERR_NOT_WITHIN_TOLERANCE;
++                              break;
++                            }
+                           bFoundGoodOne = TRUE ;
+                           break ; // exit kk iteration for acceptable break points
+                         }
+@@ -6608,13 +6643,26 @@
+   double dMaxDrop      = 0.0;
+   double dDropLineDist ;         
+   //      double dMaxDiffSq = 0.0;           // GWC : CHANGE
+-  ULONG  lNumKnots = sKnots.GetSize();
+-  for (ULONG i=1; i<=lNumKnots; i++) 
+-    {
+-      // get Surface UVPoint at even sized param steps along surface isoParameter Curve
+-      double dStep =   (i < lNumKnots)
+-                     ? (i/(double)lNumKnots)*dIvlSize
+-                     : dIvlSize ;
++  // Test actual source knots and each crossed surface span as well as the
++  // old uniform stations before accepting the isoparametric shortcut.
++  const SmPoint2d sIsoEnd = crUVDomain.ClampPoint2d(
++      crStartUVPoint + sDirVec * dIvlSize / dScale);
++  const SmVector2d sIsoTangent = sIsoEnd - crStartUVPoint;
++  SmHermiteCurve sIsoUV(crStartUVPoint, sIsoTangent,
++                        sIsoEnd, sIsoTangent);
++  SmTArray<double> sIsoBreaks;
++  SER(sm_DropTestBreaks(sIsoUV, *this, crContext, sIsoBreaks));
++  SmTArray<double> sTests = sKnots;
++  const ULONG lNumKnots = sKnots.GetSize();
++  for (ULONG i = 1; i <= lNumKnots; ++i)
++    sTests.Add(crInterval.GetMin() + dIvlSize * i / lNumKnots);
++  for (ULONG i = 0; i + 1 < sIsoBreaks.GetSize(); ++i)
++    for (ULONG j = 0; j <= 4; ++j)
++      sTests.Add(crInterval.GetMin() + dIvlSize * (sIsoBreaks[i]
++        + (sIsoBreaks[i + 1] - sIsoBreaks[i]) * j / 4.0));
++  for (ULONG i = 0; i < sTests.GetSize(); ++i)
++    {
++      double dStep = sTests[i] - crInterval.GetMin();
+       SmVector2d sUVTest = crStartUVPoint + sDirVec * dStep / dScale;
+       sUVTest = crUVDomain.ClampPoint2d(sUVTest);
+ 

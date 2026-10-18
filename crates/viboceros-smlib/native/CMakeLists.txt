@@ -173,6 +173,7 @@ if(NOT DROP_PATCH_STATUS EQUAL 0)
 endif()
 list(REMOVE_ITEM KERNEL_SOURCES "${DROP_SOURCE}")
 list(APPEND KERNEL_SOURCES "${DROP_PATCHED}")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-drop-curve-accuracy.cmake")
 
 # Keep G2 rail/corner repairs in generated copies of the pinned source.
 foreach(repair IN ITEMS
@@ -327,10 +328,21 @@ target_include_directories(viboceros_smlib_surface_fillet_baseline PRIVATE "${CM
 target_compile_options(viboceros_smlib_surface_fillet_baseline PRIVATE -Wno-write-strings
     -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
 
+# Direct UV-drop qualification and the pinned producer for an identical baseline.
+foreach(drop_target IN ITEMS probe baseline)
+    add_executable(viboceros_smlib_drop_curve_${drop_target} EXCLUDE_FROM_ALL
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/drop_curve_accuracy_probe.cpp")
+    target_link_libraries(viboceros_smlib_drop_curve_${drop_target} PRIVATE viboceros_smlib)
+    target_include_directories(viboceros_smlib_drop_curve_${drop_target} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_compile_options(viboceros_smlib_drop_curve_${drop_target} PRIVATE -Wno-write-strings
+        -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
+endforeach()
+target_sources(viboceros_smlib_drop_curve_baseline PRIVATE "${drop_accuracy_source}")
+
 # Optional instrumentation of both complete native libraries and the C ABI.
 option(VIBOCEROS_SMLIB_ASAN "Instrument native geometry with AddressSanitizer" OFF)
 if(VIBOCEROS_SMLIB_ASAN)
-    foreach(instrumented_target viboceros_smlib_curve_contact_probe viboceros_smlib_surface_fillet_probe viboceros_smlib_tensor_bezier_probe SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe viboceros_smlib_exact_split_probe)
+    foreach(instrumented_target viboceros_smlib_drop_curve_probe viboceros_smlib_curve_contact_probe viboceros_smlib_surface_fillet_probe viboceros_smlib_tensor_bezier_probe SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe viboceros_smlib_exact_split_probe)
         target_compile_options(${instrumented_target} PRIVATE -fsanitize=address -g -fno-omit-frame-pointer)
         target_link_libraries(${instrumented_target} PUBLIC asan)
     endforeach()

@@ -1,0 +1,538 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "e4bd95e00761c57e66e0974488d46d3ab4da355b",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "change": "Remove the short-parameter-span override of failed UV accuracy tests, retain original Hermite stations, test crossed surface knot spans without boundary merging, validate actual source knots in the isoparametric shortcut, and stop subdivision without representable progress. Preserve defining 3D geometry and the caller distance tolerance.",
+  "completed_runs": [
+    {
+      "command": "cargo test --release -p viboceros-smlib --features native --test surface_fillets -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-drop-curve-accuracy-focused.log.gz",
+        "uncompressed_sha256": "604281bed1553adedf88b128c4784e1042910c592ce3a1522e083edf23250d1c"
+      },
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-drop-curve-accuracy-bridge.log.gz",
+        "uncompressed_sha256": "1141e54812bb380751192e2a2ab0602da6551fb38fece93af3c88b858ad33d49"
+      },
+      "passed": 430,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-drop-curve-accuracy-command.log.gz",
+        "uncompressed_sha256": "61321194fc98e4bd4fc4ea34c983bfd26dfe8a89904ea6b4588017044bbe52e8"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --lib surface_fillet -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-drop-curve-accuracy-fillet-oracle.log.gz",
+        "uncompressed_sha256": "3c177556e99801f864dc540fd7c172ac8e345ff89839e60c4f891f58ec876d20"
+      },
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-drop-curve-accuracy-clippy.log.gz",
+        "uncompressed_sha256": "46e46ebfad0d761d49a680ca3a110f72509d92924763013f092dba4267d14e9b"
+      }
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-drop-curve-accuracy-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": "cargo build --release -p viboceros-oracle --features native-smlib",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-drop-curve-accuracy-oracle-build.log.gz",
+        "uncompressed_sha256": "7e9ecef0ea2762aa29e53a14e3ffa6989df5b6a3b20f602e2484446fe30012cd"
+      }
+    }
+  ],
+  "execution_environment": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8. Cargo gates sequential; separate preexisting normal/manual and ASan native build trees. No Wine, FEX, launcher or licensing changes.",
+  "direct_probes": {
+    "baseline": {
+      "exit_code": 1,
+      "cases": 270,
+      "passed": 18,
+      "failed": 252,
+      "maximum_normalized_lateral_error": 0.0006666666666738097,
+      "caller_normalized_tolerance": 1e-08,
+      "source_unchanged": true,
+      "raw": {
+        "retained": "docs/native-drop-curve-accuracy-baseline.jsonl.gz",
+        "uncompressed_sha256": "8e51b4f84ecf3162fed69e2d04dcd7a4453dc31fc9d193f12fc4682123cef293"
+      },
+      "stderr": {
+        "retained": "docs/native-drop-curve-accuracy-baseline.stderr.gz",
+        "uncompressed_sha256": "0271687f8859372381c97077086ad3568b11f18b1833de5c761eac6c6c9bd813"
+      }
+    },
+    "normal": {
+      "exit_code": 0,
+      "cases": 270,
+      "passed": 270,
+      "failed": 0,
+      "maximum_normalized_lateral_error": 9.887701213351363e-09,
+      "caller_normalized_tolerance": 1e-08,
+      "source_unchanged": true,
+      "raw": {
+        "retained": "docs/native-drop-curve-accuracy-normal.jsonl.gz",
+        "uncompressed_sha256": "94f70c88b1c31a5c3e3105aaf1ba70a1eabaf4ad31c7a8d8b8637a89bb8efa95"
+      },
+      "stderr": {
+        "retained": "docs/native-drop-curve-accuracy-normal.stderr.gz",
+        "uncompressed_sha256": "02040afab0e7ba59c8eb75326210dc90c59d35f4dd5a0f31acbe9338322eb57c"
+      },
+      "build_log": {
+        "retained": "docs/native-drop-curve-accuracy-normal-build.log.gz",
+        "uncompressed_sha256": "79e54325af17569d35339e533834297c64bb3a7411abe3d144724a04d49319cb"
+      }
+    },
+    "asan": {
+      "exit_code": 0,
+      "cases": 270,
+      "passed": 270,
+      "failed": 0,
+      "maximum_normalized_lateral_error": 9.887702268063236e-09,
+      "caller_normalized_tolerance": 1e-08,
+      "source_unchanged": true,
+      "raw": {
+        "retained": "docs/native-drop-curve-accuracy-asan.jsonl.gz",
+        "uncompressed_sha256": "7e8780244f95bbd5eefa01737061b24eba54acab4344d8f0988abe86a568ed34"
+      },
+      "stderr": {
+        "retained": "docs/native-drop-curve-accuracy-asan.stderr.gz",
+        "uncompressed_sha256": "02040afab0e7ba59c8eb75326210dc90c59d35f4dd5a0f31acbe9338322eb57c"
+      },
+      "runtime": {
+        "elapsed_seconds": 326.7009562039748,
+        "runner_timeout_seconds": 600,
+        "exit_code": 0,
+        "cases": 270
+      },
+      "flags": {
+        "retained": "docs/native-drop-curve-accuracy-asan-flags.txt.gz",
+        "uncompressed_sha256": "888cbfe8e382136c4adedd9557bf255553da0cea35457356e6dbdbe58e30b8f6"
+      },
+      "build_log": {
+        "retained": "docs/native-drop-curve-accuracy-asan-build.log.gz",
+        "uncompressed_sha256": "d028e1de5b2a6afc4249ad02dbc4414052e675059cc05c6ef53de1267a2b78fa"
+      }
+    }
+  },
+  "initial_incomplete_asan_attempt": {
+    "outcome": "runner_timeout",
+    "runner_timeout_seconds": 120,
+    "completed_rows": 113,
+    "completed_passes": 113,
+    "diagnostic_bytes": 0,
+    "scope": "The subprocess runner killed the instrumented executable at its fixed 120-second limit; this is an incomplete attempt, not a passing run.",
+    "raw": {
+      "retained": "docs/native-drop-curve-accuracy-asan-initial.jsonl.gz",
+      "uncompressed_sha256": "543ae0fb2713eee28d679d1a4effde486c98fb1af513846fbeb31b3c939fceac"
+    },
+    "stderr": {
+      "retained": "docs/native-drop-curve-accuracy-asan-initial.stderr.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "fillet_cap_diagnostic": {
+    "summary": [
+      {
+        "normalized": false,
+        "extend": false,
+        "defining_geometry_unchanged": true,
+        "connectivity_and_use_orientation_unchanged": true,
+        "cap_witnesses": [
+          {
+            "edge": 1,
+            "previous_closest_witness_gap": 6.661338147750939e-16,
+            "repaired_closest_witness_gap": 6.661338147750939e-16,
+            "repaired_synced_max": 2.0679515313825692e-25,
+            "caller_budget": 1e-08
+          },
+          {
+            "edge": 3,
+            "previous_closest_witness_gap": 0.0,
+            "repaired_closest_witness_gap": 0.0,
+            "repaired_synced_max": 0.0,
+            "caller_budget": 1e-08
+          }
+        ],
+        "scope": "Closest locus distances are evaluated independently at the worst synchronized station on each trim. This is a diagnostic witness, not a global bound on closest locus distance. Native tolerance metadata changes are retained in raw snapshots; comparison uses original caller budget."
+      },
+      {
+        "normalized": false,
+        "extend": true,
+        "defining_geometry_unchanged": true,
+        "connectivity_and_use_orientation_unchanged": true,
+        "cap_witnesses": [
+          {
+            "edge": 1,
+            "previous_closest_witness_gap": 5.313895273622935e-08,
+            "repaired_closest_witness_gap": 2.2659282652646385e-09,
+            "repaired_synced_max": 9.147219431202051e-09,
+            "caller_budget": 1e-08
+          },
+          {
+            "edge": 3,
+            "previous_closest_witness_gap": 7.654718124949058e-08,
+            "repaired_closest_witness_gap": 4.998619921496566e-09,
+            "repaired_synced_max": 6.32416743443034e-09,
+            "caller_budget": 1e-08
+          }
+        ],
+        "scope": "Closest locus distances are evaluated independently at the worst synchronized station on each trim. This is a diagnostic witness, not a global bound on closest locus distance. Native tolerance metadata changes are retained in raw snapshots; comparison uses original caller budget."
+      },
+      {
+        "normalized": true,
+        "extend": false,
+        "defining_geometry_unchanged": true,
+        "connectivity_and_use_orientation_unchanged": true,
+        "cap_witnesses": [
+          {
+            "edge": 1,
+            "previous_closest_witness_gap": 1.1775693440128313e-15,
+            "repaired_closest_witness_gap": 1.1775693440128313e-15,
+            "repaired_synced_max": 4.441163140772446e-15,
+            "caller_budget": 1e-08
+          },
+          {
+            "edge": 3,
+            "previous_closest_witness_gap": 2.6694457840969112e-15,
+            "repaired_closest_witness_gap": 2.6694457840969112e-15,
+            "repaired_synced_max": 4.441976168356516e-15,
+            "caller_budget": 1e-08
+          }
+        ],
+        "scope": "Closest locus distances are evaluated independently at the worst synchronized station on each trim. This is a diagnostic witness, not a global bound on closest locus distance. Native tolerance metadata changes are retained in raw snapshots; comparison uses original caller budget."
+      },
+      {
+        "normalized": true,
+        "extend": true,
+        "defining_geometry_unchanged": true,
+        "connectivity_and_use_orientation_unchanged": true,
+        "cap_witnesses": [
+          {
+            "edge": 1,
+            "previous_closest_witness_gap": 3.374244541349986e-08,
+            "repaired_closest_witness_gap": 3.5038718598013148e-09,
+            "repaired_synced_max": 4.936315254566558e-09,
+            "caller_budget": 1e-08
+          },
+          {
+            "edge": 3,
+            "previous_closest_witness_gap": 1.195375763831075e-07,
+            "repaired_closest_witness_gap": 2.47737599948851e-09,
+            "repaired_synced_max": 7.007345372873297e-09,
+            "caller_budget": 1e-08
+          }
+        ],
+        "scope": "Closest locus distances are evaluated independently at the worst synchronized station on each trim. This is a diagnostic witness, not a global bound on closest locus distance. Native tolerance metadata changes are retained in raw snapshots; comparison uses original caller budget."
+      }
+    ],
+    "runner": {
+      "retained": "docs/native-drop-curve-accuracy-fillets.py.gz",
+      "uncompressed_sha256": "8fff5365e43a74a03088f1ae72c638b2e510998cb014a8c6e69981c42b7b8b53"
+    },
+    "driver": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims.cpp.gz",
+      "uncompressed_sha256": "c7d3e7078d08f8508f82fc76f1c5869a2b386c64798e27d32d0040ef6a204daa"
+    },
+    "build_log": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims-build.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "previous": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims-previous.jsonl.gz",
+      "uncompressed_sha256": "6b7c7d33b8dd030bc76f5d7d0cde68f8f36b420ea86b3f32faef1093cabdeb0c"
+    },
+    "repaired": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims.jsonl.gz",
+      "uncompressed_sha256": "2173ff2d3b146e6ac4e5d6c9c70f69a1cd54edb77ef9631279b0ed3f2107a3e1"
+    },
+    "stderr": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims.stderr.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "analysis": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims-analysis.json.gz",
+      "uncompressed_sha256": "8b6a3fcccf704911a5c9e521fb0b3744e3e94bf897bbdff95f5150e8639e490e"
+    },
+    "analysis_log": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims-analysis.log.gz",
+      "uncompressed_sha256": "4992c88c611bd4d7cb8c56b61c635642237a65851240c0f2aea9678f3db7a29b"
+    },
+    "inspector": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims-inspect.py.gz",
+      "uncompressed_sha256": "06e21dcf8a9d871f096ede418844e0dd85dc55abba6e690191aa87e87eda2512"
+    },
+    "previous_analysis": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-trims-previous-analysis.json.gz",
+      "uncompressed_sha256": "e00902a43348b094143175cc9879be16b9b94a7894c289be38b74b3f936464bd"
+    }
+  },
+  "shared_fillet_probes": {
+    "normal": {
+      "exit_code": 0,
+      "geometry_and_lifetime_cases": 56,
+      "rejected_requests": 10,
+      "maximum_sampled_analytic_error": 7.075476204931874e-09,
+      "raw": {
+        "retained": "docs/native-drop-curve-accuracy-fillet-normal.jsonl.gz",
+        "uncompressed_sha256": "19bdd98e36ceb45c2eafe2b1189e42ba3b5245db13b55f39091456c5192bff37"
+      },
+      "stderr": {
+        "retained": "docs/native-drop-curve-accuracy-fillet-normal.stderr.gz",
+        "uncompressed_sha256": "eacaff3d01bbc31e2c651bddc659add9fa04a0dfc26d46f506a56b5088188dbd"
+      },
+      "build_log": {
+        "retained": "docs/native-drop-curve-accuracy-fillet-normal-build.log.gz",
+        "uncompressed_sha256": "cdaee5148e96441968f6b0202ff6cb94828c455ec2484874da1a3bdc49c0a542"
+      }
+    },
+    "asan": {
+      "exit_code": 0,
+      "geometry_and_lifetime_cases": 56,
+      "rejected_requests": 10,
+      "maximum_sampled_analytic_error": 7.075476204931874e-09,
+      "raw": {
+        "retained": "docs/native-drop-curve-accuracy-fillet-asan.jsonl.gz",
+        "uncompressed_sha256": "a33ff8b0b64fb1dcdbc221a8140a0702cd3bb569fd9ac50d44a9f1a9bb6996e2"
+      },
+      "stderr": {
+        "retained": "docs/native-drop-curve-accuracy-fillet-asan.stderr.gz",
+        "uncompressed_sha256": "eacaff3d01bbc31e2c651bddc659add9fa04a0dfc26d46f506a56b5088188dbd"
+      },
+      "build_log": {
+        "retained": "docs/native-drop-curve-accuracy-fillet-asan-build.log.gz",
+        "uncompressed_sha256": "cdaee5148e96441968f6b0202ff6cb94828c455ec2484874da1a3bdc49c0a542"
+      }
+    },
+    "runner": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-probes.py.gz",
+      "uncompressed_sha256": "14a488445b480ee9046ace9ea7c52a31b9fcf2d591ee0c432fdd56577fe67028"
+    }
+  },
+  "saved_sdk_audits": {
+    "contact_complete_matches": 5,
+    "fillet_followup": {
+      "executed": 6,
+      "sampled_successes": 5,
+      "paired_closest_points": 20,
+      "maximum_point_difference": 5.07015229800345e-09,
+      "maximum_bounds_difference": 1.908758778786167e-09,
+      "by_recipe": [
+        {
+          "id": "planes-0-False",
+          "maximum_point_difference": 1.7763568394002505e-15,
+          "maximum_bounds_difference": 1.7763568394002505e-15
+        },
+        {
+          "id": "planes-0-True",
+          "maximum_point_difference": 1.7763568394002505e-15,
+          "maximum_bounds_difference": 1.7763568394002505e-15
+        },
+        {
+          "id": "planes-3-False",
+          "maximum_point_difference": 8.881784197001252e-16,
+          "maximum_bounds_difference": 2.6645352591003757e-15
+        },
+        {
+          "id": "planes-3-True",
+          "maximum_point_difference": 1.7763568394002505e-15,
+          "maximum_bounds_difference": 1.7763568394002505e-15
+        },
+        {
+          "id": "cylinder-False",
+          "maximum_point_difference": 5.07015229800345e-09,
+          "maximum_bounds_difference": 1.908758778786167e-09
+        }
+      ],
+      "complete_raw_matches": 0,
+      "complete_raw_mismatches": 5,
+      "failures": [
+        {
+          "status": "failure",
+          "id": "cylinder-True",
+          "error": {
+            "kind": "geometry",
+            "message": "adaptive numerical integration did not converge at the requested tolerance"
+          }
+        }
+      ],
+      "scope": "Complete captures and actual failures retained. Successful samples do not prove continuous global Rhino parity; no raw NURBS/topology differences were normalized away."
+    },
+    "contact-audit": {
+      "retained": "docs/native-drop-curve-accuracy-contact-audit.json.gz",
+      "uncompressed_sha256": "0c3bca52cbb17f81a836b3b3f51fb378e2aafdc5e5c96a9fc99ca72b1a4d5622"
+    },
+    "contact-report": {
+      "retained": "docs/native-drop-curve-accuracy-contact-report.json.gz",
+      "uncompressed_sha256": "a9e54d2655a46ec945e1b11270295fa0d11536289229057dc8be6c19bef06522"
+    },
+    "fillet-audit": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-audit.json.gz",
+      "uncompressed_sha256": "7772ccbb5be9c1c195f45fe9e85e6260193cef6ed459dc6f4ae3fc4f58fecd22"
+    },
+    "fillet-raw-report": {
+      "retained": "docs/native-drop-curve-accuracy-fillet-raw-report.json.gz",
+      "uncompressed_sha256": "2646fbde8342e5f94e335479e4ec032f1a785e19fa0820534675d459b5925893"
+    },
+    "runner": {
+      "retained": "docs/native-drop-curve-accuracy-compare.py.gz",
+      "uncompressed_sha256": "350d6dd1359aba058218cbfc9624df57213893aa50aca72e11755a2808072558"
+    },
+    "log": {
+      "retained": "docs/native-drop-curve-accuracy-compare.log.gz",
+      "uncompressed_sha256": "a72020e738523c3247f91a5e89c92d3188d62ef2db8c826b6ce1993a5338cbe5"
+    }
+  },
+  "runner_scripts": {
+    "gates.py": {
+      "retained": "docs/native-drop-curve-accuracy-gates.py.gz",
+      "uncompressed_sha256": "8b4fff90e6a7a7a2a820817f1cf11d3deec2542b8bb8fd88ec4cd675eaaddda3"
+    },
+    "probes.py": {
+      "retained": "docs/native-drop-curve-accuracy-probes.py.gz",
+      "uncompressed_sha256": "af271e4939f6ce01e11de1c37626fd92d3e9e6aec2af9809495a96763209d3aa"
+    },
+    "asan-run.py": {
+      "retained": "docs/native-drop-curve-accuracy-asan-run.py.gz",
+      "uncompressed_sha256": "dd10830ac49fc3072a712ec7c8aa098a26f11bdcb8dfb42eb057b0d1a3d2052e"
+    },
+    "record.py": {
+      "retained": "docs/native-drop-curve-accuracy-record.py.gz",
+      "uncompressed_sha256": "1003832ae32985c9d1ddbd57fc5042c24927dbf9ddb4e22169b10594fe4533e8"
+    },
+    "preserve-provenance.py": {
+      "retained": "docs/native-drop-curve-accuracy-preserve-provenance.py.gz",
+      "uncompressed_sha256": "c52b15fc01e987cfaff810e144b41d2aa13c0d1f08ee81be24ddce7ea3f576c9"
+    },
+    "provenance.log": {
+      "retained": "docs/native-drop-curve-accuracy-provenance.log.gz",
+      "uncompressed_sha256": "8a8653328b7a9015c8d9f7d8847696c2388ad044c4a408904c2dd4cc25082b6d"
+    },
+    "after-gates.py": {
+      "retained": "docs/native-drop-curve-accuracy-after-gates.py.gz",
+      "uncompressed_sha256": "daef85c0c8cdde6ef017e8e629c41a1aefa8f3e74115a4ef8195bc7bbd1b2108"
+    }
+  },
+  "historical_provenance": {
+    "preserved_entries": 3,
+    "records": 1,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "generated_source_sha256": "8946b5f29c375b63882dadf855c371773b594fd4e03d92e91a1da93454f4a63d",
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-drop-curve/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Independent exact polynomial drop family exercises short spans and off-grid narrow features, scales, orientations, source purity and ownership; identical pinned-source baseline and complete-library ASan; four actual fillet cap before/after snapshots; existing fillet/bridge/command callers; saved complete SDK protocol values; workspace lint and formatting.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python-binding, OCCT and GUI harnesses. No new SDK capture required for unchanged recipes; saved SDK captures remain raw and hash-pinned."
+  },
+  "limitations": [
+    "Tests are sampled; general drop completeness, a continuous global error guarantee and performance are unqualified. Native surface and curve knot queries/intersections retain their existing numerical limits.",
+    "Curved ExtendYes surface fillets, support continuation, boundary policy, FilletSrf picking, source trimming, joining and document/preview workflow remain in progress. Actual current execution failures and raw SDK mismatches are retained.",
+    "ASan instruments SMLib, SM_API, the bridge and the direct native matrix. Rust caller gates run normally. Leak detection is disabled; the initial 120-second runner timeout is retained as incomplete and is not a passing run."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "3979fbc40aa152f00fdb9e9229beed822a3b3418e45a5ba8b2ba71f4de118d6a",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "c498a95494d9d17b2e6818f96ffe33bcc4d59cc9af764497261fbd32d676ad35",
+    "third_party/patches/usd-brep-drop-curve-accuracy.patch": "a3cfb968047330364c030626648bb9cf8bdaebcfa02c7889b5a3d2790db61e2c",
+    "third_party/patches/usd-brep-drop-curve-accuracy.cmake": "23f4471d1389f1c92c492c95b676920cbe7831d4cd3afd29b28372c477afeaf3",
+    "tools/usd_brep/drop_curve_accuracy_probe.cpp": "4cf916f6a22670fc7e56c012c89096e4cfc855a3903b91d1905f0597e4917894",
+    "third_party/usd-brep/source/SMLib/src/SmSurfaceDropLib.cpp": "05849d1db93201ece3710276add05af4f94adf66a41b7430710abc997b477215",
+    "third_party/usd-brep/source/SMLib/src/SmCurveClass.cpp": "c208e80640abc90098e59c380db347a925eb0d4aa6103c4e09a3c4a6c54466a9",
+    "third_party/usd-brep/source/SMLib/src/SmCrvOnSurf.cpp": "c0faff38a00495695f6c1b74125064b9aefc354f6192ce44c6dae6300cd8f03d",
+    "third_party/usd-brep/source/SMLib/src/SmHermiteCurve.cpp": "2c8d569586bc527278d917e71737b8388a415c80016d6187d0867afac2c488c3"
+  },
+  "artifact_sha256": {
+    "docs/native-drop-curve-accuracy-focused.log.gz": "43bf685b2b4c1e7ec8d8f493bead12773d82df10484abadb4ac86afb4e355d57",
+    "docs/native-drop-curve-accuracy-bridge.log.gz": "9de98a973e4ac42d042235c8b0604089a96f50515a152660e15f949cd9885361",
+    "docs/native-drop-curve-accuracy-command.log.gz": "3e99963010594772b39b014418c518d08b467405d7b0df6346b190c8c0dfd3dd",
+    "docs/native-drop-curve-accuracy-fillet-oracle.log.gz": "b665c741ef7d6f85b338f4a2bca290fac1af526a7c49f921847703f08ccfa70a",
+    "docs/native-drop-curve-accuracy-clippy.log.gz": "9eeca49c9ddf271e57670f2f69f4114f3c0c1727f51c94533924d06d7bd669a9",
+    "docs/native-drop-curve-accuracy-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-drop-curve-accuracy-oracle-build.log.gz": "6466ecad299d47c094c2ccb2c7ab370fa582934f2dd3bdca3e27d6c619a09215",
+    "docs/native-drop-curve-accuracy-baseline.jsonl.gz": "4b960a6120345392f06ade9c8277fefbebf0ac1e8c95515827903ecf2c05a226",
+    "docs/native-drop-curve-accuracy-baseline.stderr.gz": "d735f23433d25003592c4d61d085bcdf47e2bbf0167b21a2c9daf16b32421a9d",
+    "docs/native-drop-curve-accuracy-normal.jsonl.gz": "0f5b58e641fecd39caa7a6cae551a5140110ceee9c0a7080eeba30a5789f685d",
+    "docs/native-drop-curve-accuracy-normal.stderr.gz": "333bc75504ee831bcdff6127a4287227e82df4b100bd24d32e190c2038dcb119",
+    "docs/native-drop-curve-accuracy-asan.jsonl.gz": "d50ae4ffc3023a519a60a74155f5c235875ab65d7440b3492c7dfdaf845523e9",
+    "docs/native-drop-curve-accuracy-asan.stderr.gz": "333bc75504ee831bcdff6127a4287227e82df4b100bd24d32e190c2038dcb119",
+    "docs/native-drop-curve-accuracy-asan-flags.txt.gz": "d00155cc0ae69815014f448e8abb7a6865f5dccf9c4434d4ceac79ea6740c62b",
+    "docs/native-drop-curve-accuracy-normal-build.log.gz": "8e1f2e326b26f87ee448e76d26fe18fdf6d012cc0325f7ee8fe265f1705fc747",
+    "docs/native-drop-curve-accuracy-asan-build.log.gz": "f3faca42a486591d4265bdacec6c617a588b1555362b6d7dcbbe54bdd8baf6a7",
+    "docs/native-drop-curve-accuracy-asan-initial.jsonl.gz": "0e2f0c5021f091b7a8c5a9a861606199be119399419d07cc19f60a458997f68d",
+    "docs/native-drop-curve-accuracy-asan-initial.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-drop-curve-accuracy-fillets.py.gz": "14e3a61b35801ab34f1a885d2ef526837c02cf918c3707c722383b806ca292b0",
+    "docs/native-drop-curve-accuracy-fillet-trims.cpp.gz": "ca34eb3968b8ec56ed33cbed8b6782103eba00c32b1abff170566eb8fb79ae5b",
+    "docs/native-drop-curve-accuracy-fillet-trims-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-drop-curve-accuracy-fillet-trims-previous.jsonl.gz": "2f300fa3662ac2d0fb68b33d59c35fbfc470dee40fe8aa3caabd64d0d6ff12d6",
+    "docs/native-drop-curve-accuracy-fillet-trims.jsonl.gz": "df87e0d8848016775d06431fb71e1a3e2c14c5f948fabda4f629dfd2f37105c5",
+    "docs/native-drop-curve-accuracy-fillet-trims.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-drop-curve-accuracy-fillet-trims-analysis.json.gz": "16eaad92f80430d874635c3c0bf7aef30ae6bf0f40ba9c296da644a1c06769a1",
+    "docs/native-drop-curve-accuracy-fillet-trims-analysis.log.gz": "769f880f24c0eeecbe9aa5f71237504f9297ea68bc5dd96c0bd9c284a0fa4f76",
+    "docs/native-drop-curve-accuracy-fillet-trims-inspect.py.gz": "57af6ce1a53cdce6d9a370ed1753b8f2fdd65525629d4a3789d2b3f416a25a84",
+    "docs/native-drop-curve-accuracy-fillet-trims-previous-analysis.json.gz": "9b2184c34ad4cef06fd014c5574772f19681297036636b8a55137f1f8ecaa41d",
+    "docs/native-drop-curve-accuracy-fillet-normal.jsonl.gz": "7589f6e52f15d98ee9497d355758dea73909ac65c451a181ac08b64868c80b4f",
+    "docs/native-drop-curve-accuracy-fillet-normal.stderr.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-drop-curve-accuracy-fillet-normal-build.log.gz": "ebd69aaf1ce090b011ecfb5a33ea3537fa2772f0f13e3f25d861b59966702a06",
+    "docs/native-drop-curve-accuracy-fillet-asan.jsonl.gz": "830b9a23bae9a21a27d1c79f12da8104b182d067d8cc3bc9bbf401c52aa480ea",
+    "docs/native-drop-curve-accuracy-fillet-asan.stderr.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-drop-curve-accuracy-fillet-asan-build.log.gz": "ebd69aaf1ce090b011ecfb5a33ea3537fa2772f0f13e3f25d861b59966702a06",
+    "docs/native-drop-curve-accuracy-fillet-probes.py.gz": "6d53b4bbb03483fa29e70d0ab84ac4fdc13ee08323224019e60cff56cd706b74",
+    "docs/native-drop-curve-accuracy-contact-audit.json.gz": "284de12ea8507aa9230c2636d03001dc02a44e6979459cbd490d843369084b90",
+    "docs/native-drop-curve-accuracy-contact-report.json.gz": "11d742fa8349a74eb5e98b01a77c36f4401f657222987de7cd9a7b5b3166fd22",
+    "docs/native-drop-curve-accuracy-fillet-audit.json.gz": "a85d9614a74bd8aebfa8c6c7cf35f1e2d6778c5d55b6cded05b85f6524339ff8",
+    "docs/native-drop-curve-accuracy-fillet-raw-report.json.gz": "34f94f282eb58e6db71a195333d8e058dbdde6ef1fa8d69a5c1c6c0f3825493c",
+    "docs/native-drop-curve-accuracy-compare.py.gz": "1d493e6863113fbbd8f3933e47a851eea02eb4be98b7dc5aeb221376d3fc58b9",
+    "docs/native-drop-curve-accuracy-compare.log.gz": "ce0cbfa61c313838053feaa3e23abfdd224750131d6b6444dac7bd6e44ef12a0",
+    "docs/native-drop-curve-accuracy-gates.py.gz": "72b63d21bfdf185f0fb14fba5ae02b1183c429ab0a68f1be78f4662ea3ca292b",
+    "docs/native-drop-curve-accuracy-probes.py.gz": "817d977d4b92ad312c510f07991df7d6fcd81704b84399dbc60125a8ba1c0d3e",
+    "docs/native-drop-curve-accuracy-asan-run.py.gz": "7f459902636192bcc2959911b464d32bb8f7db68d069c20caeaa63dbc2d14362",
+    "docs/native-drop-curve-accuracy-record.py.gz": "c04f273108f2ac481e3d0a189a816fb42a070a3bbece98271a8530e91128f195",
+    "docs/native-drop-curve-accuracy-preserve-provenance.py.gz": "69265ec3cdb67d09db499d9959cd0780a57596434c4b59a8fc8da9e1cb670477",
+    "docs/native-drop-curve-accuracy-provenance.log.gz": "5070e09c022994756b1e339e3fa5c58bbab8a13893c1a52a6e3ad4e6bfe55366",
+    "docs/native-drop-curve-accuracy-after-gates.py.gz": "2d5456dc02f39c6c74fa3d72fbba06ded3acbe97e321586c3d4f640bc9fbbfb4",
+    "README.md": "621595dcf1899d1b6a2b1ddd3b673aa1ce8397b30be8d165152050e7bafab945",
+    "docs/native-drop-curve-accuracy.md": "daaf3ec4d286418f13921952faf9eccbc94ccc8215867f6cdd108af931b52437"
+  },
+  "baseline_git_sha256": {
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/build.rs": "71d2d70542fa49635b665ab66d08c77c1f21cced8426f6c2a9d81cb6e467da17",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/native/CMakeLists.txt": "45bb101c37c52f0ccb2ff3bf22bab65d37464bb637eb48fc06b7eccc0927c230",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/rhino_oracle/fixtures/curve_contacts_tolerance.json": "c79961765c85f953c91d85a625af69f8f6ade6d9bfe86f130f3edafa8f7bbd7f",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/rhino_oracle/observations/curve_contacts_tolerance.json": "d52bce3c92f8e807d84c756514b036309789af46f5397df34858918f1935cb4f"
+  }
+}

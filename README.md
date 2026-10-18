@@ -109,6 +109,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Native NURBS offsets and qualification](docs/smlib-curve-offset.md)
 - [Native curve intersections and qualification](docs/smlib-curve-intersections.md)
 - [Native in-tolerance curve contacts](docs/native-curve-contact-tolerance.md)
+- [Native UV drop accuracy](docs/native-drop-curve-accuracy.md)
 - [Native curve self-intersections and qualification](docs/smlib-curve-self-intersections.md)
 - [Native curve/surface intersections and qualification](docs/smlib-curve-surface-intersections.md)
 - [Native general surface intersections, face trims and tangencies](docs/smlib-surface-surface-intersections.md)

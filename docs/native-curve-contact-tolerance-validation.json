@@ -345,8 +345,6 @@
     "ASan executes the direct C ABI matrix; Rust coordination and command replays run normally. Leak detection is disabled."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "71d2d70542fa49635b665ab66d08c77c1f21cced8426f6c2a9d81cb6e467da17",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "45bb101c37c52f0ccb2ff3bf22bab65d37464bb637eb48fc06b7eccc0927c230",
     "crates/viboceros-smlib/native/bridge.cpp": "71de4241ccfba0ead693555e9c3046212bf84cf97819d05dd4b87552c2ff9118",
     "crates/viboceros-smlib/native/bridge.h": "bf59d13258ccb604153b56ed7578dda07fdd1a144912ed94fe8ab601e0dc12da",
     "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
@@ -411,7 +409,6 @@
     "docs/native-curve-contact-tolerance-extension-sdk-response.json.gz": "d7787447e23798db91e1112c0db28ad4c7df1057eab0e7bd293cfb163d9ebc3f",
     "docs/native-curve-contact-tolerance-extension-sdk.log.gz": "441981175b5dc906d9c56f832c770bd1b751fbaf5e434254ec1edbf381db8b84",
     "docs/native-curve-contact-tolerance-extension-sdk.py.gz": "0dbb7ee9e3968913813c2237b686c7860370c7c8910c493b6536fad18816ff20",
-    "README.md": "0062ce15d87594f4c0aa00077e19ca39a23f598ae0db4c5d67b8f3cf163e8857",
     "docs/smlib-curve-intersections.md": "10792c31670abd43c28eaa5991bc4841403484d5fd592c167a757de0fb215fba",
     "docs/usd-brep-limitations.md": "8df3d14512312a4aabcff8181877082f4f492772b8ac1220b3f8d943c3e86246",
     "docs/native-surface-fillets.md": "59bd1f23a782ec536cd4c8a3b53b712914d94f3e48a25f7c1746e92544bfd0c0",
@@ -431,5 +428,12 @@
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/build.rs": "df2d2e1f273ebd01fd60f6c7978768cd21857378c9547c02057d078a9374cd7e",
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/native/CMakeLists.txt": "f15a0f9b3e6affbbea3ace9040d0ee9d53b611362f9f0f6bb0650fbe1d3edf0c",
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/tests/curve_intersections.rs": "74692a5072318f233548660abe689c3c1a4118e197326a9fde0287649e469c74"
+  },
+  "source_git_sha256": {
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/build.rs": "71d2d70542fa49635b665ab66d08c77c1f21cced8426f6c2a9d81cb6e467da17",
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/native/CMakeLists.txt": "45bb101c37c52f0ccb2ff3bf22bab65d37464bb637eb48fc06b7eccc0927c230"
+  },
+  "artifact_git_sha256": {
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:README.md": "0062ce15d87594f4c0aa00077e19ca39a23f598ae0db4c5d67b8f3cf163e8857"
   }
 }
