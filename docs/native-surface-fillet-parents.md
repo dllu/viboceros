@@ -63,9 +63,10 @@ be inspected by the C ABI probe, but successful native construction does not
 establish certified Rust B-rep transfer. Curved `Extend=Yes` matching also
 remains unfinished; this change retains its existing policy.
 
-The full FilletSrf command, interactive workflow, document attributes/history,
-general trimmed parent inputs, disconnected-component choice, and remaining extension/certificate work are
-still in progress. [Validation evidence](native-surface-fillet-parents-validation.json)
+The initial [FilletSrf command](commands/fillet-srf.md) now supplies interactive
+picks, previews, metadata preservation and undo/redo. General trimmed parent
+inputs, disconnected-component choice and remaining extension/certificate work
+are still in progress. [Validation evidence](native-surface-fillet-parents-validation.json)
 records the actual gates, complete raw comparisons, native ownership probes
 and outstanding limitations. AddressSanitizer leak detection is disabled.
 

@@ -6,7 +6,9 @@ use viboceros_geometry::{BrepJoinComponent, join_breps, join_breps_with_report};
 #[cfg(feature = "native-smlib")]
 mod native;
 #[cfg(feature = "native-smlib")]
-use native::{join_breps, join_breps_for_pick};
+pub(crate) use native::join_breps;
+#[cfg(feature = "native-smlib")]
+use native::join_breps_for_pick;
 
 #[cfg(not(feature = "native-smlib"))]
 fn join_breps_for_pick(

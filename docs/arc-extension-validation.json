@@ -478,8 +478,6 @@
     "docs/commands/arc-tangent.md": "7e50fe177535bbcb3e179de6bcf112d72e1cd9ef9ed45a67980696653b0298a2",
     "src/app/arc_deform.rs": "d6c3ac5c1e14a4c599ee7cf8796de0229868c212c4fe27be67169c713ff84614",
     "src/app/arc_extension.rs": "fb628ebfbd51203bb548d308c9965afa356f39e952a0f7c2b07039d56e0a984b",
-    "src/app/component_selection.rs": "0c5b479a037092e52e277fa2dbe5dc53868ff08dbaa977baf692e54f73fcb130",
-    "src/app/object_selection.rs": "6fc3a031c8a30a82969f948ad7e4a3effbc24487222f02633a5227b4a51bf27d",
     "src/app/point_input.rs": "d43fef428c643795cb2db46990869760a28ef1c5c8df55c6133effcba76ea18c",
     "src/app/tests/arc_extension.rs": "0f149304c4d0c444ec832834f085df5a0bf0dd556adcf5cc5b5728564de46bc3",
     "src/app/tests/ellipse_around.rs": "cc8979417370ff4755437d1848bde81051d79b60f05f81966b40bb6bdcd72719",
@@ -569,6 +567,8 @@
     "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/client.py": "96d04fd67d9444f81f680d00718c14a13745b0f8c7643a5090eb6d07ff3f9011",
     "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/rhino_worker.py": "65d00106ae72337cc6f706944d5e9a1be96277558d18d3cce6b194b3cb44f6b4",
     "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/structural_sdk.py": "a684b5146cf4d5e72b09f8ce82810cb1369043684dc0757d81d5dea32d545c55",
-    "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b"
+    "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:src/app/component_selection.rs": "0c5b479a037092e52e277fa2dbe5dc53868ff08dbaa977baf692e54f73fcb130",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:src/app/object_selection.rs": "6fc3a031c8a30a82969f948ad7e4a3effbc24487222f02633a5227b4a51bf27d"
   }
 }

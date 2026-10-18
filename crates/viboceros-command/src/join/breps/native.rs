@@ -167,7 +167,7 @@ fn assemble_with_orientation(
     })
 }
 
-pub(super) fn join_breps(
+pub(crate) fn join_breps(
     sources: &[&Brep],
     distance: Real,
     tolerance: Tolerance,

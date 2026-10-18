@@ -231,7 +231,6 @@
   "source_sha256": {
     "crates/viboceros-smlib/src/native/shape.rs": "c6b973d1d6e49293bcefc673c47f7f8a2cfde8ca03d6da889d52eb8eb87fd90e",
     "crates/viboceros-smlib/tests/stitch_remote_solid.rs": "c8be43c1bf1e971b4fd406c4e59bffd595a3d2d67f35e48f45ec90dbd8178812",
-    "crates/viboceros-command/src/join/breps/native.rs": "b6f24e664a5cb3f81137e6c1333d7199c7b7c46f5c3a75163a82782fd3c26bc4",
     "crates/viboceros-command/src/join/breps/native/tests.rs": "75d76f46bdb6e8797933b9a0c879868c2aa5e3417d78707013f0de688003fb90",
     "crates/viboceros-command/tests/native_closed_join.rs": "ccd8575ad1eb7e0e033f0708971e31bed34551d3fe3c80ef65ed0916b77350d1",
     "crates/viboceros-geometry/src/brep/solid_orientation.rs": "2359984c7f911ace4c2cdb5d3c471431e183d4c073b60d9334b833ca855a72fd",
@@ -275,7 +274,6 @@
     "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
     "docs/curve-deviation-subcurves-validation.json": "364688fa86746b4229a97c4fd181b07aad17ff9541f134fa667fa7422116f689",
-    "docs/join-pick-validation.json": "9145085e97b96cd0b0304f7f9bdbf7ff29e8e58bed67e62ee199c8ddefc7e27d",
     "docs/join-source-uv-validation.json": "0794300adf0ba0801f3228f024007e8fe051d22a1206ab74f9a22b2ba0424105"
   },
   "baseline_git_sha256": {
@@ -290,13 +288,15 @@
     "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
     "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/native/bridge.cpp": "9b464b04c066eb43c55abf66c13ddbb481c9d8f975e05700e926835dcd83eb37",
-    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/native/bridge.h": "c626e2457787cd131947c43f4e6cc8df0b94fd3410c505df81d2ff6d2745f4a7"
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/native/bridge.h": "c626e2457787cd131947c43f4e6cc8df0b94fd3410c505df81d2ff6d2745f4a7",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:crates/viboceros-command/src/join/breps/native.rs": "b6f24e664a5cb3f81137e6c1333d7199c7b7c46f5c3a75163a82782fd3c26bc4"
   },
   "artifact_git_sha256": {
     "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:README.md": "9cc07dc43a448f572ce4c9a3af0842b438e028f96585fd6383306db5041834e9",
     "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:docs/usd-brep-limitations.md": "3023e3adebae7442d810ac36d2ce505ed93032f4da22011e3e1539ef924b9bab",
     "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:docs/native-uv-transpose-validation.json": "b46d1d465dcc3964df6e35eb85454088fe17ed80026d58697b510db48c9fba3a",
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/curve-distance-validation.json": "d950d707b44fc9d47e7a515db14d06a1f2761eeafedeafc3a59d16d43db4f181",
-    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/smlib-unclamped-import-validation.json": "8e66c5f693356ca2dfa7d8c09b9a85109055a1f2a5e2e1aebe4373dbab314cdc"
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/smlib-unclamped-import-validation.json": "8e66c5f693356ca2dfa7d8c09b9a85109055a1f2a5e2e1aebe4373dbab314cdc",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/join-pick-validation.json": "9145085e97b96cd0b0304f7f9bdbf7ff29e8e58bed67e62ee199c8ddefc7e27d"
   }
 }

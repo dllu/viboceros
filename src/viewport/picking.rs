@@ -217,6 +217,17 @@ impl Viewport {
         document: &Document,
         mode: FacePickMode,
     ) -> Option<(ObjectId, usize, Option<Point3>)> {
+        self.pick_selected_face_with_point_excluding(pointer, rect, document, mode, None)
+    }
+
+    pub(super) fn pick_selected_face_with_point_excluding(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        mode: FacePickMode,
+        excluded: Option<ObjectId>,
+    ) -> Option<(ObjectId, usize, Option<Point3>)> {
         let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
         let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> = if matches!(
             mode,
@@ -227,7 +238,7 @@ impl Viewport {
             Box::new(document.selected_objects())
         };
         for object in candidates {
-            if !selection_candidate(document, object, None) {
+            if Some(object.id()) == excluded || !selection_candidate(document, object, None) {
                 continue;
             }
             let display = if matches!(
@@ -1081,5 +1092,43 @@ mod tests {
         }
         assert!(triangle_depth(Pos2::ZERO, [Pos2::ZERO; 3], depths, true).is_none());
         assert!(triangle_depth(Pos2::ZERO, screen, [-1.0, 4.0, 8.0], true).is_none());
+    }
+}
+
+#[cfg(test)]
+mod excluded_faces {
+    use super::*;
+    #[test]
+    fn excluded_front_surface_allows_picking_the_overlapping_back_surface() {
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let mut doc = Document::default();
+        let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let mut ids = Vec::new();
+        for z in [0., 2.] {
+            let s = NurbsSurface::try_bilinear([
+                p(-1., -1., z),
+                p(1., -1., z),
+                p(1., 1., z),
+                p(-1., 1., z),
+            ])
+            .unwrap();
+            ids.push(doc.add_geometry(Geometry::NurbsSurface(s)).unwrap());
+        }
+        let pointer = view.project(p(0., 0., 0.), rect).unwrap();
+        let pick = |excluded| {
+            view.pick_selected_face_with_point_excluding(
+                pointer,
+                rect,
+                &doc,
+                FacePickMode::SurfaceAndBrepAny,
+                excluded,
+            )
+            .unwrap()
+        };
+        assert_eq!(pick(None).0, ids[1]);
+        let (id, face, point) = pick(Some(ids[1]));
+        assert_eq!((id, face), (ids[0], 0));
+        assert!(point.unwrap().distance_to(p(0., 0., 0.)).unwrap() < 1e-12);
     }
 }

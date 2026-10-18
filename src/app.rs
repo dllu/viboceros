@@ -177,6 +177,7 @@ mod extrude_surface_apex;
 mod extrude_surface_path;
 mod extrude_surface_tapered;
 mod extrude_tapered;
+mod fillet_surface;
 mod flow;
 mod grid_settings;
 mod group_prompt;
@@ -2327,6 +2328,7 @@ pub struct VibocerosApp {
     planar_boolean_prompt: Option<planar_boolean::Prompt>,
     tween_surfaces_prompt: Option<tween_surfaces::Prompt>,
     blend_surface_prompt: Option<blend_surface::Prompt>,
+    fillet_surface_prompt: Option<fillet_surface::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
@@ -2459,6 +2461,7 @@ impl VibocerosApp {
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
             blend_surface_prompt: None,
+            fillet_surface_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
@@ -2662,6 +2665,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_fillet_surface(&input) {
+            return;
+        }
         if self.continue_blend_surface(&input) {
             return;
         }
@@ -2787,6 +2793,7 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
+            || self.start_fillet_surface(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
@@ -5791,6 +5798,7 @@ impl VibocerosApp {
         self.cancel_block_add_input();
         self.block_session = None;
         self.blend_surface_prompt = None;
+        self.fillet_surface_prompt = None;
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
         self.cancel_boolean_two();
@@ -8627,7 +8635,7 @@ impl VibocerosApp {
         if self.pick_surface_extrusion_path(click.object_id) {
             return;
         }
-        if self.blend_surface_prompt.is_some() {
+        if self.blend_surface_prompt.is_some() || self.fillet_surface_prompt.is_some() {
             return;
         }
         if self.pick_block_edit_sources(click.object_id, click.mode) {
@@ -8929,7 +8937,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
-        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some()
+            || self.blend_surface_prompt.is_some()
+            || self.fillet_surface_prompt.is_some()
+        {
             return;
         }
         if self
@@ -8976,7 +8987,10 @@ impl VibocerosApp {
     }
 
     fn finish_fence_selection(&mut self) {
-        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some()
+            || self.blend_surface_prompt.is_some()
+            || self.fillet_surface_prompt.is_some()
+        {
             self.fence_selection = None;
             return;
         }
@@ -9068,7 +9082,10 @@ impl VibocerosApp {
         region_mode: RectSelectionMode,
         selection_mode: SelectionMode,
     ) {
-        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some()
+            || self.blend_surface_prompt.is_some()
+            || self.fillet_surface_prompt.is_some()
+        {
             self.boundary_selection = None;
             return;
         }
@@ -9208,7 +9225,10 @@ impl VibocerosApp {
         if self.select_block_add_region(&selection) {
             return;
         }
-        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some()
+            || self.blend_surface_prompt.is_some()
+            || self.fillet_surface_prompt.is_some()
+        {
             return;
         }
         if self.end_analysis_pick.is_some() {
@@ -9534,6 +9554,7 @@ impl VibocerosApp {
             || self.planar_boolean_prompt.is_some()
             || self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
+            || self.fillet_surface_prompt.is_some()
         {
             self.cancel_interactive_command(false);
         }
@@ -9630,6 +9651,8 @@ impl VibocerosApp {
             self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.fillet_surface_prompt.is_some() {
+            self.fillet_surface_prompt = None;
         } else if self.blend_surface_prompt.is_some() {
             self.blend_surface_prompt = None;
         } else if self.tween_surfaces_prompt.is_some() {
@@ -9730,6 +9753,7 @@ impl eframe::App for VibocerosApp {
         self.validate_tangent_sources();
         self.validate_circle_around_curve();
         self.validate_blend_surface();
+        self.validate_fillet_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
         self.validate_rebuild_preview();
@@ -9750,6 +9774,7 @@ impl eframe::App for VibocerosApp {
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
+            && self.fillet_surface_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
@@ -9988,7 +10013,8 @@ impl eframe::App for VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
-        } else if self.picking_orient_surface()
+        } else if self.picking_fillet_surface()
+            || self.picking_orient_surface()
             || self.picking_flow_surface()
             || self.picking_surface_flow()
             || self.selecting_move_normal_reference()
@@ -10158,6 +10184,9 @@ impl eframe::App for VibocerosApp {
             self.component_selection.valid_picks(&self.document);
         }
         let mut component_highlights = self.component_selection.highlights(&self.document);
+        if let Some(p) = &self.fillet_surface_prompt {
+            component_highlights.extend(p.highlights());
+        }
         component_highlights.extend(
             self.merge_face_highlight()
                 .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace),
@@ -10264,7 +10293,8 @@ impl eframe::App for VibocerosApp {
             self.blend_surface_prompt
                 .as_ref()
                 .and_then(|p| p.scene())
-                .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene())),
+                .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
+                .or_else(|| self.fillet_surface_prompt.as_ref().and_then(|p| p.scene())),
             self.rebuild_preview.as_ref().and_then(|p| p.scene()),
         );
         let twist_preview = self
@@ -10363,7 +10393,15 @@ impl eframe::App for VibocerosApp {
             .is_none()
             .then_some(self.point_constraint.filter(|_| model_input_active))
             .flatten();
-        let selection_excluded_object = self.planar_boolean_prompt.as_ref().and_then(|p| p.first);
+        let selection_excluded_object = self
+            .planar_boolean_prompt
+            .as_ref()
+            .and_then(|p| p.first)
+            .or_else(|| {
+                self.fillet_surface_prompt
+                    .as_ref()
+                    .and_then(|p| p.excluded())
+            });
         let selection_allowed_objects = self
             .object_prompt
             .as_ref()
@@ -10882,6 +10920,7 @@ mod tests {
     mod extrude_surface_path;
     mod extrude_surface_tapered;
     mod extrude_tapered;
+    mod fillet_surface;
     mod flow;
     mod geometry_check;
     mod grip_transform;
@@ -11032,6 +11071,7 @@ mod tests {
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
             blend_surface_prompt: None,
+            fillet_surface_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,

@@ -1370,9 +1370,6 @@
     "No continuous global Rhino equality, complete NURBS protocol parity, general conditioning or throughput claim. Upstream repo.sh/prog_test, USD, Python-binding and GUI harnesses were not run."
   ],
   "source_sha256": {
-    "README.md": "2acdf6b6079c53540d09fef42ce1323bcd021c0bcdca595058484149fa67b294",
-    "docs/native-surface-fillets.md": "4c0103c5044e675ea759c6aad27320ec2aa5775e2e08380eb1ca8b869d3609b0",
-    "docs/native-surface-fillet-parents.md": "964c07e327d347495e3221be88e9b685ebeffd383104ccfbef5428880eddabca",
     "crates/viboceros-smlib/build.rs": "de57b6b0337844bdd85639599c5973cfa3f4657d228b300aa630aeec69222c5c",
     "crates/viboceros-smlib/native/CMakeLists.txt": "ebc5b482e64a1b26cc560738f1a522684e5e084530993f90a4923b240a853fd0",
     "crates/viboceros-smlib/native/bridge.h": "d1aa0d03c32cf564aba2bafd98b30b43d657dedb66f16a0afb84f1928805141c",
@@ -1503,6 +1500,9 @@
     "docs/native-surface-fillet-parents-trace.py.gz": "d4290ca2732796192ed251b3509a985c61335c163f5d25c04c1f9cf48dae7d12"
   },
   "source_git_sha256": {
-    "dd679da03801f26d54bf7a61b8ad5467ea99739d:docs/native-surface-fillet-picks-validation.json": "1227f2e337379ecaeeeb6e5ea6c3c877c6554a2c3dcb58580dada478d58cb412"
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:docs/native-surface-fillet-picks-validation.json": "1227f2e337379ecaeeeb6e5ea6c3c877c6554a2c3dcb58580dada478d58cb412",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:README.md": "2acdf6b6079c53540d09fef42ce1323bcd021c0bcdca595058484149fa67b294",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillets.md": "4c0103c5044e675ea759c6aad27320ec2aa5775e2e08380eb1ca8b869d3609b0",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillet-parents.md": "964c07e327d347495e3221be88e9b685ebeffd383104ccfbef5428880eddabca"
   }
 }

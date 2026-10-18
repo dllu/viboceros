@@ -33,7 +33,9 @@ and reuse the same preview and document acceptance flow.
 The [surface-fillet producer](native-surface-fillets.md) now delegates offset
 intersections, rolling-ball tracing and rational circular sections to SMLib.
 It shares normalized surface preparation and exports owned sheet topology.
-The FilletSrf command workflow and curved extended-fillet parity remain in progress.
+[FilletSrf](commands/fillet-srf.md) adds ordered surface-side picks, cached previews,
+trim/split parent ownership and native stitching as one document transaction.
+Curved extended-fillet parity and general trimmed parents remain in progress.
 [OffsetSrf](smlib-offset-surfaces.md) now shares native sheet/solid transfer and
 offset/shell operations; the planar offset adapter is excluded from native builds.
 [Join and JoinCopy](smlib-joining.md) also use native sheet stitching and edge

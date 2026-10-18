@@ -10,6 +10,9 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self.accept_fillet_surface_face(object, face, point) {
+            return;
+        }
         if self.merge_face_prompt.is_some() {
             self.accept_merge_face_pick(object, face);
             return;

@@ -1125,7 +1125,6 @@
     "AddressSanitizer instruments the complete native libraries and C ABI probe; leak detection is disabled. Rust gates run normally. Upstream repo.sh/prog_test, USD, Python-binding and GUI harnesses were not run."
   ],
   "source_sha256": {
-    "docs/native-surface-fillet-picks.md": "9470d677ba52364697f79fdcda77271693292d39ecfe723f33a2b804fa510d98",
     "crates/viboceros-smlib/src/native/surface_fillet/picks.rs": "4d21449dc6ab642bbbb0cb733a4c8f46e39dbc474c0b60adf4ae2ca3700ac683",
     "tools/usd_brep/surface_fillet_probe.cpp": "9060b9619c0503868e679af3e1463b0e20ab07a7307655c4858dcf6de386643f",
     "tools/rhino_oracle/fixtures/surface_fillet_picks.json": "469e2909cf1abd489d8e93b4cdb08d337e4d810e2ab8a2d680f9f0c66db70b42",
@@ -1150,7 +1149,8 @@
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/native/CMakeLists.txt": "3bff3046222869148f338d28fee46ab3a45c4040f7a9bf9b541d5f129997185f",
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/build.rs": "6893ab8f85b5d982c80d834bc217c4083776516983d65a128e7f560701bf473f",
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
-    "dd679da03801f26d54bf7a61b8ad5467ea99739d:docs/native-surface-fillets.md": "0b0279ba36d47c488b82660031beb79f9c658a2679ca4251578f18dc1e3ba879"
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:docs/native-surface-fillets.md": "0b0279ba36d47c488b82660031beb79f9c658a2679ca4251578f18dc1e3ba879",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillet-picks.md": "9470d677ba52364697f79fdcda77271693292d39ecfe723f33a2b804fa510d98"
   },
   "artifact_sha256": {
     "docs/native-surface-fillet-picks-geometry.log.gz": "b10c1122bcfd4b7c55b7127c3094cd7c2b3da8ce8802b67da30d97be39b91dda",

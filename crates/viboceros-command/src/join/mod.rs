@@ -219,3 +219,6 @@ struct JoinPlan {
     closed_on_pick: bool,
     release: Vec<ObjectId>,
 }
+
+#[cfg(feature = "native-smlib")]
+pub(crate) use breps::join_breps;

@@ -370,7 +370,6 @@
     "policy": "Only previously verifiable historical source digests are pinned to full baseline Git blob references. Non-SHA historical claims are unchanged."
   },
   "source_sha256": {
-    "crates/viboceros-command/src/join/breps.rs": "881357e5dc2ea7e793295a6846101079cf090c94974ef6669cd5d827bafb27a1",
     "crates/viboceros-command/src/join/tests/breps.rs": "6d4ffe06f2d899a9f6e5d21eeb3b7142325e727b5c73a7a34ba1336f5e417e64",
     "crates/viboceros-command/src/join/tests/breps/orientation.rs": "393bdcec465651bf166dfd53d419acc22162a0fe960a958a2a06df16f7fbb52b",
     "crates/viboceros-command/src/join/tests/breps/thresholds.rs": "96fe271a0e64af1e707511dc615ef9c551fdd8d10ace56d1d154052ea3fe538e",
@@ -399,6 +398,7 @@
     "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:docs/smlib-joining.md": "ab89750c29b7c119d2a9e433a7668ec99ba97c9097af53b8240e784913411438",
     "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
     "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native/tests.rs": "bf870ed3c3a4d2f2a8e034ced5d3c6ea6f8d55f8ad1bdbc067c004fd5514bde0",
-    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/join-pick-probes.md": "2d812fa18e97fcd3e3e8dce8d8134f71525f5c7a88ac5520e74f5a4694fd3428"
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/join-pick-probes.md": "2d812fa18e97fcd3e3e8dce8d8134f71525f5c7a88ac5520e74f5a4694fd3428",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:crates/viboceros-command/src/join/breps.rs": "881357e5dc2ea7e793295a6846101079cf090c94974ef6669cd5d827bafb27a1"
   }
 }

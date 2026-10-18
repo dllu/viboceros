@@ -2,8 +2,8 @@
 
 `viboceros_smlib::fillet_surfaces` now constructs independently owned fillet
 sheets through usd-brep's existing surface/surface rolling-ball producer.
-The FilletSrf command and its picking, parent trimming, joining, attribute and
-history policies remain in progress. This API is their geometry foundation.
+[FilletSrf](commands/fillet-srf.md) uses this foundation for surface-side picks,
+parent trimming/splitting, joining, previews and atomic document acceptance.
 
 ```rust
 use viboceros_smlib::{fillet_surfaces, SurfaceFilletOptions, SurfaceFilletSide};
@@ -78,7 +78,8 @@ The later [circular rail correspondence repair](native-circular-fillet-rails.md)
 removes a revolution shortcut that changed the rail parameterization. It keeps
 the existing native loft and original parent UV curves together. This also
 unblocks a separate smooth-continuation prototype; the production curved
-extension policy and FilletSrf command workflow remain in progress.
+extension policy remains in progress; the initial [command workflow](commands/fillet-srf.md)
+now declines curved Extend=Yes.
 
 The subsequent [UV pick preparation and precision repair](native-surface-fillet-picks.md)
 adds `SurfaceFilletOptions::try_from_picks`. The native oracle now uses the

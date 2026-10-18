@@ -60,6 +60,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Degenerate mesh face cleanup](docs/commands/cull-degenerate-mesh-faces.md)
 - [Divide surfaces and polysurfaces along creases](docs/commands/divide-along-creases.md),
   using [paired native isocurves](docs/native-isocurve-pairs.md)
+- [Surface fillets with trim/split, joining and previews](docs/commands/fillet-srf.md)
 - [Sweep cross sections along two rails](docs/commands/sweep2.md)
 - [Revolve a profile along a rail](docs/commands/rail-revolve.md)
 - [Gordon networks](docs/smlib-gordon-network.md) and [automatic curve fitting](docs/automatic-gordon-network-fit.md)

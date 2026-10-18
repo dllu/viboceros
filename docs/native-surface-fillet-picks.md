@@ -21,8 +21,9 @@ direction or swapping U/V reverses the signed normal consistently.
 Invalid UVs, singular projection normals and signed distances within four local
 query tolerances are errors. The ambiguity filter has a normalized `1e-12`
 floor; it does not enlarge the construction or comparison tolerances. The API
-selects signed offsets. Choosing among disconnected fillet components, trimming
-parents, joining and the complete FilletSrf command workflow remain in progress.
+selects signed offsets. The initial [FilletSrf workflow](commands/fillet-srf.md)
+uses these picks with parent trimming, splitting and joining. Choosing among
+disconnected fillet components remains in progress.
 
 The native oracle previously retained picks in its request but always used
 positive normal offsets unless an explicit diagnostic override was present.

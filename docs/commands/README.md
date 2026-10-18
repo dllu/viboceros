@@ -478,6 +478,7 @@ Help
 ```
 
 - [FilletEdge: circular solid-edge rounding and component input](fillet-edge.md)
+- [FilletSrf: surface picks, trim/split, joining and previews](fillet-srf.md)
 
 [MergeAllCoplanarFaces: native B-rep scope and limits](merge-all-coplanar-faces.md).
 

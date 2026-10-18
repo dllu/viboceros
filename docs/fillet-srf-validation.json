@@ -1,0 +1,192 @@
+{
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "native_upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "date": "2026-10-18",
+  "baseline_commit": "17edd759a15358489de6fb6b1c2e2d8ab3409abe",
+  "change": "Add native FilletSrf command and interactive surface-side picking, cached previews, trim/split parent ownership, shared native joining and atomic acceptance.",
+  "completed_runs": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib"
+      ],
+      "status": 0,
+      "seconds": 447.74678132496774,
+      "name": "native-command",
+      "log": "docs/fillet-srf-native-command.log.gz",
+      "passed": 1590,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros"
+      ],
+      "status": 0,
+      "seconds": 386.38291389285587,
+      "name": "native-app",
+      "log": "docs/fillet-srf-native-app.log.gz",
+      "passed": 1396,
+      "failed": 0,
+      "ignored": 19
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "fillet_surface"
+      ],
+      "status": 0,
+      "seconds": 293.5990471590776,
+      "name": "portable-command",
+      "log": "docs/fillet-srf-portable-command.log.gz",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros"
+      ],
+      "status": 0,
+      "seconds": 387.2883739529643,
+      "name": "portable-app",
+      "log": "docs/fillet-srf-portable-app.log.gz",
+      "passed": 1382,
+      "failed": 0,
+      "ignored": 19
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "seconds": 17.453044271096587,
+      "name": "clippy",
+      "log": "docs/fillet-srf-clippy.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets"
+      ],
+      "status": 0,
+      "seconds": 42.49462182098068,
+      "name": "portable-check",
+      "log": "docs/fillet-srf-portable-check.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "seconds": 6.113338022958487,
+      "name": "fmt",
+      "log": "docs/fillet-srf-fmt.log.gz"
+    }
+  ],
+  "coverage": [
+    "Replay all 32 existing public Rhino SDK parent trim/split recipes through the command: parent counts, retained source identities and result bounds within 1e-8. No new Rhino capture or general FilletSrf parity claim.",
+    "Trim=No/Yes/Split and Join=Yes; metadata inheritance and retention; 3DM readback; single-step undo and redo.",
+    "Readonly and stale previews; typed and viewport picks; duplicate parent picks; options during picking; recovery after failed recomputation; cancellation and command replacement.",
+    "Single-face rectangular trimmed sources with non-unit original UV picks and reversed face orientation.",
+    "Overlapping surface face exclusion and native curved Extend=Yes guard."
+  ],
+  "limitations": [
+    "Arc blend only; two single-face rectangular-trim parents. General curved UV trims, polysurface-face editing and disconnected fillet choice are pending.",
+    "Curved Extend=Yes is declined. Extend=No supports the qualified curved cases. The existing closed-cylinder certificate work limit remains.",
+    "Replacement parent charts are normalized; original pick coordinates are accepted. Join stitches changed parent pieces and can leave separate components; untouched parents remain unchanged.",
+    "Native producer algorithms and ownership transfer are unchanged; no new ASan, general geometry parity or performance qualification is claimed."
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "35805e081917438c6f0c32bfe6ec1a771ae38f385857c0bec7804eb3ef72dc85",
+    "crates/viboceros-command/Cargo.toml": "81c393837c217b29527314ffef3a1bfa227ba176201a58b8a4a345cecf7f8362",
+    "crates/viboceros-command/src/fillet_surface.rs": "b4883af9beb562c72ebc12f8da51a6e226ff8424e3494a7a6801edf4e5fa9ac2",
+    "crates/viboceros-command/src/fillet_surface/options.rs": "a048ff709f986f6982ba0608b4a5f528a8fdcaf38463a3ba9e7c7382ff5fac34",
+    "crates/viboceros-command/src/fillet_surface/prepare.rs": "6bfedf351f46716c6db1d837530c14e53e5456af984e2e7ddfbf93801e5a8e2c",
+    "crates/viboceros-command/src/fillet_surface/recorded.rs": "062455648e00e465108651ff3650d6a17bdc8b8b0b81387ca6f6def3f7977eed",
+    "crates/viboceros-command/src/fillet_surface/tests.rs": "b2bbac202517ade01d5a364e1996549ced98d2a12817bf8c09f8d25d5ad7e478",
+    "crates/viboceros-command/src/join/breps.rs": "9d4cde8ec05538a5685fe03101f13b70881ba4d4b075c741871e188e6ffa9f9e",
+    "crates/viboceros-command/src/join/breps/native.rs": "ce33e70b06c07f53f17a220de1a2b635ffbb1cf7b6d2719b73157e0dcdfdd205",
+    "crates/viboceros-command/src/join/mod.rs": "2291c5e4791fdbbc7b11653a638b15371c66532dfa1c5ccb4abbbe1034c94ede",
+    "crates/viboceros-command/src/lib.rs": "1854ffe5417392a94718435cbc076991c4b48e7b2c54016e92268dc5bed48ec2",
+    "crates/viboceros-smlib/native/surface_fillet.cpp": "86e1727253f401172817b4a431b6d0887b501f8f922def207d4b3981b95948a7",
+    "crates/viboceros-smlib/src/native/surface_fillet.rs": "2d3d6028a2f5f0bdf8be4ec30798a9e94fd2bd116d2d6bc41730398d880d806f",
+    "docs/architecture.md": "8dd115cf53c346a97dc5b644a59979a3a45cbda53358861d0b7b90a51c4bdce1",
+    "docs/commands/README.md": "58844b8833d161d118ffd074989300f9cd0274e4bb2f95679d4ad9ad448332f1",
+    "docs/commands/fillet-srf.md": "06e4a6ff0707e78e2486d6ca60836ecd237d8b661071f863d84364027922460f",
+    "docs/native-surface-fillet-parents.md": "447df32a7e50160b2cf5daec40f3d1d3154178266d89e7415be97d9fc332a09e",
+    "docs/native-surface-fillet-picks.md": "f2b386cad3c84e37c7aa9610a733b446f67ff1e325c619cd1c20beba14d9ceba",
+    "docs/native-surface-fillets.md": "eb6b48ef44b5b39fd753d101dce563025ca953cf09d71c6f49957fad0b5e02ef",
+    "src/app.rs": "6a6cd5d936a568880cd1a07238f12ae2fefd89ace07435509c22b4741416de6c",
+    "src/app/command_line.rs": "cb73e343d16457c26dc1f65c4a90b945b5492f4496473e24614b12fc6ed383b9",
+    "src/app/component_selection.rs": "58c36ef1bccd27ee262a450ce83d9d1bcd59ea57dd6f22e77c43c4f1a4e03586",
+    "src/app/fillet_surface.rs": "a4e4dbbafe0344113910a06ae3049223862778b2cde475564bb0bdb4054a65a4",
+    "src/app/mesh_face_prompt.rs": "0b97b60ab40c7ddf65fdaa9ce2d68a365e3d34ac1a769adba01826b258a87fba",
+    "src/app/object_selection.rs": "fcb54ea3c7d73f159f2ed7c630c34eca1b373b91074d2d3099b533dc6be75de2",
+    "src/app/tests/fillet_surface.rs": "55e460cec2c84a528c3e8ea0776913c0f321b3ade6a3a1ae3511dbb8c77c1f3b",
+    "src/viewport.rs": "456e432485af45be2bf31ef662c17f3ea69adba8903ba23394ffa130c1034532",
+    "src/viewport/picking.rs": "71869291039e95632848a32932f100308cdb00cb74360805e15fbd96feb2e12c",
+    "tools/rhino_oracle/fixtures/surface_fillet_parents.json": "9305619c2c508d0a958da34e14cd29be48142899f7be962a17bbf344de77fb92",
+    "tools/rhino_oracle/fixtures/surface_fillet_picks.json": "469e2909cf1abd489d8e93b4cdb08d337e4d810e2ab8a2d680f9f0c66db70b42",
+    "tools/rhino_oracle/observations/surface_fillet_parents.json": "3bfdb0ada0d77935624c31ec97ca556581606259701cff38105ec4f508bfca47"
+  },
+  "artifact_sha256": {
+    "docs/fillet-srf-native-command.log.gz": "ae049ab43c48acfff8d5a017668caece57ed875943d4c0fcb1df361fd44ca034",
+    "docs/fillet-srf-native-command-runtime.json.gz": "c381a850cb24e0c68620b6a8fdefccb542972f1afeb6bc361b648a4e608e020a",
+    "docs/fillet-srf-native-app.log.gz": "7bd16d57a093927b1c9db495e63a9e31f659c72b6e17b160dc9275cb3c1a0953",
+    "docs/fillet-srf-native-app-runtime.json.gz": "f38d46987551cb93a1d6035350f89a7665f2959eb4b7ee7422e06059dada3a98",
+    "docs/fillet-srf-portable-command.log.gz": "57c0b35ed448b12969cf4d1331cd65298dc2baa7158b5f2cfada2931a2574d02",
+    "docs/fillet-srf-portable-command-runtime.json.gz": "89dd21e82507a62c078f0be8557cb2c9e1fe676c3bf8602271c4307bd72a72e5",
+    "docs/fillet-srf-portable-app.log.gz": "5543f502bd357f9dc0c26aa8bd1c592e591e97dc6078e7c1217af6c0203f58f6",
+    "docs/fillet-srf-portable-app-runtime.json.gz": "1b9b18309cf9d9a1c32a34fe425bc8d3b83888382090458901721263ddfc86cd",
+    "docs/fillet-srf-clippy.log.gz": "381c1581db5b7e8676a7d183879bf98d118675df0bbccc14efc1e73337c0b00a",
+    "docs/fillet-srf-clippy-runtime.json.gz": "73dc396187c6e6007943f8ebad80d0086d887c26b15179466c3872fb7100fa97",
+    "docs/fillet-srf-portable-check.log.gz": "75b48c13a0648649ae20a38b8f6ca191d16cf11053f45abc95cbba4d2672bdb2",
+    "docs/fillet-srf-portable-check-runtime.json.gz": "bc4aa91b232f402b913945da77ebbed20c7c0f8ec9a36976ec2cf5a378393c43",
+    "docs/fillet-srf-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-srf-fmt-runtime.json.gz": "e768082c552b8c711183265eb1874d195fcc50274059a9fe7d6a7967f798fbbe",
+    "docs/fillet-srf-gates.py.gz": "d07e4da7f16a5c4e7527d36a5f4960dd91038a3fdbdb18c9d1f3e0ecc659c3ba",
+    "docs/fillet-srf-finish-gates.py.gz": "db4269002f1d8bd0753f00c4a5eca75adb14fa00d14668b2fe3c388a086259fc",
+    "docs/fillet-srf-preserve-provenance.py.gz": "a860a5733e01d3e84455bc92f5705aa2f19286c2fc2ac042d540ec0fc0b61803"
+  }
+}

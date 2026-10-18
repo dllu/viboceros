@@ -401,8 +401,7 @@
     "docs/remap-cplane-api-replay-script.py.gz": "583db06bcada3728a95ab3f51b67ae8b4d2d3d1193fc14bea2d9b6662c241c6d",
     "docs/remap-cplane-api-native-views.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
     "docs/oracle.md": "6c5755ce7b32bccc85ce1cbd1618458a6718e666678596d3d2e55e1df9b316c4",
-    "docs/commands/remap-cplane.md": "f828e120099e5f21ea6a1f1f255e263952f1819ca51cf84a9feddeadebb813f6",
-    "docs/arc-extension-validation.json": "4663fdc56e5baa564cc41063833e1ac54fd2ab85609ef08a5fb0789528aff829"
+    "docs/commands/remap-cplane.md": "f828e120099e5f21ea6a1f1f255e263952f1819ca51cf84a9feddeadebb813f6"
   },
   "baseline_git_sha256": {
     "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
@@ -425,7 +424,8 @@
   },
   "artifact_git_sha256": {
     "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:README.md": "98ce8edb477c0acf9b227ae50272a4121fad781034e445f87dbfff86ddbe1b39",
-    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/remap-cplane-validation.json": "a53cd3eb4700cdc932ae1d7c57aa67e126db21de8582fd3212525b781c73bac0"
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/remap-cplane-validation.json": "a53cd3eb4700cdc932ae1d7c57aa67e126db21de8582fd3212525b781c73bac0",
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/arc-extension-validation.json": "4663fdc56e5baa564cc41063833e1ac54fd2ab85609ef08a5fb0789528aff829"
   },
   "source_git_sha256": {
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-oracle/src/lib.rs": "69b6ae9561c272510e9fdc4ae325ab8701fab5d02079ee0d6ca9b7536517ab72",

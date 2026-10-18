@@ -301,7 +301,7 @@ impl VibocerosApp {
         if self.picking_project_direction() || self.picking_project_plane_points() {
             return None;
         }
-        if self.blend_surface_prompt.is_some() {
+        if self.blend_surface_prompt.is_some() || self.fillet_surface_prompt.is_some() {
             return None;
         }
         if self.picking_block_edit_sources() {
