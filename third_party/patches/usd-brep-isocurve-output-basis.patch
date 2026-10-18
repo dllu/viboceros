@@ -1,0 +1,81 @@
+--- a/SmBSplineSurface.cpp
++++ b/SmBSplineSurface.cpp
+@@ -1475,6 +1475,7 @@
+ 
+   // init output
+   rpNewIsoCurve = NULL;
++  if(pOptUVIsoCurve) { *pOptUVIsoCurve = NULL; }
+   if(pOptMaxGap3d) { *pOptMaxGap3d = 0.0 ; }
+ 
+   // get natural or optional domain min/max points
+@@ -1513,18 +1514,6 @@
+     
+     } // end need to clamp boundary
+ 
+-  // when asked - build associated 2d UVTrimCurve line (different parameterization)
+-  if(pOptUVIsoCurve) 
+-    { *pOptUVIsoCurve = NULL ; 
+-
+-      // define the isoParameter Curve as an object
+-      SmIsoCurve sIso(*this,eSurfParam,dIsoParameter,TRUE);
+-      sIso.SetContext(NULL);
+-
+-      // build OptUVIsoCurve
+-      sIso.CreateUVIsoLine(*pOptUVIsoCurve, &crContext) ; 
+-    } 
+-
+   // locals
+   gw_FLAG dir;
+   gw_INDEX lCpointHighest;
+@@ -1552,14 +1541,15 @@
+   NER(cur);
+   SmMemDelete sCleanup(cur);
+ 
+-  // build the isoParameter gw_CURVE
+-  if(NL_YES == N_SrfExtractIsoCrv(pSurface, dIsoParameter, dir, cur, NULL))  // memory leak here
+-    { ERR_MSG(_T("ERROR returned from NLib\n")) ; }
+-
+-  // Use it as m_pNurb in a BSplineCurve object
+-  rpNewIsoCurve = new (crContext) SmBSplineCurve(cur,3);
+-  NER(rpNewIsoCurve);
+-  sCleanup.Clear();
++  // Extraction already supplies a complete valid tensor basis. Adopting it
++  // into a fresh owning object avoids the raw-data constructor's knot repair.
++  if (N_SrfExtractIsoCrv(pSurface, dIsoParameter, dir, cur, NULL) != NL_NO)
++    { SER(SM_ERR); }
++  SmBSplineCurve *pIsoCurve = new (crContext) SmBSplineCurve(3);
++  NER(pIsoCurve);
++  SmObjDelete curveCleanup(pIsoCurve);
++  pIsoCurve->SetGwNurbPointer(cur);
++  sCleanup.Clear(); // pIsoCurve now owns this allocation, including its basis.
+ 
+   // when asked - trim curve to optional domain limits
+   if(pOptDomain)
+@@ -1567,9 +1557,26 @@
+       SmExtent1d sTrimIvl =   eSurfParam == SM_SP_U
+                             ? sUVDomain.GetVInterval()
+                             : sUVDomain.GetUInterval() ;
+-      rpNewIsoCurve->Trim(sTrimIvl) ;  // may snap sIvl by tol to existing knots
++      SER(pIsoCurve->Trim(sTrimIvl)); // may snap sIvl by tol to existing knots
+     }
+   
++  // Build the optional UV line only after 3D construction succeeds. Retain
++  // both outputs locally until every requested operation has succeeded.
++  if(pOptUVIsoCurve)
++    {
++      SmIsoCurve sIso(*this,eSurfParam,dIsoParameter,TRUE);
++      sIso.SetContext(NULL);
++      SmCurve *pUV = NULL;
++      SmStatus status = sIso.CreateUVIsoLine(pUV, &crContext);
++      SmObjDelete uvCleanup(pUV);
++      SER(status);
++      NER(pUV);
++      *pOptUVIsoCurve = pUV;
++      uvCleanup.Clear();
++    }
++
++  rpNewIsoCurve = pIsoCurve;
++  curveCleanup.Clear();
+   // all done
+   SM_ASSERT_MSG(rpNewIsoCurve != NULL, _T("SmBSplineSurface::CreateIsoParametricCurve: rpNewIsoCurve == NULL. This is a bug in method CreateIsoParametricCurve()")) ;
+   return SM_SUCCESS;

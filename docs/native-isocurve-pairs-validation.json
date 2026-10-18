@@ -1,0 +1,365 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Adopt a checked extraction allocation into a fresh owning curve, preserving the complete basis without constructor knot cleanup or an extra control-data copy.",
+    "Construct constant-U and constant-V UV lines over the varying interval with zero varying-coordinate origin. Publish both outputs after every requested step succeeds.",
+    "Use the repaired native optional pair in DivideAlongCreases, removing its UV-segment workaround. Keep the checked Rust-facing extraction adapter and its numerical safeguards."
+  ],
+  "cases": {
+    "primary": 16,
+    "varying_directions": 2,
+    "chart_widths": [
+      "2^-40",
+      "1",
+      "2^40"
+    ],
+    "remote_origin": 1000000000000.0,
+    "spans": [
+      "ordinary",
+      "single-ULP end span"
+    ],
+    "fixed_interval": [
+      -3,
+      5
+    ],
+    "fixed_parameter": -1,
+    "comparison": "Independent exact homogeneous two-row combination; every weighted control and full knot; UV dimension, interval and evaluated coordinates; source controls/both knot vectors; retained curves after source destruction.",
+    "rejection": "One full-order fixed-axis break: current upstream extraction returns 1001, both outputs null and source unchanged. A future supported result must match the exact right-hand curve controls."
+  },
+  "parent_control": {
+    "exit_code": 1,
+    "primary_cases": 16,
+    "exact_curve": 4,
+    "uv_matches": 0,
+    "source_unchanged": 16,
+    "independent_ownership": 0,
+    "raw": {
+      "retained": "docs/native-isocurve-pairs-baseline.jsonl.gz",
+      "uncompressed_sha256": "e28d89287381aaf71fccd2ff9c14dc883b1d2714c9d241a85bf9c24f8fe902e6"
+    },
+    "stderr": {
+      "retained": "docs/native-isocurve-pairs-baseline.stderr.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build": {
+      "command": "cmake configure existing native build, then cmake --build <build> --target viboceros_smlib_isocurve_pair_baseline -j10",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-baseline-build.log.gz",
+      "uncompressed_sha256": "5cca188cec171429f260d84266f080764ee4f9689d397e0087fa03c9ce083d2c"
+    },
+    "method": "Link explicit parent-generated SmBSplineSurfaceUV.cpp and unmodified upstream SmIsoCurve.cpp objects ahead of the repaired archive. Preserve existing copy/transpose repairs; override only the two changed producer objects.",
+    "runner": {
+      "retained": "docs/native-isocurve-pairs-baseline-run.py.gz",
+      "uncompressed_sha256": "1e363b14b6d2273ac528a04466f69c64a1389a4fe5b34e19b1d9e7a8370d1fd4"
+    },
+    "caution": "The combined independent_ownership check also requires correct post-destruction UV coordinates. A false parent result is not evidence of a dangling allocation."
+  },
+  "candidate": {
+    "exit_code": 0,
+    "primary_cases": 16,
+    "exact_curve": 16,
+    "uv_matches": 16,
+    "source_unchanged": 16,
+    "independent_ownership": 16,
+    "raw": {
+      "retained": "docs/native-isocurve-pairs-candidate.jsonl.gz",
+      "uncompressed_sha256": "883f960db15e4ce955580686892da581b2938c458f375b53d009e38530dbdc90"
+    },
+    "stderr": {
+      "retained": "docs/native-isocurve-pairs-candidate.stderr.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "controlled_rejection": {
+      "status": 1001,
+      "curve_present": false,
+      "uv_present": false,
+      "valid_outcome": true,
+      "source_unchanged": true
+    }
+  },
+  "address_sanitizer": {
+    "exit_code": 0,
+    "primary_cases": 16,
+    "exact_curve": 16,
+    "uv_matches": 16,
+    "source_unchanged": 16,
+    "independent_ownership": 16,
+    "raw": {
+      "retained": "docs/native-isocurve-pairs-asan.jsonl.gz",
+      "uncompressed_sha256": "883f960db15e4ce955580686892da581b2938c458f375b53d009e38530dbdc90"
+    },
+    "stderr": {
+      "retained": "docs/native-isocurve-pairs-asan.stderr.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "controlled_rejection": {
+      "status": 1001,
+      "curve_present": false,
+      "uv_present": false,
+      "valid_outcome": true,
+      "source_unchanged": true
+    },
+    "build": {
+      "command": "cmake -S crates/viboceros-smlib/native -B /tmp/viboceros-isocurve-pair-asan -DUSD_BREP_ROOT=/home/dllu/proj/viboceros/third_party/usd-brep -DVIBOCEROS_SMLIB_ASAN=ON -DCMAKE_BUILD_TYPE=Release; cmake --build /tmp/viboceros-isocurve-pair-asan --target viboceros_smlib_isocurve_pair_probe viboceros_smlib -j10",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-asan-build.log.gz",
+      "uncompressed_sha256": "bf3cc4201020257647baa265774da5f8b59c57fecae87c0b2d134bc6daf34c83"
+    },
+    "flags": {
+      "retained": "docs/native-isocurve-pairs-asan-flags.txt.gz",
+      "uncompressed_sha256": "baa47d43f6201cde50b7a785ffbc0da8449743533bdd5de116b4232e1a9dce33"
+    },
+    "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+    "scope": "Complete SMLib, SM_API, C ABI and probe are compiled with AddressSanitizer. Execute the producer probe in its default and --discontinuity modes. C ABI crease integration is exercised by normal tests, not executed under ASan in this record.",
+    "leak_policy": "Leak detection is disabled because the default process-global API context has no public teardown contract; no leak-free result is claimed."
+  },
+  "final_probe_runs": {
+    "rebuild": {
+      "command": "cmake --build <debug-native-build> --target viboceros_smlib_isocurve_pair_probe viboceros_smlib_isocurve_pair_baseline -j10; cmake --build /tmp/viboceros-isocurve-pair-asan --target viboceros_smlib_isocurve_pair_probe -j10",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-final-probe-build.log.gz",
+      "uncompressed_sha256": "f3d71c6b1d5f814b5ad388f821b47bf065876676ff1dd36f79c3b1de61f49d8f"
+    },
+    "receipt": {
+      "command": "python3 /tmp/viboceros-isocurve-pair-final-probes.py",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-final-probes.log.gz",
+      "uncompressed_sha256": "446f825c1dfaefa46318efea17ba288fabf49fdf5a07918fd052227e5373d0c4"
+    },
+    "runner": {
+      "retained": "docs/native-isocurve-pairs-final-probes.py.gz",
+      "uncompressed_sha256": "ece38f233ba87f34bab715ea706c3aabab96c62a2aeaf6677fc05f746b8c32ac"
+    },
+    "probe_runner": {
+      "retained": "docs/native-isocurve-pairs-run-probes.py.gz",
+      "uncompressed_sha256": "9d41e45735ba5317059511498d2b611c88aeb613d36cc9c77927b8f4b8612070"
+    },
+    "timing": "The production patch and Rust test sources were frozen before broad checks. Two additional C++ test assertions checking both source knot vectors were added during those checks. The final rebuild repeats parent, candidate and ASan probes, followed by the two-test Rust integration harness with those assertions."
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-bridge-full.log.gz",
+      "uncompressed_sha256": "6c4a9f122ed6066380fce0fd0a52f907469ce1f01b662f7285ad202628c937a0",
+      "passed": 409,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-command-full.log.gz",
+      "uncompressed_sha256": "03e19eb8b7786dfd2fa08d3abcca0980bf5e3fba50ce12c1a11f5f65e38e09ae",
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-clippy.log.gz",
+      "uncompressed_sha256": "4b2fda64ddd195685fedae77a9db5cc4513c7d9b0a0236d6bc943ca9a93a5f1d"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "focused_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test isocurve_pairs --test face_creases --test isocurves -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-focused-ready.log.gz",
+      "uncompressed_sha256": "628013627318b4531efe01aaf7251aa3a6c508e8eed87ab9ec814e66fc102a95",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "target/debug/deps/isocurve_pairs-8527396d326b8a84 --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-isocurve-pairs-ownership-focused.log.gz",
+      "uncompressed_sha256": "95996e34fc9ae4f213280fb5f2602d6ae613faa1c49fb429d5fbe30e00b0477f",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "native_api_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-isocurve-pair-replay.py",
+    "exit_code": 0,
+    "retained": "docs/native-isocurve-pairs-replay.log.gz",
+    "uncompressed_sha256": "c7c4a849ee8799721e31d83739301386e03699594d9cb4f2043dca945613074d",
+    "script": {
+      "retained": "docs/native-isocurve-pairs-replay.py.gz",
+      "uncompressed_sha256": "2f497ac33a4d37429c741e1f7a2dfa339d77eaf781aa56686b57cdd4af76041b"
+    },
+    "curved_audit": {
+      "retained": "docs/native-isocurve-pairs-curved-audit.json.gz",
+      "uncompressed_sha256": "130baf51c50e16eff4d313dd59c64c59a182e3db040b3560f51abded65eebeb3"
+    },
+    "isocurve_audit": {
+      "retained": "docs/native-isocurve-pairs-isocurve-audit.json.gz",
+      "uncompressed_sha256": "11bbaa357d8c46d2a2885a597913c4a97d6154a8d013d73faa591e22a8b4fb04"
+    },
+    "curved_report": {
+      "retained": "docs/native-isocurve-pairs-curved-report.json.gz",
+      "uncompressed_sha256": "3d54e876e93237faf37ca7b3a2de5b3c8c24962ae5d6fb90a4e9fb9865b10d38"
+    }
+  },
+  "observed_subset_comparisons": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-isocurve-pair-observed-subsets.py",
+    "exit_code": 0,
+    "retained": "docs/native-isocurve-pairs-observed-subsets.log.gz",
+    "uncompressed_sha256": "f2a21356e8c349329a46eebd564bc3477d1f2f306c8d6578c602fabe43559e0d",
+    "script": {
+      "retained": "docs/native-isocurve-pairs-observed-subsets.py.gz",
+      "uncompressed_sha256": "e9c5324ac51c75abd4264057b40a1f2ffa009e96015481f4ef0d5c9bf6e03f12"
+    },
+    "reports": [
+      {
+        "retained": "docs/native-isocurve-pairs-join_isocurve_local-report.json.gz",
+        "uncompressed_sha256": "aa4b1ed2de40f3a68709d4f7273a4895a4f1a0c6f26c705a0addb629aabe0316"
+      },
+      {
+        "retained": "docs/native-isocurve-pairs-join_isocurve_origin-report.json.gz",
+        "uncompressed_sha256": "df4430490d3d51a1bbe12217e90d525edb3406aec3e77f5650965a84f682e4da"
+      }
+    ]
+  },
+  "parent_raw_outcome_comparisons": [
+    {
+      "audit": "curved",
+      "cases": 48,
+      "identical": 48,
+      "changed_ids": [],
+      "policy": "Complete raw outcomes including all fields, without normalization."
+    },
+    {
+      "audit": "isocurve",
+      "cases": 64,
+      "identical": 64,
+      "changed_ids": [],
+      "policy": "Complete raw outcomes including all fields, without normalization."
+    }
+  ],
+  "curved_strict_comparison": {
+    "cases": 48,
+    "matched": 4,
+    "native_failed": 0,
+    "mismatched": 44,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-10
+  },
+  "isocurve_strict_comparison": {
+    "executed_cases": 64,
+    "connected_two_face_outputs": 64,
+    "execution_errors": 0,
+    "observed_cases": 33,
+    "raw_matches": 0,
+    "raw_mismatches": 33,
+    "unobserved_translated_cases": 31,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12
+  },
+  "historical_provenance": {
+    "preserved_entries": 10,
+    "records": 4,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Direct native producer control first; source/basis/UV/lifetime checks, crease and checked-extractor regressions; full bridge and command release suites for this shared native producer change; all-workspace/all-target/all-feature Clippy.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses were not run. This ARM bridge builds the actual SMLib/SM_API closure; those other layers and the upstream checkout are unchanged. No fresh live Rhino or performance measurement."
+  },
+  "limitations": [
+    "The checked Rust-facing extractor still supplies conditioning, extreme-gauge, unclamped fixed-end and full-order safeguards absent from the native object method.",
+    "General optional trimmed-domain pairing and arbitrary numerical ranges remain unqualified.",
+    "Native remote-chart ray queries, some wider natural-boundary joins and full raw Rhino representation parity remain unfinished.",
+    "No new Rhino observation, speed result or leak-free result is claimed."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "d09c58eb2e263286c6fe3b9ae5fad41b1519ad39a57094ec8d6d9cf2fa64fb74",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "1a65ba7e9c2d565d1cce71550b65398180c263a978c66950c96cbcee63202957",
+    "crates/viboceros-smlib/native/face_creases.cpp": "cf24ec2a7c23adb5b9f26141afc3615ee88caf11d827837606aabaaed80b8188",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
+    "crates/viboceros-smlib/tests/isocurve_pairs.rs": "4eaeddfaf109c3367b0ec1805b1079913abc09885fe3f3d3b95fe25883b4e4ed",
+    "crates/viboceros-smlib/tests/face_creases.rs": "0de1de68bab504ac7f4131cd8291b1807f04047a81e6734c44fee3b82145fd41",
+    "crates/viboceros-smlib/tests/isocurves.rs": "633fb4c252d3f0e0acf8ab58766996aa2e724dbf6297d96bd3421e2684752655",
+    "tools/usd_brep/isocurve_pair_probe.cpp": "d1b412697e597d87a7e7b8fe6171a0bd3da063f9eeec9d88ff2052c3653775e1",
+    "third_party/patches/usd-brep-isocurve-output-basis.patch": "d2590fdc3b82fe7523b28b67252bb673f217d7d5b76ddb1cd7190128569221b3",
+    "third_party/patches/usd-brep-isocurve-uv-line.patch": "b545c9870b0ff2fc0ee3b849cfe228607fcf14f6772bec32da51bf0f3f69ec13",
+    "third_party/patches/usd-brep-isocurve-pairs.cmake": "1c4fd9b19b94d69e8dfe09fa593cc038a33259fe3d38ed3187c6086211e59726",
+    "third_party/patches/usd-brep-exact-uv-transpose.cmake": "595e1326bec0753de91716be657636d4063441f21b90dcd5b428384cd59be5a8",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp": "93c905a12c4124f6761f63ca9dbe2e2ffe400eb32b493c3d514be42de2c41138",
+    "third_party/usd-brep/source/SMLib/src/SmIsoCurve.cpp": "b3e0a1ff9ed8d80d4975c74609370c91684f74eae583a4fd9c4585aca6cdc2c9",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp": "a6a87714703ef3115cdd33e9d79f07090fc7650847a537d5341a692723db243f",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-isocurve-pairs-bridge-full.log.gz": "932fe667f6b4b87f8cbb93fbce14091d6003fa185b7b62fd0b0a8ce4aef7bbff",
+    "docs/native-isocurve-pairs-command-full.log.gz": "65ad342f74b07e04d19391336dc2fb181b31124f23609e7219bdcd897f1006de",
+    "docs/native-isocurve-pairs-clippy.log.gz": "72742592a2249ab5b530f367657d90cc6a75c9693f679b83226043302c33b6e3",
+    "docs/native-isocurve-pairs-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-isocurve-pairs-focused-ready.log.gz": "7c69ee51b3280481bed64766ef0d71a5b8235e5fdacc416c7e9d30f5d4c08497",
+    "docs/native-isocurve-pairs-ownership-focused.log.gz": "975e2fa0c7d7829f680f5f26c0342577f8d4c74fbe9a4a3b115e9836818a7a37",
+    "docs/native-isocurve-pairs-baseline.jsonl.gz": "1469505e21c2d0603b9fa64120d4e9ee5f59ab45d27b19bf1588813a8d556f64",
+    "docs/native-isocurve-pairs-baseline.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-isocurve-pairs-baseline-build.log.gz": "74a7dbfee8a007720bfe97beecf1eb4c2564e9ab8e02685466b866db18dab64e",
+    "docs/native-isocurve-pairs-baseline-run.py.gz": "5c34208bd92a9bf0a01c429012f2a320d92a533d2266378efe61d13048d9e9af",
+    "docs/native-isocurve-pairs-candidate.jsonl.gz": "ae5d395168d31eb0307bbdddada436065b9a8f20de751a13c58940e2ca584c58",
+    "docs/native-isocurve-pairs-candidate.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-isocurve-pairs-asan.jsonl.gz": "ae5d395168d31eb0307bbdddada436065b9a8f20de751a13c58940e2ca584c58",
+    "docs/native-isocurve-pairs-asan.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-isocurve-pairs-asan-build.log.gz": "b542a486a0feaae7dbb9cffbfb0411bdec2d2fa12981c1507db1354932ea119a",
+    "docs/native-isocurve-pairs-asan-flags.txt.gz": "33f57d4b15a11cd1ca165c873d3494e1a5675788087f2bf3f254bd6aa4a72975",
+    "docs/native-isocurve-pairs-final-probe-build.log.gz": "e1497c04b9e07e9a4d0908a1b7734b62a4408f5bacc4e825b2890c0009766f05",
+    "docs/native-isocurve-pairs-final-probes.log.gz": "0d523109cd4bbfb61fab2bc5b2ecd7119833dfeeb88db59f5e6050a26a50441f",
+    "docs/native-isocurve-pairs-final-probes.py.gz": "0439a9aff0e355fbfe4a5b2ba17f3c2af6ffc1bb47c730aadd9ef3fbe58d72bb",
+    "docs/native-isocurve-pairs-run-probes.py.gz": "f936423ce57ee41150e4725ab763cd51d052d96d0289ddfcd54eb887f989ef83",
+    "docs/native-isocurve-pairs-replay.log.gz": "2aadd5b71baeb182edec863b932439353149767e7e182736d19c8bf4c1b3f733",
+    "docs/native-isocurve-pairs-replay.py.gz": "7a66ab1a1f2ccab2c7db14f367327674a763481b93d978ddcafce0213e508b8d",
+    "docs/native-isocurve-pairs-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-isocurve-pairs-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "docs/native-isocurve-pairs-curved-report.json.gz": "921def0039eb31a1b9939de1ec1bbf4785268389f173cd3e1561dfbb17bade77",
+    "docs/native-isocurve-pairs-observed-subsets.log.gz": "c285c3775485780edb127d61a8e263f9db782321033ec2fdc6f4e02ce2f7ea93",
+    "docs/native-isocurve-pairs-observed-subsets.py.gz": "0929a3435fde9deb0eb34d2deb337af50f87414986992ceb7de7826964622d0a",
+    "docs/native-isocurve-pairs-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
+    "docs/native-isocurve-pairs-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
+    "README.md": "f33d2c41048d4f3bedf301e0eec284fe5aed47b76ef6f4540725954c9d0487da",
+    "docs/native-isocurve-pairs.md": "4d59bee54aae22c613a4fdfc82ff075685ded64a2008c923ecbf317539323f8c",
+    "docs/smlib-isocurves.md": "09a31efd0d4837feae8636ae94fcd405fb3368f1751d0bd357471bb6b3c7f0a4",
+    "docs/commands/divide-along-creases.md": "bb4c2ffa056cdbcf63ae1d9e091e6c78984ac2f770a51e876144d641db9471ad",
+    "docs/usd-brep-limitations.md": "7c9142b05e867bdf2cf32ef72d1038d3bfcb0eddfee4b3d2264d1647e58e9e4a",
+    "docs/native-closed-join-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-closed-join-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
+    "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
+    "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
+    "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
+    "docs/divide-along-creases-qualification.json": "8b16a89e66725b7285b9c545f94982eaa1ef96052781efef6f07ad2907013b01",
+    "docs/native-closed-join-validation.json": "c24041f21e9c0b82ba07f6a372550d844234c39ccee59011698e4d76335ce24d",
+    "docs/native-uv-transpose-validation.json": "a58532a701f3f33d57a0a65019990c6d65eceec0ca5796846329e5685a3ac321",
+    "docs/rail-revolve-qualification.json": "bacc34d34ec22a8462df4ac9ab5d3b3894aded0b9cd9d5166d6deace27933172"
+  },
+  "baseline_git_sha256": {
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/face_creases.cpp": "8ec04f7f63ed365247f4bec1777ef115a11b5906117735e5b45fcd72c4020477"
+  },
+  "log_policy": "Observe actual completed job exit codes; retain raw logs and outcomes in deterministic gzip. Exact authored geometry checks, API execution and strict saved-Rhino comparisons are distinct evidence."
+}

@@ -20,12 +20,12 @@ and shared edges. Division adds boundaries on existing surface geometry; it does
 not fit a replacement surface. The faces can retain unused portions of the
 underlying surface; [ShrinkTrimmedSrf](shrink-trimmed-surfaces.md) can reduce them.
 
-The adapter supplies independently selected U/V cuts and exact UV partners
-instead of using the pinned kernel's `SubdivideFaceAtDiscontinuities` convenience
-method. That method uses the U cut count for both directions; its related
-`SmIsoCurve` UV-line helper also repeats the U branch. The adapter uses the native
-exact BSpline isocurve override and native BSpline UV-segment constructor,
-preserving the existing exact B-rep export gate. Upstream sources are unchanged.
+The adapter supplies independently selected U/V cuts instead of using the pinned
+kernel's `SubdivideFaceAtDiscontinuities` convenience method, which uses the U
+cut count for both directions. It requests the [repaired native isocurve pair](../native-isocurve-pairs.md)
+directly, retaining the complete curve basis and its UV-coordinate line. This
+replaces the adapter's UV construction workaround and preserves the exact B-rep
+export gate. Upstream sources remain unchanged; repairs compile generated copies.
 
 Surviving object IDs, attributes, groups and selection are retained. All selected
 objects are prepared before one transaction; a failure leaves every source

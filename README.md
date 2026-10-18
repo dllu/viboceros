@@ -58,7 +58,8 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Persistent curvature graphs with adaptive outlines](docs/commands/curvature-graph.md) and [outline extraction](docs/commands/extract-curvature-graph.md)
 - [Native geometry checks and bad-object selection](docs/commands/check.md)
 - [Degenerate mesh face cleanup](docs/commands/cull-degenerate-mesh-faces.md)
-- [Divide surfaces and polysurfaces along creases](docs/commands/divide-along-creases.md)
+- [Divide surfaces and polysurfaces along creases](docs/commands/divide-along-creases.md),
+  using [paired native isocurves](docs/native-isocurve-pairs.md)
 - [Sweep cross sections along two rails](docs/commands/sweep2.md)
 - [Revolve a profile along a rail](docs/commands/rail-revolve.md)
 - [Gordon networks](docs/smlib-gordon-network.md) and [automatic curve fitting](docs/automatic-gordon-network-fit.md)

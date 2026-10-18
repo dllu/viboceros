@@ -83,10 +83,8 @@
     "crates/viboceros-oracle/src/divide_creases.rs": "28d7d821bc5676ba841585b1cedf9ab5eac7cb026f91e69fc974d52cb8a9cab4",
     "crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
-    "crates/viboceros-smlib/native/face_creases.cpp": "8ec04f7f63ed365247f4bec1777ef115a11b5906117735e5b45fcd72c4020477",
     "crates/viboceros-smlib/src/native/face_creases.rs": "eee367d755a3a2cd038dc4a540f3d4f0e36664a5f66d6e704122883f6606a2f1",
     "crates/viboceros-smlib/tests/face_creases.rs": "0de1de68bab504ac7f4131cd8291b1807f04047a81e6734c44fee3b82145fd41",
-    "docs/commands/divide-along-creases.md": "4529049fb8a032d3b01e83aff3b853e012a00dadd9125116f388f7f998156596",
     "src/app/tests/divide_creases.rs": "c171fb4c5d3ce3d1555620d7da93902eac81b32b339a1ca497ce432405af3851",
     "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
     "third_party/usd-brep/source/SMLib/src/SmBrep.cpp": "5d44d6ac347fa42e4e83fead8bbde82ce46c5ff48e0a973b5c7cddc778a2fca1",
@@ -125,6 +123,8 @@
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:tools/rhino_oracle/geometry_validity_probe.py": "057d9220939f40b131c8777ee8ebefce8236cedca2604bca0b625c3c49c14cff",
     "5af970fe02df2adb375a5f460b5b9072a2fab0a7:crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63",
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742"
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/face_creases.cpp": "8ec04f7f63ed365247f4bec1777ef115a11b5906117735e5b45fcd72c4020477",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:docs/commands/divide-along-creases.md": "4529049fb8a032d3b01e83aff3b853e012a00dadd9125116f388f7f998156596"
   }
 }

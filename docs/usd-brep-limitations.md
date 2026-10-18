@@ -228,6 +228,15 @@ issues reported by NVIDIA that have not all been reproduced here.
   factorization is shared across all control rows, and normalized residual
   checks retain every input constraint. Kernel tolerances are unchanged.
   Source: [NL_Math.cpp](../third_party/usd-brep/source/SMLib/src/NL_Math.cpp).
+- **Fixed: native isocurve construction changed the basis and UV partner.**
+  `SmBSplineSurface::CreateIsoParametricCurve` used a knot-repairing constructor
+  for an already extracted tensor curve. `SmIsoCurve::CreateUVIsoLine` repeated
+  the U branch, used the constant-axis interval and double-counted its origin.
+  Generated-source repairs preserve the extraction allocation and form the
+  correct parameter-coordinate line. DivideAlongCreases now requests the native
+  pair directly. Sixteen complete-coefficient/UV cases and an instrumented
+  lifetime check cover this; native rejection retains empty outputs.
+  See [scope and control runs](native-isocurve-pairs.md).
 - **Isocurve extraction copies unclamped boundary rows and rejects full-order
   fixed-axis breaks.** `N_SrfExtractIsoCrv` at V end `2` on a surface with
   V degree two, Y control coordinates `[0,1,2,3]` and knots

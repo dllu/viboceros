@@ -71,22 +71,13 @@ size_t vb_divide_face_creases(SmBrep &brep,bool kinks,bool tangents,double toler
         SmTArray<SmCurve*> curves,uv_curves;
         for(int d=0;d<2;++d)for(double t:cuts[d]){
             SmBSplineCurve *raw=nullptr;
-            SmBSplineCurve *uv=nullptr;
+            SmCurve *uv=nullptr;
             // The BSpline override extracts the exact tensor isocurve; its
             // approximation argument is unused. Keep the exact export gate.
-            const auto status=surface->CreateIsoParametricCurve(*brep.GetContext(),d?SM_SP_V:SM_SP_U,t,tolerance,raw);
-            std::unique_ptr<SmCurve> owner(raw);
-            require(status==SM_SUCCESS,"Extract exact native crease isocurve");
-            require(raw,"Missing native crease isocurve");
-            // Construct the UV segment with the same varying parameter as its
-            // exact 3D partner. The pinned SmIsoCurve UV convenience method
-            // repeats its U branch and uses the constant interval as its range.
-            const SmPoint3d start(d?domain.GetUMin():t,d?t:domain.GetVMin(),0.);
-            const SmPoint3d end(d?domain.GetUMax():t,d?t:domain.GetVMax(),0.);
-            const auto uv_status=SmBSplineCurve::CreateLineSegment(*brep.GetContext(),2,start,end,uv);
-            std::unique_ptr<SmCurve> uv_owner(uv);
-            require(uv_status==SM_SUCCESS && uv,"Create native crease UV line");
-            require(uv->EditParameterization(raw->GetNaturalInterval(),FALSE)==SM_SUCCESS,"Match crease curve parameterization");
+            const auto status=surface->CreateIsoParametricCurve(*brep.GetContext(),d?SM_SP_V:SM_SP_U,t,tolerance,raw,nullptr,nullptr,&uv);
+            std::unique_ptr<SmCurve> owner(raw),uv_owner(uv);
+            require(status==SM_SUCCESS,"Extract exact native crease isocurve pair");
+            require(raw && uv && uv->GetDim()==2,"Missing native crease isocurve pair");
             curves.Add(raw);uv_curves.Add(uv);
             owners.push_back(std::move(owner));owners.push_back(std::move(uv_owner));
         }

@@ -1,0 +1,19 @@
+--- a/SmIsoCurve.cpp
++++ b/SmIsoCurve.cpp
+@@ -29,13 +29,13 @@
+   // locals
+   SmExtent2d sDomain = m_cpSurface->GetNaturalUVDomain() ;
+   SmExtent1d sLineIvl ;
+-  SmPoint3d  sLinePoint = sDomain.GetMin() ;
++  SmPoint3d  sLinePoint(0,0,0) ;
+   SmVector3d sLineUnitVec ;
+-  if     (m_eSurfParam == SM_SP_U) { sLineIvl     = sDomain.GetUInterval() ;
++  if     (m_eSurfParam == SM_SP_U) { sLineIvl     = sDomain.GetVInterval() ;
+                                      sLinePoint.x = m_dIsoParameter ;
+                                      sLineUnitVec.Set(0,1,0) ; 
+                                    }
+-  else if(m_eSurfParam == SM_SP_U) { sLineIvl     = sDomain.GetVInterval() ;
++  else if(m_eSurfParam == SM_SP_V) { sLineIvl     = sDomain.GetUInterval() ;
+                                      sLinePoint.y = m_dIsoParameter ;
+                                      sLineUnitVec.Set(1,0,0) ;
+                                    }

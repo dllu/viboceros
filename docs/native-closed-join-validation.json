@@ -237,8 +237,6 @@
     "crates/viboceros-command/src/join/breps/native/tests.rs": "75d76f46bdb6e8797933b9a0c879868c2aa5e3417d78707013f0de688003fb90",
     "crates/viboceros-command/tests/native_closed_join.rs": "ccd8575ad1eb7e0e033f0708971e31bed34551d3fe3c80ef65ed0916b77350d1",
     "crates/viboceros-geometry/src/brep/solid_orientation.rs": "2359984c7f911ace4c2cdb5d3c471431e183d4c073b60d9334b833ca855a72fd",
-    "crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
     "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
@@ -265,11 +263,9 @@
     "docs/native-closed-join-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
     "docs/native-closed-join-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
     "docs/native-closed-join-parent-orientation-trace.log.gz": "5ed779d8b5591be83a9638d8fe7bbd5e77b219127ee1e0e9471319ea2b82e1f2",
-    "README.md": "9cc07dc43a448f572ce4c9a3af0842b438e028f96585fd6383306db5041834e9",
     "docs/native-closed-join.md": "c194471b5163408a5c654dfb367fc79c4148d6f48ee8307d281dddf8eb08bb8d",
     "docs/native-uv-transpose.md": "83879a97bff265660733b9edaf6d23172fcc7db5c9af38719e6e3fe1ecbb8548",
     "docs/smlib-joining.md": "e6520202be143d7ccb47f0c9e1ce817f0bf781a8c38517f4c937a35fca660bd1",
-    "docs/usd-brep-limitations.md": "3023e3adebae7442d810ac36d2ce505ed93032f4da22011e3e1539ef924b9bab",
     "docs/join-pick-probes.md": "99806c193eb8ea2582ce4a9af90e7e15a19901d501c9ed8a0d7d68fb72c60fe4",
     "docs/native-uv-transpose-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
     "docs/native-uv-transpose-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
@@ -284,7 +280,6 @@
     "docs/curve-distance-validation.json": "d950d707b44fc9d47e7a515db14d06a1f2761eeafedeafc3a59d16d43db4f181",
     "docs/join-pick-validation.json": "9145085e97b96cd0b0304f7f9bdbf7ff29e8e58bed67e62ee199c8ddefc7e27d",
     "docs/join-source-uv-validation.json": "0794300adf0ba0801f3228f024007e8fe051d22a1206ab74f9a22b2ba0424105",
-    "docs/native-uv-transpose-validation.json": "b46d1d465dcc3964df6e35eb85454088fe17ed80026d58697b510db48c9fba3a",
     "docs/smlib-unclamped-import-validation.json": "8e66c5f693356ca2dfa7d8c09b9a85109055a1f2a5e2e1aebe4373dbab314cdc"
   },
   "baseline_git_sha256": {
@@ -294,5 +289,14 @@
     "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360"
   },
   "native_executable_sha256": "db8a7243d71376b41e8e608514c4f7c7bbc65d89cd10ed53a218117eff7ba0e1",
-  "log_policy": "All completed exit codes are observed job/status receipts. Full raw logs, audits and strict reports are retained in gzip. Execution, exact authored geometry checks and raw Rhino comparison are distinct evidence; elapsed_ns=0 establishes no speed result."
+  "log_policy": "All completed exit codes are observed job/status receipts. Full raw logs, audits and strict reports are retained in gzip. Execution, exact authored geometry checks and raw Rhino comparison are distinct evidence; elapsed_ns=0 establishes no speed result.",
+  "source_git_sha256": {
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590"
+  },
+  "artifact_git_sha256": {
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:README.md": "9cc07dc43a448f572ce4c9a3af0842b438e028f96585fd6383306db5041834e9",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:docs/usd-brep-limitations.md": "3023e3adebae7442d810ac36d2ce505ed93032f4da22011e3e1539ef924b9bab",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:docs/native-uv-transpose-validation.json": "b46d1d465dcc3964df6e35eb85454088fe17ed80026d58697b510db48c9fba3a"
+  }
 }

@@ -6,6 +6,11 @@ CreateUVCrv rectangle sizing through usd-brep's `N_SrfExtractIsoCrv` producer.
 The native adapter exposes `surface_isocurve(surface, direction, parameter)`;
 U means a U-varying curve at fixed V, and V means the reverse.
 
+The separate [native surface-object producer](native-isocurve-pairs.md), used
+inside modeling operations, also preserves extracted bases and creates its UV
+partner correctly. The checked extractor below retains its additional endpoint,
+full-order and conditioning safeguards.
+
 The geometry policy validates the fixed parameter before backend entry and
 checks the complete returned varying-axis degree, count and full knot vector.
 Interior extraction uses conditioned homogeneous controls and exact binary

@@ -226,8 +226,6 @@
     "No arbitrary trimmed/periodic topology, broad Rhino command parity or performance parity is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
     "crates/viboceros-smlib/tests/stitch_uv.rs": "f71753562effc06dbd4110b5cde610e61dddf6c4394e326cd9af48ce6a2a8f86",
     "crates/viboceros-command/tests/native_unclamped_join.rs": "26bfe641bc244f8b4b4b48dbe6d8fe4b9ab12c7b37ef02f1dc9c5224c78d1b43",
     "crates/viboceros-smlib/native/brep_import.cpp": "1967e07a45a81d9c441f2230ebeddf4891bde32920687c0f3dbdffc75565b7f7",
@@ -290,7 +288,9 @@
   "log_policy": "Completed exit codes are observed job/status receipts. Full raw audit/report/log data are retained in gzip. Comparison and execution success remain distinct; elapsed_ns=0 establishes no performance result.",
   "source_git_sha256": {
     "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
-    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360"
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
+    "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590"
   },
   "artifact_git_sha256": {
     "3fba75ffc22e2adf74b34cde1355debe41515fee:README.md": "3a49335b2c1380c1f9e2be4aeaf7dfe9405acf7914923e7b9aa7d9c142777ac3",
