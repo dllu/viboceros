@@ -204,7 +204,6 @@
     "Arbitrary floating-point scales, general modeling topology, and viewport pixel parity are not established by these analytic/command cases."
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
     "crates/viboceros-geometry/src/circular.rs": "494862b1e9e284a6cd4110f1f7dbcf110f00bcc63db98906e05a30965c494fe5",
     "crates/viboceros-geometry/src/circle_curve.rs": "347e07e184fee67b64bd97f574f92a4572e99466d0cea7a186922eea0451733e",
     "crates/viboceros-geometry/src/brep/boolean/planar_mixed.rs": "90cbdf24752d5736c40e4529b7ac4f3cfc234dbb77d3e6750e66f8287eafe073",
@@ -256,7 +255,8 @@
   "source_git_sha256": {
     "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-geometry/src/frame.rs": "ebccd74e9f151b1aff6ee287a52a541b4feaa0b8282ba79f71e176abc8896ebd",
     "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-geometry/src/brep.rs": "be4390a80dafe15e65f7e3eaac6dbc64871b7d6fb3515c69c81fd50d93c76cd8",
-    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/lib.rs": "0a1a82c04ecaea6e94277139ebdfbe3ee6461bd59c0eabf7b63772aee0aa303b"
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/lib.rs": "0a1a82c04ecaea6e94277139ebdfbe3ee6461bd59c0eabf7b63772aee0aa303b",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6"
   },
   "artifact_git_sha256": {
     "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:README.md": "d06ad57f46eb78760f46435312ae1498f1453ea74f7ba1cbf0e5d36136201186",

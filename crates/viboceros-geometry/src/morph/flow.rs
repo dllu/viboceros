@@ -199,7 +199,27 @@ impl Guide {
         let reference = curve.as_ref().as_ref();
         let normal = match up {
             Some(up) => Some(up.normalized_nonzero()?),
-            None => reference.supporting_plane_normal(tolerance)?,
+            None => {
+                // The generic plane query may classify a very small conic
+                // as a line. Keep its native orientation when it agrees with
+                // the already validated analytic support plane.
+                let known = match reference {
+                    CurveRef::Circle(c) => Some(c.normal()?),
+                    CurveRef::Arc(c) => Some(c.normal()?),
+                    CurveRef::Ellipse(c) => Some(c.normal()?),
+                    _ => None,
+                };
+                match (known, reference.supporting_plane_normal(tolerance)) {
+                    (Some(known), Ok(Some(native)))
+                        if known.as_vector().cross(native.as_vector())?.length()?
+                            <= tolerance.angular().max(64. * Real::EPSILON) =>
+                    {
+                        Some(native)
+                    }
+                    (Some(known), _) => Some(known),
+                    (None, native) => native?,
+                }
+            }
         };
         let mut parameters = Vec::new();
         let mut frames = Vec::new();
@@ -394,8 +414,12 @@ impl CurveFlowPointMorph {
             surface,
             tolerance,
         )?;
-        let base_linear = base.curve().to_nurbs()?.is_linear_at_zero_tolerance()?;
-        let target_linear = target.curve().to_nurbs()?.is_linear_at_zero_tolerance()?;
+        // A validated line primitive stays a line below SelLine's public
+        // zero-tolerance minimum size. Preserve the existing NURBS predicate.
+        let base_linear = matches!(base.curve(), CurveRef::Line(_))
+            || base.curve().to_nurbs()?.is_linear_at_zero_tolerance()?;
+        let target_linear = matches!(target.curve(), CurveRef::Line(_))
+            || target.curve().to_nurbs()?.is_linear_at_zero_tolerance()?;
         if !options.stretch
             && base.total_length() < target.total_length()
             && let Some(lookup) = &target.lookup
@@ -503,39 +527,28 @@ impl CurveFlowPointMorph {
                 // The separated lines determine the half-turn plane. Exact
                 // collinearity uses the existing OpenNURBS-style perpendicular.
                 let chord = source_origin.vector_to(base.curve().end_point()?)?;
-                let between = source_origin.vector_to(target_origin).or_else(|_| {
-                    let a = source_origin.to_array();
-                    let b = target_origin.to_array();
-                    let scale = a.into_iter().chain(b).map(Real::abs).fold(0., Real::max);
-                    Vector3::try_from(std::array::from_fn(|i| b[i] / scale - a[i] / scale))
-                })?;
-                let normal = chord.cross(between).or_else(|_| {
-                    chord
-                        .normalized_nonzero()?
-                        .as_vector()
-                        .cross(between.normalized_nonzero()?.as_vector())
-                })?;
-                let normal = if normal.to_array() == [0.; 3] {
-                    Frame3::try_from_normal(
-                        source_origin,
-                        source_direction.as_vector(),
-                        Tolerance::NUMERICAL_VALIDATION,
-                    )?
-                    .x_axis()
-                    .as_vector()
-                } else {
-                    normal.normalized_nonzero()?.as_vector()
+                let normal = match chord
+                    .unit_cross_point_difference(source_origin, target_origin)?
+                {
+                    Some(normal) => normal,
+                    None => Frame3::try_from_unit_normal(source_origin, source_direction)?.x_axis(),
                 };
-                let source = Frame3::try_from_directions(
+                let source = Frame3::try_from_unit_directions(
                     source_origin,
-                    source_direction.as_vector(),
-                    normal.cross(source_direction.as_vector())?,
+                    source_direction,
+                    normal
+                        .as_vector()
+                        .cross(source_direction.as_vector())?
+                        .normalized_nonzero()?,
                     Tolerance::NUMERICAL_VALIDATION,
                 )?;
-                let target = Frame3::try_from_directions(
+                let target = Frame3::try_from_unit_directions(
                     target_origin,
-                    target_direction.as_vector(),
-                    normal.cross(target_direction.as_vector())?,
+                    target_direction,
+                    normal
+                        .as_vector()
+                        .cross(target_direction.as_vector())?
+                        .normalized_nonzero()?,
                     Tolerance::NUMERICAL_VALIDATION,
                 )?;
                 Some(crate::AffineTransform3::try_frame_mapping(

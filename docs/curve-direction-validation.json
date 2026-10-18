@@ -1,0 +1,341 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "0c85fd337d79601e2051193599f802203e25b60b",
+  "problem": "ArrayCrv applied model-distance tolerance to unit axes. Flow misclassified short line primitives and tiny analytic guide planes, and its opposite-line normal lost direction when coordinate differences or raw cross products left binary64 range.",
+  "implementation": [
+    "Keep validated CurveArrayFrame axes typed as unit directions when constructing frame mappings; retain angular admission.",
+    "Classify validated Line primitives directly within Flow. Preserve the public selection predicate and its use for other curve types.",
+    "For analytic conics, retain a native support-plane orientation when consistent with the validated analytic plane; otherwise use that known plane.",
+    "Build the opposite-line normal from exact point differences and determinants when the ordinary cross product cannot retain its direction. Normalize exact determinants before floating-point conversion; exact collinearity keeps the deterministic perpendicular."
+  ],
+  "baseline": {
+    "runs": [
+      {
+        "command": "cargo test -p viboceros-command --test curve_array_units -- --nocapture",
+        "exit_code": 101,
+        "retained_log": "docs/curve-directions-array-baseline.log.gz",
+        "uncompressed_log_sha256": "13d9bfe96cc73dce9fe1c3b48ff686be2b0617b5be3d7f3a470a08a00881769c",
+        "passed": 0,
+        "failed": 1,
+        "ignored": 0
+      },
+      {
+        "command": "cargo test -p viboceros-geometry --test flow_direction_units -- --nocapture",
+        "exit_code": 101,
+        "retained_log": "docs/curve-directions-flow-baseline.log.gz",
+        "uncompressed_log_sha256": "4d645ab50939424d8f38e668791977d3c8140e1b349f1320f257914a093d1a20",
+        "passed": 0,
+        "failed": 2,
+        "ignored": 0
+      }
+    ],
+    "test_sources": [
+      {
+        "path": "crates/viboceros-geometry/tests/flow_direction_units.rs",
+        "retained": "docs/curve-directions-baseline-flow.rs.gz",
+        "uncompressed_sha256": "9dcc2140f5149e3eea8db0e6ad26c27a006537ba3debc1e4bb400c80c69c1497"
+      },
+      {
+        "path": "crates/viboceros-command/tests/curve_array_units.rs",
+        "retained": "docs/curve-directions-baseline-array.rs.gz",
+        "uncompressed_sha256": "da1c0967881cf6d3f3f6a614174ac3a2017c888dadba471ef24c2bc5c8b49dd2"
+      }
+    ],
+    "replay": "In an isolated checkout of baseline_revision, decompress each retained source to its recorded path and run the two baseline commands. These snapshots contain the original 530 cases before the additional command admission, Flow history and tilted-arc cases."
+  },
+  "matrices": [
+    {
+      "name": "ArrayCrv",
+      "cases": 480,
+      "baseline_successful": 336,
+      "baseline_failed": 144,
+      "candidate_failed": 0,
+      "model_scale_exponents": [
+        -20,
+        0,
+        20,
+        40,
+        80
+      ],
+      "paths": [
+        "quarter arc",
+        "NURBS arc with domain width 2^-200",
+        "NURBS arc with domain width 2^200",
+        "vertical line",
+        "oblique line",
+        "spatial polyline with vertical segment"
+      ],
+      "orientations": [
+        "Freeform",
+        "Roadlike",
+        "Stairlike",
+        "NoRotation"
+      ],
+      "spacing": [
+        "item count",
+        "distance"
+      ],
+      "base_point": [
+        "default",
+        "explicit translated"
+      ]
+    },
+    {
+      "name": "opposite-line Flow",
+      "cases": 48,
+      "baseline_successful": 36,
+      "baseline_failed": 12,
+      "candidate_failed": 0,
+      "model_scale_exponents": [
+        -600,
+        -200,
+        -20,
+        0,
+        20,
+        40,
+        200,
+        600
+      ],
+      "target_origin_offsets": [
+        [
+          5,
+          7,
+          11
+        ],
+        [
+          5,
+          -3,
+          4
+        ],
+        [
+          5,
+          0,
+          0
+        ]
+      ],
+      "stretch": [
+        false,
+        true
+      ],
+      "profile_points_per_case": 3
+    },
+    {
+      "name": "overflowing-origin Flow",
+      "cases": 2,
+      "baseline_successful": 0,
+      "baseline_failed": 2,
+      "candidate_failed": 0,
+      "guide_origins": [
+        [
+          0,
+          -1e+308,
+          1e-200
+        ],
+        [
+          0,
+          1e+308,
+          -1e-200
+        ]
+      ],
+      "guide_length": "2^977",
+      "absolute_tolerance": 1e+278,
+      "relative_tolerance": 1e-30
+    }
+  ],
+  "additional_cases": {
+    "array_noops_and_invalid_inputs": 25,
+    "opposite_line_Flow_commands": 96,
+    "tilted_arc_borrowed_plane": 10,
+    "total_command_and_Flow_cases": 661,
+    "cross_direction_test_functions": 4,
+    "cross_direction_queries": 25
+  },
+  "assertions": {
+    "tolerance": "Unless overridden, absolute=1e-7 times model scale, relative=1e-12, angular=1e-9.",
+    "array_normalized_station_error_limit": 2e-07,
+    "array_axis_error_limit": 2e-10,
+    "array_history": "Exact object and group-definition Undo/Redo replay; source and rail retention; source selection; per-instance group identities; errors and single-item noops preserve state and history.",
+    "opposite_line_expected": "R=2*n*n^T-I, n=normalize([0,-dz,dy]) with dy/dz the transverse target origin offsets; exact collinearity uses n=[0,1,0]. Axial X length is additionally doubled for Stretch. Add the target origin.",
+    "opposite_line_normalized_point_error_limit": 2e-12,
+    "overflowing_origin_expected": "Exactly [x,-y,-z] for both independent finite points; tiny transverse origin data determines the half-turn plane.",
+    "tilted_arc_expected": "For input (a,b,c), output [5+(4-c)*cos(theta),7+b,11+(4-c)*sin(theta)] times scale. theta=a*pi/6 with Stretch, otherwise a/4.",
+    "tilted_arc_normalized_point_error_limit": 2e-11,
+    "Flow_command_history": "Copy/Stretch combinations preserve source objects when copied and exact object replay. Original groups restore exactly; existing copied-group definitions remain empty after Undo and recover membership on Redo.",
+    "exact_normals": "Cross-product exponent scales from -2000 to 2000, subnormal products, overflowing origin differences, reversed normals, and exact collinearity whose rounded point difference would invent a plane."
+  },
+  "completed_runs": [
+    {
+      "command": "cargo test -p viboceros-geometry --test flow_direction_units -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/curve-directions-flow-focused.log.gz",
+      "uncompressed_log_sha256": "cdfa19f1870fc7272fa05a62d0cf5b391f6cd166c017e11fbca02369237e805c",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test -p viboceros-command --test curve_array_units --test flow_direction_units -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/curve-directions-commands-focused.log.gz",
+      "uncompressed_log_sha256": "2b066000f69208d284543f2d9addfc370a8795e8dc61d531fcbff75f82b65633",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib vector::cross_direction -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/curve-directions-cross-focused.log.gz",
+      "uncompressed_log_sha256": "f47dda8fb5a6449de601481fe9d70d525bb71f5b2811778246db021d159d2eaf",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-geometry -p viboceros-command --features viboceros-command/native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/curve-directions-full-release.log.gz",
+      "uncompressed_log_sha256": "3e44678efb1436c61663a6d8bd5e03e460687449c62f96bbedffce377cdf2d8b",
+      "passed": 3999,
+      "failed": 0,
+      "ignored": 11
+    },
+    {
+      "command": "cargo test --release --bin viboceros -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/curve-directions-app-release.log.gz",
+      "uncompressed_log_sha256": "761859e19b1569ddf21ae552c27ffc7ffe758f97160a28c668ff2dd427dde361",
+      "passed": 1375,
+      "failed": 0,
+      "ignored": 19
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained_log": "docs/curve-directions-clippy.log.gz",
+      "uncompressed_log_sha256": "3180b2d05c080eb7bddf6ea1022cc70d21e4db8d8ffebff5493d29589280d2f1"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained_log": "docs/curve-directions-fmt.log.gz",
+      "uncompressed_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_release_sections": [
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_command-dc4b87f7d01e2a4e)",
+      "summary": "test result: ok. 1579 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 128.94s"
+    },
+    {
+      "header": "Running tests/create_uv_curve_units.rs (target/release/deps/create_uv_curve_units-5518b9de7cd0c437)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s"
+    },
+    {
+      "header": "Running tests/curve_array_units.rs (target/release/deps/curve_array_units-68772a1c763baf2f)",
+      "summary": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s"
+    },
+    {
+      "header": "Running tests/direction_adapters.rs (target/release/deps/direction_adapters-874e97ceb405d0e2)",
+      "summary": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s"
+    },
+    {
+      "header": "Running tests/flow_direction_units.rs (target/release/deps/flow_direction_units-6f57d58d344e78c2)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+    },
+    {
+      "header": "Running tests/surface_parameter_placement.rs (target/release/deps/surface_parameter_placement-ba025f0f8f7af331)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-a159ed14312ccb02)",
+      "summary": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+    },
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_geometry-8704133541059e5f)",
+      "summary": "test result: ok. 2384 passed; 0 failed; 8 ignored; 0 measured; 0 filtered out; finished in 19.86s"
+    },
+    {
+      "header": "Running tests/direction_frames.rs (target/release/deps/direction_frames-138a83af0bbf186d)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/flow_direction_units.rs (target/release/deps/flow_direction_units-45eabd02b95bfd20)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/planar_boolean_scale.rs (target/release/deps/planar_boolean_scale-3ea37b1a5b00911b)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+    },
+    {
+      "header": "Running tests/surface_parameter_frames.rs (target/release/deps/surface_parameter_frames-d1e7e0e45209a384)",
+      "summary": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/surface_pullback_units.rs (target/release/deps/surface_pullback_units-7583c26bfe779b68)",
+      "summary": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.23s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-85517c4bb1d9ab3f)",
+      "summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s"
+    },
+    {
+      "header": "Doc-tests viboceros_command",
+      "summary": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Doc-tests viboceros_geometry",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 14,
+    "records": 10,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "log_policy": "Gzip files retain complete original output. Exit statuses were observed from the running processes. Focused runs guided development; final release suites qualify the exact recorded sources.",
+  "limitations": [
+    "No new Rhino capture or performance measurement was made. Retained native observations remain exercised by the full suites.",
+    "These cases do not qualify arbitrary floating-point scales, every NURBS guide plane/line classification, general spatial Flow policy, topology or viewport parity.",
+    "Flow command Undo intentionally retains its existing empty copied-group definitions; this correction does not change document group lifecycle."
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "6f6c269dd3d7ec0b570929233b033f0fcdf7e9d00be1d5053f76f58761f41692",
+    "crates/viboceros-geometry/src/morph/flow.rs": "a8e4a8b04dc4ba51bcc8d2d806540134dc481e5a512a0cc3f3c8757134fdd362",
+    "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
+    "crates/viboceros-geometry/src/vector/cross_direction.rs": "b2d21dc2509bea847f6fc97185b87a552f5062ff9050ab9df853524de3667d33",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/src/parameter.rs": "66eff84b5540d40dd2396bcc14d81fcc97f1595926b22e8d048807448f657253",
+    "crates/viboceros-command/tests/curve_array_units.rs": "ebdbdf8944824fb60b617a25b9ce8bf0c2d03d052a7ffd3b6435ac411b4f49a6",
+    "crates/viboceros-command/tests/flow_direction_units.rs": "58a7427a283cd38e539ff934c94c19fbc4e03459a5589e6501d472e3f9dc6fb1",
+    "crates/viboceros-geometry/tests/flow_direction_units.rs": "94c388314087643a26e46ba5b37f6dedbd8c67208e5aa835fd01311f6d0e503d",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "README.md": "323583b569a45262e40be2579e52f362d987dfb0c40ea0f05f68e0731c033dcc",
+    "docs/curve-direction-units.md": "85e8bbdacb057ab2af7b3312db5e49109d6a5c9345791d4e7ecdb5b64910353d",
+    "docs/commands/flow.md": "b17e75d9fa4498a121a834170f9da64b805f0e3fb831a6d911ab85017cd9eb7a",
+    "docs/direction-adapters.md": "68ccfdff1fbfaff0618e38561bcb3960af7bf1236b11b31b73309ea91db30a75",
+    "docs/curve-directions-baseline-flow.rs.gz": "745a3678e937d3c25b5462117aefd525fdf01da4a584fb7f4aa8c79cdee39298",
+    "docs/curve-directions-baseline-array.rs.gz": "7886a26d8cfc83e0a0d9871c14ba2f350356199102cbe21060ae36de4ea7c881",
+    "docs/curve-directions-array-baseline.log.gz": "104909ab418a9b9cd4a76b972d821b0b86546239beff0ef45211d431fd1c747a",
+    "docs/curve-directions-flow-baseline.log.gz": "0cba72fe66b4730dc10cd85c5a8f2115e5344d752b1aed0a858346e3efb65863",
+    "docs/curve-directions-flow-focused.log.gz": "b1745ba43ba06f50bc9400c22a55634ce70cdfbf2a9ee3f04e71fbc40a87d0b1",
+    "docs/curve-directions-commands-focused.log.gz": "3f20c55c20b57b85cc32d8be242f9e5ad9870796050917f98b1b830e5014e797",
+    "docs/curve-directions-cross-focused.log.gz": "9d2d509b3b6e5c988cc1e7285947381595bd11082dd09ff5b5a439679f783ac5",
+    "docs/curve-directions-full-release.log.gz": "bb9629242a0ad0856037ff8adb6d3e722df716b800bd5892d0abbc75b543561a",
+    "docs/curve-directions-app-release.log.gz": "b692d8de82fdc6faf69be49b3e43216c9e76f03085d136739baebada5f5076e1",
+    "docs/curve-directions-clippy.log.gz": "b136e116e0a87f239c71023083c0e6d673a7fea6c373cf93bfb3c56f19621d1e",
+    "docs/curve-directions-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+  },
+  "baseline_git_sha256": {
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-command/src/lib.rs": "bbfdac649c90d8cccd4be6262e8bcaf3da4e53d5c7cd930b974a58f657aa77c4",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/morph/flow.rs": "bc1f9f17b10b16f460f1303b444d35a119390c5780774089f5f4ddcca818a9e7",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/parameter.rs": "66eff84b5540d40dd2396bcc14d81fcc97f1595926b22e8d048807448f657253",
+    "0c85fd337d79601e2051193599f802203e25b60b:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

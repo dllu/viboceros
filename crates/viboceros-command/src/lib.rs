@@ -15012,18 +15012,8 @@ fn curve_array_frame_transform(
     target: CurveArrayFrame,
     tolerance: Tolerance,
 ) -> Result<AffineTransform3, GeometryError> {
-    let source = Frame3::try_from_directions(
-        base_point,
-        source.x.as_vector(),
-        source.y.as_vector(),
-        tolerance,
-    )?;
-    let target = Frame3::try_from_directions(
-        target_point,
-        target.x.as_vector(),
-        target.y.as_vector(),
-        tolerance,
-    )?;
+    let source = Frame3::try_from_unit_directions(base_point, source.x, source.y, tolerance)?;
+    let target = Frame3::try_from_unit_directions(target_point, target.x, target.y, tolerance)?;
     AffineTransform3::try_frame_mapping(source, target, [1.0; 3])
 }
 

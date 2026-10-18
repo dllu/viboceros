@@ -173,3 +173,7 @@ reversals, Copy/Stretch, Roadlike interaction, Local/Rigid placement, control/ed
 and mesh grips, complete geometry and real Undo/Redo at `1e-6`. App tests check
 preview against native points, face picking, reference invalidation, removal,
 cancellation and a single committed history entry.
+
+[Direction-unit qualification](../curve-direction-units.md) covers short line
+primitives, analytic support planes and stable opposite-line normals across
+model scales, including overflowing guide-origin differences.

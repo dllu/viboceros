@@ -110,7 +110,6 @@
     "crates/viboceros-geometry/src/point_projection/fit/line/tests.rs": "df7075ba1761e9c1eac5e30f952726d5cc995a2a4a4c0d224837b83d32b136aa",
     "crates/viboceros-geometry/src/point_projection/fit/normalized.rs": "e94962bae969e4480a3032f02edf9ff5c7ec97a4da64e335f352d2447094e9f7",
     "crates/viboceros-geometry/src/point_projection/fit/surface.rs": "d9eee3837cdb8ecc6435a2d476c1151a6864b5ff85c54be203b7d0cf89376e24",
-    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
     "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
     "docs/commands/line-through-points.md": "1cad8d2ad96dfa29c99d011752e4cbcac1be55f5964c95bbaddd202eb4193c9f",
     "docs/commands/plane-through-points.md": "af5ef16b4868515438b6ff6d8f0029d4c75709533bb4d581deb672d9f9d40851",
@@ -155,6 +154,7 @@
     "a51562a6c9bc18561be432a2fa8a7dcf74f5af07:tools/rhino_oracle/structural_sdk.py": "07a51cd22f4fbf40c999732415bc6fed69ac4df491bc7cc7771b2c5e737bc502",
     "0de7e5e72351c93d13977aa0ecd0a53d855a6cd9:crates/viboceros-command/src/object_selection.rs": "6a4e4aef1d483a52bb324e618be66cd9cdfd4225a3903aa9cce3c4c4a40d1a11",
     "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
-    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22"
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6"
   }
 }

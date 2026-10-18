@@ -143,7 +143,6 @@
     "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
-    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
     "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
     "crates/viboceros-oracle/src/object_source.rs": "7a1c48fc3d32b9ddc16c96902cd927f951e1f6ce3b6bf385849dbe3345f3b8c1",
     "crates/viboceros-oracle/src/point_deviation.rs": "3cc1904e6c9070664c740e3b57a98a52c3f63743a0e592d1272e084b61da4b1b",
@@ -184,6 +183,7 @@
     "247a9553061ba774fa9dca45d6e4cc8703e86b2e:src/app/project.rs": "ef834e9305627ac1bb8c41e61d908828ad00ae9c58f0caadd2743e569a218c14",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:crates/viboceros-geometry/src/curve.rs": "86b97f191859551779d220fae7c468a342fee3e3a85b2d2004d15ccb44104b08",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/commands/README.md": "7d13f852b53b2f895c953508ce49600de3f217ddd1117c7e69ddbb8378036547",
-    "daec5072e887979947ec3c92733a30423101e0f3:crates/viboceros-geometry/src/brep.rs": "d16111047e0cde91449d52eeb84ec250553e440e2c4d0f8fe3beee87bb69d614"
+    "daec5072e887979947ec3c92733a30423101e0f3:crates/viboceros-geometry/src/brep.rs": "d16111047e0cde91449d52eeb84ec250553e440e2c4d0f8fe3beee87bb69d614",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6"
   }
 }

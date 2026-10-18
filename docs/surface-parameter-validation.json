@@ -277,15 +277,12 @@
     "crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
     "crates/viboceros-geometry/src/morph.rs": "31780be5c5f03f316d070e839b731bda82b80cbf3b69a101e70e0c8acb773641",
     "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
-    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
     "crates/viboceros-geometry/tests/surface_parameter_frames.rs": "7974797de9df1e66843b22a01eb2ec9e03213caa543213dcb0a60d188c231b1f",
-    "crates/viboceros-command/src/lib.rs": "bbfdac649c90d8cccd4be6262e8bcaf3da4e53d5c7cd930b974a58f657aa77c4",
     "crates/viboceros-command/src/orient_surface.rs": "19bfb6617c80f54d7272eb66fffc10cd2b6aff0a8d1c7caf70facf7cc5da0a36",
     "crates/viboceros-command/tests/surface_parameter_placement.rs": "e77b0acc844ac6f53211d65f7b3f751426b93efb8898ba32fa18b6cf24ab10b4",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
-    "docs/direction-adapters.md": "7a708f65212fd89f2f0cd1de25c69e0befb79e31d4f692879b3702000edaecff",
     "docs/surface-parameters-baseline-geometry.rs.gz": "d9319ab5d4424cc930f6a31016f80df1a1bb06f7f3e7892aa7dae5e1ab8abe73",
     "docs/surface-parameters-baseline-command.rs.gz": "3fb9dab64176f26d99130f98e48f88c807d5de03f78f4641d11d35abb518128d",
     "docs/surface-parameters-geometry-baseline.log.gz": "ce3de0896afdfefa71d8ab43f49e10bff04918dc4ef5f9629ab5b0cea33ed624",
@@ -308,6 +305,11 @@
   },
   "artifact_git_sha256": {
     "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:README.md": "f48bc69b8f61c5bdb8f9b7acc4bc58b65d98beab4609e7ec2e9ebf480d739646",
-    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:docs/surface-parameter-frames.md": "9a0f316d214852604e05572d831f376356c0a86ead22338fc08d7579a6540ffd"
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:docs/surface-parameter-frames.md": "9a0f316d214852604e05572d831f376356c0a86ead22338fc08d7579a6540ffd",
+    "0c85fd337d79601e2051193599f802203e25b60b:docs/direction-adapters.md": "7a708f65212fd89f2f0cd1de25c69e0befb79e31d4f692879b3702000edaecff"
+  },
+  "source_git_sha256": {
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-command/src/lib.rs": "bbfdac649c90d8cccd4be6262e8bcaf3da4e53d5c7cd930b974a58f657aa77c4"
   }
 }

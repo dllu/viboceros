@@ -65,6 +65,9 @@ It adds no new licensed Rhino capture or performance measurement. Arbitrary
 scales, unresolved angular directions, all command adapters and general topology
 are not qualified by this matrix.
 
+The [curve-direction follow-up](curve-direction-units.md) covers ArrayCrv
+frames and Flow guide classification and opposite-line normals.
+
 The [surface-parameter follow-up](surface-parameter-frames.md) covers kernel
 surface frames, splop differentials, ArraySrf and OrientOnSrf.
 

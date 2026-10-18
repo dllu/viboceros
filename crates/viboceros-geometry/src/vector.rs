@@ -1,5 +1,6 @@
 use crate::{GeometryError, Real, Tolerance, require_finite};
 
+mod cross_direction;
 mod exact_dot;
 
 /// A finite vector in three-dimensional model space.
