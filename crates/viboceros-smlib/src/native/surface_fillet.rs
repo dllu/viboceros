@@ -3,6 +3,22 @@ use super::*;
 use viboceros_geometry::{AffineTransform3, Brep, BrepTrimType, SurfaceIso, SurfaceKnotDirection};
 mod picks;
 
+/// Treatment of private parent copies at the fillet contact rails.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SurfaceFilletParentMode {
+    Split,
+    Trim,
+}
+
+/// Owned fillet sheets and optional replacement parent faces. `None` retains
+/// the original parent; `Some([])` indicates complete consumption. Replacement
+/// parents use the native unit UV charts.
+#[derive(Clone, Debug)]
+pub struct SurfaceFilletResult {
+    pub fillet: Brep,
+    pub parents: [Option<Vec<Brep>>; 2],
+}
+
 /// Offset direction relative to the surface's increasing-U cross increasing-V normal.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SurfaceFilletSide {
@@ -55,6 +71,20 @@ impl SurfaceFilletOptions {
 }
 
 unsafe extern "C" {
+    fn vb_surface_fillet_parents(
+        first: *const brep::NurbsData,
+        second: *const brep::NurbsData,
+        radius: f64,
+        sides: *const c_int,
+        extend: c_int,
+        extension_factor: f64,
+        accuracy: f64,
+        trim: c_int,
+        out: *mut *mut NativeSolid,
+        changed: *mut c_int,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_surface_fillet(
         first: *const brep::NurbsData,
         second: *const brep::NurbsData,
@@ -85,6 +115,29 @@ pub fn fillet_surfaces(
     options: SurfaceFilletOptions,
     tolerance: Tolerance,
 ) -> Result<Option<Brep>, Error> {
+    Ok(construct(first, second, options, None, tolerance)?.map(|r| r.fillet))
+}
+
+/// Construct the fillet and trim or split private parent copies with the native
+/// rail insertion machinery. Inputs remain unchanged on success and failure.
+/// This accepts two support surfaces, not preexisting trimmed B-rep faces.
+pub fn fillet_surfaces_with_parents(
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    options: SurfaceFilletOptions,
+    mode: SurfaceFilletParentMode,
+    tolerance: Tolerance,
+) -> Result<Option<SurfaceFilletResult>, Error> {
+    construct(first, second, options, Some(mode), tolerance)
+}
+
+fn construct(
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    options: SurfaceFilletOptions,
+    mode: Option<SurfaceFilletParentMode>,
+    tolerance: Tolerance,
+) -> Result<Option<SurfaceFilletResult>, Error> {
     let (prepared, origin, scale) = prepared_sources(first, second, options.radius)?;
     let mut boundaries = Vec::new();
     if options.extend {
@@ -111,8 +164,25 @@ pub fn fillet_surfaces(
         } else {
             0.
         };
-        let mut pointer = std::ptr::null_mut();
+        let mut pointers = [std::ptr::null_mut(); 3];
+        let mut changed = [0; 2];
         call(|error, capacity| unsafe {
+            if let Some(mode) = mode {
+                return vb_surface_fillet_parents(
+                    &a.view(),
+                    &b.view(),
+                    options.radius / scale,
+                    sides.as_ptr(),
+                    c_int::from(options.extend),
+                    extension_factor,
+                    accuracy,
+                    c_int::from(mode == SurfaceFilletParentMode::Trim),
+                    pointers.as_mut_ptr(),
+                    changed.as_mut_ptr(),
+                    error,
+                    capacity,
+                );
+            }
             vb_surface_fillet(
                 &a.view(),
                 &b.view(),
@@ -121,19 +191,22 @@ pub fn fillet_surfaces(
                 c_int::from(options.extend),
                 extension_factor,
                 accuracy,
-                &mut pointer,
+                &mut pointers[0],
                 error,
                 capacity,
             )
         })?;
-        let Some(handle) = NonNull::new(pointer) else {
+        // Own every transferred handle before any fallible export.
+        let mut shapes = pointers.map(|p| {
+            NonNull::new(p).map(|handle| Shape {
+                model: Solid {
+                    handle,
+                    _thread_local: PhantomData,
+                },
+            })
+        });
+        let Some(shape) = shapes[0].take() else {
             return Ok(None);
-        };
-        let shape = Shape {
-            model: Solid {
-                handle,
-                _thread_local: PhantomData,
-            },
         };
         let output = shape
             .model
@@ -142,7 +215,23 @@ pub fn fillet_surfaces(
         // the longer parent. Enlarge the private native search until every
         // boundary end cap reaches an actual original parent boundary.
         if !options.extend || caps_reach_parent_boundaries(&output, &boundaries, local_tolerance)? {
-            return Ok(Some(output.transformed(transform, tolerance)?));
+            let mut parents = [None, None];
+            for (i, shape) in shapes[1..].iter().enumerate() {
+                if changed[i] != 0 {
+                    parents[i] = Some(Vec::new());
+                }
+                if let Some(shape) = shape {
+                    let parent = shape
+                        .model
+                        .to_brep_with_closed_uv_joints(local_tolerance, Some(accuracy * 0.25))?
+                        .transformed(transform, tolerance)?;
+                    parents[i] = Some(parent.explode_faces(tolerance)?);
+                }
+            }
+            return Ok(Some(SurfaceFilletResult {
+                fillet: output.transformed(transform, tolerance)?,
+                parents,
+            }));
         }
     }
     Err(Error::Kernel(

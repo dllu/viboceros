@@ -1379,6 +1379,36 @@ extern "C" int vb_surface_fillet(const VbNurbsData *first,const VbNurbsData *sec
     });
 }
 
+extern "C" int vb_surface_fillet_parents(const VbNurbsData *first,const VbNurbsData *second,
+    double radius,const int sides[2],int extend,double extension_factor,double accuracy,int trim,
+    VbSolid *out[3],int changed[2],char *error,size_t capacity) {
+    if(out) for(size_t i=0;i<3;++i) out[i]=nullptr;
+    if(changed) for(size_t i=0;i<2;++i) changed[i]=0;
+    return guarded(error,capacity,[&] {
+        require(first && second && out && changed && (extend==0 || extend==1) && (trim==0 || trim==1),
+                "Invalid surface fillet parent input");
+        auto result=vb_fillet_surface_parents(*first,*second,radius,sides,extend!=0,
+            extension_factor,accuracy,trim!=0);
+        if(!result.fillet) return;
+        std::unique_ptr<VbSolid> owners[3];
+        owners[0]=std::make_unique<VbSolid>();
+        owners[0]->value=std::move(result.fillet);
+        int modified[2]={};
+        for(size_t i=0;i<2;++i) {
+            if(!vb_finish_fillet_parent(result,i)) continue;
+            modified[i]=1;
+            SmTArray<SmFace*> faces;
+            result.parents[i]->GetFaces(faces);
+            if(!faces.GetSize()) continue; // A parent can be consumed completely.
+            owners[i+1]=std::make_unique<VbSolid>();
+            owners[i+1]->value=std::move(result.parents[i]);
+        }
+        // Transfer the complete batch only after all allocation and validation.
+        for(size_t i=0;i<3;++i) out[i]=owners[i].release();
+        for(size_t i=0;i<2;++i) changed[i]=modified[i];
+    });
+}
+
 extern "C" int vb_surface_intersect(const VbNurbsData *first,const VbNurbsData *second,
     double tolerance,double angle,VbSurfaceIntersections **out,char *error,size_t capacity) {
     if(out)*out=nullptr;

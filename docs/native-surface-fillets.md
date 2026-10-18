@@ -87,6 +87,10 @@ reserves precision for rail fitting and loft normals while retaining the caller'
 acceptance tolerance. Its validation record supersedes the earlier counts and
 sampled error measurements above for the current implementation.
 
+The [parent trim/split adapter](native-surface-fillet-parents.md) additionally
+returns optional owned replacements for the two support surfaces. It reuses
+the kernel's insertion and trimming operations while preserving source inputs.
+
 The native bridge retains its degree-17 and input/resource limits, positive
 conditioned weights, and normalized accuracy floor. Full-order discontinuities,
 severe independent weight ratios, arbitrary conditioning, closed-contact

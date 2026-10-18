@@ -9,12 +9,20 @@ pub struct Fixture {
     /// Optional diagnostic override; ordinary requests use the SDK UV picks.
     #[serde(default, deserialize_with = "explicit_sides")]
     pub sides: Option<[i32; 2]>,
+    /// Missing keeps parents; true trims them and false splits them (SDK overload).
+    #[serde(default, deserialize_with = "explicit_trim")]
+    pub trim: Option<bool>,
     pub queries: Vec<[f64; 3]>,
 }
 fn explicit_sides<'de, D: serde::Deserializer<'de>>(
     deserializer: D,
 ) -> Result<Option<[i32; 2]>, D::Error> {
     <[i32; 2]>::deserialize(deserializer).map(Some)
+}
+fn explicit_trim<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<bool>, D::Error> {
+    bool::deserialize(deserializer).map(Some)
 }
 #[cfg(feature = "native-smlib")]
 pub(super) fn run(
@@ -59,25 +67,77 @@ pub(super) fn run(
                 tolerance,
             )?
         };
-        let output =
-            viboceros_smlib::fillet_surfaces(&parents[0], &parents[1], options, tolerance)?;
-        let mut records = Vec::new();
-        if let Some(brep) = output {
-            let native = viboceros_smlib::Shape::from_brep(&brep, tolerance)?;
+        let mut remnants = None;
+        let output = if let Some(trim) = f.trim {
+            use viboceros_smlib::{SurfaceFilletParentMode as Mode, fillet_surfaces_with_parents};
+            fillet_surfaces_with_parents(
+                &parents[0],
+                &parents[1],
+                options,
+                if trim { Mode::Trim } else { Mode::Split },
+                tolerance,
+            )?
+            .map(|r| {
+                remnants = Some(r.parents);
+                r.fillet
+            })
+        } else {
+            viboceros_smlib::fillet_surfaces(&parents[0], &parents[1], options, tolerance)?
+        };
+        let record = |brep: &Brep| -> Result<Value, ProbeError> {
+            let native = viboceros_smlib::Shape::from_brep(brep, tolerance)?;
             let bounds = native.tight_bounds()?;
             let mut closest = Vec::new();
             for q in &f.queries {
-                let (face, u, v) = brep.closest_face_parameters(point(*q)?, tolerance)?.ok_or(
-                    ProbeError::FixtureInvariant("surface fillet closest point failed"),
-                )?;
-                closest.push(brep.faces()[face].surface().evaluate(u, v)?.to_array());
+                closest.push(closest_point(brep, point(*q)?, tolerance)?.to_array());
             }
-            records.push(json!({"valid":viboceros_command::geometry_check::check_geometry(&Geometry::Brep(brep.clone())).status == viboceros_command::geometry_check::GeometryCheckStatus::Valid,"is_solid":brep.is_solid(),"face_count":brep.faces().len(),"edge_count":brep.edges().len(),
+            Ok(
+                json!({"valid":viboceros_command::geometry_check::check_geometry(&Geometry::Brep(brep.clone())).status == viboceros_command::geometry_check::GeometryCheckStatus::Valid,"is_solid":brep.is_solid(),"face_count":brep.faces().len(),"edge_count":brep.edges().len(),
                 "area":brep.area(tolerance)?,"bounds":[bounds.min().to_array(),bounds.max().to_array()],"closest_points":closest,
-                "geometry":crate::brep_interchange::geometry_record(&brep)?}));
+                "geometry":crate::brep_interchange::geometry_record(brep)?}),
+            )
+        };
+        let records = output
+            .as_ref()
+            .map(record)
+            .transpose()?
+            .into_iter()
+            .collect::<Vec<_>>();
+        let mut value = json!({"outputs":records,"source_unchanged":parents==before});
+        if f.trim.is_some() {
+            let remnants = remnants.unwrap_or_default();
+            value["parents"] = json!(
+                remnants
+                    .each_ref()
+                    .map(|group| group
+                        .as_deref()
+                        .unwrap_or(&[])
+                        .iter()
+                        .map(record)
+                        .collect::<Result<Vec<_>, _>>())
+                    .into_iter()
+                    .collect::<Result<Vec<_>, _>>()?
+            );
         }
-        Ok(json!({"outputs":records,"source_unchanged":parents==before}))
+        Ok(value)
     })
+}
+
+#[cfg(feature = "native-smlib")]
+fn closest_point(brep: &Brep, target: Point3, tolerance: Tolerance) -> Result<Point3, ProbeError> {
+    let mut best = None;
+    for (i, face) in brep.faces().iter().enumerate() {
+        if let Some((u, v)) = brep.closest_parameters_on_face(i, target, tolerance)? {
+            let point = face.surface().evaluate(u, v)?;
+            let distance = point.distance_to(target)?;
+            if best.is_none_or(|(d, _)| distance < d) {
+                best = Some((distance, point));
+            }
+        }
+    }
+    best.map(|(_, p)| p).ok_or(ProbeError::FixtureInvariant(
+        "surface fillet closest point failed",
+    ))
 }
 #[cfg(not(feature = "native-smlib"))]
 pub(super) fn run(_: &Fixture, _: u32, _: Tolerance) -> Result<(Value, u64), ProbeError> {
@@ -89,6 +149,9 @@ pub(super) fn run(_: &Fixture, _: u32, _: Tolerance) -> Result<(Value, u64), Pro
 #[cfg(all(test, feature = "native-smlib"))]
 #[path = "surface_fillet_images.rs"]
 mod images;
+#[cfg(all(test, feature = "native-smlib"))]
+#[path = "surface_fillet_parent_tests.rs"]
+mod parent_tests;
 
 #[cfg(all(test, feature = "native-smlib"))]
 mod tests {
@@ -235,6 +298,7 @@ mod schema_tests {
                 panic!("wrong operation")
             };
             assert_eq!(fixture.sides, None);
+            assert_eq!(fixture.trim, None);
             assert_eq!(fixture.queries.len(), 4);
             assert!(fixture.picks.iter().flatten().all(|x| x.is_finite()));
         }
@@ -258,5 +322,27 @@ mod schema_tests {
         .unwrap();
         invalid["operations"][0]["sides"] = Value::Null;
         assert!(serde_json::from_value::<ProbeRequest>(invalid).is_err());
+    }
+
+    #[test]
+    fn explicit_trim_chooses_the_parent_overload_and_rejects_null_or_non_booleans() {
+        let source: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/surface_fillet.json"
+        ))
+        .unwrap();
+        for value in [true, false] {
+            let mut input = source.clone();
+            input["operations"][0]["trim"] = json!(value);
+            let request: ProbeRequest = serde_json::from_value(input).unwrap();
+            let Operation::SurfaceFillet { fixture, .. } = &request.operations[0] else {
+                panic!("wrong operation")
+            };
+            assert_eq!(fixture.trim, Some(value));
+        }
+        for value in [Value::Null, json!(0), json!("Split")] {
+            let mut input = source.clone();
+            input["operations"][0]["trim"] = value;
+            assert!(serde_json::from_value::<ProbeRequest>(input).is_err());
+        }
     }
 }

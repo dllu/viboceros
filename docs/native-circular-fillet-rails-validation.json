@@ -207,8 +207,6 @@
     }
   },
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "6893ab8f85b5d982c80d834bc217c4083776516983d65a128e7f560701bf473f",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "3bff3046222869148f338d28fee46ab3a45c4040f7a9bf9b541d5f129997185f",
     "crates/viboceros-smlib/tests/circular_fillet_rails.rs": "f937435d4d8052441d340604bbd233aa5278797b2f8ab02977ae8800417f5d1a",
     "third_party/patches/usd-brep-circular-fillet-rail-parameters.cmake": "0cbf34ff925106375272945cf75438eed33c469e23833d8e446e35bcfe361664",
     "third_party/patches/usd-brep-circular-fillet-rail-parameters.patch": "9620d387dadaf071c0beff59a9b04b8fcb32045734a8c24ad2878fb7a098af3c",
@@ -278,6 +276,8 @@
   "source_git_sha256": {
     "d59f692febecb247d503e7bb21f9061b931289ae:tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d",
     "d59f692febecb247d503e7bb21f9061b931289ae:README.md": "2691486658210e3d14ee4b6be940686fcc5ad0b2758f76ee0bd53a6c36603b00",
-    "d59f692febecb247d503e7bb21f9061b931289ae:docs/native-surface-fillets.md": "34caf32f7be3b14fd1d331c9d5a3a77e94ed89404938e7f35926bec472a1019d"
+    "d59f692febecb247d503e7bb21f9061b931289ae:docs/native-surface-fillets.md": "34caf32f7be3b14fd1d331c9d5a3a77e94ed89404938e7f35926bec472a1019d",
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/build.rs": "6893ab8f85b5d982c80d834bc217c4083776516983d65a128e7f560701bf473f",
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/native/CMakeLists.txt": "3bff3046222869148f338d28fee46ab3a45c4040f7a9bf9b541d5f129997185f"
   }
 }

@@ -92,7 +92,8 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Curve-array frames and Flow direction units](docs/curve-direction-units.md)
 - [USD BRep kernel integration](docs/usd-brep.md)
 - [Native surface-to-surface fillet producer](docs/native-surface-fillets.md), with
-  [UV pick sides and construction accuracy](docs/native-surface-fillet-picks.md)
+  [UV pick sides and construction accuracy](docs/native-surface-fillet-picks.md) and
+  [parent trimming/splitting](docs/native-surface-fillet-parents.md)
 - [Circular fillet rail correspondence](docs/native-circular-fillet-rails.md)
 - [Native surface joining](docs/smlib-joining.md): [UV transposes](docs/native-uv-transpose.md)
   and [closed-component orientation](docs/native-closed-join.md)

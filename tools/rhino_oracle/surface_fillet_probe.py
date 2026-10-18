@@ -17,13 +17,15 @@ def vector(p, size):
 
 
 def validate(op):
-    if (not isinstance(op, dict) or set(op)-{'sides'} != {'op', 'id', 'surfaces', 'picks', 'radius', 'extend', 'queries'}
+    if (not isinstance(op, dict) or set(op)-{'sides', 'trim'} != {'op', 'id', 'surfaces', 'picks', 'radius', 'extend', 'queries'}
             or op['op'] != 'surface_fillet' or not isinstance(op['id'], string_types)
             or not finite(op['radius']) or op['radius'] <= 0 or type(op['extend']) is not bool
             or not isinstance(op['surfaces'], list) or len(op['surfaces']) != 2
             or not isinstance(op['picks'], list) or len(op['picks']) != 2
             or not isinstance(op['queries'], list) or not 1 <= len(op['queries']) <= 64):
         raise ValueError('invalid surface fillet fields')
+    if 'trim' in op and type(op['trim']) is not bool:
+        raise ValueError('invalid surface fillet trim mode')
     sides = op.get('sides', [1, 1])
     if not isinstance(sides, list) or len(sides) != 2 or any(type(s) is not int or s not in (-1, 1) for s in sides):
         raise ValueError('invalid surface fillet sides')
@@ -64,29 +66,41 @@ def run(op, host, iterations, tolerance):
             parents.append(b)
         before = [host['_nurbs_surface_definition'](s) for s in surfaces]
         picks = [G.Point2d(p[0], p[1]) for p in op['picks']]
+        def record(b):
+            box = b.GetBoundingBox(True)
+            mass = G.AreaMassProperties.Compute(b)
+            if mass is None:
+                raise ValueError('SDK surface fillet mass query failed')
+            try:
+                area = float(mass.Area)
+            finally:
+                mass.Dispose()
+            return dict(valid=bool(b.IsValid), is_solid=bool(b.IsSolid),
+                face_count=int(b.Faces.Count), edge_count=int(b.Edges.Count), area=area,
+                bounds=[host['_xyz'](box.Min), host['_xyz'](box.Max)],
+                closest_points=[host['_xyz'](b.ClosestPoint(host['_point'](q))) for q in op['queries']],
+                geometry=host['_interchange_brep_record'](b))
         def compute():
             results = []
+            remnants = [[], []]
+            before_parents = [host['_interchange_brep_record'](b) for b in parents] if 'trim' in op else None
             try:
-                results = list(G.Brep.CreateFilletSurface(parents[0].Faces[0], picks[0],
-                    parents[1].Faces[0], picks[1], op['radius'], op['extend'], tolerance['absolute']) or [])
-                records = []
-                for b in results:
-                    box = b.GetBoundingBox(True)
-                    mass = G.AreaMassProperties.Compute(b)
-                    if mass is None:
-                        raise ValueError('SDK surface fillet mass query failed')
-                    try:
-                        area = float(mass.Area)
-                    finally:
-                        mass.Dispose()
-                    records.append(dict(valid=bool(b.IsValid), is_solid=bool(b.IsSolid),
-                        face_count=int(b.Faces.Count), edge_count=int(b.Edges.Count), area=area,
-                        bounds=[host['_xyz'](box.Min), host['_xyz'](box.Max)],
-                        closest_points=[host['_xyz'](b.ClosestPoint(host['_point'](q))) for q in op['queries']],
-                        geometry=host['_interchange_brep_record'](b)))
-                return dict(outputs=records, source_unchanged=before == [host['_nurbs_surface_definition'](s) for s in surfaces])
+                if 'trim' in op:
+                    fillets, first, second = G.Brep.CreateFilletSurface(parents[0].Faces[0], picks[0],
+                        parents[1].Faces[0], picks[1], op['radius'], op['trim'], op['extend'], tolerance['absolute'])
+                    results = list(fillets or [])
+                    remnants = [list(first or []), list(second or [])]
+                else:
+                    results = list(G.Brep.CreateFilletSurface(parents[0].Faces[0], picks[0],
+                        parents[1].Faces[0], picks[1], op['radius'], op['extend'], tolerance['absolute']) or [])
+                output = dict(outputs=[record(b) for b in results],
+                    source_unchanged=before == [host['_nurbs_surface_definition'](s) for s in surfaces])
+                if 'trim' in op:
+                    output['parents'] = [[record(b) for b in group] for group in remnants]
+                    output['source_unchanged'] &= before_parents == [host['_interchange_brep_record'](b) for b in parents]
+                return output
             finally:
-                for b in results:
+                for b in results + remnants[0] + remnants[1]:
                     b.Dispose()
         return host['_measure'](iterations, compute)
     finally:

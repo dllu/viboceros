@@ -1,0 +1,1508 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "dd679da03801f26d54bf7a61b8ad5467ea99739d",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "change": "Expose owned native surface-fillet parent trim/split results. Enable editing only on private parents needed for kernel face deletion. Remove only nonclosed embedded struts and their newly isolated vertices, distinguish unchanged topology from consumed/replaced parents, export independent faces, and transfer all native handles atomically. Reuse existing bounded face queries for parent closest points.",
+  "completed_runs": [
+    {
+      "name": "fillet-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "surface_fillet",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "seconds": 269.67946304311045,
+      "log": {
+        "retained": "docs/native-surface-fillet-parents-fillet-oracle.log.gz",
+        "uncompressed_sha256": "dd55e9266a25c86592d7bacd1dca33030c996f61de807c9ed5ceb893bac3095c"
+      },
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "bridge",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-smlib",
+        "--features",
+        "native",
+        "--no-fail-fast",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "seconds": 260.7586516740266,
+      "log": {
+        "retained": "docs/native-surface-fillet-parents-bridge.log.gz",
+        "uncompressed_sha256": "10e502800a003bfa8e3e7ee0df4777f7bc39948e613a751a5e2c19a64976e839"
+      },
+      "passed": 444,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "name": "command",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--no-fail-fast",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "seconds": 314.01260493602604,
+      "log": {
+        "retained": "docs/native-surface-fillet-parents-command.log.gz",
+        "uncompressed_sha256": "aab9690904f80fe4a2e39498f6681f4dd006bb62e415be71e842fb6651b9ba28"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "seconds": 43.42891675699502,
+      "log": {
+        "retained": "docs/native-surface-fillet-parents-clippy.log.gz",
+        "uncompressed_sha256": "bc23984fa693c14ee560437602004e7c2da7b19b4a7f6bee17f23fe2abd32062"
+      }
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "seconds": 4.585178159875795,
+      "log": {
+        "retained": "docs/native-surface-fillet-parents-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "oracle-build",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib"
+      ],
+      "status": 0,
+      "seconds": 112.39999862900004,
+      "log": {
+        "retained": "docs/native-surface-fillet-parents-oracle-build.log.gz",
+        "uncompressed_sha256": "3647cd3ad549afec4fe7aff545f06f7ec6ac72fa9211f7b8cb638a912043f525"
+      }
+    },
+    {
+      "name": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_surface_fillet_probe"
+      ],
+      "status": 0,
+      "seconds": 0.03758687409572303,
+      "log": {
+        "retained": "docs/native-surface-fillet-parents-python.log.gz",
+        "uncompressed_sha256": "dec5673ee7ead0e86a249ea046dba60aab31a8206a43fedeb035ab8449b4e26d"
+      }
+    }
+  ],
+  "sdk_comparison": {
+    "recipes": 32,
+    "absolute_epsilon": 1e-08,
+    "relative_epsilon": 1e-12,
+    "semantics_matches": 32,
+    "raw_complete_matches": 0,
+    "raw_complete_mismatches": 32,
+    "records": [
+      {
+        "id": "planes-0.2-0.2-split",
+        "fillet_maximum_bounds_difference": 1.7763568394002505e-15,
+        "fillet_maximum_closest_distance_difference": 3.5476283913284582e-15,
+        "fillet_maximum_closest_coordinate_difference": 3.552713678800501e-15,
+        "parent_counts": [
+          2,
+          2
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 8.881784197001252e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 57.5,
+              "sdk_area": 57.50000000000001
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 0.0,
+              "maximum_closest_distance_difference": 8.881784197001252e-16,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.4432899320127035e-15,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 57.49999999999999,
+              "sdk_area": 57.50000000000001
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 5.551115123125783e-16,
+              "maximum_closest_distance_difference": 7.771561172376096e-16,
+              "maximum_closest_coordinate_difference": 1.3322676295501878e-15,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ]
+        ]
+      },
+      {
+        "id": "planes-0.2-0.2-trim",
+        "fillet_maximum_bounds_difference": 1.7763568394002505e-15,
+        "fillet_maximum_closest_distance_difference": 3.5476283913284582e-15,
+        "fillet_maximum_closest_coordinate_difference": 3.552713678800501e-15,
+        "parent_counts": [
+          1,
+          1
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 0.0,
+              "maximum_closest_distance_difference": 8.881784197001252e-16,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 5.551115123125783e-16,
+              "maximum_closest_distance_difference": 7.771561172376096e-16,
+              "maximum_closest_coordinate_difference": 1.3322676295501878e-15,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ]
+        ]
+      },
+      {
+        "id": "planes-0.2-0.8-split",
+        "fillet_maximum_bounds_difference": 1.7763568394002505e-15,
+        "fillet_maximum_closest_distance_difference": 2.633370207103274e-15,
+        "fillet_maximum_closest_coordinate_difference": 2.6645352591003757e-15,
+        "parent_counts": [
+          2,
+          2
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 8.881784197001252e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 57.5,
+              "sdk_area": 57.50000000000001
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 0.0,
+              "maximum_closest_distance_difference": 8.881784197001252e-16,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 7.771561172376096e-16,
+              "maximum_closest_distance_difference": 1.4432899320127035e-15,
+              "maximum_closest_coordinate_difference": 1.7763568394002505e-15,
+              "native_area": 42.49999999999999,
+              "sdk_area": 42.49999999999999
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 9.992007221626409e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 57.50000000000001,
+              "sdk_area": 57.500000000000014
+            }
+          ]
+        ]
+      },
+      {
+        "id": "planes-0.2-0.8-trim",
+        "fillet_maximum_bounds_difference": 1.7763568394002505e-15,
+        "fillet_maximum_closest_distance_difference": 2.633370207103274e-15,
+        "fillet_maximum_closest_coordinate_difference": 2.6645352591003757e-15,
+        "parent_counts": [
+          1,
+          1
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 0.0,
+              "maximum_closest_distance_difference": 8.881784197001252e-16,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 7.771561172376096e-16,
+              "maximum_closest_distance_difference": 1.4432899320127035e-15,
+              "maximum_closest_coordinate_difference": 1.7763568394002505e-15,
+              "native_area": 42.49999999999999,
+              "sdk_area": 42.49999999999999
+            }
+          ]
+        ]
+      },
+      {
+        "id": "planes-0.8-0.2-split",
+        "fillet_maximum_bounds_difference": 2.6645352591003757e-15,
+        "fillet_maximum_closest_distance_difference": 1.3290596649903885e-15,
+        "fillet_maximum_closest_coordinate_difference": 1.7763568394002505e-15,
+        "parent_counts": [
+          2,
+          2
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 8.881784197001252e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.50000000000001,
+              "sdk_area": 42.49999999999999
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 2.6645352591003757e-15,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 1.7763568394002505e-15,
+              "native_area": 57.5,
+              "sdk_area": 57.500000000000014
+            }
+          ],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.4432899320127035e-15,
+              "maximum_closest_distance_difference": 8.881784197001252e-16,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 57.49999999999999,
+              "sdk_area": 57.50000000000001
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 5.551115123125783e-16,
+              "maximum_closest_distance_difference": 7.771561172376096e-16,
+              "maximum_closest_coordinate_difference": 1.3322676295501878e-15,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ]
+        ]
+      },
+      {
+        "id": "planes-0.8-0.2-trim",
+        "fillet_maximum_bounds_difference": 2.6645352591003757e-15,
+        "fillet_maximum_closest_distance_difference": 1.3290596649903885e-15,
+        "fillet_maximum_closest_coordinate_difference": 1.7763568394002505e-15,
+        "parent_counts": [
+          1,
+          1
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 8.881784197001252e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.50000000000001,
+              "sdk_area": 42.49999999999999
+            }
+          ],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 5.551115123125783e-16,
+              "maximum_closest_distance_difference": 7.771561172376096e-16,
+              "maximum_closest_coordinate_difference": 1.3322676295501878e-15,
+              "native_area": 42.5,
+              "sdk_area": 42.500000000000014
+            }
+          ]
+        ]
+      },
+      {
+        "id": "planes-0.8-0.8-split",
+        "fillet_maximum_bounds_difference": 2.6645352591003757e-15,
+        "fillet_maximum_closest_distance_difference": 6.327665013686964e-16,
+        "fillet_maximum_closest_coordinate_difference": 1.1102230246251565e-15,
+        "parent_counts": [
+          2,
+          2
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 8.881784197001252e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.50000000000001,
+              "sdk_area": 42.49999999999999
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 2.6645352591003757e-15,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 1.7763568394002505e-15,
+              "native_area": 57.5,
+              "sdk_area": 57.500000000000014
+            }
+          ],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 7.771561172376096e-16,
+              "maximum_closest_distance_difference": 1.887379141862766e-15,
+              "maximum_closest_coordinate_difference": 1.6653345369377348e-15,
+              "native_area": 42.49999999999999,
+              "sdk_area": 42.49999999999999
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 9.992007221626409e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 57.50000000000001,
+              "sdk_area": 57.500000000000014
+            }
+          ]
+        ]
+      },
+      {
+        "id": "planes-0.8-0.8-trim",
+        "fillet_maximum_bounds_difference": 2.6645352591003757e-15,
+        "fillet_maximum_closest_distance_difference": 6.327665013686964e-16,
+        "fillet_maximum_closest_coordinate_difference": 1.1102230246251565e-15,
+        "parent_counts": [
+          1,
+          1
+        ],
+        "parents": [
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 8.881784197001252e-16,
+              "maximum_closest_distance_difference": 0.0,
+              "maximum_closest_coordinate_difference": 8.881784197001252e-16,
+              "native_area": 42.50000000000001,
+              "sdk_area": 42.49999999999999
+            }
+          ],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 7.771561172376096e-16,
+              "maximum_closest_distance_difference": 1.887379141862766e-15,
+              "maximum_closest_coordinate_difference": 1.6653345369377348e-15,
+              "native_area": 42.49999999999999,
+              "sdk_area": 42.49999999999999
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-2.0-0.2-split",
+        "fillet_maximum_bounds_difference": 4.440892098500626e-15,
+        "fillet_maximum_closest_distance_difference": 6.663078536276762e-11,
+        "fillet_maximum_closest_coordinate_difference": 5.300199168445374e-11,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 7.771561172376096e-15,
+              "maximum_closest_distance_difference": 1.4988010832439613e-15,
+              "maximum_closest_coordinate_difference": 1.7177725908368302e-09,
+              "native_area": 45.16039439535328,
+              "sdk_area": 45.16039444254824
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 2.6645352591003757e-15,
+              "maximum_closest_distance_difference": 1.7763568394002505e-15,
+              "maximum_closest_coordinate_difference": 5.669324565360512e-09,
+              "native_area": 33.379421944391545,
+              "sdk_area": 33.37942197927466
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-2.0-0.2-trim",
+        "fillet_maximum_bounds_difference": 4.440892098500626e-15,
+        "fillet_maximum_closest_distance_difference": 6.663078536276762e-11,
+        "fillet_maximum_closest_coordinate_difference": 5.300199168445374e-11,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 2.6645352591003757e-15,
+              "maximum_closest_distance_difference": 1.7763568394002505e-15,
+              "maximum_closest_coordinate_difference": 5.669324565360512e-09,
+              "native_area": 33.379421944391545,
+              "sdk_area": 33.37942197927466
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-2.0-0.8-split",
+        "fillet_maximum_bounds_difference": 4.9960036108132044e-15,
+        "fillet_maximum_closest_distance_difference": 6.663760035150016e-11,
+        "fillet_maximum_closest_coordinate_difference": 5.2976956155248445e-11,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 1.1102230246251565e-15,
+              "maximum_closest_distance_difference": 1.2212453270876722e-15,
+              "maximum_closest_coordinate_difference": 8.996121625415299e-09,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927468
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 7.216449660063518e-15,
+              "maximum_closest_distance_difference": 2.220446049250313e-15,
+              "maximum_closest_coordinate_difference": 1.6416112913475445e-10,
+              "native_area": 45.16039439535327,
+              "sdk_area": 45.160394442548196
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-2.0-0.8-trim",
+        "fillet_maximum_bounds_difference": 4.9960036108132044e-15,
+        "fillet_maximum_closest_distance_difference": 6.663760035150016e-11,
+        "fillet_maximum_closest_coordinate_difference": 5.2976956155248445e-11,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.1102230246251565e-15,
+              "maximum_closest_distance_difference": 1.2212453270876722e-15,
+              "maximum_closest_coordinate_difference": 8.996121625415299e-09,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927468
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-6.0-0.2-split",
+        "fillet_maximum_bounds_difference": 7.105427357601002e-15,
+        "fillet_maximum_closest_distance_difference": 9.434692706762679e-11,
+        "fillet_maximum_closest_coordinate_difference": 1.3572004631257073e-10,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.965094753586527e-14,
+              "maximum_closest_distance_difference": 1.5265566588595902e-15,
+              "maximum_closest_coordinate_difference": 3.6699532302009175e-10,
+              "native_area": 45.16039439535328,
+              "sdk_area": 45.16039444254831
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 1.7763568394002505e-15,
+              "maximum_closest_distance_difference": 1.1102230246251565e-15,
+              "maximum_closest_coordinate_difference": 1.0350759360733264e-08,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.37942197927459
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-6.0-0.2-trim",
+        "fillet_maximum_bounds_difference": 7.105427357601002e-15,
+        "fillet_maximum_closest_distance_difference": 9.434692706762679e-11,
+        "fillet_maximum_closest_coordinate_difference": 1.3572004631257073e-10,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.7763568394002505e-15,
+              "maximum_closest_distance_difference": 1.1102230246251565e-15,
+              "maximum_closest_coordinate_difference": 1.0350759360733264e-08,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.37942197927459
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-6.0-0.8-split",
+        "fillet_maximum_bounds_difference": 4.440892098500626e-15,
+        "fillet_maximum_closest_distance_difference": 9.434934575636478e-11,
+        "fillet_maximum_closest_coordinate_difference": 1.3571249679600328e-10,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 1.7763568394002505e-15,
+              "maximum_closest_distance_difference": 1.9984014443252818e-15,
+              "maximum_closest_coordinate_difference": 1.106381408710888e-08,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927474
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 2.55351295663786e-15,
+              "maximum_closest_distance_difference": 2.525757381022231e-15,
+              "maximum_closest_coordinate_difference": 3.5105385265410405e-10,
+              "native_area": 45.16039439535328,
+              "sdk_area": 45.160394442548196
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder-6.0-0.8-trim",
+        "fillet_maximum_bounds_difference": 4.440892098500626e-15,
+        "fillet_maximum_closest_distance_difference": 9.434934575636478e-11,
+        "fillet_maximum_closest_coordinate_difference": 1.3571249679600328e-10,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.7763568394002505e-15,
+              "maximum_closest_distance_difference": 1.9984014443252818e-15,
+              "maximum_closest_coordinate_difference": 1.106381408710888e-08,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927474
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder--6.0-0.2-split",
+        "fillet_maximum_bounds_difference": 4.440892098500626e-15,
+        "fillet_maximum_closest_distance_difference": 9.560269242925301e-11,
+        "fillet_maximum_closest_coordinate_difference": 6.6235710249884505e-09,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 7.771561172376096e-15,
+              "maximum_closest_distance_difference": 1.5265566588595902e-15,
+              "maximum_closest_coordinate_difference": 3.6699532302009175e-10,
+              "native_area": 45.16039439535328,
+              "sdk_area": 45.16039444254824
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 2.6645352591003757e-15,
+              "maximum_closest_distance_difference": 1.887379141862766e-15,
+              "maximum_closest_coordinate_difference": 7.2161565611850165e-09,
+              "native_area": 33.379421944391545,
+              "sdk_area": 33.37942197927466
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder--6.0-0.2-trim",
+        "fillet_maximum_bounds_difference": 4.440892098500626e-15,
+        "fillet_maximum_closest_distance_difference": 9.560269242925301e-11,
+        "fillet_maximum_closest_coordinate_difference": 6.6235710249884505e-09,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 2.6645352591003757e-15,
+              "maximum_closest_distance_difference": 1.887379141862766e-15,
+              "maximum_closest_coordinate_difference": 7.2161565611850165e-09,
+              "native_area": 33.379421944391545,
+              "sdk_area": 33.37942197927466
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder--6.0-0.8-split",
+        "fillet_maximum_bounds_difference": 4.9960036108132044e-15,
+        "fillet_maximum_closest_distance_difference": 9.559558700189541e-11,
+        "fillet_maximum_closest_coordinate_difference": 2.7086650422614156e-08,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 1.1102230246251565e-15,
+              "maximum_closest_distance_difference": 1.4432899320127035e-15,
+              "maximum_closest_coordinate_difference": 7.284005842933539e-09,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927468
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 7.216449660063518e-15,
+              "maximum_closest_distance_difference": 2.525757381022231e-15,
+              "maximum_closest_coordinate_difference": 3.5105385265410405e-10,
+              "native_area": 45.16039439535327,
+              "sdk_area": 45.160394442548196
+            }
+          ]
+        ]
+      },
+      {
+        "id": "cylinder--6.0-0.8-trim",
+        "fillet_maximum_bounds_difference": 4.9960036108132044e-15,
+        "fillet_maximum_closest_distance_difference": 9.559558700189541e-11,
+        "fillet_maximum_closest_coordinate_difference": 2.7086650422614156e-08,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.1102230246251565e-15,
+              "maximum_closest_distance_difference": 1.4432899320127035e-15,
+              "maximum_closest_coordinate_difference": 7.284005842933539e-09,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927468
+            }
+          ]
+        ]
+      },
+      {
+        "id": "reverse-u-split",
+        "fillet_maximum_bounds_difference": 4.3298697960381105e-15,
+        "fillet_maximum_closest_distance_difference": 2.151749889378607e-10,
+        "fillet_maximum_closest_coordinate_difference": 5.4991029507789335e-09,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 7.327471962526033e-15,
+              "maximum_closest_distance_difference": 1.7763568394002505e-15,
+              "maximum_closest_coordinate_difference": 6.6834799916648535e-09,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927468
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.2434497875801753e-14,
+              "maximum_closest_distance_difference": 4.9960036108132044e-15,
+              "maximum_closest_coordinate_difference": 1.0953016271741944e-11,
+              "native_area": 45.16039439535327,
+              "sdk_area": 45.16039444254821
+            }
+          ]
+        ]
+      },
+      {
+        "id": "reverse-u-trim",
+        "fillet_maximum_bounds_difference": 4.3298697960381105e-15,
+        "fillet_maximum_closest_distance_difference": 2.151749889378607e-10,
+        "fillet_maximum_closest_coordinate_difference": 5.4991029507789335e-09,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 7.327471962526033e-15,
+              "maximum_closest_distance_difference": 1.7763568394002505e-15,
+              "maximum_closest_coordinate_difference": 6.6834799916648535e-09,
+              "native_area": 33.37942194439156,
+              "sdk_area": 33.37942197927468
+            }
+          ]
+        ]
+      },
+      {
+        "id": "reverse-v-split",
+        "fillet_maximum_bounds_difference": 2.3314683517128287e-15,
+        "fillet_maximum_closest_distance_difference": 1.5363815775160106e-10,
+        "fillet_maximum_closest_coordinate_difference": 1.2006874605674511e-08,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 2.9976021664879227e-15,
+              "maximum_closest_distance_difference": 9.992007221626409e-16,
+              "maximum_closest_coordinate_difference": 7.625339915051654e-09,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.379421979274696
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 3.885780586188048e-15,
+              "maximum_closest_distance_difference": 2.7478019859472624e-15,
+              "maximum_closest_coordinate_difference": 3.510534085648942e-10,
+              "native_area": 45.16039439535327,
+              "sdk_area": 45.160394442548224
+            }
+          ]
+        ]
+      },
+      {
+        "id": "reverse-v-trim",
+        "fillet_maximum_bounds_difference": 2.3314683517128287e-15,
+        "fillet_maximum_closest_distance_difference": 1.5363815775160106e-10,
+        "fillet_maximum_closest_coordinate_difference": 1.2006874605674511e-08,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 2.9976021664879227e-15,
+              "maximum_closest_distance_difference": 9.992007221626409e-16,
+              "maximum_closest_coordinate_difference": 7.625339915051654e-09,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.379421979274696
+            }
+          ]
+        ]
+      },
+      {
+        "id": "swap-split",
+        "fillet_maximum_bounds_difference": 1.3322676295501878e-15,
+        "fillet_maximum_closest_distance_difference": 1.5363516014943457e-10,
+        "fillet_maximum_closest_coordinate_difference": 1.1926963194852647e-08,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 4.551914400963142e-15,
+              "maximum_closest_distance_difference": 2.886579864025407e-15,
+              "maximum_closest_coordinate_difference": 7.577987792828367e-09,
+              "native_area": 33.37942194439157,
+              "sdk_area": 33.37942197927471
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 8.992806499463768e-15,
+              "maximum_closest_distance_difference": 1.7763568394002505e-15,
+              "maximum_closest_coordinate_difference": 3.691611460965305e-10,
+              "native_area": 45.16039439535327,
+              "sdk_area": 45.160394442548224
+            }
+          ]
+        ]
+      },
+      {
+        "id": "swap-trim",
+        "fillet_maximum_bounds_difference": 1.3322676295501878e-15,
+        "fillet_maximum_closest_distance_difference": 1.5363516014943457e-10,
+        "fillet_maximum_closest_coordinate_difference": 1.1926963194852647e-08,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 4.551914400963142e-15,
+              "maximum_closest_distance_difference": 2.886579864025407e-15,
+              "maximum_closest_coordinate_difference": 7.577987792828367e-09,
+              "native_area": 33.37942194439157,
+              "sdk_area": 33.37942197927471
+            }
+          ]
+        ]
+      },
+      {
+        "id": "mobius-.5-split",
+        "fillet_maximum_bounds_difference": 5.218048215738236e-15,
+        "fillet_maximum_closest_distance_difference": 1.2315437558640951e-10,
+        "fillet_maximum_closest_coordinate_difference": 1.9217921476410993e-08,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 1.7208456881689926e-14,
+              "maximum_closest_distance_difference": 8.881784197001252e-16,
+              "maximum_closest_coordinate_difference": 5.1335242723382635e-09,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.379420895450124
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 5.10702591327572e-15,
+              "maximum_closest_distance_difference": 3.1086244689504383e-15,
+              "maximum_closest_coordinate_difference": 8.123879791099853e-09,
+              "native_area": 45.1603943953533,
+              "sdk_area": 45.160392976196974
+            }
+          ]
+        ]
+      },
+      {
+        "id": "mobius-.5-trim",
+        "fillet_maximum_bounds_difference": 5.218048215738236e-15,
+        "fillet_maximum_closest_distance_difference": 1.2315437558640951e-10,
+        "fillet_maximum_closest_coordinate_difference": 1.9217921476410993e-08,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 1.7208456881689926e-14,
+              "maximum_closest_distance_difference": 8.881784197001252e-16,
+              "maximum_closest_coordinate_difference": 5.1335242723382635e-09,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.379420895450124
+            }
+          ]
+        ]
+      },
+      {
+        "id": "mobius-2-split",
+        "fillet_maximum_bounds_difference": 4.6629367034256575e-15,
+        "fillet_maximum_closest_distance_difference": 1.1307837999297021e-10,
+        "fillet_maximum_closest_coordinate_difference": 5.9583999956203115e-09,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 8.104628079763643e-15,
+              "maximum_closest_distance_difference": 1.7763568394002505e-15,
+              "maximum_closest_coordinate_difference": 7.4278001527261495e-09,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.379420895450025
+            },
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 6.328271240363392e-15,
+              "maximum_closest_distance_difference": 3.219646771412954e-15,
+              "maximum_closest_coordinate_difference": 1.3240475382758632e-10,
+              "native_area": 45.16039439535329,
+              "sdk_area": 45.16039297619714
+            }
+          ]
+        ]
+      },
+      {
+        "id": "mobius-2-trim",
+        "fillet_maximum_bounds_difference": 4.6629367034256575e-15,
+        "fillet_maximum_closest_distance_difference": 1.1307837999297021e-10,
+        "fillet_maximum_closest_coordinate_difference": 5.9583999956203115e-09,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 8.104628079763643e-15,
+              "maximum_closest_distance_difference": 1.7763568394002505e-15,
+              "maximum_closest_coordinate_difference": 7.4278001527261495e-09,
+              "native_area": 33.37942194439155,
+              "sdk_area": 33.379420895450025
+            }
+          ]
+        ]
+      },
+      {
+        "id": "reverse-plane-split",
+        "fillet_maximum_bounds_difference": 3.657134136255696e-15,
+        "fillet_maximum_closest_distance_difference": 1.5363388339295625e-10,
+        "fillet_maximum_closest_coordinate_difference": 2.7073176644965002e-08,
+        "parent_counts": [
+          0,
+          2
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 8.992806499463768e-15,
+              "maximum_closest_distance_difference": 6.661338147750939e-16,
+              "maximum_closest_coordinate_difference": 3.688294114567725e-10,
+              "native_area": 45.16039439535327,
+              "sdk_area": 45.160394442548224
+            },
+            {
+              "sdk_index": 1,
+              "maximum_bounds_difference": 6.994405055138486e-15,
+              "maximum_closest_distance_difference": 1.887379141862766e-15,
+              "maximum_closest_coordinate_difference": 7.649147315547111e-09,
+              "native_area": 33.37942194439153,
+              "sdk_area": 33.37942197927468
+            }
+          ]
+        ]
+      },
+      {
+        "id": "reverse-plane-trim",
+        "fillet_maximum_bounds_difference": 3.657134136255696e-15,
+        "fillet_maximum_closest_distance_difference": 1.5363388339295625e-10,
+        "fillet_maximum_closest_coordinate_difference": 2.7073176644965002e-08,
+        "parent_counts": [
+          0,
+          1
+        ],
+        "parents": [
+          [],
+          [
+            {
+              "sdk_index": 0,
+              "maximum_bounds_difference": 6.994405055138486e-15,
+              "maximum_closest_distance_difference": 1.887379141862766e-15,
+              "maximum_closest_coordinate_difference": 7.649147315547111e-09,
+              "native_area": 33.37942194439153,
+              "sdk_area": 33.37942197927468
+            }
+          ]
+        ]
+      }
+    ],
+    "original_contracts": [
+      {
+        "fixture": "surface_fillet_picks.json",
+        "cases": 16,
+        "complete_value_matches": 16,
+        "changes": [
+          {
+            "id": "planes-0.2-0.2",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "planes-0.2-0.8",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "planes-0.8-0.2",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "planes-0.8-0.8",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder-2.0-0.2",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder-2.0-0.8",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder-6.0-0.2",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder-6.0-0.8",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder--6.0-0.2",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder--6.0-0.8",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "reverse-u",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "reverse-v",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "swap",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "mobius-.5",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "mobius-2",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "reverse-plane",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          }
+        ]
+      },
+      {
+        "fixture": "surface_fillet.json",
+        "cases": 6,
+        "complete_value_matches": 6,
+        "changes": [
+          {
+            "id": "planes-0-False",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "planes-0-True",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "planes-3-False",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "planes-3-True",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder-False",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          },
+          {
+            "id": "cylinder-True",
+            "complete_value_unchanged": true,
+            "maximum_point_difference": 0.0,
+            "maximum_bounds_difference": 0.0
+          }
+        ]
+      }
+    ],
+    "closed_contact_failure_unchanged": true,
+    "seconds": 46.89399216300808,
+    "scope": "All fresh recipes execute both the public SDK and native parent-result overloads. Match parent regions by bounds only for geometric qualification; retain original complete ordering and all coefficient/area/query differences in the raw audit. Integrated Rust tests additionally check bidirectional interior/boundary memberships using a coefficient-checked rectangular region helper; it does not qualify arbitrary trim loops. Literal closest-point coordinate differences can exceed epsilon. Full FilletSrf command/UI, existing trimmed parents, closed certificate work, disconnected-component choice and curved extension matching remain unfinished."
+  },
+  "native_matrices": {
+    "normal-parents": {
+      "cases": 56,
+      "maximum_geometry_error": 6.159588394893944e-10,
+      "raw": {
+        "retained": "docs/native-surface-fillet-parents-normal-parents.jsonl.gz",
+        "uncompressed_sha256": "8a8c748c99bf1708511c2cb047a3dda181ab659833455c35078d95e633b1a608"
+      }
+    },
+    "asan-parents": {
+      "cases": 56,
+      "maximum_geometry_error": 6.159597276678141e-10,
+      "raw": {
+        "retained": "docs/native-surface-fillet-parents-asan-parents.jsonl.gz",
+        "uncompressed_sha256": "5524f1385b039a60892a770c3866a7b060e6cff27b739d5fcd461b0778616cd0"
+      }
+    },
+    "normal-original": {
+      "cases": 66,
+      "maximum_geometry_error": 1.9766943637478107e-10,
+      "raw": {
+        "retained": "docs/native-surface-fillet-parents-normal-original.jsonl.gz",
+        "uncompressed_sha256": "a5fb21ea6720f0bb3d455783b11819c4fd5eed33afdde7c675a2c3bc6ca84d6f"
+      }
+    },
+    "asan-original": {
+      "cases": 66,
+      "maximum_geometry_error": 1.9766943637478107e-10,
+      "raw": {
+        "retained": "docs/native-surface-fillet-parents-asan-original.jsonl.gz",
+        "uncompressed_sha256": "909ad0ad60c7b91920dd89fe411df55c2d953ba37f9607ed384dffa02d2330a0"
+      }
+    },
+    "lifetime-normal": {
+      "cases": 12,
+      "maximum_geometry_error": 0,
+      "raw": {
+        "retained": "docs/native-surface-fillet-parents-lifetime-normal.jsonl.gz",
+        "uncompressed_sha256": "795872470e136b651a0590140d20b4ab2c954cb9c1036b640f4f16618b736bd0"
+      }
+    },
+    "lifetime-asan": {
+      "cases": 12,
+      "maximum_geometry_error": 0,
+      "raw": {
+        "retained": "docs/native-surface-fillet-parents-lifetime-asan.jsonl.gz",
+        "uncompressed_sha256": "694a6f8eec2ecfac2cda88678b604d1156fb2f65df2b6d25cb3d4ab30782a1a3"
+      }
+    }
+  },
+  "controlled_trimming_precondition": {
+    "cases": 24,
+    "uneditable_successes": 8,
+    "uneditable_trim_failures": 16,
+    "editable_successes": 24,
+    "scope": "Both plane and quarter-cylinder families, four signed-offset quadrants, original insertion-only mode plus normal and reverse base trimming. A temporary wrapper differs only by enabling private parent editing before the executive. Instrumented executive trace reaches DeleteFaces; SmBrep::DeleteFace requires editing enabled. Reverse trimming is diagnostic and is not exposed by the new Rust API."
+  },
+  "qualification": {
+    "model_epsilon": 1e-08,
+    "rectangular_region_parameter_filter": 1e-12,
+    "scope": "Integrated SDK tests check 32 complete parent-result recipes, source purity, output counts, tight bounds, closest distances, returned point membership, and bidirectional sampled parent interiors/boundaries. The rectangular fixture helper validates all trim controls near rectangle sides before reconstructing these finite regions; it is not an arbitrary B-rep reader or a continuous global certificate. Full raw definitions, unsnapped coefficients, result order, literal query coordinate differences and area differences remain in separate unnormalized audits. Independent bridge tests check analytic parent areas, four picked quadrants, joins, conditioned spatial scales and signed gauges."
+  },
+  "ownership": {
+    "batch": "Every input buffer and private parent is gone before snapshot inspection. The complete normal and ASan matrices check all output payloads after deleting every native result. Twelve additional cases export each remaining result after deleting earlier handles, in both orders.",
+    "asan": "The complete native libraries and direct probes are instrumented; Rust gates run normally. Leak detection is disabled."
+  },
+  "closed_contact": {
+    "previous_binary": {
+      "commit": "dd679da03801f26d54bf7a61b8ad5467ea99739d",
+      "sha256": "1881311352d5e601a05c6e9996d36623597f0aa5aeeb36581e0f25e3891bf415",
+      "source_mtime": 1792349352.7765331,
+      "scope": "Retained before rebuilding the oracle for parent results; previous turn built and verified this executable."
+    },
+    "request": {
+      "retained": "docs/native-surface-fillet-parents-closed-request.json.gz",
+      "uncompressed_sha256": "f5d189b00cba15b2b9eaa9652a726406367744a6cb4ff555edf4231e44ae1f1c"
+    },
+    "baseline": {
+      "retained": "docs/native-surface-fillet-parents-closed-baseline-audit.json.gz",
+      "uncompressed_sha256": "ba8a8f7a24d6ade8a735dd9817f2756326555632b12e4207f453cd1175526eab"
+    },
+    "candidate": {
+      "retained": "docs/native-surface-fillet-parents-closed-candidate-audit.json.gz",
+      "uncompressed_sha256": "b171c63706a95d25ac242e048fb38355b1c57c17a3c50f5edc0331518784b9fe"
+    },
+    "scope": "Exact same request retains the previous surface/parameter-curve certificate work-limit failure. The bridge regression permits a future certified improvement, otherwise it requires the existing untrimmed entry point to decline identically and both sources to remain unchanged. Sixteen full-circle C ABI cases additionally check native topology, sampled circle identities and lifetimes; native status success is not certified Rust transfer."
+  },
+  "limitations": [
+    "The full FilletSrf command/UI, source attributes/history, arbitrary existing trimmed parents, disconnected-component choice and curved Extend=Yes matching remain unfinished.",
+    "Replacement parent UV charts are normalized; source objects retain their original geometry and charts.",
+    "Complete native consumption has an explicit representation but the qualified SDK matrix exercises unchanged and replaced parents, not general consumption cases.",
+    "The full-circle Rust transfer still declines the existing certificate work limit. No guard or model/comparison tolerance was relaxed.",
+    "No continuous global Rhino equality, complete NURBS protocol parity, general conditioning or throughput claim. Upstream repo.sh/prog_test, USD, Python-binding and GUI harnesses were not run."
+  ],
+  "source_sha256": {
+    "README.md": "2acdf6b6079c53540d09fef42ce1323bcd021c0bcdca595058484149fa67b294",
+    "docs/native-surface-fillets.md": "4c0103c5044e675ea759c6aad27320ec2aa5775e2e08380eb1ca8b869d3609b0",
+    "docs/native-surface-fillet-parents.md": "964c07e327d347495e3221be88e9b685ebeffd383104ccfbef5428880eddabca",
+    "crates/viboceros-smlib/build.rs": "de57b6b0337844bdd85639599c5973cfa3f4657d228b300aa630aeec69222c5c",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "ebc5b482e64a1b26cc560738f1a522684e5e084530993f90a4923b240a853fd0",
+    "crates/viboceros-smlib/native/bridge.h": "d1aa0d03c32cf564aba2bafd98b30b43d657dedb66f16a0afb84f1928805141c",
+    "crates/viboceros-smlib/native/bridge.cpp": "2d1aa7ca77c6d47c10077d1e427fbd77d672debd2dd03b04b682a92004a9a50f",
+    "crates/viboceros-smlib/native/surface_fillet.h": "7db50016bc07956fcab5dd4a8baffeda253741c54bd83febc5f7a0c238e05b79",
+    "crates/viboceros-smlib/native/surface_fillet.cpp": "86e1727253f401172817b4a431b6d0887b501f8f922def207d4b3981b95948a7",
+    "crates/viboceros-smlib/src/lib.rs": "c28cd0818e1fd57677f4ed1b4a4b5f51a710b95cd587c9927dd94632e0b38536",
+    "crates/viboceros-smlib/src/native.rs": "42a5d69f4522a1b2b15d8505ad714c4c8552d0b0db3535d0215c83433a4fe557",
+    "crates/viboceros-smlib/src/native/surface_fillet.rs": "2d3d6028a2f5f0bdf8be4ec30798a9e94fd2bd116d2d6bc41730398d880d806f",
+    "crates/viboceros-smlib/tests/surface_fillet_picks.rs": "a575b263d45c8a7dcb97c3f9d2925a845bb97716dfcf838bf8f94be06c459764",
+    "crates/viboceros-oracle/src/surface_fillet.rs": "eb491a8b60891cc6c61b6bc49b4244c385756c2e7b04115154b0eb1489b2c13b",
+    "crates/viboceros-oracle/src/surface_fillet_images.rs": "31c97e343b784a904ec4ca1621b4d84bdcecfb0d6e046a914e488f6f04caefcb",
+    "crates/viboceros-oracle/src/surface_fillet_parent_tests.rs": "3d8b9253039a6cc7ab16b6385e9ec65d169800262767df5294d79e306025ad7f",
+    "tools/usd_brep/surface_fillet_parents_probe.cpp": "c46a2a2bacd9057c119b0b0f013d4707f503e8ff6f87e72e7c8ba98a0bf221cc",
+    "tools/usd_brep/surface_fillet_probe.cpp": "9060b9619c0503868e679af3e1463b0e20ab07a7307655c4858dcf6de386643f",
+    "tools/rhino_oracle/surface_fillet_probe.py": "f7771d6d91fdf4d398741250c728ce1309114c94857461b5c8bc7a691f953641",
+    "tools/rhino_oracle/test_surface_fillet_probe.py": "acdcca92942268f6a186cbb102dc740f9660a497c5c993a15d26c479dce346c3",
+    "tools/rhino_oracle/fixtures/surface_fillet_parents.json": "9305619c2c508d0a958da34e14cd29be48142899f7be962a17bbf344de77fb92",
+    "tools/rhino_oracle/observations/surface_fillet_parents.json": "3bfdb0ada0d77935624c31ec97ca556581606259701cff38105ec4f508bfca47",
+    "third_party/usd-brep/source/SMLib/src/SmFilletExecutive.cpp": "b747e04cd9f2c760bd9cdd06b7d82222828dba043531bfc489e4711ce68c567c",
+    "third_party/usd-brep/source/SMLib/src/SmFilletGeom.cpp": "5e170c38eeec1720384e6218a81b9d6446fa5a5c8ae6383e9541a331bc93a79f",
+    "third_party/usd-brep/source/SMLib/src/SmBrep.cpp": "5d44d6ac347fa42e4e83fead8bbde82ce46c5ff48e0a973b5c7cddc778a2fca1",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-surface-fillet-parents-fillet-oracle.log.gz": "95270089ff57a959f4411f6af046b280e009f310eabd7c77577f56aa5ef7feba",
+    "docs/native-surface-fillet-parents-bridge.log.gz": "2877f831e7ed85a26575c1619b434a80c7be33f29f3627ce9c3fb7f4dda62d19",
+    "docs/native-surface-fillet-parents-command.log.gz": "f1a1404180ae333897f3bcfc6d15b30f6937835e55b17fada0c2019ef3878599",
+    "docs/native-surface-fillet-parents-clippy.log.gz": "e48d7fa14e385fd370d867f63897d5f03106bc07328a0bf6c9eeeebe572dbde1",
+    "docs/native-surface-fillet-parents-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-oracle-build.log.gz": "6b0e52dd9d6ed35eee6ea38370b62b50d7c7c7820f201e95863ed600e2e51d38",
+    "docs/native-surface-fillet-parents-python.log.gz": "608470a5194d3af3784534f76f71c8bbd934cdf1d503bb67c08de07a6e2684b4",
+    "docs/native-surface-fillet-parents-normal-parents.jsonl.gz": "47eecf2e24e31e5c859155a7bb4629f010a882984d46e4176ebc310d2344f986",
+    "docs/native-surface-fillet-parents-asan-parents.jsonl.gz": "64bfba8d71213173b4ad18982d9642612b84db397ae887fc8221038ab51acb0e",
+    "docs/native-surface-fillet-parents-normal-original.jsonl.gz": "c2f15a3060609bda58da740210cbda870ee8cf9529a7eff9037f6b988c90137b",
+    "docs/native-surface-fillet-parents-asan-original.jsonl.gz": "4f6a626239007f8862e59558acc46d6ecadb26c5c7f1027e3c345451704c63d1",
+    "docs/native-surface-fillet-parents-lifetime-normal.jsonl.gz": "67ed7f1d5cc9589939f6b84b7fb149e41039a9bd01f6d8b2fcc642c2f7cd0f87",
+    "docs/native-surface-fillet-parents-lifetime-asan.jsonl.gz": "acca7fb5a40d064e9e558fee3bd9da176aecaf831e80c6b0bc8872d646fdec8c",
+    "docs/native-surface-fillet-parents-closed-request.json.gz": "53f706b7e4546f431787b61875f43ac8c7415cc389c278d69e73d02f659790fc",
+    "docs/native-surface-fillet-parents-closed-baseline-audit.json.gz": "c6ccb61278d49c28bddbbdc4dee9c3ba172a8f288b3f440b780a8d601544a217",
+    "docs/native-surface-fillet-parents-closed-candidate-audit.json.gz": "d503d22c166541c1493649456c1613ea03ee45b86bfe5b01b313b768be95a32d",
+    "docs/native-surface-fillet-parents-asan-build-runtime.json.gz": "42c55864103db11f0ad615c7237ef4bfa1551ebe2f56c509fb6c39e70e7c0eeb",
+    "docs/native-surface-fillet-parents-asan-build.jsonl.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-asan-build.log.gz": "04515466acbf399f7ab0ce40d15159674feb213c2e1ce0f8cc349d64f88225bd",
+    "docs/native-surface-fillet-parents-asan-configure-runtime.json.gz": "e4cf86a121e5e4b0f6dfec335f7244736a1349cc9286d939d389a89ce8a297d0",
+    "docs/native-surface-fillet-parents-asan-configure.jsonl.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-asan-configure.log.gz": "ef0274d4d23637be73055009d63f49400aa8e2c88402d8c1c7d65bd4a72eb5b4",
+    "docs/native-surface-fillet-parents-asan-original-runtime.json.gz": "5dde2d57037137afbcf3d51080b946a9975d053294bfc679e9fa24fef0796feb",
+    "docs/native-surface-fillet-parents-asan-original.log.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-surface-fillet-parents-asan-parents-runtime.json.gz": "7dc13eb476b4fc85e45e60d74b28378a98bbc55dad7d7521db7030f42890d202",
+    "docs/native-surface-fillet-parents-asan-parents.log.gz": "7ef3d125f4926dc3847593cf1a5c9cc2ed4833954efef8d667ea8b69e9190528",
+    "docs/native-surface-fillet-parents-asan-resume.py.gz": "64d5d474b95cafb70cd04c26e099a8f4cadbe77c8a759a3beac17c072cc56921",
+    "docs/native-surface-fillet-parents-asan.py.gz": "d07633986562edcc7fe84391ac9ee4175de94f52c53a534cfaa4218c687f918b",
+    "docs/native-surface-fillet-parents-audit.log.gz": "50d462b3a1c4cd22cbdfab7ee201fde38e751194861b6a413cf78029dada65b0",
+    "docs/native-surface-fillet-parents-audit.py.gz": "6812de5b806db92cfac5f49044667cb9ab84d2f417bd1123a16768d5c29bc372",
+    "docs/native-surface-fillet-parents-baseline-binary.json.gz": "2c28f644585786ec2646e9919599d1d7f93061ce00ed58f04391073521128c1c",
+    "docs/native-surface-fillet-parents-bridge-runtime.json.gz": "12e6e7d75edd74985c03bcb7f7097af4777cc276c33fb96f185ae98f45d46af5",
+    "docs/native-surface-fillet-parents-candidate-audit.json.gz": "d1a55479bbc3580c320a3523cb951deb16428215a74d6d190ec3b38d9e56fcd3",
+    "docs/native-surface-fillet-parents-candidate-raw-report.json.gz": "d9a4dcf5c6892a6f5705f33af23002db0295320d0ac7993c0a4ffc121e2b6bc4",
+    "docs/native-surface-fillet-parents-cleanup-focused.log.gz": "aadb188de3eced2a2a22f6f27bed88917c12ccf845ddf925e10f88046c68cad0",
+    "docs/native-surface-fillet-parents-clippy-runtime.json.gz": "bafc35ec94b3f5437a39eee60e1219f8a9cab2c7723bc9cd3f8d8182c67f0676",
+    "docs/native-surface-fillet-parents-closed-baseline-runtime.json.gz": "3fcb1e7dc28f631a68f1184ab51277b2ac72f0dc7b20920c788bd775511fa342",
+    "docs/native-surface-fillet-parents-closed-focused.log.gz": "f67c7477a0722ac51f60488c70bec9387ad7e7e24aa767c97753f0cd329745c9",
+    "docs/native-surface-fillet-parents-closed-initial-baseline-audit.json.gz": "c6ccb61278d49c28bddbbdc4dee9c3ba172a8f288b3f440b780a8d601544a217",
+    "docs/native-surface-fillet-parents-closed-initial-baseline-runtime.json.gz": "40f1e6ac6af734ac1c1a1c717d547b410ee5b33b5d746036f96c4e71f5958963",
+    "docs/native-surface-fillet-parents-closed-initial-request.json.gz": "8c15c223c86773246721b45cf769adb8938f775af9adbab84d772f88af9f555d",
+    "docs/native-surface-fillet-parents-command-runtime.json.gz": "5cdbbef8b25161d48a50fffe44e8ea72ab63908e4283d46d62302ec0c3423a83",
+    "docs/native-surface-fillet-parents-comparison.json.gz": "d9d448fb5443746a70b247b485f28f15388bc450f092d6adf769ea524f4e6dc8",
+    "docs/native-surface-fillet-parents-current-focused.log.gz": "683a6b77c4b8c469749bdd977e8e9c35e54ee8f0d48cc288eb254688a1683bab",
+    "docs/native-surface-fillet-parents-editable-probe.cpp.gz": "cd7992825cb3cb7fc1c23b412bce75a4c7d2351665d27a6e868254a63c66ec16",
+    "docs/native-surface-fillet-parents-editable-probe.jsonl.gz": "7ebadd06ef9c1b880aff4d019dd5c073b8812ce222f2faa6e7a53f48410558c9",
+    "docs/native-surface-fillet-parents-editable-prototype.cpp.gz": "fa1a78378356eec91ad4e8eae343196550f539bbaca832181aafb85d72829ae9",
+    "docs/native-surface-fillet-parents-editable-runtime.json.gz": "08cecf09382aa35401f3c146bd1ef2cf7f19e35c862fe7871b1acfe7ed59ad1c",
+    "docs/native-surface-fillet-parents-editable.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-editable.py.gz": "e6aa7c49a5f6a26d5c29cbad62841847dac1daeb763ba59764f187321afd6f6e",
+    "docs/native-surface-fillet-parents-fillet-oracle-runtime.json.gz": "187296649dc46b3e626015669184c415ac73c9be3d3412d412c3467268b05896",
+    "docs/native-surface-fillet-parents-fmt-runtime.json.gz": "36214e6fa628141293f82580b3f737d255f18fcce9af594d1fe6c7146d005183",
+    "docs/native-surface-fillet-parents-focused-final.log.gz": "3330b33517491142e3c6b96010dbab4968d809d8eeef4a410c143840b7c51989",
+    "docs/native-surface-fillet-parents-focused.log.gz": "859ed76dc5d46aa26e90c954b2c73fb103f0a9e2403ab225a381d8a99f17a447",
+    "docs/native-surface-fillet-parents-gates.py.gz": "1a0618c40d8d003989a45ad5dc7ae2cd2ed419988b0dfbed1323c70da7e5466c",
+    "docs/native-surface-fillet-parents-initial-asan-build-runtime.json.gz": "159c9e2b0afec6f6bdfc000518b0aa8885ace7e14096be8ed4d5f9fead625738",
+    "docs/native-surface-fillet-parents-initial-asan-build.jsonl.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-initial-asan-build.log.gz": "e9f9c478caaeee0b9276a56e9916e61b70cc528df3e880fb84d42fd396ca9891",
+    "docs/native-surface-fillet-parents-initial-fillet-oracle-runtime.json.gz": "4f5651d670848151bdc80496236516e97445b1b4ab80fc4764fa21ab8e2c65d7",
+    "docs/native-surface-fillet-parents-initial-fillet-oracle.log.gz": "1264964511555f2707071c6a10c6461aa7c97d00e544d474474104c9f76f7e95",
+    "docs/native-surface-fillet-parents-kernel-trace-final.log.gz": "b7b89ef39936aa35735ae2c62daf5196fbf0cff9fa84cfe1c87ddf0a2cd4c616",
+    "docs/native-surface-fillet-parents-kernel-trace.jsonl.gz": "a8fbab95d292337bba40f3cbfe513b838a0e251e6b958f707c4b5519de6a5e0d",
+    "docs/native-surface-fillet-parents-kernel-trace.log.gz": "b450b8d363b8a91c665345e654da93a4f5308825c1741a59b82dacd18797b6ac",
+    "docs/native-surface-fillet-parents-lifetime-asan-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-lifetime-asan-runtime.json.gz": "7cad9ccedf29a6007e2eccbbb3a549a9b436f9efbd640203a7f881efaf685a22",
+    "docs/native-surface-fillet-parents-lifetime-asan.log.gz": "6ddebf8d6958e1388651adadf555b8c661b6f46bc416b7603f41d283c5a295a1",
+    "docs/native-surface-fillet-parents-lifetime-normal-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-lifetime-normal-runtime.json.gz": "1e661cc1f4d4852939bf71f5353ffae2c9f7f9cb71094079539b3fdb63f0a7eb",
+    "docs/native-surface-fillet-parents-lifetime-normal.log.gz": "6ddebf8d6958e1388651adadf555b8c661b6f46bc416b7603f41d283c5a295a1",
+    "docs/native-surface-fillet-parents-lifetime-order.cpp.gz": "a63366c25a0320e1f39984ef20de1fd315de494fa9514ab636758b701daaa387",
+    "docs/native-surface-fillet-parents-lifetime-order.py.gz": "17ac3b92845452dbb364135761fd7e3ba2de9a30e2d040a254bfa13efd70d86d",
+    "docs/native-surface-fillet-parents-normal-original-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-normal-original-runtime.json.gz": "491ee2fd6685e9bfd8e865733ceba5100b461eea28c21336cb43ec27be790422",
+    "docs/native-surface-fillet-parents-normal-original.log.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-surface-fillet-parents-normal-parents-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-normal-parents-runtime.json.gz": "7bc92737aafd78b7ee3bd1c9df73db5798125335f98c9fd2ec87c02e811f5f51",
+    "docs/native-surface-fillet-parents-normal-parents.log.gz": "7ef3d125f4926dc3847593cf1a5c9cc2ed4833954efef8d667ea8b69e9190528",
+    "docs/native-surface-fillet-parents-normal.py.gz": "73d08d5251af3053ba3014ed01226e17be0061766cd0d91b84a9c1b93593cfe9",
+    "docs/native-surface-fillet-parents-oracle-build-runtime.json.gz": "07526fc15633d9dd1677c720effb3ce28c9687c1094df6fe228b3d4857b60756",
+    "docs/native-surface-fillet-parents-original-picks-audit.json.gz": "d855a079090fd821090428c7e8bfb35468892ac6d99aa1ad611440ab1048a0a1",
+    "docs/native-surface-fillet-parents-original-six-audit.json.gz": "f1e511498423dfb4414857d4dceca1f805a8d86d0cc2e1361bb0427631040ce3",
+    "docs/native-surface-fillet-parents-preserve-provenance.py.gz": "d81990018e2a76497cf7296e9904a492e04940f09523bbbe7dffc4ad37953c63",
+    "docs/native-surface-fillet-parents-probe-trace.cpp.gz": "7eada2beef121fc943ca586afc5ff33a82d31518e64e57b00ca317e095bc941e",
+    "docs/native-surface-fillet-parents-probe-trace.jsonl.gz": "a8fbab95d292337bba40f3cbfe513b838a0e251e6b958f707c4b5519de6a5e0d",
+    "docs/native-surface-fillet-parents-probe.cpp.gz": "5b3c5e22e93b8cd7f6918fed01de2c244ae76a78f56dab4dbada9978ebdd968e",
+    "docs/native-surface-fillet-parents-probe.jsonl.gz": "a8fbab95d292337bba40f3cbfe513b838a0e251e6b958f707c4b5519de6a5e0d",
+    "docs/native-surface-fillet-parents-prototype.cpp.gz": "98839758075351dcee337dd961ed095d44cda7f6fca8f3914ae032b491613037",
+    "docs/native-surface-fillet-parents-prototype.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-prototype.py.gz": "3744ac09c2b460bb44d8c10b280487aa37f0336dce5bbfad893b6ac5fb00274b",
+    "docs/native-surface-fillet-parents-python-runtime.json.gz": "a457c9b1c52ee43146c908b99a72dc48828fc23818e8fd0cd9ae1a9a50c38f27",
+    "docs/native-surface-fillet-parents-record.py.gz": "54c59364443609e0ce008f24ba7869295cc384d018d80c7a89f2aca5a30bfa9c",
+    "docs/native-surface-fillet-parents-runtime.json.gz": "c070050e7ee9762219d4e434aa7c16c8e2066a9d406a7c7cfd919b0095e0353c",
+    "docs/native-surface-fillet-parents-sdk-request.json.gz": "1dcc9f8aba88f03f5448e0a0fcbe3619f95c917539b2aca9581cfb9eb10e1bdb",
+    "docs/native-surface-fillet-parents-sdk-response.json.gz": "cfa19ca0c4a55d4e58e864245fe5e262c0d6bccc9ba0eacd83088fa58d17d840",
+    "docs/native-surface-fillet-parents-sdk-runtime.json.gz": "ef47dc62c781053e8f4567f6d7a24c2bb7b5a768d83802a05b528caeeec10f58",
+    "docs/native-surface-fillet-parents-sdk.log.gz": "a34cfa754e2f3aa9f5bfa2e43828368b0492148b8f0c5767633d70a47089f24f",
+    "docs/native-surface-fillet-parents-sdk.py.gz": "a82b8c17d0a2af37202aecc054e77fea787bc4ae05901c60ade8a9f70956048a",
+    "docs/native-surface-fillet-parents-stage.py.gz": "fed0f065ccdbecb56e3f77540161fea66335610a5eb17f1a876a7693a042634d",
+    "docs/native-surface-fillet-parents-trace-final.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-parents-trace-kernel.py.gz": "63f3fc667822d3ae73cae236735b5fda02e1d683fe1d5c240d74934a42229e4d",
+    "docs/native-surface-fillet-parents-trace-runtime.json.gz": "1c40d9da17af10eec6ea0a6877d60486bce2309d06bbec7ba2f00425448fbf2a",
+    "docs/native-surface-fillet-parents-trace.log.gz": "70b24e6da07819212630981fcea34cda168eb740a16ecbd47336e9172082ce1b",
+    "docs/native-surface-fillet-parents-trace.py.gz": "d4290ca2732796192ed251b3509a985c61335c163f5d25c04c1f9cf48dae7d12"
+  },
+  "source_git_sha256": {
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:docs/native-surface-fillet-picks-validation.json": "1227f2e337379ecaeeeb6e5ea6c3c877c6554a2c3dcb58580dada478d58cb412"
+  }
+}

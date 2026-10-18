@@ -1,7 +1,7 @@
 //! Sampled image checks independent of each constructor's parameterization.
 use super::super::*;
 
-fn surface(record: &Value) -> NurbsSurface {
+pub(super) fn surface(record: &Value) -> NurbsSurface {
     let d = &record["definition"];
     let definition: NurbsSurfaceDefinition = serde_json::from_value(json!({
         "degree_u":d["degree"][0], "degree_v":d["degree"][1],

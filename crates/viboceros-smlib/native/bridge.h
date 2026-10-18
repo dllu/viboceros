@@ -13,6 +13,12 @@ typedef struct VbParts VbParts;
 typedef struct VbCurveList VbCurveList;
 int vb_surface_fillet(const VbNurbsData *first,const VbNurbsData *second,double radius,
     const int sides[2],int extend,double extension_factor,double accuracy,VbSolid **out,char *error,size_t capacity);
+// Batch order: fillet, first parent, second parent. changed=0 keeps the source;
+// changed=1 with a null parent means it was consumed completely.
+// trim=0 imprints/splits parent faces, trim=1 retains their outside remnants.
+int vb_surface_fillet_parents(const VbNurbsData *first,const VbNurbsData *second,double radius,
+    const int sides[2],int extend,double extension_factor,double accuracy,int trim,
+    VbSolid *out[3],int changed[2],char *error,size_t capacity);
 int vb_shape_extrude_faces(const VbSolid *shape, const double displacement[3], int cap_ends,
     double tolerance, VbSolid **out, char *error, size_t capacity);
 int vb_shape_extrude_faces_to_point(const VbSolid *shape, const double apex[3],

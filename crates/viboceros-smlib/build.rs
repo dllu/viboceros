@@ -32,6 +32,7 @@ fn build_native() {
     println!("cargo:rerun-if-changed=../../tools/usd_brep/curve_contact_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/drop_curve_accuracy_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/circular_fillet_rails_probe.cpp");
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/surface_fillet_parents_probe.cpp");
     println!("cargo:rerun-if-changed=native/face_creases.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/planarity_zone_probe.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-protected-topology.patch");

@@ -345,8 +345,6 @@
     "ASan executes the direct C ABI matrix; Rust coordination and command replays run normally. Leak detection is disabled."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/native/bridge.cpp": "71de4241ccfba0ead693555e9c3046212bf84cf97819d05dd4b87552c2ff9118",
-    "crates/viboceros-smlib/native/bridge.h": "bf59d13258ccb604153b56ed7578dda07fdd1a144912ed94fe8ab601e0dc12da",
     "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "crates/viboceros-smlib/tests/curve_intersections.rs": "4e0f45c4572c86db3a4ff4ca84fc9731d8ebb5bc98e3b957f21f78c512f67868",
@@ -358,7 +356,6 @@
     "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
     "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
-    "tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
     "tools/rhino_oracle/structural_sdk.py": "c884e0ef025f1d1aba239a399fc23089c626590b40ab395e940f93ab1a6aed88",
     "third_party/patches/usd-brep-curve-contact-tolerance.patch": "ec1b4e4a3aad2be56e089e06f019f521e273d9b9d81c02671173756b0656d669",
     "third_party/patches/usd-brep-curve-contact-tolerance.cmake": "451de8a89718348b6de927f665b5b4eac5c9494a15c6f4669073192b22757e90",
@@ -429,7 +426,10 @@
   },
   "source_git_sha256": {
     "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/build.rs": "71d2d70542fa49635b665ab66d08c77c1f21cced8426f6c2a9d81cb6e467da17",
-    "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/native/CMakeLists.txt": "45bb101c37c52f0ccb2ff3bf22bab65d37464bb637eb48fc06b7eccc0927c230"
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/native/CMakeLists.txt": "45bb101c37c52f0ccb2ff3bf22bab65d37464bb637eb48fc06b7eccc0927c230",
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/native/bridge.cpp": "71de4241ccfba0ead693555e9c3046212bf84cf97819d05dd4b87552c2ff9118",
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/native/bridge.h": "bf59d13258ccb604153b56ed7578dda07fdd1a144912ed94fe8ab601e0dc12da",
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94"
   },
   "artifact_git_sha256": {
     "e4bd95e00761c57e66e0974488d46d3ab4da355b:README.md": "0062ce15d87594f4c0aa00077e19ca39a23f598ae0db4c5d67b8f3cf163e8857",
