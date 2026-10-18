@@ -216,10 +216,7 @@
     "third_party/usd-brep/source/SMLib/src/SmFilletStandardSolver.cpp": "14837a8f3a279906470ab9c67478dc2fba316952c8ee41043ec67d8662af175f",
     "third_party/usd-brep/source/SMLib/src/SmOffsetSurface.cpp": "4d41a2903ff0cdffd10f0571385cb1407698a8f06394435323ed5878e8d041c7",
     "tools/usd_brep/circular_fillet_rails_probe.cpp": "8c1a3c1d2491ebb967fd634ab57b68b26f8bbd28a2a69cc672e13302dee401f2",
-    "tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d",
-    "README.md": "2691486658210e3d14ee4b6be940686fcc5ad0b2758f76ee0bd53a6c36603b00",
     "docs/native-circular-fillet-rails.md": "a25125d818b21a67c68da52ec36b9f00efb36cb347fc6c0f40337c8d447bee5d",
-    "docs/native-surface-fillets.md": "34caf32f7be3b14fd1d331c9d5a3a77e94ed89404938e7f35926bec472a1019d",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
     "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
     "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73"
@@ -277,5 +274,10 @@
     "docs/native-circular-fillet-rails-experimental-offset.cpp.gz": "b33b4e28d0fc9fe62a38d024046e919f516f08026a517012dd4886baaae8d696",
     "docs/native-circular-fillet-rails-continuation-driver.cpp.gz": "9f1602b2d022593f16ed664da3a859512a683da430516f57315bbbfddf71febc",
     "docs/native-circular-fillet-rails-initial-continuation-trace.log.gz": "29533931696d6818757b45c7919d97d63b852692fa212fe39cf21a62f1235d8e"
+  },
+  "source_git_sha256": {
+    "d59f692febecb247d503e7bb21f9061b931289ae:tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d",
+    "d59f692febecb247d503e7bb21f9061b931289ae:README.md": "2691486658210e3d14ee4b6be940686fcc5ad0b2758f76ee0bd53a6c36603b00",
+    "d59f692febecb247d503e7bb21f9061b931289ae:docs/native-surface-fillets.md": "34caf32f7be3b14fd1d331c9d5a3a77e94ed89404938e7f35926bec472a1019d"
   }
 }

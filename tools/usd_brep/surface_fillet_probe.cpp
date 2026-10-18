@@ -112,7 +112,9 @@ int main() {
                 const auto &edge=view.edges[i];const auto &c=edge.curve;VbCurve *curve=nullptr;
                 check(vb_curve_create(c.degree[0],c.points_xyzw,c.count[0],c.knots[0],c.knot_count[0],&curve,error,sizeof error)==0);
                 std::unique_ptr<VbCurve,decltype(&vb_curve_free)> curve_owner(curve,&vb_curve_free);
-                for(int j=0;j<=4;++j) {double p[3];const double u=edge.interval[0]+(edge.interval[1]-edge.interval[0])*j/4.;
+                // Use stored endpoints exactly: reconstructing the upper endpoint
+                // can round one ULP outside the curve's active knot interval.
+                for(int j=0;j<=4;++j) {double p[3];const double u=j==0?edge.interval[0]:j==4?edge.interval[1]:edge.interval[0]+(edge.interval[1]-edge.interval[0])*j/4.;
                     check(vb_curve_evaluate(curve,u,p,error,sizeof error)==0);geometry_error(p);}
             }
             if(family!=3) {

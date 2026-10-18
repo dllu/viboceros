@@ -1,6 +1,7 @@
 //! Rolling-ball surface fillets through the existing SMLib executive.
 use super::*;
 use viboceros_geometry::{AffineTransform3, Brep, BrepTrimType, SurfaceIso, SurfaceKnotDirection};
+mod picks;
 
 /// Offset direction relative to the surface's increasing-U cross increasing-V normal.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -35,6 +36,24 @@ impl Default for SurfaceFilletOptions {
     }
 }
 
+impl SurfaceFilletOptions {
+    /// Select signed normal offsets from two UV picks in the original domains.
+    /// Uses the normal at each bounded surface point nearest to the other
+    /// surface pick. Singular projections and near-contact ambiguities are errors.
+    /// This selects offset sides; it does not select
+    /// among disconnected fillet components or apply source trimming.
+    pub fn try_from_picks(
+        first: &NurbsSurface,
+        second: &NurbsSurface,
+        picks: [[f64; 2]; 2],
+        radius: f64,
+        extend: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, Error> {
+        picks::options(first, second, picks, radius, extend, tolerance)
+    }
+}
+
 unsafe extern "C" {
     fn vb_surface_fillet(
         first: *const brep::NurbsData,
@@ -66,21 +85,7 @@ pub fn fillet_surfaces(
     options: SurfaceFilletOptions,
     tolerance: Tolerance,
 ) -> Result<Option<Brep>, Error> {
-    if !options.radius.is_finite() || options.radius <= 0. {
-        return Err(Error::Kernel(
-            "Surface fillet radius must be finite and positive".into(),
-        ));
-    }
-    let origin = first.evaluate(*first.domain_u().start(), *first.domain_v().start())?;
-    let mut scale = options.radius;
-    for p in first.control_points().iter().chain(second.control_points()) {
-        scale = scale.max(origin.distance_to(p.point())?);
-    }
-    let prepare = |source| {
-        super::curve_surface_intersections::prepared_surface(source, origin, scale)?
-            .ok_or_else(|| Error::Kernel("Unsupported surface fillet input preparation".into()))
-    };
-    let prepared = [prepare(first)?, prepare(second)?];
+    let (prepared, origin, scale) = prepared_sources(first, second, options.radius)?;
     let mut boundaries = Vec::new();
     if options.extend {
         for source in &prepared {
@@ -143,6 +148,28 @@ pub fn fillet_surfaces(
     Err(Error::Kernel(
         "Surface fillet extension search limit".into(),
     ))
+}
+
+fn prepared_sources(
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    radius: f64,
+) -> Result<([NurbsSurface; 2], Point3, f64), Error> {
+    if !radius.is_finite() || radius <= 0. {
+        return Err(Error::Kernel(
+            "Surface fillet radius must be finite and positive".into(),
+        ));
+    }
+    let origin = first.evaluate(*first.domain_u().start(), *first.domain_v().start())?;
+    let mut scale = radius;
+    for p in first.control_points().iter().chain(second.control_points()) {
+        scale = scale.max(origin.distance_to(p.point())?);
+    }
+    let prepare = |source| {
+        super::curve_surface_intersections::prepared_surface(source, origin, scale)?
+            .ok_or_else(|| Error::Kernel("Unsupported surface fillet input preparation".into()))
+    };
+    Ok(([prepare(first)?, prepare(second)?], origin, scale))
 }
 
 fn caps_reach_parent_boundaries(

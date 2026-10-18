@@ -80,6 +80,13 @@ the existing native loft and original parent UV curves together. This also
 unblocks a separate smooth-continuation prototype; the production curved
 extension policy and FilletSrf command workflow remain in progress.
 
+The subsequent [UV pick preparation and precision repair](native-surface-fillet-picks.md)
+adds `SurfaceFilletOptions::try_from_picks`. The native oracle now uses the
+original UV picks when no explicit side override is supplied. Construction
+reserves precision for rail fitting and loft normals while retaining the caller's
+acceptance tolerance. Its validation record supersedes the earlier counts and
+sampled error measurements above for the current implementation.
+
 The native bridge retains its degree-17 and input/resource limits, positive
 conditioned weights, and normalized accuracy floor. Full-order discontinuities,
 severe independent weight ratios, arbitrary conditioning, closed-contact

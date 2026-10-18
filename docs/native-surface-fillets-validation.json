@@ -346,11 +346,9 @@
   "source_sha256": {
     "crates/viboceros-smlib/native/bridge.cpp": "71de4241ccfba0ead693555e9c3046212bf84cf97819d05dd4b87552c2ff9118",
     "crates/viboceros-smlib/native/bridge.h": "bf59d13258ccb604153b56ed7578dda07fdd1a144912ed94fe8ab601e0dc12da",
-    "crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c",
     "crates/viboceros-smlib/native/surface_fillet.h": "a3a79e0c92cd6b521fb7a573228cfbed984185f879ab8a31464fac03bbd022be",
     "crates/viboceros-smlib/src/lib.rs": "1e7f2fc776132218a25d28b32905d2d3b128261c22beabc5e01a0a7925c3560d",
     "crates/viboceros-smlib/src/native.rs": "c13a920a70a844b3050cc432e1c2cafbced1109cc27e4d52ef839e3deea390d0",
-    "crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
     "crates/viboceros-smlib/src/native/curve_surface_intersections.rs": "ca5ebd99f64c85f06a302706d050a4e2602e1b4debce58709edebf9b05e0a8f2",
     "crates/viboceros-smlib/src/native/brep.rs": "a25ec4f459059781c63c238296c79084d5ec823a5569c218ef6d7159d606f3b8",
     "crates/viboceros-smlib/src/native/brep/joints.rs": "99fd73bfff755b6874ebc56ba1c8ebf3885c8fe5484ba0e4060a61c4d5c602c4",
@@ -359,8 +357,6 @@
     "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
     "tools/rhino_oracle/structural_sdk.py": "c884e0ef025f1d1aba239a399fc23089c626590b40ab395e940f93ab1a6aed88",
     "tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
-    "tools/rhino_oracle/test_surface_fillet_probe.py": "b98556c353f6496553d5ed2e947d4ae981da5dea732d33378031413fe9727700",
-    "tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d",
     "third_party/patches/usd-brep-surface-fillet.cmake": "c07265226016db090d997c00561dfc0dd6a8f0b6233af7eafe0395b1acd33ac2",
     "third_party/patches/usd-brep-surface-fillet-domain.patch": "fbd34cd46f89b6865facf8d54005e0d08ec0074d644d84439c30072a1763ac30",
     "third_party/patches/usd-brep-surface-fillet-header.patch": "8616f472b2560c5399c0ccac2102e785151987f92c7ae7403c3428af1570c5bc",
@@ -441,7 +437,11 @@
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/build.rs": "df2d2e1f273ebd01fd60f6c7978768cd21857378c9547c02057d078a9374cd7e",
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/native/CMakeLists.txt": "f15a0f9b3e6affbbea3ace9040d0ee9d53b611362f9f0f6bb0650fbe1d3edf0c",
     "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-oracle/src/surface_fillet.rs": "3abe4a6509fdb83ba2f4b867f6d778b4deb845a07f005c457013e1791b41bd80",
-    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-smlib/tests/surface_fillets.rs": "83cc70584ebdf971b788905da94b50918ca1fd330f1b532dfc3e9045cd3404fc"
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-smlib/tests/surface_fillets.rs": "83cc70584ebdf971b788905da94b50918ca1fd330f1b532dfc3e9045cd3404fc",
+    "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c",
+    "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
+    "d59f692febecb247d503e7bb21f9061b931289ae:tools/rhino_oracle/test_surface_fillet_probe.py": "b98556c353f6496553d5ed2e947d4ae981da5dea732d33378031413fe9727700",
+    "d59f692febecb247d503e7bb21f9061b931289ae:tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d"
   },
   "artifact_git_sha256": {
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:README.md": "4ccc486e80f8fb015b5865ce8952f5dfa7085f70cc0faf8dfd9802e8ff432056",

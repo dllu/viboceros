@@ -961,10 +961,7 @@
     "crates/viboceros-smlib/Cargo.toml": "4035f83731c394bf57bb69aa0788a92099d2a32d90c65806da1c15829feaea19",
     "crates/viboceros-smlib/examples/surface_fillets.rs": "524c5b40623d99104a3d786f3f06656c6b4b1fec1ae24fbf293b1c171f3f2c2a",
     "crates/viboceros-smlib/tests/surface_fillets.rs": "7edcfe717b9dbf50702da2d98a9b029760d11d14b712e05c80a22d5caa012ef9",
-    "crates/viboceros-smlib/tests/data/fitted-fillet-sheet.3dm": "732eff2490abeed18f928a4fdbe0dd6066f8e48024914cebccfc392c3f905db8",
-    "crates/viboceros-oracle/src/surface_fillet.rs": "db32e4b55afbfe24c0956764e48e9817f1a6cfd8f915d7a6702ccef42d9a5410",
-    "crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
-    "crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c"
+    "crates/viboceros-smlib/tests/data/fitted-fillet-sheet.3dm": "732eff2490abeed18f928a4fdbe0dd6066f8e48024914cebccfc392c3f905db8"
   },
   "artifact_sha256": {
     "docs/mass-integration-direction-geometry.log.gz": "109f3bf9a7ef3019a37f9da06ab29b5005f788163a7262087d95435bc4429983",
@@ -1026,5 +1023,10 @@
     "109c7fc1ac18506987dafd2435ea4f17c8c92011:tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
     "109c7fc1ac18506987dafd2435ea4f17c8c92011:tools/rhino_oracle/fixtures/trim_parameter_frames.json": "548631ffc136ee7d77ea8f531eb139104fe6d770419ce95039242f9e9fd24153",
     "109c7fc1ac18506987dafd2435ea4f17c8c92011:tools/rhino_oracle/observations/trim_parameter_frames.json": "acb8ed070f620a1dd774839dc998dacd89d11b467f85c709802ae410b0b022c0"
+  },
+  "source_git_sha256": {
+    "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-oracle/src/surface_fillet.rs": "db32e4b55afbfe24c0956764e48e9817f1a6cfd8f915d7a6702ccef42d9a5410",
+    "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
+    "d59f692febecb247d503e7bb21f9061b931289ae:crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c"
   }
 }

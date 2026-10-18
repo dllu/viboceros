@@ -1,0 +1,1279 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "d59f692febecb247d503e7bb21f9061b931289ae",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "change": "Prepare signed surface fillet offsets from bounded closest normals to the other original UV pick, using existing conditioned source preparation. Native oracle uses those picks unless an explicit diagnostic side override is supplied. Reserve internal construction precision for fitted rail/loft normals without changing caller acceptance. Fix the C ABI probe to evaluate its actual stored endpoints.",
+  "completed_runs": [
+    {
+      "name": "geometry",
+      "command": "cargo test --release -p viboceros-geometry --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-geometry.log.gz",
+        "uncompressed_sha256": "09c7a1f4b9b612cb3a7fdcf30053bcd0ceb79376c866a40cdf032f4669ae6f8e"
+      },
+      "passed": 2408,
+      "failed": 0,
+      "ignored": 8
+    },
+    {
+      "name": "bridge",
+      "command": "cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-bridge.log.gz",
+        "uncompressed_sha256": "614c188ab4be22d5bd7d6c3d9b60adf96290e30c5e4f60a7fa727cfc7b741c75"
+      },
+      "passed": 440,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "name": "command",
+      "command": "cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-command.log.gz",
+        "uncompressed_sha256": "3c5798886191497f37daf946e5d03cbdd8746d09c8d552d1d8d8d1f807536f02"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "name": "fillet-oracle",
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --lib surface_fillet -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-fillet-oracle.log.gz",
+        "uncompressed_sha256": "ded60c6487b4f9f7f819184fe0db1564018e5ef64c0265bb65b83e8a3cf34b77"
+      },
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-clippy.log.gz",
+        "uncompressed_sha256": "ac4f96f100d568ea9a10d995868941c8a5242d605b09c9422881556d8dd121d6"
+      }
+    },
+    {
+      "name": "fmt",
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "oracle-build",
+      "command": "cargo build --release -p viboceros-oracle --features native-smlib",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-oracle-build.log.gz",
+        "uncompressed_sha256": "c578441871773a9c12d5ed35da5082f21add3b1252f513537908e5c3e5506af1"
+      }
+    },
+    {
+      "name": "python",
+      "command": "python3 -m unittest tools.rhino_oracle.test_surface_fillet_probe",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillet-picks-python.log.gz",
+        "uncompressed_sha256": "fe008aab760eb03ccac7578e2b84665b1b50b0d7f855b17a0c7a8d039435b658"
+      }
+    }
+  ],
+  "sdk_comparison": {
+    "baseline_commit": "d59f692febecb247d503e7bb21f9061b931289ae",
+    "sdk_recipes": 16,
+    "queries": 64,
+    "absolute_epsilon": 1e-08,
+    "baseline_strict_point_matches": 2,
+    "baseline_bounds_matches": 5,
+    "candidate_strict_point_matches": 11,
+    "candidate_sampled_image_matches": 16,
+    "baseline_sampled_image_matches": 5,
+    "baseline_images": [
+      {
+        "bounds_gap": 0.7500000000000009,
+        "coordinate_gap": 0.3204240443135863,
+        "distance_gap": 0.3657553064937109,
+        "id": "planes-0.2-0.2",
+        "native_grid_to_sdk": 0.9270509831248428,
+        "native_points_to_sdk": 0.16725799477130976,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248432,
+        "sdk_points_to_native": 0.3657553064937122
+      },
+      {
+        "bounds_gap": 2.0380985511143445e-15,
+        "coordinate_gap": 2.6645352591003757e-15,
+        "distance_gap": 2.487653435121222e-15,
+        "id": "planes-0.2-0.8",
+        "native_grid_to_sdk": 2.5341311739065128e-15,
+        "native_points_to_sdk": 1.6401643046719713e-15,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 1.989128069720283e-15,
+        "sdk_points_to_native": 1.1102230246251565e-15
+      },
+      {
+        "bounds_gap": 1.0606601717798225,
+        "coordinate_gap": 0.638905955151575,
+        "distance_gap": 0.7493573404893749,
+        "id": "planes-0.8-0.2",
+        "native_grid_to_sdk": 0.9270509831248437,
+        "native_points_to_sdk": 0.6529925667962524,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248435,
+        "sdk_points_to_native": 0.7493573404893766
+      },
+      {
+        "bounds_gap": 0.7500000000000009,
+        "coordinate_gap": 0.6241158348360534,
+        "distance_gap": 0.7154622257199211,
+        "id": "planes-0.8-0.8",
+        "native_grid_to_sdk": 0.9270509831248426,
+        "native_points_to_sdk": 0.17182860093195995,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248435,
+        "sdk_points_to_native": 0.7154622257199219
+      },
+      {
+        "bounds_gap": 1.2990381056766513,
+        "coordinate_gap": 0.6076356851810889,
+        "distance_gap": 0.7493573373629401,
+        "id": "cylinder-2.0-0.2",
+        "native_grid_to_sdk": 0.9270509831248418,
+        "native_points_to_sdk": 0.6529925644418104,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248421,
+        "sdk_points_to_native": 0.7493573373698231
+      },
+      {
+        "bounds_gap": 1.060660171779815,
+        "coordinate_gap": 0.5935694443575548,
+        "distance_gap": 0.7154622224785091,
+        "id": "cylinder-2.0-0.8",
+        "native_grid_to_sdk": 0.9270509831248399,
+        "native_points_to_sdk": 0.17182859738500622,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248411,
+        "sdk_points_to_native": 0.7154622225119637
+      },
+      {
+        "bounds_gap": 0.7500000000000016,
+        "coordinate_gap": 0.32042404301670524,
+        "distance_gap": 0.36575530445963234,
+        "id": "cylinder-6.0-0.2",
+        "native_grid_to_sdk": 0.9270509855019333,
+        "native_points_to_sdk": 0.16725799417308126,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248421,
+        "sdk_points_to_native": 0.36575530458849004
+      },
+      {
+        "bounds_gap": 7.951088352073423e-15,
+        "coordinate_gap": 1.8497665343897296e-09,
+        "distance_gap": 2.4912924642541165e-09,
+        "id": "cylinder-6.0-0.8",
+        "native_grid_to_sdk": 5.297265548266656e-09,
+        "native_points_to_sdk": 2.6550126177104687e-09,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 6.0914707549569204e-09,
+        "sdk_points_to_native": 2.6550127588925787e-09
+      },
+      {
+        "bounds_gap": 1.2990381056766513,
+        "coordinate_gap": 0.6102009278634641,
+        "distance_gap": 0.6512184679082266,
+        "id": "cylinder--6.0-0.2",
+        "native_grid_to_sdk": 0.9270509831248418,
+        "native_points_to_sdk": 0.7616224645047979,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248421,
+        "sdk_points_to_native": 0.6682375265819586
+      },
+      {
+        "bounds_gap": 1.060660171779815,
+        "coordinate_gap": 0.5935694331400745,
+        "distance_gap": 0.7154622244391892,
+        "id": "cylinder--6.0-0.8",
+        "native_grid_to_sdk": 0.9270509831248399,
+        "native_points_to_sdk": 0.715462226130131,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248411,
+        "sdk_points_to_native": 0.17182859693435742
+      },
+      {
+        "bounds_gap": 5.102196573270515e-15,
+        "coordinate_gap": 4.649302587367288e-08,
+        "distance_gap": 1.7759276826900816e-09,
+        "id": "reverse-u",
+        "native_grid_to_sdk": 3.742444859237202e-09,
+        "native_points_to_sdk": 1.7759261280825186e-09,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.742429690773821e-09,
+        "sdk_points_to_native": 1.7759283546408765e-09
+      },
+      {
+        "bounds_gap": 3.234923947455718e-15,
+        "coordinate_gap": 5.0882450475242536e-08,
+        "distance_gap": 2.0185481619527934e-09,
+        "id": "reverse-v",
+        "native_grid_to_sdk": 3.4187478857684537e-09,
+        "native_points_to_sdk": 2.0185475154380062e-09,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.41868769258771e-09,
+        "sdk_points_to_native": 2.018548214897992e-09
+      },
+      {
+        "bounds_gap": 2.3314683517128287e-15,
+        "coordinate_gap": 5.088243892892308e-08,
+        "distance_gap": 2.018544498216812e-09,
+        "id": "swap",
+        "native_grid_to_sdk": 3.418744395956466e-09,
+        "native_points_to_sdk": 2.018543680237813e-09,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.4186844977922035e-09,
+        "sdk_points_to_native": 2.01854476665179e-09
+      },
+      {
+        "bounds_gap": 1.0606601717798163,
+        "coordinate_gap": 0.5935694259305855,
+        "distance_gap": 0.7154622243084016,
+        "id": "mobius-.5",
+        "native_grid_to_sdk": 0.9270509831248401,
+        "native_points_to_sdk": 0.7154622259598046,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248426,
+        "sdk_points_to_native": 0.1718285969237006
+      },
+      {
+        "bounds_gap": 1.0606601717798163,
+        "coordinate_gap": 0.5935694300282659,
+        "distance_gap": 0.7154622243583343,
+        "id": "mobius-2",
+        "native_grid_to_sdk": 0.9270509831248402,
+        "native_points_to_sdk": 0.7154622260251797,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.9270509831248422,
+        "sdk_points_to_native": 0.17182859689968336
+      },
+      {
+        "bounds_gap": 1.299038105676657,
+        "coordinate_gap": 0.610200927987381,
+        "distance_gap": 0.6512184677909768,
+        "id": "reverse-plane",
+        "native_grid_to_sdk": 0.9270509831248421,
+        "native_points_to_sdk": 0.7616224645988258,
+        "sampled_image_pass": false,
+        "sdk_grid_to_native": 0.927050983124842,
+        "sdk_points_to_native": 0.6682375268886925
+      }
+    ],
+    "candidate_images": [
+      {
+        "bounds_gap": 1.7763568394002505e-15,
+        "coordinate_gap": 3.552713678800501e-15,
+        "distance_gap": 3.5476283913284582e-15,
+        "id": "planes-0.2-0.2",
+        "native_grid_to_sdk": 2.6852712547870858e-15,
+        "native_points_to_sdk": 4.47545209131181e-16,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 1.4217791915866694e-15,
+        "sdk_points_to_native": 6.314393452555578e-16
+      },
+      {
+        "bounds_gap": 2.0380985511143445e-15,
+        "coordinate_gap": 2.6645352591003757e-15,
+        "distance_gap": 2.633370207103274e-15,
+        "id": "planes-0.2-0.8",
+        "native_grid_to_sdk": 2.0947646133377085e-15,
+        "native_points_to_sdk": 2.1755839288168296e-15,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 1.9860273225978185e-15,
+        "sdk_points_to_native": 1.2710114229825056e-15
+      },
+      {
+        "bounds_gap": 3.2023728339893768e-15,
+        "coordinate_gap": 1.7763568394002505e-15,
+        "distance_gap": 1.3290596649903885e-15,
+        "id": "planes-0.8-0.2",
+        "native_grid_to_sdk": 2.0137621733714647e-15,
+        "native_points_to_sdk": 9.639819490876587e-16,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 2.6645352591003757e-15,
+        "sdk_points_to_native": 1.4002130849932114e-15
+      },
+      {
+        "bounds_gap": 3.354637663152832e-15,
+        "coordinate_gap": 1.1102230246251565e-15,
+        "distance_gap": 6.327665013686964e-16,
+        "id": "planes-0.8-0.8",
+        "native_grid_to_sdk": 2.0777787570717024e-15,
+        "native_points_to_sdk": 9.41467529262489e-16,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 2.6645352591003757e-15,
+        "sdk_points_to_native": 1.531343299291801e-15
+      },
+      {
+        "bounds_gap": 4.5288390936029406e-15,
+        "coordinate_gap": 5.300199168445374e-11,
+        "distance_gap": 6.663078536276762e-11,
+        "id": "cylinder-2.0-0.2",
+        "native_grid_to_sdk": 3.3924108503090666e-10,
+        "native_points_to_sdk": 7.604347056013457e-11,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.3924171306701813e-10,
+        "sdk_points_to_native": 7.604317429668886e-11
+      },
+      {
+        "bounds_gap": 5.376277206893599e-15,
+        "coordinate_gap": 5.2976956155248445e-11,
+        "distance_gap": 6.663760035150016e-11,
+        "id": "cylinder-2.0-0.8",
+        "native_grid_to_sdk": 3.392417285131296e-10,
+        "native_points_to_sdk": 7.603648030442364e-11,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.3924234110429226e-10,
+        "sdk_points_to_native": 7.603700965538833e-11
+      },
+      {
+        "bounds_gap": 7.588599744428075e-15,
+        "coordinate_gap": 1.3572004631257073e-10,
+        "distance_gap": 9.434692706762679e-11,
+        "id": "cylinder-6.0-0.2",
+        "native_grid_to_sdk": 4.0221686551091873e-10,
+        "native_points_to_sdk": 1.9478509686008983e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 4.625203486287059e-10,
+        "sdk_points_to_native": 1.947850992556099e-10
+      },
+      {
+        "bounds_gap": 4.463041323674983e-15,
+        "coordinate_gap": 1.3571249679600328e-10,
+        "distance_gap": 9.434934575636478e-11,
+        "id": "cylinder-6.0-0.8",
+        "native_grid_to_sdk": 4.022178075679874e-10,
+        "native_points_to_sdk": 1.9479108755949273e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 4.625335374143128e-10,
+        "sdk_points_to_native": 1.947912959726549e-10
+      },
+      {
+        "bounds_gap": 4.5288390936029406e-15,
+        "coordinate_gap": 6.6235710249884505e-09,
+        "distance_gap": 9.560269242925301e-11,
+        "id": "cylinder--6.0-0.2",
+        "native_grid_to_sdk": 3.3924108503090666e-10,
+        "native_points_to_sdk": 9.560247942722722e-11,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.3924171306701813e-10,
+        "sdk_points_to_native": 9.560280043763597e-11
+      },
+      {
+        "bounds_gap": 5.376277206893599e-15,
+        "coordinate_gap": 2.7086650422614156e-08,
+        "distance_gap": 9.559553149074418e-11,
+        "id": "cylinder--6.0-0.8",
+        "native_grid_to_sdk": 3.392417285131296e-10,
+        "native_points_to_sdk": 9.55968896364974e-11,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.3924234110429226e-10,
+        "sdk_points_to_native": 9.559762731842676e-11
+      },
+      {
+        "bounds_gap": 5.005862532312609e-15,
+        "coordinate_gap": 5.4991029507789335e-09,
+        "distance_gap": 2.151749889378607e-10,
+        "id": "reverse-u",
+        "native_grid_to_sdk": 3.392351186823251e-10,
+        "native_points_to_sdk": 2.1517463398469139e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 3.39235746715984e-10,
+        "sdk_points_to_native": 2.1517492157019114e-10
+      },
+      {
+        "bounds_gap": 3.062686598583602e-15,
+        "coordinate_gap": 1.2006874605674511e-08,
+        "distance_gap": 1.5363815775160106e-10,
+        "id": "reverse-v",
+        "native_grid_to_sdk": 4.366913856263041e-10,
+        "native_points_to_sdk": 1.5363803679186478e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 4.366916996573704e-10,
+        "sdk_points_to_native": 1.5363730358574497e-10
+      },
+      {
+        "bounds_gap": 1.831026719408895e-15,
+        "coordinate_gap": 1.1926963194852647e-08,
+        "distance_gap": 1.5363516014943457e-10,
+        "id": "swap",
+        "native_grid_to_sdk": 4.366822791477243e-10,
+        "native_points_to_sdk": 1.5363530512035958e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 4.3668259350685143e-10,
+        "sdk_points_to_native": 1.5363440429686548e-10
+      },
+      {
+        "bounds_gap": 5.925929145204076e-15,
+        "coordinate_gap": 1.9217921476410993e-08,
+        "distance_gap": 1.2315437558640951e-10,
+        "id": "mobius-.5",
+        "native_grid_to_sdk": 3.364760778216121e-10,
+        "native_points_to_sdk": 1.2315487476004582e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 1.6257080871868739e-10,
+        "sdk_points_to_native": 1.2315418566871265e-10
+      },
+      {
+        "bounds_gap": 5.443490401604861e-15,
+        "coordinate_gap": 5.9583999956203115e-09,
+        "distance_gap": 1.1307843550412144e-10,
+        "id": "mobius-2",
+        "native_grid_to_sdk": 1.4822908108325042e-10,
+        "native_points_to_sdk": 1.1307796311367211e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 1.137247147058838e-10,
+        "sdk_points_to_native": 1.1307871954021832e-10
+      },
+      {
+        "bounds_gap": 4.316698132548644e-15,
+        "coordinate_gap": 2.7073176644965002e-08,
+        "distance_gap": 1.5363388339295625e-10,
+        "id": "reverse-plane",
+        "native_grid_to_sdk": 4.366876174052923e-10,
+        "native_points_to_sdk": 1.536336638336606e-10,
+        "sampled_image_pass": true,
+        "sdk_grid_to_native": 4.3668793142278204e-10,
+        "sdk_points_to_native": 1.5363312551204453e-10
+      }
+    ],
+    "candidate_maximum_point_difference": 2.7086650422614156e-08,
+    "candidate_maximum_bounds_difference": 7.105427357601002e-15,
+    "baseline": [
+      {
+        "id": "planes-0.2-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 0.3204240443135863,
+        "maximum_bounds_difference": 0.7500000000000009,
+        "native_area": 11.78097245096173,
+        "sdk_area": 11.780972596345448,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "planes-0.2-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 2.6645352591003757e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 11.78097245096173,
+        "sdk_area": 11.780972596345439,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "planes-0.8-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 0.638905955151575,
+        "maximum_bounds_difference": 0.7500000000000009,
+        "native_area": 11.78097245096173,
+        "sdk_area": 11.780972596345462,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "planes-0.8-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 0.6241158348360534,
+        "maximum_bounds_difference": 0.7500000000000009,
+        "native_area": 11.78097245096173,
+        "sdk_area": 11.780972596345462,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "cylinder-2.0-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 0.6076356851810889,
+        "maximum_bounds_difference": 0.7500000000000023,
+        "native_area": 9.75709429677997,
+        "sdk_area": 8.748414183244021,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "cylinder-2.0-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 0.5935694443575548,
+        "maximum_bounds_difference": 0.7499999999999973,
+        "native_area": 9.75709429677997,
+        "sdk_area": 8.748414183244028,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "cylinder-6.0-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 0.32042404301670524,
+        "maximum_bounds_difference": 0.7500000000000016,
+        "native_area": 9.75709429677997,
+        "sdk_area": 9.757094297196183,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "cylinder-6.0-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 1.8497665343897296e-09,
+        "maximum_bounds_difference": 7.105427357601002e-15,
+        "native_area": 9.75709429677997,
+        "sdk_area": 9.757094297196167,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder--6.0-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 0.6102009278634641,
+        "maximum_bounds_difference": 0.7500000000000023,
+        "native_area": 9.75709429677997,
+        "sdk_area": 8.748414183244021,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "cylinder--6.0-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 0.5935694331400745,
+        "maximum_bounds_difference": 0.7499999999999973,
+        "native_area": 9.75709429677997,
+        "sdk_area": 8.748414183244028,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "reverse-u",
+        "native_valid": true,
+        "maximum_point_difference": 4.649302587367288e-08,
+        "maximum_bounds_difference": 4.440892098500626e-15,
+        "native_area": 8.74841394009097,
+        "sdk_area": 8.748414183244028,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "reverse-v",
+        "native_valid": true,
+        "maximum_point_difference": 5.0882450475242536e-08,
+        "maximum_bounds_difference": 2.55351295663786e-15,
+        "native_area": 8.748413940084516,
+        "sdk_area": 8.748414183243977,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "swap",
+        "native_valid": true,
+        "maximum_point_difference": 5.088243892892308e-08,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 8.748413940084516,
+        "sdk_area": 8.748414183244035,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "mobius-.5",
+        "native_valid": true,
+        "maximum_point_difference": 0.5935694259305855,
+        "maximum_bounds_difference": 0.7499999999999973,
+        "native_area": 9.757094296780396,
+        "sdk_area": 8.74841418320869,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "mobius-2",
+        "native_valid": true,
+        "maximum_point_difference": 0.5935694300282659,
+        "maximum_bounds_difference": 0.7499999999999973,
+        "native_area": 9.757094296779382,
+        "sdk_area": 8.748414183214729,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "reverse-plane",
+        "native_valid": true,
+        "maximum_point_difference": 0.610200927987381,
+        "maximum_bounds_difference": 0.7500000000000026,
+        "native_area": 9.757094296786002,
+        "sdk_area": 8.748414183243995,
+        "strict_point_and_bounds_pass": false
+      }
+    ],
+    "candidate": [
+      {
+        "id": "planes-0.2-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 3.552713678800501e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 11.780972450961723,
+        "sdk_area": 11.780972596345448,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "planes-0.2-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 2.6645352591003757e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 11.78097245096173,
+        "sdk_area": 11.780972596345439,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "planes-0.8-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 2.6645352591003757e-15,
+        "native_area": 11.780972450961716,
+        "sdk_area": 11.780972596345462,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "planes-0.8-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 1.1102230246251565e-15,
+        "maximum_bounds_difference": 2.6645352591003757e-15,
+        "native_area": 11.780972450961727,
+        "sdk_area": 11.780972596345462,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder-2.0-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 5.300199168445374e-11,
+        "maximum_bounds_difference": 4.440892098500626e-15,
+        "native_area": 8.748413940895592,
+        "sdk_area": 8.748414183244021,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder-2.0-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 5.2976956155248445e-11,
+        "maximum_bounds_difference": 4.9960036108132044e-15,
+        "native_area": 8.748413940895594,
+        "sdk_area": 8.748414183244028,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder-6.0-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 1.3572004631257073e-10,
+        "maximum_bounds_difference": 7.105427357601002e-15,
+        "native_area": 9.757094310371352,
+        "sdk_area": 9.757094297196183,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder-6.0-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 1.3571249679600328e-10,
+        "maximum_bounds_difference": 4.440892098500626e-15,
+        "native_area": 9.757094310371352,
+        "sdk_area": 9.757094297196167,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder--6.0-0.2",
+        "native_valid": true,
+        "maximum_point_difference": 6.6235710249884505e-09,
+        "maximum_bounds_difference": 4.440892098500626e-15,
+        "native_area": 8.748413940895592,
+        "sdk_area": 8.748414183244021,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder--6.0-0.8",
+        "native_valid": true,
+        "maximum_point_difference": 2.7086650422614156e-08,
+        "maximum_bounds_difference": 4.9960036108132044e-15,
+        "native_area": 8.748413940895594,
+        "sdk_area": 8.748414183244028,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "reverse-u",
+        "native_valid": true,
+        "maximum_point_difference": 5.4991029507789335e-09,
+        "maximum_bounds_difference": 4.3298697960381105e-15,
+        "native_area": 8.748413940895594,
+        "sdk_area": 8.748414183244028,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "reverse-v",
+        "native_valid": true,
+        "maximum_point_difference": 1.2006874605674511e-08,
+        "maximum_bounds_difference": 2.3314683517128287e-15,
+        "native_area": 8.748413940893423,
+        "sdk_area": 8.748414183243977,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "swap",
+        "native_valid": true,
+        "maximum_point_difference": 1.1926963194852647e-08,
+        "maximum_bounds_difference": 1.3322676295501878e-15,
+        "native_area": 8.748413940893423,
+        "sdk_area": 8.748414183244035,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "mobius-.5",
+        "native_valid": true,
+        "maximum_point_difference": 1.9217921476410993e-08,
+        "maximum_bounds_difference": 5.218048215738236e-15,
+        "native_area": 8.74841394089633,
+        "sdk_area": 8.74841418320869,
+        "strict_point_and_bounds_pass": false
+      },
+      {
+        "id": "mobius-2",
+        "native_valid": true,
+        "maximum_point_difference": 5.9583999956203115e-09,
+        "maximum_bounds_difference": 4.6629367034256575e-15,
+        "native_area": 8.748413940895658,
+        "sdk_area": 8.748414183214729,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "reverse-plane",
+        "native_valid": true,
+        "maximum_point_difference": 2.7073176644965002e-08,
+        "maximum_bounds_difference": 3.657134136255696e-15,
+        "native_area": 8.748413940893425,
+        "sdk_area": 8.748414183243995,
+        "strict_point_and_bounds_pass": false
+      }
+    ],
+    "positive_control_complete_value_matches": 0,
+    "positive_control_changes": [
+      {
+        "id": "planes-0.2-0.2",
+        "maximum_bounds_difference": 8.881784197001252e-16,
+        "maximum_point_difference": 2.3818822469934275e-09,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "planes-0.2-0.8",
+        "maximum_bounds_difference": 8.881784197001252e-16,
+        "maximum_point_difference": 2.220446049250313e-15,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "planes-0.8-0.2",
+        "maximum_bounds_difference": 8.881784197001252e-16,
+        "maximum_point_difference": 2.169532109519423e-09,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "planes-0.8-0.8",
+        "maximum_bounds_difference": 8.881784197001252e-16,
+        "maximum_point_difference": 6.004329811126752e-10,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "cylinder-2.0-0.2",
+        "maximum_bounds_difference": 3.552713678800501e-15,
+        "maximum_point_difference": 6.253782802723151e-08,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "cylinder-2.0-0.8",
+        "maximum_bounds_difference": 3.552713678800501e-15,
+        "maximum_point_difference": 6.197510615812973e-08,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "cylinder-6.0-0.2",
+        "maximum_bounds_difference": 3.552713678800501e-15,
+        "maximum_point_difference": 1.6538480362982e-08,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "cylinder-6.0-0.8",
+        "maximum_bounds_difference": 3.552713678800501e-15,
+        "maximum_point_difference": 1.801434307280303e-09,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "cylinder--6.0-0.2",
+        "maximum_bounds_difference": 3.552713678800501e-15,
+        "maximum_point_difference": 1.6538480362982e-08,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "cylinder--6.0-0.8",
+        "maximum_bounds_difference": 3.552713678800501e-15,
+        "maximum_point_difference": 1.801434307280303e-09,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "reverse-u",
+        "maximum_bounds_difference": 1.5700924586837751e-15,
+        "maximum_point_difference": 5.179197071214503e-08,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "reverse-v",
+        "maximum_bounds_difference": 2.220446049250313e-16,
+        "maximum_point_difference": 6.288932508091705e-08,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "swap",
+        "maximum_bounds_difference": 8.881784197001252e-16,
+        "maximum_point_difference": 6.280940212377573e-08,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "mobius-.5",
+        "maximum_bounds_difference": 3.552713678800501e-15,
+        "maximum_point_difference": 1.7852502531834347e-09,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "mobius-2",
+        "maximum_bounds_difference": 1.5700924586837751e-15,
+        "maximum_point_difference": 1.8031141024721364e-09,
+        "complete_value_unchanged": false
+      },
+      {
+        "id": "reverse-plane",
+        "maximum_bounds_difference": 1.5700924586837751e-15,
+        "maximum_point_difference": 2.2955021217185845e-08,
+        "complete_value_unchanged": false
+      }
+    ],
+    "original_six_complete_values_unchanged": 0,
+    "original_six": [
+      {
+        "id": "planes-0-False",
+        "native_valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 1.1102230246251565e-15,
+        "native_area": 15.707963267948966,
+        "sdk_area": 15.70796346179396,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "planes-0-True",
+        "native_valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 9.199618330719454e-16,
+        "native_area": 15.707963267948973,
+        "sdk_area": 15.70796346179396,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "planes-3-False",
+        "native_valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 2.6645352591003757e-15,
+        "native_area": 6.2831853071795845,
+        "sdk_area": 6.283185384717587,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "planes-3-True",
+        "native_valid": true,
+        "maximum_point_difference": 8.881784197001252e-16,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 10.995574287564278,
+        "sdk_area": 10.9955742990552,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder-False",
+        "native_valid": true,
+        "maximum_point_difference": 4.455813495951588e-11,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 13.233610274093616,
+        "sdk_area": 13.233611430762192,
+        "strict_point_and_bounds_pass": true
+      },
+      {
+        "id": "cylinder-True",
+        "native_valid": true,
+        "maximum_point_difference": 2.099787010934051e-10,
+        "maximum_bounds_difference": 9.14987564381133,
+        "native_area": 28.941564353363976,
+        "sdk_area": 14.469328109898152,
+        "strict_point_and_bounds_pass": false
+      }
+    ],
+    "raw_complete_matches": 0,
+    "raw_complete_mismatches": 16,
+    "scope": "All sixteen recipes are executed without side overrides. Checks cover source purity, one valid owned output, bidirectional 81-point surface image membership, membership of all closest points on the other surface, closest distances and tight bounds at the caller epsilon. Literal closest-point coordinate differences remain diagnostics, including tangential discrepancies above epsilon. Full NURBS/topology/area protocols remain unnormalized and are compared separately; sampled geometry checks are not complete protocol parity or a global continuous error certificate. The original curved Extend=Yes extent mismatch remains unqualified."
+  },
+  "old_executable": {
+    "sha256": "0d587dc26ece7d5cd06f7c281a6680cddad2958387704537857c828d9e02f9c3",
+    "source_mtime": 1792344646.4354362,
+    "baseline_commit": "d59f692febecb247d503e7bb21f9061b931289ae",
+    "scope": "Existing release binary retained before rebuilding the oracle for this change; the previous completed goal turn built and audited this executable."
+  },
+  "independent_accuracy_diagnostic": {
+    "cases": 4,
+    "query_accuracies": [
+      1e-08,
+      1e-09,
+      1e-10,
+      1e-11
+    ],
+    "old_maximum_analytic_distance": 4.1916294633021865e-08,
+    "candidate_maximum_analytic_distance": 6.3646726134033e-09,
+    "old_maximum_sdk_coordinate_difference": 3.2286063156306e-08,
+    "candidate_maximum_sdk_coordinate_difference": 6.6235710249884505e-09,
+    "scope": "Controlled temporary native wrapper override reserves one sixteenth of caller accuracy after validating the original request. Same Rust query driver and public inputs; tightening only the projection solver does not remove the old construction error. This diagnoses one torus family, not global C1 accuracy."
+  },
+  "closest_point_qualification": {
+    "id": "cylinder--6.0-0.8",
+    "query_index": 1,
+    "model_absolute_tolerance": 1e-08,
+    "native_analytic_distance": 1.9509426593173003e-09,
+    "sdk_analytic_distance": 3.0990325194367277e-08,
+    "sdk": [
+      4.668784732488399,
+      1.5169801208892724,
+      0.39201666398972795
+    ],
+    "analytic": [
+      4.668784747510587,
+      1.5169801219379662,
+      0.3920166910754136
+    ],
+    "native": [
+      4.6687847469011805,
+      1.5169801237912874,
+      0.3920166910763784
+    ],
+    "scope": "Literal coordinate comparison failed in the full oracle. An independent metric torus projection shows this SDK answer differs tangentially by about 3.1e-8 while both sampled surface images agree below 5e-10. Fitted-normal effects and SDK query stopping are not distinguished. Original closest-point coordinates and raw audit failures remain unchanged. Geometry qualification uses bidirectional sampled membership, closest distances and bounds at the original 1e-8 epsilon; this does not claim literal closest-point coordinate parity."
+  },
+  "native_fillet_matrix": {
+    "normal_passed": 66,
+    "asan_passed": 66,
+    "normal_maximum_geometry_error": 1.9766943637478107e-10,
+    "asan_maximum_geometry_error": 1.9766943637478107e-10,
+    "normal": {
+      "retained": "docs/native-surface-fillet-picks-native-fillet.jsonl.gz",
+      "uncompressed_sha256": "a5fb21ea6720f0bb3d455783b11819c4fd5eed33afdde7c675a2c3bc6ca84d6f"
+    },
+    "asan": {
+      "retained": "docs/native-surface-fillet-picks-asan-fillet.jsonl.gz",
+      "uncompressed_sha256": "909ad0ad60c7b91920dd89fe411df55c2d953ba37f9607ed384dffa02d2330a0"
+    },
+    "scope": "56 full geometry and lifetime cases, ten invalid requests; original 1e-8 analytic radius/extent checks. Inputs and private parents die before export; exported definitions outlive the native result."
+  },
+  "probe_failure": {
+    "initial_exit_code": 2,
+    "cause": "Probe interpolated the last edge sample to 15.000000000000004 although the stored upper endpoint and active knot limit are 15.000000000000002. Native Parameter outside NURBS domain rejection is correct. Final probe uses the exact stored endpoints; no curve domain or acceptance tolerance changed.",
+    "diagnostic": {
+      "retained": "docs/native-surface-fillet-picks-invariant-stderr.log.gz",
+      "uncompressed_sha256": "b6d79918767a1ba194985c642e49fb9463e93e9aced4e8ad6190e0b04d24c185"
+    }
+  },
+  "sdk_capture": {
+    "recipes": 16,
+    "completed": true,
+    "runtime": {
+      "seconds": 55.294627784052864,
+      "recipes": 16
+    },
+    "initial_postcapture_check": "Initial expected-sides assertion was incorrect for a negative-X pick next to a bounded first-quadrant cylinder. Full SDK capture completed before this diagnostic assertion. Both original expected-sides hypothesis and failure log remain retained; qualification uses the bounded projection result."
+  },
+  "extension_followup": {
+    "production_policy_changed": false,
+    "basis_input_equivalence": {
+      "method": "Independent 80-digit Decimal Cox-de Boor power-polynomial expansion on every knot span. Compare all homogeneous coefficients for both V rows against the original degree-two chart. Sum absolute coefficient differences on [0,1], divide by the positive source weight lower bound, and bound Cartesian denominator perturbations using the target control hull. Bounds include decimal JSON coefficient rounding; tensor V blending preserves them.",
+      "records": [
+        {
+          "mobius": "0.5",
+          "basis": "elevated3",
+          "maximum_coordinate_bound": 3.690871002700994e-14
+        },
+        {
+          "mobius": "0.5",
+          "basis": "elevated4",
+          "maximum_coordinate_bound": 4.28362248043233e-14
+        },
+        {
+          "mobius": "0.5",
+          "basis": "split",
+          "maximum_coordinate_bound": 3.1346938775510207e-14
+        },
+        {
+          "mobius": "1.0",
+          "basis": "elevated3",
+          "maximum_coordinate_bound": 9.366876797733727e-15
+        },
+        {
+          "mobius": "1.0",
+          "basis": "elevated4",
+          "maximum_coordinate_bound": 3.877478846941782e-14
+        },
+        {
+          "mobius": "1.0",
+          "basis": "split",
+          "maximum_coordinate_bound": 2.0020680065009914e-14
+        },
+        {
+          "mobius": "2.0",
+          "basis": "elevated3",
+          "maximum_coordinate_bound": 2.6074348901404263e-14
+        },
+        {
+          "mobius": "2.0",
+          "basis": "elevated4",
+          "maximum_coordinate_bound": 6.390907563741826e-14
+        },
+        {
+          "mobius": "2.0",
+          "basis": "split",
+          "maximum_coordinate_bound": 4.758985087390016e-14
+        }
+      ],
+      "maximum_coordinate_bound": 6.390907563741826e-14,
+      "scope": "A complete same-parameter image equivalence bound for these finite JSON input recipes. It does not certify a general extension algorithm or output surfaces."
+    },
+    "scope": "16 fresh SDK calls: 14 basis/chart recipes and two tolerance variants. Degree elevation preserves observed extension endpoints; knot insertion changes them despite complete same-parameter input polynomial bounds below 6.4e-14 in decimal JSON. The remote chart returns no fillet. Loose tolerance changes shape/extent. Complete responses are retained without normalization.",
+    "rejected_g2": {
+      "cases": 14,
+      "status_successes": 14,
+      "vertex_radius_results": [
+        {
+          "normalized": false,
+          "factor": 0,
+          "maximum_vertex_radius_error": 1.7763568394002505e-15
+        },
+        {
+          "normalized": false,
+          "factor": 0.01,
+          "maximum_vertex_radius_error": 1.0058864094553144e-05
+        },
+        {
+          "normalized": false,
+          "factor": 0.05,
+          "maximum_vertex_radius_error": 0.001288827369940293
+        },
+        {
+          "normalized": false,
+          "factor": 0.1,
+          "maximum_vertex_radius_error": 0.010643269820538315
+        },
+        {
+          "normalized": false,
+          "factor": 0.125,
+          "maximum_vertex_radius_error": 0.021109528050903492
+        },
+        {
+          "normalized": false,
+          "factor": 0.5,
+          "maximum_vertex_radius_error": 1.3677358259586265
+        },
+        {
+          "normalized": false,
+          "factor": 1,
+          "maximum_vertex_radius_error": 4.269651441812284
+        },
+        {
+          "normalized": true,
+          "factor": 0,
+          "maximum_vertex_radius_error": 0.0
+        },
+        {
+          "normalized": true,
+          "factor": 0.01,
+          "maximum_vertex_radius_error": 1.0058864097217679e-05
+        },
+        {
+          "normalized": true,
+          "factor": 0.05,
+          "maximum_vertex_radius_error": 0.0012888273699420694
+        },
+        {
+          "normalized": true,
+          "factor": 0.1,
+          "maximum_vertex_radius_error": 0.010643269820532986
+        },
+        {
+          "normalized": true,
+          "factor": 0.125,
+          "maximum_vertex_radius_error": 0.021109528050901716
+        },
+        {
+          "normalized": true,
+          "factor": 0.5,
+          "maximum_vertex_radius_error": 1.367735825958623
+        },
+        {
+          "normalized": true,
+          "factor": 1,
+          "maximum_vertex_radius_error": 4.269651441801974
+        }
+      ],
+      "scope": "Separate NL_G2 offset continuation returned status zero but violated analytic circle radii. Successful construction status is insufficient; this experiment is not enabled."
+    }
+  },
+  "limitations": [
+    "FilletSrf UI/command, source trimming, joining, attributes/history and disconnected-component choice remain unfinished.",
+    "Curved Extend=Yes retains its known large native/SDK extent mismatch. These changes do not qualify the extension policy.",
+    "Sampled surface image membership, closest distances and tight bounds do not certify continuous global Rhino agreement or complete NURBS/topology/area protocol parity. Literal SDK closest-point coordinates retain differences above the model epsilon, diagnosed independently as tangential projection differences; SDK fitted-normal effects and query stopping are not distinguished. All raw protocol differences remain in the audit.",
+    "A smaller internal construction target is an empirical precision reserve, not a global normal-error bound. Conditioning/resource limits and general throughput remain unqualified.",
+    "AddressSanitizer instruments the complete native libraries and C ABI probe; leak detection is disabled. Rust gates run normally. Upstream repo.sh/prog_test, USD, Python-binding and GUI harnesses were not run."
+  ],
+  "source_sha256": {
+    "README.md": "5c9339990bed35f41aaa13d5b59e2827e6a20476e1e822267de8669db06f0243",
+    "docs/native-surface-fillets.md": "0b0279ba36d47c488b82660031beb79f9c658a2679ca4251578f18dc1e3ba879",
+    "docs/native-surface-fillet-picks.md": "9470d677ba52364697f79fdcda77271693292d39ecfe723f33a2b804fa510d98",
+    "crates/viboceros-smlib/native/surface_fillet.cpp": "ed4da3637dfcae32c31a34896eee1c6fa41cea8d479ea514f3d73b06b3465989",
+    "crates/viboceros-smlib/src/native/surface_fillet.rs": "514796748b2f7fd6dce2bcfb7dcc988851b95861d8aa675a542d95a98067ac49",
+    "crates/viboceros-smlib/src/native/surface_fillet/picks.rs": "4d21449dc6ab642bbbb0cb733a4c8f46e39dbc474c0b60adf4ae2ca3700ac683",
+    "crates/viboceros-smlib/tests/surface_fillet_picks.rs": "5084e62647de57d312cd5e61318cc97366b88c220600ac65ec898ee3c080b668",
+    "crates/viboceros-oracle/src/surface_fillet.rs": "6b0150710e04e73f994d94dbdbb067dfb2d3f7277cc1f2763bd4100190524cc8",
+    "crates/viboceros-oracle/src/surface_fillet_images.rs": "f22219c8fdab0a92865cd08db8bd4e8b8e392a54d20d7925db7a136a1b4fc277",
+    "tools/usd_brep/surface_fillet_probe.cpp": "9060b9619c0503868e679af3e1463b0e20ab07a7307655c4858dcf6de386643f",
+    "tools/rhino_oracle/test_surface_fillet_probe.py": "c4526bc5a38a3ac9176848a9d62fdf7a3106a90f646692639379356065a0fb6a",
+    "tools/rhino_oracle/fixtures/surface_fillet_picks.json": "469e2909cf1abd489d8e93b4cdb08d337e4d810e2ab8a2d680f9f0c66db70b42",
+    "tools/rhino_oracle/observations/surface_fillet_picks.json": "e2cd2635d87e28240748476ff71df87bac9d2d90f0830139c53abe15bbfc8b2b",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
+    "third_party/usd-brep/source/SMLib/src/SmOffsetSurface.cpp": "4d41a2903ff0cdffd10f0571385cb1407698a8f06394435323ed5878e8d041c7",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "3bff3046222869148f338d28fee46ab3a45c4040f7a9bf9b541d5f129997185f",
+    "crates/viboceros-smlib/build.rs": "6893ab8f85b5d982c80d834bc217c4083776516983d65a128e7f560701bf473f",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
+    "tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
+    "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73"
+  },
+  "source_git_sha256": {
+    "d59f692febecb247d503e7bb21f9061b931289ae:docs/native-circular-fillet-rails-validation.json": "7fb32748b948ea50c674c1a776808346eb9c6bb6461b37f904e64ad5c4fd3a51"
+  },
+  "artifact_sha256": {
+    "docs/native-surface-fillet-picks-geometry.log.gz": "b10c1122bcfd4b7c55b7127c3094cd7c2b3da8ce8802b67da30d97be39b91dda",
+    "docs/native-surface-fillet-picks-bridge.log.gz": "79e711029ce8e9265ba0b11a7d9860a4bfafa2ae189225d19dc038b5e4be8b98",
+    "docs/native-surface-fillet-picks-command.log.gz": "c352f2f61dce7acd96ee693a7d32bfe0ddbfd67281ca4d6a88fed00877696c10",
+    "docs/native-surface-fillet-picks-fillet-oracle.log.gz": "b6a651583885fd3224c5efb4a71261fd639ac13e241aaffd5c72bf54268c5456",
+    "docs/native-surface-fillet-picks-clippy.log.gz": "de4e40360cb61a5bb2c823a7638677b38d273a7a06e981ec4df7e5791d664db9",
+    "docs/native-surface-fillet-picks-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-oracle-build.log.gz": "f03663a44576aaa0e00ad163cecc60985a89c80c53b8795ba1580426c1d3db61",
+    "docs/native-surface-fillet-picks-python.log.gz": "eaeea4c4972ff6d29267b0ffada8e9a7867fd65643625fbe10e506dc30832a6e",
+    "docs/native-surface-fillet-picks-native-fillet.jsonl.gz": "c2f15a3060609bda58da740210cbda870ee8cf9529a7eff9037f6b988c90137b",
+    "docs/native-surface-fillet-picks-asan-fillet.jsonl.gz": "4f6a626239007f8862e59558acc46d6ecadb26c5c7f1027e3c345451704c63d1",
+    "docs/native-surface-fillet-picks-invariant-stderr.log.gz": "54ff5ba4741cf83f350cbea303ca6a0f5d252a4ea9b90fbbbe949319f7cc3f60",
+    "docs/native-surface-fillet-picks-asan-build-runtime.json.gz": "896bca49d062fd5e84821d406c852d2c33e7d1d8ec5ed201eacba3c6d9596b83",
+    "docs/native-surface-fillet-picks-asan-build.jsonl.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-asan-build.log.gz": "507935e11a1c76826e574609cc173247c8ef5bf2146bd262f20741a7727c7f05",
+    "docs/native-surface-fillet-picks-asan-fillet-runtime.json.gz": "6c20af08b67708bbb77430c1430386bd42ed285c9c2192b48fe038e4c7991189",
+    "docs/native-surface-fillet-picks-asan-fillet.log.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-surface-fillet-picks-asan-flags.json.gz": "8671217f121da8e911e9446dfed100aa9a85abf8d924e8391e6202d5e26b3df9",
+    "docs/native-surface-fillet-picks-asan.py.gz": "218d8a47e5886c8ca2fcdbf6153a287a617e020b2c92cbffbd9a8c832b2b29c0",
+    "docs/native-surface-fillet-picks-audit.log.gz": "f9fa858055c41fa69eab451df07551945ad37cbcb977f0ee739370f5273ea91c",
+    "docs/native-surface-fillet-picks-audit.py.gz": "81d603f5dbf83c22f8fde0760e1d8c4cffa2a4c72eaf3e11658f4f1fbe0d8a03",
+    "docs/native-surface-fillet-picks-baseline-audit.json.gz": "cf2faba6535f7ef275ab0291170c861409dfe54890ce1b599bbd2f4ca5300381",
+    "docs/native-surface-fillet-picks-baseline-binary.json.gz": "e18f68fea954c8503259e8c4c30e82789010226ab92d43454af5a824ffd063db",
+    "docs/native-surface-fillet-picks-baseline-images-initial.jsonl.gz": "07660a3498324b792f214c33d7c24a1dc8f750eb66cf5546aa4af669bf489110",
+    "docs/native-surface-fillet-picks-baseline-images.jsonl.gz": "07660a3498324b792f214c33d7c24a1dc8f750eb66cf5546aa4af669bf489110",
+    "docs/native-surface-fillet-picks-baseline-run.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-baseline-runtime.json.gz": "ab8e629d4159e5d5a4da8fc8c5ab10e93dbd64c14c9d3a41529b0116ac604787",
+    "docs/native-surface-fillet-picks-basis-analysis.json.gz": "896ee6dcdfdb0f8f3891cd99e29e517fe5c0de27392f74347fe459a2d25e9bfa",
+    "docs/native-surface-fillet-picks-basis-analysis.py.gz": "ee18eb68d69e06d9ae50966d4f1ea3fae0385d1e4f92ec98507acf675d762e01",
+    "docs/native-surface-fillet-picks-budget-focused.log.gz": "7099af36658478dd4aff4e608dd557026f2f2604353fab18cdb075200f68580e",
+    "docs/native-surface-fillet-picks-budget-prototype.log.gz": "2cee836b5414e829cfadafdb33d84f974e4597e9a78075d74a52f4d86a1c52b8",
+    "docs/native-surface-fillet-picks-budget-prototype.py.gz": "88cc98b209d2e797b0edb689b41631ce09e81f152d49e36491d16cdcc9fc6bc8",
+    "docs/native-surface-fillet-picks-budget-runner.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-budget-runner.py.gz": "3689dbf8b23e690a1a06957a03d1c6559027dcf0b3822bdd491b9ebb82c4e503",
+    "docs/native-surface-fillet-picks-budget.cpp.gz": "39ed89839fab18e79d9299db1c9d91e4965fd79b9bbf88baaaa101115877883f",
+    "docs/native-surface-fillet-picks-candidate-audit.json.gz": "99a17912684b03b9023a6632af4f95533e6eb29eded9fe018574c0ddadc2c247",
+    "docs/native-surface-fillet-picks-candidate-images.jsonl.gz": "0622693349f06abc6e698a1605c12aae1aed055e25917316e8561c5bf06dd947",
+    "docs/native-surface-fillet-picks-candidate-raw-report.json.gz": "551cf1a55dbfd15638b0a22fed63f5d0d5e8f6650591a9f9850641288414c142",
+    "docs/native-surface-fillet-picks-check-final.log.gz": "daf651d0bc8df05edc577952fadfdf7088a1c628ffec92a19c11b84792ac1f35",
+    "docs/native-surface-fillet-picks-check.log.gz": "40e9a92a4609887ea3edfb08ffee4f51a7e198dcf150b4332d0b4c9d4bd2cffe",
+    "docs/native-surface-fillet-picks-comparison.json.gz": "7881e0500d517a43527ee3f2fc35f3e10f5a6e00cbc5508528c2556547adeafb",
+    "docs/native-surface-fillet-picks-extended-check-build.log.gz": "03a43d747de6d21759443018f9a376aaeac8d6feeebef42f556482e3118e7b25",
+    "docs/native-surface-fillet-picks-extended-check.jsonl.gz": "afc8009e86a419886d7fdac0effcf5a774801d7ad84c609d74b752d0d92b8084",
+    "docs/native-surface-fillet-picks-extended-check.py.gz": "8aec691b20df793ab9a3aa5bd9d03ad24c1a0609f458581210cbfb556653d91e",
+    "docs/native-surface-fillet-picks-extended-check.rs.gz": "b387411308819c7b9e083b0d2a13ff7c0f0f9faa194c86358bcb2d203d34c03d",
+    "docs/native-surface-fillet-picks-focused-closest.log.gz": "42dca0598da4f6d80acf5d983e55d89e9625c5978773d5fa3ce9052bbffdb4f3",
+    "docs/native-surface-fillet-picks-focused-final.log.gz": "a58600870c825af7c953b3e4c3cee163f646a159ca97b0fffefa1f34184d0d02",
+    "docs/native-surface-fillet-picks-focused.log.gz": "b5f53dbb09ddd1816eae124220543d02bd52344080335116fb600ad0fe0781f2",
+    "docs/native-surface-fillet-picks-gates.py.gz": "3f045f5298e6f9bf49842653d0bbdcd4e53ac52fc3ebd18b13d712a0385d63a7",
+    "docs/native-surface-fillet-picks-image-compare-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-image-compare-build.py.gz": "bed6b33250a7bc9d9ad2cf10936e38fc3f1ef6b67ea7f8dda668dce85326b543",
+    "docs/native-surface-fillet-picks-image-compare.rs.gz": "022e2638bcc24a8a8c95a4cb2a5c76d2f71a50e88f5d858bda7f6fd541c8aaa9",
+    "docs/native-surface-fillet-picks-initial-asan-build-runtime.json.gz": "1d2c95580a0ca40ce5d934984bea4d6f60a37f80632872c86624dc3f950cc4e9",
+    "docs/native-surface-fillet-picks-initial-asan-build.jsonl.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-initial-asan-build.log.gz": "7b5c2929ae19453791136320aeb54538ca0653d63edcf6dbd5ffce7f0f54a1eb",
+    "docs/native-surface-fillet-picks-initial-asan-fillet-runtime.json.gz": "9f2b2e8995b13e36b51f871e0c6c5d7434eb941d1e0147234d76b2e8bd0aa1ac",
+    "docs/native-surface-fillet-picks-initial-asan-fillet.jsonl.gz": "c59ccab58c8544a716d25339d43eff6ce645d04cff2669ef1f792edd4227df50",
+    "docs/native-surface-fillet-picks-initial-asan-fillet.log.gz": "a0a043da96e824e608da38d795ff3949f255ffb398f74889b07a26a8510662b0",
+    "docs/native-surface-fillet-picks-initial-bridge.log.gz": "8efd895f7b7bbe3c8adea0c6953566fe09b16af632949cb7073429884d92bc51",
+    "docs/native-surface-fillet-picks-initial-command.log.gz": "7ed0a3708d1e1085ba19b78784fa04fa7f04164a000b50a3059ac5ace84740d6",
+    "docs/native-surface-fillet-picks-initial-gates-termination.json.gz": "78a3a154beae623d18f391a62efd6b68f02f3634cae9c293935922d8d19866e6",
+    "docs/native-surface-fillet-picks-initial-geometry.log.gz": "d6c7a5e30e414a8b48b979268cae130ecad4f7c1a89592fc12dbcaf3ed7454ee",
+    "docs/native-surface-fillet-picks-invariant-probe.cpp.gz": "7ecf359ec4ffcacd76128ef775e14a4e99852fbb0a308ea5cbecc5672ae22917",
+    "docs/native-surface-fillet-picks-invariant-runtime.json.gz": "c0d6f4ee1aac5bdd74f42b24efa66e486b76c858fc76a234808cdba81493ac4d",
+    "docs/native-surface-fillet-picks-invariant-stdout.jsonl.gz": "c59ccab58c8544a716d25339d43eff6ce645d04cff2669ef1f792edd4227df50",
+    "docs/native-surface-fillet-picks-membership-build-final.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-membership-build.log.gz": "144ec1a81e805cdcd86a54aeacedefba39326c27aa1fea55534f8da3287fd712",
+    "docs/native-surface-fillet-picks-membership.jsonl.gz": "90039d22147939b32670cc31a5f1cdb4a19bf5ecb556176c62f6f6a63a3518bb",
+    "docs/native-surface-fillet-picks-membership.py.gz": "34ad67cb123f6cf20e8d8c98fd66ec66fed1bed0d99f283f1baa18485314c76a",
+    "docs/native-surface-fillet-picks-membership.rs.gz": "aae5e1fc5211c84e022967726a8cee6221d6aa4385f7877905534d9422b3568d",
+    "docs/native-surface-fillet-picks-model-query-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-model-query.jsonl.gz": "7bbf35b5d1561a5b19d2b42fefc32aacf223244cbe1664cd6d15394f393423fc",
+    "docs/native-surface-fillet-picks-model-query.py.gz": "5dd876430d4be1ecd4727322e1fe043b1fe52d5163af9bd54c925bac8f48cbc0",
+    "docs/native-surface-fillet-picks-model-query.rs.gz": "82c641302bce6f5aa37fc5b401c3d9f565536da7a3c0309be95a8e7e030a540e",
+    "docs/native-surface-fillet-picks-native-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-native-fillet.log.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-surface-fillet-picks-native-runtime.json.gz": "ed4b97f19cb0a292f6b4266c01f9c691f3f6786942bc2d30d65180816d986bb0",
+    "docs/native-surface-fillet-picks-oracle-focused.log.gz": "10c76dd26ce23d67fc0cb9d7b9e9bbae72a10d34cf04a69363e6706263e76138",
+    "docs/native-surface-fillet-picks-original-six-audit.json.gz": "4723e0efa77c71614b1ac37aa49025d3895b1a42d363494c3b0ee138cd0a075b",
+    "docs/native-surface-fillet-picks-positive-control-audit.json.gz": "9cda6d9b6b57ef8591b0330fa0c1c07603da155a433219a97f92518a901fa2e9",
+    "docs/native-surface-fillet-picks-positive-control-request.json.gz": "23b5b39b08ace68fa20920927a0434278d3af4483347ffa52e7ca7a9bb227c7c",
+    "docs/native-surface-fillet-picks-pre-images-bridge.log.gz": "54617cb9ffb5a2da21ddbae8601649b115bc2b43e7338322baab9963d1bd02e6",
+    "docs/native-surface-fillet-picks-pre-images-fillet-oracle.log.gz": "60b9c6b426e4c87541b8b96aaaa1f41f695e5b57499c1eac5766450515323684",
+    "docs/native-surface-fillet-picks-preserve-provenance.py.gz": "f5febd8d87b0c7fece86c716054a0b6bc89816a4060f208baf536f57baeaf092",
+    "docs/native-surface-fillet-picks-python-focused.log.gz": "eaeea4c4972ff6d29267b0ffada8e9a7867fd65643625fbe10e506dc30832a6e",
+    "docs/native-surface-fillet-picks-query-budget.jsonl.gz": "42eeeae7d669f069baa1af5369e0cc078dc890f7904af1eb3c72abcbdda87f4f",
+    "docs/native-surface-fillet-picks-query-final.log.gz": "08c671ec56182ba45e80214169ad4726de8708eed9edff3dc4a9a6d2b1699350",
+    "docs/native-surface-fillet-picks-query-lto.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-query.jsonl.gz": "394a1f288978f8b22ab604667318c1b8ecb11aab9ecfc728d1c3dbd0fefedbb4",
+    "docs/native-surface-fillet-picks-query.log.gz": "71d969de1f8a8999597f6d24bf893ec5d2b8bb4b8415d16d5d9f540889b7da3d",
+    "docs/native-surface-fillet-picks-query.py.gz": "ebea1bd09944cb1ab013adf2486e0f8a5c71f72f89386f9e64f0c64d0000d26e",
+    "docs/native-surface-fillet-picks-query.rs.gz": "000b39040370e646564aef8297fb8abd14d7ee11746c1850da2b61538e8896ab",
+    "docs/native-surface-fillet-picks-record.py.gz": "98d3a754835e2d3b12a14ba5d1d028b333d1e54fd30b54e0812119aaebe1604e",
+    "docs/native-surface-fillet-picks-resume-gates.py.gz": "cb44a8457357cbf095a4f8f36f027e4b8ebb208263b835da41b594023658c026",
+    "docs/native-surface-fillet-picks-sdk-expected-sides.json.gz": "a5bf1a74c54620687a5bcfaddfdb80e4eaab7417a13647afc42b1dbca6008c43",
+    "docs/native-surface-fillet-picks-sdk-projection-diagnostic.json.gz": "2ef0106ffed025f11e370de32332e8d86aee15fe321e671c31131df820875838",
+    "docs/native-surface-fillet-picks-sdk-request.json.gz": "dba978e357a54bdb25090842f02eeae5599346f49443961b174d94eb07ca123a",
+    "docs/native-surface-fillet-picks-sdk-response.json.gz": "75ff65666863a0ab91283fdaf2ba59ce71c1d51d4fbf248a91a2b84572897247",
+    "docs/native-surface-fillet-picks-sdk-runtime.json.gz": "6fd01375c8a1d1e2d1a88463cfd54d12d26c08507bf06ce769198ead8c529597",
+    "docs/native-surface-fillet-picks-sdk.log.gz": "3df2c42478f93cac9412f8af9e26e6caffe76851666187a30c853e7e0a08f897",
+    "docs/native-surface-fillet-picks-sdk.py.gz": "c9dd280815239748f91c76fb204ea7fb13c3387004fda42cfa0788b6c535e343",
+    "docs/native-surface-fillet-picks-stage.py.gz": "351152c2f6b37d980e506b75017e8a2ee148552be7b4d93fdb2e5277c72815b9",
+    "docs/native-surface-fillet-picks-upper-query-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-upper-query.jsonl.gz": "7bbf35b5d1561a5b19d2b42fefc32aacf223244cbe1664cd6d15394f393423fc",
+    "docs/native-surface-fillet-picks-upper-query.py.gz": "38b408936a45575f4bee8a01b886e930da86cd487d940d4654fb7d5ae3e88f18",
+    "docs/native-surface-fillet-picks-upper-query.rs.gz": "a188d9305993fb6aa891c7515ffc50c72c6c0448c82791a70aaad21fcfe3e11f",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-basis-request.json.gz": "03d09729e0ca87bd64dd0ab3e3981b350468d648de8ed543bab5fa58b7d7509f",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-basis-response.json.gz": "509036274ce930cb39801e53852ed5133279bbd8a7240b5cd8efbc12a3a7c7a7",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-basis-runtime.json.gz": "26fd0116ff36b004de42b86c247b37ac5bf86ff3f3390f44ef4dceb9b11d8628",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-initial.log.gz": "c08b7822575f7dfb11b824668da485dbadba78766d37baa72f722b76d27e67b9",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-loose-request.json.gz": "d96e02e2e913979885ebf7b9a64e56ebba484d9b581fa0d3f23b3961be5c81c8",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-loose-response.json.gz": "dda41a47b778b0e1ca11869aa29935ec343a46021c6cd72fe59a72133fb86d1b",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-loose-runtime.json.gz": "5c864dcfe96a7caeaf08bc3e1b0eddac20e1c97b0ec8950ebdac8a1c3d8a4f01",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-tight-request.json.gz": "e6ee6e272a46d333411281c47b6eafb1aa8a8d7d8010cde18235446c4d36ba62",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-tight-response.json.gz": "d40c05df423e1731cc758674e0dd1c831d823aa71f50349c680b1072a2c6e3f5",
+    "docs/native-surface-fillet-picks-extension-basis-sdk-tight-runtime.json.gz": "66cdb01c774aa5bf5ced0c7388eac4e7fc56ebe61546c070ce4c4ba24f2fac22",
+    "docs/native-surface-fillet-picks-extension-basis-sdk.log.gz": "1c10656069b3b3ee9f672b40370391fc9a56b23c408fc7a8fe531d685336478e",
+    "docs/native-surface-fillet-picks-extension-basis-sdk.py.gz": "a5f839a920f45717d4484bba147e9ad8e01c63ec4f38f2efd77572c9d12c62e7",
+    "docs/native-surface-fillet-picks-g2-prototype.cpp.gz": "aea4b1714210d1a426c8ccb3fead43e49febabf45760736234aa14b2ecfce0fa",
+    "docs/native-surface-fillet-picks-g2-prototype.jsonl.gz": "f7989fbc299359ccb25bbe13aa8da19a396170c160f4f16fafb91defbc589633",
+    "docs/native-surface-fillet-picks-g2-prototype.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillet-picks-g2-prototype.py.gz": "34a825675c0cf495c1664744ee9d02c1e0dbc7776cb5cb87ca3d1606aa231f0e",
+    "docs/native-surface-fillet-picks-continuation-driver.cpp.gz": "9f1602b2d022593f16ed664da3a859512a683da430516f57315bbbfddf71febc"
+  }
+}

@@ -8,7 +8,10 @@ from .surface_fillet_probe import validate
 
 class SurfaceFilletRequestTests(unittest.TestCase):
     def setUp(self):
-        self.operations = json.loads((Path(__file__).parent / 'fixtures/surface_fillet.json').read_text())['operations']
+        fixtures = Path(__file__).parent / 'fixtures'
+        self.operations = []
+        for name in ['surface_fillet.json', 'surface_fillet_picks.json']:
+            self.operations.extend(json.loads((fixtures / name).read_text())['operations'])
 
     def test_saved_sdk_recipes_and_explicit_side_choices_validate(self):
         for op in self.operations:
