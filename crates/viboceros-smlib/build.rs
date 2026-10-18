@@ -29,6 +29,7 @@ fn build_native() {
     println!("cargo:rerun-if-changed=../../tools/usd_brep/point_interpolation_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/exact_split_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/tensor_bezier_probe.cpp");
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/curve_contact_probe.cpp");
     println!("cargo:rerun-if-changed=native/face_creases.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/planarity_zone_probe.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-protected-topology.patch");
@@ -55,6 +56,8 @@ fn build_native() {
         "usd-brep-curve-intersection-distance.cmake",
         "usd-brep-curve-self-intersection-pairs.patch",
         "usd-brep-curve-self-intersection-pairs.cmake",
+        "usd-brep-curve-contact-tolerance.patch",
+        "usd-brep-curve-contact-tolerance.cmake",
         "usd-brep-copy-curve-basis.patch",
         "usd-brep-copy-surface-basis.patch",
         "usd-brep-copy-basis.cmake",

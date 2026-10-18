@@ -53,6 +53,12 @@ configuration definition forces consistent recompilation when enabling this
 class-layout extension. This prevents reuse of cached objects built against the
 original solver layout.
 
+The subsequent [contact tolerance repair](native-curve-contact-tolerance.md)
+retains bounded in-tolerance witnesses after both strict attempts fail. Fitted
+rails can have an irreducible gap below the requested distance tolerance;
+requiring arithmetic coincidence discarded valid contacts. The final check
+evaluates both curves and keeps the caller's existing distance budget.
+
 [Retained qualification](smlib-curve-intersections-comparison.json) contains
 normal and complete AddressSanitizer C ABI jobs, each with 36 analytic cases:
 transverse/tangent/two-root contacts, forward/reversed overlaps and disjoint
@@ -71,8 +77,9 @@ domains and overlap interiors and preserve producer errors.
 
 Command comparisons and saved Rhino replays are retained separately. The saved
 Split records exercise curve cutting; trim-geometry records exercise extraction.
-These are prior SDK observations, not fresh captures. Wine licensing startup
-still blocks fresh instrumentation as described in [isocurve qualification](smlib-isocurves.md).
+Those are prior SDK observations. The subsequent
+[contact tolerance qualification](native-curve-contact-tolerance.md) adds five
+fresh Rhino command captures for in-tolerance skew contacts.
 
 The unchanged whole-domain trim outer-knot difference is retained as a raw failure:
 Viboceros stores `-2`/`4`, while Rhino pads the two omitted full-vector slots with

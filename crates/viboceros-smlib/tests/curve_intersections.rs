@@ -24,6 +24,102 @@ fn curve(xy: &[[f64; 2]], domain: [f64; 2], gauge: f64, plane: usize) -> NurbsCu
     )
     .unwrap()
 }
+
+#[test]
+fn skew_contacts_use_the_requested_distance_after_strict_newton_attempts() {
+    let mut cases = 0;
+    for scale in [1e-40_f64, 1., 1e40] {
+        // Keep the absolute budget dominant over the shared relative scale floor.
+        let tolerance = Tolerance::try_new(1e-8 * scale, 1e-12 * scale.min(1.), 1e-10).unwrap();
+        for axis in 0..3 {
+            let world = |p: [f64; 3]| {
+                let mut result = [32. * scale; 3];
+                for i in 0..3 {
+                    result[(i + axis) % 3] += scale * p[i];
+                }
+                Point3::try_from(result).unwrap()
+            };
+            for factor in [-1.5_f64, -0.5, -0.05, 0., 0.05, 0.5, 1.5] {
+                for gauge in [1., 1e-280, -1e280] {
+                    for chart in 0..2 {
+                        cases += 1;
+                        let domain = if chart == 0 {
+                            [0., 1.]
+                        } else {
+                            [1e12, 1e12 + 2_f64.powi(28)]
+                        };
+                        let line_domain = if chart == 0 {
+                            [-4., 7.]
+                        } else {
+                            [0., 2_f64.powi(-360)]
+                        };
+                        let gap = factor * 1e-8;
+                        let first = NurbsCurve::try_new_rational(
+                            2,
+                            [[0., 0., gap], [1., 2., gap], [2., 0., gap]]
+                                .map(|p| WeightedPoint3::try_new(world(p), gauge).unwrap())
+                                .to_vec(),
+                            [vec![domain[0]; 3], vec![domain[1]; 3]].concat(),
+                        )
+                        .unwrap();
+                        let second = NurbsCurve::try_new_rational(
+                            1,
+                            [[0., 0.5, 0.], [2., 0.5, 0.]]
+                                .map(|p| WeightedPoint3::try_new(world(p), gauge).unwrap())
+                                .to_vec(),
+                            [vec![line_domain[0]; 2], vec![line_domain[1]; 2]].concat(),
+                        )
+                        .unwrap();
+                        let before = (first.clone(), second.clone());
+                        let events = curve_intersection_events(&first, &second, tolerance).unwrap();
+                        assert_eq!(
+                            events.len(),
+                            if factor.abs() < 1. { 2 } else { 0 },
+                            "scale={scale}, axis={axis}, factor={factor}, gauge={gauge}, chart={chart}"
+                        );
+                        for (i, event) in events.iter().enumerate() {
+                            let CurveCurveIntersectionEvent::Point(hit) = event else {
+                                panic!("expected transverse point contact")
+                            };
+                            let expected =
+                                (1. + if i == 0 {
+                                    -0.5_f64.sqrt()
+                                } else {
+                                    0.5_f64.sqrt()
+                                }) * 0.5;
+                            assert!(
+                                ((hit.first_parameter() - domain[0]) / (domain[1] - domain[0])
+                                    - expected)
+                                    .abs()
+                                    < 1e-8
+                            );
+                            assert!(
+                                ((hit.second_parameter() - line_domain[0])
+                                    / (line_domain[1] - line_domain[0])
+                                    - expected)
+                                    .abs()
+                                    < 1e-8
+                            );
+                            let a = first.evaluate(hit.first_parameter()).unwrap();
+                            let b = second.evaluate(hit.second_parameter()).unwrap();
+                            assert!(a.distance_to(b).unwrap() <= tolerance.absolute());
+                            assert!(
+                                hit.point()
+                                    .distance_to(world([2. * expected, 0.5, 0.]))
+                                    .unwrap()
+                                    <= tolerance.absolute()
+                            );
+                        }
+                        assert_eq!((first, second), before);
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(cases, 378);
+    eprintln!("CURVE_CONTACT cases={cases}");
+}
+
 #[test]
 fn native_crossing_tangent_and_overlap_events_match_analytic_points_and_pair_parameters() {
     let tolerance = Tolerance::try_new(1e-9, 1e-12, 1e-10).unwrap();

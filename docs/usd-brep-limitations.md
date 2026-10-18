@@ -335,8 +335,8 @@ issues reported by NVIDIA that have not all been reproduced here.
   56 independent geometry cases; the repair passes all 56, including under
   AddressSanitizer. See [the qualification](native-surface-fillets.md).
   Curved `Extend=Yes` remains incomplete: the retained plane/quarter-cylinder
-  SDK recipe succeeds in Rhino and returns native status 1001 in Viboceros.
-  That failure is retained, rather than counted as a match.
+  SDK recipe succeeds in Rhino; the retained native baseline returns status
+  1001. The subsequent contact repair does not complete curved extension.
 - **Fixed: tensor Bezier decomposition indexed before full-order control blocks.**
   `N_SrfDecomposeToBez` used `ru = p - mlu` and `rv = q - mlv`, which
   become `-1` at multiplicity `degree + 1`. The next-block copies now start
@@ -656,6 +656,15 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
+- **Fixed: strict native solves rejected in-tolerance skew curve contacts.**
+  Fitted curves can have a nonzero gap below the requested contact tolerance.
+  Both strict Newton attempts could stop without arithmetic coincidence, and
+  their bounded witnesses were discarded. A final independent spatial check
+  now accepts the better witness inside both requested intervals and the
+  existing distance budget. The preceding producer misses 60 of 252 direct
+  cases; the repair passes all 252 normally and under AddressSanitizer. Five
+  fresh Rhino `Intersect` recipes cover accepted and rejected gaps. See
+  [the qualification](native-curve-contact-tolerance.md).
 - **Curve intersection equation convergence and parameter merging can miss
   nearby crossings.** The original global solver reports no contacts for
   `C(t)=(2t,4t(1-t),0)` against `Y=1-1e-10` at tolerance `1e-12`. Small normal

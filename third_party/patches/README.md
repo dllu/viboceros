@@ -1,5 +1,9 @@
 # Local usd-brep fixes
 
+`usd-brep-curve-contact-tolerance.patch` evaluates bounded contact witnesses
+after strict Newton attempts fail, accepting only spatial gaps inside the
+caller's existing tolerance. See [the contact qualification](../../docs/native-curve-contact-tolerance.md).
+
 `usd-brep-surface-fillet-domain.patch` keeps minimal surface fillets inside their
 original offset domains. The accompanying header patch exposes the existing
 solver extension factor, retaining its 0.5 default for existing callers. See

@@ -68,9 +68,11 @@ closest points within `1e-8`; maximum observed coordinate difference is about
 `5.1e-9`. Raw NURBS definitions differ between constructors and remain retained.
 SDK area integration differences remain diagnostics, alongside independent
 analytic area checks. These samples do not prove a continuous global Rhino
-error bound. The curved `Extend=Yes` recipe succeeds in Rhino and currently
-fails in the native producer with status 1001. Its complete failure is retained;
-curved extended fillets remain a required follow-up.
+error bound. The curved `Extend=Yes` recipe succeeds in Rhino; the retained
+native baseline fails with status 1001. Its complete failure is retained.
+The subsequent [curve contact repair](native-curve-contact-tolerance.md) fixes
+in-tolerance boundary proposals found during this investigation. Curved extended
+fillets remain a required follow-up.
 
 The native bridge retains its degree-17 and input/resource limits, positive
 conditioned weights, and normalized accuracy floor. Full-order discontinuities,

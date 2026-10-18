@@ -1,0 +1,435 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "a7b8350068e8dd366464f31e207b896f17cf0ab3",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "change": "Retain the better finite, bounded source-curve witness within the caller distance budget after both strict native Newton attempts fail. Keep existing strict targets, tangent retries, iteration budgets and later refinement/filtering.",
+  "completed_runs": [
+    {
+      "command": "cargo test --release -p viboceros-smlib --features native --test curve_intersections -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-focused.log.gz",
+        "uncompressed_sha256": "a78295ba9a47744b577f22694f587062f2ac04d9813642de0db18a3215d6570b"
+      },
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-bridge.log.gz",
+        "uncompressed_sha256": "cfafba288e699b68c3608986ace49afe043df6fc757ece9ea1c8f34c7362760e"
+      },
+      "passed": 430,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-command.log.gz",
+        "uncompressed_sha256": "0d9d5c58f6965d98050ad17939af7a30042bff1d0db973e991b90473eb832db9"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --test curve_contacts_tolerance -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-oracle.log.gz",
+        "uncompressed_sha256": "49624c28103fdcc75a8e376a23d933229f992405bd723b02a252b2e8c42a2ff2"
+      },
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --lib surface_fillet -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-fillet-oracle.log.gz",
+        "uncompressed_sha256": "44efa6e2f4adad0b62c056395483be5be54f2e797622a4ea85130262cc326523"
+      },
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-clippy.log.gz",
+        "uncompressed_sha256": "d6f35e649d974c9d5619eb1247fd63f5a18600309330055313c50383e12ff194"
+      }
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": "cargo build --release -p viboceros-oracle --features native-smlib",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-oracle-build.log.gz",
+        "uncompressed_sha256": "c9ef3b68d69664e1d157e575848e4f6146e26ad39b9aa75897123cb92d2ce4bd"
+      }
+    }
+  ],
+  "execution_environment": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8; all final Cargo invocations sequential.",
+  "direct_probes": {
+    "baseline": {
+      "exit_code": 1,
+      "cases": 252,
+      "passed": 192,
+      "failed": 60,
+      "empty_controls": 72,
+      "point_contact_recipes": 180,
+      "paired_contacts": 150,
+      "all_sources_unchanged": true,
+      "maximum_gap_per_scale": 5.000001692680102e-09,
+      "maximum_position_error_per_scale": 1.0048591735576161e-14,
+      "failed_families": {
+        "0": 60,
+        "1": 0
+      },
+      "raw": {
+        "retained": "docs/native-curve-contact-tolerance-baseline.jsonl.gz",
+        "uncompressed_sha256": "fdf02020684fb70d1c575c67bbd4bacf576570e4782b75c99a518d9641f2f0ed"
+      },
+      "stderr": {
+        "retained": "docs/native-curve-contact-tolerance-baseline.stderr.gz",
+        "uncompressed_sha256": "dac1b1853cc1a32317066fad87e213954b27154d781af33dc95ae0fea97f5df3"
+      },
+      "construction": "Explicitly link the preceding generated SmCurveSelfPairs.cpp ahead of the repaired archive. Keep all prior distance-convergence, tangent, deduplication and self-pair repairs; only the final bounded witness phase is absent. All 60 failures are in-tolerance polynomial contacts, not crashes or API failures."
+    },
+    "normal": {
+      "exit_code": 0,
+      "cases": 252,
+      "passed": 252,
+      "failed": 0,
+      "empty_controls": 72,
+      "point_contact_recipes": 180,
+      "paired_contacts": 270,
+      "all_sources_unchanged": true,
+      "maximum_gap_per_scale": 5.000001692684074e-09,
+      "maximum_position_error_per_scale": 1.0048591735576161e-14,
+      "failed_families": {
+        "0": 0,
+        "1": 0
+      },
+      "raw": {
+        "retained": "docs/native-curve-contact-tolerance-normal.jsonl.gz",
+        "uncompressed_sha256": "865c32cdf83e65b53fa4fc57076c9691b772d86662d0c8d13845e5d34425e888"
+      },
+      "stderr": {
+        "retained": "docs/native-curve-contact-tolerance-normal.stderr.gz",
+        "uncompressed_sha256": "71d74844ebe3309eb79b7bccf2d4da250ad34e0233826a555133ef40bafbfcaf"
+      }
+    },
+    "asan": {
+      "exit_code": 0,
+      "cases": 252,
+      "passed": 252,
+      "failed": 0,
+      "empty_controls": 72,
+      "point_contact_recipes": 180,
+      "paired_contacts": 270,
+      "all_sources_unchanged": true,
+      "maximum_gap_per_scale": 5.000001692684074e-09,
+      "maximum_position_error_per_scale": 1.0048591735576161e-14,
+      "failed_families": {
+        "0": 0,
+        "1": 0
+      },
+      "raw": {
+        "retained": "docs/native-curve-contact-tolerance-asan.jsonl.gz",
+        "uncompressed_sha256": "f25f02c91896b616581e2fec3994ae3e41fe4dd62e531eee4319e7ca7ba696a6"
+      },
+      "stderr": {
+        "retained": "docs/native-curve-contact-tolerance-asan.stderr.gz",
+        "uncompressed_sha256": "71d74844ebe3309eb79b7bccf2d4da250ad34e0233826a555133ef40bafbfcaf"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "flags": {
+        "retained": "docs/native-curve-contact-tolerance-asan-flags.txt.gz",
+        "uncompressed_sha256": "36af7772dc6ed69da86893727d0afecb7771628742dfb2a6dc093352acaf5163"
+      },
+      "scope": "Complete SMLib, SM_API and C ABI archives plus the direct probe are instrumented. Native input handles die before event copying; the event owner dies before independent closed-form evaluations. Rust coordination and command replays run normally. Leak detection is disabled."
+    }
+  },
+  "probe_runner": {
+    "command": "python3 /tmp/viboceros-curve-contact-probes.py",
+    "exit_code": 0,
+    "log": {
+      "retained": "docs/native-curve-contact-tolerance-probes.log.gz",
+      "uncompressed_sha256": "37429588484a8cda760d671817e508e0f538eb6d04f5fdf488af52236006453c"
+    },
+    "script": {
+      "retained": "docs/native-curve-contact-tolerance-probes.py.gz",
+      "uncompressed_sha256": "419240d46c90c81bf9e18a09ef34deec75da81e8ab7067fee72fdb839f3a066e"
+    },
+    "normal_build": {
+      "command": "cmake configure Release; build viboceros_smlib_curve_contact_probe and viboceros_smlib_curve_contact_baseline -j10",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-normal-build.log.gz",
+        "uncompressed_sha256": "e9297e83e75d5b9d130a770d2c55de5bb7b76674930e49b54ab81b1955fa4bf5"
+      }
+    },
+    "asan_build": {
+      "command": "cmake configure Release with VIBOCEROS_SMLIB_ASAN=ON; build viboceros_smlib_curve_contact_probe -j10",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-curve-contact-tolerance-asan-build.log.gz",
+        "uncompressed_sha256": "3e1b6e790857a07b5bafd7105f282774497fbeaf66edbdcbe511f121f4733c95"
+      }
+    },
+    "normal_flags": {
+      "retained": "docs/native-curve-contact-tolerance-normal-flags.txt.gz",
+      "uncompressed_sha256": "ca322535a1bbc8a00e02d04e5d328c10860880e99f2b7bccc6c78e90eef9be98"
+    }
+  },
+  "rust_matrix_cases": 378,
+  "sdk_comparison": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-curve-contact-compare.py",
+    "exit_code": 0,
+    "log": {
+      "retained": "docs/native-curve-contact-tolerance-compare.log.gz",
+      "uncompressed_sha256": "e32e63ebfc095a4262206d53e827605b2978ad9ec258884792bbd24693ff4d9e"
+    },
+    "script": {
+      "retained": "docs/native-curve-contact-tolerance-compare.py.gz",
+      "uncompressed_sha256": "f7e3c86e2ce302c98a9614ebb38e15aadf443f6263ebe4c17485b65e18ec75b0"
+    },
+    "baseline_audit": {
+      "retained": "docs/native-curve-contact-tolerance-baseline-audit.json.gz",
+      "uncompressed_sha256": "15b53000cc4828d86895497e51b7dea3ea2a6e0a4faac0f7c5fb06356a4432dc"
+    },
+    "baseline_report": {
+      "retained": "docs/native-curve-contact-tolerance-baseline-report.json.gz",
+      "uncompressed_sha256": "484b705914b265579a76ba46c2d57551cb30b6a18675b43549bd98d8614a0a8d"
+    },
+    "candidate_audit": {
+      "retained": "docs/native-curve-contact-tolerance-candidate-audit.json.gz",
+      "uncompressed_sha256": "83d1b53cf31eae6a6f6c732a08442bb5646a19f401ea040298189cc7d0e9bc2c"
+    },
+    "candidate_report": {
+      "retained": "docs/native-curve-contact-tolerance-candidate-report.json.gz",
+      "uncompressed_sha256": "4204d55457d2b96263cbdbb10b3a7a559944ac26134518abbcb7af88e8e589f6"
+    },
+    "summary": {
+      "retained": "docs/native-curve-contact-tolerance-comparison.json.gz",
+      "uncompressed_sha256": "f84af4bc3474fe9fda3d8563ccc8d6187d09383f1099908786b5d262b02e026b"
+    },
+    "fresh_sdk_capture": {
+      "retained": "docs/native-curve-contact-tolerance-sdk.log.gz",
+      "uncompressed_sha256": "aded3f74e520ccb1db3aee6fe4c3f58f106cd570397ac0eea36235c499d3bd87"
+    },
+    "capture_script": {
+      "retained": "docs/native-curve-contact-tolerance-sdk.py.gz",
+      "uncompressed_sha256": "04ffe29faf340a6115ece9439a80bea0b119fae6c275af9adb063bfadb367026"
+    },
+    "fillet_followup_audit": {
+      "retained": "docs/native-curve-contact-tolerance-fillet-audit.json.gz",
+      "uncompressed_sha256": "00b08c870283e655704b1d0b4f063ef044a6103952ca9285ffd0dc94523ead61"
+    },
+    "fillet_followup_raw_report": {
+      "retained": "docs/native-curve-contact-tolerance-fillet-raw-report.json.gz",
+      "uncompressed_sha256": "1b95e7c65f05767109a253d9a6005cbfdda8089918212bba29fb86c6ca3c8d70"
+    },
+    "scope": {
+      "command_cases": 5,
+      "baseline_complete_matches": 2,
+      "candidate_complete_matches": 5,
+      "execution_failures": 0,
+      "absolute_epsilon": 1e-08,
+      "relative_epsilon": 1e-12,
+      "normalization": "None; compare all captured protocol values, including output coordinates, attributes and input selection.",
+      "fillet_followup": {
+        "executed": 6,
+        "sampled_successes": 5,
+        "paired_closest_points": 20,
+        "maximum_point_difference": 5.07015229800345e-09,
+        "maximum_bounds_difference": 1.908758778786167e-09,
+        "complete_raw_matches": 0,
+        "complete_raw_mismatches": 5,
+        "failures": [
+          {
+            "status": "failure",
+            "id": "cylinder-True",
+            "error": {
+              "kind": "geometry",
+              "message": "invalid B-rep topology: a p-curve interior leaves its model-space edge"
+            }
+          }
+        ],
+        "scope": "Retain the actual curved extension failure. Successful samples do not prove continuous global Rhino parity; complete NURBS/topology differences remain in the raw report."
+      }
+    }
+  },
+  "initial_test_setup_failure": {
+    "exit_code": 101,
+    "log": {
+      "retained": "docs/native-curve-contact-tolerance-focused-initial.log.gz",
+      "uncompressed_sha256": "03b2baf5a60c487373a34528120b9f9510fe011cfea9361334dcae2dbea979e6"
+    },
+    "cause": "The initial tiny-unit test used a fixed relative tolerance, whose shared max(1, coordinate) floor exceeded the entire tiny model. The test now scales the relative component down so its specified absolute budget dominates. This makes the effective test budget stricter; no product tolerance or resource limit was loosened."
+  },
+  "additional_fillet_sdk_diagnostics": {
+    "request": {
+      "retained": "docs/native-curve-contact-tolerance-extension-sdk-request.json.gz",
+      "uncompressed_sha256": "d09249bab64896469f027d9a8fd0f5eddc4fd3fc7b5c1b29c36bc1c69f7e8d13"
+    },
+    "response": {
+      "retained": "docs/native-curve-contact-tolerance-extension-sdk-response.json.gz",
+      "uncompressed_sha256": "7ce4a94635d62e3aa72c0290d39c3d5531ac196672acadf171c8330e7c4410a6"
+    },
+    "log": {
+      "retained": "docs/native-curve-contact-tolerance-extension-sdk.log.gz",
+      "uncompressed_sha256": "242c409c041256d5af99d9c635d97f409137ca10c58c0ce1d75d92a18e08ede2"
+    },
+    "script": {
+      "retained": "docs/native-curve-contact-tolerance-extension-sdk.py.gz",
+      "uncompressed_sha256": "798b2a8aa38a1422fe30986546c45ba117eaf65c40d1041e64238e70ba3d27b8"
+    },
+    "scope": "Six additional owned public SDK producer captures vary fillet radius and plane/cylinder size. These are diagnostic end-cap references, not passing native extension comparisons. Curved extension and FilletSrf command workflow remain required follow-ups."
+  },
+  "runner_scripts": {
+    "gates.py": {
+      "retained": "docs/native-curve-contact-tolerance-gates.py.gz",
+      "uncompressed_sha256": "7acb82ed128937a9381c92c05a3d6bcc012f080d3c37fee078923c51a40cc2d9"
+    },
+    "record.py": {
+      "retained": "docs/native-curve-contact-tolerance-record.py.gz",
+      "uncompressed_sha256": "cc1e2b52848c0811509bf244189dabba7acbcecbd2adef13126233382542f7e8"
+    },
+    "preserve-provenance.py": {
+      "retained": "docs/native-curve-contact-tolerance-preserve-provenance.py.gz",
+      "uncompressed_sha256": "39451286b5d14d866bac0368a02328ea82c853cefdbf7f65a98e52e7c1630bf7"
+    },
+    "provenance.log": {
+      "retained": "docs/native-curve-contact-tolerance-provenance.log.gz",
+      "uncompressed_sha256": "65e357f57e929945e41d647f7c424bb7d68be8c4f4179bc612fc5a9135fdcdc1"
+    }
+  },
+  "historical_provenance": {
+    "preserved_entries": 6,
+    "records": 1,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "generated_source_digests": {
+    "SmCurveSelfPairs.cpp": "5dffc7a8e907a33487bcd1c81c18e382e7314234cca8f34a3f2cbad653d7f7bd",
+    "SmCurveContacts.cpp": "60a7ffd90248d07c537685d684fa13298aab02a3e6808441ee1d20cd5e61b359"
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/smlib-kernel-fillets/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Begin with exact-distance polynomial/rational contacts and owned native parameter buffers, then normal/baseline/ASan comparison, normalized public Rust recipes, full shared bridge/command callers, fresh complete command values and existing surface-fillet recipes, plus all-feature lint and formatting.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python-binding, OCCT and GUI harnesses. This ARM build executes the actual SMLib/SM_API libraries and the C ABI; unchanged Python helpers are exercised by fresh SDK capture and complete audit comparison rather than rerunning the unrelated full helper suite."
+  },
+  "limitations": [
+    "General intersection completeness and performance remain unqualified. Contacts are accepted within explicit model tolerance; this is not exact algebraic intersection for skew curves.",
+    "The curved extended surface fillet remains an actual native failure, retained in the current follow-up audit. FilletSrf picking, source trimming, joining and document/preview workflow remain in progress.",
+    "ASan executes the direct C ABI matrix; Rust coordination and command replays run normally. Leak detection is disabled."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "71d2d70542fa49635b665ab66d08c77c1f21cced8426f6c2a9d81cb6e467da17",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "45bb101c37c52f0ccb2ff3bf22bab65d37464bb637eb48fc06b7eccc0927c230",
+    "crates/viboceros-smlib/native/bridge.cpp": "71de4241ccfba0ead693555e9c3046212bf84cf97819d05dd4b87552c2ff9118",
+    "crates/viboceros-smlib/native/bridge.h": "bf59d13258ccb604153b56ed7578dda07fdd1a144912ed94fe8ab601e0dc12da",
+    "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
+    "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
+    "crates/viboceros-smlib/tests/curve_intersections.rs": "4e0f45c4572c86db3a4ff4ca84fc9731d8ebb5bc98e3b957f21f78c512f67868",
+    "crates/viboceros-oracle/tests/curve_contacts_tolerance.rs": "d5d908b9d88e05cbb1ab2da29aa890b3f146a614dec87461aa1a9a2caf42bd04",
+    "crates/viboceros-geometry/src/nurbs/intersection_backend.rs": "bf78fd136d04a54c7588e292dd9d43480567fc5eb4cbab2c2da7821835e08075",
+    "crates/viboceros-geometry/src/tolerance.rs": "a5d8ff84321ee02cabcdac0666c9965aa7d1211f893c0321b05cf9a30a420123",
+    "tools/usd_brep/curve_contact_probe.cpp": "6555baaa8260ee1bb6dff77795d5f974e25823f397fe04e9a16c0e3999ac5b49",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
+    "tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
+    "tools/rhino_oracle/structural_sdk.py": "c884e0ef025f1d1aba239a399fc23089c626590b40ab395e940f93ab1a6aed88",
+    "third_party/patches/usd-brep-curve-contact-tolerance.patch": "ec1b4e4a3aad2be56e089e06f019f521e273d9b9d81c02671173756b0656d669",
+    "third_party/patches/usd-brep-curve-contact-tolerance.cmake": "451de8a89718348b6de927f665b5b4eac5c9494a15c6f4669073192b22757e90",
+    "third_party/patches/usd-brep-curve-intersection-distance.patch": "2a34f44ff1880c09725f64637576218a2f379a3118277a7404678ff987609f3d",
+    "third_party/patches/usd-brep-curve-intersection-distance-solver.patch": "7649cf8310195d4923e4cdc3843a50adf1666d93605440342919bc78ce65b234",
+    "third_party/patches/usd-brep-curve-intersection-distance-header.patch": "4e0d6fd7ef1f7d8411fdaa8e6cae721279e73d18d5ded75ee1df3bad6894dcbf",
+    "third_party/patches/usd-brep-curve-intersection-distance.cmake": "fd5b423ead72b8f0eadd8ef2d97844129f82c1f129924b7b9b9819e9960e6e19",
+    "third_party/patches/usd-brep-curve-self-intersection-pairs.patch": "e07136fdff1dc47e8150886d45e1296b279bf674ea0d614925ee51e91f9bd31a",
+    "third_party/patches/usd-brep-curve-self-intersection-pairs.cmake": "cab2cc4ab2f1f075734a40881f285acb90289d52b58e54a99eb77fb702a8f76d",
+    "third_party/usd-brep/source/SMLib/src/SmCurve.cpp": "f0c0a7fb5a6d800556bb206a5f0e80ac2c6f0a65edb101c1629ae2a2b33a6b24",
+    "third_party/usd-brep/source/SMLib/src/SmLocalSolveNd.cpp": "7847004dab165685fc72c6582fadb0ed29a2c550210531b40e25199fccc5f937",
+    "third_party/usd-brep/source/SMLib/inc/SmLocalSolveNd.h": "ecfac6c431ba3a84a2e37c9b7f810e626723d27043e9aa8a55be1e2ff3d3b200"
+  },
+  "artifact_sha256": {
+    "docs/native-curve-contact-tolerance-focused.log.gz": "662086e135129926c367cf019c23854a67ea9dac10b7777a731d338a6cbc9524",
+    "docs/native-curve-contact-tolerance-bridge.log.gz": "db0cb86109d583fb21b60d7200ca1900802c245614554fed163c138fe9b4e96a",
+    "docs/native-curve-contact-tolerance-command.log.gz": "f1f2f1ad0525a03ad4687cc2e98739615e193cd379b8334aef12b2f81f880fb2",
+    "docs/native-curve-contact-tolerance-oracle.log.gz": "2ab111258abf6e3bf2a7c4d6727d7ecad0a2ac8b34f92b2f4ad4c107e23d01f9",
+    "docs/native-curve-contact-tolerance-fillet-oracle.log.gz": "6e45ab1b98f5bf3fa7a804bcc06d680396b70e45f2dcbee45cdf721ddb382854",
+    "docs/native-curve-contact-tolerance-clippy.log.gz": "a0e52ab6f8651e2450921ee81509b0109ddb86d2d1676029ab6f1901ac4c0fe0",
+    "docs/native-curve-contact-tolerance-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-curve-contact-tolerance-oracle-build.log.gz": "fd7049bf2d67f2f74a2b50dd0dfb50b32bd04e22e5a5c7a55f4198bc4a75b7b2",
+    "docs/native-curve-contact-tolerance-baseline.jsonl.gz": "5afeff618f824c3f14c705698a519785121055b60b2370bb86fd0d2bde7c4f02",
+    "docs/native-curve-contact-tolerance-baseline.stderr.gz": "2ae98dea160b30bacf0a6ce020fdc13fe840cc4186a58c4e474c0f3078f792e0",
+    "docs/native-curve-contact-tolerance-normal.jsonl.gz": "966d1fddc2d1da98a4fd6948cce3a1de9493f474ce82b979215a3da1df3d46ef",
+    "docs/native-curve-contact-tolerance-normal.stderr.gz": "ca5c87ed05c0802f6deddbcdd1ece434adcf8c70896b2c56205ab9c80e5da034",
+    "docs/native-curve-contact-tolerance-asan.jsonl.gz": "39c9d32f12645dcef4bb17571dab036cae5841625498f84d99bada9029eb4a35",
+    "docs/native-curve-contact-tolerance-asan.stderr.gz": "ca5c87ed05c0802f6deddbcdd1ece434adcf8c70896b2c56205ab9c80e5da034",
+    "docs/native-curve-contact-tolerance-asan-flags.txt.gz": "a9111b04b33f8a473e8456e0604dcb5891b22e9ed32e7948f8ef95ab7c3c4def",
+    "docs/native-curve-contact-tolerance-probes.log.gz": "1d835b60ae94ddf02f0c2883a5ba18f9d580d33bef6ac358c1a4a3b7cafcad5d",
+    "docs/native-curve-contact-tolerance-probes.py.gz": "85730226c4d58999ea385c796f48ffdec5c6e1a5ee8571d27d526c51df7dc389",
+    "docs/native-curve-contact-tolerance-normal-build.log.gz": "2359c78de3ef2d85ee7e061f5c184d9025e7a2c7b95d31d98daf21c409d0c17b",
+    "docs/native-curve-contact-tolerance-asan-build.log.gz": "811f238252154693446fb8f79c5058e32379980dec606072a34e2c02ad9323a1",
+    "docs/native-curve-contact-tolerance-normal-flags.txt.gz": "9e6bf10e58b6c8398a8d23c177f83320020f197d8c48f506401eff36e60565a1",
+    "docs/native-curve-contact-tolerance-compare.log.gz": "f10c2fbf504ae52d632fe6bcef02c4ebeae6f8dd4a8d4f88e6bae3fdd94bdf12",
+    "docs/native-curve-contact-tolerance-compare.py.gz": "1fdbf0e6300c79976fdb6dae307cfcda3b3ade9a72a80da28ce7e5f379c9bc0f",
+    "docs/native-curve-contact-tolerance-baseline-audit.json.gz": "feab7b5620a370a7f48fc5efc3e094629b119cd14787713034c05ce315dc4a4b",
+    "docs/native-curve-contact-tolerance-baseline-report.json.gz": "b03846dbf64a1b0baee43de5a4138ffba48feb8fd1f3263b9507d3c79c91711e",
+    "docs/native-curve-contact-tolerance-candidate-audit.json.gz": "8a160b7764a0fd31b7c25cf99a80b5fbb257ed7361bbb566d6e3a679bce47599",
+    "docs/native-curve-contact-tolerance-candidate-report.json.gz": "d8e95069146b404df35e02f30060d1dc1611a0b9e0aa08d5299521b7382a0218",
+    "docs/native-curve-contact-tolerance-comparison.json.gz": "a04c0fd7c4d4725b8d5861ff7607937bc846c338ad44ede508c43eb948223f6b",
+    "docs/native-curve-contact-tolerance-sdk.log.gz": "c291b81328299419cdbd798d1e975800b38ab48b85a6c6a2c647955628d709f8",
+    "docs/native-curve-contact-tolerance-sdk.py.gz": "4594e15e308f9ce9bf1c80d3b3c56263532fd3a6b6a57c1d2989155edc1b4627",
+    "docs/native-curve-contact-tolerance-fillet-audit.json.gz": "0fc425a1dbfd567a2e30eeb1a1c256d690227a33feef226155da1362d8a4ade4",
+    "docs/native-curve-contact-tolerance-fillet-raw-report.json.gz": "8ff9fc3b98befaf92e3e17d98c4abc060bc3d5e6c64ce6af495c57db9f9826bd",
+    "docs/native-curve-contact-tolerance-focused-initial.log.gz": "f1e9d65c7719cf1ace80208b709184917889d32432d1cb5c33587f3c2d4fabe5",
+    "docs/native-curve-contact-tolerance-extension-sdk-request.json.gz": "bb5a6071c09a08d2ea96ef6006980734eb12ba5fb0fac5a04a02be9e2937437f",
+    "docs/native-curve-contact-tolerance-extension-sdk-response.json.gz": "d7787447e23798db91e1112c0db28ad4c7df1057eab0e7bd293cfb163d9ebc3f",
+    "docs/native-curve-contact-tolerance-extension-sdk.log.gz": "441981175b5dc906d9c56f832c770bd1b751fbaf5e434254ec1edbf381db8b84",
+    "docs/native-curve-contact-tolerance-extension-sdk.py.gz": "0dbb7ee9e3968913813c2237b686c7860370c7c8910c493b6536fad18816ff20",
+    "README.md": "0062ce15d87594f4c0aa00077e19ca39a23f598ae0db4c5d67b8f3cf163e8857",
+    "docs/smlib-curve-intersections.md": "10792c31670abd43c28eaa5991bc4841403484d5fd592c167a757de0fb215fba",
+    "docs/usd-brep-limitations.md": "8df3d14512312a4aabcff8181877082f4f492772b8ac1220b3f8d943c3e86246",
+    "docs/native-surface-fillets.md": "59bd1f23a782ec536cd4c8a3b53b712914d94f3e48a25f7c1746e92544bfd0c0",
+    "docs/native-curve-contact-tolerance.md": "f755c70dec505d22356c1b96f9de633b5db335ce85e04525ba55773d5140efc2",
+    "third_party/patches/README.md": "99333c2c6ef35f2e8fbd3426f065d4d0e09fc0c1aaff71094f1683db486b3c8f",
+    "tools/rhino_oracle/fixtures/curve_contacts_tolerance.json": "c79961765c85f953c91d85a625af69f8f6ade6d9bfe86f130f3edafa8f7bbd7f",
+    "tools/rhino_oracle/observations/curve_contacts_tolerance.json": "d52bce3c92f8e807d84c756514b036309789af46f5397df34858918f1935cb4f",
+    "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
+    "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
+    "docs/native-surface-fillets-validation.json": "c4aa5f1bdf3f2830c8fae8a5c050afc556a2897ba961ed30bc4ccf5ab68f308c",
+    "docs/native-curve-contact-tolerance-gates.py.gz": "d0a7fa911de9d3a0d4efe8fcad5238f8f937f379933e37c0d5772fda3dc60106",
+    "docs/native-curve-contact-tolerance-record.py.gz": "06499bdf7a5b7b7bd2bd418ec3456416e789e9faa24bc831cb318cb382ce3846",
+    "docs/native-curve-contact-tolerance-preserve-provenance.py.gz": "2aebcd3994b39cf32cd887b26f477c4b80347665c3ffcaad14746dd4ce5d9ce2",
+    "docs/native-curve-contact-tolerance-provenance.log.gz": "4af1e11dbd9fab21d09e229091127b17a6c63459174e92820403793cff5fddc0"
+  },
+  "baseline_git_sha256": {
+    "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/build.rs": "df2d2e1f273ebd01fd60f6c7978768cd21857378c9547c02057d078a9374cd7e",
+    "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/native/CMakeLists.txt": "f15a0f9b3e6affbbea3ace9040d0ee9d53b611362f9f0f6bb0650fbe1d3edf0c",
+    "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/tests/curve_intersections.rs": "74692a5072318f233548660abe689c3c1a4118e197326a9fde0287649e469c74"
+  }
+}

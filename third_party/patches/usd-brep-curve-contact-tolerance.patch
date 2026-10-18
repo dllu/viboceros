@@ -1,0 +1,59 @@
+--- a/SmCurveSelfPairs.cpp
++++ b/SmCurveContacts.cpp
+@@ -7,6 +7,7 @@
+ **********************************************************************/
+ 
+ #include "StdAfx.h"
++#include <cmath>
+ #include <SmCurve.h>
+ #include <SmSurface.h>
+ #include <SmCurveCache.h>
+@@ -17016,15 +17017,46 @@
+                   sSolutionVector));
+ 
+   // A separate tangent-objective attempt avoids changing objectives while
+-  // Newton is resolving two nearly tangent crossings. Both attempts require
+-  // physical coincidence; a nearby nonzero-distance extremum is not a hit.
++  // Newton is resolving two nearly tangent crossings. Both attempts aim for
++  // tight physical coincidence before the final model-space contact test.
+   if(!bFoundSolution) {
++    const SmBoolean bHaveFirst = sSolutionVector.GetSize() == 2;
++    const double dFirst[2] = {bHaveFirst ? sSolutionVector[0] : 0.0,
++                             bHaveFirst ? sSolutionVector[1] : 0.0};
+     SmCCIntersectENFO tangentEval(*this,crOtherCurve,dDistTol,TRUE);
+     SmLocalSolveNd tangentSolve(tangentEval,&sIntervals,&sPeriodicities);
+     tangentSolve.RequireSpatialConvergence();
+     tangentSolve.SetDesiredAccuracy(SM_EFF_ZERO/10.0);
+     tangentSolve.SetBoundaryHandler(SM_BH_HITS_ALL_BOUNDARIES);
+     SER(tangentSolve.SolveIt(sGuessT,dDistTol*2.0,bFoundSolution,sSolutionVector));
++    if(!bFoundSolution) {
++      // Fitted rails can have a nonzero gap below the requested contact
++      // tolerance. Keep the strict Newton targets, then accept the better
++      // bounded witness from either stalled attempt within that same budget.
++      double dBestGap = dDistTol, dBest[2] = {0.0, 0.0};
++      for(int candidate = 0; candidate < 2; ++candidate) {
++        if(candidate == 0 ? !bHaveFirst : sSolutionVector.GetSize() != 2) continue;
++        const double u = candidate == 0 ? dFirst[0] : sSolutionVector[0];
++        const double v = candidate == 0 ? dFirst[1] : sSolutionVector[1];
++        if(!std::isfinite(u) || !std::isfinite(v)
++            || u < crInterval.GetMin() || u > crInterval.GetMax()
++            || v < crOtherInterval.GetMin() || v > crOtherInterval.GetMax()) continue;
++        SmPoint3d a, b;
++        SER(EvaluatePoint(u, a));
++        SER(crOtherCurve.EvaluatePoint(v, b));
++        const double gap = a.DistanceBetween(b);
++        if(gap < dBestGap) {
++          dBestGap = gap;
++          dBest[0] = u; dBest[1] = v;
++          bFoundSolution = TRUE;
++        }
++      }
++      if(bFoundSolution) {
++        sSolutionVector.ReSet();
++        sSolutionVector.Add(dBest[0]);
++        sSolutionVector.Add(dBest[1]);
++      }
++    }
+   }
+ 
+   // when a solution was found

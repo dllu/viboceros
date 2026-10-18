@@ -1,0 +1,361 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_intersect_command",
+      "id": "skew-0.0",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1,
+                2,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "skew-0.05",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                5e-10
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1,
+                2,
+                5e-10
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0,
+                5e-10
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "skew-0.5",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                5e-09
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1,
+                2,
+                5e-09
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0,
+                5e-09
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "skew--0.5",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                -5e-09
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1,
+                2,
+                -5e-09
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0,
+                -5e-09
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "skew-1.5",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1.5000000000000002e-08
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1,
+                2,
+                1.5000000000000002e-08
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0,
+                1.5000000000000002e-08
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2,
+                0.5,
+                0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    }
+  ]
+}
