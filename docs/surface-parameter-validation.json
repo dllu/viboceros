@@ -1,0 +1,311 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "4106aeb2aaf4ffdeaf4573a1373aef7895647011",
+  "problem": "UV derivative lengths were admitted against model distance. Splop differential speed products and raw normal cross products could overflow or underflow after geometry-preserving UV rescaling.",
+  "implementation": [
+    "Use independently normalized derivative directions with the existing angular admission for NurbsSurface::frame_at.",
+    "Invert the splop triangular differential using unit-angle ratios and Vector3::parameter_step, avoiding products of derivative speeds.",
+    "Use typed frames for mapped normals and constrained-orientation differentials; normalize explicit constrained normals independently of magnitude.",
+    "Parse ArraySrf Up/Normal into UnitVector3 and reuse validated direction frames for OrientOnSrf targets. Normalize its source normal while retaining the existing raw numerical source-reference/projection policy."
+  ],
+  "matrix": {
+    "model_scale_exponents": [
+      -20,
+      0,
+      40,
+      80
+    ],
+    "absolute_tolerance": "1e-7 times scale",
+    "relative_tolerance": 1e-12,
+    "angular_tolerance": 1e-09,
+    "pose": "origin [5,-7,11] times scale; normal [2,3,6]",
+    "UV_domain_width_exponent_pairs": [
+      [
+        0,
+        0
+      ],
+      [
+        -200,
+        -200
+      ],
+      [
+        200,
+        200
+      ],
+      [
+        -600,
+        -600
+      ],
+      [
+        600,
+        600
+      ],
+      [
+        -600,
+        600
+      ],
+      [
+        600,
+        -600
+      ]
+    ],
+    "analytic_surface": "(2*u+v, 3*v, w*u*v), w in [0,1], transformed by model pose",
+    "direction_magnitude_exponents": [
+      -200,
+      0,
+      200
+    ]
+  },
+  "baseline": {
+    "runs": [
+      {
+        "command": "cargo test -p viboceros-geometry --test surface_parameter_frames -- --nocapture",
+        "exit_code": 101,
+        "retained_log": "docs/surface-parameters-geometry-baseline.log.gz",
+        "uncompressed_log_sha256": "071143cb772b66503c6d8aa8af843d58db9a19797d3f8dfc40576c5ee38d117b",
+        "passed": 0,
+        "failed": 2,
+        "ignored": 0
+      },
+      {
+        "command": "cargo test -p viboceros-command --test surface_parameter_placement -- --nocapture",
+        "exit_code": 101,
+        "retained_log": "docs/surface-parameters-command-baseline.log.gz",
+        "uncompressed_log_sha256": "ef7fbabbf1df76e432a6c05fed16589cd2da6e6efa17b0803d36032fa405828a",
+        "passed": 0,
+        "failed": 2,
+        "ignored": 0
+      }
+    ],
+    "test_sources": [
+      {
+        "path": "crates/viboceros-geometry/tests/surface_parameter_frames.rs",
+        "retained": "docs/surface-parameters-baseline-geometry.rs.gz",
+        "uncompressed_sha256": "ceba4958b0a357a2fd597fd2eb99b57aacd4bb78df66952d79e5d3db9ee679e5"
+      },
+      {
+        "path": "crates/viboceros-command/tests/surface_parameter_placement.rs",
+        "retained": "docs/surface-parameters-baseline-command.rs.gz",
+        "uncompressed_sha256": "8880f338a107cd4e1c03654af29ad47228f2c0900809c561f8877f3c89526a04"
+      }
+    ],
+    "replay": "Use an isolated checkout of the baseline revision; decompress each retained test source to its recorded path and execute the baseline commands. The retained files contain the original four matrices before adding further admission checks."
+  },
+  "matrices": [
+    {
+      "name": "frames",
+      "cases": 672,
+      "baseline_successful": 288,
+      "baseline_failed": 384,
+      "candidate_failed": 0
+    },
+    {
+      "name": "splop",
+      "cases": 168,
+      "baseline_successful": 48,
+      "baseline_failed": 120,
+      "baseline_error_entries": 168,
+      "candidate_failed": 0
+    },
+    {
+      "name": "surface arrays",
+      "cases": 336,
+      "baseline_successful": 72,
+      "baseline_failed": 264,
+      "candidate_failed": 0
+    },
+    {
+      "name": "surface orientation",
+      "cases": 672,
+      "baseline_successful": 168,
+      "baseline_failed": 504,
+      "candidate_failed": 0
+    }
+  ],
+  "baseline_count_policy": "Kernel logs distinguish failed cases from individual failed sample entries. Baseline splop has 120 failing recipes with 168 error entries; all other matrices have one error entry per failed case.",
+  "additional_cases": {
+    "angular_or_zero_derivative": 174,
+    "constrained_normals": 168,
+    "command_admission": 24,
+    "total_focused_cases": 2214
+  },
+  "assertions": {
+    "frame_normalized_origin_error_limit": 2e-12,
+    "corresponding_axis_dot_minimum": 0.999999999998,
+    "orthogonality_dot_absolute_limit": 2e-14,
+    "handedness_dot_minimum": 0.99999999999998,
+    "splop_normalized_point_error_limit": 2e-11,
+    "array_normalized_point_error_limit": 2e-11,
+    "orientation_normalized_point_error_limit": 2e-06,
+    "direction_magnitude_variation": "exactly equal command geometry",
+    "undo_redo": "exact object geometry and identity",
+    "source_preservation": true,
+    "invalid_commands": "objects, selected identities and pre-existing redo history retained",
+    "source_reference_policy": "coincident references and exactly parallel source normals rejected; a nonzero preferred normal projection 2^-80 below document angular tolerance remains accepted",
+    "angular_policy": {
+      "absolute_tolerances": [
+        1e-24,
+        1e-07,
+        0.1,
+        1,
+        1e+17,
+        1e+100
+      ],
+      "threshold": 1e-09,
+      "separations": [
+        0,
+        5e-10,
+        2e-09,
+        1e-06
+      ],
+      "acceptance": [
+        false,
+        false,
+        true,
+        true
+      ]
+    }
+  },
+  "completed_runs": [
+    {
+      "command": "cargo test -p viboceros-geometry --test surface_parameter_frames -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/surface-parameters-geometry-focused.log.gz",
+      "uncompressed_log_sha256": "a88b630e26197b09f654737a1abd6c824ad822da0a99706eb04ddd3a72593b75",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test -p viboceros-command --test surface_parameter_placement -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/surface-parameters-command-focused.log.gz",
+      "uncompressed_log_sha256": "cb6c06c106fa6fd324933e7833aac4f5bd07f1c3ea5679ada0c8f7ebb3554664",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-geometry -p viboceros-command --features viboceros-command/native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/surface-parameters-full-release.log.gz",
+      "uncompressed_log_sha256": "c7a9863c4f8eda988d1dc06515ca1d81fea47637fc1cba1df93f03d9da7448ee",
+      "passed": 3984,
+      "failed": 0,
+      "ignored": 11
+    },
+    {
+      "command": "cargo test --release --bin viboceros -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/surface-parameters-app-release.log.gz",
+      "uncompressed_log_sha256": "c778e4f06408ba26d61f9a62c2baa27e4ea60ae6eb48a1ca33eea36997199383",
+      "passed": 1375,
+      "failed": 0,
+      "ignored": 19
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained_log": "docs/surface-parameters-clippy.log.gz",
+      "uncompressed_log_sha256": "648d393524245f48409363dbc5095dbbd553c70b86626eb066dcde02c3867275"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained_log": "docs/surface-parameters-fmt.log.gz",
+      "uncompressed_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_release_sections": [
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_command-dc4b87f7d01e2a4e)",
+      "summary": "test result: ok. 1579 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 128.40s"
+    },
+    {
+      "header": "Running tests/direction_adapters.rs (target/release/deps/direction_adapters-874e97ceb405d0e2)",
+      "summary": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s"
+    },
+    {
+      "header": "Running tests/surface_parameter_placement.rs (target/release/deps/surface_parameter_placement-ba025f0f8f7af331)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-a159ed14312ccb02)",
+      "summary": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+    },
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_geometry-8704133541059e5f)",
+      "summary": "test result: ok. 2380 passed; 0 failed; 8 ignored; 0 measured; 0 filtered out; finished in 20.90s"
+    },
+    {
+      "header": "Running tests/direction_frames.rs (target/release/deps/direction_frames-138a83af0bbf186d)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/planar_boolean_scale.rs (target/release/deps/planar_boolean_scale-3ea37b1a5b00911b)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s"
+    },
+    {
+      "header": "Running tests/surface_parameter_frames.rs (target/release/deps/surface_parameter_frames-d1e7e0e45209a384)",
+      "summary": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-85517c4bb1d9ab3f)",
+      "summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s"
+    },
+    {
+      "header": "Doc-tests viboceros_command",
+      "summary": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Doc-tests viboceros_geometry",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 20,
+    "records": 18,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "log_policy": "Gzip archives retain complete original log bytes; process statuses are observed exit codes. Final full suites qualify the recorded source. No licensed Rhino process was launched for these analytic matrices.",
+  "limitations": [
+    "No new licensed Rhino capture or performance measurement; existing retained native observations remain in the full suites.",
+    "The focused surfaces are analytic bilinear patches and affine planes. Existing native tests cover additional surfaces; these matrices do not qualify arbitrary surfaces or singularities.",
+    "Arbitrary floating-point model/parameter scales, all morph consumers, general topology, and viewport parity remain unproven. Other derivative consumers, including surface pullback, remain outside this correction."
+  ],
+  "source_sha256": {
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
+    "crates/viboceros-geometry/src/morph.rs": "31780be5c5f03f316d070e839b731bda82b80cbf3b69a101e70e0c8acb773641",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "crates/viboceros-geometry/tests/surface_parameter_frames.rs": "7974797de9df1e66843b22a01eb2ec9e03213caa543213dcb0a60d188c231b1f",
+    "crates/viboceros-command/src/lib.rs": "bbfdac649c90d8cccd4be6262e8bcaf3da4e53d5c7cd930b974a58f657aa77c4",
+    "crates/viboceros-command/src/orient_surface.rs": "19bfb6617c80f54d7272eb66fffc10cd2b6aff0a8d1c7caf70facf7cc5da0a36",
+    "crates/viboceros-command/tests/surface_parameter_placement.rs": "e77b0acc844ac6f53211d65f7b3f751426b93efb8898ba32fa18b6cf24ab10b4",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "README.md": "f48bc69b8f61c5bdb8f9b7acc4bc58b65d98beab4609e7ec2e9ebf480d739646",
+    "docs/surface-parameter-frames.md": "9a0f316d214852604e05572d831f376356c0a86ead22338fc08d7579a6540ffd",
+    "docs/direction-adapters.md": "7a708f65212fd89f2f0cd1de25c69e0befb79e31d4f692879b3702000edaecff",
+    "docs/surface-parameters-baseline-geometry.rs.gz": "d9319ab5d4424cc930f6a31016f80df1a1bb06f7f3e7892aa7dae5e1ab8abe73",
+    "docs/surface-parameters-baseline-command.rs.gz": "3fb9dab64176f26d99130f98e48f88c807d5de03f78f4641d11d35abb518128d",
+    "docs/surface-parameters-geometry-baseline.log.gz": "ce3de0896afdfefa71d8ab43f49e10bff04918dc4ef5f9629ab5b0cea33ed624",
+    "docs/surface-parameters-command-baseline.log.gz": "08ec14fb23b8ba84cf217430b1a12169280cfd4043054496ad866ea221426044",
+    "docs/surface-parameters-geometry-focused.log.gz": "f894c016ee8c6cf72d0e773ca768382caff641ac7ec9cad0965ea2863c1cd600",
+    "docs/surface-parameters-command-focused.log.gz": "5ec9f53e8e7ff0a4e6b947f1981ac3e70d42eafefbcda064614ff6a80f64cdf7",
+    "docs/surface-parameters-full-release.log.gz": "ec0225b9c4fd498f5b72e520c3190a6e805c53cc4a9811d045f09d3fa5eb95c8",
+    "docs/surface-parameters-app-release.log.gz": "11fd2f81676b97de36e9d790ef5601a1a5791f8ec9abae74675d694b3da4cb58",
+    "docs/surface-parameters-clippy.log.gz": "aaa0df98dfd1ef5cfc1d8ed692f73e23c8776fd57e5d304bfad3849a44437a94",
+    "docs/surface-parameters-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+  },
+  "baseline_git_sha256": {
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/morph.rs": "83af5748a6b4846816607bbbee55b32851b4dbb9851c078801931cd10e97cd3e",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-command/src/lib.rs": "194a637d2acca12a50947fabc259b09978d0d9c2a8f7db4c0c15edcbcde586d7",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-command/src/orient_surface.rs": "429defbef089762a2f4a538568329b23b12e0b6c042955992f77428522c9a664",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

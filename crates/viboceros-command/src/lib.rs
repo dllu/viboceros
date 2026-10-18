@@ -15068,7 +15068,7 @@ impl Command for ArraySurfaceCommand {
                 maximum: MAX_ARRAY_OBJECTS,
             })?;
         let tolerance = document.tolerance();
-        let source_frame = Frame3::try_from_normal(options.base_point, options.up, tolerance)?;
+        let source_frame = Frame3::try_from_unit_normal(options.base_point, options.up)?;
         let (u_parameters, v_parameters) =
             surface_array_parameters(&surface, u_count, v_count, options.mode, tolerance)?;
         let mut transforms = Vec::new();
@@ -15118,7 +15118,7 @@ impl SurfaceArrayMode {
 #[derive(Debug, PartialEq)]
 struct SurfaceArrayOptions {
     base_point: Point3,
-    up: Vector3,
+    up: UnitVector3,
     mode: SurfaceArrayMode,
     surface_name: Option<String>,
 }
@@ -15133,7 +15133,7 @@ fn parse_surface_array_count(value: &str) -> Result<usize, CommandError> {
 
 fn parse_surface_array_options(arguments: &[&str]) -> Result<SurfaceArrayOptions, CommandError> {
     let mut base_point = None;
-    let mut up = Vector3::try_new(0.0, 0.0, 1.0).expect("the world z direction is finite");
+    let mut up = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
     let mut mode = SurfaceArrayMode::Uv;
     let mut surface_name = None;
     let mut up_seen = false;
@@ -15146,7 +15146,8 @@ fn parse_surface_array_options(arguments: &[&str]) -> Result<SurfaceArrayOptions
         } else if (option_name_eq(name, "Up") || option_name_eq(name, "Normal")) && !up_seen {
             up = Vector3::try_from(
                 parse_single_option_point(value, ARRAY_SURFACE_USAGE)?.to_array(),
-            )?;
+            )?
+            .normalized_nonzero()?;
             up_seen = true;
         } else if option_name_eq(name, "Mode") && !mode_seen {
             let value = value.trim_start_matches(['_', '-']);

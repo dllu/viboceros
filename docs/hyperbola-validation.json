@@ -381,7 +381,6 @@
     "crates/viboceros-oracle/src/hyperbola.rs": "cfcdd9927b272261dd84d52c563625ed95236fff0aa09412394509d70b493eb4",
     "docs/commands/hyperbola.md": "26ca5230daf8974edecc2463bde3c010d2a7f37def7acd150338254a9d99d2a5",
     "docs/curvature-sampling-validation.json": "7f0fb20c4380e2abbe5e01d430620700b24d0d4d6a1fd14908a463114dd83b36",
-    "docs/network-source-reference-audit-validation.json": "1633812bd433ef125f379912cb488fbd99d77e317a7186bfcef57a2ab15214fb",
     "docs/projection-loose-qualification.json": "4a4d6b8060d5cbd056ddbada89921ecb16146e8ac165121fd240408d172dd660",
     "src/app/hyperbola.rs": "fadb185f906dbdb87a515536a693dbda38dca0332f2906dc24ef25fb0d16300b",
     "src/app/tests/hyperbola.rs": "b35a7e3c1b4f3c6232f20b26236115e1884226133b62d31f19d14fbd1ab81787",
@@ -429,6 +428,7 @@
     "650fa1c854c05003a45311fc531c421cb45f680d:docs/original-network-curve-admission-validation.json": "071992c0aa417adfdfe4958b9f0503ee10d83a1ea8499b0e99b218735546410f",
     "650fa1c854c05003a45311fc531c421cb45f680d:docs/prepared-curve-length-validation.json": "eb3805a9eaeb8f81d330abc59ac106d97429a93bc7979c80f8665b4e57ce6d77",
     "650fa1c854c05003a45311fc531c421cb45f680d:docs/prepared-gordon-families-validation.json": "0e69b0949d4f4c712d88c0ae6741388660c5e24079611bdc515194b5fdb0b8a9",
-    "650fa1c854c05003a45311fc531c421cb45f680d:docs/shared-gordon-curve-fit-validation.json": "1631008547774fec9fb46a7bd328272fad73b4b8a1e3fd398cfdfefa6e6402ce"
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/shared-gordon-curve-fit-validation.json": "1631008547774fec9fb46a7bd328272fad73b4b8a1e3fd398cfdfefa6e6402ce",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:docs/network-source-reference-audit-validation.json": "1633812bd433ef125f379912cb488fbd99d77e317a7186bfcef57a2ab15214fb"
   }
 }

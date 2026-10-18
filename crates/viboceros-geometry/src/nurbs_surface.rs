@@ -3334,7 +3334,8 @@ impl NurbsSurface {
 
     /// Evaluates the right-handed surface frame used by Rhino: x follows the
     /// positive U derivative, y is the component of the positive V derivative
-    /// perpendicular to x, and z is the surface normal.
+    /// perpendicular to x, and z is the surface normal. Derivative magnitudes
+    /// depend on UV units; only angular admission applies to their directions.
     pub fn frame_at(
         &self,
         u: Real,
@@ -3342,7 +3343,12 @@ impl NurbsSurface {
         tolerance: Tolerance,
     ) -> Result<Frame3, GeometryError> {
         let (point, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
-        Frame3::try_from_directions(point, derivative_u, derivative_v, tolerance)
+        Frame3::try_from_unit_directions(
+            point,
+            derivative_u.normalized_nonzero()?,
+            derivative_v.normalized_nonzero()?,
+            tolerance,
+        )
     }
 
     /// Divides the U-varying isocurve at `v` into equal arc-length segments

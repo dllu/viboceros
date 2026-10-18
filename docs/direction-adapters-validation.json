@@ -215,7 +215,6 @@
     "crates/viboceros-geometry/src/brep.rs": "55297e3b4843abfff0ae532f1b4ea40dfac1c52f03222bd45cd0aec408ac6aba",
     "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
     "crates/viboceros-geometry/tests/direction_frames.rs": "51b0b0a34664342c63ea9cf1cf37c3d62f92b5196a1ac71c4ff58692f434c630",
-    "crates/viboceros-command/src/lib.rs": "194a637d2acca12a50947fabc259b09978d0d9c2a8f7db4c0c15edcbcde586d7",
     "crates/viboceros-command/src/construction_plane.rs": "af26cf1f1e9cad0a2b1428826b6237f22a5dbc7458dfa6ae162a1d1c617052c2",
     "crates/viboceros-command/src/contour/brep.rs": "85e8f4877fa00aa73fb92b6a40211cf4dc06e6eb414f10f8088de56773363794",
     "crates/viboceros-command/src/orient_curve.rs": "698e1999d424f88b05245a943a3478e98f7fcab14f1e39b4ab71a465b9717e8c",
@@ -225,8 +224,6 @@
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
-    "README.md": "43e00d00ca513765c2c0844728dcf5a932d63c774301404f0a5cf4eb384f74b6",
-    "docs/direction-adapters.md": "d5d8c97965b1a0e199b3c806c3e4a18b8d9ab09205e50eea55f02506e3d270eb",
     "docs/direction-adapters-baseline-test.rs.gz": "3abf96b988f93d20c696984a34be3991b9b7c570482bba1c17b716a9917ba6a9",
     "docs/direction-adapters-baseline.log.gz": "5f4c12941054ddd55e3ab6df9b4193e4552fda9a3d2efe708039a9eb477fbbcd",
     "docs/direction-adapters-focused.log.gz": "34b50ac7e78aabaed5a447667f75bb70b0a45f6e3f1b7f420c2277e9dc33d08d",
@@ -247,5 +244,12 @@
     "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/orient_points.rs": "ec422490eb48e0e7c72724be015167431145143e2895d413b666b251c5caa7a4",
     "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/spiral_input.rs": "eb38a303403cbfa9d23e24ffbedc40bd2956be998790ab17d8a340e66308710d",
     "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "source_git_sha256": {
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-command/src/lib.rs": "194a637d2acca12a50947fabc259b09978d0d9c2a8f7db4c0c15edcbcde586d7"
+  },
+  "artifact_git_sha256": {
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:README.md": "43e00d00ca513765c2c0844728dcf5a932d63c774301404f0a5cf4eb384f74b6",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:docs/direction-adapters.md": "d5d8c97965b1a0e199b3c806c3e4a18b8d9ab09205e50eea55f02506e3d270eb"
   }
 }

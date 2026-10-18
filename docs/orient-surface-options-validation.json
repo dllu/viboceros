@@ -161,7 +161,6 @@
     "method": "Keep original digests and all non-hash metadata; move baseline-verifiable affected paths to immutable full base-revision Git references."
   },
   "sha256": {
-    "crates/viboceros-command/src/orient_surface.rs": "429defbef089762a2f4a538568329b23b12e0b6c042955992f77428522c9a664",
     "crates/viboceros-oracle/src/orient_surface.rs": "9dcb0f237ea62ea7a2340d10562e4ad420c2c7a1261089546b6ced3256de7a05",
     "docs/commands/orient-on-surface.md": "cd4b663a7d34af9148ed4f42129e5954fe998cd7df2cee6c05f3f4f21dbd555c",
     "src/app/orient_surface.rs": "b0549800f972369bd45b692b2a160bc66a148572edd26c0499a8318d51e7cc0a",
@@ -186,6 +185,7 @@
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:crates/viboceros-command/src/lib.rs": "0aa51da6d428ed17d0e6ffa21dbe4602626abbab41e66ab58813ae7bf542ee89",
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:crates/viboceros-geometry/src/morph.rs": "46c5742635a2c127b4f663ec09544d031d13d624c58504ad8e95a9387b4d2230",
     "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:crates/viboceros-oracle/src/lib.rs": "a3884657feac1cd57d68e85ec79ac90419a5e45cdcf3d2b6dcbc35f846c23700",
-    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:docs/orient-surface-validation.json": "ba75e21eb59b5c9cf7623a0b39dd3612a06d375bc10f0d944d5b8b5269c59bf7"
+    "e9f6a997f2a83daf6be6e59dc4afd17f9052c870:docs/orient-surface-validation.json": "ba75e21eb59b5c9cf7623a0b39dd3612a06d375bc10f0d944d5b8b5269c59bf7",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-command/src/orient_surface.rs": "429defbef089762a2f4a538568329b23b12e0b6c042955992f77428522c9a664"
   }
 }

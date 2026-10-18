@@ -94,7 +94,6 @@
   ],
   "sha256": {
     "docs/flow-command-comparison.json": "9d02efddf0a58bbfe07e522d0ff65874a915f4d678832faf5b4ac62a19cd4042",
-    "docs/orient-surface-options-validation.json": "32190410a59628febac7e3d2de10589c759731f57cf5ec1d24e558384f58f6be",
     "tools/rhino_oracle/flow_report.py": "bcb9d250082ee1d069726764815e734517740eb6b7962c30dab2401f4fc856ad",
     "tools/rhino_oracle/test_flow_capture.py": "62462cd2fd36a14d3a1f975077d43717a00cadf8de3206d151bcf41ce68aa051"
   },
@@ -138,6 +137,7 @@
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:src/viewport/morph_preview.rs": "277abe2a03d02d27145c3683f134ae0b68b4e2025f0a7c6ef8fda4ad7bf5bd5d",
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/orient-surface-validation.json": "790bee460ae086a718f58db249f1b353c452d566aa63d51a413ab7b909b412f4",
     "76ae3d7a661bd54636a2b05e7e11a716523d1210:src/app/object_selection.rs": "bdc5d37665c9d1aa56500e7323ca66f394b4435bdf030c48e93dd67187177aaf",
-    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/app/component_selection.rs": "57fb4643e9063f9d657e03af902733a0d883edfdc474cdf9888d3823d358edb2"
+    "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:src/app/component_selection.rs": "57fb4643e9063f9d657e03af902733a0d883edfdc474cdf9888d3823d358edb2",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:docs/orient-surface-options-validation.json": "32190410a59628febac7e3d2de10589c759731f57cf5ec1d24e558384f58f6be"
   }
 }

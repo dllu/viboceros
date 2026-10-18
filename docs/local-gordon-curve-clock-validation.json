@@ -134,7 +134,6 @@
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
     "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
     "crates/viboceros-geometry/src/nurbs/sampling.rs": "bca2aa4e92def49fa00ccc1158c61987c2294ebd350fc90311047121e59993e4",
-    "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
     "crates/viboceros-geometry/src/nurbs_surface/closest_point.rs": "827bac8e90ff7c12098fbc746e20663ce160a58105dabf81a5a23c75ce1b612c",
     "crates/viboceros-geometry/src/surface_pullback.rs": "393e7424dde66b72cda6290f50b13239644aeeef3f30f354f08aa7adba4f505b",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
@@ -199,6 +198,7 @@
     "c02784ac11502b0b218da67abbed9c9fc861ecbd:docs/smlib-gordon-network.md": "fcf2169d05ca63c482d304bb5884a781f9aa393df0128809c0034e0219c524a1",
     "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273"
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0"
   }
 }

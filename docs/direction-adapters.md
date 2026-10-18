@@ -65,6 +65,9 @@ It adds no new licensed Rhino capture or performance measurement. Arbitrary
 scales, unresolved angular directions, all command adapters and general topology
 are not qualified by this matrix.
 
+The [surface-parameter follow-up](surface-parameter-frames.md) covers kernel
+surface frames, splop differentials, ArraySrf and OrientOnSrf.
+
 ```sh
 cargo test -p viboceros-command --test direction_adapters
 cargo test -p viboceros-geometry --test direction_frames

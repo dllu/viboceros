@@ -346,7 +346,7 @@ impl Placement {
         let source = Frame3::try_from_x_and_normal(
             base,
             base.vector_to(reference)?,
-            normal,
+            normal.normalized_nonzero()?.as_vector(),
             Tolerance::NUMERICAL_VALIDATION,
         )?;
         let reference_length = base.distance_to(reference)?;
@@ -491,7 +491,12 @@ fn target_frame(
     let sign = if flip { -1. } else { 1. };
     let x = combine_frame_axes(frame.x_axis(), frame.y_axis(), cos, sin * sign)?;
     let y = combine_frame_axes(frame.x_axis(), frame.y_axis(), -sin, cos * sign)?;
-    Frame3::try_from_directions(frame.origin(), x, y, tolerance)
+    Frame3::try_from_unit_directions(
+        frame.origin(),
+        x.normalized_nonzero()?,
+        y.normalized_nonzero()?,
+        tolerance,
+    )
 }
 fn combine_frame_axes(
     first: UnitVector3,

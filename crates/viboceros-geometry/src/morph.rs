@@ -289,28 +289,20 @@ impl<'a> SurfacePointMorph<'a> {
                 context: "surface point morph scale",
             });
         }
-        let (_, derivative_u, derivative_v) =
+        let (point, derivative_u, derivative_v) =
             surface.evaluate_with_derivatives(target_u, target_v)?;
-        let x_axis = derivative_u.normalized(tolerance)?;
-        let u_speed = derivative_u.length()?;
-        let v_along_x = derivative_v.dot(x_axis.as_vector())?;
-        let derivative_v_values = derivative_v.to_array();
-        let x_values = x_axis.as_vector().to_array();
-        let v_perpendicular = Vector3::try_new(
-            (-v_along_x).mul_add(x_values[0], derivative_v_values[0]),
-            (-v_along_x).mul_add(x_values[1], derivative_v_values[1]),
-            (-v_along_x).mul_add(x_values[2], derivative_v_values[2]),
-        )?;
-        let v_speed = v_perpendicular.length()?;
-        if v_speed <= tolerance.absolute() {
-            return Err(GeometryError::Degenerate {
-                context: "surface point morph target frame",
-            });
-        }
+        let x_axis = derivative_u.normalized_nonzero()?;
+        let v_axis = derivative_v.normalized_nonzero()?;
+        // Admit directions independently of UV units before inverting the
+        // triangular differential. Unit-angle ratios avoid a product of two
+        // derivative speeds, which can overflow or underflow for a valid map.
+        Frame3::try_from_unit_directions(point, x_axis, v_axis, tolerance)?;
+        let v_cosine = v_axis.as_vector().dot(x_axis.as_vector())?;
+        let v_sine = x_axis.as_vector().cross(v_axis.as_vector())?.length()?;
         let (sine, cosine) = angle_radians.sin_cos();
-        let u_per_x = 1.0 / u_speed;
-        let u_per_y = -v_along_x / (u_speed * v_speed);
-        let v_per_y = 1.0 / v_speed;
+        let u_per_x = derivative_u.parameter_step(1.);
+        let u_per_y = derivative_u.parameter_step(-v_cosine / v_sine);
+        let v_per_y = derivative_v.parameter_step(1. / v_sine);
         require_finite(
             [u_per_x, u_per_y, v_per_y, sine, cosine],
             "surface point morph differential",
@@ -339,7 +331,7 @@ impl<'a> SurfacePointMorph<'a> {
     /// Uses a fixed placement construction-plane normal instead of the
     /// varying target surface normal.
     pub fn with_constrained_normal(mut self, normal: Vector3) -> Result<Self, GeometryError> {
-        self.constrained_normal = Some(normal.normalized(self.tolerance)?);
+        self.constrained_normal = Some(normal.normalized_nonzero()?);
         Ok(self)
     }
 
@@ -366,12 +358,10 @@ impl<'a> SurfacePointMorph<'a> {
         }
         if let Some(normal) = normal {
             let n = normal.normalized_nonzero()?;
-            let (_, du, dv) = self
+            let frame = self
                 .surface
-                .evaluate_with_derivatives(self.target_u, self.target_v)?;
-            let x = du.normalized_nonzero()?.as_vector();
-            let z = du.cross(dv)?.normalized_nonzero()?.as_vector();
-            let y = z.cross(x)?;
+                .frame_at(self.target_u, self.target_v, self.tolerance)?;
+            let [x, y, z] = frame.axes().map(|axis| axis.as_vector());
             let a = x.dot(n.as_vector())?;
             let b = y.dot(n.as_vector())?;
             let c = z.dot(n.as_vector())?;
@@ -470,9 +460,13 @@ impl PointMorph for SurfacePointMorph<'_> {
         let normal = if let Some(normal) = self.constrained_normal {
             normal
         } else {
-            derivative_u
-                .cross(derivative_v)?
-                .normalized(self.tolerance)?
+            Frame3::try_from_unit_directions(
+                surface_point,
+                derivative_u.normalized_nonzero()?,
+                derivative_v.normalized_nonzero()?,
+                self.tolerance,
+            )?
+            .z_axis()
         };
         surface_point.translated(normal.as_vector().scaled(target_z)?)
     }
