@@ -1,5 +1,10 @@
 # Local usd-brep fixes
 
+`usd-brep-point-interpolation.patch` repairs interpolation at supplied parameters
+in the pinned release below. It uses actual endpoint basis rows, preserves the
+linear knot-station fast path, orders constraints privately and reuses the native
+banded solver. See the [producer qualification](../../docs/native-point-interpolation.md).
+
 `usd-brep-basis-evaluation.patch` and `usd-brep-curve-evaluation-basis.patch`
 repair unclamped endpoint limits and exact nonzero evaluation spans in the
 pinned release below. Curve derivatives share the stack-based basis derivative

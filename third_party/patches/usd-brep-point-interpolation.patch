@@ -1,0 +1,176 @@
+--- a/NL_CrvFit.cpp
++++ b/NL_CrvFit.cpp
+@@ -9,6 +9,8 @@
+ 
+ #include <nurbs.h>
+ #include <NL_Globals.h>
++#include <algorithm>
++#include <cmath>
+ 
+ #define ROUND(x)  (NL_INDEX)(x + 0.5)
+ 
+@@ -2276,7 +2278,11 @@
+ 
+     NL_FLAG error = NL_NO;
+ 
+-    NL_INDEX i, j, k, l, m, mc, bw, sbw, sp;
++    NL_INDEX i, j, k, l, m, mc, bw, sbw, sp, *order;
++    NL_BOOLEAN sorted = NL_YES, linear_nodes = NL_YES;
++    NL_PARAMETER *parameters;
++    NL_POINT *ordered_points;
++    NL_CPOINT *ordered_cpoints;
+ 
+     NL_REAL ** B, *N, *U, *UC;
+ 
+@@ -2295,11 +2301,83 @@
+     /* Check for curve memory */
+ 
+     N_KnotVectorGetKnots( knt, &m, &U );
+-    mc = n + p + 1;
+-
+-    if( m NEQ mc )
+-        NL_ERROR( NL_INP_ERR );
+-    /* if( p GT  n  )  NL_ERROR(NL_INP_ERR);  RCLxx */
++    if (p < 0 || p > NL_MAXDEG || n < p || m < 2 * p + 1 || n != m - p - 1)
++        NL_ERROR(NL_INP_ERR);
++    mc = m;
++    if (ptp != NL_EPOINT && ptp != NL_HPOINT)
++        NL_ERROR(NL_CAL_ERR);
++    for (i = 0; i <= m; ++i)
++        if (!std::isfinite(U[i]) || (i && U[i] < U[i - 1]))
++            NL_ERROR(NL_INP_ERR);
++    if (!(U[p] < U[n + 1]))
++        NL_ERROR(NL_INP_ERR);
++    for (i = 0; i <= n; ++i)
++    {
++        if (!std::isfinite(u[i]) || u[i] < U[p] || u[i] > U[n + 1])
++            NL_ERROR(NL_PAR_ERR);
++        if (i && u[i] <= u[i - 1])
++            sorted = NL_NO;
++        if (u[i] != U[i + 1])
++            linear_nodes = NL_NO;
++        if (ptp == NL_EPOINT)
++        {
++            Q = (NL_POINT *)A;
++            if (!std::isfinite(Q[i].x) || !std::isfinite(Q[i].y) || !std::isfinite(Q[i].z))
++                NL_ERROR(NL_INP_ERR);
++        }
++        else
++        {
++            Qw = (NL_CPOINT *)A;
++            if (!std::isfinite(Qw[i].x) || !std::isfinite(Qw[i].y) ||
++                !std::isfinite(Qw[i].z) || !std::isfinite(Qw[i].w))
++                NL_ERROR(NL_INP_ERR);
++        }
++    }
++
++    // Order constraints together, without mutating the caller's parameters or
++    // points. Sorted non-singular B-spline collocation fits a degree-wide band.
++    // Keep Euclidean RHS data in its original type so output weights retain the polynomial sentinel.
++    if (!sorted)
++    {
++        order = N_AllocInt1dArray(n, &SL);
++        parameters = N_AllocReal1dArray(n, &SL);
++        if (!order || !parameters)
++            NL_QUIT;
++        for (i = 0; i <= n; ++i)
++            order[i] = i;
++        std::sort(order, order + n + 1, [u](NL_INDEX a, NL_INDEX b) { return u[a] < u[b]; });
++        for (i = 0; i <= n; ++i)
++        {
++            parameters[i] = u[order[i]];
++            if (i && parameters[i] == parameters[i - 1])
++                NL_ERROR(NL_INP_ERR);
++        }
++        if (ptp == NL_EPOINT)
++        {
++            ordered_points = N_AllocPt1dArray(n, &SL);
++            if (!ordered_points)
++                NL_QUIT;
++            Q = (NL_POINT *)A;
++            for (i = 0; i <= n; ++i)
++                ordered_points[i] = Q[order[i]];
++            A = ordered_points;
++        }
++        else
++        {
++            ordered_cpoints = N_AllocCPt1dArray(n, &SL);
++            if (!ordered_cpoints)
++                NL_QUIT;
++            Qw = (NL_CPOINT *)A;
++            for (i = 0; i <= n; ++i)
++                ordered_cpoints[i] = Qw[order[i]];
++            A = ordered_cpoints;
++        }
++        u = parameters;
++        linear_nodes = NL_YES;
++        for (i = 0; i <= n; ++i)
++            if (u[i] != U[i + 1])
++                linear_nodes = NL_NO;
++    }
+ 
+     error = N_CrvSizeArrays( cur, n, p, mc, rname, SG );
+ 
+@@ -2311,9 +2389,10 @@
+     for ( i = 0; i <= m; i++ )
+         UC[i] = U[i];
+ 
+-    /* Control points are the data points in case of linear curves */
+-
+-    if( p EQ 1 )
++    // A linear control polygon interpolates data directly only at its knots.
++    // Strictly ordered knot stations also exclude rank-deficient duplicates.
++
++    if (p == 1 && linear_nodes)
+     {
+         switch( ptp )
+         {
+@@ -2343,17 +2422,9 @@
+ 
+     /* Compute coefficient matrix */
+ 
+-    if( 2 *p LE n )
+-    {
+-        bw = 2 * p + 1;
+-        sbw = p;
+-    }
+-    else
+-    {
+-        bw = 2 * p - 1;
+-        sbw = p - 1;
+-    }
+-    sp = sbw - p; /* this must be non-positive */
++    sbw = p;
++    bw = 2 * sbw + 1;
++    sp = sbw - p;
+ 
+     N = N_AllocReal1dArray( p, &SL );
+ 
+@@ -2373,10 +2444,9 @@
+             B[i][j] = 0.0;
+     }
+ 
+-    B[0][sbw] = 1.0;
+-    B[n][sbw] = 1.0;
+-
+-    for ( i = 1; i < n; i++ )
++    // Every supplied station contributes its actual basis row. Endpoint
++    // identity rows are correct only at clamped active bounds.
++    for ( i = 0; i <= n; i++ )
+     {
+         error = N_BasisEval( knt, p, u[i], NL_LEFT, N, &j );
+ 
+@@ -2405,6 +2475,13 @@
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
++
++    // A finite input can still require unrepresentable controls. Do not
++    // report a successful interpolating curve containing infinities or NaNs.
++    for (i = 0; i <= n; ++i)
++        if (!std::isfinite(Pw[i].x) || !std::isfinite(Pw[i].y) ||
++            !std::isfinite(Pw[i].z) || !std::isfinite(Pw[i].w))
++            NL_ERROR(NL_NUM_ERR);
+ 
+     /* End NURBS and Exit */
+ 

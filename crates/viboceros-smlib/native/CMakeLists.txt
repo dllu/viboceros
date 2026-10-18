@@ -9,6 +9,7 @@ file(GLOB API_SOURCES CONFIGURE_DEPENDS "${USD_BREP_ROOT}/source/SM_API/src/*.cp
 list(FILTER KERNEL_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 list(FILTER API_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-basis-evaluation.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-point-interpolation.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-intersection-distance.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-self-intersection-pairs.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-copy-basis.cmake")
@@ -221,6 +222,9 @@ target_compile_options(viboceros_smlib_curve_segment_probe PRIVATE -Wall -Wextra
 add_executable(viboceros_smlib_basis_evaluation_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/basis_evaluation_probe.cpp")
 target_link_libraries(viboceros_smlib_basis_evaluation_probe PRIVATE SMLib)
 target_compile_options(viboceros_smlib_basis_evaluation_probe PRIVATE -Wall -Wextra -Werror)
+add_executable(viboceros_smlib_point_interpolation_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/point_interpolation_probe.cpp")
+target_link_libraries(viboceros_smlib_point_interpolation_probe PRIVATE SMLib)
+target_compile_options(viboceros_smlib_point_interpolation_probe PRIVATE -Wall -Wextra -Werror)
 add_executable(viboceros_smlib_curve_segment_baseline EXCLUDE_FROM_ALL
     "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/curve_segment_limits_probe.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/NL_CrvTool.cpp")
@@ -282,7 +286,7 @@ target_compile_options(viboceros_smlib_planarity_baseline PRIVATE -Wno-write-str
 # Optional instrumentation of both complete native libraries and the C ABI.
 option(VIBOCEROS_SMLIB_ASAN "Instrument native geometry with AddressSanitizer" OFF)
 if(VIBOCEROS_SMLIB_ASAN)
-    foreach(instrumented_target SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe)
+    foreach(instrumented_target SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe)
         target_compile_options(${instrumented_target} PRIVATE -fsanitize=address -g -fno-omit-frame-pointer)
         target_link_libraries(${instrumented_target} PUBLIC asan)
     endforeach()

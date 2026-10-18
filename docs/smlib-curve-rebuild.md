@@ -25,12 +25,11 @@ Matrix storage and residual checks are linear in point count at fixed degree;
 factoring uses the native band routines. Nonuniform periodic InterpCrv and Loft
 retain their existing full pivoted matrix path.
 
-The fitting convenience producer cannot directly replace periodic collocation:
-`N_FitCrvInterpGivenParams` uses identity endpoint rows even on unclamped bases.
-The [direct probe](../tools/usd_brep/rebuild_interpolation_probe.cpp) and
-[retained result](smlib-curve-rebuild-probe.json) demonstrate incorrect endpoint
-limits for the exact target `X(u)=u`. Dedicated periodic fitting exports are
-also absent from the pinned default kernel build. See the
+The fitting convenience producer's former unclamped endpoint error is now
+[repaired](native-point-interpolation.md). Periodic collocation still needs the
+adapter's folded control columns and closure constraints; ordinary interpolation
+through that producer does not replace them. Dedicated periodic fitting exports
+are also absent from the pinned default kernel build. See the
 [limitations ledger](usd-brep-limitations.md).
 
 Regressions compare complete definitions and 65 parameter samples with the
@@ -60,11 +59,12 @@ ignored), including the independent circle witnesses and existing command
 preview/history checks. Workspace lint passes in both feature configurations
 with warnings denied; formatting passes.
 
-Fresh Rhino capture remains unavailable pending the Wine licensing startup
-described in [isocurve qualification](smlib-isocurves.md). Native/portable
-agreement does not certify fresh SDK parity, a continuous approximation bound,
-arbitrary input conditioning or speed relative to Rhino. Native LU tolerances
-and the existing degree/point limits still apply.
+The 94 Rebuild comparisons above use retained observations. The newer
+[point producer qualification](native-point-interpolation.md) includes fresh
+SDK evaluation of fitted definitions, which does not certify current Rebuild
+command parity, a continuous approximation bound, arbitrary conditioning or
+speed relative to Rhino. Native LU tolerances and the existing degree/point
+limits still apply.
 
 ```sh
 CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-smlib \

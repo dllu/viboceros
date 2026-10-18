@@ -291,8 +291,6 @@
     "No speedup, full Rhino command parity or leak-free result is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "81924334d38a10984e93e7ce6c5b1039a3bce7b7400b5a77a63e06b3552a9f1e",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "261855c291fe8da7b19700fe7f2a225023186cf95e868f4d4976cbfd30fd56ff",
     "crates/viboceros-smlib/tests/basis_evaluation.rs": "b292615287e2cb763785eb0d839ba3a877e016d1ee0941e50198533ad856d007",
     "tools/usd_brep/basis_evaluation_probe.cpp": "6c957c1a66c47b26082bd479686b8b8a58a5b162457e22b7e7a74b7271b2c54e",
     "third_party/patches/usd-brep-basis-evaluation.patch": "30ed2e42f01042cf43cc943ccd6f1f5d6cd3ee7eb837e08a55e3b5cb237ca426",
@@ -337,11 +335,8 @@
     "docs/native-basis-evaluation-observed-subsets.py.gz": "9daeabd12979b624808ade24592f2e3f92f31a4911aa29830ff4a3a4583b3135",
     "docs/native-basis-evaluation-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
     "docs/native-basis-evaluation-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
-    "README.md": "7a33f93a6d216523fc16218b93479890c25f7ffaf1a29af78f0089f8045ea611",
-    "third_party/patches/README.md": "d1ad86fcb3f353fe9bf759d258e9d6322dedec513a42fa2a581301ed8daab4a8",
     "docs/native-basis-evaluation.md": "d67cbba57e2d498740dcc7f40bcec42a09e179a6b7ecc1da8c52afbc4dcd31ad",
     "docs/native-curve-segment-limits.md": "726954443992bf51c260cdddb8f358644f3d9bfb1b46bd87cf356a644c0732ef",
-    "docs/usd-brep-limitations.md": "d2423f62e1d710fd2a27d7bbc5b16c65a89e31f337e9c486ce9de5a79215051f",
     "docs/native-curve-segment-limits-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
     "docs/native-curve-segment-limits-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
     "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
@@ -360,5 +355,14 @@
     "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/build.rs": "b1e0da66d73572f24ffcada31aa6c1e9bac2ae8bde6f9a91ff082c4c34475c7b",
     "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/native/CMakeLists.txt": "ef9821365cdb54f41f4a31b33489a5c77dbc7382fbf9edbc93d8494c8032a9e6"
   },
-  "log_policy": "Observed completed exit statuses, deterministic gzip of raw results and logs, exact request/response capture without normalization, and historical hashes pinned to immutable Git blobs."
+  "log_policy": "Observed completed exit statuses, deterministic gzip of raw results and logs, exact request/response capture without normalization, and historical hashes pinned to immutable Git blobs.",
+  "source_git_sha256": {
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/build.rs": "81924334d38a10984e93e7ce6c5b1039a3bce7b7400b5a77a63e06b3552a9f1e",
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/native/CMakeLists.txt": "261855c291fe8da7b19700fe7f2a225023186cf95e868f4d4976cbfd30fd56ff"
+  },
+  "artifact_git_sha256": {
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:README.md": "7a33f93a6d216523fc16218b93479890c25f7ffaf1a29af78f0089f8045ea611",
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:third_party/patches/README.md": "d1ad86fcb3f353fe9bf759d258e9d6322dedec513a42fa2a581301ed8daab4a8",
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:docs/usd-brep-limitations.md": "d2423f62e1d710fd2a27d7bbc5b16c65a89e31f337e9c486ce9de5a79215051f"
+  }
 }

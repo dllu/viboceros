@@ -1,0 +1,360 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "985ed0a9bb0e9510efe781ab11af93fd1c7972e3",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Assemble actual basis rows at all supplied parameters; preserve direct degree-one copying only at distinct knot stations.",
+    "Order unsorted point/parameter constraints privately and reuse a degree-wide native banded LU/point solver. Preserve Euclidean and polynomial-sentinel RHS types.",
+    "Validate dimensions, finite monotone knots, finite active-domain stations and point channels; reject duplicate constraints, deficient support and nonfinite fitted controls."
+  ],
+  "matrix": {
+    "reconstructions": 2040,
+    "families": 17,
+    "rejection_cases": 13,
+    "allocation_paths": [
+      "allocated",
+      "preallocated_with_null_stack"
+    ],
+    "degrees": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      11,
+      17
+    ],
+    "chart_scales": [
+      "2^-360",
+      "1",
+      "2^360"
+    ],
+    "translated_origin": 1000000000000.0,
+    "parameter_orders": [
+      "ascending",
+      "reversed",
+      "rotated"
+    ],
+    "input_types": [
+      "NL_EPOINT polynomial",
+      "NL_HPOINT polynomial with NL_NOW",
+      "NL_HPOINT rational"
+    ],
+    "rational_gauges": [
+      "1",
+      "2^-180",
+      "-2^180"
+    ],
+    "small_coordinate_channel": 1e-18,
+    "expected_geometry": "Independent Bernstein and closed piecewise polynomial identities generate points from known controls. Complete output degree/count/full knots are exact.",
+    "comparisons": "Controls: channel-maximum-normalized error <=2e-8. At 33 stations after input-array destruction: channel-normalized homogeneous error <=2e-11 and Euclidean max-component absolute error <=1e-10.",
+    "sample_stations_per_curve": 33,
+    "total_native_stations": 67320,
+    "representation": "Raw output controls retain native NL_NOW polynomial sentinels. Only homogeneous comparison controls map NL_NOW to unit weight; raw records preserve every original value.",
+    "failure_policy": "Zero residual defaults on failed structural/finite/status checks do not establish a match."
+  },
+  "producers": {
+    "baseline": {
+      "exit_code": 1,
+      "reconstructions": 2040,
+      "passed_reconstructions": 360,
+      "rejection_cases": 0,
+      "passed_rejections": 0,
+      "unchanged_inputs": 2040,
+      "raw": {
+        "retained": "docs/native-point-interpolation-baseline.jsonl.gz",
+        "uncompressed_sha256": "436bdea1caf71c86f4aef46d519f27b22c6d75e72ed4c632926f293747e2b879"
+      },
+      "stderr": {
+        "retained": "docs/native-point-interpolation-baseline.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "build": {
+        "command": "cmake --build <debug native tree> --target viboceros_smlib_point_interpolation_probe viboceros_smlib_point_interpolation_baseline -j10",
+        "exit_code": 0,
+        "retained": "docs/native-point-interpolation-baseline-build.log.gz",
+        "uncompressed_sha256": "8b23bebcec9a23d847ecd81ee1091ce41684fd188632e00ef5ec2d6a1c9c5483"
+      },
+      "method": "Explicitly link the pinned original NL_CrvFit.cpp object ahead of the candidate archive, retaining all other fixes including exact basis evaluation. Both execute identical valid reconstruction fixtures.",
+      "safety": "The baseline macro excludes malformed/rank-deficient input receipts. The original producer lacks these guards and is not memory-safe on all malformed dimensions; no baseline invalid-input parity is claimed."
+    },
+    "candidate": {
+      "exit_code": 0,
+      "reconstructions": 2040,
+      "passed_reconstructions": 2040,
+      "rejection_cases": 13,
+      "passed_rejections": 13,
+      "unchanged_inputs": 2040,
+      "raw": {
+        "retained": "docs/native-point-interpolation-candidate.jsonl.gz",
+        "uncompressed_sha256": "c139acf23d006f21a085985d09f29f63c50c652394a90a931689bbb6981f7ce0"
+      },
+      "stderr": {
+        "retained": "docs/native-point-interpolation-candidate.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_arrays_destroyed_before_output_queries": 2040,
+      "max_observed_errors": {
+        "max_channel_relative_control_error": 9.113628892170024e-12,
+        "max_channel_relative_homogeneous_error": 1.6691392851356043e-15,
+        "max_absolute_point_error": 7.105427357601002e-15
+      }
+    },
+    "asan": {
+      "exit_code": 0,
+      "reconstructions": 2040,
+      "passed_reconstructions": 2040,
+      "rejection_cases": 13,
+      "passed_rejections": 13,
+      "unchanged_inputs": 2040,
+      "raw": {
+        "retained": "docs/native-point-interpolation-asan.jsonl.gz",
+        "uncompressed_sha256": "c139acf23d006f21a085985d09f29f63c50c652394a90a931689bbb6981f7ce0"
+      },
+      "stderr": {
+        "retained": "docs/native-point-interpolation-asan.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_arrays_destroyed_before_output_queries": 2040,
+      "max_observed_errors": {
+        "max_channel_relative_control_error": 9.113628892170024e-12,
+        "max_channel_relative_homogeneous_error": 1.6691392851356043e-15,
+        "max_absolute_point_error": 7.105427357601002e-15
+      },
+      "build": {
+        "command": "Configure the native tree with -DVIBOCEROS_SMLIB_ASAN=ON -DCMAKE_BUILD_TYPE=Release, then cmake --build /tmp/viboceros-isocurve-pair-asan --target viboceros_smlib_point_interpolation_probe viboceros_smlib -j10",
+        "exit_code": 0,
+        "retained": "docs/native-point-interpolation-asan-build.log.gz",
+        "uncompressed_sha256": "14adfe306787105916625383a993fed6a8d04a4e08d5887489bd21f72919075d"
+      },
+      "flags": {
+        "retained": "docs/native-point-interpolation-asan-flags.txt.gz",
+        "uncompressed_sha256": "5ff9481cb3818c580dcdbb147408cdda989575072e49bc0b36ee2c5bef30bb48"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "scope": "Complete SMLib/SM_API/C ABI archives and direct probe are instrumented. This execution is the direct producer probe, not the Rust-facing C ABI suite. Leak detection is disabled; no leak-free claim."
+    }
+  },
+  "producer_runs": {
+    "command": "python3 /tmp/viboceros-point-interpolation-probes.py",
+    "exit_code": 0,
+    "retained": "docs/native-point-interpolation-probes.log.gz",
+    "uncompressed_sha256": "4d66a809c2ccd76bd53c81e88471b815407c4d50613bde63c439357492a50fb0",
+    "script": {
+      "retained": "docs/native-point-interpolation-probes.py.gz",
+      "uncompressed_sha256": "a7018dfd6412664b215e7ff33ffc71b7505083a50e078a8626602b4e8e7c4227"
+    }
+  },
+  "probe_format_followup": {
+    "change": "Split adjacent input-destruction loops onto separate lines after the sanitizer compiler reported -Werror=misleading-indentation. No production or Rust source changed after the full gates began.",
+    "full_gate_probe_snapshot": {
+      "retained": "docs/native-point-interpolation-probe-before-format.cpp.gz",
+      "uncompressed_sha256": "6d45478adcd91f2de1f303aaca2ff9f381befbcc15b11fb49dff59c60426e4e6"
+    },
+    "final_focused_run": {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test point_interpolation -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-point-interpolation-focused-final.log.gz",
+      "uncompressed_sha256": "91c2230b85eff3b0d3d91cd934c389e01e30b3061d6c78d1e41991df85b4b83a",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "final_asan_and_normal_runs": "Producer runs above use the final probe.",
+    "identical_pre_post_format_normal_stdout_sha256": "c139acf23d006f21a085985d09f29f63c50c652394a90a931689bbb6981f7ce0"
+  },
+  "linear_precision_witness": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-point-interpolation-witness.py",
+    "exit_code": 0,
+    "retained": "docs/native-point-interpolation-witness.log.gz",
+    "uncompressed_sha256": "a6a4fb766e887b11b2f14c885e3666c1765f78437e2abd5750aa4d5b9acb8a16",
+    "script": {
+      "retained": "docs/native-point-interpolation-witness.py.gz",
+      "uncompressed_sha256": "db4b796aa488be82203e7281fffdab481c52a5a39301b1b0e2bf0735268994be"
+    },
+    "compiler_command": {
+      "retained": "docs/native-point-interpolation-witness-command.txt.gz",
+      "uncompressed_sha256": "3bdafbf2973810e269b3ba415fcfb2dca65883db945335141cc84168794e86e3"
+    },
+    "build_log": {
+      "retained": "docs/native-point-interpolation-witness-build.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "result": {
+      "retained": "docs/native-point-interpolation-witness.json.gz",
+      "uncompressed_sha256": "31788d9efb4b546bb6683e7658788606f62a57104c2e4c52ac57cd851e06fb23"
+    },
+    "summary": {
+      "expected_endpoints": [
+        0,
+        2
+      ],
+      "fitted_endpoint_limits": [
+        0,
+        2
+      ],
+      "fitted_controls": [
+        -0.4999999999999999,
+        0.4000000000000001,
+        1.3999999999999997,
+        2.5000000000000004
+      ],
+      "expected_controls": [
+        -0.5,
+        0.4,
+        1.4,
+        2.5
+      ]
+    }
+  },
+  "fresh_rhino": {
+    "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-point-interpolation-sdk.py",
+    "exit_code": 0,
+    "retained": "docs/native-point-interpolation-sdk.log.gz",
+    "uncompressed_sha256": "38fbc6fe09c667cd8457fd47093274e31069e3eab4b84758de5b6dd36fd02d35",
+    "script": {
+      "retained": "docs/native-point-interpolation-sdk.py.gz",
+      "uncompressed_sha256": "a71118aec352790e9af2ae57f4170ce539e63bb21b9a9905efcceb0db8e74a43"
+    },
+    "request": {
+      "retained": "docs/native-point-interpolation-sdk-request.json.gz",
+      "uncompressed_sha256": "02d37e5ecb66e5edb888ce0d36908ffb7ba86cb5c79c575451bf1ccd23d9eb8b"
+    },
+    "response": {
+      "retained": "docs/native-point-interpolation-sdk-rhino.json.gz",
+      "uncompressed_sha256": "8416b7b8c46d38dfe631b731aae6e3d2a7f543ad740127ea570f9a5cc4af45b3"
+    },
+    "report": {
+      "retained": "docs/native-point-interpolation-sdk-report.json.gz",
+      "uncompressed_sha256": "fd49b48431eb086f4d395db2062c23bc3c78e9edc1274cec14e3449f9565f501"
+    },
+    "summary": {
+      "sdk_evaluations": 180,
+      "paired_stations": 90,
+      "curves": 10,
+      "absolute_point_epsilon": 1e-10,
+      "max_absolute_differences": {
+        "point": 5.329070518200751e-15,
+        "derivative": 1.8829382497642655e-13
+      },
+      "passed": true,
+      "scope": "Rhino evaluates retained expected and fitted definitions at identical parameters, using their exact stored knots and controls. Continuous degree 1/2/3/5/17 unit-chart positive-weight fixtures include interior stations, unclamped bases and nonuniform linear sampling. First derivative differences are retained as diagnostics, not the pass criterion. This is sampled locus agreement, not a Rhino interpolation-producer comparison or continuous bound."
+    }
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-point-interpolation-bridge.log.gz",
+      "uncompressed_sha256": "227c7e7f8541b3634b8c0e9a6b9c0c1e42b86ba40ba4e65b3c6a6d784135c59d",
+      "passed": 416,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-point-interpolation-command.log.gz",
+      "uncompressed_sha256": "f9bc61beb11deec7379c65134977c2ba3f2aee9358444de794e14d8aa9122d06",
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-point-interpolation-clippy.log.gz",
+      "uncompressed_sha256": "7cb3e14a3315158e9395e79535fadae1d31ca8cc3503cf0de5d7d2d86fe49dc1"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-point-interpolation-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 5,
+    "records": 1,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Direct known-control reconstruction and the original linear-precision witness first; then allocated/preallocated ownership and invalid-input checks, sanitizer execution, fresh SDK sampled loci, complete release bridge and command suites, all-target/all-feature lint and formatting. Existing degree-change, interpolation, rebuild, loft and command tests cover producer callers.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses. This ARM bridge compiles actual SMLib/SM_API; those other layers and the upstream checkout remain unchanged."
+  },
+  "limitations": [
+    "Native errors can leave partial allocated output; callers must honor status.",
+    "The ordinary producer does not fold periodic controls, add Hermite constraints or replace the multi-RHS adapter.",
+    "The SDK evaluates retained definitions rather than comparing interpolation producers. Only sampled point loci are a pass criterion; first derivatives remain diagnostics.",
+    "No arbitrary conditioning, extrapolation, mixed rational/polynomial sentinel payload, continuous Rhino parity, performance or leak-free result is claimed."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "450781a1e7bc97d313e698918b0f881d6a477bf18d2fca5877a61e8e5d76da0c",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "8e9817570a773adc9c71f1370bf1cee35eff6627ae273874a3db2de7a5fd9ef9",
+    "crates/viboceros-smlib/tests/point_interpolation.rs": "f54fe194b8e9f514d696fe7f509237663bf5e6dfb6a3e59d946d32cb94b108f9",
+    "tools/usd_brep/point_interpolation_probe.cpp": "37aec8c7650fafcca3dc07a8d128b7fb1b1e019ef597309ad6d6d5bed7e89a72",
+    "third_party/patches/usd-brep-point-interpolation.patch": "263092507195e4a2e9eb615f4c67275878b8eee5c4ac94fcee34826c63a7b2b1",
+    "third_party/patches/usd-brep-point-interpolation.cmake": "b16591dbf4681b9d9c9c42730ba79868dcea8de84d5578f394ae084647e872ba",
+    "third_party/patches/usd-brep-basis-evaluation.patch": "30ed2e42f01042cf43cc943ccd6f1f5d6cd3ee7eb837e08a55e3b5cb237ca426",
+    "third_party/patches/usd-brep-basis-evaluation.cmake": "8837702947678530aa5a0c46a44e79e3503e43265744194c26cafec1a540af94",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvFit.cpp": "d5ce13d0b9feba764c713af356f021e1bb428b2e131a9604a72ca18de80662d9",
+    "third_party/usd-brep/source/SMLib/src/NL_BasisBasic.cpp": "8624f62ba13165eb29b3181f04bae5452a23a7d2fed3686b5079ba00c485274f",
+    "third_party/usd-brep/source/SMLib/src/NL_Math.cpp": "e9be4e00c093e58c5e2064feddd3e84c9edef1936cea738fd7ee14956cd39bcd",
+    "third_party/usd-brep/source/SMLib/inc/NL_Geometry.h": "5ad6a4389f4fbbae4949df7cfef3d0469fe69998b0fde0aa28e07e77dc9c7baf",
+    "third_party/usd-brep/source/SMLib/inc/SmNurbsCrv.h": "cc710f8a410a141579335f03b509516a3936a9039dd7d85b7f92a46f3994620e",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5",
+    "tools/usd_brep/rebuild_interpolation_probe.cpp": "6bc8c02b181f9e2a3f6ed3745d30bc6aafb0c53c5fcb3dbf7012aeed148a95c3",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-point-interpolation-bridge.log.gz": "97039feb6e2aea0475a05558246a1758a2176b87affc1cd1f8126116a2ef0ed7",
+    "docs/native-point-interpolation-command.log.gz": "f291589bde4c8c0818245f67eb7d962bde56a80cb75a29c0fecf83fe721170e9",
+    "docs/native-point-interpolation-clippy.log.gz": "0f6248231c3a4a29556f2dcbd55f6e88f71d32be629698fdebdcadd916e7b448",
+    "docs/native-point-interpolation-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-point-interpolation-baseline.jsonl.gz": "87f9795cc4c3e19c0f3c8fca32548d12c8812b66310b51beb062b38008a8d572",
+    "docs/native-point-interpolation-baseline.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-point-interpolation-candidate.jsonl.gz": "39ea3731590f692d03a43bce3e4c48de4340784da21645c45a8737f674452b23",
+    "docs/native-point-interpolation-candidate.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-point-interpolation-asan.jsonl.gz": "39ea3731590f692d03a43bce3e4c48de4340784da21645c45a8737f674452b23",
+    "docs/native-point-interpolation-asan.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-point-interpolation-baseline-build.log.gz": "0e32875a5b9dd428b88d476e40c44fe7aaa0788ce4ff7e6720828be4dbf248f0",
+    "docs/native-point-interpolation-asan-build.log.gz": "8329463f4369e391853306a878eb23cba944b85e0b1483d4667c0a535ede0967",
+    "docs/native-point-interpolation-asan-flags.txt.gz": "524f343ed6a3275a6269df7af7934688293da01e786bdbdc9d99e8d6d7a57282",
+    "docs/native-point-interpolation-probes.log.gz": "eead63133aae179602d9f7001b14b9cbb5d5a2c16329128494289812fd3831f1",
+    "docs/native-point-interpolation-probes.py.gz": "2b74ce3b2d242ac8d23bda77b1a42d380c98a63a00b9a8926872ea8412eae0bb",
+    "docs/native-point-interpolation-focused-final.log.gz": "26495f6501bd44d2fff95a5af5cadef7b14fc03f9919ef9e655dcfbabfa95137",
+    "docs/native-point-interpolation-probe-before-format.cpp.gz": "2db8eb5a72213e0224f37bc449c47a52545257822ce918befc365eb298c6d473",
+    "docs/native-point-interpolation-sdk.log.gz": "95e766de6080dde66fc4c3fec6f084b9fab689845c9b84068abc3c85019c5d66",
+    "docs/native-point-interpolation-sdk.py.gz": "c39870ace913725d2bf14da306267be13753a26cf401f20a40b3c7dbaed2ebe7",
+    "docs/native-point-interpolation-sdk-request.json.gz": "db0835b9b8234845b5a7f5f3b2767e2fd0255f840019c873b7467fbc07bcdab0",
+    "docs/native-point-interpolation-sdk-rhino.json.gz": "1e1762f06e6bc69a5a539b7601fbd659cc5a1e1ec23c76fdd8d60456138caa25",
+    "docs/native-point-interpolation-sdk-report.json.gz": "ecbb0c75b29419ab1593c7f3b65cb8312145ecc60884ab8a8aa9ba17de17ac2c",
+    "docs/native-point-interpolation-witness.log.gz": "45441508d283ec4891b300953d13281f22aad6577df31540cf8c15266d55680c",
+    "docs/native-point-interpolation-witness.py.gz": "fc15a3c4ce2731c5782691a4f4daea5a2c651601fe0d1788174fae951e89d54a",
+    "docs/native-point-interpolation-witness-command.txt.gz": "3b33d723f32a1d2bfcd8e01ad45ccb32c9d9adfa96da165683c0396cdf132972",
+    "docs/native-point-interpolation-witness-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-point-interpolation-witness.json.gz": "9dfb9aae12a9a5c20a419e1fefefe10f785ba4fd9d2419a3e5f73f364b797699",
+    "README.md": "b2530d0bbb1a35b00ed9a9fc827f21697af53cc424124e9650241695ad823a42",
+    "third_party/patches/README.md": "f32a97e01913032528156e2f4e52b55a2486491823ebb28531143e36c82ada79",
+    "docs/native-point-interpolation.md": "9e53d8d540c40ac47ba869892930d6b7f2f022d7f1623d2dbcc783a56ddc4294",
+    "docs/usd-brep-limitations.md": "9a1e51ffc96b91d949b16d4e39891f50118ec075adeb9d42a7e978bcd2b895e8",
+    "docs/smlib-curve-rebuild.md": "0db298f4d6d80e79a44da40ada0b2e65634f9a7f7f672b448873880b4eacd1d6",
+    "docs/smlib-curve-rebuild-probe.json": "37a1c2909c6207518b49db05b09f1e5e3c87d367bc89297054103c0d68cc8f45",
+    "crates/viboceros-smlib/tests/degree_change.rs": "6029632b2ae81c0ee209ba4180b21da22207d4b7f4c46d2ebac25b2e6dbb12a1",
+    "crates/viboceros-smlib/tests/curve_rebuild.rs": "3116ce0b3143e16e94a677d6590234453e0795884982832412320417c08a0a61",
+    "crates/viboceros-smlib/tests/curve_interpolation.rs": "8235ca46940865ceb00f3b3e324edca277c01e24670cbca8c175c741afffb081",
+    "crates/viboceros-smlib/tests/loft_basis.rs": "6d2668b19d22460a9ed20991e7d2c2c2e0c396be3e2f5b0a0162837ccf5d7dd4",
+    "docs/native-basis-evaluation-validation.json": "5efe9893bd524eb9ad7921244dbffb0105f41091851366d01c112ffb47e599df"
+  },
+  "baseline_git_sha256": {
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/build.rs": "81924334d38a10984e93e7ce6c5b1039a3bce7b7400b5a77a63e06b3552a9f1e",
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/native/CMakeLists.txt": "261855c291fe8da7b19700fe7f2a225023186cf95e868f4d4976cbfd30fd56ff"
+  },
+  "log_policy": "Completed observed exit statuses; deterministic gzip of raw results, exact SDK requests and responses; historical validation hashes pinned to immutable Git blobs. The one formatting-only probe followup is recorded separately from production/full-gate validation."
+}

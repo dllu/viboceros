@@ -200,22 +200,26 @@ issues reported by NVIDIA that have not all been reproduced here.
   basis/span and invalid-input errors still propagate. A 64-row exact cyclic
   permutation regression exercises the retry with every diagonal zero.
   Source: [NL_Math.cpp](../third_party/usd-brep/source/SMLib/src/NL_Math.cpp).
-- **Point interpolation supplies clamped endpoint constraints for unclamped bases.**
+- **Fixed: point interpolation supplied clamped endpoint constraints for unclamped bases.**
   `N_FitCrvInterpGivenParams` accepts the quadratic basis
   `[-2,-1,0,0.8,2,3,4]` and samples of `X(u)=u` at `[0,0.4,1.4,2]`,
-  but its endpoint identity rows produce actual endpoint limits
+  but its old endpoint identity rows produced actual endpoint limits
   `0.17511520737327191` and `1.778801843317972` instead of `0` and `2`.
   Linear precision independently gives controls `[-0.5,0.4,1.4,2.5]`;
-  the producer returns `[0,0.31520737327188947,1.5133640552995387,2]`.
+  the old producer returned `[0,0.31520737327188947,1.5133640552995387,2]`.
   The [direct probe](../tools/usd_brep/rebuild_interpolation_probe.cpp) evaluates
   the endpoint limits with independent quadratic coefficients, avoiding the
   then-unrepaired native endpoint evaluator's identical clamping assumption.
-  The [basis evaluator repair](native-basis-evaluation.md) fixes evaluation;
-  this interpolation producer's endpoint constraints remain separate.
+  The [basis evaluator repair](native-basis-evaluation.md) fixed evaluation.
+  The [interpolation repair](native-point-interpolation.md) now supplies every
+  actual basis row, orders constraints privately and retains a degree-wide
+  native band. The same witness now recovers the independent controls and both
+  endpoint limits. Degree-one input is copied directly only at knot stations;
+  other parameter layouts use the shared native basis and solver.
   [Retained output](smlib-curve-rebuild-probe.json) records the result.
   Periodic Rebuild instead uses the shared native derivative-basis and matrix
-  adapter with cyclic control constraints; existing basis edits only supply
-  clamped targets to the fitting convenience producer. Source:
+  adapter with cyclic control constraints, which are separate from this
+  convenience producer's ordinary interpolation. Source:
   [NL_CrvFit.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvFit.cpp).
 - **The real-vector pivot solver skips small nonzero RHS values.**
   `N_RealMatrixForBackPivot` advances its first active row only when the RHS
