@@ -320,11 +320,26 @@ pub(super) fn boundary_curve(
     boundary: &[CurveSegment3],
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
+    // Arc evaluation and arc-to-NURBS conversion use different floating
+    // frames. Reconcile the actual exported endpoints as well as the analytic
+    // junctions: an analytically closed loop can acquire a small conversion
+    // gap, especially at a seam coordinate near zero in a large model.
+    let curves = boundary
+        .iter()
+        .map(|segment| segment.to_nurbs()?.clamped_to_active_domain())
+        .collect::<Result<Vec<_>, GeometryError>>()?;
     let mut endpoints = Vec::with_capacity(boundary.len());
     let mut needs_edit = false;
     for i in 0..boundary.len() {
         let end = boundary[i].as_ref().end_point()?;
         let start = boundary[(i + 1) % boundary.len()].as_ref().start_point()?;
+        if !end.is_near(start, tolerance) {
+            return Err(GeometryError::UnrepresentableBrepBoolean);
+        }
+        needs_edit |= !crate::nurbs::curve_points_coincident(end, start);
+        let end = curves[i].evaluate(*curves[i].domain().end())?;
+        let next = &curves[(i + 1) % curves.len()];
+        let start = next.evaluate(*next.domain().start())?;
         if !end.is_near(start, tolerance) {
             return Err(GeometryError::UnrepresentableBrepBoolean);
         }
@@ -335,8 +350,7 @@ pub(super) fn boundary_curve(
         return PolyCurve3::try_new(boundary.to_vec());
     }
     let mut segments = Vec::with_capacity(boundary.len());
-    for (i, segment) in boundary.iter().enumerate() {
-        let curve = segment.to_nurbs()?.clamped_to_active_domain()?;
+    for (i, curve) in curves.into_iter().enumerate() {
         let mut controls = curve.control_points().to_vec();
         let last = controls.len() - 1;
         controls[0] = crate::WeightedPoint3::try_new(
@@ -356,6 +370,62 @@ pub(super) fn boundary_curve(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn arc_conversion_gaps_obey_the_existing_export_tolerance() {
+        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-9).unwrap();
+        let circle = Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            2_f64.powi(21),
+            Vector3::try_new(0., 0., 1.)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let arc = CircularArc3::try_from_circle_angles(circle, 0.3..=TAU).unwrap();
+        let line =
+            LineSegment::try_new(arc.end().unwrap(), arc.start().unwrap(), tolerance).unwrap();
+        let boundary = vec![CurveSegment3::Arc(arc), CurveSegment3::Line(line)];
+        let before = boundary.clone();
+        assert!(
+            PolyCurve3::try_new(boundary.clone())
+                .unwrap()
+                .is_closed()
+                .unwrap()
+        );
+        let converted = arc.to_nurbs().unwrap();
+        let gap = converted
+            .evaluate(*converted.domain().end())
+            .unwrap()
+            .distance_to(line.start())
+            .unwrap();
+        assert!(gap > 1e-10 && gap < tolerance.absolute(), "{gap:e}");
+        let result = boundary_curve(&boundary, tolerance).unwrap();
+        assert!(result.to_nurbs().unwrap().is_closed().unwrap());
+        for (source, output) in boundary.iter().zip(result.segments()) {
+            // Rational circle parameters are not linear in angle. Endpoint
+            // editing retains the converted basis, so compare that same clock.
+            let source = source.to_nurbs().unwrap();
+            let domain = source.domain();
+            for sample in 0..33 {
+                let t = *domain.start() + (*domain.end() - *domain.start()) * sample as f64 / 32.;
+                assert!(
+                    source
+                        .evaluate(t)
+                        .unwrap()
+                        .distance_to(output.evaluate(t).unwrap())
+                        .unwrap()
+                        < tolerance.absolute()
+                );
+            }
+        }
+        assert!(matches!(
+            boundary_curve(&boundary, Tolerance::try_new(1e-12, 1e-12, 1e-9).unwrap()),
+            Err(GeometryError::UnrepresentableBrepBoolean)
+        ));
+        assert_eq!(boundary, before);
+    }
     #[test]
     fn boolean_export_reconciles_scaled_junctions_and_rejects_larger_gaps() {
         let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-9).unwrap();

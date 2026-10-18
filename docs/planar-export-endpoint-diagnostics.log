@@ -1,0 +1,27 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 33.64s
+     Running tests/planar_boolean_scale.rs (target/debug/deps/planar_boolean_scale-82944c03f6e55022)
+
+running 1 test
+PLANAR outer closed=Ok(false) planar=Ok(true) start=Ok(Point3([5242880.0, 0.0, 0.0])) end=Ok(Point3([5242880.0, -5.43336831988914e-10, 0.0])) controls=[Some(WeightedPoint3 { point: Point3([5242880.0, 0.0, 0.0]), weight: 1.0 }), Some(WeightedPoint3 { point: Point3([5242880.0, -5.43336831988914e-10, 0.0]), weight: 1.0 })]
+PLANAR outer closed=Ok(false) planar=Ok(true) start=Ok(Point3([5242880.0, 0.0, 0.0])) end=Ok(Point3([5242880.0, -5.43336831988914e-10, 0.0])) controls=[Some(WeightedPoint3 { point: Point3([5242880.0, 0.0, 0.0]), weight: 1.0 }), Some(WeightedPoint3 { point: Point3([5242880.0, -5.43336831988914e-10, 0.0]), weight: 1.0 })]
+PLANAR outer closed=Ok(false) planar=Ok(true) start=Ok(Point3([2097152.0, 0.0, 0.0])) end=Ok(Point3([2097152.0000000005, -1.0181645271851257e-9, 0.0])) controls=[Some(WeightedPoint3 { point: Point3([2097152.0, 0.0, 0.0]), weight: 1.0 }), Some(WeightedPoint3 { point: Point3([2097152.0000000005, -1.0181645271851257e-9, 0.0]), weight: 1.0 })]
+PLANAR outer closed=Ok(false) planar=Ok(true) start=Ok(Point3([2097152.0, 0.0, 0.0])) end=Ok(Point3([2097152.0000000005, -1.0181645271851257e-9, 0.0])) controls=[Some(WeightedPoint3 { point: Point3([2097152.0, 0.0, 0.0]), weight: 1.0 }), Some(WeightedPoint3 { point: Point3([2097152.0000000005, -1.0181645271851257e-9, 0.0]), weight: 1.0 })]
+
+thread 'circular_and_mixed_planar_booleans_preserve_area_across_model_scales' (2032293) panicked at crates/viboceros-geometry/tests/planar_boolean_scale.rs:63:5:
+circles 20 Union: InvalidPlanarFaceBoundary
+circles 20 Difference: InvalidPlanarFaceBoundary
+strip 20 Union: InvalidPlanarFaceBoundary
+strip 20 Difference: InvalidPlanarFaceBoundary
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test circular_and_mixed_planar_booleans_preserve_area_across_model_scales ... FAILED
+
+failures:
+
+failures:
+    circular_and_mixed_planar_booleans_preserve_area_across_model_scales
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+
+error: test failed, to rerun pass `-p viboceros-geometry --test planar_boolean_scale`
+EXIT_CODE 101

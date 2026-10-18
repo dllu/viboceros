@@ -123,6 +123,13 @@ topology, metadata and history. Six meet the existing boundary bound; 21 retain
 measured fitted-curve discrepancies as explicit diagnostics. See
 [arithmetic and diagnostics](../planar-cut-numerics.md).
 
+The [export closure regression](../planar-boolean-export-closure.md) fixes
+large-scale Union/Difference failures caused by arc-to-NURBS conversion opening
+an analytically closed contour. The contour builder reconciles the actual
+exported endpoints within the existing tolerance. A 72-case analytic matrix
+also checks reversed operand order and tilted, translated planes. Existing
+native curve-discrepancy diagnostics and comparison bounds are retained.
+
 A production wgpu/egui inspection on private Xvfb checks ordered viewport picks
 for Difference and Intersection, automatic completion on the second pick, and
 Undo/Redo in Ghosted mode. It also checks three-surface preselected Union.

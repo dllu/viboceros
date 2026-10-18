@@ -1,0 +1,215 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee",
+  "log_policy": "Plain debug logs retain Cargo output followed by the observed process exit code. Gzipped release logs retain the complete original bytes.",
+  "bug": "Analytic arc endpoints were checked before conversion. Rounded arc-to-NURBS frames could reopen a seam near coordinate zero, so the valid planar region was rejected by fixed NURBS closure admission.",
+  "rejected_contour_diagnostics": {
+    "circle_endpoint_gap": 5.43336831988914e-10,
+    "strip_endpoint_offset": [
+      4.656612873077393e-10,
+      -1.0181645271851257e-09,
+      0
+    ],
+    "strip_endpoint_gap": 1.1195978916178843e-09,
+    "plane_check": true,
+    "closed_check": false,
+    "log": "docs/planar-export-endpoint-diagnostics.log",
+    "scope": "Initial eighteen-case subset, with diagnostic logging added only at the unchanged planar-face rejection branch. This diagnostic run is not the exact-source 72-case baseline."
+  },
+  "implementation": {
+    "prepare": "Convert and clamp the actual NURBS segments before assessing junctions.",
+    "bounds": "Both analytic and converted junction gaps must obey the existing model tolerance; do not relax general curve closure or polycurve admission.",
+    "reconcile": "Share the midpoint of adjacent exported endpoint controls when fixed coincidence requires editing. Preserve other controls, weights, degree and full knots; retain source segments.",
+    "refusal": "Conversion gaps beyond the supplied model tolerance return UnrepresentableBrepBoolean."
+  },
+  "matrix": {
+    "baseline": {
+      "cases": 72,
+      "failed_cases": 5,
+      "successful_cases": 67,
+      "maximum_normalized_area_error": 4.973799150320701e-14,
+      "log": "docs/planar-export-closure-baseline.log"
+    },
+    "candidate": {
+      "cases": 72,
+      "failed_cases": 0,
+      "successful_cases": 72,
+      "maximum_normalized_area_error": 4.973799150320701e-14,
+      "log": "docs/planar-export-closure-candidate.log"
+    },
+    "candidate_release": {
+      "cases": 72,
+      "failed_cases": 0,
+      "successful_cases": 72,
+      "maximum_normalized_area_error": 4.973799150320701e-14,
+      "log": "docs/planar-export-geometry-release.log.gz"
+    },
+    "baseline_command": "cargo test -p viboceros-geometry --test planar_boolean_scale -- --nocapture",
+    "baseline_exit_code": 101,
+    "candidate_exit_code": 0,
+    "baseline_source": "Original production planar_circular.rs at the baseline revision with the same new 72-case integration test.",
+    "model_scales": [
+      "2^-20",
+      "1",
+      "2^20"
+    ],
+    "absolute_tolerance": "1e-7 times model scale",
+    "cases": "Two boundary pairs (circle-circle and disk-strip), both operand orders, all three set operations, XY and tilted/translated planes.",
+    "analytic_oracles": "Closed circle-lens and disk-strip area formulas, independent of the contour construction.",
+    "area_assertion_normalized_absolute_error_lt": 1e-06,
+    "other_assertions": [
+      "Expected component counts",
+      "Manifold open topology",
+      "Output vertices on the supporting plane",
+      "Exact source preservation"
+    ]
+  },
+  "regressions": {
+    "new_unit": "arc_conversion_gaps_obey_the_existing_export_tolerance",
+    "assertions": [
+      "Analytic contour closes before conversion",
+      "Actual conversion produces a measurable sub-tolerance gap",
+      "Exported NURBS contour closes",
+      "33 witnesses per segment compare the unchanged NURBS parameterization and stay within the model tolerance",
+      "A tighter model tolerance rejects the conversion gap",
+      "Input segments remain exactly unchanged"
+    ],
+    "existing_unit": "boolean_export_reconciles_scaled_junctions_and_rejects_larger_gaps",
+    "fixed_command_tests": [
+      "planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics",
+      "planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history"
+    ],
+    "unchanged_native_comparisons": true,
+    "unchanged_observation_fixtures": true,
+    "unchanged_document_and_history_assertions": true
+  },
+  "completed_runs": [
+    {
+      "command": "cargo test --release -p viboceros-geometry -p viboceros-command --features viboceros-command/native-smlib -- --nocapture",
+      "exit_code": 101,
+      "log_sha256": "ded9650e9338c74b46a3655a07117bb3787d5f849f9a26cde1404ed6b5f753d7",
+      "passed": 3958,
+      "failed": 1,
+      "ignored": 11,
+      "retained_log": "docs/planar-export-initial-release.log.gz",
+      "command_library_suite": {
+        "exit_code": 0,
+        "passed": 1579,
+        "failed": 0,
+        "ignored": 3
+      },
+      "geometry_library_suite": {
+        "passed": 2379,
+        "failed": 1,
+        "ignored": 8
+      },
+      "subsequent_change": "Only the cfg(test) guard comparison changed afterward: compare the source NURBS conversion at the same parameters, rather than linear arc angles. The production implementation is identical in this run and the final source."
+    },
+    {
+      "command": "cargo test --release -p viboceros-geometry -- --nocapture",
+      "exit_code": 0,
+      "log_sha256": "d56a7ff703967b61fe8c3c27cf1beab2468d13b95834b39b1455251566ac3110",
+      "passed": 2382,
+      "failed": 0,
+      "ignored": 8,
+      "retained_log": "docs/planar-export-geometry-release.log.gz"
+    },
+    {
+      "command": "cargo test --release --bin viboceros planar_boolean -- --nocapture",
+      "exit_code": 0,
+      "log_sha256": "fa164c3cc2f0cc2b0bd4e6c5e6c4606d2e59620dca90c8dbed37fdf9188a6bee",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "retained_log": "docs/planar-export-app-release.log.gz"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "f9730dd166f6f8c9135c6638c8a83db6a5f6f004d16d45698643d5d12b94d78e"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_release_sections": [
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_geometry-b224b5d66ce6650b)",
+      "summary": "test result: ok. 2380 passed; 0 failed; 8 ignored; 0 measured; 0 filtered out; finished in 19.76s"
+    },
+    {
+      "header": "Running tests/planar_boolean_scale.rs (target/release/deps/planar_boolean_scale-5f138d1e4f8fe084)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s"
+    },
+    {
+      "header": "Doc-tests viboceros_geometry",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 0,
+    "records": 0,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "limits": [
+    "Existing native fitted-curve discrepancy diagnostics and comparison bounds remain; this is not a new Rhino parity capture.",
+    "General spline Boolean inputs, near contacts and arbitrary scales are not qualified by this regression.",
+    "The additional 2^40 experiment stopped in frame construction because a unit normal is normalized with document distance tolerance above one. That separate dimensional issue remains; it is not included among the 72 passing cases.",
+    "No new performance claim. Segment conversions are prepared eagerly to check the actual exported payload."
+  ],
+  "production_region_sha256": "9ddc3186e97a1c32f914102867241d125800acb37f213cefb1289cff2177c07e",
+  "source_sha256": {
+    "crates/viboceros-geometry/src/brep/boolean/planar_circular.rs": "f40873d0106d0ecb5a08fcaab191a2e9c4ed3fa6ebe6abe6f2a6af553c3eac60",
+    "crates/viboceros-geometry/src/brep/boolean/planar_mixed.rs": "91a0a8cd9d5af0eb9233ded07dc37443ba4462fece43b81b669baf78b75d9048",
+    "crates/viboceros-geometry/src/brep.rs": "3121a923320d387016db11103192922caf3fe5b47115424b9a8e6a41e503c3a1",
+    "crates/viboceros-geometry/src/nurbs.rs": "6050a03ba4cca4a943be70e71f820158c8006f06101931276aef521227f8c3b1",
+    "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
+    "crates/viboceros-geometry/src/polycurve.rs": "7e12b570052bb53a128d576809af3b209ff25b3e63ac2aebe31c1b9c84f92115",
+    "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
+    "crates/viboceros-geometry/src/circular.rs": "150b07fbe8244a42585ddf938098d3968011e3877e5e81b002900ac1588d97e2",
+    "crates/viboceros-geometry/src/circle_curve.rs": "a72e5c943d8e4786bc67fa3ed76e1677f3b57909a4845cb0aa624a4297810ec2",
+    "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "crates/viboceros-geometry/src/tolerance.rs": "a5d8ff84321ee02cabcdac0666c9965aa7d1211f893c0321b05cf9a30a420123",
+    "crates/viboceros-geometry/tests/planar_boolean_scale.rs": "3ae6e50fb9246985840bcadfe446e6522e5ff78c73e156d48b22f4f996964022",
+    "crates/viboceros-command/src/planar_boolean.rs": "f2b20728494afb35a7f5f368ed0416fe8f70d874ba3eb54e8b2cdfdcdd45d86e",
+    "crates/viboceros-command/src/planar_boolean/tests.rs": "e5f1998b805068593f92f92794e6b8cd46275020b350b2822d6179d4ca84af64",
+    "src/app/tests/planar_boolean.rs": "b9bcb61c29f4504f7a451547080d93f2ba118ecd8578eb26202fc74688f903b3",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/commands/planar-booleans.md": "e78c6c387854ae8c9794d0f557ada2b23350800826460b6bb3d7f68da758ba9b",
+    "docs/planar-boolean-export-closure.md": "50b36a4f64b1a67ca687527a78220ec410ef23f53e87d675ea105d36117c7c96",
+    "docs/planar-export-closure-baseline.log": "f5b38a5b0e554ed941b2d7d0a90afae11d4a9654fd6c3636baf5c9edfd2064ef",
+    "docs/planar-export-closure-candidate.log": "4b89ca17063f83651ecb5b95680f9386fea700ac11e6507409b56679635e80eb",
+    "docs/planar-export-endpoint-diagnostics.log": "38a7ae634f53f47b291b2ef00906688b8381c7a94b9cd7a69a00a1924f4aa847",
+    "docs/planar-export-initial-release.log.gz": "cd228f58af7b4b1edf6710fb7f56bfe7d7e75607a59e20261df05737d08828c7",
+    "docs/planar-export-geometry-release.log.gz": "12ae370b7a06a1918f6e1b34783dd09a08e7753138ccd13dce5f281aa653a338",
+    "docs/planar-export-app-release.log.gz": "b11aa2eb404391ad44bcfd1896eae93681f66e26ef91c73f220f192c80b22b64",
+    "docs/native-pole-existing-planar-failures.log": "6d6956706def228109b744e5fc6a645277f7287af21a0493f471115e3442937c",
+    "tools/rhino_oracle/observations/planar_boolean_command.json": "06eca1218a0495c75030ab9c771811d4816a4bb9f9c15f4f59c9f9fb665d6d10",
+    "tools/rhino_oracle/observations/planar_boolean_topology.json": "cc0d0684f792df289a473ec9586cf63b54cc52587e56bce9561b3b5dad5518dd",
+    "tools/rhino_oracle/observations/planar_boolean_circular.json": "f268621c566f47c35eab795979dc650a207b24c6ac402ed93493e6efefb59483",
+    "tools/rhino_oracle/observations/planar_boolean_mixed.json": "e74b38dcde235185e5b209aa3e2399f8aa4778f8e579689326d2818d8db2af6a",
+    "tools/rhino_oracle/observations/planar_boolean_scale.json": "744f550869f18dec58077ea992b4f0bd1dbb73c224833f4f5ea9d532a75a93ad",
+    "tools/rhino_oracle/observations/planar_circle_scale.json": "a3cda629694e4f4f8a8f5dfb30c2ee808dddc97c18b5909b591845859d38073c"
+  },
+  "baseline_git_sha256": {
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/brep/boolean/planar_circular.rs": "66c3ba2aa5c806ea3d9ab6bfad710d7b1e9cea8a86b2f2c6572c0cab8bc72a31",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/brep/boolean/planar_mixed.rs": "91a0a8cd9d5af0eb9233ded07dc37443ba4462fece43b81b669baf78b75d9048",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/brep.rs": "3121a923320d387016db11103192922caf3fe5b47115424b9a8e6a41e503c3a1",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/nurbs.rs": "6050a03ba4cca4a943be70e71f820158c8006f06101931276aef521227f8c3b1",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/polycurve.rs": "7e12b570052bb53a128d576809af3b209ff25b3e63ac2aebe31c1b9c84f92115",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/circular.rs": "150b07fbe8244a42585ddf938098d3968011e3877e5e81b002900ac1588d97e2",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/circle_curve.rs": "a72e5c943d8e4786bc67fa3ed76e1677f3b57909a4845cb0aa624a4297810ec2",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-geometry/src/tolerance.rs": "a5d8ff84321ee02cabcdac0666c9965aa7d1211f893c0321b05cf9a30a420123",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-command/src/planar_boolean.rs": "f2b20728494afb35a7f5f368ed0416fe8f70d874ba3eb54e8b2cdfdcdd45d86e",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-command/src/planar_boolean/tests.rs": "e5f1998b805068593f92f92794e6b8cd46275020b350b2822d6179d4ca84af64",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:src/app/tests/planar_boolean.rs": "b9bcb61c29f4504f7a451547080d93f2ba118ecd8578eb26202fc74688f903b3",
+    "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}
