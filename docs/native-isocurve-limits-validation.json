@@ -356,7 +356,6 @@
     "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
     "docs/common-parameter-curve-fit-validation.json": "5b34a8e722f99ee9fb7696cb0e2bfb931ebbc3d3711e1f08c59b2dac5d06d582",
     "docs/constrained-network-fit-validation.json": "aaf69072e3bd71138b7028584339ed24f9fc0b40bf063bff203162e842733a14",
-    "docs/native-isocurve-pairs-validation.json": "e25bbc2cbf2ba300c69c7d36de15c481c2f10be71298c3f7b40586fae0542a73",
     "docs/smlib-native-fillet-contact-comparison.json": "52ebd9aabbf984c4f7f2e36305f9f1122e5dc55aa96a4dfd4ce09d07ba05a21a"
   },
   "baseline_git_sha256": {
@@ -374,6 +373,7 @@
     "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/native/knot_refinement.cpp": "7352074510f0c849f4af5c409d54ac52ffea1862f2a735e402ed17db8c2b9098"
   },
   "artifact_git_sha256": {
-    "fc9f50e921d449f0845da00252da5adb142d5042:docs/usd-brep-limitations.md": "901ddd596be778d9dfecc7c3f481b970f6f0360a2ddce31c98e136205039a64a"
+    "fc9f50e921d449f0845da00252da5adb142d5042:docs/usd-brep-limitations.md": "901ddd596be778d9dfecc7c3f481b970f6f0360a2ddce31c98e136205039a64a",
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:docs/native-isocurve-pairs-validation.json": "e25bbc2cbf2ba300c69c7d36de15c481c2f10be71298c3f7b40586fae0542a73"
   }
 }

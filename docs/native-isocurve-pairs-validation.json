@@ -331,7 +331,6 @@
     "docs/native-isocurve-pairs-observed-subsets.py.gz": "0929a3435fde9deb0eb34d2deb337af50f87414986992ceb7de7826964622d0a",
     "docs/native-isocurve-pairs-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
     "docs/native-isocurve-pairs-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
-    "README.md": "f33d2c41048d4f3bedf301e0eec284fe5aed47b76ef6f4540725954c9d0487da",
     "docs/commands/divide-along-creases.md": "bb4c2ffa056cdbcf63ae1d9e091e6c78984ac2f770a51e876144d641db9471ad",
     "docs/native-closed-join-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
     "docs/native-closed-join-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
@@ -364,6 +363,7 @@
   "artifact_git_sha256": {
     "bdef540085515d56b7d222d15cadea16c159a118:docs/native-isocurve-pairs.md": "4d59bee54aae22c613a4fdfc82ff075685ded64a2008c923ecbf317539323f8c",
     "bdef540085515d56b7d222d15cadea16c159a118:docs/smlib-isocurves.md": "09a31efd0d4837feae8636ae94fcd405fb3368f1751d0bd357471bb6b3c7f0a4",
-    "bdef540085515d56b7d222d15cadea16c159a118:docs/usd-brep-limitations.md": "7c9142b05e867bdf2cf32ef72d1038d3bfcb0eddfee4b3d2264d1647e58e9e4a"
+    "bdef540085515d56b7d222d15cadea16c159a118:docs/usd-brep-limitations.md": "7c9142b05e867bdf2cf32ef72d1038d3bfcb0eddfee4b3d2264d1647e58e9e4a",
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:README.md": "f33d2c41048d4f3bedf301e0eec284fe5aed47b76ef6f4540725954c9d0487da"
   }
 }

@@ -1,5 +1,11 @@
 # Local usd-brep fixes
 
+`usd-brep-basis-evaluation.patch` and `usd-brep-curve-evaluation-basis.patch`
+repair unclamped endpoint limits and exact nonzero evaluation spans in the
+pinned release below. Curve derivatives share the stack-based basis derivative
+routine; editing span helpers retain their own contracts. See the
+[native basis qualification](../../docs/native-basis-evaluation.md).
+
 `usd-brep-interior-point.patch` applies to NVIDIA usd-brep release 1.0.0,
 commit `c9c5979f04cea8c38213004d4f04df0dcfb40d05` (Apache-2.0).
 It checks the existing model-space tolerance before treating a nearest-point

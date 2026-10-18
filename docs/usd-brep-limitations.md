@@ -209,7 +209,9 @@ issues reported by NVIDIA that have not all been reproduced here.
   the producer returns `[0,0.31520737327188947,1.5133640552995387,2]`.
   The [direct probe](../tools/usd_brep/rebuild_interpolation_probe.cpp) evaluates
   the endpoint limits with independent quadratic coefficients, avoiding the
-  native endpoint evaluator's identical clamping assumption.
+  then-unrepaired native endpoint evaluator's identical clamping assumption.
+  The [basis evaluator repair](native-basis-evaluation.md) fixes evaluation;
+  this interpolation producer's endpoint constraints remain separate.
   [Retained output](smlib-curve-rebuild-probe.json) records the result.
   Periodic Rebuild instead uses the shared native derivative-basis and matrix
   adapter with cyclic control constraints; existing basis edits only supply
@@ -294,14 +296,17 @@ issues reported by NVIDIA that have not all been reproduced here.
   [native segment extraction](smlib-curve-segments.md),
   [direct probe](../tools/usd_brep/segment_extraction_probe.cpp), and
   [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp).
-- **Endpoint evaluation assumes clamped basis coefficients.** `N_BasisEval`
-  supplies identity rows at active endpoints regardless of padding.
-  `N_CrvEvalPt` therefore returns `[8,3,2]` at the same unclamped active end,
-  and cannot independently validate the segment-extraction result above.
-  `N_SrfExtractIsoCrv` similarly copies the first/last control row at constant-axis
-  active boundaries (source audit); this requires that axis to be clamped.
-  Curve endpoint behavior is reproduced by the same direct probe; the tensor
-  convenience path was inspected, not executed as a new adapter operation.
+- **Fixed: endpoint evaluation assumed clamped basis coefficients.**
+  `N_BasisEval` previously supplied identity rows at every active endpoint;
+  `N_CrvEvalPt` returned `[8,3,2]` at the same unclamped end. Evaluation now
+  selects exact nonzero spans and computes the actual inward limit, retaining
+  identity shortcuts only at clamped ends. Shared basis derivatives and curve
+  derivatives use the same span rules, including full-order breaks and small
+  positive spans. Curve and tensor point queries are directly exercised by
+  the [368-station qualification](native-basis-evaluation.md), supplemented by
+  88 fresh SDK evaluations. The separate earlier
+  [isocurve extraction repair](native-isocurve-limits.md) corrected the
+  constant-axis producer's similar boundary-row shortcut.
   Sources: [NL_BasisBasic.cpp](../third_party/usd-brep/source/SMLib/src/NL_BasisBasic.cpp),
   [NL_CrvAdv.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp), and
   [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).

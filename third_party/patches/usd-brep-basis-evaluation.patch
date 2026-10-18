@@ -1,0 +1,218 @@
+--- a/NL_BasisBasic.cpp
++++ b/NL_BasisBasic.cpp
+@@ -9,6 +9,8 @@
+ 
+ #include <nurbs.h>
+ #include <NL_Globals.h>
++#include <algorithm>
++#include <cmath>
+ 
+ 
+ /* -------------------------- */
+@@ -2835,6 +2837,30 @@
+ 
+    ***********************************************************************/
+ 
++// Evaluation needs an actual nonzero span, including at unclamped ends and
++// beside full-order groups. Keep the legacy span helpers used by editing
++// operations unchanged: their tolerance and indexing contracts are different.
++static NL_FLAG sm_BasisEvaluationSpan(NL_KNOTVECTOR *knt, NL_DEGREE p,
++                                    NL_PARAMETER u, NL_FLAG flg, NL_INDEX *spn)
++{
++    const NL_REAL *U = knt->U;
++    const NL_INDEX m = knt->m;
++    if (U[p] < U[m - p] && u >= U[p] && u <= U[m - p] &&
++        (flg == NL_LEFT || flg == NL_RIGHT))
++    {
++        if (u == U[p] && U[p] < U[p + 1])
++            *spn = p;
++        else if (u == U[m - p] && U[m - p - 1] < U[m - p])
++            *spn = m - p - 1;
++        else if (u == U[p] || (u != U[m - p] && flg == NL_LEFT))
++            *spn = std::upper_bound(U, U + m + 1, u) - U - 1;
++        else
++            *spn = std::lower_bound(U, U + m + 1, u) - U - 1;
++        return NL_NO;
++    }
++    return N_BasisFindSpan(knt, p, u, flg, spn);
++}
++
+ NL_FLAG N_BasisEval( NL_KNOTVECTOR *knt, NL_DEGREE p, NL_PARAMETER u, NL_FLAG flg, NL_REAL *N, NL_INDEX *spn )
+ {
+     NL_PRIVATE NL_STRING rname = _T("N_BasisEval");
+@@ -2845,17 +2871,13 @@
+ 
+     NL_REAL *U, left[NL_MAXDEG + 2], right[NL_MAXDEG + 2], saved, delta, temp;
+ 
+-    /* Divide by zero?  Note that the denominator is the sum of
+-     * the two things being multiplied by it, in the following
+-     * two statements, so the quotients in parentheses can never
+-     * be greater than 1.0.  Therefore, the only way for any floating-
+-     * point problem is if the delta is exactly zero, which can
+-     * happen only if there are more than degree+1 consecutive
+-     * equal knots (which would probably be caught before here).
+-     * So we essentially just have to guard against the denominator
+-     * being exactly zero ... but use something very tiny, to be safe.
+-     */
++    // On the active chart a positive finite knot width is sufficient. An
++    // absolute cutoff rejects valid scaled charts. Retain the legacy cutoff
++    // for extrapolation outside the active domain.
+     NL_REAL dZeroTol = 1e-24;
++
++    if (p < 0 || p > NL_MAXDEG)
++        NL_ERROR(NL_DEG_ERR);
+ 
+     /* Get local notation */
+ 
+@@ -2874,7 +2896,7 @@
+ 
+     /* Special cases for end values */
+ 
+-    if( u EQ U[p] )
++    if( u EQ U[p] && U[0] EQ u )
+     {
+         N[0] = 1.0;
+         *spn = p;
+@@ -2884,7 +2906,7 @@
+         NL_OUT;
+     }
+ 
+-    if( u EQ U[m - p] )
++    if( u EQ U[m - p] && U[m] EQ u )
+     {
+         N[p] = 1.0;
+         *spn = m - p - 1;
+@@ -2896,7 +2918,9 @@
+ 
+     /* Find the knot span u is in */
+ 
+-    N_BasisFindSpan( knt, p, u, flg, &i );
++    error = sm_BasisEvaluationSpan(knt, p, u, flg, &i);
++    if (error == NL_YES)
++        NL_OUT;
+     *spn = i;
+ 
+     /* Compute the non-vanishing B-splines */
+@@ -2913,7 +2937,8 @@
+         {
+             delta = right[l + 1] + left[k - l];
+ 
+-            if( delta < dZeroTol )
++            if (!(delta > 0.0) || !std::isfinite(delta) ||
++                ((u < U[p] || u > U[m - p]) && delta < dZeroTol))
+             {
+                 NL_ERROR( NL_NUM_ERR );
+             }
+@@ -2993,25 +3018,19 @@
+ 
+     NL_INDEX i, j, k, r, s1, s2, rk, pk, j1, j2, mder;
+ 
+-    NL_REAL *U, *left, *right, ** ndu, ** a, saved, delta, d;
+-
+-    NL_STACKS S;
+-
+-    /* Divide by zero?  Note that the denominator is the sum of
+-     * the two things being multiplied by it, in the following
+-     * two statements, so the quotients in parentheses can never
+-     * be greater than 1.0.  Therefore, the only way for any floating-
+-     * point problem is if the delta is exactly zero, which can
+-     * happen only if there are more than degree+1 consecutive
+-     * equal knots (which would probably be caught before here).
+-     * So we essentially just have to guard against the denominator
+-     * being exactly zero ... but use something very tiny, to be safe.
+-     */
++    NL_REAL *U, left[NL_MAXDEG + 1], right[NL_MAXDEG + 1],
++            ndu[NL_MAXDEG + 1][NL_MAXDEG + 1], a[2][NL_MAXDEG + 1],
++            saved, delta, d, factor;
++
++    // On the active chart a positive finite knot width is sufficient. An
++    // absolute cutoff rejects valid scaled charts. Retain the legacy cutoff
++    // for extrapolation outside the active domain.
+     NL_REAL dZeroTol = 1e-24;
+ 
+-    /* Start NURBS */
+-
+-    N_InitNurbs( &S );
++    if (p < 0 || p > NL_MAXDEG)
++        NL_ERROR(NL_DEG_ERR);
++    if (der < 0)
++        NL_ERROR(NL_MXD_ERR);
+ 
+     /* Get local notation */
+ 
+@@ -3019,7 +3038,7 @@
+ 
+     /* Find the knot span u is in */
+ 
+-    error = N_BasisFindSpan( knt, p, u, flg, &i );
++    error = sm_BasisEvaluationSpan(knt, p, u, flg, &i);
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+@@ -3037,28 +3056,6 @@
+         }
+     }
+ 
+-    /* Allocate memory */
+-
+-    left = N_AllocReal1dArray( p, &S );
+-
+-    if( left EQ NULL )
+-        NL_QUIT;
+-
+-    right = N_AllocReal1dArray( p, &S );
+-
+-    if( right EQ NULL )
+-        NL_QUIT;
+-
+-    ndu = N_AllocReal2dArray( p, p, &S );
+-
+-    if( ndu EQ NULL )
+-        NL_QUIT;
+-
+-    a = N_AllocReal2dArray( 1, p, &S );
+-
+-    if( a EQ NULL )
+-        NL_QUIT;
+-
+     /* Compute the basis functions */
+ 
+     ndu[0][0] = 1.0;
+@@ -3076,7 +3073,8 @@
+             delta = right[r + 1] + left[j - r];
+             ndu[j][r] = delta;
+ 
+-            if( delta < dZeroTol )
++            if (!(delta > 0.0) || !std::isfinite(delta) ||
++                ((u < U[p] || u > U[knt->m - p]) && delta < dZeroTol))
+             {
+                 NL_ERROR( NL_NUM_ERR );
+             }
+@@ -3143,22 +3141,22 @@
+ 
+     /* Multiply through by the correct factors */
+ 
+-    r = p;
++    factor = p;
+ 
+     for ( k = 1; k <= mder; k++ )
+     {
+         for ( j = 0; j <= p; j++ )
+         {
+-            ND[k][j] *= r;
++            ND[k][j] *= factor;
++            if (!std::isfinite(ND[k][j]))
++                NL_ERROR(NL_NUM_ERR);
+         }
+-        r *= (p - k);
++        factor *= (p - k);
+     }
+ 
+     /* End NURBS and Exit */
+ 
+     EXIT:
+-
+-    N_EndNurbs( &S );
+ 
+     return (error);
+ } /* end N_BasisDerivs */

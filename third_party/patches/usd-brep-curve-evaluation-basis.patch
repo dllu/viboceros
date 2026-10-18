@@ -1,0 +1,151 @@
+--- a/NL_CrvNurb.cpp
++++ b/NL_CrvNurb.cpp
+@@ -957,25 +957,20 @@
+ 
+     NL_FLAG error = NL_NO;
+ 
+-    NL_INDEX i, j, k, m, r, s1, s2, rk, pk, j1, j2, mder, nsp;
++    NL_INDEX i, j, k, m, r, j1, j2, nsp;
+ 
+     NL_INTEGER tri[NL_MAXDER + 1][NL_MAXDER + 1];
+ 
+     NL_DEGREE p;
+ 
+-    NL_REAL *U, BD[NL_MAXDER + 1][NL_MAXDEG + 1], saved, temp, d, *left, w, *right, a[2][NL_MAXDEG + 1], ndu[NL_MAXDEG + 1][NL_MAXDEG + 1], *dd;
++    NL_REAL *U, BD[NL_MAXDER + 1][NL_MAXDEG + 1],
++            *basis_rows[NL_MAXDER + 1], dd[NL_MAXDER + 1], d, w;
+ 
+     NL_KNOTVECTOR *knt;
+ 
+     NL_POINT P[NL_MAXDEG + 1];
+ 
+     NL_CPOINT *Pw;
+-
+-    /* Assign addresses */
+-
+-    left = &a[0][0];
+-    right = &a[1][0];
+-    dd = &a[0][0];
+ 
+     /* Get local notation */
+ 
+@@ -1001,113 +996,13 @@
+         NL_OUT;
+     }
+ 
+-    /* Compute basis function derivatives */
+-
+-    /* Find the knot span u is in */
+-
+-    error = N_BasisFindSpan( knt, p, u, flg, &nsp );
+-
+-    if( error EQ NL_YES )
++    // Share exact span selection and the stable basis calculation. All scratch
++    // storage stays on the stack, as in the previous specialized evaluator.
++    for (k = 0; k <= der; ++k)
++        basis_rows[k] = BD[k];
++    error = N_BasisDerivs(knt, p, u, flg, der, basis_rows, &nsp);
++    if (error == NL_YES)
+         NL_OUT;
+-
+-    /* Get maximum derivative index and set zero derivatives */
+-
+-    mder = NL_MIN( p, der );
+-
+-    for ( k = p + 1; k <= der; k++ )
+-    {
+-        for ( j = 0; j <= p; j++ )
+-        {
+-            BD[k][j] = 0.0;
+-        }
+-    }
+-
+-    /* Compute the basis functions */
+-
+-    ndu[0][0] = 1.0;
+-
+-    for ( j = 1; j <= p; j++ )
+-    {
+-        left[j] = u - U[nsp + 1 - j];
+-        right[j] = U[nsp + j] - u;
+-        saved = 0.0;
+-
+-        for ( r = 0; r < j; r++ )
+-        {
+-            ndu[j][r] = right[r + 1] + left[j - r];
+-            if( N_FloatOpIsBad( ndu[r][j - 1], ndu[j][r] , NL_DIVISION ) )
+-               NL_ERROR( NL_NUM_ERR );
+-
+-            temp = ndu[r][j - 1] / ndu[j][r];
+-            ndu[r][j] = saved + right[r + 1] * temp;
+-            saved = left[j - r] * temp;
+-        }
+-        ndu[j][j] = saved;
+-    }
+-
+-    /* Load the basis functions */
+-
+-    for ( j = 0; j <= p; j++ )
+-        BD[0][j] = ndu[j][p];
+-
+-    /* Compute derivatives */
+-
+-    for ( r = 0; r <= p; r++ )
+-    {
+-        s1 = 0;
+-        s2 = 1;
+-        a[0][0] = 1.0;
+-
+-        for ( k = 1; k <= mder; k++ )
+-        {
+-            d = 0.0;
+-            rk = r - k;
+-            pk = p - k;
+-
+-            if( r GE k )
+-            {
+-                a[s2][0] = a[s1][0] / ndu[pk + 1][rk];
+-                d = a[s2][0] * ndu[rk][pk];
+-            }
+-
+-            if( rk GE - 1 )
+-                j1 = 1;
+-            else
+-                j1 = -rk;
+-
+-            if( (r - 1)LE pk )
+-                j2 = k - 1;
+-            else
+-                j2 = p - r;
+-
+-            for ( j = j1; j <= j2; j++ )
+-            {
+-                a[s2][j] = (a[s1][j] - a[s1][j - 1]) / ndu[pk + 1][rk + j];
+-                d += a[s2][j] * ndu[rk + j][pk];
+-            }
+-
+-            if( r LE pk )
+-            {
+-                a[s2][k] = -a[s1][k - 1] / ndu[pk + 1][r];
+-                d += a[s2][k] * ndu[r][pk];
+-            }
+-            BD[k][r] = d;
+-            N_SwapIntegers( &s1, &s2 );
+-        }
+-    }
+-
+-    /* Multiply through by the correct factors */
+-
+-    r = p;
+-
+-    for ( k = 1; k <= mder; k++ )
+-    {
+-        for ( j = 0; j <= p; j++ )
+-        {
+-            BD[k][j] *= r;
+-        }
+-        r *= (p - k);
+-    }
+ 
+     if( N_IsCrvRat( cur ) )
+     {

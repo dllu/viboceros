@@ -1,0 +1,364 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "387c821af5c3bb4f945da14235b6d3f6de6ab9b6",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Compute actual unclamped endpoint basis values; select exact nonzero evaluation spans at active bounds, inactive padding and full-order breaks. Editing span helper contracts remain unchanged.",
+    "Accept positive finite in-domain knot widths without the absolute numerical cutoff; retain the extrapolation cutoff.",
+    "Use fixed stack scratch in the shared derivative basis routine and reuse it for curve derivatives instead of duplicated basis math. Reject nonfinite basis derivatives."
+  ],
+  "cases": {
+    "stations": 368,
+    "families": 12,
+    "weighted_cases": 1104,
+    "degrees": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      17
+    ],
+    "chart_scales": [
+      "2^-360",
+      "1",
+      "2^360"
+    ],
+    "translated_origin": 1000000000000.0,
+    "common_gauges": [
+      "1",
+      "2^-100",
+      "-2^100"
+    ],
+    "sides": [
+      "NL_LEFT (right limit)",
+      "NL_RIGHT (left limit)"
+    ],
+    "maximum_derivative_order": {
+      "unit_or_translated": 4,
+      "extreme_chart_scales": 2
+    },
+    "expected": "Independent Bernstein derivative polynomials, uniform quadratic/cubic identities, irregular endpoint coefficients and isolated blocks; a one-ULP final span exercises exact span selection.",
+    "comparisons": "All tolerances multiply max(1,abs(expected)): basis 2e-13, chart-normalized basis derivatives 2e-11, curve/surface points 1e-10, chart-normalized curve derivatives 2e-9, homogeneous points divided by common gauge 5e-12."
+  },
+  "producers": {
+    "baseline": {
+      "exit_code": 1,
+      "stations": 368,
+      "weighted_cases": 1104,
+      "passing": {
+        "all_checks": 228,
+        "basis": 262,
+        "basis_derivatives": 270,
+        "curve_points": 786,
+        "curve_derivatives": 996,
+        "surface_points": 786
+      },
+      "unchanged_curve_definitions": 1104,
+      "raw": {
+        "retained": "docs/native-basis-evaluation-baseline.jsonl.gz",
+        "uncompressed_sha256": "fdaabf00f79ceae0d15f0fcfab14f28341eae1b19e3be352112cbe6040cda408"
+      },
+      "stderr": {
+        "retained": "docs/native-basis-evaluation-baseline.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "build": {
+        "command": "cmake --build <focused debug native tree> --target viboceros_smlib_basis_evaluation_probe viboceros_smlib_basis_evaluation_baseline -j10",
+        "exit_code": 0,
+        "retained": "docs/native-basis-evaluation-baseline-build.log.gz",
+        "uncompressed_sha256": "4a1ffd750bba88358255fc26a06ee80076693586b0a2e54950176dafab75d630"
+      },
+      "method": "Explicitly link the pinned original NL_BasisBasic.cpp and NL_CrvNurb.cpp objects ahead of the repaired archive. All other local repairs remain. The final corrected independent fixture is identical in baseline and candidate executions."
+    },
+    "candidate": {
+      "exit_code": 0,
+      "stations": 368,
+      "weighted_cases": 1104,
+      "passing": {
+        "all_checks": 368,
+        "basis": 368,
+        "basis_derivatives": 368,
+        "curve_points": 1104,
+        "curve_derivatives": 1104,
+        "surface_points": 1104
+      },
+      "unchanged_curve_definitions": 1104,
+      "raw": {
+        "retained": "docs/native-basis-evaluation-candidate.jsonl.gz",
+        "uncompressed_sha256": "98764f1b58826ec4503a62f1c667b141fae714c5ceb15c97e66b562ce598ec15"
+      },
+      "stderr": {
+        "retained": "docs/native-basis-evaluation-candidate.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "asan": {
+      "exit_code": 0,
+      "stations": 368,
+      "weighted_cases": 1104,
+      "passing": {
+        "all_checks": 368,
+        "basis": 368,
+        "basis_derivatives": 368,
+        "curve_points": 1104,
+        "curve_derivatives": 1104,
+        "surface_points": 1104
+      },
+      "unchanged_curve_definitions": 1104,
+      "raw": {
+        "retained": "docs/native-basis-evaluation-asan.jsonl.gz",
+        "uncompressed_sha256": "98764f1b58826ec4503a62f1c667b141fae714c5ceb15c97e66b562ce598ec15"
+      },
+      "stderr": {
+        "retained": "docs/native-basis-evaluation-asan.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "build": {
+        "command": "Configure the native tree with -DVIBOCEROS_SMLIB_ASAN=ON -DCMAKE_BUILD_TYPE=Release, then cmake --build /tmp/viboceros-isocurve-pair-asan --target viboceros_smlib_basis_evaluation_probe viboceros_smlib -j10",
+        "exit_code": 0,
+        "retained": "docs/native-basis-evaluation-asan-build.log.gz",
+        "uncompressed_sha256": "55bba3a403b099e49bc645e7cbfc7dd2ea6548132587fc01f8609455884711f1"
+      },
+      "flags": {
+        "retained": "docs/native-basis-evaluation-asan-flags.txt.gz",
+        "uncompressed_sha256": "ed1721fe1d936e70c924417174379b1a20aa65c3244e59cb2ebe35385013f0e9"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "scope": "Complete SMLib/SM_API/C ABI archives and direct probe are instrumented. Execution here is the direct basis/curve/surface probe, not the Rust-facing C ABI suite.",
+      "leak_policy": "Leak detection disabled; no leak-free claim."
+    }
+  },
+  "producer_runs": {
+    "command": "python3 /tmp/viboceros-basis-evaluation-probes.py",
+    "exit_code": 0,
+    "retained": "docs/native-basis-evaluation-probes.log.gz",
+    "uncompressed_sha256": "114e1de6818f828a42fc24f83a30b3df2e8492ab7a6b4c07b409238b1a82f89c",
+    "script": {
+      "retained": "docs/native-basis-evaluation-probes.py.gz",
+      "uncompressed_sha256": "bf4a120e7164747ecb09dbe641a2a2c71602b10811e163b7801ca07b8b5e2fda"
+    }
+  },
+  "fresh_rhino": {
+    "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-basis-evaluation-sdk.py",
+    "exit_code": 0,
+    "retained": "docs/native-basis-evaluation-sdk.log.gz",
+    "uncompressed_sha256": "5087364a56b91921774c57015674f544dbfd4bf8006247c07e00c6a21cac67a4",
+    "script": {
+      "retained": "docs/native-basis-evaluation-sdk.py.gz",
+      "uncompressed_sha256": "9b4b9d63584ff4a2d52621d7041716a93be3981e7be60e26a5eb6eeae3fb77af"
+    },
+    "request": {
+      "retained": "docs/native-basis-evaluation-sdk-request.json.gz",
+      "uncompressed_sha256": "792f01ba9fc45bec3a9009e2e0bf3faf5a393dd9b36525519b23599d7522a35d"
+    },
+    "response": {
+      "retained": "docs/native-basis-evaluation-sdk-rhino.json.gz",
+      "uncompressed_sha256": "3d3907b0b788107f34a69e24670d1203ba03d05cf7832db74462d32fa2d48fc1"
+    },
+    "report": {
+      "retained": "docs/native-basis-evaluation-sdk-report.json.gz",
+      "uncompressed_sha256": "e46b7bc39916e575555171e92e43e8b0c1661854330c9b3c2da525eb233ab90d"
+    },
+    "summary": {
+      "sdk_evaluations": 88,
+      "curve_stations": 44,
+      "surface_stations": 44,
+      "absolute_epsilon": 1e-10,
+      "max_absolute_differences": {
+        "curve_point": 8.881784197001252e-16,
+        "curve_derivative": 1.1368683772161603e-13,
+        "surface_point": 8.881784197001252e-16
+      },
+      "passed": true,
+      "scope": "Continuous degree 1/2/3/5/17 sources at unit scale, plus three unclamped families translated to 1e12; gauge 1. Exact stored knots and parameters, no normalization. Surface comparison covers points only. Small/large chart scales, full-order breaks, inactive padding and higher derivatives use the independent polynomial checks, not this SDK capture."
+    }
+  },
+  "native_api_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-basis-evaluation-replay.py",
+    "exit_code": 0,
+    "retained": "docs/native-basis-evaluation-replay.log.gz",
+    "uncompressed_sha256": "c7c4a849ee8799721e31d83739301386e03699594d9cb4f2043dca945613074d",
+    "script": {
+      "retained": "docs/native-basis-evaluation-replay.py.gz",
+      "uncompressed_sha256": "56ca2f4f2e5a721310019c0e49e767301c0dba0679547fad7b1da1a6d28acd5d"
+    },
+    "curved_audit": {
+      "retained": "docs/native-basis-evaluation-curved-audit.json.gz",
+      "uncompressed_sha256": "130baf51c50e16eff4d313dd59c64c59a182e3db040b3560f51abded65eebeb3"
+    },
+    "isocurve_audit": {
+      "retained": "docs/native-basis-evaluation-isocurve-audit.json.gz",
+      "uncompressed_sha256": "11bbaa357d8c46d2a2885a597913c4a97d6154a8d013d73faa591e22a8b4fb04"
+    },
+    "curved_report": {
+      "retained": "docs/native-basis-evaluation-curved-report.json.gz",
+      "uncompressed_sha256": "3d54e876e93237faf37ca7b3a2de5b3c8c24962ae5d6fb90a4e9fb9865b10d38"
+    },
+    "curved_summary": {
+      "cases": 48,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 44
+    }
+  },
+  "parent_raw_outcome_comparisons": [
+    {
+      "audit": "curved",
+      "cases": 48,
+      "identical": 48,
+      "changed_ids": [],
+      "policy": "Complete raw outcome equality with all fields retained, no normalization."
+    },
+    {
+      "audit": "isocurve",
+      "cases": 64,
+      "identical": 64,
+      "changed_ids": [],
+      "policy": "Complete raw outcome equality with all fields retained, no normalization."
+    }
+  ],
+  "observed_subset_comparisons": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-basis-evaluation-observed-subsets.py",
+    "exit_code": 0,
+    "retained": "docs/native-basis-evaluation-observed-subsets.log.gz",
+    "uncompressed_sha256": "f2a21356e8c349329a46eebd564bc3477d1f2f306c8d6578c602fabe43559e0d",
+    "script": {
+      "retained": "docs/native-basis-evaluation-observed-subsets.py.gz",
+      "uncompressed_sha256": "1f5b1f686c386deb30e3f7069e27f14246ccf453c84682e81d7f713e4b2cba00"
+    },
+    "reports": [
+      {
+        "retained": "docs/native-basis-evaluation-join_isocurve_local-report.json.gz",
+        "uncompressed_sha256": "aa4b1ed2de40f3a68709d4f7273a4895a4f1a0c6f26c705a0addb629aabe0316"
+      },
+      {
+        "retained": "docs/native-basis-evaluation-join_isocurve_origin-report.json.gz",
+        "uncompressed_sha256": "df4430490d3d51a1bbe12217e90d525edb3406aec3e77f5650965a84f682e4da"
+      }
+    ],
+    "scope": "The existing observations cover all 32 local configurations and one translated configuration; 31 translated configurations have no recorded Rhino result. Strict mismatches remain visible and are distinct from successful execution/topology checks."
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-basis-evaluation-bridge.log.gz",
+      "uncompressed_sha256": "65600098bf066a40da11f104c05215b79a0f17f1b9146b04361d69615b8a3606",
+      "passed": 415,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-basis-evaluation-command.log.gz",
+      "uncompressed_sha256": "5465be50bb0ef00f443dba7fe4d5c6908577b74903252915645c913c394af5f7",
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-basis-evaluation-clippy.log.gz",
+      "uncompressed_sha256": "12b6a256a1d9236810a0bcb47c31617bac882eb7f680d746a45ed1cf97f28216"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-basis-evaluation-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 8,
+    "records": 4,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Reproduce the shared basis/point failure independently, compare original-object control to generated-source repairs, then exercise the shared evaluator through complete release bridge/command suites, all-target/all-feature lint, sanitizer probes, fresh SDK points/derivatives and saved public API joins.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses. This ARM build executes actual SMLib/SM_API; upstream checkout and those layers remain unchanged."
+  },
+  "limitations": [
+    "No arbitrary span ratio, overflowed support width, extrapolation accuracy, every-native-evaluator or continuous Rhino parity claim.",
+    "Full-order breaks, inactive padding, extreme charts and higher derivatives are checked by independent polynomial fixtures, not the bounded fresh SDK capture.",
+    "The existing N_CrvSplit full-order indexing and endpoint interpolation-constraint limitations remain separate.",
+    "No speedup, full Rhino command parity or leak-free result is claimed."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "81924334d38a10984e93e7ce6c5b1039a3bce7b7400b5a77a63e06b3552a9f1e",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "261855c291fe8da7b19700fe7f2a225023186cf95e868f4d4976cbfd30fd56ff",
+    "crates/viboceros-smlib/tests/basis_evaluation.rs": "b292615287e2cb763785eb0d839ba3a877e016d1ee0941e50198533ad856d007",
+    "tools/usd_brep/basis_evaluation_probe.cpp": "6c957c1a66c47b26082bd479686b8b8a58a5b162457e22b7e7a74b7271b2c54e",
+    "third_party/patches/usd-brep-basis-evaluation.patch": "30ed2e42f01042cf43cc943ccd6f1f5d6cd3ee7eb837e08a55e3b5cb237ca426",
+    "third_party/patches/usd-brep-curve-evaluation-basis.patch": "161b4da82e5888c124b8a4805c95fb43c5e51f640059075d993d03511ce714e2",
+    "third_party/patches/usd-brep-basis-evaluation.cmake": "8837702947678530aa5a0c46a44e79e3503e43265744194c26cafec1a540af94",
+    "third_party/usd-brep/source/SMLib/src/NL_BasisBasic.cpp": "8624f62ba13165eb29b3181f04bae5452a23a7d2fed3686b5079ba00c485274f",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvNurb.cpp": "2d986086a4bf51988915a909baa41dede83dde76fe8fd5df571ff2fa46109a2a",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp": "63685ffb966435fcb2213aac68febb71eed09f53bf06e3ee42961f1696218294",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfNurb.cpp": "430533d6a34f31f23290262f7ce8bdee4c956660b2694633b2f70c29cbbc1eda",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-basis-evaluation-bridge.log.gz": "916fd8ba0316983d680c1ec6ae7274b11b2c4e510f45f2356b55ed8d58fce9fd",
+    "docs/native-basis-evaluation-command.log.gz": "f5290e22225bf87d65273e18e8c22ee5dcd9cce7f8db0389ba5f6e946d29a502",
+    "docs/native-basis-evaluation-clippy.log.gz": "97deecc3871ad0fccb0b15efb239eb930d8691b5d4cf0609a36dce4761458648",
+    "docs/native-basis-evaluation-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-basis-evaluation-baseline.jsonl.gz": "351ae86c1257e7175b80bffb9c64932fb7b6b3dcb32b597d4188f1b22e496ea0",
+    "docs/native-basis-evaluation-baseline.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-basis-evaluation-candidate.jsonl.gz": "1db188473e7c6f02d3f7f9f15ec3075f309eb752b2e386734d5ca2bada31cc10",
+    "docs/native-basis-evaluation-candidate.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-basis-evaluation-asan.jsonl.gz": "1db188473e7c6f02d3f7f9f15ec3075f309eb752b2e386734d5ca2bada31cc10",
+    "docs/native-basis-evaluation-asan.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-basis-evaluation-baseline-build.log.gz": "461f86f65e33b77f779496e1fd0eef0e2e1217c0e2795a182b073578c91f989d",
+    "docs/native-basis-evaluation-asan-build.log.gz": "d00c46f4740132495345310d19dfa883412e7bed93ca40b36dafc4f7bcefc603",
+    "docs/native-basis-evaluation-asan-flags.txt.gz": "149a32edd8aaa6346404bd3667e2a1ec333c0edc0b0c3a1d3ad8a8464c4b41c4",
+    "docs/native-basis-evaluation-probes.log.gz": "aa1d830e10ec95c2c077b9682ac5c81443900bcf33d4cbb8effc4dad4dbde42e",
+    "docs/native-basis-evaluation-probes.py.gz": "350281b9446d8bc506206e4260ffb796d485917b03f99e541f0cbfc81b2f720b",
+    "docs/native-basis-evaluation-sdk.log.gz": "a4ffd8cbd1a03147283127f9a57f219d45ce2990e43951ad40270d82f4605982",
+    "docs/native-basis-evaluation-sdk.py.gz": "7183585322370c7f808d8e717d3f93cded974b11803c027273c4a59e683afaf5",
+    "docs/native-basis-evaluation-sdk-request.json.gz": "d70b28cabfdf9f4f988986c93d918d2c9f47600775be0ccb6930717df82890e4",
+    "docs/native-basis-evaluation-sdk-rhino.json.gz": "b3597a0e737f1339835c9f4150aa72912583f576da591a151304117bc0219f17",
+    "docs/native-basis-evaluation-sdk-report.json.gz": "1c96450d4ad38b6602bf8856df4a3bc06d22ea7bbdf2537c5be2af22dcf3d349",
+    "docs/native-basis-evaluation-replay.log.gz": "2aadd5b71baeb182edec863b932439353149767e7e182736d19c8bf4c1b3f733",
+    "docs/native-basis-evaluation-replay.py.gz": "fb4b4c3c0900887eeaace6482ae2b5cc1bde61bc4e80b85671ce7f3d6baa9f33",
+    "docs/native-basis-evaluation-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-basis-evaluation-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "docs/native-basis-evaluation-curved-report.json.gz": "921def0039eb31a1b9939de1ec1bbf4785268389f173cd3e1561dfbb17bade77",
+    "docs/native-basis-evaluation-observed-subsets.log.gz": "c285c3775485780edb127d61a8e263f9db782321033ec2fdc6f4e02ce2f7ea93",
+    "docs/native-basis-evaluation-observed-subsets.py.gz": "9daeabd12979b624808ade24592f2e3f92f31a4911aa29830ff4a3a4583b3135",
+    "docs/native-basis-evaluation-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
+    "docs/native-basis-evaluation-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
+    "README.md": "7a33f93a6d216523fc16218b93479890c25f7ffaf1a29af78f0089f8045ea611",
+    "third_party/patches/README.md": "d1ad86fcb3f353fe9bf759d258e9d6322dedec513a42fa2a581301ed8daab4a8",
+    "docs/native-basis-evaluation.md": "d67cbba57e2d498740dcc7f40bcec42a09e179a6b7ecc1da8c52afbc4dcd31ad",
+    "docs/native-curve-segment-limits.md": "726954443992bf51c260cdddb8f358644f3d9bfb1b46bd87cf356a644c0732ef",
+    "docs/usd-brep-limitations.md": "d2423f62e1d710fd2a27d7bbc5b16c65a89e31f337e9c486ce9de5a79215051f",
+    "docs/native-curve-segment-limits-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-curve-segment-limits-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
+    "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
+    "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
+    "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
+    "docs/native-curve-segment-limits-validation.json": "70c98b033fdc65ba28b960af1afe2d39375a98d055e8307ab15dd6eb16377798",
+    "docs/native-isocurve-limits-validation.json": "ca9078ab022072454f90497f21e137aba295c52e5ba5a06504c8fa329627830a",
+    "docs/native-isocurve-pairs-validation.json": "be4b78a57a0c60c7af487a5a9e5c69ca6092018b1c7235517083e30b131a8573",
+    "docs/native-surface-patches-validation.json": "bb71f9ab2595b839455409729cdfed234eec35ca70fe91b16fa79f106b14d6c9"
+  },
+  "baseline_git_sha256": {
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/build.rs": "b1e0da66d73572f24ffcada31aa6c1e9bac2ae8bde6f9a91ff082c4c34475c7b",
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/native/CMakeLists.txt": "ef9821365cdb54f41f4a31b33489a5c77dbc7382fbf9edbc93d8494c8032a9e6"
+  },
+  "log_policy": "Observed completed exit statuses, deterministic gzip of raw results and logs, exact request/response capture without normalization, and historical hashes pinned to immutable Git blobs."
+}

@@ -440,8 +440,7 @@
     "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
     "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
-    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
-    "docs/native-isocurve-limits-validation.json": "08c9872d7f918c3e1c134be6d99b4c8651b85d0d8958a31f30cb4c46f247c519"
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c"
   },
   "baseline_git_sha256": {
     "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/build.rs": "61603438464e225c7baf5ae399f89f7c6b4283ac0cc6ee5a00ac3c665d6933fb",
@@ -455,6 +454,7 @@
     "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/native/knot_refinement.cpp": "f06dfbfb920038755fb53482ef45b9cf60031ef9906cb6c91158bc77b4da3e55"
   },
   "artifact_git_sha256": {
-    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:docs/usd-brep-limitations.md": "a924d8fffb5dd4fa1841dd855b34c129fa316e3fe02e4e3ed38b58a6c07ad9dd"
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:docs/usd-brep-limitations.md": "a924d8fffb5dd4fa1841dd855b34c129fa316e3fe02e4e3ed38b58a6c07ad9dd",
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:docs/native-isocurve-limits-validation.json": "08c9872d7f918c3e1c134be6d99b4c8651b85d0d8958a31f30cb4c46f247c519"
   }
 }

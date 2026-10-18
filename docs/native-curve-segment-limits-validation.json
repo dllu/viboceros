@@ -407,8 +407,6 @@
     "No arbitrary degree, chart/weight ratio, out-of-domain accuracy, full Rhino command parity or performance/leak-free result is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "b1e0da66d73572f24ffcada31aa6c1e9bac2ae8bde6f9a91ff082c4c34475c7b",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "ef9821365cdb54f41f4a31b33489a5c77dbc7382fbf9edbc93d8494c8032a9e6",
     "crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5",
     "crates/viboceros-smlib/tests/curve_segment_limits.rs": "31b136c4c9f8d5f22d7cecb00f3ff2d317c430af2fa2b8cd9c3a6a7fb32fc561",
     "tools/usd_brep/curve_segment_limits_probe.cpp": "b6e0392b5671e48fee83f41dc439e0c397f6fa1c3a9ff324f7bd1f8d2d26ce19",
@@ -472,9 +470,7 @@
     "docs/native-curve-segment-limits-observed-subsets.py.gz": "da23a895f0a75b43ccb33b1a93c55c227bdddc4fc082a71b8f2468013a90e2fc",
     "docs/native-curve-segment-limits-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
     "docs/native-curve-segment-limits-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
-    "docs/native-curve-segment-limits.md": "b0767942ee807631ac1e7cd0240c49248a9c0be8c941f2c55324f0946382fcd9",
     "docs/smlib-curve-segments.md": "dc650f402a01e71a1a453bbe1a9ad5325ea3623aee8d6c180f3999b4b690fe61",
-    "docs/usd-brep-limitations.md": "3665367d4146e1a565d10a1dbb07c07adcfc88df65fbb909a0edf332af6ad53c",
     "tools/rhino_oracle/fixtures/curve_segment_limits_geometry.json": "2082600304613cfe0efc523ea471d7d320232bab44edea54a3b5f41003ea8e93",
     "tools/rhino_oracle/observations/curve_segment_limits_geometry.json": "e718f0335d97ac0acc34d282cd8cbde8ab0d752a137b4c2b0fa6f39872b78f7d",
     "tools/rhino_oracle/fixtures/curve_trim_geometry.json": "d95bc9038eabfad11a6194de2d9c1179d23128f04024b252c1dff0fdc2334e64",
@@ -487,13 +483,21 @@
     "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
     "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
-    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
-    "docs/native-surface-patches-validation.json": "febb0457f3586f7c62451d52666b95426ccfa3af1fb9f65aa7ffe35ecf60c1d8"
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c"
   },
   "baseline_git_sha256": {
     "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/build.rs": "36983bab4d704d5f84c754fc9340dd73309d1c760900a0b06148ab44e5cd3b99",
     "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/native/CMakeLists.txt": "1583462ef0357c4ec37e7ac38ee99cfe674a652145db93bfe33c973b90c9ebd6",
     "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/native/knot_refinement.cpp": "f06dfbfb920038755fb53482ef45b9cf60031ef9906cb6c91158bc77b4da3e55"
   },
-  "log_policy": "Use completed status receipts, retain all raw controls and strict mismatch reports, and keep authored geometry, SDK sampled equivalence and API execution as distinct evidence. Deterministic gzip and Git-backed source maps preserve historical bytes."
+  "log_policy": "Use completed status receipts, retain all raw controls and strict mismatch reports, and keep authored geometry, SDK sampled equivalence and API execution as distinct evidence. Deterministic gzip and Git-backed source maps preserve historical bytes.",
+  "source_git_sha256": {
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/build.rs": "b1e0da66d73572f24ffcada31aa6c1e9bac2ae8bde6f9a91ff082c4c34475c7b",
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/native/CMakeLists.txt": "ef9821365cdb54f41f4a31b33489a5c77dbc7382fbf9edbc93d8494c8032a9e6"
+  },
+  "artifact_git_sha256": {
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:docs/native-curve-segment-limits.md": "b0767942ee807631ac1e7cd0240c49248a9c0be8c941f2c55324f0946382fcd9",
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:docs/usd-brep-limitations.md": "3665367d4146e1a565d10a1dbb07c07adcfc88df65fbb909a0edf332af6ad53c",
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:docs/native-surface-patches-validation.json": "febb0457f3586f7c62451d52666b95426ccfa3af1fb9f65aa7ffe35ecf60c1d8"
+  }
 }

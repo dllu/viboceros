@@ -25,6 +25,7 @@ fn build_native() {
     println!("cargo:rerun-if-changed=../../tools/usd_brep/isocurve_pair_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/surface_patch_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/curve_segment_limits_probe.cpp");
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/basis_evaluation_probe.cpp");
     println!("cargo:rerun-if-changed=native/face_creases.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/planarity_zone_probe.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-protected-topology.patch");
@@ -66,6 +67,9 @@ fn build_native() {
         "usd-brep-surface-patch.cmake",
         "usd-brep-curve-segment-limits.patch",
         "usd-brep-curve-segment-limits.cmake",
+        "usd-brep-basis-evaluation.patch",
+        "usd-brep-curve-evaluation-basis.patch",
+        "usd-brep-basis-evaluation.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");
     }
@@ -100,6 +104,12 @@ fn build_native() {
         .define("VIBOCEROS_SMLIB_ASAN", if sanitize { "ON" } else { "OFF" })
         .profile("Release")
         .build();
+    println!(
+        "cargo:rustc-env=VIBOCEROS_NATIVE_BASIS_EVALUATION_PROBE={}",
+        destination
+            .join("build/viboceros_smlib_basis_evaluation_probe")
+            .display()
+    );
     println!(
         "cargo:rustc-env=VIBOCEROS_NATIVE_CURVE_SEGMENT_PROBE={}",
         destination
