@@ -885,15 +885,6 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
         output.points_xyzw=points.data();
         return vb_copy_nurbs_payload(output);
     }
-    if(parameter==start || parameter==end) {
-        // Native boundary extraction assumes clamped padding. Reuse checked
-        // one-sided endpoint preparation, including reverse/start/end repair.
-        std::unique_ptr<VbSurfaceData,decltype(&vb_surface_data_free)> prepared(
-            vb_refine_nurbs(data,fixed,parameter,degree+1),vb_surface_data_free);
-        VbNurbsData view;
-        require(vb_surface_data_view(prepared.get(),&view)==0,"Read clamped isocurve source failed");
-        return vb_surface_isocurve(view,varying,parameter);
-    }
     const BinaryChart chart(knots,data.knot_count[fixed],{parameter});
     std::vector<double> basis(knots,knots+data.knot_count[fixed]);
     chart.scale(basis);
@@ -915,13 +906,6 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
     check(N_SrfFromCPtsAndKnots(&surface,rows.data(),data.count[0]-1,data.count[1]-1,
         data.degree[0],data.degree[1],const_cast<double *>(query.knots[0]),const_cast<double *>(query.knots[1]),
         data.knot_count[0]-1,data.knot_count[1]-1,&stack),"Build native isocurve surface failed");
-    NL_INDEX span,mult;
-    const auto *fixed_basis=fixed==0?surface.knu:surface.knv;
-    const double query_parameter=chart.scaled(parameter);
-    check(N_BasisFindSpanAndMult(const_cast<NL_KNOTVECTOR *>(fixed_basis),degree,query_parameter,NL_LEFT,&span,&mult),
-          "Locate native isocurve span failed");
-    require(span==static_cast<NL_INDEX>(std::upper_bound(basis.begin(),basis.end(),query_parameter)-basis.begin()-1)
-            && mult==static_cast<NL_INDEX>(multiplicity),"Native isocurve span differs from the exact source chart");
     check(N_SrfExtractIsoCrv(&surface,chart.scaled(parameter),varying==0?NL_UDIR:NL_VDIR,&curve,&stack),
           "Extract native surface isocurve failed");
     require(curve.p==static_cast<NL_DEGREE>(output.degree[0]) && curve.pol->n+1==static_cast<NL_INDEX>(count)

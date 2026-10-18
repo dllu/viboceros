@@ -10,7 +10,6 @@
     "crates/viboceros-smlib/src/native/boundary_extension.rs": "0c74eebd30d00ba037f88e5cd12a32919798b0f917fd0166bf83d381ee33a8ad",
     "crates/viboceros-smlib/src/native/curve_connections.rs": "c518b48d8100e3dac019358c48d457d8a07c772e44ca1661b8dfa514b61679ef",
     "crates/viboceros-smlib/src/native/curve_extension.rs": "3db231cadd07725f95899f66c8e5dd28d0c475fb9866ea2ada92765d4e6994ec",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
     "crates/viboceros-smlib/tests/curve_connections.rs": "49caafeb0abf37f54195912936998aab1cd2eb1d6a713f175cfc89b0099735dc",
     "crates/viboceros-geometry/src/curve_connect_pair/backend_tests.rs": "2990b341b3bd1c0b176754ab5f21a835a73e72655a47fa113fb6fa0fd060def1",
     "crates/viboceros-command/src/curve_connections.rs": "08cbfbc78871c426f44e30f6c1cc947035fef8ff45f2544399b7076d622c0b89",
@@ -20306,6 +20305,7 @@
     "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-smlib/native/CMakeLists.txt": "0b386cad397be39b4b756ec98c464e8f38f32c92e070f6459a1d8153927351a7",
     "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-smlib/build.rs": "dcac67f49ce04699e96f4bdb59aa8778a15fe7f8171888009b868798dfb5a99d",
     "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-oracle/src/lib.rs": "b7776081d660dd521d24ecef67504f7df72a48024a22a04d3432f604237e2f9c",
-    "46a9b476e65045268c71b1797bac25b2cb4de969:tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376"
+    "46a9b476e65045268c71b1797bac25b2cb4de969:tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376",
+    "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f"
   }
 }

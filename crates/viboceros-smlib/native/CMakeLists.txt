@@ -217,6 +217,13 @@ add_executable(viboceros_smlib_isocurve_pair_baseline EXCLUDE_FROM_ALL
 target_link_libraries(viboceros_smlib_isocurve_pair_baseline PRIVATE SM_API)
 target_compile_options(viboceros_smlib_isocurve_pair_baseline PRIVATE -Wno-write-strings
     -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
+# Keep the repaired object/UV producers and override only NLib extraction.
+add_executable(viboceros_smlib_isocurve_limits_baseline EXCLUDE_FROM_ALL
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/isocurve_pair_probe.cpp"
+    "${USD_BREP_ROOT}/source/SMLib/src/NL_SrfTool.cpp")
+target_link_libraries(viboceros_smlib_isocurve_limits_baseline PRIVATE SM_API)
+target_compile_options(viboceros_smlib_isocurve_limits_baseline PRIVATE -Wno-write-strings
+    -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
 install(TARGETS viboceros_smlib SM_API SMLib ARCHIVE DESTINATION lib)
 add_executable(viboceros_smlib_copy_basis_probe EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/copy_basis_probe.cpp")
 target_link_libraries(viboceros_smlib_copy_basis_probe PRIVATE viboceros_smlib)

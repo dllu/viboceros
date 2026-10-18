@@ -237,7 +237,7 @@ issues reported by NVIDIA that have not all been reproduced here.
   pair directly. Sixteen complete-coefficient/UV cases and an instrumented
   lifetime check cover this; native rejection retains empty outputs.
   See [scope and control runs](native-isocurve-pairs.md).
-- **Isocurve extraction copies unclamped boundary rows and rejects full-order
+- **Fixed: isocurve extraction copied unclamped boundary rows and rejected full-order
   fixed-axis breaks.** `N_SrfExtractIsoCrv` at V end `2` on a surface with
   V degree two, Y control coordinates `[0,1,2,3]` and knots
   `[-2,-1,0,0.8,2,3,4]` returns Y `3`; the independent de Boor endpoint limit
@@ -245,11 +245,12 @@ issues reported by NVIDIA that have not all been reproduced here.
   instead returns an error because multiplicity exceeds the degree.
   The [direct probe](../tools/usd_brep/isocurve_probe.cpp) reproduces both
   behaviors without relying on the native endpoint evaluator;
-  [retained output](smlib-isocurves-probe.json) records them. The adapter reuses
-  checked one-sided clamping at an unclamped endpoint, and directly selects the
-  exact separated row/column at full-order knots (right limit inside/at start,
-  left limit at the active end). Interior extraction uses the existing producer,
-  with exact span/multiplicity and varying-basis checks. Source:
+  [retained output](smlib-isocurves-probe.json) records them. Production now uses
+  a generated-source repair selecting exact one-sided spans and isolated rows.
+  Unclamped endpoints use the existing homogeneous reduction instead of the
+  outermost row. The adapter's endpoint-clamping workaround is removed; exact
+  full-order payload copies and numerical conditioning remain. See the
+  [288-case qualification](native-isocurve-limits.md). Source:
   [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).
 - **Patch extraction snaps near knots and changes the geometric restriction.**
   `N_SrfExtractPatch` snaps all four boundaries using a fixed `1e-8` parameter

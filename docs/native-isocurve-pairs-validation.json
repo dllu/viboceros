@@ -287,17 +287,11 @@
     "No new Rhino observation, speed result or leak-free result is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "d09c58eb2e263286c6fe3b9ae5fad41b1519ad39a57094ec8d6d9cf2fa64fb74",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "1a65ba7e9c2d565d1cce71550b65398180c263a978c66950c96cbcee63202957",
     "crates/viboceros-smlib/native/face_creases.cpp": "cf24ec2a7c23adb5b9f26141afc3615ee88caf11d827837606aabaaed80b8188",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
-    "crates/viboceros-smlib/tests/isocurve_pairs.rs": "4eaeddfaf109c3367b0ec1805b1079913abc09885fe3f3d3b95fe25883b4e4ed",
     "crates/viboceros-smlib/tests/face_creases.rs": "0de1de68bab504ac7f4131cd8291b1807f04047a81e6734c44fee3b82145fd41",
     "crates/viboceros-smlib/tests/isocurves.rs": "633fb4c252d3f0e0acf8ab58766996aa2e724dbf6297d96bd3421e2684752655",
-    "tools/usd_brep/isocurve_pair_probe.cpp": "d1b412697e597d87a7e7b8fe6171a0bd3da063f9eeec9d88ff2052c3653775e1",
     "third_party/patches/usd-brep-isocurve-output-basis.patch": "d2590fdc3b82fe7523b28b67252bb673f217d7d5b76ddb1cd7190128569221b3",
     "third_party/patches/usd-brep-isocurve-uv-line.patch": "b545c9870b0ff2fc0ee3b849cfe228607fcf14f6772bec32da51bf0f3f69ec13",
-    "third_party/patches/usd-brep-isocurve-pairs.cmake": "1c4fd9b19b94d69e8dfe09fa593cc038a33259fe3d38ed3187c6086211e59726",
     "third_party/patches/usd-brep-exact-uv-transpose.cmake": "595e1326bec0753de91716be657636d4063441f21b90dcd5b428384cd59be5a8",
     "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
     "third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp": "93c905a12c4124f6761f63ca9dbe2e2ffe400eb32b493c3d514be42de2c41138",
@@ -338,10 +332,7 @@
     "docs/native-isocurve-pairs-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
     "docs/native-isocurve-pairs-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
     "README.md": "f33d2c41048d4f3bedf301e0eec284fe5aed47b76ef6f4540725954c9d0487da",
-    "docs/native-isocurve-pairs.md": "4d59bee54aae22c613a4fdfc82ff075685ded64a2008c923ecbf317539323f8c",
-    "docs/smlib-isocurves.md": "09a31efd0d4837feae8636ae94fcd405fb3368f1751d0bd357471bb6b3c7f0a4",
     "docs/commands/divide-along-creases.md": "bb4c2ffa056cdbcf63ae1d9e091e6c78984ac2f770a51e876144d641db9471ad",
-    "docs/usd-brep-limitations.md": "7c9142b05e867bdf2cf32ef72d1038d3bfcb0eddfee4b3d2264d1647e58e9e4a",
     "docs/native-closed-join-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
     "docs/native-closed-join-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
     "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
@@ -361,5 +352,18 @@
     "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
     "0dfbd88e950d2784d3f8d7c3dd6e079da9be5329:crates/viboceros-smlib/native/face_creases.cpp": "8ec04f7f63ed365247f4bec1777ef115a11b5906117735e5b45fcd72c4020477"
   },
-  "log_policy": "Observe actual completed job exit codes; retain raw logs and outcomes in deterministic gzip. Exact authored geometry checks, API execution and strict saved-Rhino comparisons are distinct evidence."
+  "log_policy": "Observe actual completed job exit codes; retain raw logs and outcomes in deterministic gzip. Exact authored geometry checks, API execution and strict saved-Rhino comparisons are distinct evidence.",
+  "source_git_sha256": {
+    "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/build.rs": "d09c58eb2e263286c6fe3b9ae5fad41b1519ad39a57094ec8d6d9cf2fa64fb74",
+    "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/native/CMakeLists.txt": "1a65ba7e9c2d565d1cce71550b65398180c263a978c66950c96cbcee63202957",
+    "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
+    "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/tests/isocurve_pairs.rs": "4eaeddfaf109c3367b0ec1805b1079913abc09885fe3f3d3b95fe25883b4e4ed",
+    "bdef540085515d56b7d222d15cadea16c159a118:tools/usd_brep/isocurve_pair_probe.cpp": "d1b412697e597d87a7e7b8fe6171a0bd3da063f9eeec9d88ff2052c3653775e1",
+    "bdef540085515d56b7d222d15cadea16c159a118:third_party/patches/usd-brep-isocurve-pairs.cmake": "1c4fd9b19b94d69e8dfe09fa593cc038a33259fe3d38ed3187c6086211e59726"
+  },
+  "artifact_git_sha256": {
+    "bdef540085515d56b7d222d15cadea16c159a118:docs/native-isocurve-pairs.md": "4d59bee54aae22c613a4fdfc82ff075685ded64a2008c923ecbf317539323f8c",
+    "bdef540085515d56b7d222d15cadea16c159a118:docs/smlib-isocurves.md": "09a31efd0d4837feae8636ae94fcd405fb3368f1751d0bd357471bb6b3c7f0a4",
+    "bdef540085515d56b7d222d15cadea16c159a118:docs/usd-brep-limitations.md": "7c9142b05e867bdf2cf32ef72d1038d3bfcb0eddfee4b3d2264d1647e58e9e4a"
+  }
 }

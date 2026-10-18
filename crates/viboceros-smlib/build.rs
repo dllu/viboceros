@@ -57,6 +57,7 @@ fn build_native() {
         "usd-brep-exact-uv-transpose.cmake",
         "usd-brep-isocurve-output-basis.patch",
         "usd-brep-isocurve-uv-line.patch",
+        "usd-brep-isocurve-limits.patch",
         "usd-brep-isocurve-pairs.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");

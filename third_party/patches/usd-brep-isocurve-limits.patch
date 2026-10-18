@@ -1,0 +1,147 @@
+--- a/NL_SrfTool.cpp
++++ b/NL_SrfTool.cpp
+@@ -9,6 +9,7 @@
+ 
+ #include <nurbs.h>
+ #include <NL_Globals.h>
++#include <algorithm>
+ 
+ NL_PRIVATE NL_REAL sto = 1.0e-05;
+ NL_PRIVATE NL_REAL NOREM = 1.0e+25;
+@@ -1182,7 +1183,9 @@
+ 
+     NL_REAL *U, *V, *UC;
+ 
+-    NL_KNOTVECTOR *knu, *knv;
++    NL_KNOTVECTOR *knu, *knv, *fixedBasis;
++    NL_DEGREE fixedDegree;
++    NL_INDEX fixedCount, fixedSpan, fixedMult, isolatedRow = -1;
+ 
+     NL_CPOINT ** Pw, *Cw, Rw[NL_MAXDEG + 1];
+ 
+@@ -1214,10 +1217,9 @@
+     {
+         case NL_UDIR:
+ 
+-            error = N_BasisFindSpanAndMult( knv, q, t, NL_LEFT, &spv, &mlv );
+-
+-            if( error EQ NL_YES )
+-                NL_OUT;
++            fixedBasis = knv;
++            fixedDegree = q;
++            fixedCount = m + 1;
+ 
+             ne = n;
+             pe = p;
+@@ -1226,10 +1228,9 @@
+ 
+         case NL_VDIR:
+ 
+-            error = N_BasisFindSpanAndMult( knu, p, t, NL_LEFT, &spu, &mlu );
+-
+-            if( error EQ NL_YES )
+-                NL_OUT;
++            fixedBasis = knu;
++            fixedDegree = p;
++            fixedCount = n + 1;
+ 
+             ne = m;
+             pe = q;
+@@ -1241,6 +1242,43 @@
+             NL_ERROR( NL_CAL_ERR );
+     }
+ 
++    /* Classify valid parameters exactly. The general span/multiplicity helper
++       assumes clamped ends and skips short endpoint spans by tolerance. */
++    {
++        NL_REAL *K = fixedBasis->U;
++        if( t GE K[fixedDegree] AND t LE K[fixedCount] )
++        {
++            NL_REAL *first = std::lower_bound(K, K + fixedBasis->m + 1, t);
++            NL_REAL *last = std::upper_bound(first, K + fixedBasis->m + 1, t);
++            fixedMult = (NL_INDEX)(last - first);
++            fixedSpan = (NL_INDEX)((t EQ K[fixedCount] ? first : last) - K) - 1;
++            if( fixedMult EQ fixedDegree + 1 )
++            {
++                /* Right limit at starts/interior breaks; left limit at end.
++                   Inactive padding can put this row away from either edge. */
++                isolatedRow = (NL_INDEX)(first - K) - (t EQ K[fixedCount] ? 1 : 0);
++                if( isolatedRow LT 0 OR isolatedRow GE fixedCount )
++                    NL_ERROR( NL_IND_ERR );
++            }
++            else if( t EQ K[fixedCount] )
++            {
++                /* The end knot is to the right of the chosen span. Use the
++                   full existing de Boor reduction, not an assumed end row. */
++                fixedMult = 0;
++            }
++        }
++        else
++        {
++            /* Preserve the existing extrapolation policy outside the domain. */
++            error = N_BasisFindSpanAndMult(fixedBasis, fixedDegree, t, NL_LEFT,
++                                           &fixedSpan, &fixedMult);
++            if( error EQ NL_YES )
++                NL_OUT;
++        }
++        if( dir EQ NL_UDIR ) { spv = fixedSpan; mlv = fixedMult; }
++        else                 { spu = fixedSpan; mlu = fixedMult; }
++    }
++
+     /* See if memory is needed..only for NLib...others (SMLib) will have a good cur */
+ 
+     if( SC != NULL )
+@@ -1254,43 +1292,23 @@
+     Cw = cur->pol->Pw;
+     UC = cur->knt->U;
+ 
+-    /* See if boundary curve is required */
+-
+-    if( dir EQ NL_UDIR AND( t EQ V[q]OR t EQ V[s - q] ) )
+-    {
+-        if( t EQ V[q] )
+-        {
+-            for ( i = 0; i <= n; i++ )
+-                N_CopyCPt( Pw[i][0], &Cw[i] );
+-        }
+-        else
+-        {
+-            for ( i = 0; i <= n; i++ )
+-                N_CopyCPt( Pw[i][m], &Cw[i] );
+-        }
+-
++    /* Full-order groups isolate one row exactly, including clamped poles. */
++
++    if( dir EQ NL_UDIR AND isolatedRow GE 0 )
++    {
++        for ( i = 0; i <= n; i++ )
++            N_CopyCPt( Pw[i][isolatedRow], &Cw[i] );
+         for ( i = 0; i <= r; i++ )
+             UC[i] = U[i];
+-
+         NL_OUT;
+     }
+ 
+-    if( dir EQ NL_VDIR AND( t EQ U[p]OR t EQ U[r - p] ) )
+-    {
+-        if( t EQ U[p] )
+-        {
+-            for ( j = 0; j <= m; j++ )
+-                N_CopyCPt( Pw[0][j], &Cw[j] );
+-        }
+-        else
+-        {
+-            for ( j = 0; j <= m; j++ )
+-                N_CopyCPt( Pw[n][j], &Cw[j] );
+-        }
+-
++    if( dir EQ NL_VDIR AND isolatedRow GE 0 )
++    {
++        for ( j = 0; j <= m; j++ )
++            N_CopyCPt( Pw[isolatedRow][j], &Cw[j] );
+         for ( j = 0; j <= s; j++ )
+             UC[j] = V[j];
+-
+         NL_OUT;
+     }
+ 

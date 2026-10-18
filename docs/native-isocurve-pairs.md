@@ -31,12 +31,13 @@ data after the source surface is destroyed.
 
 The parent-object control changes knots in twelve cases and fails to supply a
 correct UV partner in all sixteen. The repaired producer passes all sixteen.
-A separate full-order fixed-axis case verifies that a native rejection leaves
-both outputs null and preserves the source. It permits a future exact supported
-result, instead of making the current upstream rejection permanent.
+A follow-up [limit-selection repair](native-isocurve-limits.md) now supports the
+full-order fixed-axis case exactly. A separate rejected out-of-domain request
+verifies that both outputs remain null and the source remains unchanged.
 
-AddressSanitizer builds the complete native libraries, C ABI and producer probe.
-Both probe modes pass without a sanitizer diagnostic. Leak detection is disabled
+The original AddressSanitizer qualification built the complete native libraries,
+C ABI and producer probe. Both original probe modes passed without a sanitizer
+diagnostic. The follow-up limit record covers all four current modes. Leak detection is disabled
 because the default process-global API context has no public teardown contract;
 this run checks invalid memory access and allocation lifetime. The crease
 regressions additionally retain kink/tangent selection, asymmetric charts,
@@ -52,7 +53,8 @@ two producer objects, preserving the other kernel repairs. The
 raw output, the candidate/ASan outputs, actual job results and artifact hashes.
 
 This repair does not replace the [checked Rust-facing extractor](smlib-isocurves.md).
-That adapter still handles full-order fixed-axis breaks, unclamped fixed-axis
-endpoints, extreme gauges and chart conditioning. General optional trimmed-domain
+That adapter retains exact full-order payload copies, extreme-gauge handling and
+chart conditioning; endpoints use the repaired native limit selection. General optional trimmed-domain
 pairing, arbitrary numerical ranges and the native ray-query path remain
-unqualified. No new Rhino observation or performance parity is claimed.
+unqualified. The original pair qualification made no Rhino or performance parity
+claim; the follow-up limit record includes fresh SDK comparison.

@@ -98,7 +98,6 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/pushup/tests.rs": "e775f1249f3967a8ba7c806496e646a9ced9239f84e0f93c72a2d9d6ccb54698",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
     "third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp": "7d2e20b8e12e14ae843b117c19272f4eec9efa13d78485bbb6bac7adc236b57b",
     "third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp": "e6a619f83d147c5bb5db29cdf7ade29e2392406ef1b433dc769b7d80ba99b21c",
     "third_party/usd-brep/source/SMLib/src/NL_SrfAdv.cpp": "00e24340417dd111d4abb0258eae2a42649290043d6a4c23be682132a9a3eace",
@@ -140,6 +139,7 @@
     "c1ad337e5dfd11c3bcdf389c322834f0ed64cf13:crates/viboceros-geometry/src/error.rs": "e5da49390851fc391db3912c7e57a61661d422655ced84734c8db0e2484a679c",
     "df0d2231a50561cc3f126cd6c0792e1c2be553a2:crates/viboceros-geometry/src/curve/arc_length.rs": "2022499da072f43e57dd5a071b3f5d35a59f9ae7f8c6aa8088ab220e5fcff6c8",
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136"
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
+    "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f"
   }
 }
