@@ -1077,7 +1077,20 @@ fn projected_unit(
     normal: UnitVector3,
     tolerance: Tolerance,
 ) -> Result<UnitVector3, GeometryError> {
-    project_to_plane(vector, normal)?.normalized(tolerance)
+    normalized_direction(project_to_plane(vector, normal)?, tolerance)
+}
+
+// Projections and crosses of unit directions have dimensionless lengths.
+// Use the same sine-angle threshold as frame angular admission, never a
+// distance tolerance that changes with model units or radius.
+pub(crate) fn normalized_direction(
+    vector: Vector3,
+    tolerance: Tolerance,
+) -> Result<UnitVector3, GeometryError> {
+    if vector.length()? <= tolerance.angular() {
+        return Err(GeometryError::Degenerate { context: "vector" });
+    }
+    vector.normalized_nonzero()
 }
 
 fn project_to_plane(vector: Vector3, normal: UnitVector3) -> Result<Vector3, GeometryError> {

@@ -1043,7 +1043,7 @@ fn sphere_sphere_surface_intersection_events(
     if squared_radius <= distance_tolerance * distance_tolerance {
         return Ok(vec![SurfaceSurfaceIntersectionEvent::Point(circle_center)]);
     }
-    let circle_frame = crate::Frame3::try_from_normal(circle_center, axis.as_vector(), tolerance)?;
+    let circle_frame = crate::Frame3::try_from_unit_normal(circle_center, axis)?;
     let circle = Circle3::try_from_frame(
         circle_center,
         squared_radius.sqrt(),

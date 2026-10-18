@@ -38,8 +38,9 @@ Their comparison bounds and document/history assertions are unchanged. This
 repair establishes export closure for the stated paths; general spline
 Booleans, near-contact classification and arbitrary scales remain outside this
 qualification. In particular, normalizing a unit direction with a document
-distance tolerance of one or greater remains a separate frame-construction
-issue at much larger scales.
+distance tolerance of one or greater exposed a separate frame-construction
+issue at much larger scales. The later [unit-direction repair](unit-directions-and-model-tolerance.md)
+addresses the listed paths and extends the Boolean matrix through `2^80`.
 
 The [validation record](planar-export-closure-validation.json) retains baseline
 and candidate logs, exact source hashes and completed regression results.

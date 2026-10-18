@@ -52,8 +52,7 @@ impl Command for IPlaneCommand {
             }
         }
         let plane = infinite_plane::resolve(doc, definition, context.construction_plane)?.plane;
-        let frame =
-            Frame3::try_from_normal(plane.origin(), plane.normal().as_vector(), doc.tolerance())?;
+        let frame = Frame3::try_from_unit_normal(plane.origin(), plane.normal())?;
         let ids = objects.unwrap_or_else(|| {
             doc.selected_objects()
                 .filter(|o| ObjectSelectionFilter::Section.accepts_object(o))

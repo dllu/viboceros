@@ -386,7 +386,6 @@
     "crates/viboceros-oracle/src/circle_around.rs": "60d0017e524726e071606b6fb874e448b1ab2d801715e6f9b55f4f15d20b7bc4",
     "crates/viboceros-oracle/src/curve_getters.rs": "2b7377192b0f2aa862a068830f97e2dfdd73d2a16b19608c99c5d0be78abe87a",
     "crates/viboceros-oracle/src/ellipse_command.rs": "1259c9eecef6ca2cd38824d84a41ba8d1f658055b9be2ab705bd495b7c2accd9",
-    "docs/circle-around-validation.json": "0698d9fa1b84345bee80086258bc799a032b03f86c6ea366eaa3494a149a7b83",
     "docs/circle-tangent-validation.json": "8ba6be600c464f51d075ea9e579de420130a2202395e7465e4e841af9cd8998b",
     "docs/commands/arc-tilted.md": "953bbc6f378dd7e8a1e33f3c469e84eccd65287555f5ba39121f47ff9c77c6c1",
     "docs/commands/curves.md": "c979e9badf817024dbc5b5060ba562995ab3ab61b653db7518abe95b67157bbd",
@@ -441,6 +440,7 @@
     "8e69543c3e93fa78c2888133c95f018332adc544:crates/viboceros-oracle/src/lib.rs": "196738b27c966c1ddfd46907b4d743007f089c9c39c26367abc583032c0f6c90",
     "8e69543c3e93fa78c2888133c95f018332adc544:tools/rhino_oracle/client.py": "f1bafcaa05132d973c7a40181b9d4092e84ff2a6b9c2f0af2b9140a011d23da0",
     "8e69543c3e93fa78c2888133c95f018332adc544:tools/rhino_oracle/rhino_worker.py": "02b2de8f1cadfa5fb45b0852e3bf922388133bce97349127df15c50227abdecf",
-    "8e69543c3e93fa78c2888133c95f018332adc544:tools/rhino_oracle/structural_sdk.py": "720bf53dda3042dca6fe0373f6478de12b304ad0bafc0b42b9547e3e06447146"
+    "8e69543c3e93fa78c2888133c95f018332adc544:tools/rhino_oracle/structural_sdk.py": "720bf53dda3042dca6fe0373f6478de12b304ad0bafc0b42b9547e3e06447146",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/circle-around-validation.json": "0698d9fa1b84345bee80086258bc799a032b03f86c6ea366eaa3494a149a7b83"
   }
 }

@@ -1387,11 +1387,13 @@ impl TriangleMesh {
         // A standard NURBS sphere is polar on frame Z and begins its U seam
         // on frame X. Cyclically permuting the ellipsoid frame therefore puts
         // the requested first axis at the poles without changing handedness.
+        // The supplied axes already belong to a validated unit frame; model
+        // distance tolerance applies to mesh geometry, not this permutation.
         let surface_frame = Frame3::try_from_directions(
             frame.origin(),
             frame.y_axis().as_vector(),
             frame.z_axis().as_vector(),
-            tolerance,
+            Tolerance::NUMERICAL_VALIDATION,
         )?;
         let surface = NurbsSurface::try_ellipsoid(surface_frame, [radii[1], radii[2], radii[0]])?;
 

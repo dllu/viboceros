@@ -192,7 +192,7 @@ pub(super) fn mixed_regions(
     }
     let first = breps[0].faces.first().ok_or_else(unsupported)?;
     let plane = first.surface.plane(tolerance)?.ok_or_else(unsupported)?;
-    let frame = Frame3::try_from_normal(plane.origin(), plane.normal().as_vector(), tolerance)?;
+    let frame = Frame3::try_from_unit_normal(plane.origin(), plane.normal())?;
     let mut edges = Vec::new();
     let mut regions = Vec::new();
     let mut controls = 0;

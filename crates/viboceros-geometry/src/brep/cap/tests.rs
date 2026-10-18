@@ -241,9 +241,7 @@ fn work_budget_is_checked_before_sampling_or_projecting_large_inputs() {
         .flat_map(|&(i, _)| source.edges[i].curve.control_points())
         .map(|p| p.point())
         .collect::<Vec<_>>();
-    let frame = boundary::frame(&points, Tolerance::DEFAULT)
-        .unwrap()
-        .unwrap();
+    let frame = boundary::frame(&points).unwrap().unwrap();
     assert!(
         source
             .cap_loop(

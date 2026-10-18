@@ -71,10 +71,7 @@ pub(super) fn cycles(brep: &Brep) -> Vec<Vec<(usize, bool)>> {
     result
 }
 
-pub(super) fn frame(
-    points: &[Point3],
-    tolerance: Tolerance,
-) -> Result<Option<Frame3>, GeometryError> {
+pub(super) fn frame(points: &[Point3]) -> Result<Option<Frame3>, GeometryError> {
     let Some(&origin) = points.first() else {
         return Ok(None);
     };
@@ -111,5 +108,5 @@ pub(super) fn frame(
     let Some(normal) = best else {
         return Ok(None);
     };
-    Frame3::try_from_normal(origin, normal.normalized_nonzero()?.as_vector(), tolerance).map(Some)
+    Frame3::try_from_unit_normal(origin, normal.normalized_nonzero()?).map(Some)
 }

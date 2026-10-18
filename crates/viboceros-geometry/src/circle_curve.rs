@@ -96,10 +96,10 @@ impl Circle3 {
         let height = (radius - half_chord).sqrt() * (radius + half_chord).sqrt();
         let center = midpoint.translated(perpendicular.as_vector().scaled(height)?)?;
         let x_axis = center.vector_to(second)?.normalized(tolerance)?;
-        let normal = chord_unit
-            .as_vector()
-            .cross(perpendicular.as_vector())?
-            .normalized(tolerance)?;
+        let normal = crate::circular::normalized_direction(
+            chord_unit.as_vector().cross(perpendicular.as_vector())?,
+            tolerance,
+        )?;
         Self::try_from_frame(center, radius, x_axis, normal, tolerance)
     }
     /// Constructs a diameter circle, orienting its plane as close as possible
@@ -122,8 +122,8 @@ impl Circle3 {
             (-up_projection).mul_add(diameter_axis.y(), up.y()),
             (-up_projection).mul_add(diameter_axis.z(), up.z()),
         )?;
-        let normal = projected_normal.normalized(tolerance)?;
-        let frame = Frame3::try_from_normal(center, normal.as_vector(), tolerance)?;
+        let normal = crate::circular::normalized_direction(projected_normal, tolerance)?;
+        let frame = Frame3::try_from_unit_normal(center, normal)?;
         Self::try_from_frame(center, radius, frame.x_axis(), normal, tolerance)
     }
     /// Constructs a circle in a plane perpendicular to the construction plane.
@@ -139,11 +139,13 @@ impl Circle3 {
     ) -> Result<Self, GeometryError> {
         let direction = center.vector_to(direction_point)?;
         let x_axis = direction.normalized(tolerance)?;
-        let normal = construction_plane
-            .z_axis()
-            .as_vector()
-            .cross(x_axis.as_vector())?
-            .normalized(tolerance)?;
+        let normal = crate::circular::normalized_direction(
+            construction_plane
+                .z_axis()
+                .as_vector()
+                .cross(x_axis.as_vector())?,
+            tolerance,
+        )?;
         Self::try_from_frame(center, radius, x_axis, normal, tolerance)
     }
     pub fn try_from_frame(

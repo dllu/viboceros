@@ -4769,10 +4769,9 @@ impl Command for SphereCommand {
             require_consumed(remaining, point_consumed, USAGE)?;
             center.distance_to(point_on_sphere)?
         };
-        let frame = Frame3::try_from_normal(
+        let frame = Frame3::try_from_unit_normal(
             center,
-            Vector3::try_new(0.0, 0.0, 1.0)?,
-            document.tolerance(),
+            Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
         )?;
         let surface = NurbsSurface::try_sphere(frame, radius)?;
         let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
@@ -5856,7 +5855,10 @@ fn parse_ellipsoid_positionals(
             parse_finite_real(remaining[1])?,
             parse_finite_real(remaining[2])?,
         ];
-        let frame = Frame3::try_from_normal(center, Vector3::try_new(0.0, 0.0, 1.0)?, tolerance)?;
+        let frame = Frame3::try_from_unit_normal(
+            center,
+            Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
+        )?;
         return Ok(EllipsoidPositionals {
             frame,
             radii,

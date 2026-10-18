@@ -44,7 +44,7 @@ impl Input {
     }
     pub fn center_plane(&self) -> Option<Frame3> {
         let (p, t) = self.endpoint?;
-        Frame3::try_from_normal(p, t.as_vector(), self.tolerance).ok()
+        Frame3::try_from_unit_normal(p, t).ok()
     }
     pub fn current(&self, doc: &Document) -> bool {
         self.source.as_ref().is_none_or(|s| s.current(doc))

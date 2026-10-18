@@ -7783,7 +7783,7 @@ fn project_planar_curve(
     let normal = largest_cross
         .ok_or(GeometryError::InvalidCappedExtrusionProfile)?
         .normalized_nonzero()?;
-    let frame = Frame3::try_from_normal(origin, normal.as_vector(), tolerance)?;
+    let frame = Frame3::try_from_unit_normal(origin, normal)?;
     let mut coordinate_bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
     let mut maximum_residual: Real = 0.0;
     let mut projected = Vec::with_capacity(controls.len());

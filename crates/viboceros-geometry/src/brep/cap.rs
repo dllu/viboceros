@@ -63,7 +63,7 @@ impl Brep {
                 .take(budget.0 + 1)
                 .collect::<Vec<_>>();
             budget.charge(points.len())?;
-            let Some(frame) = boundary::frame(&points, tolerance)? else {
+            let Some(frame) = boundary::frame(&points)? else {
                 continue;
             };
             if boundary::is_planar(self, frame, tolerance, &mut budget)? {

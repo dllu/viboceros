@@ -156,11 +156,8 @@
     "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "182e042e26e40454b6aab9f23a1d0fcc7a54c8715edb9bcbb8047d21cdea7ca3",
     "crates/viboceros-opennurbs/src/curve.rs": "8ec0cf2071b697b52075135a9a4dd261473ba8060687d9ed3c66e5271ad3df6c",
     "crates/viboceros-opennurbs/src/lib.rs": "5612e871fcd0c1b826191748094abc457dcc1ce42e3877536a879680f062dccd",
-    "docs/cull-degenerate-mesh-faces-qualification.json": "294bd5769c989b37497e9bd962b53998f6d79d443ef8f7b207e8f7bc47fccbad",
-    "docs/flow-line-validation.json": "99b1970171a2f46f66d55b67fdc36980d3034c0edfea7c09a03a3972dfafc581",
     "docs/geometry-check-qualification.json": "bca0e86f44f9a630087de83c1aca4a6efb21cc9bc74cc2e94abc364bb3e78173",
     "docs/orient-on-curve-validation.json": "e2c67c9de4e535ea1344689752e5afb194dadb0d94748da25f2f9faba14ed6c0",
-    "docs/orient-surface-grips-validation.json": "1e2300070732faff295d9265282d16e3862209137e076d5bf68fd6c5ab4ccbc8",
     "tools/rhino_oracle/fixtures/flow_pole_lookup.json": "37c5f6866a54e21d789f494d70f0941a3bf601f1aece5e03dc3b6132dc1c5efd",
     "tools/rhino_oracle/fixtures/flow_roadlike_poles.json": "a80964a16595b6cd8b6947cd0813c560b875848bfed474e50615bffdf1b9712f",
     "tools/rhino_oracle/observations/flow_pole_lookup_rhino_20261016.json": "fec75434cc95226dfbe2bf87fd5e38d2de8f1d74fd78dfd0359c0d945cc8855a",
@@ -197,6 +194,9 @@
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/sphere-fit-points-validation.json": "a051aa46072c32826f416e47c6144047264d8b330e1cc12366a6b0607a19bbc3",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:crates/viboceros-geometry/src/circular.rs": "dc2b9956b9eb90fd6466a37959a02061cc9bc36d17e6b8afca9c8a68c38dab36",
     "eed1fe254caffce125318350a5797bd11dafc5f0:crates/viboceros-geometry/src/circle_curve.rs": "8f95987035ade21be75a5fc258800f5b670ca72b838a521b9770acafd100693e",
-    "650fa1c854c05003a45311fc531c421cb45f680d:docs/coplanar-mesh-qualification.json": "d58a927867dad99adf096b554982d1ef59d308241414cad4ad00757c5687dd42"
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/coplanar-mesh-qualification.json": "d58a927867dad99adf096b554982d1ef59d308241414cad4ad00757c5687dd42",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/cull-degenerate-mesh-faces-qualification.json": "294bd5769c989b37497e9bd962b53998f6d79d443ef8f7b207e8f7bc47fccbad",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/flow-line-validation.json": "99b1970171a2f46f66d55b67fdc36980d3034c0edfea7c09a03a3972dfafc581",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/orient-surface-grips-validation.json": "1e2300070732faff295d9265282d16e3862209137e076d5bf68fd6c5ab4ccbc8"
   }
 }

@@ -1,0 +1,22 @@
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 17.17s
+     Running tests/unit_direction_scale.rs (target/debug/deps/unit_direction_scale-e5adc044c04bb846)
+
+running 2 tests
+
+thread 'primitive_commands_keep_world_directions_at_large_document_tolerances' (2099134) panicked at crates/viboceros-command/tests/unit_direction_scale.rs:44:41:
+exponent=40 MeshEllipsoid 0,0,0 2199023255552 3298534883328 4398046511104: Geometry(Degenerate { context: "vector" })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test primitive_commands_keep_world_directions_at_large_document_tolerances ... FAILED
+UNIT_DIRECTION_COMMANDS plane_cases=5 extension_frame_cases=5
+test infinite_plane_and_arc_extension_reuse_valid_unit_directions_and_preserve_sources ... ok
+
+failures:
+
+failures:
+    primitive_commands_keep_world_directions_at_large_document_tolerances
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.01s
+
+error: test failed, to rerun pass `-p viboceros-command --test unit_direction_scale`
+EXIT_CODE 101

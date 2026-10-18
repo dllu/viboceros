@@ -44,7 +44,6 @@
     "Rust command/document timings and Rhino SDK/sampling timings cover different work and cannot establish kernel speed parity."
   ],
   "source_sha256": {
-    "crates/viboceros-command/src/iplane.rs": "673836a5f566fd1a8b6c93c53a499bd8e9d3c9f31360593ab97370970e04dc01",
     "crates/viboceros-command/src/iplane/tests.rs": "96e2253ae442dafd564a8e68022eeaace6948a5f11134328c4f4bec0a37d1d85",
     "crates/viboceros-command/src/infinite_plane.rs": "76fa39f0811eda02fcc8187d5a63f5d3f4c4458290fb3067e626842bce0a1943",
     "crates/viboceros-command/src/section.rs": "e27586227345f289dca55e0a2d8433745bf8d92befa52c96f88e234d0e304468",
@@ -70,6 +69,7 @@
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:src/app/intersect_two_sets.rs": "2c3579b7bd2519454e4bee43e47335d0517ec5898ded5839604808621e95ee94",
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:src/app/tests/project.rs": "59efb0f2eafbb546dc3b80e9df51a589d9cb4881a9162003876470b0cd4f848f",
     "d59d97e5c73561647e5f82ade753c719733318b4:tools/rhino_oracle/client.py": "c629ff9272f91da75108557b56aacd0571e5f87cfd3f9316a442c1f11a7a0f16",
-    "78d92776d42a198ee3a68e238041a8259848ee65:crates/viboceros-oracle/src/object_source.rs": "5f1a86ac6649e678b346f26b8a37d0d2041dc2ddace2ec77a594de95cf5e11f8"
+    "78d92776d42a198ee3a68e238041a8259848ee65:crates/viboceros-oracle/src/object_source.rs": "5f1a86ac6649e678b346f26b8a37d0d2041dc2ddace2ec77a594de95cf5e11f8",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-command/src/iplane.rs": "673836a5f566fd1a8b6c93c53a499bd8e9d3c9f31360593ab97370970e04dc01"
   }
 }

@@ -162,17 +162,11 @@
   "production_region_sha256": "9ddc3186e97a1c32f914102867241d125800acb37f213cefb1289cff2177c07e",
   "source_sha256": {
     "crates/viboceros-geometry/src/brep/boolean/planar_circular.rs": "f40873d0106d0ecb5a08fcaab191a2e9c4ed3fa6ebe6abe6f2a6af553c3eac60",
-    "crates/viboceros-geometry/src/brep/boolean/planar_mixed.rs": "91a0a8cd9d5af0eb9233ded07dc37443ba4462fece43b81b669baf78b75d9048",
-    "crates/viboceros-geometry/src/brep.rs": "3121a923320d387016db11103192922caf3fe5b47115424b9a8e6a41e503c3a1",
     "crates/viboceros-geometry/src/nurbs.rs": "6050a03ba4cca4a943be70e71f820158c8006f06101931276aef521227f8c3b1",
     "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
     "crates/viboceros-geometry/src/polycurve.rs": "7e12b570052bb53a128d576809af3b209ff25b3e63ac2aebe31c1b9c84f92115",
-    "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
-    "crates/viboceros-geometry/src/circular.rs": "150b07fbe8244a42585ddf938098d3968011e3877e5e81b002900ac1588d97e2",
-    "crates/viboceros-geometry/src/circle_curve.rs": "a72e5c943d8e4786bc67fa3ed76e1677f3b57909a4845cb0aa624a4297810ec2",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/tolerance.rs": "a5d8ff84321ee02cabcdac0666c9965aa7d1211f893c0321b05cf9a30a420123",
-    "crates/viboceros-geometry/tests/planar_boolean_scale.rs": "3ae6e50fb9246985840bcadfe446e6522e5ff78c73e156d48b22f4f996964022",
     "crates/viboceros-command/src/planar_boolean.rs": "f2b20728494afb35a7f5f368ed0416fe8f70d874ba3eb54e8b2cdfdcdd45d86e",
     "crates/viboceros-command/src/planar_boolean/tests.rs": "e5f1998b805068593f92f92794e6b8cd46275020b350b2822d6179d4ca84af64",
     "src/app/tests/planar_boolean.rs": "b9bcb61c29f4504f7a451547080d93f2ba118ecd8578eb26202fc74688f903b3",
@@ -180,7 +174,6 @@
   },
   "artifact_sha256": {
     "docs/commands/planar-booleans.md": "e78c6c387854ae8c9794d0f557ada2b23350800826460b6bb3d7f68da758ba9b",
-    "docs/planar-boolean-export-closure.md": "50b36a4f64b1a67ca687527a78220ec410ef23f53e87d675ea105d36117c7c96",
     "docs/planar-export-closure-baseline.log": "f5b38a5b0e554ed941b2d7d0a90afae11d4a9654fd6c3636baf5c9edfd2064ef",
     "docs/planar-export-closure-candidate.log": "4b89ca17063f83651ecb5b95680f9386fea700ac11e6507409b56679635e80eb",
     "docs/planar-export-endpoint-diagnostics.log": "38a7ae634f53f47b291b2ef00906688b8381c7a94b9cd7a69a00a1924f4aa847",
@@ -211,5 +204,16 @@
     "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:crates/viboceros-command/src/planar_boolean/tests.rs": "e5f1998b805068593f92f92794e6b8cd46275020b350b2822d6179d4ca84af64",
     "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:src/app/tests/planar_boolean.rs": "b9bcb61c29f4504f7a451547080d93f2ba118ecd8578eb26202fc74688f903b3",
     "ba4a94ebd09ba015bcc7b28c91e6d75efe15b2ee:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "source_git_sha256": {
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/brep/boolean/planar_mixed.rs": "91a0a8cd9d5af0eb9233ded07dc37443ba4462fece43b81b669baf78b75d9048",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/brep.rs": "3121a923320d387016db11103192922caf3fe5b47115424b9a8e6a41e503c3a1",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/circular.rs": "150b07fbe8244a42585ddf938098d3968011e3877e5e81b002900ac1588d97e2",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/circle_curve.rs": "a72e5c943d8e4786bc67fa3ed76e1677f3b57909a4845cb0aa624a4297810ec2",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/tests/planar_boolean_scale.rs": "3ae6e50fb9246985840bcadfe446e6522e5ff78c73e156d48b22f4f996964022"
+  },
+  "artifact_git_sha256": {
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/planar-boolean-export-closure.md": "50b36a4f64b1a67ca687527a78220ec410ef23f53e87d675ea105d36117c7c96"
   }
 }

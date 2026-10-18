@@ -1,0 +1,261 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "de24538d30e14997ac0ca5ff17193ce17f516dc3",
+  "problem": "Distance tolerances at or above one rejected already normalized directions in frame/circle construction and MeshEllipsoid axis permutation.",
+  "changes": [
+    "Add Frame3::try_from_unit_normal, retaining the supplied UnitVector3 exactly and sharing the deterministic axis algorithm. Keep raw-vector model-size admission unchanged.",
+    "Keep known unit normals typed through planar projection/caps/Booleans, sphere intersection, crossed torus section planes, IPlane and Arc Extension endpoint frames.",
+    "Use the existing frame-style angular threshold for projections/crosses of unit directions in circle construction; keep dimensional radius/chord/radial-position policies.",
+    "Use validated mathematical axes for Sphere and positional Ellipsoid/MeshEllipsoid commands; use numerical frame validation for the internal mesh-axis permutation.",
+    "Update the existing cap test for the helper signature and correct the independently reproduced stale autocomplete expectation."
+  ],
+  "scales": {
+    "exponents": [
+      -20,
+      0,
+      20,
+      40,
+      80
+    ],
+    "absolute_tolerance": "1e-7 times scale",
+    "relative_tolerance": 1e-12,
+    "angular_tolerance": 1e-09,
+    "pose": "translated origin [5,-7,11] times scale, normal [2,3,6]; Boolean matrix also retains XY cases"
+  },
+  "primitive_cases": {
+    "circles": {
+      "cases": 25,
+      "baseline_failed": 10,
+      "baseline_successful": 15,
+      "candidate_failed": 0,
+      "candidate_successful": 25
+    },
+    "spheres": {
+      "cases": 5,
+      "baseline_failed": 2,
+      "baseline_successful": 3,
+      "candidate_failed": 0,
+      "candidate_successful": 5
+    },
+    "caps": {
+      "cases": 30,
+      "baseline_failed": 12,
+      "baseline_successful": 18,
+      "candidate_failed": 0,
+      "candidate_successful": 30
+    },
+    "tori": {
+      "cases": 5,
+      "baseline_failed": 2,
+      "baseline_successful": 3,
+      "candidate_failed": 0,
+      "candidate_successful": 5
+    }
+  },
+  "baseline_scope": "Baseline primitive log measures the original production code and the four operation tests, before adding typed-frame and angular-admission tests. The four operation input recipes and assertions remain unchanged apart from formatting.",
+  "baseline_replay": "Use production code at the baseline revision and the same four operation tests from unit_direction_scale.rs; omit the two later tests requiring the new typed constructor/angular policy.",
+  "planar_boolean_matrix": {
+    "cases": 120,
+    "baseline": "Stops during first 2^40 circle construction; the previous 72 cases remain qualified at the baseline revision.",
+    "candidate": "all pass",
+    "normalized_area_absolute_error_limit": 1e-06,
+    "maximum_normalized_area_error": 4.973799150320701e-14,
+    "preserved": [
+      "analytic circle-lens/disk-strip formulas",
+      "component counts",
+      "manifold open topology",
+      "supporting planes",
+      "unchanged inputs"
+    ]
+  },
+  "primitive_assertions": {
+    "circle_radius_and_center_normalized_error_lt": 1e-12,
+    "circle_plane_normal_abs_dot_gt": 0.999999999999,
+    "cap_normalized_volume": 30,
+    "cap_normalized_volume_error_lt": 1e-08,
+    "cap_vertices_and_edges": "exactly retained",
+    "sphere_intersection_pieces": 2,
+    "sphere_normalized_radius_error_lt": 1e-12,
+    "crossed_torus_sections": 4,
+    "torus_section_normalized_residual_lt": 5e-07,
+    "source_preservation": true
+  },
+  "admission_tests": {
+    "typed_frame_normals": 5,
+    "normal_and_origin": "exactly retained",
+    "orthogonality_dot_limit": "4 machine epsilons",
+    "handedness_dot_gt": "1 - 8 machine epsilons",
+    "raw_vector_small_magnitude_rejection": "retained",
+    "angular_cases": 24,
+    "model_distance_tolerances": [
+      1e-13,
+      1e-07,
+      0.1,
+      1,
+      100000.0,
+      1e+17
+    ],
+    "angular_threshold": 1e-09,
+    "projections": [
+      0,
+      5e-10,
+      2e-09,
+      1
+    ]
+  },
+  "command_cases": {
+    "primitive_recipes": 20,
+    "infinite_plane_recipes": 5,
+    "extension_endpoint_frames": 5,
+    "geometry_checks": "analytic bounds for Circle/Sphere/Ellipsoid, analytic implicit equation and closed topology for mesh vertices",
+    "history": "exact object geometry/identity through Undo/Redo",
+    "source_preservation": true,
+    "mesh_before": "The retained intermediate log isolates the old model-tolerance axis permutation after other unit-direction fixes; it is not a complete original-code baseline."
+  },
+  "baseline_application": {
+    "command": "/tmp/viboceros-unit-direction-retained-baseline-app --nocapture",
+    "exit_code": 101,
+    "log_sha256": "ff7dae842d5754de2ff58dc662190c54d29ce3b888926c1d2f68cd67a9927821",
+    "passed": 1374,
+    "failed": 1,
+    "ignored": 19,
+    "retained_log": "docs/unit-direction-app-baseline.log.gz",
+    "binary": {
+      "label": "app",
+      "source": "target/release/deps/viboceros-cdd7ed46a0528046",
+      "retained": "/tmp/viboceros-unit-direction-retained-baseline-app",
+      "sha256": "236f7494501c92396a273f964ec550b81c9fb43f05651eb7385ef5dba38a99ee",
+      "basis_log": "/tmp/viboceros-planar-scale-app-release.log",
+      "baseline_revision": "de24538d30e14997ac0ca5ff17193ce17f516dc3"
+    },
+    "failure": "app::tests::command_completion_prioritizes_prefixes_and_is_case_insensitive",
+    "diagnosis": "The old assertion expected ExtrudeCrvToPoint first, after ExtrudeCrvTapered had also been registered. The test now asserts both lexical prefix matches; completion implementation is unchanged."
+  },
+  "completed_runs": [
+    {
+      "command": "cargo test --release -p viboceros-geometry -p viboceros-command --features viboceros-command/native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log_sha256": "48d3fbd0212677e3bbd06571f94899bafc25bfbbd53637cf6ec7319170ea8b58",
+      "passed": 3969,
+      "failed": 0,
+      "ignored": 11,
+      "retained_log": "docs/unit-direction-full-release.log.gz"
+    },
+    {
+      "command": "cargo test --release --bin viboceros -- --nocapture",
+      "exit_code": 0,
+      "log_sha256": "ba0c2034f0f5c6ec99dcea3f379ac533a0dae2b27a3ed2ac5b4e95cc9625f98e",
+      "passed": 1375,
+      "failed": 0,
+      "ignored": 19,
+      "retained_log": "docs/unit-direction-app-release.log.gz"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "2800dd61c3b03496376d6340cfac8f239eeb83a5eb1216d0ece68063da4b94b5"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_release_sections": [
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_command-dc4b87f7d01e2a4e)",
+      "summary": "test result: ok. 1579 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 125.13s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-a159ed14312ccb02)",
+      "summary": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+    },
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_geometry-8704133541059e5f)",
+      "summary": "test result: ok. 2380 passed; 0 failed; 8 ignored; 0 measured; 0 filtered out; finished in 19.72s"
+    },
+    {
+      "header": "Running tests/planar_boolean_scale.rs (target/release/deps/planar_boolean_scale-3ea37b1a5b00911b)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-85517c4bb1d9ab3f)",
+      "summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s"
+    },
+    {
+      "header": "Doc-tests viboceros_command",
+      "summary": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Doc-tests viboceros_geometry",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 30,
+    "records": 17,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "log_policy": "Plain focused logs retain Cargo output followed by the observed exit code. Gzipped full release logs retain all original bytes. The final full suites qualify the exact recorded source.",
+  "limitations": [
+    "No new licensed Rhino capture or performance comparison. Existing retained native observations remain in the full suites.",
+    "The circle angular threshold follows the existing frame-style sine-angle policy; arbitrary angular degeneracies are not newly qualified.",
+    "Other raw-direction adapters, including axial primitive direction options and some construction-plane/orientation helpers, still require a dimensional-policy audit.",
+    "Arbitrary floating-point scales, general modeling topology, and viewport pixel parity are not established by these analytic/command cases."
+  ],
+  "source_sha256": {
+    "crates/viboceros-geometry/src/frame.rs": "ebccd74e9f151b1aff6ee287a52a541b4feaa0b8282ba79f71e176abc8896ebd",
+    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "crates/viboceros-geometry/src/circular.rs": "494862b1e9e284a6cd4110f1f7dbcf110f00bcc63db98906e05a30965c494fe5",
+    "crates/viboceros-geometry/src/circle_curve.rs": "347e07e184fee67b64bd97f574f92a4572e99466d0cea7a186922eea0451733e",
+    "crates/viboceros-geometry/src/brep.rs": "be4390a80dafe15e65f7e3eaac6dbc64871b7d6fb3515c69c81fd50d93c76cd8",
+    "crates/viboceros-geometry/src/brep/boolean/planar_mixed.rs": "90cbdf24752d5736c40e4529b7ac4f3cfc234dbb77d3e6750e66f8287eafe073",
+    "crates/viboceros-geometry/src/brep/cap.rs": "893ae678dcba7f4ca8f1e2023fad9bc1cb301ac5cfdd91b2f251ca2f3f774fb2",
+    "crates/viboceros-geometry/src/brep/cap/boundary.rs": "9a93fc77ff719ec26011a03bbad0d58304076ccd0655371dbfaafd00fcf774e2",
+    "crates/viboceros-geometry/src/brep/cap/tests.rs": "dff2e8c24b76565069394c76648447c5653a72a26a8bc16846a2f71441af211f",
+    "crates/viboceros-geometry/src/intersection.rs": "435504cc4af41c13bd98eae66f4c2ecc924a7b120f594f9a24e073a07fb846e6",
+    "crates/viboceros-geometry/src/intersection/torus_torus/crossed_equal.rs": "6ddd453bc293e207c6d5a792372ea89db68d2a6070dbfc4597b14470685d0151",
+    "crates/viboceros-geometry/src/mesh.rs": "8bba77c35d702c989952a3398bf5a5aba88d2d325f2bedc1f58bfe7b96944792",
+    "crates/viboceros-geometry/tests/planar_boolean_scale.rs": "55211c48314116c4e47a88ac596c7e108bb747ca7e510b62aecd0d216f0c7db6",
+    "crates/viboceros-geometry/tests/unit_direction_scale.rs": "29e84ec802746a4d89c3d3db317d9c2cd52380583929d614af793fb11488453a",
+    "crates/viboceros-command/src/arc_extension_input.rs": "2fa1f5e4cdb352c1d401e7a4dd76a93f3816ab1a3944b12620cb4dd623d3703c",
+    "crates/viboceros-command/src/iplane.rs": "e385f5c8b276e4510be934175e2aad1869e6cae60798551ecd4cc0222d575b76",
+    "crates/viboceros-command/src/lib.rs": "0a1a82c04ecaea6e94277139ebdfbe3ee6461bd59c0eabf7b63772aee0aa303b",
+    "crates/viboceros-command/tests/unit_direction_scale.rs": "90c3f9ecc3a7a1f2cf74f2e2fc998d10688345a590a98b070ae254a373fcf970",
+    "src/app.rs": "020260f1bb69bd557bb9ebc0fb0dfef1aed7b32cfb21c215c5d34c0565138b30",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "README.md": "d06ad57f46eb78760f46435312ae1498f1453ea74f7ba1cbf0e5d36136201186",
+    "docs/unit-directions-and-model-tolerance.md": "5e7df434b94915e322584de23b6da691f0a369907bf12b2b5f1881098e00f815",
+    "docs/planar-boolean-export-closure.md": "34d7fed39961fd6a36c23cc5673cd68d4c9acdd2a5552cfa30933ffb1c20583d",
+    "docs/unit-direction-planar-baseline.log": "bbe85f19863a7845d3bab0e7d0b2ec42317e883714f6afda1617c0df46524059",
+    "docs/unit-direction-primitives-baseline.log": "c9bcf9c8fde926e81e1e2ead5c862bbca2b2cbf77426fea3effbec9d8ae84bf2",
+    "docs/unit-direction-primitives-candidate.log": "1b496022d566114985fe41c0d406b496de50e4ba431a2d44c31b9994d5e3b76e",
+    "docs/unit-direction-mesh-permutation-before.log": "d7cff4cfa61cf7bb93849aa97e91a946194cce674e46cc53613555bd0cf20827",
+    "docs/unit-direction-command-candidate.log": "f5467e731a25f3eb0a599dff383f3520d1dff0fee3390bb04b1dffec6f4c7a12",
+    "docs/unit-direction-app-baseline.log.gz": "29103d1b410c905e1d75d6941b639f606f7d576516c49be652b69a0a8a6e1f7c",
+    "docs/unit-direction-full-release.log.gz": "c1d2d595b05aa7197432544522070e26cdf9f7fe63142c2bf47c94daf1bb6eb8",
+    "docs/unit-direction-app-release.log.gz": "36a4ee51da534c6dd7640e5c1cfa88658925de76cff94ebbad8285e81dc95f7e"
+  },
+  "baseline_git_sha256": {
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/circular.rs": "150b07fbe8244a42585ddf938098d3968011e3877e5e81b002900ac1588d97e2",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/circle_curve.rs": "a72e5c943d8e4786bc67fa3ed76e1677f3b57909a4845cb0aa624a4297810ec2",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/brep.rs": "3121a923320d387016db11103192922caf3fe5b47115424b9a8e6a41e503c3a1",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/brep/boolean/planar_mixed.rs": "91a0a8cd9d5af0eb9233ded07dc37443ba4462fece43b81b669baf78b75d9048",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/brep/cap.rs": "3fb05fff071836a03c1cfdcd8473ba75be8adc3fb8030533c95b685142759000",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/brep/cap/boundary.rs": "b26d1a711c244ccf0a2ed0e50d7338ca8875998bc3fe69373c58cff1c8be7636",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/brep/cap/tests.rs": "dc14cf19b6d1336a24d037e96063ac585b3dfb8c2b06f062e11fceb861236bef",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/intersection.rs": "4af65f5e283beec675aa5b105a493a228f942e2f0fe71c3d0a20401a1ad9e9fa",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/intersection/torus_torus/crossed_equal.rs": "01480a81abbf7354e8c1862e8c839c3e711e891b454ba8574373106164073c85",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/mesh.rs": "13adcc0e70f0e955fb1e52274855cbbca4857cfaaf38320047d3296f03fcc469",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/tests/planar_boolean_scale.rs": "3ae6e50fb9246985840bcadfe446e6522e5ff78c73e156d48b22f4f996964022",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-command/src/arc_extension_input.rs": "8a9884bac2867d0c75db9d2aa25a57e5535bbaabb96832972bd9547285bf6e76",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-command/src/iplane.rs": "673836a5f566fd1a8b6c93c53a499bd8e9d3c9f31360593ab97370970e04dc01",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-command/src/lib.rs": "ae879ce16bfd4b7d467041e4b4a795ebbffc388d6305478d9be3f90999ab2d7d",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:src/app.rs": "45bea5ff62df68810be84c2c0a514ed8d8a1c1bf252244f3860cd967929456ce",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

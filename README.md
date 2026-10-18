@@ -79,6 +79,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Modelling issue fixes and regression results](docs/modelling-issues.md)
 - [Development and testing](docs/development.md)
 - [Prepared curve-length queries and integration diagnostics](docs/prepared-curve-length.md)
+- [Unit directions and model tolerances](docs/unit-directions-and-model-tolerance.md)
 - [USD BRep kernel integration](docs/usd-brep.md)
 - [Native surface joining](docs/smlib-joining.md), including source UV chart preservation
 - [Native pole transfer and exact NURBS copies](docs/native-pole-transfer.md)

@@ -11134,8 +11134,8 @@ mod tests {
             ["Polygon", "PolygonCount", "Polyline"]
         );
         assert_eq!(
-            command_completions(&commands, "_eXtRuDeCrVt")[..1],
-            ["ExtrudeCrvToPoint"]
+            command_completions(&commands, "_eXtRuDeCrVt")[..2],
+            ["ExtrudeCrvTapered", "ExtrudeCrvToPoint"]
         );
         assert!(command_completions(&commands, "Point ").is_empty());
         assert!(command_completions(&commands, "").is_empty());

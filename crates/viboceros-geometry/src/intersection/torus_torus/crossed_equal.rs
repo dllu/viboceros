@@ -23,7 +23,8 @@ pub(super) fn intersect(
             first_axis[1] + sign * second_axis[1],
             first_axis[2] + sign * second_axis[2],
         )?;
-        let plane_frame = Frame3::try_from_normal(frame.origin(), normal, tolerance)?;
+        let plane_frame =
+            Frame3::try_from_unit_normal(frame.origin(), normal.normalized_nonzero()?)?;
         let corner = |x: Real, y: Real| plane_frame.point_at([x, y, 0.0]);
         let patch = NurbsSurface::try_bilinear([
             corner(-span, -span)?,

@@ -318,7 +318,6 @@
   "sha256": {
     "docs/ellipse-validation.json": "11469255088f6d70ae0b2ba41d3572fa460cefe273d5e7bc8891ec098fc3e2c6",
     "docs/rectangle-rounded-validation.json": "74d50cab68ce8363a6bc31d416c6ec4902e4220ac12e6fdd6eebb576ee236052",
-    "docs/sphere-fit-points-validation.json": "5cf601a2059873f282af660888cb082c11894648add5e657386e0fd5aa6ad9d0",
     "tools/rhino_oracle/ellipse_probe.py": "a9115d21bf141928028ed561a5bb18ccbcb3ae99fb59afb1151917e5c3f1b97b",
     "tools/rhino_oracle/fixtures/circle_around_command.json": "bf213eb2dccac9237c6e8684546614fb4a6604be2dfb10749d29689fd7827bf8",
     "tools/rhino_oracle/fixtures/circle_around_controls.json": "3f660f379e2e597014936bf844d85482cf56593b973bc276240675250a44e8e8",
@@ -365,6 +364,7 @@
     "7fd899f6a0c5b54892b256b00166a1528f578c9b:docs/commands/curves.md": "d1d687c12f3680c521ddf544d9d50c28fdb9a8d550bd35a808e8b747dae8ee83",
     "771c31cac4aa5535a6a96aedfbeab15544a0c117:crates/viboceros-oracle/src/ellipse_command.rs": "033e2d07e463aae09012a07b6f459b2a072c24ec9605aed04335c8268c227063",
     "771c31cac4aa5535a6a96aedfbeab15544a0c117:src/app/point_input.rs": "c68e7bf77980b2ebcdcc111768325784d5fdb5174989342ccd62d993ccde9dab",
-    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/ellipse-deform-validation.json": "5210d335e18d0f30e0e432f37d2492554a06dcf8efdfe83af59948158efa9192"
+    "771c31cac4aa5535a6a96aedfbeab15544a0c117:docs/ellipse-deform-validation.json": "5210d335e18d0f30e0e432f37d2492554a06dcf8efdfe83af59948158efa9192",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/sphere-fit-points-validation.json": "5cf601a2059873f282af660888cb082c11894648add5e657386e0fd5aa6ad9d0"
   }
 }

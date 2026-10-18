@@ -8,7 +8,7 @@ fn circular_and_mixed_planar_booleans_preserve_area_across_model_scales() {
     let mut failures = Vec::new();
     let mut checked = 0;
     let mut maximum_area_error = 0_f64;
-    for exponent in [-20, 0, 20] {
+    for exponent in [-20, 0, 20, 40, 80] {
         let scale = 2_f64.powi(exponent);
         let tolerance = Tolerance::try_new(1e-7 * scale, 1e-12, 1e-9).unwrap();
         for tilted in [false, true] {
@@ -20,7 +20,7 @@ fn circular_and_mixed_planar_booleans_preserve_area_across_model_scales() {
             let frame = Frame3::try_from_normal(
                 Point3::try_from(origin).unwrap(),
                 Vector3::try_from(normal).unwrap(),
-                tolerance,
+                Tolerance::NUMERICAL_VALIDATION,
             )
             .unwrap();
             let point = |x, y| frame.point_at([x * scale, y * scale, 0.]).unwrap();
@@ -119,6 +119,6 @@ fn circular_and_mixed_planar_booleans_preserve_area_across_model_scales() {
         "PLANAR_SCALE cases={checked} failures={} max_normalized_area_error={maximum_area_error:e}",
         failures.len()
     );
-    assert_eq!(checked, 72);
+    assert_eq!(checked, 120);
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

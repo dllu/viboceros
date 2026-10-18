@@ -167,7 +167,6 @@
     "docs/curve-deviation-subcurves-ui.log": "0c8f5fd0d0682fbd829a223a04a5e351b8c49b40418905ed2814a310c7e589ef",
     "docs/curve-distance-queries.md": "6cc93a5b23054c686fd936e835e846d0fe39a1163a163366f20e716bbb36272f",
     "docs/project-subcurve-qualification.json": "870c7dfe7c45e78fa9a30037d9dc3bafa2281c46466d3015b9aad242c3cf9d98",
-    "docs/pull-command-qualification.json": "2c2bbf4705eb007ac785bdf8560ed1be9ff89d654c4011b741c01d2a5930c503",
     "src/app/apply_curves.rs": "c3760d67c13e8fd1fcba57cc9993ce500db9000aa1e55f889f266f272efce88e",
     "src/app/boolean_solids.rs": "20c2f741782e10de10fbfec962eefc369672015734ce570521bbb1bb37903985",
     "src/app/curve_deviation.rs": "1fa8fd8e0fe8b182d1d101808dc2f6cefd79ea3fbebd9bcce26e518add4c2b76",
@@ -201,6 +200,7 @@
     "30059acfb157ee4995c538fb07b2212dc4d05b75:docs/point-deviation-validation.json": "24a977983334171f1bb83e6ee65350d78efc4b2a1bbd8647d3324bd3e23fd10d",
     "30059acfb157ee4995c538fb07b2212dc4d05b75:src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c",
     "2348c030682b04b278c62b1d5e139d1c632c488b:src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708",
-    "04f7e1923710f12ee4228b34083f8b10048d068d:crates/viboceros-command/src/subcurve_input.rs": "f0765acef3a926429066695f43181c8dc485faf52b5da8e5f01727bcb6326ed2"
+    "04f7e1923710f12ee4228b34083f8b10048d068d:crates/viboceros-command/src/subcurve_input.rs": "f0765acef3a926429066695f43181c8dc485faf52b5da8e5f01727bcb6326ed2",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/pull-command-qualification.json": "2c2bbf4705eb007ac785bdf8560ed1be9ff89d654c4011b741c01d2a5930c503"
   }
 }

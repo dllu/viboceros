@@ -155,8 +155,7 @@
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
-    "tools/rhino_oracle/orient_surface_grips_comparison.py": "7820fe60cd3c72fc5c62dbc892c2eb511adc7d757a967170a1804da32920970d",
-    "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22"
+    "tools/rhino_oracle/orient_surface_grips_comparison.py": "7820fe60cd3c72fc5c62dbc892c2eb511adc7d757a967170a1804da32920970d"
   },
   "fixture_sha256": {
     "tools/rhino_oracle/fixtures/flow_line.json": "2ec4b0a46c23dcb8a778d66498e28924f8276373d75742cc91cb8dc006d9ac37",
@@ -187,6 +186,7 @@
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:tools/rhino_oracle/flow_line_probe.py": "e41f1f924954924f34a40cc73e93d08bd8b35cbe3157324df8e5d784f1e68b45",
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:README.md": "1958111563e9d6b5775b2d9cb5d9638d4f0024359887d6d5625426ff22bfb9fd",
     "a073235d672ba6ec22ebe0ed05c8f90bfad665b1:docs/commands/flow.md": "67efd08568c268944d731b446eed8691861557c7721dc715987f1fd4ea1687db",
-    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5"
+    "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/morph/flow.rs": "da3491152817bcf3b0fce2a49f222634916f2575c486853ee4c070c47c92eda5",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22"
   }
 }

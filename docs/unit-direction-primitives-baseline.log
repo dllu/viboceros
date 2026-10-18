@@ -1,0 +1,61 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.93s
+     Running tests/unit_direction_scale.rs (target/debug/deps/unit_direction_scale-0b85c8c6e25373ff)
+
+running 4 tests
+UNIT_DIRECTION_CIRCLES cases=25 failures=10
+
+thread 'circle_direction_constructors_keep_model_size_and_angular_policies_separate' (2094238) panicked at crates/viboceros-geometry/tests/unit_direction_scale.rs:52:5:
+normal exponent=40: Degenerate { context: "vector" }
+frame exponent=40: Degenerate { context: "vector" }
+diameter exponent=40: Degenerate { context: "vector" }
+vertical exponent=40: Degenerate { context: "vector" }
+two-points-radius exponent=40: Degenerate { context: "vector" }
+normal exponent=80: Degenerate { context: "vector" }
+frame exponent=80: Degenerate { context: "vector" }
+diameter exponent=80: Degenerate { context: "vector" }
+vertical exponent=80: Degenerate { context: "vector" }
+two-points-radius exponent=80: Degenerate { context: "vector" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test circle_direction_constructors_keep_model_size_and_angular_policies_separate ... FAILED
+UNIT_DIRECTION_SPHERES cases=5 failures=2
+
+thread 'sphere_intersection_unit_axis_does_not_depend_on_model_distance_tolerance' (2094241) panicked at crates/viboceros-geometry/tests/unit_direction_scale.rs:83:5:
+exponent=40: Degenerate { context: "vector" }
+exponent=80: Degenerate { context: "vector" }
+test sphere_intersection_unit_axis_does_not_depend_on_model_distance_tolerance ... FAILED
+UNIT_DIRECTION_CAPS cases=30 failures=12
+
+thread 'planar_caps_keep_source_topology_at_large_model_tolerances' (2094240) panicked at crates/viboceros-geometry/tests/unit_direction_scale.rs:110:5:
+exponent=40 omitted=0: Err(Degenerate { context: "vector" })
+exponent=40 omitted=1: Err(Degenerate { context: "vector" })
+exponent=40 omitted=2: Err(Degenerate { context: "vector" })
+exponent=40 omitted=3: Err(Degenerate { context: "vector" })
+exponent=40 omitted=4: Err(Degenerate { context: "vector" })
+exponent=40 omitted=5: Err(Degenerate { context: "vector" })
+exponent=80 omitted=0: Err(Degenerate { context: "vector" })
+exponent=80 omitted=1: Err(Degenerate { context: "vector" })
+exponent=80 omitted=2: Err(Degenerate { context: "vector" })
+exponent=80 omitted=3: Err(Degenerate { context: "vector" })
+exponent=80 omitted=4: Err(Degenerate { context: "vector" })
+exponent=80 omitted=5: Err(Degenerate { context: "vector" })
+test planar_caps_keep_source_topology_at_large_model_tolerances ... FAILED
+UNIT_DIRECTION_TORI cases=5 failures=2
+
+thread 'crossed_torus_section_frames_use_directions_at_every_model_scale' (2094239) panicked at crates/viboceros-geometry/tests/unit_direction_scale.rs:143:5:
+exponent=40: Degenerate { context: "vector" }
+exponent=80: Degenerate { context: "vector" }
+test crossed_torus_section_frames_use_directions_at_every_model_scale ... FAILED
+
+failures:
+
+failures:
+    circle_direction_constructors_keep_model_size_and_angular_policies_separate
+    crossed_torus_section_frames_use_directions_at_every_model_scale
+    planar_caps_keep_source_topology_at_large_model_tolerances
+    sphere_intersection_unit_axis_does_not_depend_on_model_distance_tolerance
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+error: test failed, to rerun pass `-p viboceros-geometry --test unit_direction_scale`
+EXIT_CODE 101

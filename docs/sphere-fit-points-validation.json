@@ -116,7 +116,6 @@
     "crates/viboceros-geometry/src/circle_fit/seed.rs": "5f3b5159013ce7ca1d1ef518cada76e96c9781b2d24ae1ad093e20aa4a595ce2",
     "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
     "crates/viboceros-geometry/src/finite_sum.rs": "d56fa845aa7e65cfffb75453280012a7f8447bd1da1102cdc8cd15f497d061d0",
-    "crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22",
     "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
     "crates/viboceros-geometry/src/point.rs": "560b5b7ba0a2efbcb22ff75d314fcce63a1108bccced69ac3d920a94b30f0409",
     "crates/viboceros-geometry/src/point/distance_bound.rs": "94c9b4b8c63187479433c4cdfa1bc4d4ef45fe392dc65d2ae68f8482baf2cff2",
@@ -167,6 +166,7 @@
     "30059acfb157ee4995c538fb07b2212dc4d05b75:crates/viboceros-geometry/src/error.rs": "518022cce3800809aa22690c514bf59b85b1c31c4ac02e733161314002f52919",
     "ce00480a5cfeb795b4bbe9df2cfd2ff73f839337:crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/circle_curve.rs": "014c0491e2cacd5d8b13beed4b7e4ad48cf6464d3bb84ad6a23fc0375889bf30",
-    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/app/circle.rs": "068c2ca364ef50305ce8823c851016c96275a5ae2bea183935e8d8c5d557eee2"
+    "03c766480d8d71bb6f47a7d6fd65fd3945813648:src/app/circle.rs": "068c2ca364ef50305ce8823c851016c96275a5ae2bea183935e8d8c5d557eee2",
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-geometry/src/frame.rs": "a93db008f32dbf287255340adceea1b735411bfb0b6d94ff40f2e85661486d22"
   }
 }

@@ -44,12 +44,24 @@ impl Frame3 {
     /// Constructs the deterministic OpenNURBS-style plane whose z-axis is the
     /// supplied normal. The x-axis is chosen from the two largest normal
     /// components, and y completes a right-handed orthonormal frame.
+    /// The raw normal must exceed the model distance tolerance. Use
+    /// [`Self::try_from_unit_normal`] for an already validated unit direction.
     pub fn try_from_normal(
         origin: Point3,
         normal: Vector3,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let z_axis = normal.normalized(tolerance)?;
+        Self::try_from_unit_normal(origin, z_axis)
+    }
+
+    /// Constructs the deterministic normal-derived frame from an already
+    /// validated direction. Its dimensionless axes do not depend on a model
+    /// distance tolerance. The supplied normal is retained exactly.
+    pub fn try_from_unit_normal(
+        origin: Point3,
+        z_axis: UnitVector3,
+    ) -> Result<Self, GeometryError> {
         let components = z_axis.as_vector().to_array();
         let [x, y, z] = components.map(f64::abs);
         let (first, second, zero) = if y > x {
