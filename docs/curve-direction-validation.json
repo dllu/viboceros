@@ -300,7 +300,6 @@
     "Flow command Undo intentionally retains its existing empty copied-group definitions; this correction does not change document group lifecycle."
   ],
   "source_sha256": {
-    "crates/viboceros-command/src/lib.rs": "6f6c269dd3d7ec0b570929233b033f0fcdf7e9d00be1d5053f76f58761f41692",
     "crates/viboceros-geometry/src/morph/flow.rs": "a8e4a8b04dc4ba51bcc8d2d806540134dc481e5a512a0cc3f3c8757134fdd362",
     "crates/viboceros-geometry/src/vector.rs": "e46ccdeee2e52a8c5519fbda816b14cff9e32e817e3d4824b61ab4b5d6501f43",
     "crates/viboceros-geometry/src/vector/cross_direction.rs": "b2d21dc2509bea847f6fc97185b87a552f5062ff9050ab9df853524de3667d33",
@@ -313,7 +312,6 @@
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
-    "README.md": "323583b569a45262e40be2579e52f362d987dfb0c40ea0f05f68e0731c033dcc",
     "docs/curve-direction-units.md": "85e8bbdacb057ab2af7b3312db5e49109d6a5c9345791d4e7ecdb5b64910353d",
     "docs/commands/flow.md": "b17e75d9fa4498a121a834170f9da64b805f0e3fb831a6d911ab85017cd9eb7a",
     "docs/direction-adapters.md": "68ccfdff1fbfaff0618e38561bcb3960af7bf1236b11b31b73309ea91db30a75",
@@ -337,5 +335,11 @@
     "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
     "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/parameter.rs": "66eff84b5540d40dd2396bcc14d81fcc97f1595926b22e8d048807448f657253",
     "0c85fd337d79601e2051193599f802203e25b60b:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "source_git_sha256": {
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:crates/viboceros-command/src/lib.rs": "6f6c269dd3d7ec0b570929233b033f0fcdf7e9d00be1d5053f76f58761f41692"
+  },
+  "artifact_git_sha256": {
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:README.md": "323583b569a45262e40be2579e52f362d987dfb0c40ea0f05f68e0731c033dcc"
   }
 }

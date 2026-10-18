@@ -202,6 +202,12 @@ pub(crate) struct NamedViewSnapshot {
     port_size: [i32; 2],
 }
 
+impl NamedViewSnapshot {
+    pub(crate) fn construction_plane(self) -> Frame3 {
+        self.plane
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ViewKind {
     Top,

@@ -1,0 +1,1378 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "remap-copy-cancel-0",
+      "value": {
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  2.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  1.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  5.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "after_script": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  2.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  1.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  5.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  5.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "events": [
+          {
+            "name": "RemapCPlane",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "grips": [],
+                  "grips_on": false,
+                  "groups": [],
+                  "name": "remap source 0",
+                  "points": [
+                    [
+                      1.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      2.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      1.0,
+                      -3.0,
+                      3.0
+                    ],
+                    [
+                      1.0,
+                      -4.0,
+                      2.0
+                    ]
+                  ],
+                  "selected": true,
+                  "source": 0
+                },
+                {
+                  "grips": [],
+                  "grips_on": false,
+                  "groups": [],
+                  "name": "remap source 1",
+                  "points": [
+                    [
+                      4.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      5.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      3.0
+                    ],
+                    [
+                      4.0,
+                      -4.0,
+                      2.0
+                    ]
+                  ],
+                  "selected": true,
+                  "source": 1
+                }
+              ],
+              "plane": {
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x_axis": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y_axis": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              }
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _RemapCPlane\nClick in a viewport with the target CPlane ( Copy=No  CPlane  View ): _CPlane\nName of CPlane to map to: \"Front\"",
+        "macro": "_RemapCPlane _CPlane \"Front\"",
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  2.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  1.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  5.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "redo_returned": true,
+        "setup": {
+          "after": {
+            "groups": [],
+            "objects": [
+              {
+                "grips": [],
+                "grips_on": false,
+                "groups": [],
+                "name": "remap source 0",
+                "points": [
+                  [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    2.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    1.0,
+                    3.0,
+                    3.0
+                  ],
+                  [
+                    1.0,
+                    2.0,
+                    4.0
+                  ]
+                ],
+                "selected": true,
+                "source": 0
+              },
+              {
+                "grips": [],
+                "grips_on": false,
+                "groups": [],
+                "name": "remap source 1",
+                "points": [
+                  [
+                    4.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    5.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    4.0,
+                    3.0,
+                    3.0
+                  ],
+                  [
+                    4.0,
+                    2.0,
+                    4.0
+                  ]
+                ],
+                "selected": true,
+                "source": 1
+              }
+            ],
+            "plane": {
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x_axis": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y_axis": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "events": [
+            {
+              "name": "RemapCPlane",
+              "objects": {
+                "groups": [],
+                "objects": [
+                  {
+                    "grips": [],
+                    "grips_on": false,
+                    "groups": [],
+                    "name": "remap source 0",
+                    "points": [
+                      [
+                        1.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        2.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        1.0,
+                        3.0,
+                        3.0
+                      ],
+                      [
+                        1.0,
+                        2.0,
+                        4.0
+                      ]
+                    ],
+                    "selected": true,
+                    "source": 0
+                  },
+                  {
+                    "grips": [],
+                    "grips_on": false,
+                    "groups": [],
+                    "name": "remap source 1",
+                    "points": [
+                      [
+                        4.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        5.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        4.0,
+                        3.0,
+                        3.0
+                      ],
+                      [
+                        4.0,
+                        2.0,
+                        4.0
+                      ]
+                    ],
+                    "selected": true,
+                    "source": 1
+                  }
+                ],
+                "plane": {
+                  "origin": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "x_axis": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "y_axis": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ]
+                }
+              },
+              "result": "Cancel",
+              "selected": []
+            }
+          ],
+          "macro": "_RemapCPlane _Copy=_Yes _Cancel",
+          "success": false
+        },
+        "success": true,
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  5.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "undo_returned": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "remap-copy-cancel-1",
+      "value": {
+        "after": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  2.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  1.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  5.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "after_script": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  2.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  1.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  5.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "before": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  5.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "events": [
+          {
+            "name": "RemapCPlane",
+            "objects": {
+              "groups": [],
+              "objects": [
+                {
+                  "grips": [],
+                  "grips_on": false,
+                  "groups": [],
+                  "name": "remap source 0",
+                  "points": [
+                    [
+                      1.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      2.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      1.0,
+                      -3.0,
+                      3.0
+                    ],
+                    [
+                      1.0,
+                      -4.0,
+                      2.0
+                    ]
+                  ],
+                  "selected": true,
+                  "source": 0
+                },
+                {
+                  "grips": [],
+                  "grips_on": false,
+                  "groups": [],
+                  "name": "remap source 1",
+                  "points": [
+                    [
+                      4.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      5.0,
+                      -3.0,
+                      2.0
+                    ],
+                    [
+                      4.0,
+                      -3.0,
+                      3.0
+                    ],
+                    [
+                      4.0,
+                      -4.0,
+                      2.0
+                    ]
+                  ],
+                  "selected": true,
+                  "source": 1
+                }
+              ],
+              "plane": {
+                "origin": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "x_axis": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "y_axis": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              }
+            },
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _RemapCPlane\nClick in a viewport with the target CPlane ( Copy=No  CPlane  View ): _CPlane\nName of CPlane to map to: \"Front\"",
+        "macro": "_RemapCPlane _CPlane \"Front\"",
+        "redo": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  2.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  1.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  5.0,
+                  -3.0,
+                  2.0
+                ],
+                [
+                  4.0,
+                  -3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  -4.0,
+                  2.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "redo_returned": true,
+        "setup": {
+          "after": {
+            "groups": [],
+            "objects": [
+              {
+                "grips": [],
+                "grips_on": false,
+                "groups": [],
+                "name": "remap source 0",
+                "points": [
+                  [
+                    1.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    2.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    1.0,
+                    3.0,
+                    3.0
+                  ],
+                  [
+                    1.0,
+                    2.0,
+                    4.0
+                  ]
+                ],
+                "selected": true,
+                "source": 0
+              },
+              {
+                "grips": [],
+                "grips_on": false,
+                "groups": [],
+                "name": "remap source 1",
+                "points": [
+                  [
+                    4.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    5.0,
+                    2.0,
+                    3.0
+                  ],
+                  [
+                    4.0,
+                    3.0,
+                    3.0
+                  ],
+                  [
+                    4.0,
+                    2.0,
+                    4.0
+                  ]
+                ],
+                "selected": true,
+                "source": 1
+              }
+            ],
+            "plane": {
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "x_axis": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "y_axis": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "events": [
+            {
+              "name": "RemapCPlane",
+              "objects": {
+                "groups": [],
+                "objects": [
+                  {
+                    "grips": [],
+                    "grips_on": false,
+                    "groups": [],
+                    "name": "remap source 0",
+                    "points": [
+                      [
+                        1.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        2.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        1.0,
+                        3.0,
+                        3.0
+                      ],
+                      [
+                        1.0,
+                        2.0,
+                        4.0
+                      ]
+                    ],
+                    "selected": true,
+                    "source": 0
+                  },
+                  {
+                    "grips": [],
+                    "grips_on": false,
+                    "groups": [],
+                    "name": "remap source 1",
+                    "points": [
+                      [
+                        4.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        5.0,
+                        2.0,
+                        3.0
+                      ],
+                      [
+                        4.0,
+                        3.0,
+                        3.0
+                      ],
+                      [
+                        4.0,
+                        2.0,
+                        4.0
+                      ]
+                    ],
+                    "selected": true,
+                    "source": 1
+                  }
+                ],
+                "plane": {
+                  "origin": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "x_axis": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "y_axis": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ]
+                }
+              },
+              "result": "Cancel",
+              "selected": []
+            }
+          ],
+          "macro": "_RemapCPlane _Copy=_No _Cancel",
+          "success": false
+        },
+        "success": true,
+        "undo": {
+          "groups": [],
+          "objects": [
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 0",
+              "points": [
+                [
+                  1.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  2.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  1.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 0
+            },
+            {
+              "grips": [],
+              "grips_on": false,
+              "groups": [],
+              "name": "remap source 1",
+              "points": [
+                [
+                  4.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  5.0,
+                  2.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  3.0,
+                  3.0
+                ],
+                [
+                  4.0,
+                  2.0,
+                  4.0
+                ]
+              ],
+              "selected": true,
+              "source": 1
+            }
+          ],
+          "plane": {
+            "origin": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "x_axis": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "y_axis": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        },
+        "undo_returned": true
+      }
+    }
+  ]
+}

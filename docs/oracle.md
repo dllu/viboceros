@@ -2,6 +2,13 @@
 
 [Project overview](../README.md)
 
+The native `remap_cplane` capture operation covers 38 RemapCPlane commands and
+two Copy-cancellation workflows. It uses public planes and document APIs in an
+empty owned document under a private settings scheme. The application tests
+replay the saved geometry, grips, selection, groups and Undo/Redo records; the
+headless Rust oracle does not yet expose this command-specific operation. See
+[RemapCPlane](commands/remap-cplane.md) for reproduction and scope.
+
 For Wine licensing startup errors involving `AcquireCredentialsHandleW`, use
 the [security DLL diagnostic](oracle-sspi.md) to check symbol resolution and
 compare native and x64 execution before running another geometry capture.

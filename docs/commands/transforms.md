@@ -82,6 +82,11 @@ for geometry policy, viewport changes, verification, and remaining limitations.
 
 ## Orientation and arrays
 
+[`RemapCPlane`](remap-cplane.md) preserves local coordinates while moving
+objects or grips from the source construction plane to a picked viewport,
+world plane, saved CPlane or named view. Copy and replacement share the existing
+transform group and history policies.
+
 `Align` moves object/group bounds to an edge or center, in world or CPlane
 coordinates, using a target point or automatic overall bounds. See
 [alignment](align.md) for its seven bounding-box modes, curve/line/plane projection modes, interactive workflow, selection

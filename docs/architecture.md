@@ -6,6 +6,12 @@ The dependency direction runs from mathematical primitives through document
 state and commands to the user interface. Geometry does not depend on the UI,
 file formats, or command parsing.
 
+[`RemapCPlane`](commands/remap-cplane.md) shares rigid frame mapping and the
+existing object/grip transform path. Its application controller captures the
+source frame and resolves viewport, named CPlane and saved-view targets without
+editing cameras or planes. Native command captures constrain Bottom orientation,
+Copy cancellation, source/group policy and history.
+
 The `viboceros-opennurbs` crate owns the shared OpenNURBS build and C ABI.
 Its mesh adapters have no dependency on the Rust geometry or file-format crates;
 geometry uses them for planar n-gons and coplanar face merging. File readers and

@@ -1,0 +1,32 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "remap_cplane",
+      "id": "remap-copy-cancel-0",
+      "source_plane": "Top",
+      "target": "Front",
+      "mode": "CPlane",
+      "source": "points",
+      "copy": true,
+      "postselected": false,
+      "group": false,
+      "grips": false,
+      "setup_copy": true
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-copy-cancel-1",
+      "source_plane": "Top",
+      "target": "Front",
+      "mode": "CPlane",
+      "source": "points",
+      "copy": false,
+      "postselected": false,
+      "group": false,
+      "grips": false,
+      "setup_copy": false
+    }
+  ]
+}

@@ -227,6 +227,9 @@ class OracleClient:
             if self.settings_scheme is None or request.get('iterations', 1) != 1:
                 raise OracleProtocolError('Owned fitting/deviation commands require a private scheme and one iteration')
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') == 'remap_cplane' for op in request.get('operations', [])):
+            if self.settings_scheme is None or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('RemapCPlane requires a private scheme and one iteration')
         if any(op.get('op') == 'fillet_edge_reference' for op in request.get('operations', [])):
             from .fillet_edge_probe import validate
             if self.settings_scheme is None or request.get('iterations', 1) != 1:

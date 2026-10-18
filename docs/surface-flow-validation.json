@@ -459,7 +459,6 @@
     "docs/flow-spatial-validation.json": "78a054eeb13ca993db084b1a721b6e453c53247b5fad8e30cff770d3eeb15701",
     "docs/flow-structure-validation.json": "16c61acc1a0d1bb510dd91e360c9d725b8cc9b1987477babad0d26d1632751e0",
     "src/app/mesh_face_prompt.rs": "44a9aa3a1bd2b76f42092ebc00ab7595e0da664655c080a261b7fc15505a7d62",
-    "src/app/transform_sources.rs": "3251ad35896c44a4222910e4a3607d82e84fc742419276a90374ba3c346923a7",
     "tools/rhino_oracle/fixtures/surface_flow.json": "85d9250a297351da2b42d15e2db06583810d9321fe06ee1e413a03b6839b5321",
     "tools/rhino_oracle/fixtures/surface_flow_command.json": "edc99e530fa281a5522d475fb9b860201c5679fd7aa9534726f35977d28e6db0",
     "tools/rhino_oracle/fixtures/surface_flow_faces.json": "bb0520a89acc707ae9943259be1b1224876096cca68b6f73943f29caf4cc5271",
@@ -496,6 +495,7 @@
     "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/flow-poles-validation.json": "555ba358a3600ecf86c9c43ee1d2637861da052f57d4496089228dccb1e40d31",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:crates/viboceros-geometry/src/lib.rs": "746280e1272364022098da8d0c568522bc750db546c4ddda96f34b9768f3c452",
     "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/flow-local-validation.json": "9611d98df2dbc54bd3a6bbe99f00278f85ca220986d3a1c96db0ce769229af6a",
-    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/morph.rs": "83af5748a6b4846816607bbbee55b32851b4dbb9851c078801931cd10e97cd3e"
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-geometry/src/morph.rs": "83af5748a6b4846816607bbbee55b32851b4dbb9851c078801931cd10e97cd3e",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:src/app/transform_sources.rs": "3251ad35896c44a4222910e4a3607d82e84fc742419276a90374ba3c346923a7"
   }
 }

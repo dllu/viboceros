@@ -207,6 +207,7 @@ mod project_plane;
 mod radius;
 mod rail_revolve;
 mod rectangle;
+mod remap_cplane;
 mod replace_block;
 mod scale_by_plane;
 mod scale_nu;
@@ -340,6 +341,7 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
+    RemapCPlane,
     OrientOnCurve,
     SurfaceFlow {
         start: Option<Point3>,
@@ -833,6 +835,7 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
+            Self::RemapCPlane => "RemapCPlane",
             Self::OrientOnCurve => "OrientOnCrv",
             Self::SurfaceFlow { .. } => "FlowAlongSrf",
             Self::Flow { .. } => "Flow",
@@ -973,6 +976,9 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
+            Self::RemapCPlane => {
+                "RemapCPlane: click a target viewport, or choose CPlane or View (Esc cancels)"
+            }
             Self::OrientOnCurve => "OrientOnCrv: follow the curve placement prompt (Esc finishes)",
             Self::SurfaceFlow { .. } => {
                 "FlowAlongSrf: choose base and target surfaces; Enter applies; Esc cancels"
@@ -1819,6 +1825,7 @@ impl InteractiveCommand {
 
     const fn anchor(self) -> Option<Point3> {
         match self {
+            Self::RemapCPlane => None,
             Self::ProjectDirection { start }
             | Self::SurfaceFlow { start }
             | Self::Flow { start } => start,
@@ -2355,6 +2362,7 @@ pub struct VibocerosApp {
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     orient_points_session: Option<orient_points::Session>,
+    remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
     surface_extrusion_sources: Option<extrude_surface::SurfaceExtrusionSources>,
     surface_path_prompt: Option<extrude_surface_path::SurfacePathSession>,
@@ -2486,6 +2494,7 @@ impl VibocerosApp {
             conic_session: None,
             rectangle_session: None,
             orient_points_session: None,
+            remap_cplane_session: None,
             orient_surface_session: None,
             surface_extrusion_sources: None,
             surface_path_prompt: None,
@@ -2629,6 +2638,9 @@ impl VibocerosApp {
         if self.continue_project_plane_name_input(&input) {
             return;
         }
+        if self.plane_prompt.is_none() && self.try_continue_remap_cplane(&input) {
+            return;
+        }
         if !input.is_empty() && self.try_run_view_command(&input) {
             return;
         }
@@ -2705,6 +2717,7 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_orient_surface(&input)
+            || self.try_continue_remap_cplane(&input)
             || self.try_continue_orient_points(&input)
             || self.try_continue_orient_curve(&input)
             || self.try_continue_conic(&input)
@@ -3422,6 +3435,9 @@ impl VibocerosApp {
             return true;
         }
         if self.try_start_orient_surface_input(input, picked_sources.as_deref()) {
+            return true;
+        }
+        if self.try_start_remap_cplane(input, picked_sources.as_deref()) {
             return true;
         }
         if self.try_start_orient_points_input(input, picked_sources.as_deref()) {
@@ -5764,6 +5780,7 @@ impl VibocerosApp {
         self.release_ellipse_picks();
         self.commands.clear_curve_deviation();
         self.set_point_sources = None;
+        self.remap_cplane_session = None;
         self.surface_extrusion_sources = None;
         self.surface_path_prompt = None;
         self.cancel_shell_prompt(false);
@@ -5959,7 +5976,8 @@ impl VibocerosApp {
             InteractiveCommand::ProjectDirection { start } => {
                 return self.accept_project_direction_point(start, point);
             }
-            InteractiveCommand::OrientPoints { .. }
+            InteractiveCommand::RemapCPlane
+            | InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientOnCurve
             | InteractiveCommand::CircleDeform { .. }
             | InteractiveCommand::ArcTangent { .. }
@@ -8603,6 +8621,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.remap_cplane_session.is_some() && self.plane_prompt.is_none() {
+            return;
+        }
         if self.pick_surface_extrusion_path(click.object_id) {
             return;
         }
@@ -9201,6 +9222,7 @@ impl VibocerosApp {
             || self.picking_alignment_curve()
             || self.picking_scale_by_plane_object()
             || self.picking_scale_by_plane_view()
+            || self.remap_cplane_session.is_some()
         {
             // This phase needs one target; a window must not change the sources.
             return;
@@ -9239,6 +9261,15 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if self.remap_cplane_session.is_some()
+            && self.plane_prompt.is_none()
+            && self.set_view_prompt.is_none()
+        {
+            if output.source_viewport_click {
+                self.accept_remap_cplane_view(self.active_viewport);
+            }
+            return true;
+        }
         if output.selection_pointer.is_some() {
             self.capture_flow_pointer(output.selection_pointer);
             if let Some(s) = &mut self.arc_extension_session {
@@ -9755,6 +9786,7 @@ impl eframe::App for VibocerosApp {
                 && !self.replacing_block()
                 && !self.picking_scale_by_plane_object()
                 && !self.picking_scale_by_plane_view()
+                && (self.remap_cplane_session.is_none() || self.plane_prompt.is_some())
                 && !self.picking_extract_faces()
                 && !self.picking_spiral_rail()
                 && !self.picking_conic_curve()
@@ -10889,6 +10921,7 @@ mod tests {
     mod rail_revolve;
     mod rebuild_preview;
     mod rectangle;
+    mod remap_cplane;
     mod rhino_curve_prompt;
     mod scale_by_plane;
     mod scale_by_plane_curve;
@@ -11033,6 +11066,7 @@ mod tests {
             conic_session: None,
             rectangle_session: None,
             orient_points_session: None,
+            remap_cplane_session: None,
             orient_surface_session: None,
             surface_extrusion_sources: None,
             surface_path_prompt: None,

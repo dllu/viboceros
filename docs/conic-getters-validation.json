@@ -575,7 +575,6 @@
     "crates/viboceros-oracle/src/conic.rs": "6aa3e03139fb45d65b63aa570679618a61e8d38adcc9218b1c9219a0f6873786",
     "docs/commands/conic.md": "bf0e54cadccf16b41eef03627f3c974ae4b92236dee370ffce21db74fb6466d8",
     "docs/orient-on-curve-subcurve-validation.json": "8df336d738d674bd0fcae2e138f1728171fe9807e1e6335931ce59d1f85df745",
-    "docs/orient-surface-validation.json": "b18782a2af431a72f3e67bdd092a3e0460edc06d8ff24faa4c4ea606ddb83cfb",
     "src/app/conic.rs": "36f24044999bf7d4eaf0aa3698ef0f2e1fb4612108798bbe85ad23a22a6e7b83",
     "src/app/orient_curve/subcurve.rs": "c4dafd09c894757d77eaba7c6fa2b8440d7648c2a9f91c24b40b59e45649fac5",
     "src/app/subcurve_direction.rs": "df13a06b45c2d3912e2392c68cd19a8f05eb1b8898261e802d8f937fa5640a32",
@@ -601,6 +600,7 @@
     "dbb6bf38e387d24a920d7452e338284261d24406:docs/rectangle-rounded-validation.json": "43b9ff94cef9567efab4be7fd6280ace56604673576e22323c9eec7e9e67f1d1",
     "5af970fe02df2adb375a5f460b5b9072a2fab0a7:docs/orient-on-curve-edge-validation.json": "17e0b700d75db34abf018c9b355c99cc6f0edc352f226773eb80ab18669664ad",
     "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/curve-deviation-subcurves-validation.json": "98747e393042d184011c6006e5cb3c20f539b8d872f18019f516274fdd97023a",
-    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:docs/surface-flow-rectangles-validation.json": "8b4b8bba56c93e4dd48675656c34aa4fe83fae1ab08cc9fd10d95ecadf3b18ab"
+    "4106aeb2aaf4ffdeaf4573a1373aef7895647011:docs/surface-flow-rectangles-validation.json": "8b4b8bba56c93e4dd48675656c34aa4fe83fae1ab08cc9fd10d95ecadf3b18ab",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:docs/orient-surface-validation.json": "b18782a2af431a72f3e67bdd092a3e0460edc06d8ff24faa4c4ea606ddb83cfb"
   }
 }

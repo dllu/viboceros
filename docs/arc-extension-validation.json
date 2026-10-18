@@ -474,7 +474,6 @@
     "crates/viboceros-oracle/src/arc_extension.rs": "d303c2b5cd163daa0e0b47eb2a7f3f10149798725329a983be3179ed6f8b8bb7",
     "crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
     "docs/arc-tangent-validation.json": "5b8d0b88af9e6a3471fc3c89d8559e8311ab7c0e48e734e024d2b91de4164181",
-    "docs/commands/README.md": "431510f9cd6143800216c773e252ffcff9d95a4e8a4c0a53c6ed4c7db837ce9a",
     "docs/commands/arc-deformable.md": "d7c549de68029e204e04798ca30c0991b71b6cad4cd2617e37fe8f4504fcc940",
     "docs/commands/arc-extension.md": "5b1e47b109cd00d6f06dc13271c395b27bd3e0565027f7ec795fc33ba28d4365",
     "docs/commands/arc-tangent.md": "7e50fe177535bbcb3e179de6bcf112d72e1cd9ef9ed45a67980696653b0298a2",
@@ -485,9 +484,7 @@
     "src/app/point_input.rs": "d43fef428c643795cb2db46990869760a28ef1c5c8df55c6133effcba76ea18c",
     "src/app/tests/arc_extension.rs": "0f149304c4d0c444ec832834f085df5a0bf0dd556adcf5cc5b5728564de46bc3",
     "src/app/tests/ellipse_around.rs": "cc8979417370ff4755437d1848bde81051d79b60f05f81966b40bb6bdcd72719",
-    "src/viewport.rs": "e204967975793c6d24faa2b56de3fecfacd3b5f6fc15cf5b95146aa7d8a77728",
     "tools/rhino_oracle/arc_extension_probe.py": "d07987f7365026ec0ce4d31f6a1970341ba66dbb01c4c5790b9b1375d2859643",
-    "tools/rhino_oracle/client.py": "96d04fd67d9444f81f680d00718c14a13745b0f8c7643a5090eb6d07ff3f9011",
     "tools/rhino_oracle/conic_getter_input.py": "acf4aa5077d7cdae4a3ff8c8239463aa6e87edec0bb98a9d644986166b77b13c",
     "tools/rhino_oracle/fixtures/arc_extension_basic.json": "0d2066b5a87adc60d1c7d8f8403d9a4dca630dfee546f5da7e68ca03d98627a0",
     "tools/rhino_oracle/fixtures/arc_extension_center.json": "a05d492b9617370ca344facfdab7acef394b802294eeb1ba83ef41213d37a37c",
@@ -509,8 +506,6 @@
     "tools/rhino_oracle/observations/arc_extension_relative_rhino_20261017.json": "dd36bed8a726b837494da619c8324d15c72fa60bc9bfa57237f353f7ce4988bd",
     "tools/rhino_oracle/observations/arc_extension_selection_rhino_20261017.json": "5508b3185c33657456de62176e6ee5e9d3f408552bf21c5e9134c9e99ff2438a",
     "tools/rhino_oracle/observations/arc_extension_sources_rhino_20261017.json": "b259a12395dc080af0a8442822defcc19e74166e174076510cf82930b0094143",
-    "tools/rhino_oracle/rhino_worker.py": "65d00106ae72337cc6f706944d5e9a1be96277558d18d3cce6b194b3cb44f6b4",
-    "tools/rhino_oracle/structural_sdk.py": "a684b5146cf4d5e72b09f8ce82810cb1369043684dc0757d81d5dea32d545c55",
     "tools/rhino_oracle/test_arc_extension.py": "205b7d450957888122efe2cea44ff986aaae2562109cc3901a343686ce6191fe"
   },
   "baseline_git_sha256": {
@@ -569,6 +564,11 @@
     "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-command/src/arc_extension_input.rs": "8a9884bac2867d0c75db9d2aa25a57e5535bbaabb96832972bd9547285bf6e76",
     "de24538d30e14997ac0ca5ff17193ce17f516dc3:crates/viboceros-command/src/lib.rs": "ae879ce16bfd4b7d467041e4b4a795ebbffc388d6305478d9be3f90999ab2d7d",
     "de24538d30e14997ac0ca5ff17193ce17f516dc3:src/app.rs": "45bea5ff62df68810be84c2c0a514ed8d8a1c1bf252244f3860cd967929456ce",
-    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/arc-tilted-validation.json": "7d3cac47bfb4e128fbc0636748f208d2c094980bbacf8285dd84fc78cc53f279"
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/arc-tilted-validation.json": "7d3cac47bfb4e128fbc0636748f208d2c094980bbacf8285dd84fc78cc53f279",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:docs/commands/README.md": "431510f9cd6143800216c773e252ffcff9d95a4e8a4c0a53c6ed4c7db837ce9a",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:src/viewport.rs": "e204967975793c6d24faa2b56de3fecfacd3b5f6fc15cf5b95146aa7d8a77728",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/client.py": "96d04fd67d9444f81f680d00718c14a13745b0f8c7643a5090eb6d07ff3f9011",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/rhino_worker.py": "65d00106ae72337cc6f706944d5e9a1be96277558d18d3cce6b194b3cb44f6b4",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/structural_sdk.py": "a684b5146cf4d5e72b09f8ce82810cb1369043684dc0757d81d5dea32d545c55"
   }
 }

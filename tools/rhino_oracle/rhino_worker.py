@@ -13494,6 +13494,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'orient_surface':
         from orient_surface_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'remap_cplane':
+        from remap_cplane_probe import run
+        return run(operation, globals())
     if kind == 'orient_points':
         from orient_points_probe import run
         return run(operation, globals(), iterations, tolerance)
@@ -17497,7 +17500,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op')in('flow_grips','flow_line','flow_roadlike','surface_flow','rectangle','conic_command','parabola_command','hyperbola_command','helix_command','spiral_command','catenary_command','ellipse_command','circle_around','circle_deform','circle_tangent','arc_tangent','arc_extension','arc_command') for op in request.get('operations',[])):
+        if not at_idle and any(op.get('op')in('remap_cplane','flow_grips','flow_line','flow_roadlike','surface_flow','rectangle','conic_command','parabola_command','hyperbola_command','helix_command','spiral_command','catenary_command','ellipse_command','circle_around','circle_deform','circle_tangent','arc_tangent','arc_extension','arc_command') for op in request.get('operations',[])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino,lambda:_main(True))
             return

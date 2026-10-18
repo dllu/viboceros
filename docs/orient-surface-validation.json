@@ -244,7 +244,6 @@
   "sha256": {
     "crates/viboceros-command/src/surface_reference.rs": "ad90798b8b4ecf197243e83c9ab3a4e2152e7af5542565249ea370305bfd5131",
     "crates/viboceros-command/src/translation/normal.rs": "8293847d445e159ec00415385c238164d28ca79e95e66c969990c40764c497be",
-    "docs/commands/transforms.md": "fac6698bafe825bc20a3032feceeaaa5d0b319a2b957d4d14b1d8a7e829612d7",
     "docs/selected-coplanar-faces-qualification.json": "87a99f4ebcfb03f02397548ee791e0f1171365f9bee263076d01a58927f8f204",
     "src/app/transform_prompt.rs": "8ecd572469b24c0546c10c6093ed4517525f6ae4e2570f869cefc35a6457eb1a",
     "src/viewport/affine_preview.rs": "3fe7536191c78f40edeb277c590f126cbabf55db6273c1926b26343421cbd563",
@@ -287,6 +286,7 @@
     "76ae3d7a661bd54636a2b05e7e11a716523d1210:src/app/mesh_face_prompt.rs": "501085858483065af7c50c605ec669354708f2ded6202f830481edf4eebfbf07",
     "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/commands/README.md": "6f3dde43f7fb63a6323fa50c473fbb1f9f457798c277e703d7e8cf81493ae98e",
     "f6f85ddcd816261b8c8da3e910c4ecac4f46ee51:src/app/point_input.rs": "5f3a48a8c422ad819b8fe625f581e4c3eb94c58822ec76c75d665adf3d4813e6",
-    "04f7e1923710f12ee4228b34083f8b10048d068d:docs/orient-on-curve-subcurve-validation.json": "ec1c30d0a20dbfcee902790a862407e83a0385b317c30706f810207aaec1fa7d"
+    "04f7e1923710f12ee4228b34083f8b10048d068d:docs/orient-on-curve-subcurve-validation.json": "ec1c30d0a20dbfcee902790a862407e83a0385b317c30706f810207aaec1fa7d",
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:docs/commands/transforms.md": "fac6698bafe825bc20a3032feceeaaa5d0b319a2b957d4d14b1d8a7e829612d7"
   }
 }
