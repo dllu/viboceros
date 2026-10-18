@@ -418,7 +418,6 @@
     "tools/rhino_oracle/observations/curve_contacts_tolerance.json": "d52bce3c92f8e807d84c756514b036309789af46f5397df34858918f1935cb4f",
     "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
     "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
-    "docs/native-surface-fillets-validation.json": "c4aa5f1bdf3f2830c8fae8a5c050afc556a2897ba961ed30bc4ccf5ab68f308c",
     "docs/native-curve-contact-tolerance-gates.py.gz": "d0a7fa911de9d3a0d4efe8fcad5238f8f937f379933e37c0d5772fda3dc60106",
     "docs/native-curve-contact-tolerance-record.py.gz": "06499bdf7a5b7b7bd2bd418ec3456416e789e9faa24bc831cb318cb382ce3846",
     "docs/native-curve-contact-tolerance-preserve-provenance.py.gz": "2aebcd3994b39cf32cd887b26f477c4b80347665c3ffcaad14746dd4ce5d9ce2",
@@ -434,6 +433,7 @@
     "e4bd95e00761c57e66e0974488d46d3ab4da355b:crates/viboceros-smlib/native/CMakeLists.txt": "45bb101c37c52f0ccb2ff3bf22bab65d37464bb637eb48fc06b7eccc0927c230"
   },
   "artifact_git_sha256": {
-    "e4bd95e00761c57e66e0974488d46d3ab4da355b:README.md": "0062ce15d87594f4c0aa00077e19ca39a23f598ae0db4c5d67b8f3cf163e8857"
+    "e4bd95e00761c57e66e0974488d46d3ab4da355b:README.md": "0062ce15d87594f4c0aa00077e19ca39a23f598ae0db4c5d67b8f3cf163e8857",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:docs/native-surface-fillets-validation.json": "c4aa5f1bdf3f2830c8fae8a5c050afc556a2897ba961ed30bc4ccf5ab68f308c"
   }
 }

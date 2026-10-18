@@ -354,10 +354,8 @@
     "crates/viboceros-smlib/src/native/curve_surface_intersections.rs": "ca5ebd99f64c85f06a302706d050a4e2602e1b4debce58709edebf9b05e0a8f2",
     "crates/viboceros-smlib/src/native/brep.rs": "a25ec4f459059781c63c238296c79084d5ec823a5569c218ef6d7159d606f3b8",
     "crates/viboceros-smlib/src/native/brep/joints.rs": "99fd73bfff755b6874ebc56ba1c8ebf3885c8fe5484ba0e4060a61c4d5c602c4",
-    "crates/viboceros-smlib/tests/surface_fillets.rs": "83cc70584ebdf971b788905da94b50918ca1fd330f1b532dfc3e9045cd3404fc",
     "crates/viboceros-oracle/src/lib.rs": "5a6313c512497354e94c717fc130e3b9daa5c0608f0f3d1c15faafbcee9d66cb",
     "crates/viboceros-oracle/src/audit.rs": "34f5610b57a7be73fec28d591a2f6565e382e403c4256f49d9d0bfe7dde49476",
-    "crates/viboceros-oracle/src/surface_fillet.rs": "3abe4a6509fdb83ba2f4b867f6d778b4deb845a07f005c457013e1791b41bd80",
     "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
     "tools/rhino_oracle/structural_sdk.py": "c884e0ef025f1d1aba239a399fc23089c626590b40ab395e940f93ab1a6aed88",
     "tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
@@ -410,7 +408,6 @@
     "docs/architecture.md": "caa5f1e3bd84c9db44be111a01db23c5d725a36b10090168fc624a100e1222e1",
     "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
     "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
-    "docs/curve-distance-validation.json": "680ec981adc8f633ba6a1aebd66418eceef211ab1a51d6e17d2a226759075eab",
     "docs/native-basis-evaluation-validation.json": "039624b652c4080dfad370595bc23cb0b835862c56e2a4c18b8c22ad468dff64",
     "docs/native-closed-join-validation.json": "26a8b7e381fdb73b575b00a7974e4f073efba62275285f622406a4859b750bad",
     "docs/native-curve-segment-limits-validation.json": "bbee8e47ec00f6c123bdddf46cb90ab8bafe154411b30d451099cd371e64ecd8",
@@ -442,12 +439,15 @@
   },
   "source_git_sha256": {
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/build.rs": "df2d2e1f273ebd01fd60f6c7978768cd21857378c9547c02057d078a9374cd7e",
-    "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/native/CMakeLists.txt": "f15a0f9b3e6affbbea3ace9040d0ee9d53b611362f9f0f6bb0650fbe1d3edf0c"
+    "a7b8350068e8dd366464f31e207b896f17cf0ab3:crates/viboceros-smlib/native/CMakeLists.txt": "f15a0f9b3e6affbbea3ace9040d0ee9d53b611362f9f0f6bb0650fbe1d3edf0c",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-oracle/src/surface_fillet.rs": "3abe4a6509fdb83ba2f4b867f6d778b4deb845a07f005c457013e1791b41bd80",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-smlib/tests/surface_fillets.rs": "83cc70584ebdf971b788905da94b50918ca1fd330f1b532dfc3e9045cd3404fc"
   },
   "artifact_git_sha256": {
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:README.md": "4ccc486e80f8fb015b5865ce8952f5dfa7085f70cc0faf8dfd9802e8ff432056",
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:docs/usd-brep-limitations.md": "66dba7d2d390249abfc976c4236980528837451ae79d06188cedf34e00ae4c4f",
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:docs/native-surface-fillets.md": "086bc23cf92a082bd8af9460e210f42fc3109a9f8fb8754829010a712199be95",
-    "a7b8350068e8dd366464f31e207b896f17cf0ab3:third_party/patches/README.md": "9bf84d3ba0dcdca8d2e1bda92c1cd660b752474a4d53a2a5a42a13b785bfc185"
+    "a7b8350068e8dd366464f31e207b896f17cf0ab3:third_party/patches/README.md": "9bf84d3ba0dcdca8d2e1bda92c1cd660b752474a4d53a2a5a42a13b785bfc185",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:docs/curve-distance-validation.json": "680ec981adc8f633ba6a1aebd66418eceef211ab1a51d6e17d2a226759075eab"
   }
 }

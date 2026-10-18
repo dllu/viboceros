@@ -46,14 +46,18 @@ For nonplanar trims, Green's theorem reduces the integral of a surface density
 over the retained UV region to a boundary integral:
 
 ```text
-∫∫ D f(u,v) du dv = ∮ boundary(D) [∫ u0..u f(s,v) ds] dv
+∫∫ D f(u,v) du dv =  ∮ boundary(D) [∫ u0..u f(s,v) ds] dv
+                   = -∮ boundary(D) [∫ v0..v f(u,s) ds] du
 area density:   |Su × Sv|
 volume density: (S - reference) · (Su × Sv) / 3
 ```
 
 Outer loops add area and clockwise inner loops subtract it. Face orientation
-changes the volume sign. Inner quadrature is split at U knots. Outer quadrature
-is split at trim knots and crossings of surface U/V knots, found from the rational
+changes the volume sign. The primitive uses the direction with fewer surface
+knot spans, retaining U on ties. Inner quadrature is split at those knots; the
+V primitive uses the negative boundary derivative and preserves the original
+U-cross-V normal for volume and first moments. Outer quadrature is split at trim
+knots and crossings of both surface knot directions, found from the rational
 trim's Bernstein polynomials. This lets narrow surface spans and creases receive
 their own integration intervals.
 
@@ -79,6 +83,61 @@ An unrepresentable rescaling fails instead of collapsing knots. Lossless origin
 removal can be declined when exterior knots prevent it, and arbitrary relative
 span conditioning is not solved. These frames do not make every extreme-domain
 curve admissible to the B-rep constructor.
+
+## Integration direction qualification
+
+Dense one-direction surface bases can exhaust bounded nested integration even
+when the underlying shape is regular. A captured native extended fillet has
+289 U spans and one V span. Integrating its area with the original U primitive
+fails; swapping the face's UV axes allows the same geometry to integrate at the
+same tolerance. Automatic primitive selection now gives the same result,
+`28.941496050285952`, without changing the face, work limits, distance tolerance,
+or relative accuracy target. The per-piece error budget is divided among the
+spans of the selected primitive; the total caller budget remains unchanged.
+
+Two analytic regressions refine an exact paraboloid to 128 U spans without
+changing its shape. Capped disks check area, signed volume and both centroids;
+annuli check hole subtraction and area centroids. Both UV orientations and both
+face senses are tested against radial integral formulas at `1e-10`, alongside
+unchanged input geometry. This is sampled numerical quadrature, not a continuous
+error certificate or a general performance guarantee.
+
+The native fillet itself remains geometrically different from Rhino's curved
+extended fillet: its lower rail ends at the plane's outer boundary. Successful
+integration does not qualify that extension policy. Complete geometry, query
+results, saved SDK comparisons and shared caller checks are retained in the
+[direction-selection validation record](mass-integration-direction-validation.json).
+
+The full geometry, native bridge and command suites pass 2,408, 431 and 1,600
+tests. All 35 saved trim-parameter SDK comparisons still match complete values
+at `1e-8` absolute / `1e-10` relative tolerance. All six surface-fillet recipes
+now complete; the curved extended recipe still differs from Rhino by about
+`9.15` in bounds and has area `28.94` versus `14.47`. Five previously qualified
+recipes retain their sampled closest-point and bounds agreement. Complete raw
+NURBS/topology differences remain in the audit.
+
+Twenty fresh SDK references vary cylinder angle from 15 to 150 degrees, height,
+plane aspect and rational parameterization. Two additional captures restore the
+same physical picks after a Möbius parameter change. The latter leave the complete
+output values unchanged relative to their corresponding changed-parameter cases.
+Equivalent quarter cylinders nevertheless produce different lower-rail margins:
+about `0.8501` for the original chart, versus `1.5650` and `0.4428` on opposite ends
+of a changed chart. Thus a fixed geometric angular margin cannot reproduce these
+SDK continuation results. These captures guide the remaining construction work;
+they are not new passing native continuation comparisons.
+
+A frozen 3DM sheet retains the actual integration counterexample independently
+of future fillet-producer changes. Its regression checks area, area centroid,
+UV swapping, face reversal and unchanged imported geometry. The analytic 128-span
+case was already numerically correct before this change; it tests accuracy and
+orientation, while the frozen fitted sheet exercises the previous failure.
+
+A diagnostic example writes editable 3DM bodies before running mass queries,
+and retains query errors independently in JSON:
+
+```sh
+cargo run --release -p viboceros-smlib --features native --example surface_fillets -- /tmp/viboceros-surface-fillets
+```
 
 ## Validation
 

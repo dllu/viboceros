@@ -306,3 +306,46 @@ fn plane_and_cylinder_produce_the_analytic_torus_fillet() {
     }
     assert_eq!([plane, cylinder], before);
 }
+
+#[test]
+fn captured_fitted_sheet_mass_queries_survive_uv_swap() {
+    // Frozen native output keeps the original integration counterexample even
+    // when the fillet continuation policy and its generated surface improve.
+    // This qualifies measurement of that sheet, not its agreement with Rhino's
+    // extended fillet geometry.
+    let file = tempfile::NamedTempFile::new().unwrap();
+    std::fs::write(file.path(), include_bytes!("data/fitted-fillet-sheet.3dm")).unwrap();
+    let model = viboceros_io::read_3dm_file(file.path(), tol()).unwrap();
+    assert_eq!(model.objects.len(), 1);
+    let viboceros_io::ThreeDmGeometry::Brep(brep) = &model.objects[0].geometry else {
+        panic!("captured sheet was not imported as a B-rep")
+    };
+    assert_eq!(brep.faces().len(), 1);
+    let surface = brep.faces()[0].surface();
+    assert!(surface.knots_u().windows(2).filter(|w| w[0] < w[1]).count() > 200);
+    assert_eq!(
+        surface.knots_v().windows(2).filter(|w| w[0] < w[1]).count(),
+        1
+    );
+    let before = brep.clone();
+    let area = brep.area(tol()).unwrap();
+    let mass = brep.area_mass_properties(tol()).unwrap();
+    let center = mass.centroid().unwrap();
+    // Independent reference: original integrator applied after transposing the
+    // frozen face, at the same model tolerance, gave this area before the fix.
+    assert!((area - 28.941496050285952).abs() < 1e-7);
+    assert!((mass.area().unwrap() - area).abs() < 1e-7);
+    for reversed in [false, true] {
+        let mut swapped = if reversed {
+            brep.reversed()
+        } else {
+            brep.clone()
+        };
+        swapped.try_swap_face_uv(&[0]).unwrap();
+        assert!((swapped.area(tol()).unwrap() - area).abs() < 1e-7);
+        let other = swapped.area_mass_properties(tol()).unwrap();
+        assert!((other.area().unwrap() - area).abs() < 1e-7);
+        assert!(other.centroid().unwrap().distance_to(center).unwrap() < 1e-8);
+    }
+    assert_eq!(brep, &before);
+}

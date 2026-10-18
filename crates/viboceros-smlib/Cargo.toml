@@ -52,3 +52,7 @@ required-features = ["native"]
 [[example]]
 name = "blend_surface"
 required-features = ["native"]
+
+[[example]]
+name = "surface_fillets"
+required-features = ["native"]

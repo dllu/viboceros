@@ -1,0 +1,1030 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "109c7fc1ac18506987dafd2435ea4f17c8c92011",
+  "change": "Choose the trimmed Green primitive along the direction with fewer surface knot spans, keep U on ties, and preserve the U-cross-V normal and the negative sign of the V primitive. Reuse existing exact NURBS evaluation, boundary partitioning, adaptive quadrature and compensated sums. Keep the original caller tolerances, 65,536 boundary-interval cap and 2,000,000 surface-evaluation cap.",
+  "execution_environment": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8. Cargo gates sequential. Independent SDK captures used dedicated Xvfb and private settings schemes through the existing launcher; no Wine/FEX/licensing changes.",
+  "completed_runs": [
+    {
+      "command": "cargo test --release -p viboceros-geometry --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/mass-integration-direction-geometry.log.gz",
+        "uncompressed_sha256": "4c8b493582c1958da61b3756c75b110d50d8717fc44a15dec1862e857af2afd3"
+      },
+      "passed": 2408,
+      "failed": 0,
+      "ignored": 8
+    },
+    {
+      "command": "cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/mass-integration-direction-bridge.log.gz",
+        "uncompressed_sha256": "0975bb29bb38a26ff99e71bd7cc78cb1f9580bf7a86a3e60aa2733dd10f65937"
+      },
+      "passed": 431,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/mass-integration-direction-command.log.gz",
+        "uncompressed_sha256": "5cd9fda8107b172af35dda54a088b0148eb973c6227b1b814e60f49ebc56e7ec"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --lib surface_fillet -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/mass-integration-direction-fillet-oracle.log.gz",
+        "uncompressed_sha256": "0e84a87918831f611e68be58565f527acc0e0b2bc96032d0731cb1c8531d28d9"
+      },
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/mass-integration-direction-clippy.log.gz",
+        "uncompressed_sha256": "cb22e0247d8f6041eee1bde081a6fc9967ed7fefd0fe2f29a9c5ca081b3010d9"
+      }
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/mass-integration-direction-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": "cargo build --release -p viboceros-oracle --features native-smlib",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/mass-integration-direction-oracle-build.log.gz",
+        "uncompressed_sha256": "e88f37c1c12bb29e40b469070bc5f6c4de35c8e3a86332ff61aa2f0fb067f051"
+      }
+    }
+  ],
+  "analytic_regressions": {
+    "baseline": {
+      "retained": "docs/mass-integration-direction-baseline.log.gz",
+      "uncompressed_sha256": "5ec6f6ec43f7c09bfa7f42c53403b9f1cd50c89fa0ae409cc8b75c14ba97d33e"
+    },
+    "baseline_test_source": {
+      "retained": "docs/mass-integration-direction-baseline-parameter-tests.rs.gz",
+      "uncompressed_sha256": "92d2a019567b8f83597d9b644dc617b4f9a560fade2e00a0f7faefb51f9bf767"
+    },
+    "repaired": {
+      "retained": "docs/mass-integration-direction-focused.log.gz",
+      "uncompressed_sha256": "387dd4976bd1aaaf9ae7f0ecefcca092513bdc7f7bc5fee94b6f6d824c2eeb6c"
+    },
+    "scope": "The 128-span analytic baseline already passed; it is an accuracy/orientation and repeated-work diagnostic. The actual functional failure is the separately retained fitted native sheet. Baseline used one test, repaired focused run includes the added annulus test; their wall times are not a controlled throughput benchmark."
+  },
+  "fitted_sheet_diagnostic": {
+    "comparison": [
+      {
+        "id": "cylinder-false",
+        "previous_area": "Ok(13.233610266632235)",
+        "repaired_area": "Ok(13.233610266632235)",
+        "uv_swapped_reference": "Ok(13.23361026341606)",
+        "captured_vertices_surface_metrics_trim_definitions_and_closest_points_unchanged": true,
+        "previous_area_mass_properties_success": true,
+        "repaired_area_mass_properties_success": true
+      },
+      {
+        "id": "cylinder-true",
+        "previous_area": "Err(NumericalIntegrationDidNotConverge)",
+        "repaired_area": "Ok(28.941496050285952)",
+        "uv_swapped_reference": "Ok(28.941496050285952)",
+        "captured_vertices_surface_metrics_trim_definitions_and_closest_points_unchanged": true,
+        "previous_area_mass_properties_success": false,
+        "repaired_area_mass_properties_success": true
+      }
+    ],
+    "comparison_script": {
+      "retained": "docs/mass-integration-direction-example-compare.py.gz",
+      "uncompressed_sha256": "39fb5cbaa482bbfd836f33c9fc56289f38d968d4e2bbf016f48c90f17519720f"
+    },
+    "candidate_log": {
+      "retained": "docs/mass-integration-direction-example.log.gz",
+      "uncompressed_sha256": "4e06eb0471a9346baea3a06def265956d971e01f4db1844c63ff167796c35098"
+    },
+    "baseline_log": {
+      "retained": "docs/mass-integration-direction-example-baseline.log.gz",
+      "uncompressed_sha256": "d07f76015ad1c8e3cfe624e2c0e530968967fbef586c970edf13e0783cd6c23a"
+    },
+    "baseline_source": {
+      "retained": "docs/mass-integration-direction-baseline-example.rs.gz",
+      "uncompressed_sha256": "c78907ca503766672bd25a40509ea16dc15d75aad552c3e0d7937fda7b9f0e41"
+    },
+    "baseline_files": {
+      "cylinder-false.json": {
+        "retained": "docs/mass-integration-direction-example-baseline-cylinder-false.json.gz",
+        "uncompressed_sha256": "c598ff74a2957cf93d5edf7276cd5429ef7d4869d7bc5af3dc46c0e06cab195b"
+      },
+      "cylinder-false.3dm": {
+        "retained": "docs/mass-integration-direction-example-baseline-cylinder-false.3dm.gz",
+        "uncompressed_sha256": "c1bbe1cd063ed4f58313e57e494e43572b0008fbde22815275cfa1dd724cec0a"
+      },
+      "cylinder-true.json": {
+        "retained": "docs/mass-integration-direction-example-baseline-cylinder-true.json.gz",
+        "uncompressed_sha256": "68814f12c657f3f1f33a0c64592c522b6cbc09b4ce9341bd16ba8fac158e43e7"
+      },
+      "cylinder-true.3dm": {
+        "retained": "docs/mass-integration-direction-example-baseline-cylinder-true.3dm.gz",
+        "uncompressed_sha256": "732eff2490abeed18f928a4fdbe0dd6066f8e48024914cebccfc392c3f905db8"
+      }
+    },
+    "candidate_files": {
+      "cylinder-false.json": {
+        "retained": "docs/mass-integration-direction-example-candidate-cylinder-false.json.gz",
+        "uncompressed_sha256": "c598ff74a2957cf93d5edf7276cd5429ef7d4869d7bc5af3dc46c0e06cab195b"
+      },
+      "cylinder-false.3dm": {
+        "retained": "docs/mass-integration-direction-example-candidate-cylinder-false.3dm.gz",
+        "uncompressed_sha256": "5f85e06c87e3880ff938868223540bcab56a77e46b520b2eafab2283d5a8ad99"
+      },
+      "cylinder-true.json": {
+        "retained": "docs/mass-integration-direction-example-candidate-cylinder-true.json.gz",
+        "uncompressed_sha256": "bdcd7bdec0fe2f956fb7c3a8f015bd25389ca88b845405de2998c0a1117b2aa7"
+      },
+      "cylinder-true.3dm": {
+        "retained": "docs/mass-integration-direction-example-candidate-cylinder-true.3dm.gz",
+        "uncompressed_sha256": "f315fc1cdcf65595cbeedf65a449b3d47a0950e76deb3cc5b9265f126c7e63dc"
+      }
+    },
+    "frozen_regression_fixture": {
+      "path": "crates/viboceros-smlib/tests/data/fitted-fillet-sheet.3dm",
+      "sha256": "732eff2490abeed18f928a4fdbe0dd6066f8e48024914cebccfc392c3f905db8",
+      "scope": "Frozen geometry from the pre-repair native producer. Its mass test remains independent of later continuation-policy changes. It is not asserted to match Rhino extended-filleting geometry."
+    }
+  },
+  "saved_sdk_comparisons": {
+    "saved_mass_recipes": 35,
+    "complete_mass_matches": 35,
+    "mass_absolute_epsilon": 1e-08,
+    "mass_relative_epsilon": 1e-10,
+    "fillet_executed": 6,
+    "fillet_execution_failures": [],
+    "fillet_recipes": [
+      {
+        "id": "planes-0-False",
+        "valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 15.707963267948962,
+        "sdk_area": 15.70796346179396
+      },
+      {
+        "id": "planes-0-True",
+        "valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 15.707963267948971,
+        "sdk_area": 15.70796346179396
+      },
+      {
+        "id": "planes-3-False",
+        "valid": true,
+        "maximum_point_difference": 8.881784197001252e-16,
+        "maximum_bounds_difference": 2.6645352591003757e-15,
+        "native_area": 6.283185307179582,
+        "sdk_area": 6.283185384717587
+      },
+      {
+        "id": "planes-3-True",
+        "valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 10.995574287564276,
+        "sdk_area": 10.9955742990552
+      },
+      {
+        "id": "cylinder-False",
+        "valid": true,
+        "maximum_point_difference": 5.07015229800345e-09,
+        "maximum_bounds_difference": 1.908758778786167e-09,
+        "native_area": 13.233610266632235,
+        "sdk_area": 13.233611430762192
+      },
+      {
+        "id": "cylinder-True",
+        "valid": true,
+        "maximum_point_difference": 4.249335106010221e-09,
+        "maximum_bounds_difference": 9.14987564381133,
+        "native_area": 28.941496050285952,
+        "sdk_area": 14.469328109898152
+      }
+    ],
+    "complete_fillet_matches": 0,
+    "complete_fillet_mismatches": 6,
+    "scope": "All six fillet recipes now return complete protocol values. Only the five previously qualified recipes pass the sampled closest-point/bounds checks. The curved extended recipe retains its large geometry/area mismatch; completing execution is not Rhino parity. No output normalization or tolerance widening.",
+    "mass-audit": {
+      "retained": "docs/mass-integration-direction-mass-audit.json.gz",
+      "uncompressed_sha256": "107420e0e6676f050a4fad5c5288609e521aa7b45c5329a4c93505f1f671f9a7"
+    },
+    "mass-report": {
+      "retained": "docs/mass-integration-direction-mass-report.json.gz",
+      "uncompressed_sha256": "bb3843d9add1f4bd48c58933509c76e16609b3c03fb8f14c2ba4b5584577be81"
+    },
+    "fillet-audit": {
+      "retained": "docs/mass-integration-direction-fillet-audit.json.gz",
+      "uncompressed_sha256": "4f9ccbc408d05323f847bc405dfb1cdd25d79413b4b9a77792d4fb3b8c8a6c5f"
+    },
+    "fillet-raw-report": {
+      "retained": "docs/mass-integration-direction-fillet-raw-report.json.gz",
+      "uncompressed_sha256": "c8e9195c081fb9ba185a1a456f182b6213a7383043a17b03ab0d2892e0ecd687"
+    },
+    "runner": {
+      "retained": "docs/mass-integration-direction-compare.py.gz",
+      "uncompressed_sha256": "556703c386c3de423018139fdd0bc8628c6d753937978d0ac99a35598eb531b0"
+    },
+    "log": {
+      "retained": "docs/mass-integration-direction-compare.log.gz",
+      "uncompressed_sha256": "e625e56c5eed1bdf043311f305d35004d8c2ced1a271278d182361af10482996"
+    }
+  },
+  "fresh_sdk_continuation_references": {
+    "summary": {
+      "owned_public_sdk_recipes": 22,
+      "source_unchanged": true,
+      "valid_owned_outputs": 22,
+      "angle_matrix": [
+        {
+          "id": "angle-15-False",
+          "extend": false,
+          "outputs": [
+            {
+              "angles": [
+                4.440892098500627e-16,
+                0.2617993877991492
+              ],
+              "original_parameters": [
+                1.7011497933739659e-15,
+                0.9999999999999989
+              ],
+              "angular_extension": [
+                -4.440892098500627e-16,
+                -2.220446049250313e-16
+              ],
+              "area": 2.2056018951117453,
+              "u_domain": [
+                0.0,
+                1.5707963261104403
+              ]
+            }
+          ],
+          "elapsed_ns": 43484489441
+        },
+        {
+          "id": "angle-15-True",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.02553929243504173,
+                0.2873387677609031
+              ],
+              "original_parameters": [
+                -0.09791933727068575,
+                1.0979196731715297
+              ],
+              "angular_extension": [
+                0.02553929243504173,
+                0.025539379961753705
+              ],
+              "area": 2.427591890567369,
+              "u_domain": [
+                0.0,
+                1.8772683605847489
+              ]
+            }
+          ],
+          "elapsed_ns": 30883110046
+        },
+        {
+          "id": "angle-30-False",
+          "extend": false,
+          "outputs": [
+            {
+              "angles": [
+                4.440892098500627e-16,
+                0.5235987755982985
+              ],
+              "original_parameters": [
+                8.579144739409623e-16,
+                0.9999999999999993
+              ],
+              "angular_extension": [
+                -4.440892098500627e-16,
+                -3.3306690738754696e-16
+              ],
+              "area": 4.411203802719522,
+              "u_domain": [
+                0.0,
+                3.1415926522210027
+              ]
+            }
+          ],
+          "elapsed_ns": 44799774170
+        },
+        {
+          "id": "angle-30-True",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.05076277757793815,
+                0.5743623071957975
+              ],
+              "original_parameters": [
+                -0.09841615022962108,
+                1.0984176176147606
+              ],
+              "angular_extension": [
+                0.05076277757793815,
+                0.05076353159749869
+              ],
+              "area": 4.852441275034663,
+              "u_domain": [
+                0.0,
+                3.7507505080638555
+              ]
+            }
+          ],
+          "elapsed_ns": 31678756714
+        },
+        {
+          "id": "angle-45-False",
+          "extend": false,
+          "outputs": [
+            {
+              "angles": [
+                4.440892098500627e-16,
+                0.7853981633974482
+              ],
+              "original_parameters": [
+                5.802305146913056e-16,
+                0.9999999999999998
+              ],
+              "angular_extension": [
+                -4.440892098500627e-16,
+                -1.1102230246251565e-16
+              ],
+              "area": 6.616805715345958,
+              "u_domain": [
+                0.0,
+                4.712388979229756
+              ]
+            }
+          ],
+          "elapsed_ns": 305747986
+        },
+        {
+          "id": "angle-45-True",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.07535425629443242,
+                0.8607496802637031
+              ],
+              "original_parameters": [
+                -0.09924583963199166,
+                1.0992422009509282
+              ],
+              "angular_extension": [
+                0.07535425629443242,
+                0.07535151686625485
+              ],
+              "area": 7.271779138639502,
+              "u_domain": [
+                0.0,
+                5.61662361828027
+              ]
+            }
+          ],
+          "elapsed_ns": 349212646
+        },
+        {
+          "id": "angle-60-False",
+          "extend": false,
+          "outputs": [
+            {
+              "angles": [
+                4.440892098500627e-16,
+                1.0471975511965979
+              ],
+              "original_parameters": [
+                4.440892098500623e-16,
+                1.0
+              ],
+              "angular_extension": [
+                -4.440892098500627e-16,
+                2.220446049250313e-16
+              ],
+              "area": 8.822407620503848,
+              "u_domain": [
+                0.0,
+                6.283185304440644
+              ]
+            }
+          ],
+          "elapsed_ns": 361526489
+        },
+        {
+          "id": "angle-60-True",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.09899689786753257,
+                1.1461916918821733
+              ],
+              "original_parameters": [
+                -0.1004106702304477,
+                1.1004078314192345
+              ],
+              "angular_extension": [
+                0.09899689786753257,
+                0.09899414068557566
+              ],
+              "area": 9.682884730747926,
+              "u_domain": [
+                0.0,
+                7.471131535275169
+              ]
+            }
+          ],
+          "elapsed_ns": 471183777
+        },
+        {
+          "id": "angle-90-False",
+          "extend": false,
+          "outputs": [
+            {
+              "angles": [
+                4.440892098500627e-16,
+                1.5707963267948961
+              ],
+              "original_parameters": [
+                3.140184917367555e-16,
+                0.9999999999999996
+              ],
+              "angular_extension": [
+                -4.440892098500627e-16,
+                -4.440892098500626e-16
+              ],
+              "area": 13.233611430762208,
+              "u_domain": [
+                0.0,
+                9.42477795147568
+              ]
+            }
+          ],
+          "elapsed_ns": 414527893
+        },
+        {
+          "id": "angle-90-True",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.1421657971740163,
+                1.7129621239688964
+              ],
+              "original_parameters": [
+                -0.10375615482887851,
+                1.103756154828866
+              ],
+              "angular_extension": [
+                0.1421657971740163,
+                0.1421657971739998
+              ],
+              "area": 14.469328109898282,
+              "u_domain": [
+                0.0,
+                11.13076751612999
+              ]
+            }
+          ],
+          "elapsed_ns": 578468323
+        },
+        {
+          "id": "angle-120-False",
+          "extend": false,
+          "outputs": [
+            {
+              "angles": [
+                4.440892098500627e-16,
+                2.0943951023931957
+              ],
+              "original_parameters": [
+                2.5639502485114164e-16,
+                1.0
+              ],
+              "angular_extension": [
+                -4.440892098500627e-16,
+                4.440892098500626e-16
+              ],
+              "area": 17.64481524101559,
+              "u_domain": [
+                0.0,
+                12.566370592026917
+              ]
+            }
+          ],
+          "elapsed_ns": 1139556885
+        },
+        {
+          "id": "angle-120-True",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.17773619220599518,
+                2.2721410158517115
+              ],
+              "original_parameters": [
+                -0.10846695407790397,
+                1.1084732414775744
+              ],
+              "angular_extension": [
+                0.17773619220599518,
+                0.1777459134585162
+              ],
+              "area": 19.189754950070185,
+              "u_domain": [
+                0.0,
+                14.699263223212014
+              ]
+            }
+          ],
+          "elapsed_ns": 1292617798
+        },
+        {
+          "id": "angle-150-False",
+          "extend": false,
+          "outputs": [
+            {
+              "angles": [
+                4.440892098500627e-16,
+                2.6179938779914944
+              ],
+              "original_parameters": [
+                2.29877490467452e-16,
+                1.0
+              ],
+              "angular_extension": [
+                -4.440892098500627e-16,
+                0.0
+              ],
+              "area": 22.056019051167315,
+              "u_domain": [
+                0.0,
+                15.70796322291177
+              ]
+            }
+          ],
+          "elapsed_ns": 642700195
+        },
+        {
+          "id": "angle-150-True",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.20323038176370173,
+                2.8212128485498185
+              ],
+              "original_parameters": [
+                -0.11452390282007976,
+                1.1145168783546797
+              ],
+              "angular_extension": [
+                0.20323038176370173,
+                0.20321897055832405
+              ],
+              "area": 23.822464490234545,
+              "u_domain": [
+                0.0,
+                18.14665933265574
+              ]
+            }
+          ],
+          "elapsed_ns": 1013847351
+        },
+        {
+          "id": "height-4.0",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.14216579717400749,
+                1.7129621239688368
+              ],
+              "original_parameters": [
+                -0.10375615482887185,
+                1.103756154828821
+              ],
+              "angular_extension": [
+                0.14216579717400749,
+                0.1421657971739403
+              ],
+              "area": 14.469328109897965,
+              "u_domain": [
+                0.0,
+                11.130767516129549
+              ]
+            }
+          ],
+          "elapsed_ns": 561141968
+        },
+        {
+          "id": "height-30.0",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.14216579717398517,
+                1.7129621239688886
+              ],
+              "original_parameters": [
+                -0.103756154828855,
+                1.1037561548288601
+              ],
+              "angular_extension": [
+                0.14216579717398517,
+                0.14216579717399203
+              ],
+              "area": 14.469328109898065,
+              "u_domain": [
+                0.0,
+                11.130767516129696
+              ]
+            }
+          ],
+          "elapsed_ns": 565383911
+        },
+        {
+          "id": "mobius-0.5",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.07386461544176823,
+                1.8346795595832264
+              ],
+              "original_parameters": [
+                -0.11207983519722042,
+                1.0903307827603137
+              ],
+              "angular_extension": [
+                0.07386461544176823,
+                0.2638832327883298
+              ],
+              "area": 14.701477332440668,
+              "u_domain": [
+                0.0,
+                11.451265031447603
+              ]
+            }
+          ],
+          "elapsed_ns": 981246948
+        },
+        {
+          "id": "mobius-2.0",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.2638832327883088,
+                1.6446609422367255
+              ],
+              "original_parameters": [
+                -0.09033078276030662,
+                1.1120798351973193
+              ],
+              "angular_extension": [
+                0.2638832327883088,
+                0.07386461544182898
+              ],
+              "area": 14.701477332404444,
+              "u_domain": [
+                0.0,
+                11.451265031447866
+              ]
+            }
+          ],
+          "elapsed_ns": 1063270569
+        },
+        {
+          "id": "wide-plane-0",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.1421657971740075,
+                1.7129621239687927
+              ],
+              "original_parameters": [
+                -0.10375615482887188,
+                1.1037561548287877
+              ],
+              "angular_extension": [
+                0.1421657971740075,
+                0.1421657971738961
+              ],
+              "area": 14.469328109897738,
+              "u_domain": [
+                0.0,
+                11.130767516129286
+              ]
+            }
+          ],
+          "elapsed_ns": 567565918
+        },
+        {
+          "id": "wide-plane-1",
+          "extend": true,
+          "outputs": [
+            {
+              "angles": [
+                -0.14216579717404312,
+                1.7129621239688881
+              ],
+              "original_parameters": [
+                -0.10375615482889874,
+                1.1037561548288597
+              ],
+              "angular_extension": [
+                0.14216579717404312,
+                0.14216579717399158
+              ],
+              "area": 14.469328109898415,
+              "u_domain": [
+                0.0,
+                11.130767516130094
+              ]
+            }
+          ],
+          "elapsed_ns": 561279297
+        }
+      ],
+      "fixed_physical_pick_checks": [
+        {
+          "id": "mobius-0.5-fixed-physical-pick",
+          "mobius_k": 0.5,
+          "maximum_independent_reparameterization_error": 1.9984014443252818e-15,
+          "physical_pick_error": 6.280369834735101e-16,
+          "complete_value_equal_to_same_chart_original_pick": true,
+          "bottom_rail_endpoints": [
+            [
+              -1.564987928338784,
+              5.792306344121821,
+              0.0
+            ],
+            [
+              5.9836394963369175,
+              -0.4427847986064082,
+              0.0
+            ]
+          ]
+        },
+        {
+          "id": "mobius-2.0-fixed-physical-pick",
+          "mobius_k": 2.0,
+          "maximum_independent_reparameterization_error": 2.175583928816829e-15,
+          "physical_pick_error": 6.280369834735101e-16,
+          "complete_value_equal_to_same_chart_original_pick": true,
+          "bottom_rail_endpoints": [
+            [
+              -0.44278479860677145,
+              5.98363949633689,
+              0.0
+            ],
+            [
+              5.792306344121851,
+              -1.5649879283386618,
+              0.0
+            ]
+          ]
+        }
+      ],
+      "inference": "For these equivalent cylinder sheets, the SDK extended caps depend on the rational parameterization even with identical physical picks. A fixed geometric angular margin cannot reproduce these cases. No new native continuation parity is claimed."
+    },
+    "summary_runner": {
+      "retained": "docs/mass-integration-direction-sdk-summary.py.gz",
+      "uncompressed_sha256": "bacef94adb6fb0c2338b3d4c1bd7d2bd21c4707bfbd11b68f260bb59c51ac5ac"
+    },
+    "batches": {
+      "shape": {
+        "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-fillet-extension-shape-sdk.py",
+        "request": {
+          "retained": "docs/mass-integration-direction-sdk-shape-request.json.gz",
+          "uncompressed_sha256": "a2075ae778de08bd981d6e6cf2f10972c298787839b523806a64bb8d5c8d25e4"
+        },
+        "response": {
+          "retained": "docs/mass-integration-direction-sdk-shape-response.json.gz",
+          "uncompressed_sha256": "8e97cf448819c7399edc270a7e96e2ba7e54ac4d23ffdfd2a995f3f9182c968d"
+        },
+        "log": {
+          "retained": "docs/mass-integration-direction-sdk-shape.log.gz",
+          "uncompressed_sha256": "51fd7cfbe06ee13d9b3e7f5096084f9fb934afce9c0ad45a9984b7d5abb25996"
+        },
+        "runner": {
+          "retained": "docs/mass-integration-direction-sdk-shape.py.gz",
+          "uncompressed_sha256": "b4c1e3e5d29f3ad67a99109ef5224a5132d95c046e0f89fdb91b5bcb7081e857"
+        },
+        "runtime": {
+          "elapsed_seconds": 376.71926871710457,
+          "recipes": 20
+        }
+      },
+      "mobius": {
+        "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-fillet-extension-mobius-sdk.py",
+        "request": {
+          "retained": "docs/mass-integration-direction-sdk-mobius-request.json.gz",
+          "uncompressed_sha256": "5c12ce1e04a019941a2e0ee1b96759c7ed4c82684f3822d5aff611667fbf5b7c"
+        },
+        "response": {
+          "retained": "docs/mass-integration-direction-sdk-mobius-response.json.gz",
+          "uncompressed_sha256": "43851847a012ef847dd64311ba9648c07609cab8cc7e3756d05ed1dac626935f"
+        },
+        "log": {
+          "retained": "docs/mass-integration-direction-sdk-mobius.log.gz",
+          "uncompressed_sha256": "511ee67860c62c6acc24a4541a86e2bab6c82bfb6c3f90933c67da5206419e63"
+        },
+        "runner": {
+          "retained": "docs/mass-integration-direction-sdk-mobius.py.gz",
+          "uncompressed_sha256": "0cd9de2af7015a8e972a60b92cdf28a7c7b4179230cdf5ef3ce456f119bd0031"
+        },
+        "runtime": {
+          "elapsed_seconds": 57.84459485998377,
+          "recipes": 2
+        }
+      }
+    },
+    "angle_analysis": {
+      "retained": "docs/mass-integration-direction-sdk-angle-analysis.json.gz",
+      "uncompressed_sha256": "0e1b45f2a073d8ed281e2354ae44ac2ff6c1aeccf571eeca89370b9e16902f45"
+    },
+    "angle_analyzer": {
+      "retained": "docs/mass-integration-direction-sdk-angle-analyze.py.gz",
+      "uncompressed_sha256": "30e65c45b230670ca81361b9d12a632cf34e01df4d1e7a259731ee3858613ec7"
+    },
+    "initial_invocation": {
+      "outcome": "capture setup rejected before launch",
+      "reason": "Direct Python invocation omitted the dedicated Xvfb marker required by the existing oracle client. Corrected by using run_headless.sh exec; no launcher or licensing changes.",
+      "log": {
+        "retained": "docs/mass-integration-direction-sdk-initial.log.gz",
+        "uncompressed_sha256": "b8e2c6bbe9d7b1f501ede79601418e17af99d232a3ad7f289a68483d18d893b6"
+      }
+    }
+  },
+  "earlier_runs": {
+    "bridge": {
+      "log": {
+        "retained": "docs/mass-integration-direction-bridge-initial.log.gz",
+        "uncompressed_sha256": "0ac014c3633646fba4ace43d0c7d49e21f8f9974a67994bc554fca0ee95479a5"
+      },
+      "scope": "Earlier passing run before the frozen-sheet regression was added. Final bridge/lint/format runs above include the new regression and fixture."
+    },
+    "clippy": {
+      "log": {
+        "retained": "docs/mass-integration-direction-clippy-initial.log.gz",
+        "uncompressed_sha256": "3ca5385ac15aef5b6b2a75df08a82fe8fdea62dd32f351290fbbf4075bd249c5"
+      },
+      "scope": "Earlier passing run before the frozen-sheet regression was added. Final bridge/lint/format runs above include the new regression and fixture."
+    },
+    "fmt": {
+      "log": {
+        "retained": "docs/mass-integration-direction-fmt-initial.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scope": "Earlier passing run before the frozen-sheet regression was added. Final bridge/lint/format runs above include the new regression and fixture."
+    }
+  },
+  "runner_scripts": {
+    "gates.py": {
+      "retained": "docs/mass-integration-direction-gates.py.gz",
+      "uncompressed_sha256": "d41fbecc4afeb274ac0e2fa0d7d330f054c0c7d977a53bce9bf99d1c33d19361"
+    },
+    "after-gates.py": {
+      "retained": "docs/mass-integration-direction-after-gates.py.gz",
+      "uncompressed_sha256": "b38f28b0d245a3cfd787b47ab5d97d44f54cb008f484d3c37c839fc4370d55c5"
+    },
+    "record.py": {
+      "retained": "docs/mass-integration-direction-record.py.gz",
+      "uncompressed_sha256": "0ffa44a4635fe66aeadf047201ab79db38e824c4e294b82211b4f4226ebb008c"
+    },
+    "preserve-provenance.py": {
+      "retained": "docs/mass-integration-direction-preserve-provenance.py.gz",
+      "uncompressed_sha256": "06c2945114657882bc767b039e1392e0faadc8133d5398d6c5363535035343d3"
+    },
+    "provenance.log": {
+      "retained": "docs/mass-integration-direction-provenance.log.gz",
+      "uncompressed_sha256": "34fbe019c02a27ee0d5effe54ef9a4405887d7a88e2469fd1b0b0bbf897c9309"
+    }
+  },
+  "historical_provenance": {
+    "preserved_entries": 6,
+    "records": 4,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "rationale": "Analytic disks/annuli and first moments in both parameter directions and face senses; frozen native fitted sheet and its UV-transposed reference; all geometry tests and native bridge/command callers; saved complete mass and fillet protocol values; fresh public SDK continuation reference matrix; final workspace lint and formatting.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python-binding, OCCT and GUI harnesses. ASan was not repeated for this safe Rust integration change; the native producer, foreign ownership and C++ sources are unchanged from 109c7fc1."
+  },
+  "limitations": [
+    "Quadrature error estimates are numerical, not continuous mathematical certificates. General completeness, extreme conditioning and overall performance remain unqualified.",
+    "The native extended curved fillet still has incorrect cap extents. Its six-case audit now completes and retains a large bounds/area mismatch, not a passing Rhino-parity claim. FilletSrf picking, source trimming, joining and document/preview workflow remain required.",
+    "Fresh 20+2 SDK captures are continuation references, not newly qualified native comparisons. Parameter dependence is established only for the retained family.",
+    "The example is diagnostic and retains per-query errors; its process exit status is not an assertion of Rhino parity."
+  ],
+  "source_sha256": {
+    "crates/viboceros-geometry/src/brep/mass_properties/trimmed.rs": "d5eee2464c9d8c8dc89fc4d5d78351cbfe43f66046643f24a08de8b67ea6d169",
+    "crates/viboceros-geometry/src/brep/mass_properties/parameter_tests.rs": "1753e02226b6068c70af7768a85eaa1d3edb638d3ae9e212a0971ff138216ef7",
+    "crates/viboceros-geometry/src/brep/mass_properties/boundary.rs": "7377f8baca54e9054b25ad42ea15c225a7033b96de74e6a22ca29441bd489c1f",
+    "crates/viboceros-geometry/src/integration.rs": "9640f8c158cdb93b33d6ef2bcb0b88161d08a8948fa04c9e65b08cba4f899e35",
+    "crates/viboceros-geometry/src/brep/mass_properties.rs": "239a7a35c1ea35100f35667e6fd77a5e44d56c6dc4cc590ed898802d73f09a54",
+    "crates/viboceros-geometry/src/brep/mass_properties/centroid.rs": "06f15e7b67435655134d8a458726ee4fcacf641eca6ef1d3e49041b68b972bf3",
+    "crates/viboceros-geometry/src/brep/mass_properties/volume_centroid.rs": "13a23843540e64d9e65451b8373ea64dfd375d05b367288132560e2f8b80158e",
+    "crates/viboceros-smlib/Cargo.toml": "4035f83731c394bf57bb69aa0788a92099d2a32d90c65806da1c15829feaea19",
+    "crates/viboceros-smlib/examples/surface_fillets.rs": "524c5b40623d99104a3d786f3f06656c6b4b1fec1ae24fbf293b1c171f3f2c2a",
+    "crates/viboceros-smlib/tests/surface_fillets.rs": "7edcfe717b9dbf50702da2d98a9b029760d11d14b712e05c80a22d5caa012ef9",
+    "crates/viboceros-smlib/tests/data/fitted-fillet-sheet.3dm": "732eff2490abeed18f928a4fdbe0dd6066f8e48024914cebccfc392c3f905db8",
+    "crates/viboceros-oracle/src/surface_fillet.rs": "db32e4b55afbfe24c0956764e48e9817f1a6cfd8f915d7a6702ccef42d9a5410",
+    "crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
+    "crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c"
+  },
+  "artifact_sha256": {
+    "docs/mass-integration-direction-geometry.log.gz": "109f3bf9a7ef3019a37f9da06ab29b5005f788163a7262087d95435bc4429983",
+    "docs/mass-integration-direction-bridge.log.gz": "7e5d5aa7b5995f35e4586a53c8cd475d6ab9459be98da005c91b450a155d44b7",
+    "docs/mass-integration-direction-command.log.gz": "ab233799b53f5b1b4ed8e7588e0843b8dcab5dd5e5e652e9c7c51820ada5839e",
+    "docs/mass-integration-direction-fillet-oracle.log.gz": "80d68db27dadbe7495a5d81518ee4b141df25c59bc5856ef675a1a5e421ea14c",
+    "docs/mass-integration-direction-clippy.log.gz": "e48c369c18809854e69bf2f95b8004177d4f57555d583af24ffc6c83ae392379",
+    "docs/mass-integration-direction-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/mass-integration-direction-oracle-build.log.gz": "c65c72f7f2577447fd7066d2265ceccebbdedeae3fafdcec69c74dcdd80e4747",
+    "docs/mass-integration-direction-baseline.log.gz": "97647b1266c90e51cc11096a8c9f78d2a9996348cc0f42402a40bc4e44d9d4eb",
+    "docs/mass-integration-direction-baseline-parameter-tests.rs.gz": "95b11972f8d6d35cbd648556cb7a600c8df035b268bf4c8316abb7f3e75fee05",
+    "docs/mass-integration-direction-focused.log.gz": "c5ae9eac849639f256401613eaa2dc0494a4b82dddf3b0f2c40af2c10887a7cc",
+    "docs/mass-integration-direction-example-compare.py.gz": "1bf524a99bc5e24ab844db7d750a9ece76e8afbadc075c3daf964a85e3541b64",
+    "docs/mass-integration-direction-example.log.gz": "d2b9e96651c081ae72b1a3a734064ce28c1318d1fadfde1636f8f6a62aea96ff",
+    "docs/mass-integration-direction-example-baseline.log.gz": "233560a8e09a55cc040b21de8dad3f07b08d42a69860407b85ad54037ba2bb96",
+    "docs/mass-integration-direction-baseline-example.rs.gz": "6cb73b0f364f385362ee21e18a72141d0585a350bc97d8c30d4864b2349fade8",
+    "docs/mass-integration-direction-example-baseline-cylinder-false.json.gz": "eadc165882bf63f44e6b389b75ba21c3404fdfed173a4c9688186e20fcf311cf",
+    "docs/mass-integration-direction-example-baseline-cylinder-false.3dm.gz": "684dd5698b9bfc313104fba71ddc0f517df9c7e0393a4d4a656ac914c9f13375",
+    "docs/mass-integration-direction-example-baseline-cylinder-true.json.gz": "63a43cd6ee3c865d1ba87d6e9d796fc1418797c39ef5507b2926007b863089df",
+    "docs/mass-integration-direction-example-baseline-cylinder-true.3dm.gz": "ad62dd9c84ca3a3bd2d6c5d9cd8ed8d41d6a7bd2d4798fbee9f0f72704320f35",
+    "docs/mass-integration-direction-example-candidate-cylinder-false.json.gz": "eadc165882bf63f44e6b389b75ba21c3404fdfed173a4c9688186e20fcf311cf",
+    "docs/mass-integration-direction-example-candidate-cylinder-false.3dm.gz": "73455161d8e7a6335f19737c8d3b1faff896b2f5ce7ad53024c6712cddf211b5",
+    "docs/mass-integration-direction-example-candidate-cylinder-true.json.gz": "bc5638fe03cccc9090951fa187a8790b2a9772f6222002b1d1bcd9772d57b510",
+    "docs/mass-integration-direction-example-candidate-cylinder-true.3dm.gz": "aea9c0f56a17634d111d4d76dcf2357cfa6490ce54599169d6e94d94e682390d",
+    "docs/mass-integration-direction-sdk-summary.py.gz": "7b4c67d40ca429a20e2a863b9dd6dd0e875b1c645ea09c37040aa66d2d85c850",
+    "docs/mass-integration-direction-sdk-shape-request.json.gz": "2ac1390333dc0c0e2b214d1dfedd847128f164f4ba4dc0be2814c0c82ed2813a",
+    "docs/mass-integration-direction-sdk-shape-response.json.gz": "13252a0b3958b5a3f89257fea640aa242d172cb94ebd0339d5e5eaf959ee38cf",
+    "docs/mass-integration-direction-sdk-shape.log.gz": "040434c5b600df73fb1fff61f71059725cdcc6e46c979f88c2eaddf2ac82c7b7",
+    "docs/mass-integration-direction-sdk-shape.py.gz": "093f985c784264f9ec1dfb75b40a9183a0fa10b928dd412d299317d4b68d42ce",
+    "docs/mass-integration-direction-sdk-mobius-request.json.gz": "18691fefbed2af12e5eb89721f621e075688be0650d878087f5e1439e72d3d49",
+    "docs/mass-integration-direction-sdk-mobius-response.json.gz": "ec3b1d34b9cdfee90fa6f2288044bf36d696a89493acfaa45e433a9abe88a380",
+    "docs/mass-integration-direction-sdk-mobius.log.gz": "dba8dcf4bfe6594c0dd99423b70c542d5e6095f5dbe16ec61ced6bec982e02d8",
+    "docs/mass-integration-direction-sdk-mobius.py.gz": "0626de1bede1e634a04eb9bcd92da14189d50c68f4bcef1a61a9f40fe37b63bc",
+    "docs/mass-integration-direction-sdk-angle-analysis.json.gz": "9b769c4693419f1655425f97daab680a9a308f557daf5427ea13a4f96db79f68",
+    "docs/mass-integration-direction-sdk-angle-analyze.py.gz": "185f1f35d6941bfae2b38f5c082ee337013f764cbb6100f725281a628585df48",
+    "docs/mass-integration-direction-sdk-initial.log.gz": "202f6821e07249c41f2ec1d3ff6439865835d2d5398cf7b3dff4a45f503750c1",
+    "docs/mass-integration-direction-mass-audit.json.gz": "31051b308174e33f71dcf0195890664f51f44903cfe06ceea7cb9fa299d2b8ba",
+    "docs/mass-integration-direction-mass-report.json.gz": "e80a90c80b6f5675acabad7464f5aa9c4e450d88376c52c05c07c88b2ad6c8d1",
+    "docs/mass-integration-direction-fillet-audit.json.gz": "ba7c42b47042e6a5a61937132a4a3ab3bebeff8e233f197d2efe3ae3d951bda5",
+    "docs/mass-integration-direction-fillet-raw-report.json.gz": "391a5d9386b2b67684e4ffbd28066ec0d55ddb1202b7d1f41e75bdd4a344138b",
+    "docs/mass-integration-direction-compare.py.gz": "85f7dfeec60a345076a0df5d631820592d726b06f50a523764bbf93a9e279add",
+    "docs/mass-integration-direction-compare.log.gz": "7684f05c62f3b79e0284071006c81abdcdad7497bd763d79a6bfc08f7792c395",
+    "docs/mass-integration-direction-gates.py.gz": "b3e9ff83e3b2e542f81ad18b298c9074a6c6e1914a630851328b3d67e546e020",
+    "docs/mass-integration-direction-after-gates.py.gz": "8c29675d81788777f98bdd6632a77fe55275c27384713623104a2c4246bc57cd",
+    "docs/mass-integration-direction-record.py.gz": "64185a619e304c9d6517527766653cb77b8b343600b33c01aa625871fee1670f",
+    "docs/mass-integration-direction-preserve-provenance.py.gz": "5ef07653f36d990a7abd99fe9b873f3981c028ff408e851191bfd0e401876248",
+    "docs/mass-integration-direction-provenance.log.gz": "9b32e059a2514b4838df878eaca291397123836327612479f115cbd1b9b3808e",
+    "docs/mass-integration-direction-bridge-initial.log.gz": "4a59652de8754b89b68a8ad98dd6701d34c5ec8037a90acf36b6599adb287009",
+    "docs/mass-integration-direction-clippy-initial.log.gz": "54cbe961e74f615950062d5f9e5c615adfbdefc8390a7030598d14394a7a340f",
+    "docs/mass-integration-direction-fmt-initial.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/mass-properties.md": "6f779c15c41370746e281ecc769c286c8ec3ccbe129d135ce2bc1dd31ba8b4f1"
+  },
+  "baseline_git_sha256": {
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-geometry/src/brep/mass_properties/trimmed.rs": "516abeb87304cfdf75bc09d866ae663d5076903cf0de5dc35d71f8b59067ecf1",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-geometry/src/brep/mass_properties/boundary.rs": "7377f8baca54e9054b25ad42ea15c225a7033b96de74e6a22ca29441bd489c1f",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:tools/rhino_oracle/fixtures/trim_parameter_frames.json": "548631ffc136ee7d77ea8f531eb139104fe6d770419ce95039242f9e9fd24153",
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:tools/rhino_oracle/observations/trim_parameter_frames.json": "acb8ed070f620a1dd774839dc998dacd89d11b467f85c709802ae410b0b022c0"
+  }
+}

@@ -113,3 +113,89 @@ fn rational_holes_and_orientation_survive_trim_parameter_scaling() {
         }
     }
 }
+
+fn densely_refined_paraboloid() -> NurbsSurface {
+    let mut surface = tests::paraboloid();
+    for i in 1..128 {
+        surface = surface.try_insert_knot_u(-1. + i as Real / 64., 1).unwrap();
+    }
+    surface
+}
+
+#[test]
+fn dense_knots_in_either_direction_preserve_trimmed_area_volume_and_centroids() {
+    let source = tests::round_trim(densely_refined_paraboloid(), &[0.5], true);
+    let tolerance = Tolerance::try_new(1e-10, 1e-12, 1e-10).unwrap();
+    let pi = std::f64::consts::PI;
+    let curved_area = pi / 6. * (2_f64.powf(1.5) - 1.);
+    let cap_area = pi * 0.25;
+    let curved_first_z = pi / 8. * ((2_f64.powf(2.5) - 1.) / 5. - (2_f64.powf(1.5) - 1.) / 3.);
+    let centroid_z = (curved_first_z + cap_area * 0.25) / (curved_area + cap_area);
+    for swapped in [false, true] {
+        let mut body = source.clone();
+        if swapped {
+            body.try_swap_face_uv(&(0..body.faces.len()).collect::<Vec<_>>())
+                .unwrap();
+        }
+        for reversed in [false, true] {
+            let body = if reversed {
+                body.reversed()
+            } else {
+                body.clone()
+            };
+            let before = body.clone();
+            let area = body.area(tolerance).unwrap();
+            assert!(
+                (area - curved_area - cap_area).abs() < 1e-10,
+                "{swapped} {reversed}: {area}"
+            );
+            let area_mass = body.area_mass_properties(tolerance).unwrap();
+            assert!((area_mass.area().unwrap() - area).abs() < 1e-10);
+            let center = area_mass.centroid().unwrap();
+            assert!(center.x().abs() < 1e-10 && center.y().abs() < 1e-10);
+            assert!((center.z() - centroid_z).abs() < 1e-10, "{center:?}");
+            let sign = if reversed { -1. } else { 1. };
+            assert!((body.signed_volume(tolerance).unwrap() - sign * pi / 32.).abs() < 1e-10);
+            let volume_mass = body.volume_mass_properties(tolerance).unwrap();
+            assert!((volume_mass.signed_volume().unwrap() - sign * pi / 32.).abs() < 1e-10);
+            let center = volume_mass.centroid().unwrap();
+            assert!(center.x().abs() < 1e-10 && center.y().abs() < 1e-10);
+            assert!((center.z() - 1. / 6.).abs() < 1e-10, "{center:?}");
+            assert_eq!(body, before);
+        }
+    }
+}
+
+#[test]
+fn dense_knots_keep_curved_holes_subtractive_in_both_green_forms() {
+    let tolerance = Tolerance::try_new(1e-10, 1e-12, 1e-10).unwrap();
+    let source = tests::round_trim(densely_refined_paraboloid(), &[0.5, 0.25], false);
+    let pi = std::f64::consts::PI;
+    let q_outer = 2_f64;
+    let q_inner = 1.25_f64;
+    let area = pi / 6. * (q_outer.powf(1.5) - q_inner.powf(1.5));
+    let first_z = pi / 8.
+        * ((q_outer.powf(2.5) - q_inner.powf(2.5)) / 5.
+            - (q_outer.powf(1.5) - q_inner.powf(1.5)) / 3.);
+    for swapped in [false, true] {
+        let mut annulus = source.clone();
+        if swapped {
+            annulus.try_swap_face_uv(&[0]).unwrap();
+        }
+        for reversed in [false, true] {
+            let annulus = if reversed {
+                annulus.reversed()
+            } else {
+                annulus.clone()
+            };
+            let before = annulus.clone();
+            assert!((annulus.area(tolerance).unwrap() - area).abs() < 1e-10);
+            let mass = annulus.area_mass_properties(tolerance).unwrap();
+            assert!((mass.area().unwrap() - area).abs() < 1e-10);
+            let center = mass.centroid().unwrap();
+            assert!(center.x().abs() < 1e-10 && center.y().abs() < 1e-10);
+            assert!((center.z() - first_z / area).abs() < 1e-10, "{center:?}");
+            assert_eq!(annulus, before);
+        }
+    }
+}

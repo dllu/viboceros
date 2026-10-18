@@ -88,8 +88,8 @@ mod tests {
         .unwrap();
         let mut compared = 0;
         for op in &request.operations {
-            // This captured curved extension still fails in the native producer;
-            // the full audit retains it separately from the qualified recipes.
+            // Curved support continuation has unqualified endpoint extents;
+            // the full audit retains its complete result separately.
             if op.id() == "cylinder-True" {
                 continue;
             }
