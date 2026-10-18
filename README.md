@@ -20,7 +20,7 @@ cargo run --release
 
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
-For native B-rep modeling, curved Project targets, NURBS editing, extension and
+For [native B-rep modeling](docs/smlib-import.md), curved Project targets, NURBS editing, extension and
 fitting, Sweep1/Sweep2/Pipe/RailRevolve construction, and STEP material regions on Linux,
 install `patch` and oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
 

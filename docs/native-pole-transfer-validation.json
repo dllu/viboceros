@@ -238,7 +238,6 @@
     "crates/viboceros-smlib/native/CMakeLists.txt": "c04ade9fcd5eab4e385285de898eda218e1530d591cb1ad075939fe5548a1946",
     "crates/viboceros-smlib/native/basis_preservation.cpp": "aa7690878cfd402e8c5fdaffb4f70e4267f5d5c02e6cf0c3eba52bcf6f50f016",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
-    "crates/viboceros-smlib/native/brep_import.cpp": "25ff30313d39ee9be201015a365be8c0201c65ef4730b7fe8631900fcb870901",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
     "crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a",
     "crates/viboceros-smlib/src/native/brep/poles.rs": "d8949afc7d7aca46e586fa639097b2a687a35519b0712997b1159fe03f6d9345",
@@ -301,5 +300,8 @@
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-command/src/planar_boolean.rs": "f2b20728494afb35a7f5f368ed0416fe8f70d874ba3eb54e8b2cdfdcdd45d86e",
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
     "650fa1c854c05003a45311fc531c421cb45f680d:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "source_git_sha256": {
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/native/brep_import.cpp": "25ff30313d39ee9be201015a365be8c0201c65ef4730b7fe8631900fcb870901"
   }
 }

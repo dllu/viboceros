@@ -31,8 +31,8 @@ void check(SmStatus status, const char *operation) {
     if (status != SM_SUCCESS)
         throw std::runtime_error(std::string(operation) + " status " + std::to_string(status));
 }
-void knots(const VbNurbsData &data, int direction, SmTArray<double> &unique,
-           SmTArray<ULONG> &multiplicities) {
+std::vector<double> knots(const VbNurbsData &data, int direction, SmTArray<double> &unique,
+                          SmTArray<ULONG> &multiplicities) {
     const size_t degree = data.degree[direction], count = data.count[direction],
                  n = data.knot_count[direction];
     require(degree >= 1 && degree <= 32 && count > degree && count <= limit &&
@@ -48,11 +48,20 @@ void knots(const VbNurbsData &data, int direction, SmTArray<double> &unique,
         } else
             ++multiplicities[multiplicities.GetSize() - 1];
     }
-    require(unique.GetSize() >= 2 && multiplicities[0] == degree + 1 &&
-                multiplicities[multiplicities.GetSize() - 1] == degree + 1,
-            "Import requires clamped NURBS");
-    for (ULONG i = 1; i + 1 < multiplicities.GetSize(); ++i)
-        require(multiplicities[i] <= degree, "Discontinuous NURBS interior knot");
+    const double start = data.knots[direction][degree], end = data.knots[direction][count];
+    require(start < end, "Empty active NURBS interval");
+    for (ULONG i = 0; i < unique.GetSize(); ++i)
+        if (unique[i] > start && unique[i] < end)
+            require(multiplicities[i] <= degree, "Discontinuous NURBS interior knot");
+    // CreateCanonical already clamps full NURBS data through the existing
+    // IGES importer. Retain its active interval and interior knots exactly;
+    // inactive padding and controls need not survive this modeling import.
+    std::vector<double> active(degree + 1, start);
+    for (size_t i = 0; i < n; ++i)
+        if (data.knots[direction][i] > start && data.knots[direction][i] < end)
+            active.push_back(data.knots[direction][i]);
+    active.insert(active.end(), degree + 1, end);
+    return active;
 }
 void point(const double *p, SmTArray<SmPoint3d> &points, SmTArray<double> &weights) {
     require(std::isfinite(p[0]) && std::isfinite(p[1]) && std::isfinite(p[2]) &&
@@ -66,7 +75,7 @@ SmCurve *import_curve(const VbNurbsData &data, ULONG dimension) {
     SmTArray<double> unique, weights;
     SmTArray<ULONG> multiplicities;
     SmTArray<SmPoint3d> points;
-    knots(data, 0, unique, multiplicities);
+    const auto active = knots(data, 0, unique, multiplicities);
     for (size_t i = 0; i < data.count[0]; ++i)
         point(data.points_xyzw + 4 * i, points, weights);
     SmBSplineCurve *raw = nullptr;
@@ -76,7 +85,8 @@ SmCurve *import_curve(const VbNurbsData &data, ULONG dimension) {
     std::unique_ptr<SmBSplineCurve> owner(raw);
     check(status, "create imported curve");
     require(raw, "Missing imported curve");
-    vb_preserve_curve_basis(*raw, std::vector<double>(data.knots[0], data.knots[0] + data.knot_count[0]));
+    require(raw->GetDegree() == data.degree[0], "Canonical import changed curve degree");
+    vb_preserve_curve_basis(*raw, active);
     return owner.release();
 }
 SmSurface *import_surface(const VbNurbsData &data) {
@@ -85,8 +95,8 @@ SmSurface *import_surface(const VbNurbsData &data) {
     SmTArray<double> u, v, weights;
     SmTArray<ULONG> mu, mv;
     SmTArray<SmPoint3d> points;
-    knots(data, 0, u, mu);
-    knots(data, 1, v, mv);
+    const auto active_u = knots(data, 0, u, mu);
+    const auto active_v = knots(data, 1, v, mv);
     for (size_t i = 0; i < data.count[0]; ++i)
         for (size_t j = 0; j < data.count[1]; ++j)
             point(data.points_xyzw + 4 * (j * data.count[0] + i), points, weights);
@@ -97,9 +107,9 @@ SmSurface *import_surface(const VbNurbsData &data) {
     std::unique_ptr<SmBSplineSurface> owner(raw);
     check(status, "create imported surface");
     require(raw, "Missing imported surface");
-    vb_preserve_surface_basis(*raw, {
-        std::vector<double>(data.knots[0], data.knots[0] + data.knot_count[0]),
-        std::vector<double>(data.knots[1], data.knots[1] + data.knot_count[1])});
+    require(raw->GetDegree(SM_SP_U) == data.degree[0] && raw->GetDegree(SM_SP_V) == data.degree[1],
+            "Canonical import changed surface degrees");
+    vb_preserve_surface_basis(*raw, {active_u, active_v});
     return owner.release();
 }
 } // namespace

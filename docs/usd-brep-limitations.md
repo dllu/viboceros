@@ -1072,7 +1072,9 @@ issues reported by NVIDIA that have not all been reproduced here.
   The gap-stitching regression covers this without blanket tolerance inflation.
 - Native features currently require Linux and system oneTBB. The USD scene
   layer and upstream Python packaging are not part of our kernel-only build.
-- B-rep transfer requires clamped, continuous NURBS and manifold topology.
+- B-rep transfer requires continuous NURBS and manifold topology. The adapter
+  now accepts [unclamped inputs](smlib-unclamped-import.md) through native
+  canonical clamping of their active domains; output control layouts can differ.
   Mixed open/closed imports, nonmanifold sheets and unsupported singular or
   periodic topology can be rejected. Native face reversal can swap UV axes.
   See [transfer](smlib-brep-transfer.md) and [sheet import](smlib-offset-surfaces.md).

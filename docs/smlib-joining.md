@@ -14,6 +14,11 @@ pointer enters a document. Partial circular overlaps are split and joined by
 the upstream kernel, extending the Rust matcher's straight partial-overlap
 coverage without another matching algorithm.
 
+The shared importer also accepts [unclamped edges, UV trims and surfaces](smlib-unclamped-import.md).
+Native canonical construction clamps each active domain before stitching;
+JoinCopy keeps the original objects' unclamped definitions. This can change
+output coefficients and exterior knots while preserving the active surface.
+
 Native UV creation can update tolerances, so export snapshots edges and vertices
 after the trims. Tiny out-of-domain UV controls use native knot snapping only
 within a roundoff allowance, followed by the existing continuous surface-image

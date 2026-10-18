@@ -6,6 +6,12 @@ and constructs native faces and edgeuses without fitting, analytic replacement
 or healing. UV curves are oriented in the spatial edge direction and mapped to
 its parameter interval, as required by SMLib's native trim convention.
 
+[Unclamped NURBS](smlib-unclamped-import.md) are accepted for spatial edges,
+UV trims and face surfaces. The existing native canonical constructor clamps
+their active domain; the adapter retains the exact active endpoints and interior
+knots. Source objects keep their original definitions. Imported modeling copies
+can have different control counts and exterior knots.
+
 Connected shells receive separate paired native shells and regions. Their
 signed Rust volumes establish boundary sense. Native face intersections reject
 crossing/touching components; point classification establishes parent containment.

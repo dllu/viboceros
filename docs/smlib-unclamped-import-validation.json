@@ -1,0 +1,405 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "d2cb74ce405599ec4492f83bc3dd23977c14fcc5",
+  "feature": "Accept unclamped spatial edges, UV trims and face surfaces in native B-rep import using existing usd-brep canonical clamping.",
+  "implementation": [
+    "Pass complete source knot arrays, controls and weights to native CreateCanonical for active-domain clamping; add no new fitting or clamping algorithm.",
+    "Require a positive active interval, unchanged degree, continuous interior knots and the existing positive finite control/weight and resource constraints.",
+    "Preserve exactly the clamped active endpoints and source interior knots through the existing checked basis-restoration helper.",
+    "Keep the original Rust document geometry unchanged, including JoinCopy sources. Inactive exterior knots and controls can differ in native modeling outputs."
+  ],
+  "upstream_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "cases": {
+    "rational_surface_matrix": 75,
+    "knot_patterns_per_axis": 5,
+    "parameter_scale_exponents": [
+      -40,
+      0,
+      40
+    ],
+    "complete_tensor_comparison": "Exact active knots and control counts, control positions within 1e-11 and common-gauge-independent weight ratios within 1e-12, against independent Rust knot insertion.",
+    "sampled_surface_maximum_error": 9.930136612989092e-16,
+    "additional_bridge_cases": [
+      "four spatial-edge/UV-trim combinations",
+      "periodic sheet seam",
+      "all-unclamped closed box and subsequent Boolean cut"
+    ],
+    "native_command_workflows": 16,
+    "command_comparison": "Complete independently authored active tensor coefficients, allowing only the documented native U/V transpose. Preserve source identity/geometry, seed metadata, groups, selection, shared edge topology and two complete Undo/Redo cycles.",
+    "native_command_options": [
+      "Join/JoinCopy",
+      "preselected/command-first",
+      "unclamped U/V",
+      "ordinary/reversed sheet faces"
+    ]
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-bridge-full.log.gz",
+      "uncompressed_sha256": "e73c71f5df05acd013592cf752bffb69384a63c5cc7d2e1b338d27479ac23189",
+      "passed": 404,
+      "failed": 0,
+      "ignored": 1,
+      "summaries": [
+        "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.94s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 400.07s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 55.37s",
+        "test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.27s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.59s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 59.76s",
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 108.52s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.91s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.62s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.42s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.21s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.90s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.24s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 45.66s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.30s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.81s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 462.49s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.14s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.68s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.09s",
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 390.11s",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 359.71s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.41s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.26s",
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.14s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+        "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.07s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 63.10s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.01s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 38.00s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.23s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.60s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.05s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.18s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s"
+      ]
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-command-full.log.gz",
+      "uncompressed_sha256": "e06ba4509d952eeae76ba6997d54c3d05562753c98325a62d31ae81360198216",
+      "passed": 1597,
+      "failed": 0,
+      "ignored": 3,
+      "summaries": [
+        "test result: ok. 1582 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 118.75s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-clippy.log.gz",
+      "uncompressed_sha256": "9d19b80892472d0d48d0abeb3dad9c5258d83a58a01e69c37c0096d81c9659ca"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "focused_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test unclamped_brep -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-bridge-focused.log.gz",
+      "uncompressed_sha256": "b0ff7cbaeec9b7a20a8f97946d27e7429f4f19d38d7f94b0162a525165ddc6a5",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "summaries": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.08s"
+      ]
+    }
+  ],
+  "development_reproduction": {
+    "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test unclamped_brep -- --nocapture",
+    "exit_code": 101,
+    "retained": "docs/smlib-unclamped-import-development-before.log.gz",
+    "uncompressed_sha256": "269db6910137e11bba0f624fd3647e5ebfd6cf16fadead7c8ec6fcd320eccb07",
+    "passed": 0,
+    "failed": 2,
+    "ignored": 0,
+    "summaries": [
+      "test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s"
+    ],
+    "scope": "Initial development version of the two new surface/edge regressions, before adding complete coefficient, periodic and solid/cut coverage. Parent importer source is pinned in Git; the initial test-source snapshot was not retained."
+  },
+  "native_api_replay": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-unclamped-join-replay.py",
+    "exit_code": 0,
+    "retained": "docs/smlib-unclamped-import-api-replay.log.gz",
+    "uncompressed_sha256": "bcf72fb808babcb1bd9ae96b20228b8b9231609df1e36dbe37ecffb72e2e666a",
+    "script": {
+      "retained": "docs/smlib-unclamped-import-api-replay-script.py.gz",
+      "uncompressed_sha256": "c4632c4d995be1754bc5caeb2adee598b7c7e4d401a0b99592e7bd2b82925a09"
+    },
+    "curved_audit": {
+      "retained": "docs/smlib-unclamped-import-curved-audit.json.gz",
+      "uncompressed_sha256": "0ee457bfba1e7eb891293da8f530037dac689e3672a45e4769c3edae416448d3"
+    },
+    "curved_raw_comparison": {
+      "retained": "docs/smlib-unclamped-import-curved-report.json.gz",
+      "uncompressed_sha256": "a40cda65a6171f8b015398f98395c673bc21ec157c390b5245cbd3e0a18a90c7"
+    },
+    "isocurve_audit": {
+      "retained": "docs/smlib-unclamped-import-isocurve-audit.json.gz",
+      "uncompressed_sha256": "2a4d22a23bc9189bf9671cefe94d75ffdc273d8a2031916ee4b2bb38f581986f"
+    }
+  },
+  "raw_comparison": {
+    "cases": 48,
+    "executions": 48,
+    "execution_errors": 0,
+    "full_matches": 4,
+    "raw_mismatches": 44,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-10,
+    "unclamped_join_successes": 8,
+    "policy": "Use the existing strict field comparator with no geometry, knot, domain, metadata, tolerance or ordering normalization. Execution success and active-surface evidence are not counted as raw matches."
+  },
+  "independent_rhino_surface_witness": {
+    "cases": 8,
+    "samples": 4096,
+    "arithmetic_digits": 80,
+    "absolute_epsilon": 1e-10,
+    "maximum_sampled_error": 6.802781575523303e-80,
+    "policy": "Compare active domains exactly, then independently evaluate tensor NURBS on a 16x16 interior grid. Require a unique face bijection, allowing only a U/V transpose. Keep raw tolerance, topology, metadata and representation mismatches in the separate strict report. A grid is a diagnostic witness, not a continuous boundary proof.",
+    "obtained_run": {
+      "command": "PYTHONPATH=. python3 /tmp/viboceros-unclamped-physical.py",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-physical-witness.log.gz",
+      "uncompressed_sha256": "1002b078655967dcbe6a035cecaff14f0a519bf2b48e171e69bf920d5d363de8",
+      "script": {
+        "retained": "docs/smlib-unclamped-import-physical-script.py.gz",
+        "uncompressed_sha256": "9e81d8e7896c1d1b5b897863328f0b37ade03ca222409d54e44a908905a5e14a"
+      },
+      "results": {
+        "retained": "docs/smlib-unclamped-import-physical-results.json.gz",
+        "uncompressed_sha256": "0a908550f0ffb0d501a8d4098c6eca6012ad044ea9d67bbba1294c2443804d86"
+      }
+    },
+    "mutation_check": {
+      "command": "PYTHONPATH=. python3 /tmp/viboceros-unclamped-physical-negative.py",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-physical-negative.log.gz",
+      "uncompressed_sha256": "dfa63942f3c90b80178ee8d0bae53a1cf010a49c6736e34745f05efb15d8d46e",
+      "script": {
+        "retained": "docs/smlib-unclamped-import-physical-negative-script.py.gz",
+        "uncompressed_sha256": "2e0d6b772a8dbb1d431a569878e122532cd9368670a55d7ea1fb811c3307b18c"
+      }
+    }
+  },
+  "interior_isocurve_discovery": {
+    "cases": 64,
+    "executions": 32,
+    "execution_errors": 32,
+    "successful_unclamped_commands": 16,
+    "failed_ids": [
+      "extrusion-clamped-uv0-origin1e+12-Join-pre",
+      "extrusion-clamped-uv0-origin1e+12-Join-post",
+      "extrusion-clamped-uv0-origin1e+12-JoinCopy-pre",
+      "extrusion-clamped-uv0-origin1e+12-JoinCopy-post",
+      "extrusion-clamped-uv1-origin1e+12-Join-pre",
+      "extrusion-clamped-uv1-origin1e+12-Join-post",
+      "extrusion-clamped-uv1-origin1e+12-JoinCopy-pre",
+      "extrusion-clamped-uv1-origin1e+12-JoinCopy-post",
+      "extrusion-unclamped-uv0-origin1e+12-Join-pre",
+      "extrusion-unclamped-uv0-origin1e+12-Join-post",
+      "extrusion-unclamped-uv0-origin1e+12-JoinCopy-pre",
+      "extrusion-unclamped-uv0-origin1e+12-JoinCopy-post",
+      "extrusion-unclamped-uv1-origin1e+12-Join-pre",
+      "extrusion-unclamped-uv1-origin1e+12-Join-post",
+      "extrusion-unclamped-uv1-origin1e+12-JoinCopy-pre",
+      "extrusion-unclamped-uv1-origin1e+12-JoinCopy-post",
+      "tensor-clamped-uv0-origin1e+12-Join-pre",
+      "tensor-clamped-uv0-origin1e+12-Join-post",
+      "tensor-clamped-uv0-origin1e+12-JoinCopy-pre",
+      "tensor-clamped-uv0-origin1e+12-JoinCopy-post",
+      "tensor-clamped-uv1-origin1e+12-Join-pre",
+      "tensor-clamped-uv1-origin1e+12-Join-post",
+      "tensor-clamped-uv1-origin1e+12-JoinCopy-pre",
+      "tensor-clamped-uv1-origin1e+12-JoinCopy-post",
+      "tensor-unclamped-uv0-origin1e+12-Join-pre",
+      "tensor-unclamped-uv0-origin1e+12-Join-post",
+      "tensor-unclamped-uv0-origin1e+12-JoinCopy-pre",
+      "tensor-unclamped-uv0-origin1e+12-JoinCopy-post",
+      "tensor-unclamped-uv1-origin1e+12-Join-pre",
+      "tensor-unclamped-uv1-origin1e+12-Join-post",
+      "tensor-unclamped-uv1-origin1e+12-JoinCopy-pre",
+      "tensor-unclamped-uv1-origin1e+12-JoinCopy-post"
+    ],
+    "error": "invalid NURBS knot vector: the active domain must have positive length",
+    "policy": "No missing Rhino observation is invented and no execution error is a numeric result. The translated-UV errors remain unresolved; this is an execution audit, not a parity score."
+  },
+  "translated_uv_diagnostic": {
+    "obtained_run": {
+      "command": "CARGO_TARGET_DIR=/home/dllu/proj/viboceros/target CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --quiet --manifest-path /tmp/viboceros-unclamped-origins/Cargo.toml --offline",
+      "exit_code": 0,
+      "retained": "docs/smlib-unclamped-import-translated-uv-probe.log.gz",
+      "uncompressed_sha256": "e9c988528b05ec7d630911a929cef6362cd683664c1ada7ae1b09d891225b97c",
+      "materials": [
+        {
+          "retained": "docs/smlib-unclamped-import-translated-uv-probe-source.rs.gz",
+          "uncompressed_sha256": "b9d8773ad64667867497972563f25bcfe5645528b3f409b516fe39ffe243cd55"
+        },
+        {
+          "retained": "docs/smlib-unclamped-import-translated-uv-probe-manifest.toml.gz",
+          "uncompressed_sha256": "01a8dc6aaaafcf41e7d7e7bdb5ccfcea36729aaef1753a02fd3c03dc901f4fd7"
+        },
+        {
+          "retained": "docs/smlib-unclamped-import-translated-uv-probe-lock.lock.gz",
+          "uncompressed_sha256": "6d274e1e9d242572cbc31826d6d48cce6d2c4fbb659bcef010e04fb921fb38c2"
+        }
+      ]
+    },
+    "finding": "A direct assembly probe at document tolerance 0.001 reproduces the eight unique translated-source pairs failing during native export. The existing normalized-domain import permits export for all sixteen source pairs (local and translated). This diagnostic counts exported assemblies only; it does not establish joining connectivity, command state, restored charts or a production fix."
+  },
+  "historical_provenance": {
+    "preserved_entries": 3,
+    "records": 3,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "log_policy": "Full raw outputs, audits, comparison reports and independent witness scripts are retained in gzip. All completed-run exit codes come from observed jobs/status receipts. Native probe elapsed_ns=0 establishes no performance result.",
+  "limitations": [
+    "General trimmed/periodic/nonmanifold topology, all parameter conditioning and arbitrary weight ranges are not qualified by these cases.",
+    "UV origins near 1e12 remain rejected in the retained discovery cases; their errors are not hidden or converted into matches.",
+    "The complete curved-Join archive still has 44 strict mismatches from tolerance, representation and other native policy differences.",
+    "The eight-case active-surface grid is a diagnostic witness, not a continuous whole-B-rep equivalence proof.",
+    "No performance parity, broad Rhino command parity or full native oracle-suite pass is claimed. Existing portable-backend expectations remain unchanged."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/native/brep_import.cpp": "1967e07a45a81d9c441f2230ebeddf4891bde32920687c0f3dbdffc75565b7f7",
+    "crates/viboceros-smlib/native/basis_preservation.cpp": "aa7690878cfd402e8c5fdaffb4f70e4267f5d5c02e6cf0c3eba52bcf6f50f016",
+    "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
+    "crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "c04ade9fcd5eab4e385285de898eda218e1530d591cb1ad075939fe5548a1946",
+    "crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a",
+    "crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
+    "crates/viboceros-smlib/tests/unclamped_brep.rs": "5dfd2f730cd1eb2d4287619748e61cfe0cf2c658ab1fba0c4c08523559250d03",
+    "crates/viboceros-smlib/build.rs": "a47e9483a9fde54ad376294db1f40f234b279a76c97e01ece62ad2052f08a42d",
+    "crates/viboceros-command/tests/native_unclamped_join.rs": "d08df6aceeb4984e97f23ec51b9627b898dcbaf22708d11f5ce690128360c53d",
+    "crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
+    "crates/viboceros-command/src/join/breps.rs": "881357e5dc2ea7e793295a6846101079cf090c94974ef6669cd5d827bafb27a1",
+    "crates/viboceros-geometry/src/nurbs.rs": "6050a03ba4cca4a943be70e71f820158c8006f06101931276aef521227f8c3b1",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/references/join_isocurve_areas.py": "bf5df5b9ac08f7707e00be23b0608dff24399c14541e0774e04c003ac1f573d3",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp": "93c905a12c4124f6761f63ca9dbe2e2ffe400eb32b493c3d514be42de2c41138",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
+    "third_party/usd-brep/source/SMLib/src/NL_Iges.cpp": "833f82bd4abda2478230bdffbb96e5093ef55c50da691e3f0f2e9701c36d41bb"
+  },
+  "artifact_sha256": {
+    "docs/smlib-unclamped-import-bridge-full.log.gz": "c7b9e707928a27a644d6d8e8b2e0131010e635cbe973f003db3b380359f94c19",
+    "docs/smlib-unclamped-import-command-full.log.gz": "1df756cacb4c322a28c8231c12fbf2e7b07c1cff7848d546f85c411435fd2893",
+    "docs/smlib-unclamped-import-bridge-focused.log.gz": "a246f0bcb5c5f5651f0e92d9c0072e79c749687d620f768b529c4dbfba1be28f",
+    "docs/smlib-unclamped-import-development-before.log.gz": "b8108bd81a303785774da2e29359bc5fb823ca8bd3add122ca94b86ae97d0ff9",
+    "docs/smlib-unclamped-import-clippy.log.gz": "effe88ef3b039430bb30708baefd8dca613860913f8065058c68e205627503fa",
+    "docs/smlib-unclamped-import-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/smlib-unclamped-import-api-replay.log.gz": "b4f582b0904f4e9ab45b64c028bd706b86339315aa9051a2b1ac5189ef4c799e",
+    "docs/smlib-unclamped-import-api-replay-script.py.gz": "0ec11af753d9b42975798c21af17478429f0c15a73c8ecc9dcd43f94f39331d5",
+    "docs/smlib-unclamped-import-curved-audit.json.gz": "c561bc35920005628529607cc6e71987db1869b5b233d820c7d132b096a3de48",
+    "docs/smlib-unclamped-import-curved-report.json.gz": "0ccd18d76c94c042c25de183e64adc39aa106751810c28a82606b9aeb04d8d8b",
+    "docs/smlib-unclamped-import-isocurve-audit.json.gz": "93170bbbc3d86c32b3db0ddc325b78f2728947b1c242f69f32da8bc512791f31",
+    "docs/smlib-unclamped-import-physical-witness.log.gz": "eb75187abb63cc27d499b012dbda3b84132ecdf1349088a9a3bb0f69fb8ddbb7",
+    "docs/smlib-unclamped-import-physical-script.py.gz": "63fedfeaffbbbf214465b4faf6ca837bb97e59e681a7a675f7c3e149750e7030",
+    "docs/smlib-unclamped-import-physical-results.json.gz": "6575a2d1a9b95894cfa1fd67f0e89c25d28b2c2418e3a9fe2a61ef2ea761abac",
+    "docs/smlib-unclamped-import-physical-negative.log.gz": "eed0ba6cb972ec2ca14d675428f901c9259f61cb5e0b9994b61d102aa7ed21d1",
+    "docs/smlib-unclamped-import-physical-negative-script.py.gz": "7bb0436b61971a32748f1dc829e4dba7d4abade117ea53a60517fc73e85b9bd4",
+    "docs/smlib-unclamped-import-translated-uv-probe.log.gz": "f4d7c0b2754491da4915af8589d8e98f743ede76a19a1ecadb4059d1770a5614",
+    "docs/smlib-unclamped-import-translated-uv-probe-source.rs.gz": "0150fab81cf3b91f850dfa0912f9bbac702d16c3b30464cfa4b06b148d929f64",
+    "docs/smlib-unclamped-import-translated-uv-probe-manifest.toml.gz": "611b2804252ba1c28bf5170f493cbd68f9011ee50da87cb3d255ac38c1542994",
+    "docs/smlib-unclamped-import-translated-uv-probe-lock.lock.gz": "35ebec867f3a28a7719c69eba13333e7bfd9f6a6c69391b410bd67bff1b71ef6",
+    "README.md": "787b60291db63992a6ecd9ebf23fb80467f09a8336fb0c7296e07ab8140dae63",
+    "docs/smlib-import.md": "fcc7badf8c43e6b33016765cc35c49cd63751eabedd2d6cf671349840a4618da",
+    "docs/smlib-joining.md": "77b94ad0d9387a50b007d04aac6e5135f622dad2550f0900943fb04cbbbbd1b0",
+    "docs/usd-brep-limitations.md": "959a589e30c88b10788df3339ca2a037692be0cfc9f6bbaf44d610870cb6ba1d",
+    "docs/smlib-unclamped-import.md": "3c24f66fead4e275c5bbc7db9f295dda93782bbb46b5f62c6f9b2bae1faf3ce8",
+    "docs/join-pick-validation.json": "88e75a7af93fc0691092f71202aa6da73a70801c42feedcb5163fee4d239bd0d",
+    "docs/native-pole-transfer-validation.json": "eed3f50b34c25a332a16aba538e38c8c568822c905763149a508437d7a3430e5",
+    "docs/remap-cplane-api-validation.json": "d811ffd6ac83dbc37cd5b500b40a394db6cd1134e18b94e87b875d540e3b08a0",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c"
+  },
+  "baseline_git_sha256": {
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/native/brep_import.cpp": "25ff30313d39ee9be201015a365be8c0201c65ef4730b7fe8631900fcb870901",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/native/basis_preservation.cpp": "aa7690878cfd402e8c5fdaffb4f70e4267f5d5c02e6cf0c3eba52bcf6f50f016",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/native/CMakeLists.txt": "c04ade9fcd5eab4e385285de898eda218e1530d591cb1ad075939fe5548a1946",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-smlib/build.rs": "a47e9483a9fde54ad376294db1f40f234b279a76c97e01ece62ad2052f08a42d",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-command/src/join/breps.rs": "881357e5dc2ea7e793295a6846101079cf090c94974ef6669cd5d827bafb27a1",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-geometry/src/nurbs.rs": "6050a03ba4cca4a943be70e71f820158c8006f06101931276aef521227f8c3b1",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:tools/rhino_oracle/references/join_isocurve_areas.py": "bf5df5b9ac08f7707e00be23b0608dff24399c14541e0774e04c003ac1f573d3",
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}
