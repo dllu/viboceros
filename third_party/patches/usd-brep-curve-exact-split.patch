@@ -1,0 +1,137 @@
+--- a/NL_CrvToolSegments.cpp
++++ b/NL_CrvToolSegments.cpp
+@@ -10,6 +10,7 @@
+ 
+ #include <nurbs.h>
+ #include <NL_Globals.h>
++#include "usd-brep-exact-split-span.h"
+ #include <algorithm>
+ 
+ 
+@@ -229,9 +230,9 @@
+      highest indexes  in curL's  and curR's  knot vector  and polygon 
+      objects.
+ 
+-     Note that splitting a curve near a knot will create a very small
+-     span, and may violate some multiplicity rules. A test has been added
+-     to remove unintended small differences from knot values.
++     The supplied parameter is preserved exactly. Unclamped active endpoints
++     are supported when interior to the full knot vector; the unused outer
++     piece may have an empty active domain.
+ 
+ 
+    ACCESS:
+@@ -261,11 +262,11 @@
+ 
+     NL_DEGREE p;
+ 
+-    NL_REAL *U, *UL, *UR, alf, oma, PTol;
++    NL_REAL *U, *UL, *UR, alf, oma;
+ 
+     NL_KNOTVECTOR *knt;
+ 
+-    NL_CPOINT *Pw, *Lw, *Rw, *Sw;
++    NL_CPOINT *Pw, *Lw, *Rw, *Sw = NULL;
+ 
+     NL_STACKS SL;
+ 
+@@ -273,70 +274,57 @@
+ 
+     N_InitNurbs( &SL );
+ 
++    if (cur == curL || cur == curR || curL == curR)
++        NL_ERROR(NL_INP_ERR);
++    if (!SG && (N_CrvAreArraysNULL(curL) || N_CrvAreArraysNULL(curR)))
++        NL_ERROR(NL_INP_ERR);
++
+     /* Get local notation */
+ 
+     N_CrvGetCPtsDegreeAndKnots( cur, &n, &Pw, &p, &m, &U );
+ 
+-    /* Check parameter u */
+-    /* if u is within PTol of knot, set u to knot value */
+-    /* NL_PTOL is far too small to use here */
+-    PTol = (U[m - p] - U[p]) * 1.0E-6;
+-
+-    for ( i = p; i <= m - p; i++ )
+-    {
+-        if( fabs( U[i] - u ) < PTol )
+-        {
+-            u = U[i];
+-            break;
+-        }
+-    }
+-
+-    /* Check parameter for domain */
+-    N_CrvGetKnotVector( cur, &knt );
+-    error = N_KnotVectorIsEndParam( knt, u, rname );
++    // Preserve the exact parameter and classify its actual knot group. The
++    // general editing helper assumes clamped active ends and skips thin spans.
++    N_CrvGetKnotVector(cur, &knt);
++    error = sm_ExactSplitSpan(knt, p, n, u, &spn, &mlt, rname);
++    if (error == NL_YES)
++        NL_OUT;
++
++    /* See if memory is needed */
++
++    error = N_CrvSizeArrays( curL, spn - mlt, p, spn - mlt + p + 1, rname, SG );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+-    /* Get span, and knot multiplicity */
+-
+-    error = N_BasisFindSpanAndMult( knt, p, u, NL_LEFT, &spn, &mlt );
++    N_CrvGetCPtsAndKnots( curL, &Lw, &UL );
++
++    error = N_CrvSizeArrays( curR, n + p - spn, p, n - spn + 2 * p + 1, rname, SG );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+-    /* See if memory is needed */
+-
+-    error = N_CrvSizeArrays( curL, spn - mlt, p, spn - mlt + p + 1, rname, SG );
+-
+-    if( error EQ NL_YES )
+-        NL_OUT;
+-
+-    N_CrvGetCPtsAndKnots( curL, &Lw, &UL );
+-
+-    error = N_CrvSizeArrays( curR, n + p - spn, p, n - spn + 2 * p + 1, rname, SG );
+-
+-    if( error EQ NL_YES )
+-        NL_OUT;
+-
+     N_CrvGetCPtsAndKnots( curR, &Rw, &UR );
+ 
+     /* Get auxiliary control points */
+ 
+-    Sw = N_AllocCPt1dArray( p, &SL );
+-
+-    if( Sw EQ NULL )
+-        NL_QUIT;
++    if (mlt <= p)
++    {
++        Sw = N_AllocCPt1dArray(p, &SL);
++        if (!Sw)
++            NL_QUIT;
++    }
+ 
+     for ( i = 0; i <= p - mlt; i++ )
+         N_CopyCPt( Pw[spn - p + i], &Sw[i] );
+ 
+-    /* Save unaltered control points */
+-
+-    for ( i = 0; i <= spn - p; i++ )
++    // Full-order groups separate independent blocks: the first right control
++    // belongs only to that side, without a shared pole or blending step.
++
++    for ( i = 0; i <= spn - p - (mlt == p + 1 ? 1 : 0); i++ )
+         N_CopyCPt( Pw[i], &Lw[i] );
+ 
+-    for ( i = spn - mlt; i <= n; i++ )
++    for ( i = (mlt == p + 1 ? spn - p : spn - mlt); i <= n; i++ )
+         N_CopyCPt( Pw[i], &Rw[i + p - spn] );
+ 
+     /* Now split the curve */

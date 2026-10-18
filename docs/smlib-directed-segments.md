@@ -25,10 +25,10 @@ Command point/parameter splits preserve their existing seam polycurve form.
 Segments already bounded by full-order knot groups copy their isolated control
 blocks exactly, preserving independent gauges without homogeneous roundoff.
 
-Native splitting uses two checked segment extractions rather than invoking the
-upstream splitter at a full-order interior break. This avoids its negative
-right-control index and undersized left polygon; the previous endpoint-only
-workaround did not qualify that interior split path. See the
+Native splitting uses two checked segment extractions to produce two fully
+clamped outputs. The [native splitter is now repaired](native-exact-splits.md)
+and preserves outer padding, so these extractions retain a representation policy
+rather than bypassing its former buffer defect. See the
 [limitations ledger](usd-brep-limitations.md) and the
 [underlying segment adapter](smlib-curve-segments.md).
 

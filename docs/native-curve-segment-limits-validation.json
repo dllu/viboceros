@@ -407,7 +407,6 @@
     "No arbitrary degree, chart/weight ratio, out-of-domain accuracy, full Rhino command parity or performance/leak-free result is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5",
     "crates/viboceros-smlib/tests/curve_segment_limits.rs": "31b136c4c9f8d5f22d7cecb00f3ff2d317c430af2fa2b8cd9c3a6a7fb32fc561",
     "tools/usd_brep/curve_segment_limits_probe.cpp": "b6e0392b5671e48fee83f41dc439e0c397f6fa1c3a9ff324f7bd1f8d2d26ce19",
     "third_party/patches/usd-brep-curve-segment-limits.patch": "40609e039eb5b65b6355018ff0b62e1bb48dbcae56224e326af3f9176b0fa5f6",
@@ -417,7 +416,6 @@
     "third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp": "7d2e20b8e12e14ae843b117c19272f4eec9efa13d78485bbb6bac7adc236b57b",
     "crates/viboceros-smlib/tests/curve_segments.rs": "b1123c86cc7329674c727ef344ac55221829dda9075c321a9c660666541c889d",
     "crates/viboceros-smlib/tests/surface_segments.rs": "3562b93d67ef35507970c23712e8fc7f31fb86c01ec94535b04884cf69239fef",
-    "crates/viboceros-smlib/tests/directed_segments.rs": "5fe955c7437721e26c7e518c1cf5799869aab39615b6cac05d2a71edc576ea6c",
     "crates/viboceros-smlib/tests/surface_seams.rs": "2ecbf55921417cb0ed67c16dc7c3a96614b209bf4141fa6f453b6461e82c4ce5",
     "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
@@ -493,7 +491,9 @@
   "log_policy": "Use completed status receipts, retain all raw controls and strict mismatch reports, and keep authored geometry, SDK sampled equivalence and API execution as distinct evidence. Deterministic gzip and Git-backed source maps preserve historical bytes.",
   "source_git_sha256": {
     "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/build.rs": "b1e0da66d73572f24ffcada31aa6c1e9bac2ae8bde6f9a91ff082c4c34475c7b",
-    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/native/CMakeLists.txt": "ef9821365cdb54f41f4a31b33489a5c77dbc7382fbf9edbc93d8494c8032a9e6"
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/native/CMakeLists.txt": "ef9821365cdb54f41f4a31b33489a5c77dbc7382fbf9edbc93d8494c8032a9e6",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/tests/directed_segments.rs": "5fe955c7437721e26c7e518c1cf5799869aab39615b6cac05d2a71edc576ea6c"
   },
   "artifact_git_sha256": {
     "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:docs/native-curve-segment-limits.md": "b0767942ee807631ac1e7cd0240c49248a9c0be8c941f2c55324f0946382fcd9",

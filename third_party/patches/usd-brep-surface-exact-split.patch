@@ -1,0 +1,140 @@
+--- a/NL_SrfToolPatch.cpp
++++ b/NL_SrfToolPatch.cpp
+@@ -9,6 +9,7 @@
+ 
+ #include <nurbs.h>
+ #include <NL_Globals.h>
++#include "usd-brep-exact-split-span.h"
+ #include <algorithm>
+ 
+ NL_PRIVATE NL_REAL sto = 1.0e-05;
+@@ -428,12 +429,19 @@
+     NL_REAL *oma[NL_MAXDEG + 1];
+     NL_REAL stack_oma[NL_MAXDEG + 1][NL_MAXDEG + 1];
+ 
++    if (sur == surL || sur == surR || surL == surR)
++        NL_ERROR(NL_INP_ERR);
++    if (!SG && (N_SrfAreArraysNULL(surL) || N_SrfAreArraysNULL(surR)))
++        NL_ERROR(NL_INP_ERR);
++
+     /* Get local notation */
+ 
+     N_SrfGetCPtsDegreesAndKnots( sur, &n, &m, &Pw, &p, &q, &r, &s, &U, &V );
+     knu = sur->knu;
+     knv = sur->knv;
+ 
++    if (p < 0 || p > NL_MAXDEG || q < 0 || q > NL_MAXDEG)
++        NL_ERROR(NL_DEG_ERR);
+     a = NL_MAX( p, q );
+ 
+     for ( i = 0; i <= a; i++ )
+@@ -448,21 +456,9 @@
+     {
+         case NL_UDIR:
+ 
+-            error = N_KnotVectorIsEndParam( knu, dSplitParam, rname );
+-
+-            if( error EQ NL_YES )
++            error = sm_ExactSplitSpan(knu, p, n, dSplitParam, &spu, &mlu, rname);
++            if (error == NL_YES)
+                 NL_OUT;
+-
+-            error = N_BasisFindSpanAndMult( knu, p, dSplitParam, NL_LEFT, &spu, &mlu );
+-
+-            if( error EQ NL_YES )
+-                NL_OUT;
+-
+-            if( mlu > p )
+-            {
+-                mlu = p; /* Bad knot vector */
+-                NL_OUT;
+-            }
+ 
+             nl = spu - mlu;
+             ml = m;
+@@ -477,21 +473,9 @@
+ 
+         case NL_VDIR:
+ 
+-            error = N_KnotVectorIsEndParam( knv, dSplitParam, rname );
+-
+-            if( error EQ NL_YES )
++            error = sm_ExactSplitSpan(knv, q, m, dSplitParam, &spv, &mlv, rname);
++            if (error == NL_YES)
+                 NL_OUT;
+-
+-            error = N_BasisFindSpanAndMult( knv, q, dSplitParam, NL_LEFT, &spv, &mlv );
+-
+-            if( error EQ NL_YES )
+-                NL_OUT;
+-
+-            if( mlv > q )
+-            {
+-                mlv = q; /* Bad knot vector */
+-                NL_OUT;
+-            }
+ 
+             nl = n;
+             ml = spv - mlv;
+@@ -509,17 +493,25 @@
+             NL_ERROR( NL_CAL_ERR );
+     }
+ 
+-    /* See if memory is needed */
+-
+-    if( SG != NULL )
+-    {
+-        error = N_SrfSizeArrays( surL, nl, ml, p, q, rl, sl, rname, SG );
+-
+-        if( error EQ NL_YES )
++    /* Check preallocated capacity even when the allocation stack is null. */
++    if (!SG)
++    {
++        error = N_SrfIsSized(surL, nl, ml, rl, sl, rname);
++        if (error == NL_YES)
+             NL_OUT;
+-        error = N_SrfSizeArrays( surR, nr, mr, p, q, rr, sr, rname, SG );
+-
+-        if( error EQ NL_YES )
++        error = N_SrfIsSized(surR, nr, mr, rr, sr, rname);
++        if (error == NL_YES)
++            NL_OUT;
++        N_SrfSetSizeIndices(surL, nl, ml, p, q, rl, sl);
++        N_SrfSetSizeIndices(surR, nr, mr, p, q, rr, sr);
++    }
++    else
++    {
++        error = N_SrfSizeArrays(surL, nl, ml, p, q, rl, sl, rname, SG);
++        if (error == NL_YES)
++            NL_OUT;
++        error = N_SrfSizeArrays(surR, nr, mr, p, q, rr, sr, rname, SG);
++        if (error == NL_YES)
+             NL_OUT;
+     }
+ 
+@@ -561,10 +553,10 @@
+ 
+             /* Save unaltered control points */
+ 
+-            for ( i = 0; i <= a; i++ )
++            for ( i = 0; i <= a - (mlu == p + 1 ? 1 : 0); i++ )
+                 N_CopyCPt( Pw[i][l], &Lw[i][l] );
+ 
+-            for ( i = spu - mlu; i <= n; i++ )
++            for ( i = (mlu == p + 1 ? a : spu - mlu); i <= n; i++ )
+                 N_CopyCPt( Pw[i][l], &Rw[i - a][l] );
+ 
+             /* Now split the surface */
+@@ -633,10 +625,10 @@
+ 
+             /* Save unaltered control points */
+ 
+-            for ( i = 0; i <= a; i++ )
++            for ( i = 0; i <= a - (mlv == q + 1 ? 1 : 0); i++ )
+                 N_CopyCPt( Pw[k][i], &Lw[k][i] );
+ 
+-            for ( i = spv - mlv; i <= m; i++ )
++            for ( i = (mlv == q + 1 ? a : spv - mlv); i <= m; i++ )
+                 N_CopyCPt( Pw[k][i], &Rw[k][i - a] );
+ 
+             /* Now split the surface */

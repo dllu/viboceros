@@ -64,8 +64,8 @@ outcomes remain unchanged. Release validation passes 414 bridge tests and 1,600
 command tests, with zero failures and four existing ignored tests. Workspace
 lint with warnings denied and formatting pass.
 
-The underlying `N_CrvSplit` full-order indexing defect remains a separate
-limitation. The subsequently repaired native endpoint evaluator has its own
+The subsequently repaired `N_CrvSplit` has a separate
+[splitter qualification](native-exact-splits.md). The native endpoint evaluator has its own
 [basis qualification](native-basis-evaluation.md). No arbitrary degree/range,
 continuous Rhino parity or kernel speedup is claimed.
 

@@ -22,16 +22,14 @@ periodicity predicate; a single row cannot decide whether a rational tensor
 with unequal seam weights is periodic. This policy changes representation
 around the active interval without another geometric refinement.
 
-The [limitations ledger](usd-brep-limitations.md) records upstream findings:
-unclamped active-end splits can corrupt native buffers, and NLib reversal only
-updates interior knots under a clamped-padding assumption. The adapter avoids
-the end-split path through native reversal and active-start splitting, with the
-full reversed chart supplied explicitly. Clamped/no-op endpoints return copied
+The [native split repair](native-exact-splits.md) fixes full-order and unclamped
+endpoint allocation/copy bounds. The adapter now splits directly at either end,
+without native reversal wrappers. Clamped/no-op endpoints return copied
 definitions, and one-sided clamping retains the opposite end's original data.
 An endpoint group with full multiplicity can still have inactive controls and
-exterior padding. Splitting that active start also corrupts native buffers.
-For this case, the adapter copies the remaining controls and full knots exactly,
-removing only the inactive prefix or suffix. The shared outer-knot policy retains
+exterior padding. For that case, the adapter copies the retained Euclidean
+controls and full knots directly, preserving exact payloads without a
+homogenization/projection round trip. The shared outer-knot policy retains
 an exterior entry when duplicating its neighbor would exceed full multiplicity.
 These arbitrary full vectors need not be representable by OpenNURBS' omitted
 outer entries; independent qualification covers them without a Rhino parity claim.

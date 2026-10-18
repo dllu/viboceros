@@ -1,0 +1,430 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "23378e8e32fa540e1c0999ca8903de1870cefe0d",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Classify exact finite in-domain parameters and actual knot groups privately for curve and tensor splits; leave general editing span helpers unchanged. Remove curve split parameter snapping.",
+    "Copy full-order blocks disjointly, fixing curve overrun/underflow and surface success without outputs. Preserve opposite/outer bases and polynomial sentinels.",
+    "Reject output object aliases and missing/undersized null-stack buffers; reset oversized surface metadata.",
+    "Call endpoint splitters directly, deleting reversal wrappers and Bezier inactive-prefix preprocessing. Retain exact Euclidean payload copying where homogeneous projection could round unchanged controls."
+  ],
+  "matrix": {
+    "valid_operations": 7452,
+    "rejection_operations": 36,
+    "families": 23,
+    "kinds": [
+      "curve",
+      "tensor_U",
+      "tensor_V"
+    ],
+    "allocation_paths": [
+      "allocated",
+      "exact_preallocated_null_stack",
+      "oversized_preallocated_null_stack"
+    ],
+    "degrees": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      17
+    ],
+    "chart_scales": [
+      "2^-360",
+      "1",
+      "2^360"
+    ],
+    "translated_origin": 1000000000000.0,
+    "representations": [
+      "native polynomial NL_NOW",
+      "homogeneous uniform weight",
+      "homogeneous varying weight"
+    ],
+    "homogeneous_common_gauges": [
+      "1",
+      "-1",
+      "2^-300",
+      "2^300"
+    ],
+    "expected_geometry": "Independent Bernstein polar products, uniform quadratic/cubic polynomial identities and isolated control blocks. Exact full degrees/counts/knots and 5e-13*max(1,abs(expected/gauge)) homogeneous comparisons; NL_NOW exact.",
+    "full_order_bit_exact_operations": 972,
+    "ownership": "Compare all active scalar addresses among source/left/right, require pairwise disjoint storage, then reread both outputs after destroying the separate source stack.",
+    "parameter_policy": "Near-group authored fixtures use an adjacent representable parameter if translation collapses the decimal offset. Every actual stored request is retained exactly, without producer-side snapping.",
+    "empty_native_parts": "Unclamped active-bound splits may produce an unused outer native piece with empty active domain/fewer than degree+1 controls. Definitions/storage are checked; these pieces are not constructed as public SDK NURBS."
+  },
+  "producers": {
+    "baseline": {
+      "exit_code": 1,
+      "operations": 1053,
+      "passed_operations": 738,
+      "passed_by_kind": {
+        "0": 270,
+        "1": 234,
+        "2": 234
+      },
+      "rejection_cases": 0,
+      "passed_rejections": 0,
+      "source_unchanged": 1053,
+      "raw": {
+        "retained": "docs/native-exact-splits-baseline.jsonl.gz",
+        "uncompressed_sha256": "232a157474a872a6ad74e5f15e38b815e052f084910b88e682e5d915d1058acd"
+      },
+      "stderr": {
+        "retained": "docs/native-exact-splits-baseline.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "build": {
+        "command": "cmake --build <debug native tree> --target viboceros_smlib_exact_split_probe viboceros_smlib_exact_split_baseline -j10",
+        "exit_code": 0,
+        "retained": "docs/native-exact-splits-baseline-build.log.gz",
+        "uncompressed_sha256": "7c0c442c43a78fba7ef5740abb108f04074303acaee6bc8f931b095662f021c6"
+      },
+      "execution": "viboceros_smlib_exact_split_baseline --safe-control",
+      "method": "Explicitly link preceding NL_CrvToolSegments.cpp and NL_SrfToolPatch.cpp objects ahead of the candidate archive, preserving prior extraction repairs and all other fixes.",
+      "scope": "Only safe unit-chart cases execute. Full-order, inactive-endpoint, active-end and one-ULP parent paths are excluded to avoid known memory corruption. Parent failures retain curve snapping and oversized surface metadata; a failed content-retention conjunction does not by itself establish dangling storage."
+    },
+    "candidate": {
+      "exit_code": 0,
+      "operations": 7452,
+      "passed_operations": 7452,
+      "passed_by_kind": {
+        "0": 2484,
+        "1": 2484,
+        "2": 2484
+      },
+      "rejection_cases": 36,
+      "passed_rejections": 36,
+      "source_unchanged": 7488,
+      "raw": {
+        "retained": "docs/native-exact-splits-candidate.jsonl.gz",
+        "uncompressed_sha256": "6ee67444ecef3f4d9eb3bdbeefd29ae7f5a8368f1e44873c3abd95e179d244e9"
+      },
+      "stderr": {
+        "retained": "docs/native-exact-splits-candidate.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "disjoint_storage_operations": 7452,
+      "both_outputs_reread_after_source_destruction": 7452,
+      "full_order_bit_exact_operations": 972,
+      "max_gauge_normalized_homogeneous_error": 1.4210854715202004e-14
+    },
+    "asan": {
+      "exit_code": 0,
+      "operations": 7452,
+      "passed_operations": 7452,
+      "passed_by_kind": {
+        "0": 2484,
+        "1": 2484,
+        "2": 2484
+      },
+      "rejection_cases": 36,
+      "passed_rejections": 36,
+      "source_unchanged": 7488,
+      "raw": {
+        "retained": "docs/native-exact-splits-asan.jsonl.gz",
+        "uncompressed_sha256": "6ee67444ecef3f4d9eb3bdbeefd29ae7f5a8368f1e44873c3abd95e179d244e9"
+      },
+      "stderr": {
+        "retained": "docs/native-exact-splits-asan.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "disjoint_storage_operations": 7452,
+      "both_outputs_reread_after_source_destruction": 7452,
+      "full_order_bit_exact_operations": 972,
+      "max_gauge_normalized_homogeneous_error": 1.4210854715202004e-14,
+      "build": {
+        "command": "Configure the native tree with -DVIBOCEROS_SMLIB_ASAN=ON -DCMAKE_BUILD_TYPE=Release; cmake --build /tmp/viboceros-isocurve-pair-asan --target viboceros_smlib_exact_split_probe viboceros_smlib -j10",
+        "exit_code": 0,
+        "retained": "docs/native-exact-splits-asan-build.log.gz",
+        "uncompressed_sha256": "84bc4acc49e91746b8a88afa39ef0249e02fbdf223bff33229eb52327845ffdd"
+      },
+      "flags": {
+        "retained": "docs/native-exact-splits-asan-flags.txt.gz",
+        "uncompressed_sha256": "a303c5cb04efcbaed1afa8676e3b6edc349b4ea1e6878df6741bd022f2ae9bd3"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "scope": "Complete SMLib/SM_API/C ABI archives and the direct probe are instrumented. Execute the direct split probe, including both output lifetimes, three allocation paths and rejection cases. Rust-facing C ABI tests execute normally, not under ASan in this record.",
+      "leak_policy": "Leak detection disabled; no leak-free claim."
+    }
+  },
+  "producer_runs": {
+    "command": "python3 /tmp/viboceros-exact-split-probes.py",
+    "exit_code": 0,
+    "retained": "docs/native-exact-splits-probes.log.gz",
+    "uncompressed_sha256": "15c7d3f322a1fca1f91c4885086bd5184fa8d8dc059860369e47f567b8fe543a",
+    "script": {
+      "retained": "docs/native-exact-splits-probes.py.gz",
+      "uncompressed_sha256": "fd9db1f1fb1c24193fd3b72707adf5317fcfe0a3347e33ec891cfce655ba1ff1"
+    }
+  },
+  "unused_helper_cleanup": {
+    "object": "/home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/CMakeFiles/viboceros_smlib.dir/knot_refinement.cpp.o",
+    "before_sha256": "d77323c65ef385942032dca2c469d5a52fc7964342f78af50e339084618aa322",
+    "after_sha256": "d77323c65ef385942032dca2c469d5a52fc7964342f78af50e339084618aa322",
+    "byte_identical": true,
+    "before_source_sha256": "895735e5fd9ff9210a84855af2c9d36e446bd2e444a9673b9253565aff6f9f75",
+    "after_source_sha256": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c",
+    "report": {
+      "retained": "docs/native-exact-splits-unused-removal-report.json.gz",
+      "uncompressed_sha256": "e8ecdcb378a91d6f7a9cd06e1141156f753ec180a1718496a91abee0f8458872"
+    },
+    "source_diff": {
+      "retained": "docs/native-exact-splits-unused-removal.patch.gz",
+      "uncompressed_sha256": "253c7333963a38fbe0c0017d89643135268fe916b29fec00367f809936cbc284"
+    },
+    "normal_object_flags": {
+      "retained": "docs/native-exact-splits-normal-object-flags.txt.gz",
+      "uncompressed_sha256": "844a3bb861ab380e4393d4ccbec43fe7d1001201c7f02d3998603995a07d5236"
+    },
+    "final_focused": {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test exact_split --test knot_refinement --test directed_segments -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-exact-splits-focused-final.log.gz",
+      "uncompressed_sha256": "541b4e7e576294e6a307724f0203d65384741bd994ab4e9e5cca757445681d22",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0
+    },
+    "scope": "After the full gates started, the strict sanitizer build reported an unused private curve-reversal helper. Its sole remaining definition was deleted; no active caller changed. The normal optimized knot_refinement.cpp object before and after deletion is byte-identical with the observed compiler/flags. Final focused and sanitizer runs compile the final source."
+  },
+  "fresh_rhino": {
+    "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-exact-split-sdk.py",
+    "exit_code": 0,
+    "retained": "docs/native-exact-splits-sdk.log.gz",
+    "uncompressed_sha256": "87219721e7285fc08195b443c5e561dea83927bcf11396ef151018f63b21f6ba",
+    "script": {
+      "retained": "docs/native-exact-splits-sdk.py.gz",
+      "uncompressed_sha256": "65af6c07e834096150105b31b605a28ab1d22a04bb2b1d5fc8a2ac93aff577c2"
+    },
+    "request": {
+      "retained": "docs/native-exact-splits-sdk-request.json.gz",
+      "uncompressed_sha256": "33ac255791ad6e8b5e095df5a4880d1aa0d94c1cb17ebf05c6c28da1e102b685"
+    },
+    "response": {
+      "retained": "docs/native-exact-splits-sdk-rhino.json.gz",
+      "uncompressed_sha256": "c209e08d953d45d0f3d5f6118e843ce1a10e29daa0f4f6be75f3157fbf672f14"
+    },
+    "report": {
+      "retained": "docs/native-exact-splits-sdk-report.json.gz",
+      "uncompressed_sha256": "0d54192b230bd81c5f7d0731612e249e7d1085e38153a286d18b115c334a7820"
+    },
+    "summary": {
+      "sdk_evaluations": 198,
+      "paired_stations": 99,
+      "curve_stations": 33,
+      "surface_stations": 66,
+      "absolute_point_epsilon": 1e-10,
+      "max_absolute_differences": {
+        "curve_point": 2.842170943040401e-14,
+        "curve_derivative": 9.094947017729282e-13,
+        "surface_point": 5.684341886080802e-14,
+        "surface_derivative_u": 1.3642420526593924e-12,
+        "surface_derivative_v": 9.094947017729282e-13,
+        "surface_normal": 7.528699885739343e-16
+      },
+      "passed": true,
+      "scope": "Public Rhino SDK evaluates complete retained source and native split definitions at identical parameters. Six unit-chart continuous positive-weight families include degree 17, unclamped bases and an active-end clamp. Curve points and surface points determine pass/fail; derivatives and normals remain diagnostics. Empty native outer pieces are excluded from SDK construction. Independent controls separately qualify full-order breaks, inactive padding, extreme charts, all gauges and preallocated buffers. This is sampled locus agreement, not direct Rhino Split definition parity or a continuous bound."
+    }
+  },
+  "native_api_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-exact-split-replay.py",
+    "exit_code": 0,
+    "retained": "docs/native-exact-splits-replay.log.gz",
+    "uncompressed_sha256": "c7c4a849ee8799721e31d83739301386e03699594d9cb4f2043dca945613074d",
+    "script": {
+      "retained": "docs/native-exact-splits-replay.py.gz",
+      "uncompressed_sha256": "af8d92482fd71d4b58a2a88e9614c17fe05ba7e51d1d12d8b6c348a87cc50a66"
+    },
+    "curved_audit": {
+      "retained": "docs/native-exact-splits-curved-audit.json.gz",
+      "uncompressed_sha256": "130baf51c50e16eff4d313dd59c64c59a182e3db040b3560f51abded65eebeb3"
+    },
+    "isocurve_audit": {
+      "retained": "docs/native-exact-splits-isocurve-audit.json.gz",
+      "uncompressed_sha256": "11bbaa357d8c46d2a2885a597913c4a97d6154a8d013d73faa591e22a8b4fb04"
+    },
+    "curved_report": {
+      "retained": "docs/native-exact-splits-curved-report.json.gz",
+      "uncompressed_sha256": "3d54e876e93237faf37ca7b3a2de5b3c8c24962ae5d6fb90a4e9fb9865b10d38"
+    }
+  },
+  "saved_join_comparisons": [
+    {
+      "audit": "curved",
+      "cases": 48,
+      "unchanged": 48,
+      "changed_ids": [],
+      "reference": "Retained native basis-evaluation checkpoint, not a newly executed parent oracle.",
+      "policy": "Complete raw outcome fields are compared without geometry or representation normalization."
+    },
+    {
+      "audit": "isocurve",
+      "cases": 64,
+      "unchanged": 64,
+      "changed_ids": [],
+      "reference": "Retained native basis-evaluation checkpoint, not a newly executed parent oracle.",
+      "policy": "Complete raw outcome fields are compared without geometry or representation normalization."
+    }
+  ],
+  "observed_subset_comparisons": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-exact-split-observed-subsets.py",
+    "exit_code": 0,
+    "retained": "docs/native-exact-splits-observed-subsets.log.gz",
+    "uncompressed_sha256": "f2a21356e8c349329a46eebd564bc3477d1f2f306c8d6578c602fabe43559e0d",
+    "script": {
+      "retained": "docs/native-exact-splits-observed-subsets.py.gz",
+      "uncompressed_sha256": "8a108e1de5c2de977270d717a0aac3ba18783e4151186f649a5e947022af9180"
+    },
+    "reports": [
+      {
+        "retained": "docs/native-exact-splits-join_isocurve_local-report.json.gz",
+        "uncompressed_sha256": "aa4b1ed2de40f3a68709d4f7273a4895a4f1a0c6f26c705a0addb629aabe0316"
+      },
+      {
+        "retained": "docs/native-exact-splits-join_isocurve_origin-report.json.gz",
+        "uncompressed_sha256": "df4430490d3d51a1bbe12217e90d525edb3406aec3e77f5650965a84f682e4da"
+      }
+    ],
+    "scope": "Existing observations cover 32 local and one translated case; 31 translated cases have no recorded Rhino result. Strict raw mismatches remain separate from API execution and topology checks."
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-exact-splits-bridge.log.gz",
+      "uncompressed_sha256": "3f1ee8f88a14ae023e26ed92a835b807fdc96fae5efaee36c2e8acb8b4ad9240",
+      "passed": 417,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-exact-splits-command.log.gz",
+      "uncompressed_sha256": "fa14dc4ff9e2d60ad354afd653f1aa8ae95c3943444617e03515f6acff5839e5",
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-exact-splits-clippy.log.gz",
+      "uncompressed_sha256": "5b5ff162cad1d1dc8c81a0031c2f3a7d7fc0466086f56042bd78b209d49d04eb"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-exact-splits-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 12,
+    "records": 3,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Independent raw definition/ownership tests first; then refinement/direct-split caller regressions and complete release bridge/command suites for the shared kernel and adapter changes. Sanitizer tests allocation/copy bounds, fresh SDK checks sampled loci, and raw saved join replays retain all outcomes and mismatches.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses. This ARM bridge compiles actual SMLib/SM_API; those other layers and the upstream checkout remain unchanged."
+  },
+  "limitations": [
+    "Output objects and backing buffers must be distinct. Explicit object aliases are rejected; arbitrary overlap through separate wrappers is not certified.",
+    "No arbitrary conditioning, out-of-domain extrapolation, mixed independent weight-ratio, continuous Rhino parity, kernel performance or leak-free claim.",
+    "Public SDK comparison evaluates retained definitions rather than Rhino Split outputs; derivatives/normals remain diagnostics.",
+    "The separate native reversal and tensor Bezier-decomposition limitations remain. Public Split uses extraction to produce clamped bases as a representation policy."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "27c325a882979c1dda24975eb433c88d0ba17c2adf161f173534625c470827d1",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "f284f4e5a425b66a55b191d46ea823068df750795718a9cf41f25a3d9ba16559",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c",
+    "crates/viboceros-smlib/tests/exact_split.rs": "9985611660c82d25effdcaabfe6a4b68f284237d8fc5cf3252745316f762d062",
+    "crates/viboceros-smlib/tests/directed_segments.rs": "723785f026c7f091fb93b58f43b30e89ad45e3f87e596394f6992ac9047919b9",
+    "tools/usd_brep/exact_split_probe.cpp": "af01cf6ec43336add0f89913380855fe26e956e77078f9c63b40f984024a18c6",
+    "third_party/patches/usd-brep-exact-split.cmake": "783758615b66afbf8a72fa43f5cf272b1bad3233238a2ff6bc1a448d68b82eb9",
+    "third_party/patches/usd-brep-exact-split-span.h": "18e276e4e86a472318431ea073c45c533a291eb1c7fc8505698273d0282c1886",
+    "third_party/patches/usd-brep-curve-exact-split.patch": "d68e4108e6da6f236ad0f55985a4fe879625899b2cbb5b359b3184f5c054d3d6",
+    "third_party/patches/usd-brep-surface-exact-split.patch": "f5d5aa23bd3f18deb7a61d84d7e1d86ca33e1194a2a4a64675c5f93d4a750ae0",
+    "third_party/patches/usd-brep-curve-segment-limits.patch": "40609e039eb5b65b6355018ff0b62e1bb48dbcae56224e326af3f9176b0fa5f6",
+    "third_party/patches/usd-brep-surface-patch-region.patch": "a91fe033dd1962c2319e265779504c9b46de84ddfc4145d18b56c79cfd46548b",
+    "third_party/patches/usd-brep-isocurve-limits.patch": "e106f93290f2e9dd68d1ad42a18b50430bc8b040cc1ba39cf807a5e5c60c51da",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp": "e6a619f83d147c5bb5db29cdf7ade29e2392406ef1b433dc769b7d80ba99b21c",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp": "a6a87714703ef3115cdd33e9d79f07090fc7650847a537d5341a692723db243f",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp": "7d2e20b8e12e14ae843b117c19272f4eec9efa13d78485bbb6bac7adc236b57b",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfBasic.cpp": "ccd0d31902c9699d2653549a816f9789850587d249acbaf4036bc323fe1a7409",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-exact-splits-bridge.log.gz": "32f8e8029e7a519ea76f049dec2c0402f6664df7333626d98a1d88888e29a325",
+    "docs/native-exact-splits-command.log.gz": "25b3dcda09c8eda864e41349bf3f92b1f0f5a8ddb526a2effd62fb3df57a29ff",
+    "docs/native-exact-splits-clippy.log.gz": "2e992bd208e644fb83934b77fb433d390c1bf0e8f948e87ef9c18f714814933f",
+    "docs/native-exact-splits-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-exact-splits-focused-final.log.gz": "f0cdc37c189f484d7e1989cc47c7e465f049f5194a96ab080caeb0cfc97d0c37",
+    "docs/native-exact-splits-baseline.jsonl.gz": "3f3ff6547daf9228c1216653c5d7910a811befd03a185dc8ab1b189dd453e536",
+    "docs/native-exact-splits-baseline.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-exact-splits-candidate.jsonl.gz": "68f1797e17ed178ceac7c02b0e7217e09576e0025a36af9bec91a28b1af2c6d7",
+    "docs/native-exact-splits-candidate.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-exact-splits-asan.jsonl.gz": "68f1797e17ed178ceac7c02b0e7217e09576e0025a36af9bec91a28b1af2c6d7",
+    "docs/native-exact-splits-asan.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-exact-splits-baseline-build.log.gz": "ddc052bb551732adf554d818d317b2ff391964985a683076f9d5611b5318a47f",
+    "docs/native-exact-splits-asan-build.log.gz": "387c1e8741fc0e5e0193d83f69635e10198d4a30f46af2e672fada1d4d3404f1",
+    "docs/native-exact-splits-asan-flags.txt.gz": "dd3a2b0a91f0a88fd3d66db99803f23bb66b594936865a28d0e4cc51759c9aee",
+    "docs/native-exact-splits-probes.log.gz": "f11250ddab98903978c223e48cff42474202e59c81c6aef704d5b0357b4ec078",
+    "docs/native-exact-splits-probes.py.gz": "a34b0d5d623123e8deaafb5f73e6832251182dc0360bd6acf6ed9a4755807a4a",
+    "docs/native-exact-splits-unused-removal-report.json.gz": "969bebb20cb9baf6874e51c602acdc660c6fab6a3b3fca28b420333367cfe019",
+    "docs/native-exact-splits-unused-removal.patch.gz": "5e9233bbfee0ecd81b97bb65739aeddd29c1dece55f91d41dbbc0298b6cfabd9",
+    "docs/native-exact-splits-normal-object-flags.txt.gz": "c9bfe64838cea535654aa1592d96d801edf4c7f3eafd5b3aff5fdb9aa62bdffb",
+    "docs/native-exact-splits-sdk.log.gz": "45e01144b102a7ed05117b9307f612f07277a81e549404b040d90464cebb36f9",
+    "docs/native-exact-splits-sdk.py.gz": "2e7b9039338242740324db2b4eb8f180e5b03ebe68557182ddcdd25e3dc677a5",
+    "docs/native-exact-splits-sdk-request.json.gz": "42514e88626ecac967bb0f71c11e939bcf8b8437778b57ea2f01b315f6d351f8",
+    "docs/native-exact-splits-sdk-rhino.json.gz": "69e7f8d08745e0fe08ac6600d1eec2cc006e84586387575f7458b8194bc96156",
+    "docs/native-exact-splits-sdk-report.json.gz": "dbf256e27b7849538ac4ea6a00ed170780386ad6d18c9ed4e8863b7e74b75112",
+    "docs/native-exact-splits-replay.log.gz": "2aadd5b71baeb182edec863b932439353149767e7e182736d19c8bf4c1b3f733",
+    "docs/native-exact-splits-replay.py.gz": "510415f7792a8cdd3d10805e734c82b7eb2140bd6851f725c76b39d2867eab15",
+    "docs/native-exact-splits-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-exact-splits-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "docs/native-exact-splits-curved-report.json.gz": "921def0039eb31a1b9939de1ec1bbf4785268389f173cd3e1561dfbb17bade77",
+    "docs/native-exact-splits-observed-subsets.log.gz": "c285c3775485780edb127d61a8e263f9db782321033ec2fdc6f4e02ce2f7ea93",
+    "docs/native-exact-splits-observed-subsets.py.gz": "5d10e3cdf5637fa15e46ab21ed785be5aca8eef0ed50e7c987710813ed0b8c78",
+    "docs/native-exact-splits-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
+    "docs/native-exact-splits-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
+    "README.md": "eceb1795d7b24fc8b5f35db13f594522079300142fae79667a6d10e1511b0fdd",
+    "third_party/patches/README.md": "735ff54d1a64d1194f54eed22ef85a9efd2f919f63a20340d29e5758c479bc50",
+    "docs/native-exact-splits.md": "2b39a36ae25089f889f8d5bb3bc38de9b187f3261c95ff8d47bef32796d840ab",
+    "docs/usd-brep-limitations.md": "ff20141d73ae0ce355610b1fb303b9570c1aaf26415c8ccff0e29e19a77386bb",
+    "docs/smlib-knot-refinement.md": "6dd352da82f20f52de3d06012e8d5fbbac8772ea347858ecdda2e2bb0b86d4f0",
+    "docs/smlib-nonperiodic.md": "b7166edb1ebf9604e8e9fb2888fd5c44d7b22b9bb6f71b7addcce85062e168af",
+    "docs/smlib-directed-segments.md": "1d029e2525255c5fdf84723ed3b871b1c30def76e774de4e2066a05d1649e325",
+    "docs/smlib-curve-seams.md": "dc61b8d2bce1bd96a1fa2eae570461be12c6265f2379794ea7af936520a031d9",
+    "docs/native-basis-evaluation.md": "a197dd53a310bf49693f91211afa106c78b9a2ab5d4c0353a319701f4649026b",
+    "docs/native-curve-segment-limits.md": "39f8a930414a1a2afdab69677d285f7d641e97bb286853953bbe15bacb190646",
+    "docs/native-basis-evaluation-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-basis-evaluation-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "crates/viboceros-smlib/tests/knot_refinement.rs": "560bd250706f9ec57e74e88d33ecba900b00c855d9d2484745d50b64c3bf1772",
+    "crates/viboceros-smlib/tests/bezier.rs": "87373ec3b7aa173587d855632d5292794cea2a13a228e0cc875783522a067a3d",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
+    "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
+    "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
+    "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
+    "docs/native-basis-evaluation-validation.json": "4f5084a178706a4fafe25eebbd9f365f4da878968d9931a342c20be99710b98d",
+    "docs/native-curve-segment-limits-validation.json": "034abc1bf0227b911187e3a226e976cf0f79644b9be0830b523500abf4d4af1c",
+    "docs/native-point-interpolation-validation.json": "f2786dc9691f5cab1acebba039557bf9ec767e437758b3833c09980faef7ba4f"
+  },
+  "baseline_git_sha256": {
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/build.rs": "450781a1e7bc97d313e698918b0f881d6a477bf18d2fca5877a61e8e5d76da0c",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/CMakeLists.txt": "8e9817570a773adc9c71f1370bf1cee35eff6627ae273874a3db2de7a5fd9ef9",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5"
+  },
+  "log_policy": "Observe completed statuses, retain complete raw definitions and mismatch reports, use deterministic gzip and pin historical hashes to immutable Git blobs. The compiler-detected unused-helper cleanup and byte-identical optimized-object evidence are recorded explicitly."
+}

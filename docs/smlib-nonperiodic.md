@@ -16,10 +16,10 @@ routine is added. Native command and oracle paths exclude the portable endpoint
 control solver for this conversion.
 
 Complete definitions enter the native adapter, including periodic padding,
-unclamped outer knots and their stored weight gauges. The native split/reversal
-workarounds and binary weight scaling from the shared adapter remain in effect.
-The [limitations ledger](usd-brep-limitations.md) records those upstream issues;
-this integration adds no claim that arbitrary native end splitting is safe.
+unclamped outer knots and their stored weight gauges. The shared adapter now
+uses [repaired native endpoint splits](native-exact-splits.md) directly; binary
+weight scaling and exact full-order Euclidean payload copies remain. The
+[limitations ledger](usd-brep-limitations.md) retains other upstream issues.
 
 Fresh Rhino 8.32 observations retain two curve and two surface conversions,
 including cubic, rational, single-direction and doubly periodic cases. All four

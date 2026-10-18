@@ -130,6 +130,7 @@ endif()
 list(REMOVE_ITEM KERNEL_SOURCES "${REMOVE_SOURCE}")
 list(APPEND KERNEL_SOURCES "${REMOVE_PATCHED}")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-segment-limits.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-exact-split.cmake")
 
 set(CURVE_FILLET_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/SmCurveFilletExecutive.cpp")
 set(CURVE_FILLET_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-fillet-sides.patch")
@@ -225,6 +226,9 @@ target_compile_options(viboceros_smlib_basis_evaluation_probe PRIVATE -Wall -Wex
 add_executable(viboceros_smlib_point_interpolation_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/point_interpolation_probe.cpp")
 target_link_libraries(viboceros_smlib_point_interpolation_probe PRIVATE SMLib)
 target_compile_options(viboceros_smlib_point_interpolation_probe PRIVATE -Wall -Wextra -Werror)
+add_executable(viboceros_smlib_exact_split_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/exact_split_probe.cpp")
+target_link_libraries(viboceros_smlib_exact_split_probe PRIVATE SMLib)
+target_compile_options(viboceros_smlib_exact_split_probe PRIVATE -Wall -Wextra -Werror)
 add_executable(viboceros_smlib_curve_segment_baseline EXCLUDE_FROM_ALL
     "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/curve_segment_limits_probe.cpp"
     "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/NL_CrvTool.cpp")
@@ -286,7 +290,7 @@ target_compile_options(viboceros_smlib_planarity_baseline PRIVATE -Wno-write-str
 # Optional instrumentation of both complete native libraries and the C ABI.
 option(VIBOCEROS_SMLIB_ASAN "Instrument native geometry with AddressSanitizer" OFF)
 if(VIBOCEROS_SMLIB_ASAN)
-    foreach(instrumented_target SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe)
+    foreach(instrumented_target SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe viboceros_smlib_exact_split_probe)
         target_compile_options(${instrumented_target} PRIVATE -fsanitize=address -g -fno-omit-frame-pointer)
         target_link_libraries(${instrumented_target} PUBLIC asan)
     endforeach()

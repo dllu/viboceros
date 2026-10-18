@@ -1,5 +1,10 @@
 # Local usd-brep fixes
 
+`usd-brep-curve-exact-split.patch`, `usd-brep-surface-exact-split.patch` and
+`usd-brep-exact-split-span.h` repair split classification and full-order copy
+bounds in the pinned release below. The surface producer also checks and updates
+preallocated output dimensions. See the [splitter qualification](../../docs/native-exact-splits.md).
+
 `usd-brep-point-interpolation.patch` repairs interpolation at supplied parameters
 in the pinned release below. It uses actual endpoint basis rows, preserves the
 linear knot-station fast path, orders constraints privately and reuses the native

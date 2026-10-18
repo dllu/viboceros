@@ -273,16 +273,17 @@ issues reported by NVIDIA that have not all been reproduced here.
   refinement or checked directional curve extraction to preserve the complete
   unselected basis. Source:
   [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).
-- **Interior full-order curve splitting shares the control-buffer underflow
-  (source audit).** With degree two and full knots
-  `[0,0,0,0.5,0.5,0.5,1,1,1]`, `N_CrvSplit` at `0.5` obtains span `5` and
-  multiplicity `3`. It allocates three left controls but copies four, and its
+- **Fixed: interior full-order curve splitting shared the control-buffer underflow.**
+  With degree two and full knots `[0,0,0,0.5,0.5,0.5,1,1,1]`, the original
+  `N_CrvSplit` at `0.5` obtained span `5` and multiplicity `3`.
+  It allocated three left controls but copied four, and its
   right copy starts at index `-1`. The same indexing defect was reproduced
   at a shifted active-start group during endpoint integration. This interior
-  call was audited, not executed. Native single-parameter splits now extract
-  two checked intervals with `N_CrvExtractCrvSeg`; full-order sides keep their
-  independent controls. [Closed-curve seam preparation](smlib-curve-seams.md)
-  also reuses this checked split adapter rather than calling the unsafe splitter.
+  parent call was audited, not rerun. The [split repair](native-exact-splits.md)
+  now uses exact groups and disjoint full-order control blocks for curves and
+  both tensor axes. Public single-parameter splits retain two checked interval
+  extractions to clamp both output bases. [Closed-curve seam preparation](smlib-curve-seams.md)
+  shares that representation policy.
   See [directed segments](smlib-directed-segments.md),
   [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp), and
   [regressions](../crates/viboceros-smlib/tests/directed_segments.rs).
@@ -337,19 +338,20 @@ issues reported by NVIDIA that have not all been reproduced here.
   [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp),
   [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp), and
   [regression](../crates/viboceros-smlib/tests/bezier.rs).
-- **Full-order active-start splitting writes outside both control buffers.**
+- **Fixed: full-order active-start splitting wrote outside both control buffers.**
   A valid quadratic with five controls and full knots
   `[-2, 0, 0, 0, 0.5, 1, 2, 3]` has active interval `[0, 1]` and an inactive
-  first control. `N_CrvSplit` at `0` obtains span `3`, multiplicity `3`.
-  It allocates one left control but copies two, then copies the inactive control
+  first control. The original `N_CrvSplit` at `0` obtained span `3`, multiplicity `3`.
+  It allocated one left control but copied two, then copied the inactive control
   into right index `-1`. Before the workaround, forcing that split aborted with
   `free(): invalid size`; gdb located the abort in native stack cleanup.
   The previous adapter skipped this split because the endpoint already had
   full multiplicity, then its outer-knot rewrite produced an invalid fourth
   zero. Full multiplicity and fully clamped padding are now checked separately.
-  The adapter slices off the inactive prefix or suffix and corresponding full
-  knots exactly, preserving every retained Euclidean control and weight; no
-  interpolation is required. Other endpoint extraction still uses NLib.
+  The [native split repair](native-exact-splits.md) now copies those full-order
+  blocks safely; Bezier preparation uses it directly. Refinement retains its
+  exact Euclidean prefix/suffix payload copy to avoid homogeneous projection
+  roundoff. Other endpoint clamping uses the repaired native producers directly.
   The shared portable representation policy also avoids adding a repetition
   to an already full-order group beside an outer knot. Regression coverage
   includes both ends, both tensor axes, insertion/no-ops, exact elevation,
@@ -395,29 +397,30 @@ issues reported by NVIDIA that have not all been reproduced here.
   chart alongside degree reduction and extreme common weight gauges. Source:
   [NL_CrvNurb.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvNurb.cpp) and
   [qualification](smlib-degree-change.md).
-- **Unclamped active-end splitting can overwrite native buffers.**
+- **Fixed: unclamped active-end splitting could overwrite native buffers.**
   `N_BasisFindSpanAndMult` with `NL_LEFT` reports multiplicity `degree + 1`
   whenever the query equals `U[m - degree]`, even for an unclamped vector.
-  `N_CrvSplit` uses that value to size its output polygons but copies more
+  The original `N_CrvSplit` used that value to size its output polygons but copied more
   controls into the left polygon. The quadratic fixture with knots
   `[-2,-1,0,0.8,2,3,4]`, split at active end `2`, aborted with heap corruption
   during `N_EndNurbs`. The debugger located the abort in stack cleanup; source
   inspection identified the undersized left-output polygon in this split path.
-  The refinement adapter never takes that path: it reverses the private native
-  curve/tensor, splits at its active start, then restores direction.
-  The tensor splitter shares the same span query. Regression coverage includes
-  both endpoints in both tensor axes. See [knot refinement](smlib-knot-refinement.md)
+  The repaired splitters use actual multiplicities and exact parameters.
+  Endpoint refinement now calls them directly, removing both reversal wrappers.
+  The surface producer also creates full-order outputs instead of returning
+  success without them, and checks/updates null-stack preallocated capacities.
+  [Qualification](native-exact-splits.md) covers both endpoints and tensor axes.
+  See [knot refinement](smlib-knot-refinement.md)
   and [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp).
-  [MakeNonPeriodic](smlib-nonperiodic.md) now shares this checked endpoint path;
-  it does not call the failing active-end split directly.
+  [MakeNonPeriodic](smlib-nonperiodic.md) shares the direct endpoint path.
 - **NLib reversal assumes clamped endpoint padding.** `N_CrvReverse` and
   `N_SrfReverse` retain endpoint knot blocks and reverse only interior knots
   using the sum of the outermost values. On a partially clamped vector
   `[0,0,0,1.2,2,3,4]`, this produced nonmonotone interior value `2.8` before
-  active end `2`. The adapter retains the existing native control reversal
-  and supplies the complete negated/reversed parameter chart, matching the
-  existing application convention. This affects definition-based editing;
-  modeling imports already clamp their active intervals. See
+  active end `2`. Endpoint adapters now use repaired splits directly and no
+  longer invoke these reversal producers. The producers themselves remain
+  unqualified on arbitrary padding; modeling imports already clamp their
+  active intervals. See
   [NL_CrvNurb.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvNurb.cpp)
   and [qualification](smlib-knot-refinement.md).
 - **Interior insertion and endpoint clamping are different native operations.**

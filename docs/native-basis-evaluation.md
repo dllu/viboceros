@@ -59,7 +59,8 @@ mismatches. The other 31 translated cases have no recorded Rhino observation.
 
 This qualification does not cover arbitrary span ratios, overflowed support
 widths, extrapolation accuracy, every native evaluator or continuous Rhino
-parity. The separate `N_CrvSplit` buffer-indexing limitation remains. Sanitizer
+parity. The subsequent [splitter repair](native-exact-splits.md) qualifies
+`N_CrvSplit` separately. Sanitizer
 execution checks memory access with leak detection disabled; no leak-free or
 performance result is claimed. Upstream USD, Python binding, OCCT, GUI and
 `repo.sh`/`prog_test` harnesses were not run.

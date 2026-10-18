@@ -53,37 +53,13 @@ struct BinaryChart {
     }
 };
 
-void reverse_curve(NL_CURVE &source, NL_CURVE &result, NL_STACKS &stack) {
-    check(N_CrvReverse(&source, &result, &stack), "Reverse native refinement curve failed");
-    // N_CrvReverse only reverses interior knots and assumes clamped padding.
-    // Preserve the complete chart by applying the command's exact negated
-    // full-vector convention to the native-reversed controls.
-    const auto last = source.knt->m;
-    for (NL_INDEX i=0; i<=last; ++i) result.knt->U[i] = -source.knt->U[last-i];
-}
-
-void reverse_surface(NL_SURFACE &source, NL_FLAG direction, NL_SURFACE &result, NL_STACKS &stack) {
-    check(N_SrfReverse(&source, direction, &result, &stack), "Reverse native refinement surface failed");
-    const auto *before = direction == NL_UDIR ? source.knu : source.knv;
-    auto *after = direction == NL_UDIR ? result.knu : result.knv;
-    for (NL_INDEX i=0; i<=before->m; ++i) after->U[i] = -before->U[before->m-i];
-}
-
 void clamp_curve_endpoint(NL_CURVE &input,bool end,NL_CURVE &result,NL_STACKS &stack) {
     NL_CURVE left,right;
     N_CrvInitArrays(&left);N_CrvInitArrays(&right);
-    if(end) {
-        NL_CURVE reversed;
-        N_CrvInitArrays(&reversed);
-        reverse_curve(input,reversed,stack);
-        check(N_CrvSplit(&reversed,reversed.knt->U[reversed.p],&left,&right,&stack),
-              "Clamp reversed native endpoint failed");
-        reverse_curve(right,result,stack);
-    } else {
-        check(N_CrvSplit(&input,input.knt->U[input.p],&left,&right,&stack),
-              "Clamp native curve endpoint failed");
-        result=right;
-    }
+    const double parameter=input.knt->U[end?input.pol->n+1:input.p];
+    check(N_CrvSplit(&input,parameter,&left,&right,&stack),
+          "Clamp native curve endpoint failed");
+    result=end?left:right;
 }
 
 void edit_curve_basis(NL_CURVE &source, NL_CURVE &result, size_t target, bool exact_elevation,
@@ -347,9 +323,9 @@ VbSurfaceData *vb_refine_nurbs(const VbNurbsData &data, int axis, double paramet
     if (current >= target && !full_clamp) return vb_copy_nurbs_payload(data);
     if (full_clamp && current == degree+1) {
         // A full-order group shifted into the active interval has inactive
-        // controls outside it. N_CrvSplit writes before its right polygon for
-        // this case. No interpolation is needed: retain the active suffix or
-        // prefix and the corresponding complete knot vector exactly.
+        // controls outside it. Preserve their Euclidean payload directly:
+        // homogenizing and projecting an unchanged native control could round
+        // a coordinate. This path needs no geometric restriction arithmetic.
         const size_t first = std::lower_bound(knots,knots+data.knot_count[axis],parameter)-knots;
         const size_t removed = clamp_start ? first : count-first;
         require(removed && removed<count-degree,"Invalid inactive endpoint controls");
@@ -387,8 +363,6 @@ VbSurfaceData *vb_refine_nurbs(const VbNurbsData &data, int axis, double paramet
         check(N_CrvFromCPtsAndKnots(&input, points.data(), count-1, degree,
               const_cast<double *>(knots), data.knot_count[0]-1, &stack), "Build native refinement curve failed");
         if (clamp_start || clamp_end) {
-            // End splitting uses reverse/start-clamp/reverse to avoid the
-            // upstream unclamped active-end span/multiplicity buffer bug.
             clamp_curve_endpoint(input,clamp_end,refined,stack);
         } else {
             std::vector<double> added(target-current, parameter);
@@ -417,17 +391,8 @@ VbSurfaceData *vb_refine_nurbs(const VbNurbsData &data, int axis, double paramet
         if (clamp_start || clamp_end) {
             NL_SURFACE left, right;
             N_SrfInitArrays(&left); N_SrfInitArrays(&right);
-            if (clamp_end) {
-                NL_SURFACE reversed;
-                N_SrfInitArrays(&reversed);
-                reverse_surface(input, direction, reversed, stack);
-                const double at = axis == 0 ? reversed.knu->U[reversed.p] : reversed.knv->U[reversed.q];
-                check(N_SrfSplit(&reversed, at, direction, &left, &right, &stack), "Clamp reversed native surface endpoint failed");
-                reverse_surface(right, direction, refined, stack);
-            } else {
-                check(N_SrfSplit(&input, parameter, direction, &left, &right, &stack), "Clamp native surface endpoint failed");
-                refined = right;
-            }
+            check(N_SrfSplit(&input, parameter, direction, &left, &right, &stack), "Clamp native surface endpoint failed");
+            refined=clamp_end?left:right;
         } else {
             std::vector<double> added(target-current, parameter);
             NL_KNOTVECTOR additions = {static_cast<NL_INDEX>(added.size()-1), added.data()};
@@ -488,18 +453,6 @@ std::vector<ControlNet> decompose_axis(const ControlNet &source,int axis) {
     const BinaryChart chart(knots.data(),knots.size());
     std::vector<double> basis=knots;
     chart.scale(basis);
-    const double start=basis[degree],end=basis[width];
-    // Full-order endpoint groups can have inactive prefix/suffix controls.
-    // Trim those exact entries before calling the native splitter.
-    const size_t start_first=std::lower_bound(basis.begin(),basis.end(),start)-basis.begin();
-    const size_t start_mult=std::count(basis.begin(),basis.end(),start);
-    const size_t end_first=std::lower_bound(basis.begin(),basis.end(),end)-basis.begin();
-    const size_t end_mult=std::count(basis.begin(),basis.end(),end);
-    const size_t prefix=start_mult==degree+1?start_first:0;
-    const size_t suffix=end_mult==degree+1?width-end_first:0;
-    require(prefix+suffix<width-degree,"Invalid Bezier active controls");
-    const size_t active_width=width-prefix-suffix;
-    basis=std::vector<double>(basis.begin()+prefix,basis.end()-suffix);
     std::vector<ControlNet> results(intervals.size());
     for(size_t span=0;span<results.size();++span) {
         auto &net=results[span];
@@ -512,14 +465,13 @@ std::vector<ControlNet> decompose_axis(const ControlNet &source,int axis) {
     for(size_t row=0;row<other;++row) {
         NL_STACKS stack;
         SmStackHandler cleanup(&stack);
-        std::vector<NL_CPOINT> controls(active_width);
-        for(size_t i=0;i<active_width;++i) {
-            const size_t index=i+prefix;
-            controls[i]=source.points[axis==0?row*width+index:index*source.count[0]+row];
+        std::vector<NL_CPOINT> controls(width);
+        for(size_t i=0;i<width;++i) {
+            controls[i]=source.points[axis==0?row*width+i:i*source.count[0]+row];
         }
         NL_CURVE curve;
         N_CrvInitArrays(&curve);
-        check(N_CrvFromCPtsAndKnots(&curve,controls.data(),active_width-1,degree,
+        check(N_CrvFromCPtsAndKnots(&curve,controls.data(),width-1,degree,
               basis.data(),basis.size()-1,&stack),"Build native Bezier control curve failed");
         for(bool at_end:{false,true}) {
             const auto *u=curve.knt->U;

@@ -102,7 +102,7 @@ fn native_splits_preserve_open_order_and_closed_cyclic_seam_assembly() {
 }
 
 #[test]
-fn full_order_splits_keep_independent_sides_without_calling_the_unsafe_splitter() {
+fn full_order_splits_keep_independent_sides_and_exact_payloads() {
     let source = NurbsCurve::try_new_rational(
         2,
         (0..6)

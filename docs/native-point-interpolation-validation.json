@@ -293,8 +293,6 @@
     "No arbitrary conditioning, extrapolation, mixed rational/polynomial sentinel payload, continuous Rhino parity, performance or leak-free result is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "450781a1e7bc97d313e698918b0f881d6a477bf18d2fca5877a61e8e5d76da0c",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "8e9817570a773adc9c71f1370bf1cee35eff6627ae273874a3db2de7a5fd9ef9",
     "crates/viboceros-smlib/tests/point_interpolation.rs": "f54fe194b8e9f514d696fe7f509237663bf5e6dfb6a3e59d946d32cb94b108f9",
     "tools/usd_brep/point_interpolation_probe.cpp": "37aec8c7650fafcca3dc07a8d128b7fb1b1e019ef597309ad6d6d5bed7e89a72",
     "third_party/patches/usd-brep-point-interpolation.patch": "263092507195e4a2e9eb615f4c67275878b8eee5c4ac94fcee34826c63a7b2b1",
@@ -306,7 +304,6 @@
     "third_party/usd-brep/source/SMLib/src/NL_Math.cpp": "e9be4e00c093e58c5e2064feddd3e84c9edef1936cea738fd7ee14956cd39bcd",
     "third_party/usd-brep/source/SMLib/inc/NL_Geometry.h": "5ad6a4389f4fbbae4949df7cfef3d0469fe69998b0fde0aa28e07e77dc9c7baf",
     "third_party/usd-brep/source/SMLib/inc/SmNurbsCrv.h": "cc710f8a410a141579335f03b509516a3936a9039dd7d85b7f92a46f3994620e",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5",
     "tools/usd_brep/rebuild_interpolation_probe.cpp": "6bc8c02b181f9e2a3f6ed3745d30bc6aafb0c53c5fcb3dbf7012aeed148a95c3",
     "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
@@ -340,21 +337,28 @@
     "docs/native-point-interpolation-witness-command.txt.gz": "3b33d723f32a1d2bfcd8e01ad45ccb32c9d9adfa96da165683c0396cdf132972",
     "docs/native-point-interpolation-witness-build.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
     "docs/native-point-interpolation-witness.json.gz": "9dfb9aae12a9a5c20a419e1fefefe10f785ba4fd9d2419a3e5f73f364b797699",
-    "README.md": "b2530d0bbb1a35b00ed9a9fc827f21697af53cc424124e9650241695ad823a42",
-    "third_party/patches/README.md": "f32a97e01913032528156e2f4e52b55a2486491823ebb28531143e36c82ada79",
     "docs/native-point-interpolation.md": "9e53d8d540c40ac47ba869892930d6b7f2f022d7f1623d2dbcc783a56ddc4294",
-    "docs/usd-brep-limitations.md": "9a1e51ffc96b91d949b16d4e39891f50118ec075adeb9d42a7e978bcd2b895e8",
     "docs/smlib-curve-rebuild.md": "0db298f4d6d80e79a44da40ada0b2e65634f9a7f7f672b448873880b4eacd1d6",
     "docs/smlib-curve-rebuild-probe.json": "37a1c2909c6207518b49db05b09f1e5e3c87d367bc89297054103c0d68cc8f45",
     "crates/viboceros-smlib/tests/degree_change.rs": "6029632b2ae81c0ee209ba4180b21da22207d4b7f4c46d2ebac25b2e6dbb12a1",
     "crates/viboceros-smlib/tests/curve_rebuild.rs": "3116ce0b3143e16e94a677d6590234453e0795884982832412320417c08a0a61",
     "crates/viboceros-smlib/tests/curve_interpolation.rs": "8235ca46940865ceb00f3b3e324edca277c01e24670cbca8c175c741afffb081",
-    "crates/viboceros-smlib/tests/loft_basis.rs": "6d2668b19d22460a9ed20991e7d2c2c2e0c396be3e2f5b0a0162837ccf5d7dd4",
-    "docs/native-basis-evaluation-validation.json": "5efe9893bd524eb9ad7921244dbffb0105f41091851366d01c112ffb47e599df"
+    "crates/viboceros-smlib/tests/loft_basis.rs": "6d2668b19d22460a9ed20991e7d2c2c2e0c396be3e2f5b0a0162837ccf5d7dd4"
   },
   "baseline_git_sha256": {
     "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/build.rs": "81924334d38a10984e93e7ce6c5b1039a3bce7b7400b5a77a63e06b3552a9f1e",
     "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/native/CMakeLists.txt": "261855c291fe8da7b19700fe7f2a225023186cf95e868f4d4976cbfd30fd56ff"
   },
-  "log_policy": "Completed observed exit statuses; deterministic gzip of raw results, exact SDK requests and responses; historical validation hashes pinned to immutable Git blobs. The one formatting-only probe followup is recorded separately from production/full-gate validation."
+  "log_policy": "Completed observed exit statuses; deterministic gzip of raw results, exact SDK requests and responses; historical validation hashes pinned to immutable Git blobs. The one formatting-only probe followup is recorded separately from production/full-gate validation.",
+  "source_git_sha256": {
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/build.rs": "450781a1e7bc97d313e698918b0f881d6a477bf18d2fca5877a61e8e5d76da0c",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/CMakeLists.txt": "8e9817570a773adc9c71f1370bf1cee35eff6627ae273874a3db2de7a5fd9ef9",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5"
+  },
+  "artifact_git_sha256": {
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:README.md": "b2530d0bbb1a35b00ed9a9fc827f21697af53cc424124e9650241695ad823a42",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:third_party/patches/README.md": "f32a97e01913032528156e2f4e52b55a2486491823ebb28531143e36c82ada79",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:docs/usd-brep-limitations.md": "9a1e51ffc96b91d949b16d4e39891f50118ec075adeb9d42a7e978bcd2b895e8",
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:docs/native-basis-evaluation-validation.json": "5efe9893bd524eb9ad7921244dbffb0105f41091851366d01c112ffb47e599df"
+  }
 }

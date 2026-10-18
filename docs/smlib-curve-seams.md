@@ -48,8 +48,9 @@ Geometry comparisons allow native projection roundoff; requested anchors,
 full seam knot vectors and history snapshots retain exact comparisons.
 
 Native refinement and extraction retain their existing
-[limits and workarounds](usd-brep-limitations.md), including endpoint conditioning
-and the full-order split defect. These finite cases do not certify arbitrary
+[limits and qualifications](usd-brep-limitations.md), including endpoint conditioning.
+The full-order split defect has a separate [repair and qualification](native-exact-splits.md).
+These finite cases do not certify arbitrary
 weight ratios, chart ratios or continuous parity. Tensor seam qualification is
 documented separately.
 
