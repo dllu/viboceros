@@ -1,6 +1,9 @@
 //! Copy native topology and NURBS payloads into the validated Rust B-rep model.
 use super::*;
 use std::borrow::Cow;
+
+mod poles;
+use poles::close_pole_gaps;
 use viboceros_geometry::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
     NurbsCurve2, NurbsSurface, Point2, SurfaceIso, WeightedPoint2,
@@ -530,211 +533,6 @@ fn classify_iso(surface: &NurbsSurface, curve: &NurbsCurve2) -> SurfaceIso {
     }
 }
 
-// At a clamped natural boundary, these are the surface's stored row/column,
-// without the rounded homogeneous evaluation of a general extracted isocurve.
-fn natural_boundary_controls(
-    surface: &NurbsSurface,
-    iso: SurfaceIso,
-) -> Option<Vec<WeightedPoint3>> {
-    let nu = surface.control_point_count_u();
-    let nv = surface.control_point_count_v();
-    let (knots, degree, count, end) = match iso {
-        SurfaceIso::South => (surface.knots_v(), surface.degree_v(), nv, false),
-        SurfaceIso::North => (surface.knots_v(), surface.degree_v(), nv, true),
-        SurfaceIso::West => (surface.knots_u(), surface.degree_u(), nu, false),
-        SurfaceIso::East => (surface.knots_u(), surface.degree_u(), nu, true),
-        _ => return None,
-    };
-    let clamp = if end {
-        &knots[count..]
-    } else {
-        &knots[..=degree]
-    };
-    if clamp.iter().any(|k| *k != clamp[0]) {
-        return None;
-    }
-    let controls = surface.control_points();
-    Some(match iso {
-        SurfaceIso::South => controls[..nu].to_vec(),
-        SurfaceIso::North => controls[(nv - 1) * nu..].to_vec(),
-        SurfaceIso::West => (0..nv).map(|j| controls[j * nu]).collect(),
-        SurfaceIso::East => (0..nv).map(|j| controls[j * nu + nu - 1]).collect(),
-        _ => unreachable!(),
-    })
-}
-
-fn close_pole_gaps(
-    surface: &NurbsSurface,
-    vertices: &[BrepVertex],
-    trims: Vec<BrepTrim>,
-    tolerance: Tolerance,
-) -> Result<Vec<BrepTrim>, Error> {
-    let mut gaps = Vec::with_capacity(trims.len());
-    for (index, trim) in trims.iter().enumerate() {
-        let next = &trims[(index + 1) % trims.len()];
-        let end = trim.curve().end_point()?;
-        let start = next.curve().start_point()?;
-        if (end.x() - start.x()).abs() <= tolerance.absolute()
-            && (end.y() - start.y()).abs() <= tolerance.absolute()
-        {
-            gaps.push(None);
-            continue;
-        }
-        let vertex = trim.vertices()[1];
-        if vertex != next.vertices()[0] {
-            return Err(Error::InvalidOutput);
-        }
-        let near = |a: f64, b: f64, boundary: f64| {
-            let epsilon = (32. * f64::EPSILON * a.abs().max(b.abs()).max(boundary.abs()).max(1.))
-                .max(tolerance.absolute());
-            (a - boundary).abs() <= epsilon && (b - boundary).abs() <= epsilon
-        };
-        let (boundary, end, start) = if near(end.y(), start.y(), *surface.domain_v().start()) {
-            let v = *surface.domain_v().start();
-            (
-                surface.isocurve_u(v)?,
-                Point2::try_new(
-                    end.x()
-                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
-                    v,
-                )?,
-                Point2::try_new(
-                    start
-                        .x()
-                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
-                    v,
-                )?,
-            )
-        } else if near(end.y(), start.y(), *surface.domain_v().end()) {
-            let v = *surface.domain_v().end();
-            (
-                surface.isocurve_u(v)?,
-                Point2::try_new(
-                    end.x()
-                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
-                    v,
-                )?,
-                Point2::try_new(
-                    start
-                        .x()
-                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
-                    v,
-                )?,
-            )
-        } else if near(end.x(), start.x(), *surface.domain_u().start()) {
-            let u = *surface.domain_u().start();
-            (
-                surface.isocurve_v(u)?,
-                Point2::try_new(
-                    u,
-                    end.y()
-                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
-                )?,
-                Point2::try_new(
-                    u,
-                    start
-                        .y()
-                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
-                )?,
-            )
-        } else if near(end.x(), start.x(), *surface.domain_u().end()) {
-            let u = *surface.domain_u().end();
-            (
-                surface.isocurve_v(u)?,
-                Point2::try_new(
-                    u,
-                    end.y()
-                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
-                )?,
-                Point2::try_new(
-                    u,
-                    start
-                        .y()
-                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
-                )?,
-            )
-        } else {
-            return Err(Error::Kernel(format!(
-                "UV loop gap is not a pole boundary: {end:?} to {start:?}"
-            )));
-        };
-        let vertex = vertices.get(vertex).ok_or(Error::InvalidOutput)?;
-        let sign = boundary.control_points()[0].weight().is_sign_positive();
-        let epsilon = tolerance.absolute().max(vertex.tolerance());
-        if boundary.control_points().iter().any(|p| {
-            p.weight().is_sign_positive() != sign
-                || p.point()
-                    .distance_to(vertex.point())
-                    .map_or(true, |distance| distance > epsilon)
-        }) {
-            return Err(Error::Kernel(
-                "UV gap boundary is not collapsed within the native vertex tolerance".into(),
-            ));
-        }
-        let curve = NurbsCurve2::try_new_rational(
-            1,
-            vec![
-                WeightedPoint2::try_new(end, 1.)?,
-                WeightedPoint2::try_new(start, 1.)?,
-            ],
-            vec![0., 0., 1., 1.],
-        )?;
-        // The segment lies exactly on a natural boundary. A single-signed
-        // clamped row/column lies in the convex hull of its stored Euclidean
-        // controls. Reuse the exact distance bound for that complete hull;
-        // unrelated mixed-sign interior weights do not affect this proof.
-        let iso = classify_iso(surface, &curve);
-        let mut hull_certified = false;
-        if let Some(controls) = natural_boundary_controls(surface, iso) {
-            let sign = controls[0].weight().is_sign_positive();
-            hull_certified = true;
-            for control in controls {
-                if control.weight().is_sign_positive() != sign
-                    || control
-                        .point()
-                        .distance_bound_to(vertex.point(), epsilon)?
-                        .is_none()
-                {
-                    hull_certified = false;
-                    break;
-                }
-            }
-        }
-        let support = NurbsCurve::try_new_rational(
-            1,
-            vec![WeightedPoint3::try_new(vertex.point(), 1.)?; 2],
-            vec![0., 0., 1., 1.],
-        )?;
-        if !hull_certified
-            && surface
-                .parameter_curve_deviation_bound(&curve, &support, epsilon)?
-                .is_none()
-        {
-            return Err(Error::Kernel(format!(
-                "Pole connector surface image is not certified: {end:?} to {start:?}, tolerance {epsilon}"
-            )));
-        }
-        let index = trim.vertices()[1];
-        gaps.push(Some(BrepTrim::try_new(
-            [index, index],
-            None,
-            false,
-            curve,
-            BrepTrimType::Singular,
-            iso,
-            [0.; 2],
-        )?));
-    }
-    let mut completed =
-        Vec::with_capacity(trims.len() + gaps.iter().filter(|g| g.is_some()).count());
-    for (trim, gap) in trims.into_iter().zip(gaps) {
-        completed.push(trim);
-        if let Some(gap) = gap {
-            completed.push(gap);
-        }
-    }
-    Ok(completed)
-}
 impl NurbsData {
     fn points(self, owner: &impl SnapshotOwner) -> Result<Vec<WeightedPoint3>, Error> {
         let count = self.count[0]
@@ -963,8 +761,24 @@ pub(super) fn import_sheet(
             components[face] = index;
         }
     }
+    // Encode reversed sheet normals with the shared exact chart permutation.
+    // Native SmFace::SwapUV mirrors UV curves through a normalized diagonal
+    // frame, which can leak the long axis into a short axis through roundoff.
+    let reversed = brep
+        .faces()
+        .iter()
+        .enumerate()
+        .filter_map(|(i, face)| face.is_reversed().then_some(i))
+        .collect::<Vec<_>>();
+    let prepared = if reversed.is_empty() {
+        Cow::Borrowed(brep)
+    } else {
+        let mut prepared = brep.clone();
+        prepared.try_swap_face_uv(&reversed)?;
+        Cow::Owned(prepared)
+    };
     let mut pointer = std::ptr::null_mut();
-    with_brep_view(brep, normalize_domains, |view| {
+    with_brep_view(&prepared, normalize_domains, |view| {
         call(|error, capacity| unsafe {
             vb_sheet_from_brep(
                 view,

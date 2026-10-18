@@ -459,7 +459,6 @@
     "crates/viboceros-oracle/src/arc_tangent.rs": "083554ee628c68452fe7d944f3808df541cbedbcf8604eb832c8265ba784d94a",
     "crates/viboceros-oracle/src/circle_tangent.rs": "2acd3813b0fc7b6549be2a116d3e1ea1416f0850d8c5aa497a3aa3de675f13cd",
     "docs/circle-clamped-validation.json": "1e2d2a327abc629de52f049a841417baf87c9fa3478d7fb0ea479404ba34c823",
-    "docs/flow-poles-validation.json": "357debd6263029599416dbf18c91645764ea260fc04403b57c2fab9403f8991e",
     "src/app/arc_length.rs": "baaccf00ac474c4c3c53e2c4f9f9016d5df5493ba7f164411d30d0481bfa16f9",
     "src/app/arc_tilted.rs": "73c9cdae0efcdfb07bb4443a28c50584b5b30afea199195135436cd7b0ca5ca4",
     "src/app/tangent.rs": "92b1726942450b65119911529b626b5a804b0e5bfb3c1d4409759ce3d7d60d8f",
@@ -561,6 +560,7 @@
     "8e69543c3e93fa78c2888133c95f018332adc544:docs/arc-tangent-validation.json": "798a78aa3c66e7a58aec4c7dd343f88d3c56d4bad5aa9b948f169821dd2ce0ae",
     "8e69543c3e93fa78c2888133c95f018332adc544:docs/arc-tilted-validation.json": "f8cd6d7b097d67b3c07a3c904a43dccfd7c87c2bf577d35b7b6b10e6d9f994a4",
     "8e69543c3e93fa78c2888133c95f018332adc544:crates/viboceros-command/src/arc_deform_input.rs": "9d6b6302ba4d531ac4c2ed16cf077b726de375833fe3eeba145f71c9528e0b59",
-    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:docs/circle-deform-validation.json": "982d8fa3dea92986238000622e8eb5d846637d2530983a952c5cbacbebda9728"
+    "5af970fe02df2adb375a5f460b5b9072a2fab0a7:docs/circle-deform-validation.json": "982d8fa3dea92986238000622e8eb5d846637d2530983a952c5cbacbebda9728",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/flow-poles-validation.json": "357debd6263029599416dbf18c91645764ea260fc04403b57c2fab9403f8991e"
   }
 }

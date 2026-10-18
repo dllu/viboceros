@@ -80,7 +80,6 @@
     "crates/viboceros-command/src/shell.rs": "d0a0e0547f08b79443317dd3102751ddaf33561d8d51dd1615362e76e5d7b153",
     "crates/viboceros-command/src/shell/tests.rs": "01b2e072b6b760f893b04d33884a3d92aa1914332e88d86653dc2e1b5a7ad7c7",
     "crates/viboceros-oracle/src/shell.rs": "cce2bc70953f2a53217218674a7f843bf6b2361112a1cc1653e741905b9d8bb9",
-    "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
     "crates/viboceros-smlib/src/native/shell.rs": "9816e73fb176677fa8f0ab7fde9520badd8a423e01b0fb6f1e58e409fd6759cc",
     "crates/viboceros-smlib/tests/shell.rs": "05f6b46aa18efa609cd19cc1930899f2fcdb7ee1aaa7221478a0fe2f74b540d5",
     "docs/commands/shell.md": "053f81166748f14817f9967338c421065d1dc3cc3cdd98c3b83f3c0e8186356a",
@@ -123,6 +122,7 @@
     "0aecdcd8b107b85d2026207490fabb10704ac491:crates/viboceros-smlib/native/CMakeLists.txt": "f2b5e03af385814fb7311af49e4d2ee927fd6e2b834f3f0e84260109096b187b",
     "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/native/brep_data.h": "6b5bb2a3319a8f0e074dbd850682720243cbf13ba3e8299ae074007d34519f03",
     "1255ea14473b1e1484f8020c528961fa8a0bc150:docs/usd-brep-limitations.md": "b5b08a42150304b2d4307698b928083442a4cd4116da0272900e017f0e20252b",
-    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:src/app/component_selection.rs": "9a6b16f7e8266992e560531d1d1595c9cefc909550eccc80fec1fc71b773df82"
+    "adb7608d1b17d33b42294eed49fda241c0dd7a4e:src/app/component_selection.rs": "9a6b16f7e8266992e560531d1d1595c9cefc909550eccc80fec1fc71b773df82",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742"
   }
 }

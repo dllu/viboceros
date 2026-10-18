@@ -379,7 +379,6 @@
     "src/app/tests/object_selection.rs": "73951b4cab312716d7d3d3065a4faea504978f7b914e10b530e2ba9fd389068f",
     "docs/smlib-joining.md": "ab89750c29b7c119d2a9e433a7668ec99ba97c9097af53b8240e784913411438",
     "docs/join-pick-probes.md": "2d812fa18e97fcd3e3e8dce8d8134f71525f5c7a88ac5520e74f5a4694fd3428",
-    "docs/join-source-uv-validation.json": "83c787e000ded90cef496a5fdef9ea73ba22f117019bb06a43ef2c11df823af7",
     "crates/viboceros-oracle/src/join_command/tests/surfaces.rs": "dc3f904771bafc308cf56066b00351ddc7e651e0b028a5f88edf355dd89b4d80",
     "crates/viboceros-oracle/src/join_command/tests/boundaries.rs": "dbd90668ab2c4ee840b3c834ca58eb593bb0ced8ba988deebb149827c29df97f",
     "tools/rhino_oracle/observations/join_surface_differences.json": "4066ffa7f53dbabda14369e60ef43e4c7eedd82b8fd584a555010ad722057ec0",
@@ -398,5 +397,8 @@
     "63fd80a3ca38e1d367867e6f7aa6f0b6f83bb940:crates/viboceros-command/src/join/breps.rs": "849cfabd1d0cf0b2250164e303ba5a19908c497020a43e1e328979e7a9c6d8b1",
     "63fd80a3ca38e1d367867e6f7aa6f0b6f83bb940:crates/viboceros-command/src/join/breps/native.rs": "aec720de5e0a117fb7b08928c53daed223ff01fe149c87cde08c8ab72917fa75"
   },
-  "unchanged_assembly_section_sha256": "80420a9e28c9a9b953b06a4620d6649eaf6639e289ef605cbf8edee689641cbe"
+  "unchanged_assembly_section_sha256": "80420a9e28c9a9b953b06a4620d6649eaf6639e289ef605cbf8edee689641cbe",
+  "source_git_sha256": {
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/join-source-uv-validation.json": "83c787e000ded90cef496a5fdef9ea73ba22f117019bb06a43ef2c11df823af7"
+  }
 }

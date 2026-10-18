@@ -10,6 +10,7 @@ list(FILTER KERNEL_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 list(FILTER API_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-intersection-distance.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-self-intersection-pairs.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-copy-basis.cmake")
 # Keep upstream immutable. Compile the bounded kernel repairs from generated
 # copies, with the source/version and patches retained under third_party.
 find_program(PATCH_EXECUTABLE patch REQUIRED)
@@ -204,6 +205,17 @@ add_executable(viboceros_smlib_surface_blend_curved_probe "${CMAKE_CURRENT_SOURC
 target_link_libraries(viboceros_smlib_surface_blend_curved_probe PRIVATE SM_API)
 target_compile_options(viboceros_smlib_surface_blend_curved_probe PRIVATE -Wall -Wextra -Werror)
 install(TARGETS viboceros_smlib SM_API SMLib ARCHIVE DESTINATION lib)
+add_executable(viboceros_smlib_copy_basis_probe EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/copy_basis_probe.cpp")
+target_link_libraries(viboceros_smlib_copy_basis_probe PRIVATE viboceros_smlib)
+target_include_directories(viboceros_smlib_copy_basis_probe PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_compile_options(viboceros_smlib_copy_basis_probe PRIVATE -Wall -Wextra -Werror)
+add_executable(viboceros_smlib_copy_basis_baseline EXCLUDE_FROM_ALL
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/copy_basis_probe.cpp"
+    "${USD_BREP_ROOT}/source/SMLib/src/SmBSplineCurve.cpp"
+    "${USD_BREP_ROOT}/source/SMLib/src/SmBSplineSurface.cpp")
+target_link_libraries(viboceros_smlib_copy_basis_baseline PRIVATE viboceros_smlib)
+target_include_directories(viboceros_smlib_copy_basis_baseline PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_compile_options(viboceros_smlib_copy_basis_baseline PRIVATE -Wno-write-strings -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
 # Reproduction targets are opt-in. The baseline object overrides the matching
 # static archive member, isolating this repair while keeping other fixes equal.
 add_executable(viboceros_smlib_surface_pull_probe EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_pull_probe.cpp")

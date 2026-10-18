@@ -1,0 +1,26 @@
+     Running tests/pole_transfer.rs (target/release/deps/pole_transfer-03718324f18c8d54)
+
+running 1 test
+POLE_TRANSFER u=1e0 v=1e0 whole=false swapped=false poles=1/1
+POLE_TRANSFER u=1e0 v=1e0 whole=false swapped=true poles=1/1
+POLE_TRANSFER u=1e0 v=1e0 whole=true swapped=false poles=2/2
+POLE_TRANSFER u=1e0 v=1e0 whole=true swapped=true poles=2/2
+POLE_TRANSFER u=1e-4 v=1e0 whole=false swapped=false poles=1/1
+POLE_TRANSFER u=1e-4 v=1e0 whole=false swapped=true poles=1/1
+POLE_TRANSFER u=1e-4 v=1e0 whole=true swapped=false poles=2/2
+POLE_TRANSFER u=1e-4 v=1e0 whole=true swapped=true poles=2/2
+POLE_TRANSFER u=1e0 v=1e-4 whole=false swapped=false poles=1/1
+POLE_TRANSFER u=1e0 v=1e-4 whole=false swapped=true poles=1/1
+POLE_TRANSFER u=1e0 v=1e-4 whole=true swapped=false poles=2/2
+POLE_TRANSFER u=1e0 v=1e-4 whole=true swapped=true poles=2/2
+POLE_TRANSFER u=1e-4 v=1e-4 whole=false swapped=false poles=1/1
+POLE_TRANSFER u=1e-4 v=1e-4 whole=false swapped=true poles=1/1
+POLE_TRANSFER u=1e-4 v=1e-4 whole=true swapped=false poles=2/2
+POLE_TRANSFER u=1e-4 v=1e-4 whole=true swapped=true poles=2/2
+POLE_TRANSFER u=1e4 v=1e-4 whole=false swapped=false poles=1/1
+POLE_TRANSFER u=1e4 v=1e-4 whole=false swapped=true poles=1/1
+POLE_TRANSFER u=1e4 v=1e-4 whole=true swapped=false poles=2/2
+POLE_TRANSFER u=1e4 v=1e-4 whole=true swapped=true poles=2/2
+test native_pole_transfer_preserves_singular_boundaries_under_independent_uv_scales ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s

@@ -1,0 +1,305 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "650fa1c854c05003a45311fc531c421cb45f680d",
+  "usd_brep_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "implementation": [
+    "Scale pole-side roundoff by 256 machine epsilons times the relevant parameter interval extent, independent of model distance units and origin.",
+    "Restore certified poles before ordinary endpoint uncertainty. Prove complete natural-boundary collapse within max(model absolute tolerance, inherited vertex tolerance); never certify a regular boundary from a short gap alone.",
+    "Reuse the shared exact face U/V swap on reversed open sheets before native import, preserving spatial geometry and outward orientation.",
+    "Preserve full source knot vectors in curve/surface copy constructors using generated-source patches. Reuse checked basis restoration after canonical B-rep data import; preserve 2D XYW and 3D XYZW payloads and native dimension."
+  ],
+  "native_pole_matrix": {
+    "test": "native_pole_transfer_preserves_singular_boundaries_under_independent_uv_scales",
+    "cases": 20,
+    "center": [
+      1,
+      -2,
+      3
+    ],
+    "radius": 2,
+    "model_absolute_tolerance": 0.001,
+    "uv_extents": [
+      [
+        1,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        1,
+        0.0001
+      ],
+      [
+        0.0001,
+        0.0001
+      ],
+      [
+        10000,
+        0.0001
+      ]
+    ],
+    "combinations": "sphere or hemisphere, original or swapped UV with compensating face reversal",
+    "baseline": {
+      "correct_pole_counts": 4,
+      "silently_missing_poles": 5,
+      "export_errors": 11,
+      "log": "docs/native-pole-transfer-baseline.log",
+      "note": "Same twenty input recipes before the repair; baseline test predates added normal/volume/3DM assertions."
+    },
+    "candidate": {
+      "correct_pole_counts": 20,
+      "missing_poles": 0,
+      "errors": 0,
+      "log": "docs/native-pole-transfer-candidate.log"
+    },
+    "independent_assertions": {
+      "poles": "sphere=2, hemisphere=1",
+      "radius_absolute_error_lt": 1e-12,
+      "area_absolute_error_lt": 1e-07,
+      "closed_sphere_signed_volume_absolute_error_lt": 1e-07,
+      "outward_unit_normal_radial_dot_gt": 1.999999999999,
+      "source_unchanged": true,
+      "manifold": true,
+      "solid": "sphere only",
+      "three_dm_round_trips": 4
+    },
+    "focused_unit_tests": 4,
+    "unit_only_uv_extents": [
+      "2^-360",
+      "2^360",
+      "translated origin 1e12/-2e12"
+    ],
+    "unit_scope": "Pole reconstruction function; extreme exponents are not qualified through native modeling solvers."
+  },
+  "direct_copy_probe": {
+    "results": [
+      {
+        "variant": "baseline",
+        "copied_cases": 24,
+        "exact_valid_copies": 8,
+        "restored_curve_cases": 12,
+        "exact_valid_restores": 12,
+        "source_unchanged_cases": 36,
+        "raw_results": "docs/native-copy-basis-baseline.jsonl",
+        "exit_code": 0
+      },
+      {
+        "variant": "candidate",
+        "copied_cases": 24,
+        "exact_valid_copies": 24,
+        "restored_curve_cases": 12,
+        "exact_valid_restores": 12,
+        "source_unchanged_cases": 36,
+        "raw_results": "docs/native-copy-basis-candidate.jsonl",
+        "exit_code": 0
+      }
+    ],
+    "degree": 2,
+    "curve_dimensions": [
+      2,
+      3
+    ],
+    "tensor_axes": [
+      0,
+      1
+    ],
+    "parameter_scales": [
+      "2^-40",
+      "1",
+      "2^40"
+    ],
+    "interior_knots": [
+      "half interval",
+      "one ULP below active end"
+    ],
+    "baseline_isolation": "Only the two original pinned copy-constructor translation units override the repaired archive members; all other repairs are shared.",
+    "source_creation": "SetExpert with valid full knot vectors and homogeneous controls",
+    "restore_scope": "Twelve additional dimension-preserving unowned curve basis changes; no surface restore assertions are added by this probe."
+  },
+  "regression_runs": [
+    {
+      "command": "cargo test --release -p viboceros-smlib --features native -- --nocapture",
+      "exit_code": 0,
+      "log_sha256": "282983bc39011192a20f10073771938695c7c1eb57a4b0b51ab9d1f8cc82598f",
+      "passed": 400,
+      "failed": 0,
+      "ignored": 1,
+      "test_result_summaries": 79,
+      "retained_log": "docs/native-pole-native-release.log.gz"
+    },
+    {
+      "command": "cargo test --release -p viboceros-command --features native-smlib -- --nocapture",
+      "exit_code": 101,
+      "log_sha256": "50cbb884a2214736f98672ce91904565fd34118fbe87b8d65dd48580c9b98fd2",
+      "passed": 1577,
+      "failed": 2,
+      "ignored": 3,
+      "test_result_summaries": 1,
+      "retained_log": "docs/native-pole-command-release.log.gz",
+      "remaining_failures": [
+        "planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics",
+        "planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history"
+      ]
+    },
+    {
+      "command": "cargo test --release -p viboceros-command planar_boolean::tests::planar_ -- --nocapture",
+      "exit_code": 101,
+      "log_sha256": "7edb9cce00ec3ce6cc41696537258c6abe245c130812c694da125a231a9197c4",
+      "passed": 6,
+      "failed": 2,
+      "ignored": 0,
+      "test_result_summaries": 1,
+      "retained_log": "docs/native-pole-existing-planar-failures.log"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "32632ad407a5b4154657786105e16c8cb006a3da09b79e872981dd8418c9555d"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_brep_transfer_comparison -v",
+      "exit_code": 0,
+      "log_sha256": "b8a024985b1ab21d724a40915d62e1ddd991ef7488ae5dff03b69839ee7bcba4",
+      "passed": 5
+    }
+  ],
+  "preexisting_planar_failures": {
+    "binary": "target/debug/deps/viboceros_command-57135ca80196f59f",
+    "binary_sha256": "37a4c6c03a626f1395caef7b7dd3db4363caa1db4afa54b6ca292a42add12ec6",
+    "basis_log": "/tmp/viboceros-join-pick-default-tests.log",
+    "runs": [
+      {
+        "command": [
+          "target/debug/deps/viboceros_command-57135ca80196f59f",
+          "--exact",
+          "planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics",
+          "--nocapture"
+        ],
+        "exit_code": 101,
+        "log": "/tmp/viboceros-pole-transfer-original-planar_circular_native_scaled_boundary_history_and_contact_diagnostics.log",
+        "log_sha256": "55f59d16a2a7a7c7b2a1e8b30b056501fe0aa4c70e9bf2ecb4a73574dc574941"
+      },
+      {
+        "command": [
+          "target/debug/deps/viboceros_command-57135ca80196f59f",
+          "--exact",
+          "planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history",
+          "--nocapture"
+        ],
+        "exit_code": 101,
+        "log": "/tmp/viboceros-pole-transfer-original-planar_mixed_native_scale_boundaries_metadata_and_history.log",
+        "log_sha256": "b655ab5f01d1a7a82262f40ab8f28e79cf04a3630610b6c9309c6e1afca31e75"
+      }
+    ],
+    "basis_log_sha256": "74104bc9d516ab4cf1daaa01b1ca429ffd2cdcf6ca83b06ea6a01eafb5f81480",
+    "qualification": "Retained pre-change default-feature executable, identified in the prior Join test log; both exact tests still fail with InvalidPlanarFaceBoundary. This executable is not rebuilt from the candidate source.",
+    "retained_combined_log": "docs/native-pole-existing-planar-failures.log"
+  },
+  "corrected_test_assumption": "Coplanar merge now compares exact ordered group membership before/after; group storage sorts random ObjectIds rather than insertion order. Full command rerun passes that assertion.",
+  "native_blend_regression": {
+    "test": "all_edges_and_invalid_sizes_preserve_source",
+    "cause": "An initial 32-EPS pole-side window rejected an existing native fitted endpoint residual of about 49 EPS.",
+    "repair": "256-EPS axis-extent allowance, consistent with shared floating parameter normalization; spatial collapse proof unchanged.",
+    "new_regression": "fitted_pole_endpoints_allow_domain_scaled_roundoff_without_model_unit_padding",
+    "final_full_release_result": "passed"
+  },
+  "join_replay": {
+    "cases": 336,
+    "raw_value_matches": 328,
+    "all_nontrim_values_exact": 336,
+    "cyclic_trim_start_only": 8,
+    "report": "docs/native-pole-join-comparison.json",
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "policy": "Retain raw differences; separately compare only cyclic trim-list start with the same epsilon. No fitting, parameter rescaling or discarded spatial/document fields.",
+    "oracle": "Current local Viboceros oracle compared to retained native responses at the baseline revision; no new licensed Rhino run."
+  },
+  "historical_provenance": {
+    "preserved_entries": 47,
+    "records": 27,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "limitations": [
+    "Full command suite is not green: the two identified planar Boolean failures remain. They reproduce without SMLib and in the retained pre-change executable.",
+    "Ordinary non-pole UV endpoint uncertainty retains the existing shared model-tolerance policy; this change does not qualify all UV tolerance handling.",
+    "Other native operations may still canonicalize data or swap charts through floating frames. Arbitrary topology, tiny-chart native solvers and universal coefficient preservation are not claimed.",
+    "No Rhino performance or newly measured Rhino parity claim. Native round trips, analytic geometry and retained native audit responses qualify the stated paths.",
+    "Superseded debug suites were stopped or failed before the final pole window; only the completed final release suites supply the reported totals."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "a47e9483a9fde54ad376294db1f40f234b279a76c97e01ece62ad2052f08a42d",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "c04ade9fcd5eab4e385285de898eda218e1530d591cb1ad075939fe5548a1946",
+    "crates/viboceros-smlib/native/basis_preservation.cpp": "aa7690878cfd402e8c5fdaffb4f70e4267f5d5c02e6cf0c3eba52bcf6f50f016",
+    "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
+    "crates/viboceros-smlib/native/brep_import.cpp": "25ff30313d39ee9be201015a365be8c0201c65ef4730b7fe8631900fcb870901",
+    "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
+    "crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a",
+    "crates/viboceros-smlib/src/native/brep/poles.rs": "d8949afc7d7aca46e586fa639097b2a687a35519b0712997b1159fe03f6d9345",
+    "crates/viboceros-smlib/src/native/brep/poles/tests.rs": "a1be0f7b9efcd010c75ed0a44f6d2b6f9beb7eee7b13f5f7d271578ea649ad40",
+    "crates/viboceros-smlib/tests/pole_transfer.rs": "65d2c46561acbc21586e9539f16463e7a54d1b0e1313012fd6c4b7e3c34c1be6",
+    "crates/viboceros-smlib/tests/blend_edges.rs": "8aae6ec39a30d23dfe912885a7bd009e0cfa40aec84b2a4288595ead018329a0",
+    "crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621",
+    "crates/viboceros-command/src/coplanar_faces/tests.rs": "64915f192370acc470b908b2fea5febb2b10d41f9f0bcc4564bf630e3d5cd797",
+    "crates/viboceros-command/src/planar_boolean.rs": "f2b20728494afb35a7f5f368ed0416fe8f70d874ba3eb54e8b2cdfdcdd45d86e",
+    "crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
+    "tools/usd_brep/copy_basis_probe.cpp": "c64a6d6ab0a8822a8a180f2fd3095eedca6fe832e639496415e218d16dbd650f",
+    "third_party/patches/usd-brep-copy-basis.cmake": "b117c6bcd62372e6c558ae044665f7f4be7a98d9465e8b0ad5642bb25ca7a9f3",
+    "third_party/patches/usd-brep-copy-curve-basis.patch": "7c8510434ba6efcd707326a3919fef4d2724fac3193010ff84ec46686a925810",
+    "third_party/patches/usd-brep-copy-surface-basis.patch": "c202199a64f4f397a304af188c4d0e5c1df541fa2c7a30b8547ecf352cea8f28",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp": "93c905a12c4124f6761f63ca9dbe2e2ffe400eb32b493c3d514be42de2c41138",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
+    "third_party/usd-brep/source/SMLib/src/SmFace.cpp": "6004846a29074d8f8923904caabc01e194eceaff7f57f33b68ecdbbec08c51f9",
+    "tools/rhino_oracle/brep_transfer_comparison.py": "b0762c27f5aeacbf73911fad9b7623ee6252f6525da3e3b361e3a7fea94b8c65",
+    "tools/rhino_oracle/test_brep_transfer_comparison.py": "3d9defab2a1dfbee60757400663a9a204826df5d0f69e15c43de100f9181fe27",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-pole-transfer.md": "dd750a7449126ce33420f4ec3f39bb723edc68cc823f16853a906a9d02450e6d",
+    "docs/native-pole-transfer-baseline.log": "29c30c55c8890960ad426b8b479070db86ba42d5f03584c2ca6925c660e3476e",
+    "docs/native-pole-transfer-candidate.log": "515bf7d2556749b6dc2807721f4c64b47ff792d933c56742e438ca7be7eedc66",
+    "docs/native-copy-basis-baseline.jsonl": "194fa26993044b3f06a2531351f778308c9f43d14ffce7908e6296ce4ab94b13",
+    "docs/native-copy-basis-candidate.jsonl": "862104a2889ce611793a9096690ca5a4794e72acf8d13f4053a8e62dbf6fc6a6",
+    "docs/native-pole-existing-planar-failures.log": "6d6956706def228109b744e5fc6a645277f7287af21a0493f471115e3442937c",
+    "docs/native-pole-native-release.log.gz": "9cd9209fff577a6604c401066918146ef5ced5d6214b12918b32fa35ed67aabb",
+    "docs/native-pole-command-release.log.gz": "ad9196917b85626f453c22f43765c301461768fa65e7561d3303d3ec328c711a",
+    "docs/native-pole-join-comparison.json": "2b8928867ef2019181756b24fa48191a306c26de914313551b08f27b9e265a70",
+    "tools/rhino_oracle/join_source_uv_comparison.py": "32ee24222c3a94c838f8cffc57ac4726b372b7465bcb2eb11abfd8ee7181305c",
+    "tools/rhino_oracle/fixtures/join_surfaces.json": "6891b698dd4f2fa0f4bfb27703e17ea57033470a972e7579da5361bb032cca9e",
+    "docs/join-pick-surfaces-reference.json.gz": "3dabdba7deef06356b7027365f2c0f4860cd4d532cac1cbda85e51d9e062f22e",
+    "docs/native-pole-join-surfaces-candidate.json.gz": "00d9cf47e1d6fd19419c1e26d6e03fe1e2a7426c35d107f1cfa8fd962d775efe",
+    "tools/rhino_oracle/fixtures/join_surface_differences.json": "b7342179d0c1adeb983d3023b5520618093eeabe424b10c7f775ff9dc0cfe515",
+    "docs/join-pick-surface-differences-reference.json.gz": "400a4e72c5f0b8f4bb832326c27cfa91917d7c6674d789fe9f62755f76d6347c",
+    "docs/native-pole-join-surface-differences-candidate.json.gz": "400a4e72c5f0b8f4bb832326c27cfa91917d7c6674d789fe9f62755f76d6347c",
+    "tools/rhino_oracle/fixtures/join_boundary_matching.json": "ce20d37b4ef89a3c2aad3ccf1ee69c72f62ec5ab823b6c0776f858063de296cc",
+    "docs/join-pick-boundary-matching-reference.json.gz": "36b7444dfb29d246ae258b1717d3b0057eff15346588a6f9c86ed2234caf847c",
+    "docs/native-pole-join-boundary-matching-candidate.json.gz": "36b7444dfb29d246ae258b1717d3b0057eff15346588a6f9c86ed2234caf847c",
+    "tools/rhino_oracle/fixtures/join_boundary_differences.json": "8d67d084a85cfeec19b358ccb52453dbf3c3fb1885942176b8d971403be03932",
+    "docs/join-pick-boundary-differences-reference.json.gz": "7dea5bf3fd06725aa68387a9e3b97e235cb480fce649ea9708b3c7800954db10",
+    "docs/native-pole-join-boundary-differences-candidate.json.gz": "7dea5bf3fd06725aa68387a9e3b97e235cb480fce649ea9708b3c7800954db10",
+    "tools/rhino_oracle/fixtures/join_corner_clustering.json": "426e5c3d307dd4f5293af79ffbcc660988bdb9fd0c43a211f42f0a901d4b2050",
+    "docs/join-pick-corner-clustering-reference.json.gz": "dc6198b17479bd431f8b5315dfb873446ac3d2ffa33383a10b0291f27f7dbc6d",
+    "docs/native-pole-join-corner-clustering-candidate.json.gz": "dc6198b17479bd431f8b5315dfb873446ac3d2ffa33383a10b0291f27f7dbc6d"
+  },
+  "baseline_git_sha256": {
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/src/native/brep.rs": "5b81ed9ed48efe577b90712705db13f861832c8aaef336bfa9886bf3569db6f3",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/tests/blend_edges.rs": "8aae6ec39a30d23dfe912885a7bd009e0cfa40aec84b2a4288595ead018329a0",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-geometry/src/brep/parameter_orientation.rs": "110d5ec099f3b6b32757c45149e9a341e404026d80866a811d23dff416c0b621",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-command/src/coplanar_faces/tests.rs": "c8a5e6b7269692b7610156b04174c69a8ed5ec0d79d02e92be4bcbc3f01da36b",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-command/src/planar_boolean.rs": "f2b20728494afb35a7f5f368ed0416fe8f70d874ba3eb54e8b2cdfdcdd45d86e",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-document/src/lib.rs": "4eee7b7dcc777eb0d0918b628a9103285d56de9d2d92a0b7a2eaf0bbee76e8ca",
+    "650fa1c854c05003a45311fc531c421cb45f680d:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

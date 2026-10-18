@@ -100,8 +100,6 @@
     "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
     "crates/viboceros-geometry/src/surface_pullback/certificate/curve.rs": "d46695cea952d33ac88f96ca3de41933b066fb981a168c9f35c1afbaffa7c808",
     "crates/viboceros-geometry/src/surface_rebuild.rs": "d367ce6574f2c6e944da1df1c95d0dcdf504a0e05392e71c1764e780c125f2b8",
-    "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
     "crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "0fb7e43039ac67b80a3329d7bd5afe59b449b6d344a5807bd394e4e29c887d8f",
@@ -139,6 +137,8 @@
     "23a970097bf8c88b7db94af4ae1e8837173edd3e:crates/viboceros-oracle/src/network_surface.rs": "580315d246b4fd88febe132cee99ba1093287ee48ed9ed154c62bc4bf9d14e5d",
     "c1ad337e5dfd11c3bcdf389c322834f0ed64cf13:crates/viboceros-geometry/src/lib.rs": "2bb0f1ecf0f59792d69bbbb1ea6dfb97459fae79dbc65142f725c3152b9e9912",
     "df0d2231a50561cc3f126cd6c0792e1c2be553a2:crates/viboceros-geometry/src/curve/arc_length.rs": "2022499da072f43e57dd5a071b3f5d35a59f9ae7f8c6aa8088ab220e5fcff6c8",
-    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:crates/viboceros-geometry/src/curve/arc_length/tests.rs": "4af9bdc370c22e5b9f23f86af9bc34e9cf514a242dd7a7884abe820458da6ec6"
+    "df0d2231a50561cc3f126cd6c0792e1c2be553a2:crates/viboceros-geometry/src/curve/arc_length/tests.rs": "4af9bdc370c22e5b9f23f86af9bc34e9cf514a242dd7a7884abe820458da6ec6",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136"
   }
 }

@@ -35,8 +35,10 @@ Extrusion/apex/path sweeps compare against affine point formulas; revolution
 checks rotated endpoints, radial distance and height. Tests also retain input
 handle evaluation and exercise both axes in the translational tensor.
 
-These fixtures qualify standalone sheets. General tiny-chart capped topology,
-arbitrary angular degeneracy and all downstream kernel copies remain open.
+These fixtures qualify standalone sheets. The
+[native copy constructors](native-pole-transfer.md) now retain full source bases
+for 2D/3D curves and both tensor directions. General tiny-chart capped topology,
+arbitrary angular degeneracy and other downstream producers remain open.
 The changes preserve document parsing, selection, attributes and history through
 the existing command adapters. See the [limitations ledger](usd-brep-limitations.md)
 for source audits and remaining kernel restrictions.

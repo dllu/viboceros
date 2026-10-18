@@ -1,0 +1,3505 @@
+{
+  "cases": 336,
+  "raw_value_matches": 328,
+  "outside_trim_values_exact": 336,
+  "cyclic_trim_start_only": 8,
+  "runs": [
+    {
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "cases": 66,
+      "raw_value_matches": 58,
+      "outside_trim_values_exact": 66,
+      "outside_trim_values_match": 66,
+      "cyclic_trim_start_only": 8,
+      "policy": "Primary comparisons retain raw order and parameterization. Secondary cyclic comparison only changes each trim list's starting index, using the same epsilon. No curve fitting, domain normalization or geometry fields are discarded.",
+      "results": [
+        {
+          "id": "single-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "single-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "single-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "single-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "single-solid-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "single-solid-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "single-solid-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "single-solid-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-reverse-picks-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-reverse-picks-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-reverse-picks-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "adjacent-reverse-picks-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "disjoint-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "disjoint-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "disjoint-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "disjoint-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "joined-and-loner-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "joined-and-loner-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "joined-and-loner-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "joined-and-loner-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-pairs-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-pairs-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-pairs-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-pairs-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "six-inward-Join-post",
+          "raw_value_match": false,
+          "raw_difference_count": 130,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/0/control_points/0/point/0",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/0/control_points/1/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/1/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/1/control_points/1/point/0",
+              "actual": 1.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/1/brep/trim_curves/0/0/1/domain/0",
+              "actual": 0.0,
+              "baseline": -3.0
+            }
+          ]
+        },
+        {
+          "id": "six-inward-Join-pre",
+          "raw_value_match": false,
+          "raw_difference_count": 156,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/0/control_points/0/point/0",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/0/control_points/1/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/1/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/1/control_points/1/point/0",
+              "actual": 1.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/0/0/1/domain/0",
+              "actual": 0.0,
+              "baseline": -3.0
+            }
+          ]
+        },
+        {
+          "id": "six-inward-JoinCopy-post",
+          "raw_value_match": false,
+          "raw_difference_count": 130,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/control_points/0/point/0",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/control_points/1/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/1/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/1/control_points/1/point/0",
+              "actual": 1.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/1/domain/0",
+              "actual": 0.0,
+              "baseline": -3.0
+            }
+          ]
+        },
+        {
+          "id": "six-inward-JoinCopy-pre",
+          "raw_value_match": false,
+          "raw_difference_count": 156,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/control_points/0/point/0",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/control_points/1/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": 2.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/1/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 1.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/1/control_points/1/point/0",
+              "actual": 1.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/6/brep/trim_curves/0/0/1/domain/0",
+              "actual": 0.0,
+              "baseline": -3.0
+            }
+          ]
+        },
+        {
+          "id": "solid-and-sheet-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "solid-and-sheet-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "solid-and-sheet-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "solid-and-sheet-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-sheets-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-sheets-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-sheets-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-sheets-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "bridged-disjoint-source-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "bridged-disjoint-source-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "bridged-disjoint-source-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "bridged-disjoint-source-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partly-connected-source-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partly-connected-source-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partly-connected-source-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partly-connected-source-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "unselected-group-peer-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "unselected-group-peer-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "unselected-group-peer-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "unselected-group-peer-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "rational-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "rational-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "rational-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "rational-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "opposite-edge-directions-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "opposite-edge-directions-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "opposite-edge-directions-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "opposite-edge-directions-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "closed-rational-edge-Join-post",
+          "raw_value_match": false,
+          "raw_difference_count": 26,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/control_points/1/point/0",
+              "actual": 3.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/domain/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/1",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": -0.0
+            }
+          ]
+        },
+        {
+          "id": "closed-rational-edge-Join-pre",
+          "raw_value_match": false,
+          "raw_difference_count": 26,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/control_points/1/point/0",
+              "actual": 3.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/domain/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/1",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/0/brep/trim_curves/1/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": -0.0
+            }
+          ]
+        },
+        {
+          "id": "closed-rational-edge-JoinCopy-post",
+          "raw_value_match": false,
+          "raw_difference_count": 26,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/control_points/1/point/0",
+              "actual": 3.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/domain/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/1",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": -0.0
+            }
+          ]
+        },
+        {
+          "id": "closed-rational-edge-JoinCopy-pre",
+          "raw_value_match": false,
+          "raw_difference_count": 26,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": true,
+          "first_differences": [
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/control_points/0/point/1",
+              "actual": 0.0,
+              "baseline": 12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/control_points/1/point/0",
+              "actual": 3.0,
+              "baseline": 0.0
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/domain/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/domain/1",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/0",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/1",
+              "actual": 0.0,
+              "baseline": -12.566370614359172
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/2",
+              "actual": 3.0,
+              "baseline": -0.0
+            },
+            {
+              "path": "/objects/2/brep/trim_curves/1/0/0/knots/3",
+              "actual": 3.0,
+              "baseline": -0.0
+            }
+          ]
+        },
+        {
+          "id": "gap-0.0021-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0021-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        }
+      ],
+      "fixture": "tools/rhino_oracle/fixtures/join_surfaces.json",
+      "baseline_response": "docs/join-pick-surfaces-reference.json.gz",
+      "candidate_response": "docs/native-pole-join-surfaces-candidate.json.gz",
+      "baseline_revision": "650fa1c854c05003a45311fc531c421cb45f680d",
+      "full_response_byte_equal": false,
+      "candidate_raw_response_sha256": "5e7780dff0fb51e151469a1866023c5d67df4af3f5a445843bbee0c655da0e20",
+      "command": [
+        "target/debug/viboceros-oracle",
+        "--audit",
+        "tools/rhino_oracle/fixtures/join_surfaces.json",
+        "/tmp/viboceros-pole-final-join_surfaces.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "cases": 26,
+      "raw_value_matches": 26,
+      "outside_trim_values_exact": 26,
+      "outside_trim_values_match": 26,
+      "cyclic_trim_start_only": 0,
+      "policy": "Primary comparisons retain raw order and parameterization. Secondary cyclic comparison only changes each trim list's starting index, using the same epsilon. No curve fitting, domain normalization or geometry fields are discarded.",
+      "results": [
+        {
+          "id": "triple-boundary-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "triple-boundary-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "triple-boundary-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "triple-boundary-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partial-edge-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partial-edge-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partial-edge-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "partial-edge-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0005-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0005-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0005-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0005-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.001-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.001-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.001-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.001-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0015-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0015-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0015-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0015-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.002-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.002-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.002-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.002-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0021-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "gap-0.0021-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        }
+      ],
+      "fixture": "tools/rhino_oracle/fixtures/join_surface_differences.json",
+      "baseline_response": "docs/join-pick-surface-differences-reference.json.gz",
+      "candidate_response": "docs/native-pole-join-surface-differences-candidate.json.gz",
+      "baseline_revision": "650fa1c854c05003a45311fc531c421cb45f680d",
+      "full_response_byte_equal": true,
+      "candidate_raw_response_sha256": "2ff230ac7a9d990529e91bd44a469213c12e5b163bd6876c627b44459beb1ecd",
+      "command": [
+        "target/debug/viboceros-oracle",
+        "--audit",
+        "tools/rhino_oracle/fixtures/join_surface_differences.json",
+        "/tmp/viboceros-pole-final-join_surface_differences.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "cases": 142,
+      "raw_value_matches": 142,
+      "outside_trim_values_exact": 142,
+      "outside_trim_values_match": 142,
+      "cyclic_trim_start_only": 0,
+      "policy": "Primary comparisons retain raw order and parameterization. Secondary cyclic comparison only changes each trim list's starting index, using the same epsilon. No curve fitting, domain normalization or geometry fields are discarded.",
+      "results": [
+        {
+          "id": "middle-0-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "middle-0-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "middle-0-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "middle-0-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "middle-1-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "middle-1-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "middle-1-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "middle-1-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-0-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-0-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-0-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-0-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-1-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-1-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-1-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prefix-1-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-0-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-0-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-0-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-0-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-1-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-1-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-1-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "suffix-1-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-0-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-0-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-0-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-0-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-1-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-1-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-1-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "left-cross-1-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-0-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-0-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-0-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-0-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-1-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-1-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-1-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "right-cross-1-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "shifted-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "shifted-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "shifted-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "shifted-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "negative-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "negative-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "negative-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "negative-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "short-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "short-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "short-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "short-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-0-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-0-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-0-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-0-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-1-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-1-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-1-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "edge-order-1-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-short-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-short-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-short-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "two-short-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-012-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-012-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-021-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-021-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-102-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-102-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-120-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-120-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-201-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-201-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-210-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "three-angles-210-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-012-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-012-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-021-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-021-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-102-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-102-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-120-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-120-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-201-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-201-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-210-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "coplanar-210-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-012-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-012-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-021-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-021-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-102-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-102-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-120-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-120-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-201-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-201-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-210-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "overlaid-210-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-first-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-first-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-first-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-first-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-second-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-second-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-second-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-second-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-both-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-both-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-both-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-both-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-prefix-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-prefix-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-prefix-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-prefix-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-suffix-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-suffix-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-suffix-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-suffix-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-cross-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-cross-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-cross-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "reverse-cross-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-third-angle-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-third-angle-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-third-angle-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-third-angle-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-wall-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-wall-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-wall-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-wall-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-floor-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-floor-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-floor-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "prejoined-duplicate-floor-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0001-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0001-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0005-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0005-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0015-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0015-JoinCopy-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        }
+      ],
+      "fixture": "tools/rhino_oracle/fixtures/join_boundary_matching.json",
+      "baseline_response": "docs/join-pick-boundary-matching-reference.json.gz",
+      "candidate_response": "docs/native-pole-join-boundary-matching-candidate.json.gz",
+      "baseline_revision": "650fa1c854c05003a45311fc531c421cb45f680d",
+      "full_response_byte_equal": true,
+      "candidate_raw_response_sha256": "a86a483db0c2fd377138e606bbee5830821168d129a79bdee9ea050fffe59efb",
+      "command": [
+        "target/debug/viboceros-oracle",
+        "--audit",
+        "tools/rhino_oracle/fixtures/join_boundary_matching.json",
+        "/tmp/viboceros-pole-final-join_boundary_matching.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "cases": 18,
+      "raw_value_matches": 18,
+      "outside_trim_values_exact": 18,
+      "outside_trim_values_match": 18,
+      "cyclic_trim_start_only": 0,
+      "policy": "Primary comparisons retain raw order and parameterization. Secondary cyclic comparison only changes each trim list's starting index, using the same epsilon. No curve fitting, domain normalization or geometry fields are discarded.",
+      "results": [
+        {
+          "id": "duplicate-012-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-012-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-021-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-021-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-102-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-102-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-120-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-120-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-201-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-201-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-210-Join-post",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "duplicate-210-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0001-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0001-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0005-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0005-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0015-Join-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "near-competition-0.0015-JoinCopy-pre",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        }
+      ],
+      "fixture": "tools/rhino_oracle/fixtures/join_boundary_differences.json",
+      "baseline_response": "docs/join-pick-boundary-differences-reference.json.gz",
+      "candidate_response": "docs/native-pole-join-boundary-differences-candidate.json.gz",
+      "baseline_revision": "650fa1c854c05003a45311fc531c421cb45f680d",
+      "full_response_byte_equal": true,
+      "candidate_raw_response_sha256": "595c2719de9f1a424b31ac2378b5e4934cbbcaa4a7cd482c132f5cf4f0c010e5",
+      "command": [
+        "target/debug/viboceros-oracle",
+        "--audit",
+        "tools/rhino_oracle/fixtures/join_boundary_differences.json",
+        "/tmp/viboceros-pole-final-join_boundary_differences.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "cases": 84,
+      "raw_value_matches": 84,
+      "outside_trim_values_exact": 84,
+      "outside_trim_values_match": 84,
+      "cyclic_trim_start_only": 0,
+      "policy": "Primary comparisons retain raw order and parameterization. Secondary cyclic comparison only changes each trim list's starting index, using the same epsilon. No curve fitting, domain normalization or geometry fields are discarded.",
+      "results": [
+        {
+          "id": "corners-chain3-012",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain3-021",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain3-102",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain3-120",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain3-201",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain3-210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain4-0123",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain4-3210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain4-1203",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain4-2130",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain4-0213",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain4-1302",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain5-01234",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain5-43210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain5-20413",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-chain5-13024",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-uneven-012",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-uneven-021",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-uneven-102",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-uneven-120",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-uneven-201",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-uneven-210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-close-012",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corners-close-210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00149-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00149-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0015-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0015-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0015000000000000002-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0015000000000000002-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0016-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0016-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00175-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00175-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00179-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00179-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0018-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.0018-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00181-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.0-0.00181-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00149-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00149-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0015-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0015-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0015000000000000002-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0015000000000000002-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0016-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0016-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00175-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00175-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00179-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00179-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0018-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.0018-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00181-False",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "corner-pair-0.003-0.00181-True",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-left-wide-012",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-left-wide-021",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-left-wide-102",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-left-wide-120",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-left-wide-201",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-left-wide-210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-right-wide-012",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-right-wide-021",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-right-wide-102",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-right-wide-120",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-right-wide-201",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-right-wide-210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary-012",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary-021",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary-102",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary-120",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary-201",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary-210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-close-012",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-close-021",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-close-102",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-close-120",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-close-201",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-close-210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary4-0123",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary4-3210",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary4-0213",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        },
+        {
+          "id": "asym-binary4-2130",
+          "raw_value_match": true,
+          "raw_difference_count": 0,
+          "outside_trim_values_exact": true,
+          "outside_trim_values_match": true,
+          "cyclic_trim_start_only": false,
+          "first_differences": []
+        }
+      ],
+      "fixture": "tools/rhino_oracle/fixtures/join_corner_clustering.json",
+      "baseline_response": "docs/join-pick-corner-clustering-reference.json.gz",
+      "candidate_response": "docs/native-pole-join-corner-clustering-candidate.json.gz",
+      "baseline_revision": "650fa1c854c05003a45311fc531c421cb45f680d",
+      "full_response_byte_equal": true,
+      "candidate_raw_response_sha256": "1d211582aafb4cc86fc655e63a41a266f11d295783a795297474b0668e3dc20b",
+      "command": [
+        "target/debug/viboceros-oracle",
+        "--audit",
+        "tools/rhino_oracle/fixtures/join_corner_clustering.json",
+        "/tmp/viboceros-pole-final-join_corner_clustering.json"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "sha256": {
+    "tools/rhino_oracle/brep_transfer_comparison.py": "b0762c27f5aeacbf73911fad9b7623ee6252f6525da3e3b361e3a7fea94b8c65",
+    "tools/rhino_oracle/join_source_uv_comparison.py": "32ee24222c3a94c838f8cffc57ac4726b372b7465bcb2eb11abfd8ee7181305c",
+    "tools/rhino_oracle/fixtures/join_surfaces.json": "6891b698dd4f2fa0f4bfb27703e17ea57033470a972e7579da5361bb032cca9e",
+    "docs/join-pick-surfaces-reference.json.gz": "3dabdba7deef06356b7027365f2c0f4860cd4d532cac1cbda85e51d9e062f22e",
+    "docs/native-pole-join-surfaces-candidate.json.gz": "00d9cf47e1d6fd19419c1e26d6e03fe1e2a7426c35d107f1cfa8fd962d775efe",
+    "tools/rhino_oracle/fixtures/join_surface_differences.json": "b7342179d0c1adeb983d3023b5520618093eeabe424b10c7f775ff9dc0cfe515",
+    "docs/join-pick-surface-differences-reference.json.gz": "400a4e72c5f0b8f4bb832326c27cfa91917d7c6674d789fe9f62755f76d6347c",
+    "docs/native-pole-join-surface-differences-candidate.json.gz": "400a4e72c5f0b8f4bb832326c27cfa91917d7c6674d789fe9f62755f76d6347c",
+    "tools/rhino_oracle/fixtures/join_boundary_matching.json": "ce20d37b4ef89a3c2aad3ccf1ee69c72f62ec5ab823b6c0776f858063de296cc",
+    "docs/join-pick-boundary-matching-reference.json.gz": "36b7444dfb29d246ae258b1717d3b0057eff15346588a6f9c86ed2234caf847c",
+    "docs/native-pole-join-boundary-matching-candidate.json.gz": "36b7444dfb29d246ae258b1717d3b0057eff15346588a6f9c86ed2234caf847c",
+    "tools/rhino_oracle/fixtures/join_boundary_differences.json": "8d67d084a85cfeec19b358ccb52453dbf3c3fb1885942176b8d971403be03932",
+    "docs/join-pick-boundary-differences-reference.json.gz": "7dea5bf3fd06725aa68387a9e3b97e235cb480fce649ea9708b3c7800954db10",
+    "docs/native-pole-join-boundary-differences-candidate.json.gz": "7dea5bf3fd06725aa68387a9e3b97e235cb480fce649ea9708b3c7800954db10",
+    "tools/rhino_oracle/fixtures/join_corner_clustering.json": "426e5c3d307dd4f5293af79ffbcc660988bdb9fd0c43a211f42f0a901d4b2050",
+    "docs/join-pick-corner-clustering-reference.json.gz": "dc6198b17479bd431f8b5315dfb873446ac3d2ffa33383a10b0291f27f7dbc6d",
+    "docs/native-pole-join-corner-clustering-candidate.json.gz": "dc6198b17479bd431f8b5315dfb873446ac3d2ffa33383a10b0291f27f7dbc6d"
+  },
+  "probe_sha256": "c1884bc22644d375884d0d0796e32d636e67d132dd6a51a45506fb4c26770172"
+}

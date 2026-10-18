@@ -1,0 +1,18 @@
+--- a/SmBSplineCurve.cpp
++++ b/SmBSplineCurve.cpp
+@@ -222,13 +222,8 @@
+       SM_ASSERT(m_pNurb == NULL) ;
+       m_pNurb = sm_AllocateAndCopyNurbCurve(pSrcCur);
+ 
+-      if (m_pNurb) 
+-        {
+-          // Edit knot values: close knots (knotSpacing<ScaledZero) become same and 
+-          //                   near knots (ScaledZero<KnotSpacing<sTol2d) are seperated by more than sTol2d.
+-          gw_KNOTVECTOR *pKnt = m_pNurb->knt;
+-          sm_FixupKnotVector(pKnt, SM_EFF_ZERO) ;
+-        }
++      // Copy valid source knots exactly; tolerance fixup can collapse a
++      // distinct span and leave endpoint multiplicity above degree + one.
+     } // end SourceCurve.m_pNurb is not NULL check
+ 
+ } // end SmBSplineCurve::SmBSplineCurve copy constructor

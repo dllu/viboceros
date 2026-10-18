@@ -8,6 +8,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Fixed: NURBS copies merged valid source knot groups.** Both B-spline copy
+  constructors ran tolerance-based knot fixup after copying. In the direct
+  curve/surface probe, 16 of 24 valid inputs consequently produce changed and
+  invalid copied bases. The generated-source
+  [curve](../third_party/patches/usd-brep-copy-curve-basis.patch) and
+  [surface](../third_party/patches/usd-brep-copy-surface-basis.patch) repairs retain
+  full source knots in copies; raw-data constructors keep their existing
+  sanitization. B-rep import reuses the checked basis adapter before constructing
+  topology. All 24 repaired copies preserve knots and homogeneous controls
+  exactly. See [the probe and pole-transfer qualification](native-pole-transfer.md).
+
 - **Planarity includes topology-zone inflation.** Exact planar NURBS can fail
   `SmSurface::IsPlanar` below their declared zone tolerance because its bounding
   box expands by that zone. The [generated repair](../third_party/patches/usd-brep-planarity-zone.patch)

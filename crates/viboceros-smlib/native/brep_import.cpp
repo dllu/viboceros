@@ -1,4 +1,5 @@
 #include "brep_data.h"
+#include "basis_preservation.h"
 #include <SmApiGeneral.h>
 #include <SmApiIntersectors.h>
 #include <SmBSplineCurve.h>
@@ -75,6 +76,7 @@ SmCurve *import_curve(const VbNurbsData &data, ULONG dimension) {
     std::unique_ptr<SmBSplineCurve> owner(raw);
     check(status, "create imported curve");
     require(raw, "Missing imported curve");
+    vb_preserve_curve_basis(*raw, std::vector<double>(data.knots[0], data.knots[0] + data.knot_count[0]));
     return owner.release();
 }
 SmSurface *import_surface(const VbNurbsData &data) {
@@ -95,6 +97,9 @@ SmSurface *import_surface(const VbNurbsData &data) {
     std::unique_ptr<SmBSplineSurface> owner(raw);
     check(status, "create imported surface");
     require(raw, "Missing imported surface");
+    vb_preserve_surface_basis(*raw, {
+        std::vector<double>(data.knots[0], data.knots[0] + data.knot_count[0]),
+        std::vector<double>(data.knots[1], data.knots[1] + data.knot_count[1])});
     return owner.release();
 }
 } // namespace

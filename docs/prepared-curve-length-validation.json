@@ -72,8 +72,6 @@
   },
   "sha256": {
     "crates/viboceros-geometry/src/curve/arc_length/tests.rs": "febcc4b507eba10d098183970869adb3c24a755658f16085b7f01db3e4bdc054",
-    "docs/common-parameter-curve-fit-validation.json": "e1c1636c9dc572ff9a8fcc4fd648786884cc6685eb7ca715e0e9c14eb1249026",
-    "docs/constrained-network-fit-validation.json": "4f335adc5f7bc2715cde42834212dd7659e900adf1fec0ac062320091ef6555e",
     "tools/rhino_oracle/fixtures/flow.json": "d521c6a45678f6d96cf47ecec9cae42813ef576610da118c1373c70ab9c51e62",
     "tools/rhino_oracle/fixtures/flow_frames.json": "7006e5717a68ef8e021c1ee888a4aca3fb4c9e4f1ebdb33accf3d1477b711fab",
     "tools/rhino_oracle/observations/flow_frames_rhino_20261016.json": "ca81823eadd4b49de7be7f2533f9bd8f22c10def72de383681bea71d424c7946",
@@ -93,6 +91,8 @@
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/orient-on-curve-validation.json": "f909d90eeeee52c03bcfb57583bda7e65504a1bd1d858512834a2676cfff1daf",
     "6de9e1a6141e20f83dcd772beaafe21fdf39c27d:docs/prepared-curve-length.md": "d49e9bb960e568cde6b0a527f077d51f92b8e98285056521c72c11a41e8e7243",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:crates/viboceros-geometry/src/curve.rs": "05cccde0ced33d5b2c166aea034ee002521ccdda8b7db864a36586c6c341d404",
-    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/curvature-sampling-validation.json": "a050b4e9f5976b3155243705f679fd74efddfa2fd3fd09f19c600fbed23f1739"
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:docs/curvature-sampling-validation.json": "a050b4e9f5976b3155243705f679fd74efddfa2fd3fd09f19c600fbed23f1739",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/common-parameter-curve-fit-validation.json": "e1c1636c9dc572ff9a8fcc4fd648786884cc6685eb7ca715e0e9c14eb1249026",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/constrained-network-fit-validation.json": "4f335adc5f7bc2715cde42834212dd7659e900adf1fec0ac062320091ef6555e"
   }
 }

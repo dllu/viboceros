@@ -114,7 +114,6 @@
     "crates/viboceros-oracle/src/chamfer_edge.rs": "08957c0c4e7ce1344a17e37e18def62b9fa45253640766ca027a41812cc2f9ef",
     "crates/viboceros-oracle/src/edge_blend.rs": "1e277b939e0c2e9f66b01e5ed6de7e2605c5fdc616a21b3124fcc61c34ae85a4",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
-    "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
     "crates/viboceros-smlib/src/native/edge_blends.rs": "5cd75e948928dbef5a892d6c7c71dfb20918bcdac5096460627f669c36d713a6",
     "crates/viboceros-smlib/tests/blend_edges.rs": "8aae6ec39a30d23dfe912885a7bd009e0cfa40aec84b2a4288595ead018329a0",
     "docs/commands/blend-edge.md": "2d7b5b8bbfde918cd79a45dde97b1a8c91b712ca5627627a0dd04382ce556b92",
@@ -162,6 +161,7 @@
     "1255ea14473b1e1484f8020c528961fa8a0bc150:src/app.rs": "ec40ff1d30b7801bd0eb65ce68e54d877a5751a8ae7e8e66d976dfa04791c27a",
     "1255ea14473b1e1484f8020c528961fa8a0bc150:tools/rhino_oracle/rhino_worker.py": "2f0acc418c35f937daf165a518e491dea386157ce43a01957d8e21ee48130a88",
     "f95624657441d23eee72bc0e1ecc9f65fe0107d7:tools/rhino_oracle/client.py": "3698030689edf250a474f95d3aa7f3c2cbcf87fae6d826d9c62a42fd4cd1278f",
-    "df63f892789a42f612a6a153fd810c788b6b7dfb:crates/viboceros-smlib/src/lib.rs": "f9f0b7c20a0fca59d0a49d80f4945ea92024cd9950b2e8e19b43bbcebac26347"
+    "df63f892789a42f612a6a153fd810c788b6b7dfb:crates/viboceros-smlib/src/lib.rs": "f9f0b7c20a0fca59d0a49d80f4945ea92024cd9950b2e8e19b43bbcebac26347",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742"
   }
 }

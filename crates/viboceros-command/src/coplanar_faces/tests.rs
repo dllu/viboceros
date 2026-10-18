@@ -68,6 +68,7 @@ fn coplanar_merge_preserves_attributes_groups_selection_and_one_history_step() {
         .unwrap();
     d.set_object_names([(id, Some("Panel".into()))]).unwrap();
     let group = d.add_group(None, [id, second]).unwrap();
+    let group_members = d.group(group).unwrap().members().collect::<Vec<_>>();
     d.select_objects_direct([id, second], SelectionMode::Replace)
         .unwrap();
     let before = d.object(id).unwrap().clone();
@@ -80,7 +81,7 @@ fn coplanar_merge_preserves_attributes_groups_selection_and_one_history_step() {
     assert_eq!(after.attributes(), before.attributes());
     assert_eq!(
         d.group(group).unwrap().members().collect::<Vec<_>>(),
-        vec![id, second]
+        group_members
     );
     assert!(d.is_selected(id));
     assert!(d.is_selected(second));

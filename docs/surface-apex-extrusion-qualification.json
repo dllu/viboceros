@@ -67,7 +67,6 @@
     "crates/viboceros-command/src/extrude_surface_apex/tests.rs": "5c79de373b2033a08564e81af0a50438484fe17916339c5baa448da29a2e6828",
     "crates/viboceros-command/src/extrude_surface_path/tests.rs": "28baad35d4f4342245c89957863a394de192d42e7e51895af320ebb8e4f26129",
     "crates/viboceros-oracle/src/surface_apex_extrusion.rs": "4b51641e366046915a79b25bf166ed9f3bdfa58a2523f33264a3b7662c12f7f1",
-    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
     "crates/viboceros-smlib/tests/apex.rs": "212bbeee0f88dc85d0edb714089c7d0c5a63f29f006abaf118afb3d10486b9eb",
     "crates/viboceros-smlib/tests/modeling_basis.rs": "9c8cf7ffb68ae55c1f708f9126e54964318f7f3f598564983100ab7a803dd5e9",
@@ -104,6 +103,7 @@
     "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:src/app.rs": "a6ea11218dc5660eda697e7be8c941d27d7393333a36c2033e96b22171ce4404",
     "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:src/app/object_selection.rs": "395388117d3f72825404dafb252f2e1e7cbb8153a1a1c121253deaeb41b5092f",
     "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:tools/rhino_oracle/client.py": "884818c02a1590cf38b6dcbe998bbb62be67e297e9203caed3edfbcbb9985e02",
-    "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:tools/rhino_oracle/rhino_worker.py": "8c4f313da3b544c5b2b04b13bf93cddce385f956627b969e752491c86881259d"
+    "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:tools/rhino_oracle/rhino_worker.py": "8c4f313da3b544c5b2b04b13bf93cddce385f956627b969e752491c86881259d",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136"
   }
 }

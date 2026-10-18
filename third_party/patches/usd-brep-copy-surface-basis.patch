@@ -1,0 +1,22 @@
+--- a/SmBSplineSurface.cpp
++++ b/SmBSplineSurface.cpp
+@@ -333,17 +333,8 @@
+   SM_ASSERT(m_pNurb == NULL) ;
+   m_pNurb = sm_AllocateAndCopyNurbSurface(pSrcSur);
+ 
+-  if (m_pNurb) 
+-    {
+-
+-      // Edit knot values: close knots (knotSpacing<ScaledZero) become same and 
+-      //                   near knots (ScaledZero<KnotSpacing<sTol2d) are seperated by more than sTol2d.
+-      gw_KNOTVECTOR *pKnu = m_pNurb->knu;
+-      gw_KNOTVECTOR *pKnv = m_pNurb->knv;
+-
+-      sm_FixupKnotVector(pKnu,SM_EFF_ZERO_PARAM);
+-      sm_FixupKnotVector(pKnv,SM_EFF_ZERO_PARAM); 
+-    }       
++  // A copy retains both source bases exactly. Tolerance fixup changes
++  // the tensor surface and can invalidate narrow source spans.
+ 
+ } // end SmBSplineSurface::SmBSplineSurface constructor
+ 

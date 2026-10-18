@@ -1,0 +1,67 @@
+COMMAND ["target/debug/deps/viboceros_command-57135ca80196f59f", "--exact", "planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics", "--nocapture"]
+EXIT 101
+
+running 1 test
+test planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics ... FAILED
+
+failures:
+
+failures:
+    planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1503 filtered out; finished in 5.58s
+
+
+thread 'planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics' (2012231) panicked at crates/viboceros-command/src/planar_boolean/tests.rs:457:9:
+planarunion_first_small_20 Err(Geometry(InvalidPlanarFaceBoundary))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+COMMAND ["target/debug/deps/viboceros_command-57135ca80196f59f", "--exact", "planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history", "--nocapture"]
+EXIT 101
+
+running 1 test
+test planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history ... FAILED
+
+failures:
+
+failures:
+    planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1503 filtered out; finished in 12.08s
+
+
+thread 'planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history' (2012245) panicked at crates/viboceros-command/src/planar_boolean/tests.rs:457:9:
+planarunion_strip_20 Err(Geometry(InvalidPlanarFaceBoundary))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+CURRENT NO-SMLIB REPLAY
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 3m 56s
+     Running unittests src/lib.rs (target/release/deps/viboceros_command-2c527186dd1a432b)
+
+running 8 tests
+test planar_boolean::tests::planar_command_failures_preserve_geometry_history_and_selection ... ok
+test planar_boolean::tests::planar_booleans_compute_finite_area_and_leave_solid_booleans_separate ... ok
+test planar_boolean::tests::planar_booleans_replay_native_geometry_defaults_identity_and_history ... ok
+
+thread 'planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics' (2012314) panicked at crates/viboceros-command/src/planar_boolean/tests.rs:457:9:
+planarunion_first_small_20 Err(Geometry(InvalidPlanarFaceBoundary))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics ... FAILED
+test planar_boolean::tests::planar_booleans_replay_trim_holes_and_nonparallel_projection ... ok
+test planar_boolean::tests::planar_circular_native_boundary_history_and_contact_diagnostics ... ok
+
+thread 'planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history' (2012317) panicked at crates/viboceros-command/src/planar_boolean/tests.rs:457:9:
+planarunion_strip_20 Err(Geometry(InvalidPlanarFaceBoundary))
+test planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history ... FAILED
+test planar_boolean::tests::planar_mixed_native_boundaries_metadata_and_history ... ok
+
+failures:
+
+failures:
+    planar_boolean::tests::planar_circular_native_scaled_boundary_history_and_contact_diagnostics
+    planar_boolean::tests::planar_mixed_native_scale_boundaries_metadata_and_history
+
+test result: FAILED. 6 passed; 2 failed; 0 ignored; 0 measured; 1496 filtered out; finished in 1.81s
+
+error: test failed, to rerun pass `-p viboceros-command --lib`

@@ -146,9 +146,6 @@
     "crates/viboceros-geometry/src/surface_pullback/interpolation/tests.rs": "f002bc0a15d1648904b4686df1867daa9c9f8f8ae5bb721db612986bd745e414",
     "crates/viboceros-geometry/src/surface_pullback/linear.rs": "c845a929f9a3a697915080dc61a926d2131a4525d1283aaa327f73f674c28b50",
     "crates/viboceros-geometry/src/surface_pullback/linear/tests.rs": "ce4c594d91cac8ec51738f719c51adfcda27a340739332d44789d080dc021421",
-    "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
-    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
     "crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
     "crates/viboceros-smlib/src/native/network_surface/prepared.rs": "7ab5baf29004873e3b6ad9d4de91c783dcfc302499ca3c5dea927f51cca10ce0",
@@ -189,6 +186,9 @@
     "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/native/bridge.h": "62988da3caef22c53ea90b84aafb58ba977339491cf464bd306d45e2739646f8",
     "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/native/network_fit.cpp": "6ade0159a18a4040809bdda6e9ea1b46fd4cf2af7d496a71fd53513426dadbe5",
     "c02784ac11502b0b218da67abbed9c9fc861ecbd:crates/viboceros-smlib/native/network_fit.h": "77e7d77bc252a3cfee06696ebec046f751ba9b10bc15515f2f6bd4c9a698cb50",
-    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99"
+    "b42e2cabaa19a7109c81e026877d1b06558800e8:crates/viboceros-geometry/src/nurbs.rs": "ce4a84484de3ba35f627ebe24c51cc0e181b9cd3c4ef33718a09216b79829c99",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
+    "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136"
   }
 }

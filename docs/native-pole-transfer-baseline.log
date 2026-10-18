@@ -1,0 +1,54 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.99s
+     Running tests/pole_transfer.rs (target/debug/deps/pole_transfer-65cd900bb6e290b2)
+
+running 1 test
+POLE_TRANSFER u=1e0 v=1e0 whole=false swapped=false poles=1/1
+POLE_TRANSFER u=1e0 v=1e0 whole=false swapped=true poles=1/1
+POLE_TRANSFER u=1e0 v=1e0 whole=true swapped=false poles=2/2
+POLE_TRANSFER u=1e0 v=1e0 whole=true swapped=true poles=2/2
+POLE_TRANSFER u=1e-4 v=1e0 whole=false swapped=false poles=0/1
+POLE_TRANSFER u=1e-4 v=1e0 whole=false swapped=true error=NURBS parameter -0.00000000000000008969019451956744 is outside [0, 0.0001]
+POLE_TRANSFER u=1e-4 v=1e0 whole=true swapped=false poles=0/2
+POLE_TRANSFER u=1e-4 v=1e0 whole=true swapped=true poles=0/2
+POLE_TRANSFER u=1e0 v=1e-4 whole=false swapped=false error=invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+POLE_TRANSFER u=1e0 v=1e-4 whole=false swapped=true error=invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+POLE_TRANSFER u=1e0 v=1e-4 whole=true swapped=false error=SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+POLE_TRANSFER u=1e0 v=1e-4 whole=true swapped=true error=SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+POLE_TRANSFER u=1e-4 v=1e-4 whole=false swapped=false error=invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+POLE_TRANSFER u=1e-4 v=1e-4 whole=false swapped=true error=invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+POLE_TRANSFER u=1e-4 v=1e-4 whole=true swapped=false poles=0/2
+POLE_TRANSFER u=1e-4 v=1e-4 whole=true swapped=true poles=0/2
+POLE_TRANSFER u=1e4 v=1e-4 whole=false swapped=false error=invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+POLE_TRANSFER u=1e4 v=1e-4 whole=false swapped=true error=invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+POLE_TRANSFER u=1e4 v=1e-4 whole=true swapped=false error=SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+POLE_TRANSFER u=1e4 v=1e-4 whole=true swapped=true error=SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+
+thread 'native_pole_transfer_preserves_singular_boundaries_under_independent_uv_scales' (1930349) panicked at crates/viboceros-smlib/tests/pole_transfer.rs:86:5:
+u=1e-4 v=1e0 whole=false swapped=false: poles 0/1
+u=1e-4 v=1e0 whole=false swapped=true: NURBS parameter -0.00000000000000008969019451956744 is outside [0, 0.0001]
+u=1e-4 v=1e0 whole=true swapped=false: poles 0/2
+u=1e-4 v=1e0 whole=true swapped=true: poles 0/2
+u=1e0 v=1e-4 whole=false swapped=false: invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+u=1e0 v=1e-4 whole=false swapped=true: invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+u=1e0 v=1e-4 whole=true swapped=false: SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+u=1e0 v=1e-4 whole=true swapped=true: SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+u=1e-4 v=1e-4 whole=false swapped=false: invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+u=1e-4 v=1e-4 whole=false swapped=true: invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+u=1e-4 v=1e-4 whole=true swapped=false: poles 0/2
+u=1e-4 v=1e-4 whole=true swapped=true: poles 0/2
+u=1e4 v=1e-4 whole=false swapped=false: invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+u=1e4 v=1e-4 whole=false swapped=true: invalid NURBS knot vector: knot multiplicity exceeds degree plus one
+u=1e4 v=1e-4 whole=true swapped=false: SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+u=1e4 v=1e-4 whole=true swapped=true: SMLib: UV gap boundary is not collapsed within the native vertex tolerance
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test native_pole_transfer_preserves_singular_boundaries_under_independent_uv_scales ... FAILED
+
+failures:
+
+failures:
+    native_pole_transfer_preserves_singular_boundaries_under_independent_uv_scales
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.70s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test pole_transfer`

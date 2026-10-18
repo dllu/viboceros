@@ -379,17 +379,10 @@
     "crates/viboceros-geometry/src/nurbs/poles.rs": "b1c7e6027e79730eefc3bdc1d58b6bc6fb6cb3768d04c62f1741366d587c9b15",
     "crates/viboceros-oracle/src/curve_primitive.rs": "72a6d7c012eda6e4a4b440464cdd27ec5b6862d4f1653cb8414914d8a3da427e",
     "crates/viboceros-oracle/src/hyperbola.rs": "cfcdd9927b272261dd84d52c563625ed95236fff0aa09412394509d70b493eb4",
-    "docs/automatic-gordon-network-fit-validation.json": "3460370b5eb342b09cfd72280fbc24800414d28854b71db1a87590bc95eaca8b",
     "docs/commands/hyperbola.md": "26ca5230daf8974edecc2463bde3c010d2a7f37def7acd150338254a9d99d2a5",
     "docs/curvature-sampling-validation.json": "7f0fb20c4380e2abbe5e01d430620700b24d0d4d6a1fd14908a463114dd83b36",
-    "docs/exact-isocurve-restriction-validation.json": "6f9812f5ee1aad709a4d0888ba21989043cf9ea650e5a32e9eb75e89d4ae22c9",
-    "docs/local-gordon-curve-clock-validation.json": "a402faa2802253252465097195e058f23728f96e406ef28e42aff266c78b607b",
     "docs/network-source-reference-audit-validation.json": "1633812bd433ef125f379912cb488fbd99d77e317a7186bfcef57a2ab15214fb",
-    "docs/original-network-curve-admission-validation.json": "071992c0aa417adfdfe4958b9f0503ee10d83a1ea8499b0e99b218735546410f",
-    "docs/prepared-curve-length-validation.json": "eb3805a9eaeb8f81d330abc59ac106d97429a93bc7979c80f8665b4e57ce6d77",
-    "docs/prepared-gordon-families-validation.json": "0e69b0949d4f4c712d88c0ae6741388660c5e24079611bdc515194b5fdb0b8a9",
     "docs/projection-loose-qualification.json": "4a4d6b8060d5cbd056ddbada89921ecb16146e8ac165121fd240408d172dd660",
-    "docs/shared-gordon-curve-fit-validation.json": "1631008547774fec9fb46a7bd328272fad73b4b8a1e3fd398cfdfefa6e6402ce",
     "src/app/hyperbola.rs": "fadb185f906dbdb87a515536a693dbda38dca0332f2906dc24ef25fb0d16300b",
     "src/app/tests/hyperbola.rs": "b35a7e3c1b4f3c6232f20b26236115e1884226133b62d31f19d14fbd1ab81787",
     "src/viewport/curve_sampling.rs": "dc2a727fc083ebedcc2b3a071724d0a9637e89f2299494a64137e7672aeabac2",
@@ -429,6 +422,13 @@
     "a4402e1b94914750c780147a340edcd895806a1d:docs/parabola-validation.json": "a0bad0bc00f4ec693eb12a2286e085c20efc6d8cd836b1cf9a4bfe20f0cbd282",
     "59d3b9492a620de5b2cdd6dcdb183a2f49167f7b:docs/conic-getters-validation.json": "96a02e70e723c4838489efab7557503ca960add0121c407cb7e027fcb1604626",
     "03c766480d8d71bb6f47a7d6fd65fd3945813648:docs/flow-poles-validation.json": "ecac59fd84672a1c05f25a6b4b9b630b1dd4544d2af3520addb3c488cb737db1",
-    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/surface-flow-validation.json": "0957dcec744703877ef7ea94ad4953309a9e96c430b58816c61665fdd062a0ee"
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:docs/surface-flow-validation.json": "0957dcec744703877ef7ea94ad4953309a9e96c430b58816c61665fdd062a0ee",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/automatic-gordon-network-fit-validation.json": "3460370b5eb342b09cfd72280fbc24800414d28854b71db1a87590bc95eaca8b",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/exact-isocurve-restriction-validation.json": "6f9812f5ee1aad709a4d0888ba21989043cf9ea650e5a32e9eb75e89d4ae22c9",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/local-gordon-curve-clock-validation.json": "a402faa2802253252465097195e058f23728f96e406ef28e42aff266c78b607b",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/original-network-curve-admission-validation.json": "071992c0aa417adfdfe4958b9f0503ee10d83a1ea8499b0e99b218735546410f",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/prepared-curve-length-validation.json": "eb3805a9eaeb8f81d330abc59ac106d97429a93bc7979c80f8665b4e57ce6d77",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/prepared-gordon-families-validation.json": "0e69b0949d4f4c712d88c0ae6741388660c5e24079611bdc515194b5fdb0b8a9",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/shared-gordon-curve-fit-validation.json": "1631008547774fec9fb46a7bd328272fad73b4b8a1e3fd398cfdfefa6e6402ce"
   }
 }

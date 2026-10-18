@@ -28,7 +28,14 @@ and parameterization. Curved faces use the native trim representation after
 conversion. Missing UV connections at a sphere pole become explicit singular
 trims only if they lie along a natural surface boundary and the sign-coherent
 isocurve control hull lies within the corresponding native vertex tolerance.
-Other UV gaps are rejected. The shape and validation tolerances are retained.
+Uncertified gaps beyond the existing endpoint uncertainty are rejected. The
+shape and validation tolerances are retained.
+Pole detection now uses each parameter axis's extent rather than model-space
+distance units, and checks certified collapsed boundaries before ordinary
+endpoint uncertainty. Reversed sheets use the shared exact U/V permutation
+before import. Native curve/surface copies preserve their original full knot
+vectors, including short spans, through generated-source repairs to the copy
+constructors. See [pole transfer and exact-copy qualification](native-pole-transfer.md).
 The use of a straight UV connector at a collapsed surface boundary is also
 described in [Open CASCADE's shape-healing documentation](https://github.com/Open-Cascade-SAS/OCCT/wiki/shape_healing).
 

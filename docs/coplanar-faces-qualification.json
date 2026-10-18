@@ -106,7 +106,6 @@
   },
   "source_sha256": {
     "crates/viboceros-smlib/native/boundary_validation.cpp": "31519023b0ed19dfa86a4edd42fdb24fb703a79b76f742f5978d90fde2053adf",
-    "docs/usd-brep-limitations.md": "49361c4313b7ea1985231174d2fbd3dfb62ca0afdb734330710b74f40986eaff",
     "third_party/patches/usd-brep-planarity-zone.patch": "b80613e66f7fb36af1b53155e4d273b7b06ce6e2b885af239ebddd9616b977a7",
     "third_party/patches/usd-brep-protected-topology.patch": "b94572c4056228b49095cbbe1526487ef8315f680780521e66618e6179ffbae6",
     "tools/rhino_oracle/fixtures/coplanar_faces.json": "b3052b14e7700dadb4d5339f29294215fe70cf39a779de559fcd1c81818eafe6",
@@ -146,6 +145,7 @@
     "f95624657441d23eee72bc0e1ecc9f65fe0107d7:crates/viboceros-oracle/src/object_source.rs": "07ed817a7c4d7ed817f525c93d8e15f1ff494fa169010b00a08f4f08a4d481e5",
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/build.rs": "5ddb31db472659e59df2bb72fbc7b63de91042de3ba491e73f4a4d3a75931cc5",
     "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/native/CMakeLists.txt": "8d83f8bb7a5eec9a5a51ad1748c7c35d57beb54e42f87379fa4d61186ec83891",
-    "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/src/native.rs": "93b20bbf59715e15394f5a8586ca5d662f4103bf760f143353c08c1ff6bbb8d8"
+    "4ce2bbfc59ccb870f925028d7ad135395a07b1b4:crates/viboceros-smlib/src/native.rs": "93b20bbf59715e15394f5a8586ca5d662f4103bf760f143353c08c1ff6bbb8d8",
+    "650fa1c854c05003a45311fc531c421cb45f680d:docs/usd-brep-limitations.md": "49361c4313b7ea1985231174d2fbd3dfb62ca0afdb734330710b74f40986eaff"
   }
 }

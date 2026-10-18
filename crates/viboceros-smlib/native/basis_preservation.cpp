@@ -24,12 +24,12 @@ void validate(const std::vector<double> &knots, size_t degree) {
                 "Invalid preserved basis knots");
     require(knots[degree] < knots[knots.size() - degree - 1], "Empty preserved basis interval");
 }
-void validate_controls(const std::vector<double> &controls, bool rational) {
+void validate_controls(const std::vector<double> &controls, bool rational, size_t dimension = 3) {
     for (size_t i = 0; i < controls.size(); i += 4) {
-        require(std::isfinite(controls[i]) && std::isfinite(controls[i + 1]) &&
-                    std::isfinite(controls[i + 2]), "Invalid preserved controls");
+        for (size_t axis = 0; axis < dimension; ++axis)
+            require(std::isfinite(controls[i + axis]), "Invalid preserved controls");
         if (rational)
-            require(std::isfinite(controls[i + 3]) && controls[i + 3] != 0,
+            require(std::isfinite(controls[i + dimension]) && controls[i + dimension] != 0,
                     "Invalid preserved control weights");
     }
 }
@@ -145,11 +145,15 @@ bool vb_preserve_curve_basis(SmBSplineCurve &curve, const std::vector<double> &k
     const auto count = knots.size() - degree - 1;
     require(count <= limit, "Preserved curve control limit");
     const bool rational = curve.IsRational();
+    const auto dimension = curve.GetDim();
+    require(dimension == 2 || dimension == 3, "Basis preservation requires a 2D or 3D curve");
     const auto form = rational ? SM_CP_HOMOGENEOUS_RATIONAL : SM_CP_NON_RATIONAL;
     std::vector<double> controls(count * 4);
     check(curve.GetControlPointsExpert(form, 0, count - 1, 4, controls.data()), "read preserved curve controls");
-    validate_controls(controls, rational);
-    check(curve.SetExpert(3, degree, SM_CF_UNSPECIFIED, SM_EK_CLAMPPED,
+    // Expert 2D rational payloads contain X,Y,W; 3D payloads contain X,Y,Z,W.
+    // Retain the native dimension and weight channel when restoring UV curves.
+    validate_controls(controls, rational, dimension);
+    check(curve.SetExpert(dimension, degree, SM_CF_UNSPECIFIED, SM_EK_CLAMPPED,
                           knots.size(), knots.data(), form, 4, controls.data()), "preserve curve basis");
     require(vb_curve_full_knots(curve) == knots, "Curve basis restoration failed");
     return true;
