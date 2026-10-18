@@ -10,6 +10,7 @@ fn rect(record: &Value, tolerance: Tolerance) -> Brep {
     assert_eq!(loops.len(), 1);
     let trims = loops[0].as_array().unwrap();
     assert_eq!(trims.len(), 4);
+    let spans = [surface.domain_u(), surface.domain_v()].map(|d| d.end() - d.start());
     let mut bounds = [[f64::INFINITY, f64::NEG_INFINITY]; 2];
     for trim in trims {
         for cp in trim["definition"]["control_points"].as_array().unwrap() {
@@ -21,19 +22,19 @@ fn rect(record: &Value, tolerance: Tolerance) -> Brep {
         }
     }
     // This helper qualifies rectangular fixtures, not arbitrary SDK trim loops.
-    // All coefficients must lie within 1e-12 UV of a single rectangle side.
+    // All coefficients must lie within 1e-12 normalized UV of a single rectangle side.
     // Retain complete unsnapped p-curves in the raw protocol comparison.
     for trim in trims {
         let cps = trim["definition"]["control_points"].as_array().unwrap();
         assert!((0..2).any(|axis| bounds[axis].iter().any(|end| {
             cps.iter()
-                .all(|cp| (cp["point"][axis].as_f64().unwrap() - end).abs() <= 1e-12)
+                .all(|cp| (cp["point"][axis].as_f64().unwrap() - end).abs() / spans[axis] <= 1e-12)
         })));
     }
     for (axis, domain) in [surface.domain_u(), surface.domain_v()].iter().enumerate() {
         for (end, value) in [*domain.start(), *domain.end()].into_iter().enumerate() {
             if (end == 0 && bounds[axis][end] < value) || (end == 1 && bounds[axis][end] > value) {
-                assert!((bounds[axis][end] - value).abs() <= 1e-12);
+                assert!((bounds[axis][end] - value).abs() / spans[axis] <= 1e-12);
                 bounds[axis][end] = value;
             }
         }
@@ -101,18 +102,31 @@ fn check_parent(a: &Value, e: &Value, queries: &[[f64; 3]], tolerance: Tolerance
 }
 #[test]
 fn sdk_parent_trim_and_split_regions_match_without_mutating_sources() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/surface_fillet_parents.json"
-    ))
-    .unwrap();
-    let reference: Value = serde_json::from_str(
-        &std::fs::read_to_string(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/../../tools/rhino_oracle/observations/surface_fillet_parents.json"
-        ))
-        .unwrap(),
+    check_fixture("surface_fillet_parents");
+}
+#[test]
+fn sdk_parent_domains_and_canonical_regions_match_under_affine_parameter_changes() {
+    check_fixture("surface_fillet_charts");
+}
+fn check_fixture(name: &str) {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
+    let request: ProbeRequest = serde_json::from_str(
+        &std::fs::read_to_string(root.join("fixtures").join(format!("{name}.json"))).unwrap(),
     )
     .unwrap();
+    let reference: Value = serde_json::from_str(
+        &std::fs::read_to_string(root.join("observations").join(format!("{name}.json"))).unwrap(),
+    )
+    .unwrap();
+    let canonical_request: ProbeRequest = serde_json::from_str(
+        &std::fs::read_to_string(root.join("fixtures/surface_fillet_parents.json")).unwrap(),
+    )
+    .unwrap();
+    let canonical_reference: Value = serde_json::from_str(
+        &std::fs::read_to_string(root.join("observations/surface_fillet_parents.json")).unwrap(),
+    )
+    .unwrap();
+    let mut inaccurate_sdk = 0;
     assert_eq!(request.operations.len(), 32);
     let tolerance = request.tolerance.geometry().unwrap();
     for op in &request.operations {
@@ -131,6 +145,50 @@ fn sdk_parent_trim_and_split_regions_match_without_mutating_sources() {
             .iter()
             .find(|r| r["id"] == op.id())
             .unwrap()["value"];
+        // Literal SDK conditioning defects remain explicit negative controls.
+        // Canonical inputs have exactly identical normalized NURBS coefficients
+        // and the same physical picks; use their accurate geometry, while
+        // checking every new parent chart against the unmodified fresh SDK.
+        let primary = e;
+        let curved = fixture.surfaces[1].degree_u > 1 || fixture.surfaces[1].degree_v > 1;
+        let unreliable = name == "surface_fillet_charts"
+            && curved
+            && conditioning::cylinder_radius_error(primary, fixture) > tolerance.absolute();
+        if name == "surface_fillet_charts" {
+            let id = op.id().rsplit_once('-').unwrap().0;
+            let canonical = canonical_request
+                .operations
+                .iter()
+                .find(|o| o.id() == id)
+                .unwrap();
+            let Operation::SurfaceFillet {
+                fixture: canonical, ..
+            } = canonical
+            else {
+                panic!()
+            };
+            conditioning::same_input_geometry(fixture, canonical, tolerance);
+            if unreliable {
+                inaccurate_sdk += 1;
+                assert!(conditioning::component_tolerance(primary) > tolerance.absolute());
+                assert!(
+                    conditioning::cylinder_radius_error(primary, fixture) > tolerance.absolute()
+                );
+                assert!(conditioning::cylinder_radius_error(a, fixture) <= tolerance.absolute());
+            }
+        }
+        let e = if unreliable {
+            let id = op.id().rsplit_once('-').unwrap().0;
+            &canonical_reference["results"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|r| r["id"] == id)
+                .unwrap()["value"]
+        } else {
+            primary
+        };
+        assert!(conditioning::component_tolerance(a) <= tolerance.absolute());
         assert_eq!(a["source_unchanged"], true);
         assert_eq!(e["source_unchanged"], true);
         assert_eq!(a["outputs"].as_array().unwrap().len(), 1);
@@ -156,6 +214,8 @@ fn sdk_parent_trim_and_split_regions_match_without_mutating_sources() {
             let a = a["parents"][i].as_array().unwrap();
             let e = e["parents"][i].as_array().unwrap();
             assert_eq!(a.len(), e.len(), "{} parent {i}", op.id());
+            let fresh = primary["parents"][i].as_array().unwrap();
+            assert_eq!(a.len(), fresh.len());
             let mut used = vec![false; e.len()];
             for parent in a {
                 let index = e
@@ -178,8 +238,24 @@ fn sdk_parent_trim_and_split_regions_match_without_mutating_sources() {
                     })
                     .unwrap_or_else(|| panic!("{} parent {i} bounds", op.id()));
                 used[index] = true;
+                for axis in ["domain_u", "domain_v"] {
+                    assert_eq!(
+                        parent["geometry"]["faces"][0]["definition"][axis],
+                        fresh[0]["geometry"]["faces"][0]["definition"][axis],
+                        "{} parent {i} {axis}",
+                        op.id()
+                    );
+                }
                 check_parent(parent, &e[index], &fixture.queries, tolerance);
             }
         }
     }
+    assert_eq!(
+        inaccurate_sdk,
+        if name == "surface_fillet_charts" {
+            8
+        } else {
+            0
+        }
+    );
 }

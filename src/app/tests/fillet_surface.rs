@@ -155,3 +155,41 @@ fn failed_recompute_clears_preview_and_corrected_options_recover() {
     enter(&mut app, "");
     assert_eq!(app.document.objects().len(), 1);
 }
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn original_uv_ranges_survive_preview_acceptance_undo_and_redo() {
+    let (mut app, ids) = pair();
+    for id in ids {
+        let Geometry::NurbsSurface(surface) = app.document.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        let surface = surface.try_reparameterized(-2. ..=8., 10. ..=30.).unwrap();
+        app.document
+            .replace_object_geometries([(id, Geometry::NurbsSurface(surface))])
+            .unwrap();
+    }
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "FilletSrf Extend=No");
+    for id in ids {
+        enter(&mut app, &format!("{id} 0,20"));
+    }
+    let scene = app.fillet_surface_prompt.as_ref().unwrap().scene().unwrap();
+    for id in ids {
+        let Geometry::Brep(b) = scene.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(b.faces()[0].surface().domain_u(), -2. ..=8.);
+        assert_eq!(b.faces()[0].surface().domain_v(), 10. ..=30.);
+    }
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "");
+    let after = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
+}

@@ -42,7 +42,8 @@ uses the current layer and is selected. A joined component inherits the lowest
 ordered contributing parent's ID and metadata; parents absorbed by that
 component are removed. Joining may leave separate components when their edges
 do not meet. Parents the native operation leaves unchanged are preserved.
-Replacement parent faces currently use the native normalized UV charts.
+Changed parents keep their [original UV ranges](../fillet-parent-charts.md).
+Existing rectangular faces also retain their full underlying source support.
 
 Supported inputs are NURBS surfaces and single-face B-reps with rectangular
 trims. Polysurface faces must first be detached with `ExtractSrf`. General curved

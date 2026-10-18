@@ -12,7 +12,7 @@ pub enum SurfaceFilletParentMode {
 
 /// Owned fillet sheets and optional replacement parent faces. `None` retains
 /// the original parent; `Some([])` indicates complete consumption. Replacement
-/// parents use the native unit UV charts.
+/// parents retain the input surfaces' original UV charts.
 #[derive(Clone, Debug)]
 pub struct SurfaceFilletResult {
     pub fillet: Brep,
@@ -225,6 +225,18 @@ fn construct(
                         .model
                         .to_brep_with_closed_uv_joints(local_tolerance, Some(accuracy * 0.25))?
                         .transformed(transform, tolerance)?;
+                    let source = if i == 0 { first } else { second };
+                    let domains = [source.domain_u(), source.domain_v()];
+                    let parent = if parent.faces().iter().all(|face| {
+                        [face.surface().domain_u(), face.surface().domain_v()] == domains
+                    }) {
+                        parent
+                    } else {
+                        parent.try_reparameterized_face_uv(
+                            (0..parent.faces().len()).map(|face| (face, domains.clone())),
+                            tolerance,
+                        )?
+                    };
                     parents[i] = Some(parent.explode_faces(tolerance)?);
                 }
             }

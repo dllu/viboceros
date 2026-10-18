@@ -1,0 +1,382 @@
+{
+  "date": "2026-10-18",
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "baseline_commit": "2d049746b4717fdbfea76c2b000f277253cb59e4",
+  "native_upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "change": "Preserve original parent surface UV charts through native FilletSrf trim/split; restore full rectangular-face support with correct interior isocurve labels; retain charts through preview, joining, history and 3dm.",
+  "completed_runs": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-geometry",
+        "--lib"
+      ],
+      "status": 0,
+      "seconds": 20.33460429101251,
+      "name": "geometry",
+      "log": "docs/fillet-parent-charts-geometry.log.gz",
+      "passed": 2390,
+      "failed": 0,
+      "ignored": 8
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib",
+        "--lib",
+        "surface_fillet",
+        "--",
+        "--nocapture"
+      ],
+      "status": 0,
+      "seconds": 220.2767671700567,
+      "name": "fillet-oracle",
+      "log": "docs/fillet-parent-charts-fillet-oracle.log.gz",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib"
+      ],
+      "status": 0,
+      "seconds": 117.80228667007759,
+      "name": "command",
+      "log": "docs/fillet-parent-charts-command.log.gz",
+      "passed": 1591,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "fillet_surface"
+      ],
+      "status": 0,
+      "seconds": 283.94663353287615,
+      "name": "ui",
+      "log": "docs/fillet-parent-charts-ui.log.gz",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "seconds": 9.98721136385575,
+      "name": "clippy",
+      "log": "docs/fillet-parent-charts-clippy.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets"
+      ],
+      "status": 0,
+      "seconds": 14.822517005959526,
+      "name": "portable-check",
+      "log": "docs/fillet-parent-charts-portable-check.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "seconds": 4.820497035048902,
+      "name": "fmt",
+      "log": "docs/fillet-parent-charts-fmt.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "-p",
+        "viboceros-oracle",
+        "--features",
+        "native-smlib"
+      ],
+      "status": 0,
+      "seconds": 136.00404894398525,
+      "name": "oracle-build",
+      "log": "docs/fillet-parent-charts-oracle-build.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-smlib",
+        "--features",
+        "native",
+        "--test",
+        "surface_fillet_picks"
+      ],
+      "status": 0,
+      "seconds": 18.01246380386874,
+      "name": "native-bridge",
+      "passed": 13,
+      "failed": 0,
+      "log": "docs/fillet-parent-charts-bridge-focused.log.gz"
+    },
+    {
+      "name": "before-after-protocol-audit",
+      "command": [
+        "env",
+        "PYTHONPATH=.",
+        "python3",
+        "/tmp/viboceros-fillet-charts-audit.py"
+      ],
+      "status": 0,
+      "seconds": 82.88359369290993,
+      "log": "docs/fillet-parent-charts-audit.log.gz",
+      "scope": "Full raw protocol values remain unnormalized. All 32 match fresh SDK domain endpoints. Eight literal SDK conditioning failures remain negative controls; geometry is compared with exact canonical-input SDK references for those cases. Bounds, query distances and unchanged-spatial-table checks qualify this scope; integrated oracle tests additionally check sampled interiors/boundaries and analytic radii. No global continuous Rhino equality or arbitrary trim-loop qualification is claimed."
+    }
+  ],
+  "reference": {
+    "sdk": "Rhino 8.32.26160.13001",
+    "fresh_recipes": 32,
+    "trimmed_or_split_parent_bodies": 72,
+    "all_original_domain_endpoints_match": true,
+    "same_request_geometric_matches": 24,
+    "sampled_sdk_radius_witnesses": [
+      {
+        "id": "cylinder-2.0-0.2-split-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0002257083475463162
+      },
+      {
+        "id": "cylinder-2.0-0.2-trim-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0002257083475463162
+      },
+      {
+        "id": "cylinder-6.0-0.8-split-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0002257083475463162
+      },
+      {
+        "id": "cylinder-6.0-0.8-trim-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0002257083475463162
+      },
+      {
+        "id": "swap-split-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0002257083475463162
+      },
+      {
+        "id": "swap-trim-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0002257083475463162
+      },
+      {
+        "id": "mobius-2-split-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0005046075511598858
+      },
+      {
+        "id": "mobius-2-trim-anisotropic",
+        "sampled_radius_error_lower_bound": 0.0005046075511598858
+      }
+    ],
+    "literal_sdk_geometry_failures": [
+      {
+        "id": "cylinder-2.0-0.2-split-anisotropic",
+        "largest_component_tolerance": 0.00022570834754334976,
+        "fillet_bounds_difference": 3.4673742366209126e-07
+      },
+      {
+        "id": "cylinder-2.0-0.2-trim-anisotropic",
+        "largest_component_tolerance": 0.00022570834754334976,
+        "fillet_bounds_difference": 3.4673742366209126e-07
+      },
+      {
+        "id": "cylinder-6.0-0.8-split-anisotropic",
+        "largest_component_tolerance": 0.00022570834754366374,
+        "fillet_bounds_difference": 3.9874804436124123e-07
+      },
+      {
+        "id": "cylinder-6.0-0.8-trim-anisotropic",
+        "largest_component_tolerance": 0.00022570834754366374,
+        "fillet_bounds_difference": 3.9874804436124123e-07
+      },
+      {
+        "id": "swap-split-anisotropic",
+        "largest_component_tolerance": 0.0002257083475424077,
+        "fillet_bounds_difference": 3.4673742366209126e-07
+      },
+      {
+        "id": "swap-trim-anisotropic",
+        "largest_component_tolerance": 0.0002257083475424077,
+        "fillet_bounds_difference": 3.4673742366209126e-07
+      },
+      {
+        "id": "mobius-2-split-anisotropic",
+        "largest_component_tolerance": 0.00036934135217919,
+        "fillet_bounds_difference": 3.837860281574734e-05
+      },
+      {
+        "id": "mobius-2-trim-anisotropic",
+        "largest_component_tolerance": 0.00036934135217919,
+        "fillet_bounds_difference": 3.837860281574734e-05
+      }
+    ],
+    "canonical_input_geometry_matches": 32,
+    "tighter_sdk_controls": {
+      "recipes_per_tolerance": 8,
+      "tolerances": [
+        1e-10,
+        1e-12,
+        1e-14
+      ],
+      "complete_values_identical_to_original": true
+    },
+    "capture_scope": "Public RhinoCommon SDK through the owned headless oracle. Raw observations are unchanged except JSON whitespace. Eight inaccurate anisotropic curved fits remain explicit literal SDK geometry failures. Canonical references have exactly equal normalized input NURBS and the same physical picks; independent radius witnesses verify the failures."
+  },
+  "protocol_regressions": {
+    "raw_full_protocol_matches": 0,
+    "raw_full_protocol_mismatches": 32,
+    "existing_parent_complete_values_unchanged": 32,
+    "fillet_only_contracts": [
+      {
+        "fixture": "surface_fillet.json",
+        "complete_values_unchanged": 6
+      },
+      {
+        "fixture": "surface_fillet_picks.json",
+        "complete_values_unchanged": 16
+      }
+    ],
+    "fresh_case_fillet_complete_values_unchanged": 32,
+    "spatial_parent_vertices_edges_and_surface_control_points_unchanged": true,
+    "baseline_executable_scope": "Retained pre-change executable; its complete operation values are checked against the committed pre-change captures before use. No embedded source revision is asserted."
+  },
+  "coverage": [
+    "Shared spatial edges, rational holes, seams, poles, reversed faces, large chart offsets, anisotropic UV ranges, invalid or duplicate requests, and declined insufficient coordinate precision.",
+    "Existing extreme spatial scale and signed-weight-gauge native parent controls; no component or model spatial tolerance widening.",
+    "All 64 old/new parent recipes replay through the command; full underlying support restored for clipped reversed faces.",
+    "Joined non-unit parent charts survive 3dm readback; interactive previews, acceptance, undo and redo retain charts."
+  ],
+  "limitations": [
+    "The eight raw SDK geometry mismatches remain failures; accurate canonical comparisons do not establish same-request SDK geometry parity for those cases.",
+    "Raw full-protocol definitions, topology and metadata differ; bounds, closest distances, sampled regions and analytic witnesses establish the stated geometric scope, not continuous global Rhino equality.",
+    "Curved Extend=Yes, arbitrary trimmed fillet sources, polysurface-face editing and the existing closed-cylinder certificate limit remain pending.",
+    "No C++ or FFI implementation changed, and no new ASan or general performance qualification is claimed."
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "14aa437da2097bc6841dee4536b763634ac58c8918810849f57ea0c364bf9973",
+    "crates/viboceros-command/src/fillet_surface/options.rs": "a048ff709f986f6982ba0608b4a5f528a8fdcaf38463a3ba9e7c7382ff5fac34",
+    "crates/viboceros-command/src/fillet_surface/prepare.rs": "5584a4d40428b0007adebd1528e34c4921ed8ece9d0663775f9df92076636ae9",
+    "crates/viboceros-command/src/fillet_surface/recorded.rs": "e39f15fa09a8aa363e098685626e636db5194e103886d4b8cf0c8e718445d8da",
+    "crates/viboceros-command/src/fillet_surface/tests.rs": "b2bbac202517ade01d5a364e1996549ced98d2a12817bf8c09f8d25d5ad7e478",
+    "crates/viboceros-geometry/src/brep.rs": "4cfe368d864c64eeddc39732ce1d4096e477245ae0321b1e12261dd18e7f755b",
+    "crates/viboceros-geometry/src/brep/reparameterize.rs": "3211c14cbf16c583b0110d3597c3031f00168363cf74211dd94cb14785c0fb8b",
+    "crates/viboceros-geometry/src/brep/reparameterize/tests.rs": "3982fdc154f1405007aa4fc30e9e5a531eae3754634bf41bfb2921350db2b9a2",
+    "crates/viboceros-oracle/src/surface_fillet.rs": "a59eb63eefbd471723d031adc2fd3e7307fe9a798c0b531f151b81323246c212",
+    "crates/viboceros-oracle/src/surface_fillet_conditioning.rs": "d246b478b11d2554f741a96a82d7ee72fd79babf109e87e13e29709f3629868a",
+    "crates/viboceros-oracle/src/surface_fillet_parent_tests.rs": "46ecc70c86b58e53ba294c985569a54b5196e1a58d3ac4b7479ed815903f3c32",
+    "crates/viboceros-smlib/Cargo.toml": "4035f83731c394bf57bb69aa0788a92099d2a32d90c65806da1c15829feaea19",
+    "crates/viboceros-smlib/native/surface_fillet.cpp": "86e1727253f401172817b4a431b6d0887b501f8f922def207d4b3981b95948a7",
+    "crates/viboceros-smlib/src/native/surface_fillet.rs": "d9ac59864446f3e862a97852c1e9fb62a5b3fc15f3fc31ae786e71fab814315d",
+    "crates/viboceros-smlib/tests/surface_fillet_picks.rs": "a6d544f0abc1d4dc00e312d1320d77a5a60e56cbff4a2e3e55216f045d1b3120",
+    "docs/commands/fillet-srf.md": "b32c0b8d83f486558232adb21ccc2a7c67e967a57a67e2876c4063c6f99719ef",
+    "docs/direction-adapters-validation.json": "391ef9a5e42e8bcfad5ecadf37f2ca0a78cd014dc7cc3d5b099a3354e91bf59f",
+    "docs/fillet-parent-charts.md": "7deaeb4fde02ea9df9b2a02ad3966dfacae97e833d021ccd21bd21161c5b60b8",
+    "docs/fillet-srf-validation.json": "a780b5a487b7238e138007abde31eb7642a1afe08c72b1c5f5fd7e8b114ce15d",
+    "docs/native-surface-fillet-parents-validation.json": "f38038266557e4904710c23bb1671153e56b18669ccb377b73e3f0b7809940fe",
+    "docs/native-surface-fillet-parents.md": "5af0721daa272235af3569fdcc1f327e23b61c34bfb7a4631a7d68ffd96e44a3",
+    "src/app/tests/fillet_surface.rs": "7fc635744a0315b695f594c747ac75b5bf69720e9511583f8ae10b8c883deeb8",
+    "tools/rhino_oracle/fixtures/surface_fillet_charts.json": "ec9a51b0a2cdce7df1ba84a5526b90362546e689f7dbae722c4cd3594677a002",
+    "tools/rhino_oracle/fixtures/surface_fillet_parents.json": "9305619c2c508d0a958da34e14cd29be48142899f7be962a17bbf344de77fb92",
+    "tools/rhino_oracle/observations/surface_fillet_charts.json": "960ef7d6476983e0d241b6800a25553798f19bc116b110d0598fbdfbcf0f2104",
+    "tools/rhino_oracle/observations/surface_fillet_parents.json": "3bfdb0ada0d77935624c31ec97ca556581606259701cff38105ec4f508bfca47"
+  },
+  "artifact_sha256": {
+    "docs/fillet-parent-charts-geometry.log.gz": "3ecf3890f4ae57ec3fab0f23b20fe3ce37cc724103498d8052e1116c6444bff6",
+    "docs/fillet-parent-charts-geometry-runtime.json.gz": "8d7ab10e46007c559825062e63d1b99ed71539494034280684feed41b73fbbf4",
+    "docs/fillet-parent-charts-fillet-oracle.log.gz": "5e736279a681ebf4b8986c0f63fa7bce2e2a00fc92491ea2e59de3262f93e15d",
+    "docs/fillet-parent-charts-fillet-oracle-runtime.json.gz": "c8a0eacd69742fe2d2cfbee13805fa90e7940d454f653b6a9ff7ddb985b902e2",
+    "docs/fillet-parent-charts-command.log.gz": "4367c2c1c97fdc239dcde3ea91a438a5450f247da9d12a1bbbca2e153093b87b",
+    "docs/fillet-parent-charts-command-runtime.json.gz": "974029c9f5fa5dee63046e009e4b364095c9c7b32bc2a15643b2ee3c3d194060",
+    "docs/fillet-parent-charts-ui.log.gz": "9a18466f770d34dbfd6f60939c04068788fdd3162e82ee287a8e027cd052e587",
+    "docs/fillet-parent-charts-ui-runtime.json.gz": "c190baf4ab469fc777b412d43dc63dffbd203fbe0955530c34d50f1333fd720f",
+    "docs/fillet-parent-charts-clippy.log.gz": "c02f94c7f15062f9b4afc9c86bd87ae9c75307608a64a09144690463b6a0018f",
+    "docs/fillet-parent-charts-clippy-runtime.json.gz": "c01afdd48e65adfa14823e7e3afc95e040ec7116bb54605f6e719a5050c7c4da",
+    "docs/fillet-parent-charts-portable-check.log.gz": "89efbeea94b7e5efb8fdfc7816303c3c662c2d66217576128c7d88b519162d05",
+    "docs/fillet-parent-charts-portable-check-runtime.json.gz": "3335fe7b37a8f64e5beb704151d4777b6024f0cf6457459d3541e43aec4f69ae",
+    "docs/fillet-parent-charts-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/fillet-parent-charts-fmt-runtime.json.gz": "24a5f11bf1d17a321cb2bf014f20097e807fc61539c8f85b4a4853254ffe71c4",
+    "docs/fillet-parent-charts-oracle-build.log.gz": "e84ddd925b3b75bc6f3c3d1a41fa6ad6fd5ce276d8d41fb9150885cb09a176c9",
+    "docs/fillet-parent-charts-oracle-build-runtime.json.gz": "e0206f2aebf04eaaa8f77f6f16b1f6bf0d5cd6b2d30c23b335999c2a83b6dee2",
+    "docs/fillet-parent-charts-bridge-focused.log.gz": "cf0d2d35a8ba12bcb009673196a6f0568702cb04ae5f25243bb12f3699489425",
+    "docs/fillet-parent-charts-bridge-focused-runtime.json.gz": "d3325d8cb308bd83ba9210d4576f73b282ca4acb414376706cc70d117e7b1b0e",
+    "docs/fillet-parent-charts-gates.py.gz": "f6028fac857ba575f9850c92782876eb70dd1bec90b8fc5e8f81a7e6bf2ebb9f",
+    "docs/fillet-parent-charts-finish.py.gz": "9e41684540a482af9de810367c19c03170678e9b389963d6cd48d0ff60aafffb",
+    "docs/fillet-parent-charts-preserve-provenance.py.gz": "25d3851e4b4e3f85d437b4797c5e41db2ac31d624b5ad5ba003ae282839ae290",
+    "docs/fillet-parent-charts-sdk.py.gz": "317c16038ad4e22f11520a0611094a950781b7540f233e8ba30af882c153317c",
+    "docs/fillet-parent-charts-sdk-runtime.json.gz": "eb5e7dabd8626990c134bd27a9236c7ccfabfb024d81ac92f5393dc41fbb1fcd",
+    "docs/fillet-parent-charts-baseline.py.gz": "bf86618b6077013ec8ff2e7011a30427b7b1d59e4aa1adc4f9348811d6fa89e0",
+    "docs/fillet-parent-charts-baseline-binary.json.gz": "1589492e4df13c4aa5c73a615381f6dbe3b98ba9d690adbe2e0d854db28c9820",
+    "docs/fillet-parent-charts-baseline-runtime.json.gz": "46a78a02deb9c211054462470fe9f37e00f658a4740008dab656970f3ea59b1d",
+    "docs/fillet-parent-charts-baseline-request.json.gz": "8aa9b0e4b2541edb815d63ad6bab2b90c77884ba951e858f0d5124110bbe930e",
+    "docs/fillet-parent-charts-baseline-audit.json.gz": "26908a36bd09cd55aa73e6a01cf04ffae5f207cbc82212b8d80ed6cb790ed9f7",
+    "docs/fillet-parent-charts-candidate-audit.json.gz": "5c9a766c8bcdffe500239b98f5ad65ad80153b408b3fb318675bf92e5d4a7bd1",
+    "docs/fillet-parent-charts-audit.py.gz": "a7ceb4b0c0972e2cd1880f1a16b37db100fbf2a9043b1960091e45a111aa4ab0",
+    "docs/fillet-parent-charts-audit.log.gz": "07aafeb63f5fa76c8707fe96960b242b7f3dbaa11d2dd3ea35d0c1af10f03f01",
+    "docs/fillet-parent-charts-comparison.json.gz": "b2a22b3adb33c6be6b9c93c679fb0c3f338ec90dc3834ac95f460f6e1d5db92b",
+    "docs/fillet-parent-charts-raw-report.json.gz": "ba162ee1f3cd4a7d23f73fc5d449dba9334c00f0c36fc393886ffb342ff2fd40",
+    "docs/fillet-parent-charts-tight-sdk.py.gz": "521cb9c119280398f657ecd69d76315da845acec39d6c57a0edc433d386163f8",
+    "docs/fillet-parent-charts-tight-sdk.log.gz": "61c49c708f20e877cb3c3159e0183c78841dc5e42fe7ecc0a56c7cd9fb7b20a4",
+    "docs/fillet-parent-charts-record.py.gz": "4be763b475e9d081368ce55715db5fde98aa22b0de0156c462cc8778efd2cae5",
+    "docs/fillet-parent-charts-stage.py.gz": "dbfd48a7b665ce4c73c1cf85c5061c917c4a46465c32f0d7611c5a388d2bece5",
+    "docs/fillet-parent-charts-tight10-request.json.gz": "c04fd5d6d8d6e42d61a02cfbf9c521308b74018392ead582107c68799518ee44",
+    "docs/fillet-parent-charts-tight10-response.json.gz": "8fb752cd1b402e5466f58761ad736971c40f20953526ccd0f7290dba9f0e46c5",
+    "docs/fillet-parent-charts-tight10-runtime.json.gz": "d48af741330931d578997c7f9a48639d93586e13f64d1d80f74916381d027440",
+    "docs/fillet-parent-charts-tight12-request.json.gz": "5cfb1a329163d9a0eec262d7606ca09be405fa094850a70a4b947f6c0f52ff62",
+    "docs/fillet-parent-charts-tight12-response.json.gz": "a740da29155caaf2db5611b02a445ea582e3ce509a4941440846c7f2449915ee",
+    "docs/fillet-parent-charts-tight12-runtime.json.gz": "2200f8dab9753316fa7d2262fb5854d0854599cb65a1dc573d2242a083a05f3d",
+    "docs/fillet-parent-charts-tight14-request.json.gz": "e0bc8ab6ae59b10c57f4ec0f01fce35d124926649c18a26d17ab897c6be88d47",
+    "docs/fillet-parent-charts-tight14-response.json.gz": "a30bb443f6320e74a01217a95a23682cd76688a55ba35bc1271bbad132dbd85c",
+    "docs/fillet-parent-charts-tight14-runtime.json.gz": "847d72dc458f430af5f510ee8074ff0e5a872bc43f0517b9e7953818fb1bce2f",
+    "docs/fillet-parent-charts-original-six-baseline-audit.json.gz": "03c04f75fef484961da6b46d1809437162c07d9d0fcc955566d865d743e378b8",
+    "docs/fillet-parent-charts-original-six-candidate-audit.json.gz": "8dde0e4d38fdb6be29cb8ad22dad0342d0bf482e71a2d649ba7ef322b66c9b40",
+    "docs/fillet-parent-charts-original-picks-baseline-audit.json.gz": "cdac3a5a1182e222dc0da398fc5ca51019d83b44e471a922ceda7de1cebf87df",
+    "docs/fillet-parent-charts-original-picks-candidate-audit.json.gz": "5175b79cc3ae01b3865ee7fbb5b18d3a0996818e0e953336a0436dd0b8a06034"
+  }
+}

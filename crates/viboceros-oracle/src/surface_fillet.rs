@@ -147,6 +147,9 @@ pub(super) fn run(_: &Fixture, _: u32, _: Tolerance) -> Result<(Value, u64), Pro
 }
 
 #[cfg(all(test, feature = "native-smlib"))]
+#[path = "surface_fillet_conditioning.rs"]
+mod conditioning;
+#[cfg(all(test, feature = "native-smlib"))]
 #[path = "surface_fillet_images.rs"]
 mod images;
 #[cfg(all(test, feature = "native-smlib"))]

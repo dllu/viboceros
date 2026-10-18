@@ -1378,11 +1378,7 @@
     "crates/viboceros-smlib/native/surface_fillet.cpp": "86e1727253f401172817b4a431b6d0887b501f8f922def207d4b3981b95948a7",
     "crates/viboceros-smlib/src/lib.rs": "c28cd0818e1fd57677f4ed1b4a4b5f51a710b95cd587c9927dd94632e0b38536",
     "crates/viboceros-smlib/src/native.rs": "42a5d69f4522a1b2b15d8505ad714c4c8552d0b0db3535d0215c83433a4fe557",
-    "crates/viboceros-smlib/src/native/surface_fillet.rs": "2d3d6028a2f5f0bdf8be4ec30798a9e94fd2bd116d2d6bc41730398d880d806f",
-    "crates/viboceros-smlib/tests/surface_fillet_picks.rs": "a575b263d45c8a7dcb97c3f9d2925a845bb97716dfcf838bf8f94be06c459764",
-    "crates/viboceros-oracle/src/surface_fillet.rs": "eb491a8b60891cc6c61b6bc49b4244c385756c2e7b04115154b0eb1489b2c13b",
     "crates/viboceros-oracle/src/surface_fillet_images.rs": "31c97e343b784a904ec4ca1621b4d84bdcecfb0d6e046a914e488f6f04caefcb",
-    "crates/viboceros-oracle/src/surface_fillet_parent_tests.rs": "3d8b9253039a6cc7ab16b6385e9ec65d169800262767df5294d79e306025ad7f",
     "tools/usd_brep/surface_fillet_parents_probe.cpp": "c46a2a2bacd9057c119b0b0f013d4707f503e8ff6f87e72e7c8ba98a0bf221cc",
     "tools/usd_brep/surface_fillet_probe.cpp": "9060b9619c0503868e679af3e1463b0e20ab07a7307655c4858dcf6de386643f",
     "tools/rhino_oracle/surface_fillet_probe.py": "f7771d6d91fdf4d398741250c728ce1309114c94857461b5c8bc7a691f953641",
@@ -1503,6 +1499,10 @@
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:docs/native-surface-fillet-picks-validation.json": "1227f2e337379ecaeeeb6e5ea6c3c877c6554a2c3dcb58580dada478d58cb412",
     "17edd759a15358489de6fb6b1c2e2d8ab3409abe:README.md": "2acdf6b6079c53540d09fef42ce1323bcd021c0bcdca595058484149fa67b294",
     "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillets.md": "4c0103c5044e675ea759c6aad27320ec2aa5775e2e08380eb1ca8b869d3609b0",
-    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillet-parents.md": "964c07e327d347495e3221be88e9b685ebeffd383104ccfbef5428880eddabca"
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillet-parents.md": "964c07e327d347495e3221be88e9b685ebeffd383104ccfbef5428880eddabca",
+    "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-smlib/src/native/surface_fillet.rs": "2d3d6028a2f5f0bdf8be4ec30798a9e94fd2bd116d2d6bc41730398d880d806f",
+    "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-smlib/tests/surface_fillet_picks.rs": "a575b263d45c8a7dcb97c3f9d2925a845bb97716dfcf838bf8f94be06c459764",
+    "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-oracle/src/surface_fillet.rs": "eb491a8b60891cc6c61b6bc49b4244c385756c2e7b04115154b0eb1489b2c13b",
+    "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-oracle/src/surface_fillet_parent_tests.rs": "3d8b9253039a6cc7ab16b6385e9ec65d169800262767df5294d79e306025ad7f"
   }
 }

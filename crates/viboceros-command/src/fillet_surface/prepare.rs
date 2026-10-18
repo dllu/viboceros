@@ -108,6 +108,29 @@ pub fn prepare(
         }
         let sources = ids.map(|id| doc.object(id).unwrap().clone());
         for (i, parent) in parents.iter_mut().enumerate() {
+            if let Geometry::Brep(b) = sources[i].geometry() {
+                let support = b.faces()[0].surface();
+                if support.domain_u() != surfaces[i].domain_u()
+                    || support.domain_v() != surfaces[i].domain_v()
+                {
+                    for piece in parent.iter_mut().flatten() {
+                        // Native construction uses the clipped support. Its restored
+                        // p-curves already use source units; retain the original full
+                        // support so Domain/UV queries do not inherit the clip bounds.
+                        let faces = piece
+                            .faces()
+                            .iter()
+                            .map(|face| restore_support(face, support))
+                            .collect::<Result<Vec<_>, _>>()?;
+                        *piece = Brep::try_new(
+                            piece.vertices().to_vec(),
+                            piece.edges().to_vec(),
+                            faces,
+                            tolerance,
+                        )?;
+                    }
+                }
+            }
             if let Geometry::Brep(b) = sources[i].geometry()
                 && b.faces()[0].is_reversed()
             {
@@ -159,4 +182,54 @@ pub fn prepare(
             layer: doc.current_layer_id(),
         })
     }
+}
+
+#[cfg(feature = "native-smlib")]
+fn restore_support(
+    face: &viboceros_geometry::BrepFace,
+    support: &NurbsSurface,
+) -> Result<viboceros_geometry::BrepFace, viboceros_geometry::GeometryError> {
+    use viboceros_geometry::{BrepFace, BrepLoop, BrepTrim, SurfaceIso};
+    let old = [face.surface().domain_u(), face.surface().domain_v()];
+    let full = [support.domain_u(), support.domain_v()];
+    let loops = face
+        .loops()
+        .iter()
+        .map(|boundary| {
+            let trims = boundary
+                .trims()
+                .iter()
+                .map(|trim| {
+                    // A boundary of the clipped rectangle may be an interior
+                    // isocurve of the original support. Keep its exact p-curve.
+                    let iso = match trim.iso() {
+                        SurfaceIso::West if old[0].start() != full[0].start() => {
+                            SurfaceIso::InteriorUConstant
+                        }
+                        SurfaceIso::East if old[0].end() != full[0].end() => {
+                            SurfaceIso::InteriorUConstant
+                        }
+                        SurfaceIso::South if old[1].start() != full[1].start() => {
+                            SurfaceIso::InteriorVConstant
+                        }
+                        SurfaceIso::North if old[1].end() != full[1].end() => {
+                            SurfaceIso::InteriorVConstant
+                        }
+                        iso => iso,
+                    };
+                    BrepTrim::try_new(
+                        trim.vertices(),
+                        trim.edge(),
+                        trim.is_reversed_3d(),
+                        trim.curve().clone(),
+                        trim.trim_type(),
+                        iso,
+                        trim.tolerance(),
+                    )
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            BrepLoop::try_new(boundary.loop_type(), trims)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    BrepFace::try_new(support.clone(), face.is_reversed(), loops)
 }

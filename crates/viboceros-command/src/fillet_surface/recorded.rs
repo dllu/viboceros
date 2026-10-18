@@ -46,18 +46,28 @@ fn close(a: [[Real; 3]; 2], e: &Value, context: &str) {
 }
 #[test]
 fn sdk_parent_recipes_keep_the_expected_pieces_and_source_identity() {
-    let request: Value = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/fixtures/surface_fillet_parents.json"
-    ))
-    .unwrap();
-    let reference: Value = serde_json::from_str(
-        &std::fs::read_to_string(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/../../tools/rhino_oracle/observations/surface_fillet_parents.json"
-        ))
-        .unwrap(),
+    check_command_fixture("surface_fillet_parents");
+    check_command_fixture("surface_fillet_charts");
+}
+fn check_command_fixture(name: &str) {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
+    let request: Value = serde_json::from_str(
+        &std::fs::read_to_string(root.join("fixtures").join(format!("{name}.json"))).unwrap(),
     )
     .unwrap();
+    let reference: Value = serde_json::from_str(
+        &std::fs::read_to_string(root.join("observations").join(format!("{name}.json"))).unwrap(),
+    )
+    .unwrap();
+    let canonical_request: Value = serde_json::from_str(
+        &std::fs::read_to_string(root.join("fixtures/surface_fillet_parents.json")).unwrap(),
+    )
+    .unwrap();
+    let canonical_reference: Value = serde_json::from_str(
+        &std::fs::read_to_string(root.join("observations/surface_fillet_parents.json")).unwrap(),
+    )
+    .unwrap();
+    let mut inaccurate_sdk = 0;
     let registry = CommandRegistry::with_builtins();
     for (op, record) in request["operations"]
         .as_array()
@@ -68,6 +78,58 @@ fn sdk_parent_recipes_keep_the_expected_pieces_and_source_identity() {
         assert_eq!(op["id"], record["id"]);
         let context = op["id"].as_str().unwrap();
         let expected = &record["value"];
+        let mut component_tolerance = 0_f64;
+        for body in expected["outputs"].as_array().unwrap().iter().chain(
+            expected["parents"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .flat_map(|p| p.as_array().unwrap()),
+        ) {
+            for table in ["vertices", "edges"] {
+                for part in body["geometry"][table].as_array().unwrap() {
+                    component_tolerance =
+                        component_tolerance.max(part["tolerance"].as_f64().unwrap());
+                }
+            }
+        }
+        let sdk_surface = &expected["outputs"][0]["geometry"]["faces"][0]["definition"];
+        let coarse_sdk = name == "surface_fillet_charts"
+            && sdk_surface["degree"][0] == 3
+            && sdk_surface["control_count"][0] == 7;
+        let geometric = if coarse_sdk {
+            assert!(component_tolerance > 1e-8);
+            // The oracle's independent radius witness identifies these eight
+            // coarse SDK fits. Keep their literal domains, counts and raw
+            // observations; compare geometry to identical canonical inputs.
+            assert_eq!(name, "surface_fillet_charts");
+            inaccurate_sdk += 1;
+            let id = context.rsplit_once('-').unwrap().0;
+            let original = canonical_request["operations"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|o| o["id"] == id)
+                .unwrap();
+            for i in 0..2 {
+                assert_eq!(
+                    surface(&op["surfaces"][i])
+                        .try_reparameterized(0. ..=1., 0. ..=1.)
+                        .unwrap(),
+                    surface(&original["surfaces"][i])
+                        .try_reparameterized(0. ..=1., 0. ..=1.)
+                        .unwrap()
+                );
+            }
+            &canonical_reference["results"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|r| r["id"] == id)
+                .unwrap()["value"]
+        } else {
+            expected
+        };
         let mut doc = Document::new(Tolerance::try_new(1e-8, 1e-12, 1e-8).unwrap());
         let ids = [
             doc.add_geometry(Geometry::NurbsSurface(surface(&op["surfaces"][0])))
@@ -102,7 +164,7 @@ fn sdk_parent_recipes_keep_the_expected_pieces_and_source_identity() {
         let Geometry::Brep(fillet) = selected.geometry() else {
             panic!()
         };
-        close(bounds(fillet), &expected["outputs"][0]["bounds"], context);
+        close(bounds(fillet), &geometric["outputs"][0]["bounds"], context);
         for (i, id) in ids.iter().enumerate() {
             let pieces = expected["parents"][i].as_array().unwrap();
             let name = format!("parent{i}");
@@ -121,6 +183,28 @@ fn sdk_parent_recipes_keep_the_expected_pieces_and_source_identity() {
                 );
             } else {
                 for piece in pieces {
+                    let expected = &piece["geometry"]["faces"][0]["definition"];
+                    assert!(
+                        actual.iter().all(|object| {
+                            let Geometry::Brep(b) = object.geometry() else {
+                                return false;
+                            };
+                            let s = b.faces()[0].surface();
+                            [*s.domain_u().start(), *s.domain_u().end()]
+                                == serde_json::from_value::<[Real; 2]>(expected["domain_u"].clone())
+                                    .unwrap()
+                                && [*s.domain_v().start(), *s.domain_v().end()]
+                                    == serde_json::from_value::<[Real; 2]>(
+                                        expected["domain_v"].clone(),
+                                    )
+                                    .unwrap()
+                        }),
+                        "{context}: parent {i} chart changed"
+                    );
+                }
+                let regions = geometric["parents"][i].as_array().unwrap();
+                assert_eq!(pieces.len(), regions.len());
+                for piece in regions {
                     assert!(
                         actual.iter().any(|o| {
                             let Geometry::Brep(b) = o.geometry() else {
@@ -140,6 +224,14 @@ fn sdk_parent_recipes_keep_the_expected_pieces_and_source_identity() {
             }
         }
     }
+    assert_eq!(
+        inaccurate_sdk,
+        if name == "surface_fillet_charts" {
+            8
+        } else {
+            0
+        }
+    );
 }
 #[test]
 fn rectangular_trimmed_parents_use_original_uv_picks_and_preserve_orientation() {
@@ -163,16 +255,30 @@ fn rectangular_trimmed_parents_use_original_uv_picks_and_preserve_orientation() 
         assert_eq!(clipped.domain_u(), -1. ..=7.);
         assert_eq!(clipped.domain_v(), 14. ..=26.);
     }
+    let supports = ids.map(|id| {
+        let Geometry::Brep(b) = doc.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        b.faces()[0].surface().clone()
+    });
     let options = parse(&["Pick1=0,20", "Pick2=0,20", "Extend=No"]).unwrap();
     prepare(&doc, ids, &options)
         .unwrap()
         .commit(&mut doc)
         .unwrap();
-    for id in ids {
+    for (i, id) in ids.into_iter().enumerate() {
         let Geometry::Brep(b) = doc.object(id).unwrap().geometry() else {
             panic!()
         };
+        assert_eq!(b.faces()[0].surface(), &supports[i]);
+        assert!(
+            b.faces()[0]
+                .contains_parameters(0., 20., doc.tolerance())
+                .unwrap()
+        );
         assert!(b.faces()[0].is_reversed());
+        assert_eq!(b.faces()[0].surface().domain_u(), -2. ..=8.);
+        assert_eq!(b.faces()[0].surface().domain_v(), 10. ..=30.);
     }
     let Geometry::Brep(b) = doc.selected_objects().next().unwrap().geometry() else {
         panic!()
@@ -223,4 +329,57 @@ fn curved_extension_is_declined_and_overlap_join_preserves_unchanged_parent() {
     };
     assert_eq!(b.faces().len(), 2);
     assert_eq!(doc.selected_objects().next().unwrap().id(), ids[1]);
+}
+
+#[test]
+fn joined_parent_faces_keep_their_nonunit_original_uv_ranges() {
+    let (_, mut doc, ids) = sources();
+    for (i, id) in ids.into_iter().enumerate() {
+        let Geometry::NurbsSurface(s) = doc.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        let s = s
+            .try_reparameterized(
+                if i == 0 { -2. ..=8. } else { 2. ..=7. },
+                if i == 0 { 10. ..=30. } else { -8. ..=3. },
+            )
+            .unwrap();
+        doc.replace_object_geometries([(id, Geometry::NurbsSurface(s))])
+            .unwrap();
+    }
+    let options = parse(&["Pick1=0,20", "Pick2=3,-2.5", "Extend=No", "Join=Yes"]).unwrap();
+    prepare(&doc, ids, &options)
+        .unwrap()
+        .commit(&mut doc)
+        .unwrap();
+    assert_eq!(doc.objects().len(), 1);
+    let Geometry::Brep(b) = doc.object(ids[0]).unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(b.faces().len(), 3);
+    for domains in [[-2. ..=8., 10. ..=30.], [2. ..=7., -8. ..=3.]] {
+        assert!(
+            b.faces()
+                .iter()
+                .any(|f| [f.surface().domain_u(), f.surface().domain_v()] == domains)
+        );
+    }
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("fillet-charts.3dm");
+    CommandRegistry::with_builtins()
+        .execute(&mut doc, &format!("SaveAs {}", path.display()))
+        .unwrap();
+    let restored = viboceros_io::read_3dm_file_with_model_tolerance(&path).unwrap();
+    assert_eq!(restored.unsupported_object_count(), 0);
+    assert_eq!(restored.objects.len(), 1);
+    let viboceros_io::ThreeDmGeometry::Brep(b) = &restored.objects[0].geometry else {
+        panic!()
+    };
+    for domains in [[-2. ..=8., 10. ..=30.], [2. ..=7., -8. ..=3.]] {
+        assert!(
+            b.faces()
+                .iter()
+                .any(|f| [f.surface().domain_u(), f.surface().domain_v()] == domains)
+        );
+    }
 }

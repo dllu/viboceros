@@ -19,8 +19,9 @@ let result = fillet_surfaces_with_parents(
 and two optional parent replacements. For each parent, `None` means retain the
 original; `Some(faces)` replaces it with separate owned faces. An empty
 replacement reports complete native consumption. The caller's input geometry
-remains unchanged on success and failure. Replacement parents use the private
-producer's normalized UV charts and world coordinates. The API accepts two
+remains unchanged on success and failure. Replacement parents use world
+coordinates and now retain their [original UV charts](fillet-parent-charts.md);
+construction still uses private normalized inputs. The API accepts two
 NURBS support surfaces; it does not import existing trimmed parent topology.
 
 The implementation reuses usd-brep's rail insertion and base-surface trimming.

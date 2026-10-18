@@ -64,6 +64,7 @@ pub use solid_orientation::BrepSolidOrientation;
 mod tessellation;
 mod tolerance;
 use tolerance::scaled_tolerance;
+mod reparameterize;
 mod retrim;
 mod surface_cut_pullback;
 mod surface_edit;

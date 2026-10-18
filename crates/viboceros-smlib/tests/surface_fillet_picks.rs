@@ -603,3 +603,86 @@ fn closed_contacts_preserve_the_existing_certificate_limit_without_mutating_sour
     }
     assert_eq!(p, before);
 }
+
+#[test]
+fn trimmed_and_split_parents_retain_original_charts_and_identical_spatial_tables() {
+    use viboceros_smlib::{SurfaceFilletParentMode as Mode, fillet_surfaces_with_parents};
+    let planes = [
+        plane([[0., 0., 0.], [10., 0., 0.], [0., 10., 0.], [10., 10., 0.]]),
+        plane([[5., 0., -5.], [5., 0., 5.], [5., 10., -5.], [5., 10., 5.]]),
+    ];
+    for family in 0..5 {
+        let mut unit = if family == 0 {
+            planes.clone()
+        } else {
+            parents()
+        };
+        unit[1] = match family {
+            2 => unit[1].try_reversed_u().unwrap(),
+            3 => unit[1].try_reversed_v().unwrap(),
+            4 => unit[1].try_swapped_uv().unwrap(),
+            _ => unit[1].clone(),
+        };
+        let charts = [[-2. ..=8., 10. ..=30.], [2e-8..=7e-8, -8e3..=-3e3]];
+        let input: [NurbsSurface; 2] = std::array::from_fn(|i| {
+            unit[i]
+                .try_reparameterized(charts[i][0].clone(), charts[i][1].clone())
+                .unwrap()
+        });
+        let picks = if family == 0 {
+            [[0.2, 0.5], [0.2, 0.5]]
+        } else {
+            [
+                [0.6, 0.6],
+                if family == 4 { [0.2, 0.5] } else { [0.5, 0.2] },
+            ]
+        };
+        let mapped = std::array::from_fn(|i| {
+            [
+                input[i].parameter_at_u(picks[i][0]).unwrap(),
+                input[i].parameter_at_v(picks[i][1]).unwrap(),
+            ]
+        });
+        let options =
+            Options::try_from_picks(&input[0], &input[1], mapped, 0.75, false, tol()).unwrap();
+        let before = input.clone();
+        for mode in [Mode::Split, Mode::Trim] {
+            let expected = fillet_surfaces_with_parents(&unit[0], &unit[1], options, mode, tol())
+                .unwrap()
+                .unwrap();
+            let actual = fillet_surfaces_with_parents(&input[0], &input[1], options, mode, tol())
+                .unwrap()
+                .unwrap();
+            assert_eq!(actual.fillet, expected.fillet);
+            for (i, source) in input.iter().enumerate() {
+                match (&actual.parents[i], &expected.parents[i]) {
+                    (None, None) => {}
+                    (Some(actual), Some(expected)) => {
+                        assert_eq!(actual.len(), expected.len());
+                        for (a, e) in actual.iter().zip(expected) {
+                            assert_eq!(a.vertices(), e.vertices());
+                            assert_eq!(a.edges(), e.edges());
+                            for (af, ef) in a.faces().iter().zip(e.faces()) {
+                                assert_eq!(af.surface().domain_u(), source.domain_u());
+                                assert_eq!(af.surface().domain_v(), source.domain_v());
+                                assert_eq!(af.is_reversed(), ef.is_reversed());
+                                for (al, el) in af.loops().iter().zip(ef.loops()) {
+                                    for (at, et) in al.trims().iter().zip(el.trims()) {
+                                        assert_eq!(at.vertices(), et.vertices());
+                                        assert_eq!(at.edge(), et.edge());
+                                        assert_eq!(at.trim_type(), et.trim_type());
+                                        assert_eq!(at.iso(), et.iso());
+                                        assert_eq!(at.is_reversed_3d(), et.is_reversed_3d());
+                                        assert_eq!(at.curve().knots(), et.curve().knots());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    _ => panic!("parent replacement contract changed"),
+                }
+            }
+        }
+        assert_eq!(input, before);
+    }
+}
