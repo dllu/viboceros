@@ -1,0 +1,29 @@
+--- a/SmBSplineSurface.cpp
++++ b/SmBSplineSurface.cpp
+@@ -4936,7 +4936,7 @@
+ ***********************************************************************/
+ SmStatus SmBSplineSurface::CopySubPatch
+  (const SmContext   & crContext,    // in : Context for new object construction
+-  const SmExtent2d  & crUVDomain,   // in : Domain of NewSurface (snapped to existing knots within 1.0e-10)
++  const SmExtent2d  & crUVDomain,   // in : Exact domain of NewSurface after natural-domain intersection
+   SmBSplineSurface *& rpNewSurface) // out: NewSurface = ThisSurface over crUVDomain
+  const
+ {
+@@ -4987,8 +4987,15 @@
+   if ( iFlg == NL_YES )
+     { return SM_ERR; }
+ 
+-  // copy sNewSur back into a SmBSplineSurface object
+-  rpNewSurface = new (crContext) SmBSplineSurface(&sNewSur) ;
++  // Copy the valid extracted tensor through the exact setter. The raw-data
++  // constructor repairs nearby knots and can change this restriction.
++  SmBSplineSurface *pPatch = new (crContext) SmBSplineSurface;
++  NER(pPatch);
++  SmObjDelete patchCleanup(pPatch);
++  SER(pPatch->SetFromGwNurb(3, &sNewSur));
++  NER(pPatch->GetOrCreateGwNurbPointer());
++  rpNewSurface = pPatch;
++  patchCleanup.Clear();
+ 
+   // note: leftover sNewSur memory is freed when NL_STACKS SC goes out of scope
+ 

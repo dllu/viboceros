@@ -296,9 +296,6 @@
     "No kernel speedup or leak-free result is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "61603438464e225c7baf5ae399f89f7c6b4283ac0cc6ee5a00ac3c665d6933fb",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "6dbde2bfe9862ad7130ef8139195e0a17faa99e94d1a55fa0c9d2f2b28c50310",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "7352074510f0c849f4af5c409d54ac52ffea1862f2a735e402ed17db8c2b9098",
     "crates/viboceros-smlib/tests/isocurve_pairs.rs": "a1d9dd31c6e7cd7c2c46b2ff8ae0ca0f584c4ca9235b8d62fd31bf9046ffa454",
     "tools/usd_brep/isocurve_pair_probe.cpp": "696eb2aabb671cb9337bc7fc3e5005d0b4f003aa24187b49cbe93a625a4eb72c",
     "third_party/patches/usd-brep-isocurve-pairs.cmake": "3010d1ea5e4a7eae0082e953fd874930c3755c88c1ef22c9a6b12edf6263dda7",
@@ -346,7 +343,6 @@
     "docs/native-isocurve-limits.md": "5a2ff4e7cb903a7ee8341939e8b28c4b2efb7df359367aac65b3cfe326923fc7",
     "docs/native-isocurve-pairs.md": "3e9b0a691d63e2a3a812d6560ef6d619053570207b9dfc2e8e0e6f2e9f873f4c",
     "docs/smlib-isocurves.md": "31f308ceb4d197812b136c4261924fe90e4e4a9c9a744f261e65de24ec242810",
-    "docs/usd-brep-limitations.md": "901ddd596be778d9dfecc7c3f481b970f6f0360a2ddce31c98e136205039a64a",
     "tools/rhino_oracle/fixtures/surface_isocurve_geometry.json": "8d1799107e57376411cdd294781310b8ef083b7d6db3a5364d614cad45d1e4e0",
     "tools/rhino_oracle/observations/surface_isocurve_geometry.json": "85d2ee54ac3861517262e93696e2c4e26889311f554a35e88905bdc4300fae50",
     "docs/native-isocurve-pairs-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
@@ -371,5 +367,13 @@
     "bdef540085515d56b7d222d15cadea16c159a118:tools/usd_brep/isocurve_pair_probe.cpp": "d1b412697e597d87a7e7b8fe6171a0bd3da063f9eeec9d88ff2052c3653775e1",
     "bdef540085515d56b7d222d15cadea16c159a118:third_party/patches/usd-brep-isocurve-pairs.cmake": "1c4fd9b19b94d69e8dfe09fa593cc038a33259fe3d38ed3187c6086211e59726"
   },
-  "log_policy": "Observe completed job exit/status receipts. Retain raw outputs, strict comparisons and logs in deterministic gzip. Exact authored geometry, successful API execution, saved-Rhino comparisons and fresh-Rhino comparisons are separate evidence."
+  "log_policy": "Observe completed job exit/status receipts. Retain raw outputs, strict comparisons and logs in deterministic gzip. Exact authored geometry, successful API execution, saved-Rhino comparisons and fresh-Rhino comparisons are separate evidence.",
+  "source_git_sha256": {
+    "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/build.rs": "61603438464e225c7baf5ae399f89f7c6b4283ac0cc6ee5a00ac3c665d6933fb",
+    "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/native/CMakeLists.txt": "6dbde2bfe9862ad7130ef8139195e0a17faa99e94d1a55fa0c9d2f2b28c50310",
+    "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/native/knot_refinement.cpp": "7352074510f0c849f4af5c409d54ac52ffea1862f2a735e402ed17db8c2b9098"
+  },
+  "artifact_git_sha256": {
+    "fc9f50e921d449f0845da00252da5adb142d5042:docs/usd-brep-limitations.md": "901ddd596be778d9dfecc7c3f481b970f6f0360a2ddce31c98e136205039a64a"
+  }
 }

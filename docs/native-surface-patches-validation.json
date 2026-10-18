@@ -1,0 +1,456 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "fc9f50e921d449f0845da00252da5adb142d5042",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Remove parameter snapping and remapping from rectangular extraction. Select exact in-domain groups with actual endpoint multiplicities for the existing homogeneous tensor restriction.",
+    "CopySubPatch intersects the natural domain as before, then deep-copies the exact result through SetFromGwNurb on a fresh guarded owning surface. Keep directional seam extraction to retain unselected source bases."
+  ],
+  "cases": {
+    "cases": 256,
+    "paths": [
+      "out_of_place",
+      "in_place",
+      "owning_object"
+    ],
+    "families": 8,
+    "chart_configurations": 4,
+    "axis_permutations": 2,
+    "polynomial_or_rational": 2,
+    "common_gauge_signs": [
+      1,
+      -1
+    ],
+    "comparison": "Exact degrees, counts, all knots; independent linear/quadratic polar-form and uniform-span coefficients for all homogeneous controls at 2e-13*max(1,abs(expected)); source purity, object output lifetime and in-place consumed results.",
+    "storage": "Probe homogeneous arrays are U-major; SDK adapters explicitly convert to protocol V-major order."
+  },
+  "producers": {
+    "baseline": {
+      "exit_code": 1,
+      "cases": 256,
+      "correct_by_path": {
+        "out_of_place": 128,
+        "in_place": 128,
+        "owning_object": 80
+      },
+      "source_unchanged_cases": 256,
+      "raw": {
+        "retained": "docs/native-surface-patches-baseline.jsonl.gz",
+        "uncompressed_sha256": "685ef1afa87bc55270a1299258c040b34de52870a0f5fda8de38c69e9a7406cb"
+      },
+      "stderr": {
+        "retained": "docs/native-surface-patches-baseline.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "build": {
+        "command": "cmake --build <focused debug native build> --target viboceros_smlib_surface_patch_probe viboceros_smlib_surface_patch_baseline -j10",
+        "exit_code": 0,
+        "retained": "docs/native-surface-patches-baseline-build.log.gz",
+        "uncompressed_sha256": "58d180df155c14c45b888c2234c27dbe91faf743e488ec543be8c9e5318309c3"
+      },
+      "method": "Explicit preceding generated NL_SrfTool.cpp and SmBSplineSurfaceIso.cpp objects override the final archive. All prior isocurve/copy/transpose repairs are preserved.",
+      "caution": "The combined independent_ownership check also fails for missing/NaN outputs. A parent failure is not proof of a dangling allocation. Residual fields are computed only when structural bases match; a default zero on another failure is not a geometry match."
+    },
+    "candidate": {
+      "exit_code": 0,
+      "cases": 256,
+      "correct_by_path": {
+        "out_of_place": 256,
+        "in_place": 256,
+        "owning_object": 256
+      },
+      "source_unchanged_cases": 256,
+      "raw": {
+        "retained": "docs/native-surface-patches-candidate.jsonl.gz",
+        "uncompressed_sha256": "cbe671e1079b7b9d75d6c7c1f1443d8a4b544cb3ca96903ad4c8a7572fdd85dc"
+      },
+      "stderr": {
+        "retained": "docs/native-surface-patches-candidate.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "max_homogeneous_coordinate_residual": 2.220446049250313e-15
+    },
+    "asan": {
+      "exit_code": 0,
+      "cases": 256,
+      "correct_by_path": {
+        "out_of_place": 256,
+        "in_place": 256,
+        "owning_object": 256
+      },
+      "source_unchanged_cases": 256,
+      "raw": {
+        "retained": "docs/native-surface-patches-asan.jsonl.gz",
+        "uncompressed_sha256": "cbe671e1079b7b9d75d6c7c1f1443d8a4b544cb3ca96903ad4c8a7572fdd85dc"
+      },
+      "stderr": {
+        "retained": "docs/native-surface-patches-asan.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "max_homogeneous_coordinate_residual": 2.220446049250313e-15,
+      "build": {
+        "command": "cmake --build /tmp/viboceros-isocurve-pair-asan --target viboceros_smlib_surface_patch_probe viboceros_smlib -j10",
+        "exit_code": 0,
+        "retained": "docs/native-surface-patches-asan-build.log.gz",
+        "uncompressed_sha256": "1620d1ae41f86327a4ec78dc74deefa384fd8fd604afcc958a5bb7fc659df556"
+      },
+      "flags": {
+        "retained": "docs/native-surface-patches-asan-flags.txt.gz",
+        "uncompressed_sha256": "6fcae0e1e4b830dd1bcdf562c8c05fe848d9b1084401a9ae3842bb4e509d2067"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "scope": "Complete SMLib, SM_API, C ABI and patch probe are instrumented. Execute all 256 direct-producer cases in all three paths. The C ABI is built with instrumentation, while its integration tests run in normal builds.",
+      "leak_policy": "Leak detection is disabled because the process-global default API context has no public teardown contract. No leak-free result is claimed."
+    }
+  },
+  "producer_runs": {
+    "command": "python3 /tmp/viboceros-surface-patch-probes.py",
+    "exit_code": 0,
+    "retained": "docs/native-surface-patches-probes-final.log.gz",
+    "uncompressed_sha256": "8c163d055c6f4a7fe3c380753696962f49e04913e0478cc9e78561185bfb7e92",
+    "runner": {
+      "retained": "docs/native-surface-patches-probes.py.gz",
+      "uncompressed_sha256": "d33e443fe5732c1958bb2b627bd30a4cb7b067aacf7e6eb4b6869bc4e5af9a45"
+    },
+    "setup_and_test_only_fix": "The instrumented tree was reconfigured with VIBOCEROS_SMLIB_ASAN=ON for the new target. Its compiler rejected an int status array narrowing SmStatus; the probe now uses SmStatus. Production code was frozen before broad checks. Final baseline/candidate/ASan runs and the focused Rust harness were repeated after this probe-only type correction."
+  },
+  "focused_run": {
+    "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test surface_patch --test isocurve_pairs --test isocurves --test surface_seams --test face_creases -- --nocapture",
+    "exit_code": 0,
+    "retained": "docs/native-surface-patches-focused-ready.log.gz",
+    "uncompressed_sha256": "fd6168c0ff273f735e77e579c1f6cf9aade421a2916c2db6c0f24a973dcaff10",
+    "passed": 20,
+    "failed": 0,
+    "ignored": 0
+  },
+  "final_probe_harness": {
+    "command": "target/debug/deps/surface_patch-35b3910433a8a779 --nocapture",
+    "exit_code": 0,
+    "retained": "docs/native-surface-patches-status-type-focused.log.gz",
+    "uncompressed_sha256": "28f9d45fa3db47debd4c749445b9da28027dd752c96794c764b2a60f4c1e5124",
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-surface-patches-bridge-full.log.gz",
+      "uncompressed_sha256": "f6885aa07bd5d0c2492b656dcde5642dc3ad6d0f6aa919658d2dce0164f82623",
+      "passed": 412,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-surface-patches-command-full.log.gz",
+      "uncompressed_sha256": "fcdf0dcd48cda4ccd0d621c08027a78e6efc95dc68de19ef8ec980bfd5cc9974",
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-surface-patches-clippy.log.gz",
+      "uncompressed_sha256": "b38a1df138866dfc495d3691a39376547a1994999a303973beaba8d72fe0aa5f"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-surface-patches-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "fresh_rhino_definitions": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-surface-patch-sdk.py",
+    "exit_code": 0,
+    "retained": "docs/native-surface-patches-sdk.log.gz",
+    "uncompressed_sha256": "314315f3bcce5a81af1286f9c968a34444ca4cddc9d32f05141751164f9c38ca",
+    "script": {
+      "retained": "docs/native-surface-patches-sdk.py.gz",
+      "uncompressed_sha256": "652ec6d3cce4feb3546cbd2c080a8190add3740899c1780433f3caecddb007c9"
+    },
+    "capture": {
+      "command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/surface_patch_geometry.json --scheme VibocerosOracleSurfacePatch20261018 --timeout 180 --output /tmp/viboceros-surface-patch-rhino.json",
+      "exit_code": 0,
+      "retained": "docs/native-surface-patches-rhino.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "paths": [
+      {
+        "mode": 0,
+        "cases": 8,
+        "raw_matches": 6,
+        "raw_mismatches": 2,
+        "mismatched_ids": [
+          "native-patch-3-0",
+          "native-patch-3-1"
+        ],
+        "audit": {
+          "retained": "docs/native-surface-patches-sdk-0-audit.json.gz",
+          "uncompressed_sha256": "e13705534b67e41a1dadeb7cc73444ab41bae755ac556a32dd5bb6ed035ef6ad"
+        },
+        "report": {
+          "retained": "docs/native-surface-patches-sdk-0-report.json.gz",
+          "uncompressed_sha256": "48d237921632497e88d1b4a3ba75ee151198c154423e22f3b89a1773524d52c7"
+        }
+      },
+      {
+        "mode": 1,
+        "cases": 8,
+        "raw_matches": 6,
+        "raw_mismatches": 2,
+        "mismatched_ids": [
+          "native-patch-3-0",
+          "native-patch-3-1"
+        ],
+        "audit": {
+          "retained": "docs/native-surface-patches-sdk-1-audit.json.gz",
+          "uncompressed_sha256": "e13705534b67e41a1dadeb7cc73444ab41bae755ac556a32dd5bb6ed035ef6ad"
+        },
+        "report": {
+          "retained": "docs/native-surface-patches-sdk-1-report.json.gz",
+          "uncompressed_sha256": "48d237921632497e88d1b4a3ba75ee151198c154423e22f3b89a1773524d52c7"
+        }
+      },
+      {
+        "mode": 2,
+        "cases": 8,
+        "raw_matches": 6,
+        "raw_mismatches": 2,
+        "mismatched_ids": [
+          "native-patch-3-0",
+          "native-patch-3-1"
+        ],
+        "audit": {
+          "retained": "docs/native-surface-patches-sdk-2-audit.json.gz",
+          "uncompressed_sha256": "e13705534b67e41a1dadeb7cc73444ab41bae755ac556a32dd5bb6ed035ef6ad"
+        },
+        "report": {
+          "retained": "docs/native-surface-patches-sdk-2-report.json.gz",
+          "uncompressed_sha256": "48d237921632497e88d1b4a3ba75ee151198c154423e22f3b89a1773524d52c7"
+        }
+      }
+    ],
+    "policy": "Retain complete raw definitions and strict 1e-10 absolute/relative reports without normalization. Eight fresh observations supply three native path comparisons each; this is not 24 independent Rhino captures. Whole-domain Rhino Trim retains its unclamped representation while NLib rectangular extraction clamps both axes."
+  },
+  "sdk_geometry_equivalence": {
+    "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-surface-patch-equivalence.py",
+    "exit_code": 0,
+    "retained": "docs/native-surface-patches-equivalence.log.gz",
+    "uncompressed_sha256": "958c9a19d105f174780da0ae15acd76bea2603f09b43cb06e1c6b01a5727f5a7",
+    "script": {
+      "retained": "docs/native-surface-patches-equivalence.py.gz",
+      "uncompressed_sha256": "faed84273d12bad113184f69812256019d553b2fc1e15e6149d854586677401d"
+    },
+    "request": {
+      "retained": "docs/native-surface-patches-equivalence-request.json.gz",
+      "uncompressed_sha256": "38be07a38b1971ad5d1dfc2f93da08845d4062deccacddfb4ecaf9e43e15eaca"
+    },
+    "raw": {
+      "retained": "docs/native-surface-patches-equivalence-rhino.json.gz",
+      "uncompressed_sha256": "1c7bd16cc23dc0860853658fd972afe9f0e52854241451889be6270e117736ca"
+    },
+    "report": {
+      "retained": "docs/native-surface-patches-equivalence-report.json.gz",
+      "uncompressed_sha256": "916f3ee2be8b528a362f5409dbee4b0ce9754dabd6e90d5beb97f3d261743619"
+    },
+    "summary": {
+      "engine": "rhino",
+      "sdk_evaluations": 324,
+      "comparison_pairs": 162,
+      "absolute_epsilon": 1e-10,
+      "normalization": "None. Both retained surface definitions are evaluated by Rhino at identical parameter stations.",
+      "results": [
+        {
+          "id": "native-patch-3-0",
+          "samples": 81,
+          "max_absolute_differences": {
+            "point": 4.440892098500626e-16,
+            "derivative_u": 5.551115123125783e-16,
+            "derivative_v": 4.440892098500626e-16,
+            "normal": 3.3306690738754696e-16
+          },
+          "passed": true
+        },
+        {
+          "id": "native-patch-3-1",
+          "samples": 81,
+          "max_absolute_differences": {
+            "point": 4.440892098500626e-16,
+            "derivative_u": 5.551115123125783e-16,
+            "derivative_v": 4.440892098500626e-16,
+            "normal": 3.3306690738754696e-16
+          },
+          "passed": true
+        }
+      ]
+    },
+    "scope": "Rhino evaluates the unchanged retained owning-object and Rhino Trim definitions at identical 9-by-9 parameter grids for the two whole-domain fixture IDs. Compare points, first derivatives and normals at 162 paired stations. This supplements the raw mismatches; it is not continuous parity, a native evaluator check, or normalization of either definition."
+  },
+  "native_api_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-surface-patch-replay.py",
+    "exit_code": 0,
+    "retained": "docs/native-surface-patches-replay.log.gz",
+    "uncompressed_sha256": "c7c4a849ee8799721e31d83739301386e03699594d9cb4f2043dca945613074d",
+    "script": {
+      "retained": "docs/native-surface-patches-replay.py.gz",
+      "uncompressed_sha256": "6a4be2cdb099fa6bb236e64840f723355bfc5f6636961f0f5cc64d7626079181"
+    },
+    "curved_audit": {
+      "retained": "docs/native-surface-patches-curved-audit.json.gz",
+      "uncompressed_sha256": "130baf51c50e16eff4d313dd59c64c59a182e3db040b3560f51abded65eebeb3"
+    },
+    "isocurve_audit": {
+      "retained": "docs/native-surface-patches-isocurve-audit.json.gz",
+      "uncompressed_sha256": "11bbaa357d8c46d2a2885a597913c4a97d6154a8d013d73faa591e22a8b4fb04"
+    },
+    "curved_report": {
+      "retained": "docs/native-surface-patches-curved-report.json.gz",
+      "uncompressed_sha256": "3d54e876e93237faf37ca7b3a2de5b3c8c24962ae5d6fb90a4e9fb9865b10d38"
+    }
+  },
+  "observed_subset_comparisons": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-surface-patch-observed-subsets.py",
+    "exit_code": 0,
+    "retained": "docs/native-surface-patches-observed-subsets.log.gz",
+    "uncompressed_sha256": "f2a21356e8c349329a46eebd564bc3477d1f2f306c8d6578c602fabe43559e0d",
+    "script": {
+      "retained": "docs/native-surface-patches-observed-subsets.py.gz",
+      "uncompressed_sha256": "02823d6cb5b56856b9f8943135c1acb902b75d741dbf1332c76787b1a14ddcbc"
+    },
+    "reports": [
+      {
+        "retained": "docs/native-surface-patches-join_isocurve_local-report.json.gz",
+        "uncompressed_sha256": "aa4b1ed2de40f3a68709d4f7273a4895a4f1a0c6f26c705a0addb629aabe0316"
+      },
+      {
+        "retained": "docs/native-surface-patches-join_isocurve_origin-report.json.gz",
+        "uncompressed_sha256": "df4430490d3d51a1bbe12217e90d525edb3406aec3e77f5650965a84f682e4da"
+      }
+    ]
+  },
+  "parent_raw_outcome_comparisons": [
+    {
+      "audit": "curved",
+      "cases": 48,
+      "identical": 48,
+      "changed_indices": [],
+      "policy": "Complete raw outcomes including all fields; no normalization."
+    },
+    {
+      "audit": "isocurve",
+      "cases": 64,
+      "identical": 64,
+      "changed_indices": [],
+      "policy": "Complete raw outcomes including all fields; no normalization."
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 4,
+    "records": 1,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Independent minimal restriction controls first, then crease/isocurve/seam integration. Shared native restriction and ownership justify full release bridge/command suites, all-workspace/all-target/all-feature lint, instrumented native probes and retained API replays. Fresh SDK definitions plus explicit sampled geometry resolve the observed whole-domain representation difference.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses were not run. This ARM bridge builds actual SMLib/SM_API; upstream checkout and those layers are unchanged."
+  },
+  "limitations": [
+    "The direct matrix uses degree-one and degree-two tensor fixtures. It does not certify arbitrary degrees, chart/weight ratios, periodic topology or every trimmed surface.",
+    "Whole-domain raw Rhino definition differences remain visible. The SDK grid comparison is sampled equivalence of retained definitions, not continuous parity or a test of the native evaluator.",
+    "Rectangular extraction still clamps both axes; checked directional extraction remains necessary for the complete unselected-basis contract.",
+    "Out-of-domain extrapolation, native remote-chart ray queries and full Rhino command/representation parity remain unqualified.",
+    "No performance or leak-free result is claimed."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "36983bab4d704d5f84c754fc9340dd73309d1c760900a0b06148ab44e5cd3b99",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "1583462ef0357c4ec37e7ac38ee99cfe674a652145db93bfe33c973b90c9ebd6",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "f06dfbfb920038755fb53482ef45b9cf60031ef9906cb6c91158bc77b4da3e55",
+    "crates/viboceros-smlib/tests/surface_patch.rs": "dc1010de0cfc88cd9958dddc0c39621008b3cf38ec390119e308887bea5e4c93",
+    "tools/usd_brep/surface_patch_probe.cpp": "ee6161423fc0633a8bca8317bbac80108363aac42ec022c1f0ef060e9a40f5be",
+    "third_party/patches/usd-brep-surface-patch-region.patch": "a91fe033dd1962c2319e265779504c9b46de84ddfc4145d18b56c79cfd46548b",
+    "third_party/patches/usd-brep-surface-patch-output.patch": "8661470b4be7fbe907225951467d270e814e6a59f5bf4d74ccda17d8c6105065",
+    "third_party/patches/usd-brep-surface-patch.cmake": "39fd0d48cb0fca1e317e46bf955840915a3a696384de3a5438c7ddbb12dc5ca6",
+    "third_party/patches/usd-brep-isocurve-pairs.cmake": "3010d1ea5e4a7eae0082e953fd874930c3755c88c1ef22c9a6b12edf6263dda7",
+    "third_party/patches/usd-brep-isocurve-limits.patch": "e106f93290f2e9dd68d1ad42a18b50430bc8b040cc1ba39cf807a5e5c60c51da",
+    "third_party/patches/usd-brep-isocurve-output-basis.patch": "d2590fdc3b82fe7523b28b67252bb673f217d7d5b76ddb1cd7190128569221b3",
+    "third_party/patches/usd-brep-copy-surface-basis.patch": "c202199a64f4f397a304af188c4d0e5c1df541fa2c7a30b8547ecf352cea8f28",
+    "third_party/patches/usd-brep-surface-transpose-basis.patch": "ddf3eafe8ad60e6fb30a5434cc8f979d5917944f843949642caad1c6d6506829",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp": "a6a87714703ef3115cdd33e9d79f07090fc7650847a537d5341a692723db243f",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-surface-patches-bridge-full.log.gz": "fe8a1f7cf818fe3fd5ce389256433270989cb259cb53fddea24b1c81bc995004",
+    "docs/native-surface-patches-command-full.log.gz": "f8468c7ed50f1bbdb692db7d2475bb1739840391dac0d2d7e1ca7f237b6bcd93",
+    "docs/native-surface-patches-clippy.log.gz": "dc6d2ad5e604db36321ff97412d12cba6b5dbb07ab6cd16967f7033afc01f392",
+    "docs/native-surface-patches-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-patches-focused-ready.log.gz": "edf71674d46ba8e303c0d3cb47639bd17cf9cf9803474b23303a974d3b1ba47c",
+    "docs/native-surface-patches-status-type-focused.log.gz": "33bc7b3a44c0a2e324c43a8b4bdf0f336c08a072d1ba15bc6dabc5ff9c335c98",
+    "docs/native-surface-patches-baseline.jsonl.gz": "cdf218e3cee2178143fd9cfeabadc91fae4b9eea2e37d4d5832094eb5f4371f5",
+    "docs/native-surface-patches-baseline.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-patches-candidate.jsonl.gz": "0477edfe09480512ce0e0bc9389bdc7813eba61c5a95bf0b9dd6f5e72975ef07",
+    "docs/native-surface-patches-candidate.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-patches-asan.jsonl.gz": "0477edfe09480512ce0e0bc9389bdc7813eba61c5a95bf0b9dd6f5e72975ef07",
+    "docs/native-surface-patches-asan.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-patches-baseline-build.log.gz": "24aa010ffc5d8aa29a6223bc8da4778a9d8abeae3afa6ec6a1a205d95a0a0aa3",
+    "docs/native-surface-patches-asan-build.log.gz": "c9395227e0cdd6473baac233c79cc0c3c0ea2549cd1e9685eb288f2be3cb738b",
+    "docs/native-surface-patches-asan-flags.txt.gz": "94afa0a296bf39f80da67576ce063c648be22c2b78afe4da0c4c7a9becc39387",
+    "docs/native-surface-patches-probes-final.log.gz": "84d29f5be70196bda29eb691c0e1f20ce74c49af4482038da1998d2fb1fba114",
+    "docs/native-surface-patches-probes.py.gz": "906d4a138f6e167811a51e053d856bc0e7848ca4d9788dde681a7c3386d28b03",
+    "docs/native-surface-patches-sdk.log.gz": "ce539ffaf0e61d712778fb7e40728841897cace2510473a07f4d1cb4fef86ffa",
+    "docs/native-surface-patches-sdk.py.gz": "33171437d0fcc127bde2ecd1dedded08b3ebc02869c797794914f4a6ca829d5a",
+    "docs/native-surface-patches-rhino.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-patches-sdk-0-audit.json.gz": "c645dec605404f3347cac0efe91909b3c3417af86139ef8c4d6c0efb89a948e9",
+    "docs/native-surface-patches-sdk-0-report.json.gz": "2ef54753edf3c481fa2ce8caeb97967357efdd7a646e9ce3fa88e8610d38d1b2",
+    "docs/native-surface-patches-sdk-1-audit.json.gz": "c645dec605404f3347cac0efe91909b3c3417af86139ef8c4d6c0efb89a948e9",
+    "docs/native-surface-patches-sdk-1-report.json.gz": "2ef54753edf3c481fa2ce8caeb97967357efdd7a646e9ce3fa88e8610d38d1b2",
+    "docs/native-surface-patches-sdk-2-audit.json.gz": "c645dec605404f3347cac0efe91909b3c3417af86139ef8c4d6c0efb89a948e9",
+    "docs/native-surface-patches-sdk-2-report.json.gz": "2ef54753edf3c481fa2ce8caeb97967357efdd7a646e9ce3fa88e8610d38d1b2",
+    "docs/native-surface-patches-equivalence.log.gz": "bb996855785c10513a2217ace9ec0d4b0b8b7a8f68d77ee1e442fddc7b51acc2",
+    "docs/native-surface-patches-equivalence.py.gz": "38013f0beacea6ae9623cd8d649cc43beab26216d127914a7f68060f69f7bcec",
+    "docs/native-surface-patches-equivalence-request.json.gz": "2dca2bcf3cf75b86b6d4dca6f5b31473dffe66620566d9796d99e8bbac8e2fcb",
+    "docs/native-surface-patches-equivalence-rhino.json.gz": "4a576688c0db5395ced647cf4caadac2f16091c0bca7327e08cf63871a4f76b0",
+    "docs/native-surface-patches-equivalence-report.json.gz": "381031efe04a0eb48b9bef289c0d3c9851133849ace507caa1eab40f70fd9b22",
+    "docs/native-surface-patches-replay.log.gz": "2aadd5b71baeb182edec863b932439353149767e7e182736d19c8bf4c1b3f733",
+    "docs/native-surface-patches-replay.py.gz": "a200f3f032f5659bf44a8b0a35a0bf4441d48f52f6fa33b83d0aa90094f309f2",
+    "docs/native-surface-patches-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-surface-patches-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "docs/native-surface-patches-curved-report.json.gz": "921def0039eb31a1b9939de1ec1bbf4785268389f173cd3e1561dfbb17bade77",
+    "docs/native-surface-patches-observed-subsets.log.gz": "c285c3775485780edb127d61a8e263f9db782321033ec2fdc6f4e02ce2f7ea93",
+    "docs/native-surface-patches-observed-subsets.py.gz": "2bd56a7809a53a221e6a34bba5a19de9b507764f6b148a0b3ed0a7b508bc624e",
+    "docs/native-surface-patches-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
+    "docs/native-surface-patches-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
+    "docs/native-surface-patches.md": "db5deef742e5456d644c78c0410226d961a311c5b89e02336d5ba778fdba1ab6",
+    "docs/smlib-surface-seams.md": "9fc413207d77e07b5e56f58d16af06908fd59b1a5e26cba846c559abd2ce5223",
+    "docs/usd-brep-limitations.md": "a924d8fffb5dd4fa1841dd855b34c129fa316e3fe02e4e3ed38b58a6c07ad9dd",
+    "tools/rhino_oracle/fixtures/surface_patch_geometry.json": "c0dc9b1860b7507ed7d49aaada2a38b4cf57a58067a4788a771ac10b955b20b7",
+    "tools/rhino_oracle/observations/surface_patch_geometry.json": "7abc977d20672385447784918ac75b48249751846197696dcd4ac9dd7be312ad",
+    "docs/native-isocurve-limits-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-isocurve-limits-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
+    "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
+    "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
+    "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
+    "docs/native-isocurve-limits-validation.json": "08c9872d7f918c3e1c134be6d99b4c8651b85d0d8958a31f30cb4c46f247c519"
+  },
+  "baseline_git_sha256": {
+    "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/build.rs": "61603438464e225c7baf5ae399f89f7c6b4283ac0cc6ee5a00ac3c665d6933fb",
+    "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/native/CMakeLists.txt": "6dbde2bfe9862ad7130ef8139195e0a17faa99e94d1a55fa0c9d2f2b28c50310",
+    "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/native/knot_refinement.cpp": "7352074510f0c849f4af5c409d54ac52ffea1862f2a735e402ed17db8c2b9098"
+  },
+  "log_policy": "Use completed exit/status receipts. Retain raw controls, SDK definitions, strict mismatches and sampled geometry separately. Deterministic gzip and Git-backed history preserve the actual evidence."
+}

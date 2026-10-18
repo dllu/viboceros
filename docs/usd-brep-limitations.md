@@ -252,7 +252,7 @@ issues reported by NVIDIA that have not all been reproduced here.
   full-order payload copies and numerical conditioning remain. See the
   [288-case qualification](native-isocurve-limits.md). Source:
   [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).
-- **Patch extraction snaps near knots and changes the geometric restriction.**
+- **Fixed: patch extraction snapped near knots and changed the geometric restriction.**
   `N_SrfExtractPatch` snaps all four boundaries using a fixed `1e-8` parameter
   tolerance, then reparameterizes the output to the originally requested box.
   On the exact bilinear surface `S(u,v)=(u,v,0)`, requesting U `[1e-9,0.75]`
@@ -260,11 +260,12 @@ issues reported by NVIDIA that have not all been reproduced here.
   The [direct probe](../tools/usd_brep/patch_extraction_probe.cpp) reads the
   extracted controls and compares against the independent bilinear definition;
   [retained output](smlib-surface-seams-probe.json) records the discrepancy.
-  The producer also clamps both axes even when the other direction is kept
-  whole, and its active-end branches share the clamped-padding assumptions
-  of curve extraction (source audit). SrfSeam therefore uses native tensor
-  refinement or batches the existing checked curve extractor per control
-  row/column, preserving the complete unselected basis. Source:
+  The [generated repair](native-surface-patches.md) removes snapping/remapping
+  and uses exact knot groups with actual endpoint multiplicities. The owning
+  object path also retains the extracted basis without constructor cleanup.
+  Rectangular extraction still clamps both axes. SrfSeam uses native tensor
+  refinement or checked directional curve extraction to preserve the complete
+  unselected basis. Source:
   [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).
 - **Interior full-order curve splitting shares the control-buffer underflow
   (source audit).** With degree two and full knots

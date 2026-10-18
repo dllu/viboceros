@@ -1,0 +1,170 @@
+--- a/NL_SrfTool.cpp
++++ b/NL_SrfTool.cpp
+@@ -1789,10 +1789,8 @@
+      for the proper amount by looking at the highest indexes in surQ's 
+      knot vector and polygon objects. 
+ 
+-     Additional Note: We first determine if the requested patch is within
+-     tolerance to existing knots. If so, we snap to the requested patch
+-     to the existing kot value in order to avoid knots within tolerance.
+-     This tolerance is hard coded at 1.0e-08.
++     Restriction retains the exact requested parameters. Nearby distinct
++     knots are not merged, and no parameter remapping changes the region.
+ 
+    ACCESS:
+    
+@@ -1829,13 +1827,24 @@
+ 
+     NL_SURFACE surA;
+ 
+-    NL_REAL dTol = 1.0e-08;  /* typically hard coded in NLIB */
+-
+-    NL_BOOLEAN bSnapped = FALSE;
+-
+-    NL_RECTANGLE sInRect;
+-
+     NL_STACKS SL;
++
++    /* Restriction needs exact groups, including unclamped active ends.
++       Keep the previous span policy for extrapolation outside the domain. */
++    auto exactGroup = [](NL_KNOTVECTOR *knots, NL_DEGREE degree, NL_PARAMETER t,
++                         NL_INDEX *span, NL_INDEX *multiplicity) -> NL_FLAG
++    {
++        NL_REAL *K = knots->U;
++        if( t GE K[degree] AND t LE K[knots->m - degree] )
++        {
++            NL_REAL *first = std::lower_bound(K, K + knots->m + 1, t);
++            NL_REAL *last = std::upper_bound(first, K + knots->m + 1, t);
++            *span = (NL_INDEX)(last - K) - 1;
++            *multiplicity = (NL_INDEX)(last - first);
++            return NL_NO;
++        }
++        return N_BasisFindSpanAndMult(knots, degree, t, NL_LEFT, span, multiplicity);
++    };
+ 
+     /* Start NURBS */
+ 
+@@ -1846,101 +1855,43 @@
+     N_SrfGetCPtsDegreesAndKnots( surP, &n, &m, &Pw, &p, &q, &r, &s, &UP, &VP );
+     N_SrfGetKnotVectors( surP, &knu, &knv );
+ 
+-    /* Remember requested box */
+-
+-    sInRect.ul = ul;
+-    sInRect.ur = ur;
+-    sInRect.vb = vl;
+-    sInRect.vt = vr;
+-    
+-    /* Snap left u to existing u knots if within tolerance */
+-    for( i = 0; i < r; i++ ) 
+-    {
+-        if( ul > UP[i] - dTol && ul < UP[i] + dTol ) {
+-            ul = UP[i];
+-            bSnapped = TRUE;
+-            break;
+-        }
+-    }
+-
+-    /* Snap right u to existing u knots if within tolerance */
+-    for( i = 0; i < r; i++ ) 
+-    {
+-        if( ur > UP[i] - dTol && ur < UP[i] + dTol ) {
+-            ur = UP[i];
+-            bSnapped = TRUE;
+-            break;
+-        }
+-    }
+-
+-    /* Snap left v to existing v knots if within tolerance */
+-    for( i = 0; i < s; i++ ) 
+-    {
+-        if( vl > VP[i] - dTol && vl < VP[i] + dTol ) {
+-            vl = VP[i];
+-            bSnapped = TRUE;
+-            break;
+-        }
+-    }
+-
+-    /* Snap right v to existing v knots if within tolerance */
+-    for( i = 0; i < s; i++ ) 
+-    {
+-        if( vr > VP[i] - dTol && vr < VP[i] + dTol ) {
+-            vr = VP[i];
+-            bSnapped = TRUE;
+-            break;
+-        }
+-    }
+-
+-
+     /* Check for degenerate parameters */
+ 
+-    if( ur LE ul )
++    if( !(ur GT ul) )
+         NL_ERROR( NL_INP_ERR );
+ 
+-    if( vr LE vl )
++    if( !(vr GT vl) )
+         NL_ERROR( NL_INP_ERR );
+ 
+ 
+     /* Find knot spans and set new indexes */
+ 
+-    error = N_BasisFindSpanAndMult( knu, p, ul, NL_LEFT, &sul, &mul );
++    error = exactGroup( knu, p, ul, &sul, &mul );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+-    error = N_BasisFindSpanAndMult( knu, p, ur, NL_LEFT, &sur, &mur );
++    error = exactGroup( knu, p, ur, &sur, &mur );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+-    error = N_BasisFindSpanAndMult( knv, q, vl, NL_LEFT, &svl, &mvl );
++    error = exactGroup( knv, q, vl, &svl, &mvl );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+-    error = N_BasisFindSpanAndMult( knv, q, vr, NL_LEFT, &svr, &mvr );
++    error = exactGroup( knv, q, vr, &svr, &mvr );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+     is = sul - p;
+ 
+-    if( ur EQ UP[r - p] )
+-    {
+-        sur = r;
+-        mur = p + 1;
+-    }
+     ie = sur - mur;
+ 
+     js = svl - q;
+ 
+-    if( vr EQ VP[s - q] )
+-    {
+-        svr = s;
+-        mvr = q + 1;
+-    }
+     je = svr - mvr;
+ 
+     n = ie - is;
+@@ -2115,15 +2066,6 @@
+ 
+     if( surP EQ surQ )
+         N_FreeSrf( &surA, SP );
+-
+-    /* When final interval was snapped away from what was requested */ 
+-    /* scale the output back to the requested interval */
+-
+-    if( bSnapped EQ TRUE )
+-    {
+-        N_SrfReparamToInterval( surQ, sInRect, NL_UVDIR ) ;     
+-    }
+-
+ 
+     /* End NURBS and Exit */
+ 

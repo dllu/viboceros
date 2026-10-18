@@ -721,8 +721,8 @@ VbSurfaceData *vb_trim_nurbs_surface_axis(const VbNurbsData &data,int axis,doubl
         }
         VbNurbsData curve={{data.degree[axis],0},{width,1},
                            {data.knot_count[axis],0},{data.knots[axis],nullptr},row.data()};
-        // Reuse checked curve extraction; the tensor convenience producer
-        // snaps near knots and clamps the unselected direction as well.
+        // Rectangular native patches clamp both axes. A directional strip
+        // must instead retain the complete unselected source basis.
         std::unique_ptr<VbSurfaceData,decltype(&vb_surface_data_free)> segment(
             vb_trim_nurbs_curve(curve,start,end),vb_surface_data_free);
         VbNurbsData view;

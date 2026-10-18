@@ -24,15 +24,15 @@ No additional refinement, fitting or evaluation solver is introduced.
 Document identity, attributes, groups, selection and history stay in the command
 layer, and native handles never enter document state.
 
-The native tensor convenience extractor `N_SrfExtractPatch` snaps near knots
-using a fixed `1e-8` parameter tolerance and reparameterizes back to the requested
-box, changing the restricted geometry. It also clamps the unselected direction.
-The adapter uses checked curve extraction to retain the requested basis.
-The [direct bilinear probe](../tools/usd_brep/patch_extraction_probe.cpp) and
-[retained result](smlib-surface-seams-probe.json) show requested U start `1e-9`
-with an incorrectly snapped X boundary `0`. See the
-[limitations ledger](usd-brep-limitations.md) for source evidence and inherited
-endpoint/split workarounds.
+The [repaired native rectangle extractor](native-surface-patches.md) now retains
+exact requested boundaries and handles unclamped/full-order endpoint groups.
+It clamps both directions, so the seam adapter still uses checked directional
+curve extraction to preserve the complete unselected basis. The historical
+[bilinear probe](../tools/usd_brep/patch_extraction_probe.cpp) and
+[retained result](smlib-surface-seams-probe.json) record requested U start `1e-9`
+with an incorrectly snapped X boundary `0`; the current generated repair removes
+that snapping and remapping. See the [limitations ledger](usd-brep-limitations.md)
+for source evidence and remaining split workarounds.
 
 The [native regressions](../crates/viboceros-smlib/tests/surface_seams.rs) compare
 the eight SDK fixture definitions, full knots, degrees, counts, periodic flags,
@@ -56,7 +56,7 @@ decomposition, splitting and intersection cases also match at their established
 tolerances, including the numeric-length `1e-6` ceiling. Timing records include
 the harness and do not establish kernel speedups.
 
-Validation covers 3,575 distinct tests: 3,448 geometry/command cases, 125 native
+The original seam qualification covered 3,575 distinct tests: 3,448 geometry/command cases, 125 native
 bridge cases and two additional debug policy regressions (11 ignored across the
 full suites). Workspace lint passes in both feature configurations with warnings
 denied, and formatting passes. Undo/redo tests compare generated snapshots
