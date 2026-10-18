@@ -86,7 +86,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Pullback parameter units and UV border domains](docs/pullback-parameter-units.md)
 - [Curve-array frames and Flow direction units](docs/curve-direction-units.md)
 - [USD BRep kernel integration](docs/usd-brep.md)
-- [Native surface joining](docs/smlib-joining.md), including source UV chart preservation
+- [Native surface joining](docs/smlib-joining.md), including [exact UV transposes](docs/native-uv-transpose.md)
 - [Native pole transfer and exact NURBS copies](docs/native-pole-transfer.md)
 - [Native parallel-view silhouettes](docs/commands/silhouette.md)
 - [Native tapered curve extrusion](docs/commands/extrude-crv-tapered.md)

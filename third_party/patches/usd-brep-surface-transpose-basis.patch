@@ -1,0 +1,68 @@
+--- a/SmBSplineSurface.cpp
++++ b/SmBSplineSurface.cpp
+@@ -5181,48 +5181,23 @@
+ ***********************************************************************/
+ SmStatus SmBSplineSurface::SwapUV()
+ {
+-  // locals
+-  ULONG                lUDegree, lVDegree;
+-  SmTArray<SmPoint3d>  sCPts;
+-  SmTArray<double>     sUKnots, sVKnots, sWeights;
+-  SmTArray<ULONG>      sUMult, sVMult;
+-  SmKnotType           eKnotType;
+-  SmBSplineSurfaceForm eBSForm;
+-
+-#ifdef SM_DEBUG_CODE
+-SmBoolean bDebugMe = FALSE ;
+-  if(bDebugMe)
+-    {
+-      SM_ASSERT_VALID(this) ;
+-      this->Dump() ;
+-    }
+-#endif // SM_DEBUG_CODE
+-
+-  // get current surface description
+-  SER(GetCanonical(lUDegree,lVDegree,sCPts,eBSForm,sUMult,sVMult,
+-                   sUKnots,sVKnots,eKnotType,sWeights));
+-
+-  // let analytic surfaces remember that they have been swapped
+-  ToggleSwapUVBit() ;
+-
+-  // Transpose Weights and control points arrays
+-  ULONG lNumVCpts = GetNumberControlPoints(SM_SP_V);
+-  sCPts.Transpose(lNumVCpts);
+-  sWeights.Transpose(lNumVCpts);
+-  
+-  // Transpose Surface definition
+-  SER(SetCanonical(lVDegree,lUDegree,sCPts,eBSForm,sVMult,sUMult,
+-                   sVKnots,sUKnots,eKnotType,&sWeights));
+-
+-#ifdef SM_DEBUG_CODE
+-  if(bDebugMe)
+-    {
+-      SM_ASSERT_VALID(this) ;
+-      this->Dump() ;
+-    }
+-#endif // SM_DEBUG_CODE
+-
+-  // all done
++  // A parameter permutation preserves the complete homogeneous tensor basis.
++  // Canonical reconstruction repairs nearby knots and can collapse a remote
++  // active interval. Use the existing exact NLib transpose on a private copy.
++  NL_STACKS stack;
++  SmStackHandler cleanup(&stack);
++  NL_SURFACE swapped;
++  N_SrfInitArrays(&swapped);
++  gw_SURFACE *source = GetOrCreateGwNurbPointer();
++  NER(source);
++  if (N_SrfCopy(source, &swapped, &stack) != NL_NO ||
++      N_SwapUV(&swapped, &stack) != NL_NO)
++    { SER(SM_ERR); }
++
++  // SetFromGwNurb copies before the stack is released, preserves borrowing
++  // ownership, notifies the hierarchy and rebuilds analytic STEP parameters.
++  ToggleSwapUVBit();
++  SER(SetFromGwNurb(0, &swapped));
+   return SM_SUCCESS;
+ 
+ } // end SmBSplineSurface::SwapUV

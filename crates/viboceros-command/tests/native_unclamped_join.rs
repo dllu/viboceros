@@ -1,10 +1,14 @@
 #![cfg(feature = "native-smlib")]
 use viboceros_command::CommandRegistry;
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, SelectionMode};
-use viboceros_geometry::{Brep, NurbsSurface, Point3};
+use viboceros_geometry::{Brep, NurbsSurface, Point3, Tolerance};
 
-fn surface(unclamped: bool) -> NurbsSurface {
-    let profile = if unclamped {
+fn surface(unclamped: bool, remote: bool) -> NurbsSurface {
+    let profile = if remote && unclamped {
+        [[-4., -2.], [4., 2.], [12., -2.]]
+    } else if remote {
+        [[0., 0.], [4., 2.], [8., 0.]]
+    } else if unclamped {
         [[-15., -15.], [15., 15.], [45., -15.]]
     } else {
         [[0., 0.], [15., 15.], [30., 0.]]
@@ -33,16 +37,29 @@ fn surface(unclamped: bool) -> NurbsSurface {
     .unwrap()
 }
 
-#[test]
-fn unclamped_join_and_copy_preserve_the_active_geometry_metadata_and_history() {
+fn check_workflows(remote: bool) {
     let mut checked = 0;
     for swapped in [false, true] {
         for reversed in [false, true] {
             for copy in [false, true] {
                 for postselected in [false, true] {
-                    let mut document = Document::default();
-                    let t = document.tolerance();
-                    let sources = [surface(false), surface(true)].map(|surface| {
+                    eprintln!(
+                        "JOIN_CHART remote={remote} swapped={swapped} reversed={reversed} copy={copy} post={postselected}"
+                    );
+                    let mut document = if remote {
+                        Document::new(Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap())
+                    } else {
+                        Document::default()
+                    };
+                    let t = Tolerance::DEFAULT;
+                    let sources = [surface(false, remote), surface(true, remote)].map(|surface| {
+                        let surface = if remote {
+                            surface
+                                .try_reparameterized(1e12..=1e12 + 1., -2e12..=-2e12 + 2.)
+                                .unwrap()
+                        } else {
+                            surface
+                        };
                         let surface = if swapped {
                             surface.try_swapped_uv().unwrap()
                         } else {
@@ -84,7 +101,7 @@ fn unclamped_join_and_copy_preserve_the_active_geometry_metadata_and_history() {
                     } else {
                         registry.execute(&mut document, command)
                     };
-                    result.unwrap_or_else(|e| panic!("swapped={swapped} reversed={reversed} copy={copy} post={postselected}: {e}"));
+                    result.unwrap_or_else(|e| panic!("remote={remote} swapped={swapped} reversed={reversed} copy={copy} post={postselected}: {e}"));
                     let outputs = document
                         .objects()
                         .filter(|o| !ids.contains(&o.id()) && o.id() != peer)
@@ -168,5 +185,15 @@ fn unclamped_join_and_copy_preserve_the_active_geometry_metadata_and_history() {
         }
     }
     assert_eq!(checked, 16);
-    eprintln!("UNCLAMPED_JOIN cases={checked}");
+    eprintln!("UNCLAMPED_JOIN remote={remote} cases={checked}");
+}
+
+#[test]
+fn unclamped_join_and_copy_preserve_the_active_geometry_metadata_and_history() {
+    check_workflows(false);
+}
+
+#[test]
+fn translated_charts_preserve_join_copy_metadata_and_history() {
+    check_workflows(true);
 }

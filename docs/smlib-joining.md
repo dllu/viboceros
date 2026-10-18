@@ -19,6 +19,12 @@ Native canonical construction clamps each active domain before stitching;
 JoinCopy keeps the original objects' unclamped definitions. This can change
 output coefficients and exterior knots while preserving the active surface.
 
+Native orientation now uses an [exact U/V permutation](native-uv-transpose.md)
+for surface bases and trim coordinates. It no longer rebuilds a surface through
+canonical knot cleanup or reflects trims through a rounded diagonal frame.
+Translated active domains and narrow interior spans survive the operation;
+this does not change native edge-matching admission or resolve every chart scale.
+
 Native UV creation can update tolerances, so export snapshots edges and vertices
 after the trims. Tiny out-of-domain UV controls use native knot snapping only
 within a roundoff allowance, followed by the existing continuous surface-image

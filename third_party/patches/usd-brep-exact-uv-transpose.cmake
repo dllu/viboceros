@@ -1,0 +1,22 @@
+# A U/V permutation must retain every knot and homogeneous control exactly.
+# Compose with the existing exact-copy patch without changing upstream files.
+find_program(PATCH_EXECUTABLE patch REQUIRED)
+foreach(uv_kind IN ITEMS Surface Face)
+    if(uv_kind STREQUAL "Surface")
+        set(uv_source "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmBSplineSurface.cpp")
+        set(uv_patch "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-surface-transpose-basis.patch")
+        set(uv_patched "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmBSplineSurfaceUV.cpp")
+    else()
+        set(uv_source "${USD_BREP_ROOT}/source/SMLib/src/SmFace.cpp")
+        set(uv_patch "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-face-transpose-uv.patch")
+        set(uv_patched "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmFaceUV.cpp")
+    endif()
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${uv_patch}")
+    execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch --fuzz=0 -o "${uv_patched}" "${uv_source}" "${uv_patch}"
+                    RESULT_VARIABLE uv_patch_status)
+    if(NOT uv_patch_status EQUAL 0)
+        message(FATAL_ERROR "usd-brep exact ${uv_kind} UV transpose patch failed; review the pinned source")
+    endif()
+    list(REMOVE_ITEM KERNEL_SOURCES "${uv_source}")
+    list(APPEND KERNEL_SOURCES "${uv_patched}")
+endforeach()

@@ -43,10 +43,12 @@ The same witness rejects a deliberately moved reference control point.
 This sampled witness does not replace the strict comparison or prove whole
 B-rep boundary equivalence.
 
-The separate 64-case interior-isocurve audit executes 32 cases, including 16
-unclamped cases. Its other 32 cases, with UV origins near `1e12`, still fail
-with an invalid active-domain error. Those failures are retained as errors;
-large translated charts remain further work.
+At the unclamped-import revision, the separate 64-case interior-isocurve audit
+executed 32 cases, including 16 unclamped cases. Its other 32 cases, with UV
+origins near `1e12`, failed with an invalid active-domain error. Those errors
+remain in the historical record. The [exact native transpose](native-uv-transpose.md)
+subsequently repairs that orientation failure; the newer qualification records
+the translated-chart executions and remaining matching limits.
 
 ```sh
 cargo test -p viboceros-smlib --features native --test unclamped_brep

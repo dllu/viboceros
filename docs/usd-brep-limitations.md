@@ -8,6 +8,18 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Fixed: orientation rebuilt and damaged valid surface parameter charts.**
+  `SmBSplineSurface::SwapUV` passed through canonical knot cleanup, collapsing
+  `[1e12,1e12+1]` and merging narrow spans. `SmFace::SwapUV` mirrored UV curves
+  through a rounded diagonal frame. The generated
+  [surface](../third_party/patches/usd-brep-surface-transpose-basis.patch) and
+  [trim](../third_party/patches/usd-brep-face-transpose-uv.patch) repairs use the
+  existing NLib tensor transpose and an axis-aligned coordinate transform.
+  Source domains, knots and homogeneous controls survive the permutation.
+  Remote-chart closed-box orientation still returns status 1006 in both the
+  parent and candidate. Some natural-boundary sheets remain unjoined despite
+  exact imported coefficients. See [qualification and retained failures](native-uv-transpose.md).
+
 - **Fixed: NURBS copies merged valid source knot groups.** Both B-spline copy
   constructors ran tolerance-based knot fixup after copying. In the direct
   curve/surface probe, 16 of 24 valid inputs consequently produce changed and

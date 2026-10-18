@@ -5,6 +5,10 @@ surface orientation sometimes transposes a face's U/V axes, including when
 importing a reversed open sheet. Export previously exposed that transpose as
 different surface coefficients and trim coordinates.
 
+The native kernel's [exact transpose repair](native-uv-transpose.md) also keeps
+remote active intervals and narrow spans intact during orientation. That repair
+prevents canonical reconstruction from changing the surface before export.
+
 The adapter now restores the corresponding input chart when the exported
 NURBS is exactly its transpose. The kernel's checked face-origin permutation
 identifies the source. Degree, knot vectors, control net and rational weights

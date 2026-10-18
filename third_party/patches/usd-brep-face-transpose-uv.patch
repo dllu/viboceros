@@ -1,0 +1,43 @@
+--- a/SmFace.cpp
++++ b/SmFace.cpp
+@@ -13846,10 +13846,10 @@
+   SmSurface          * pSurface = GetSurface();
+   SmTArray<SmLoopuse*> sUpwardLUs;
+   SmTArray<SmEdgeuse*> sEdgeuses;
+-  SmAxis2Placement     sMirror;
+-  SmVector3d           sXAxis(1,1,0);
+-  SER(sXAxis.Unitize());
+-  sMirror.SetCanonical(SmPoint3d(0,0,0),sXAxis,SmVector3d(0,0,1)); // x:[1 1 0] y:[0 0 1] z=cross(x,y):[1 -1 0]
++  // Compose an axis-aligned rotation and Z reflection to swap U/V exactly,
++  // retaining the last coordinate of both 3D and homogeneous 2D curves.
++  SmAxis2Placement sSwap;
++  sSwap.SetCanonical(SmPoint3d(0,0,0), SmVector3d(0,1,0), SmVector3d(1,0,0));
+ 
+ 
+ 
+@@ -13897,11 +13897,12 @@
+           SmBSplineCurve *pUVCurve = pEU->GetUVTrimCurve();
+           if (pUVCurve)
+             {
+-              SmCurve *pNewUV;
+-
+-              // Create MirrorCurve = mirror of curve about the SmAxis2Placement X, Y plane.
+-              // note: changes vertical lines to horizontal and vice versus
+-              SER(pUVCurve->CreateMirrorCurve(*pContext,sMirror,pNewUV));
++              SmCurve *pNewUV = NULL;
++              SER(pUVCurve->Copy(*pContext, pNewUV));
++              NER(pNewUV);
++              SmObjDelete cleanup(pNewUV);
++              const SmVector3d reflectZ(1,1,-1);
++              SER(pNewUV->Transform(sSwap, &reflectZ));
+ #ifdef SM_DEBUG_CODE
+ SmBoolean bDebugMe = FALSE;
+               if (bDebugMe)
+@@ -13919,6 +13920,7 @@
+               // replace Edgeuse mated pair's UVTrimCurve
+                 sEdgeusesToSet.Add(pEUMate);
+                 sNewUVTrims.Add(SM_CAST_PTR(SmBSplineCurve, pNewUV));
++                cleanup.Clear();
+ 
+               //pEUMate->SetUVTrimCurve(SM_CAST_PTR(SmBSplineCurve,pNewUV),0.0,TRUE) ; // TRUE = delete existing UVTrimCurve
+             } // end UVTrimCurve existence check

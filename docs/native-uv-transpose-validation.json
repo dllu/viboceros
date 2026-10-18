@@ -1,0 +1,299 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "98feba44af87655d4d4fe96a793b686de7dd1e3e",
+  "feature": "Preserve complete NURBS bases and UV coordinates during native orientation swaps.",
+  "upstream_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "implementation": [
+    "Compose generated-source repairs over the existing exact-copy patch; leave the pinned submodule unchanged.",
+    "Use N_SrfCopy and N_SwapUV on private stack-owned storage; SetFromGwNurb copies before stack destruction and retains native ownership/notification/analytic rebuild behavior.",
+    "Transform copied UV curves through an axis-aligned X/Y exchange plus Z reflection, preserving the third/homogeneous coordinate; use existing kernel transforms.",
+    "Retain native matching rules, tolerances, topology orientation and checked source-chart restoration."
+  ],
+  "cases": {
+    "bridge_charts": 8,
+    "bridge_narrow_span_cases": 2,
+    "span_width_approx": 1e-14,
+    "minimum_chart_width": 9.094947017729282e-13,
+    "translated_origins": [
+      1000000000000.0,
+      -2000000000000.0
+    ],
+    "bridge_comparison": "Exact full source surfaces after source-chart restoration, two faces, seven edges, one shared edge, manifoldness, unchanged Rust/native sources and raw spatial geometry.",
+    "construction_tolerance": 1e-09,
+    "modeling_tolerance": 0.001,
+    "command_local_workflows": 16,
+    "command_translated_workflows": 16,
+    "command_comparison": "Complete independently authored active coefficients allowing the documented U/V transpose, plus metadata, groups, selection, source retention and two Undo/Redo cycles. Original local recipes/tolerance retained; translated recipes use the compact bridge control net."
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-uv-transpose-bridge-full.log.gz",
+      "uncompressed_sha256": "c6b8748415bf9cd94870a55ef9437d68bea6cd2ed5334438757bb1d0f1a49a51",
+      "passed": 406,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-uv-transpose-command-full.log.gz",
+      "uncompressed_sha256": "eff01de6cc1b9e46b02221c024a653e793750afed63a78b90e53f17eb92dd82f",
+      "passed": 1598,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-uv-transpose-clippy.log.gz",
+      "uncompressed_sha256": "536157ad14417331db86bb72ee21cea7824566e9caaa170f2eb57bae4247aee6"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-uv-transpose-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "focused_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test stitch_uv -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-uv-transpose-focused-ready-bridge.log.gz",
+      "uncompressed_sha256": "3d6c3a7c7eee635308108b379050782d64be2b19e29fa2d8bebbad05a6819bae",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-command --features native-smlib --test native_unclamped_join -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-uv-transpose-command-focused.log.gz",
+      "uncompressed_sha256": "0d5d263c5cbfc3cb18f826d6025c31007e8fee90a37488f7a064bb6a8b78dfc1",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test stitching --test sheets --test brep_import -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-uv-transpose-existing.log.gz",
+      "uncompressed_sha256": "4b5069af3142b103c29efe8774ae0acdef15e3364b22ae755752f492bf10d363",
+      "passed": 21,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "baseline_reproduction": {
+    "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test stitch_uv -- --nocapture --skip remote_charts_keep_closed_box_orientation_and_source_geometry",
+    "exit_code": 101,
+    "retained": "docs/native-uv-transpose-baseline-final.log.gz",
+    "uncompressed_sha256": "3674a76acbd6ed6f110bf314b4c611b9298d6576c353c60a8e5aea8f7cbc211f",
+    "passed": 0,
+    "failed": 2,
+    "ignored": 0
+  },
+  "baseline_method": "New transpose CMake include temporarily omitted, leaving the parent generated exact-copy repair and pinned kernel active. The retained exploratory Rust source supplies the two failing focused regressions and the closed-box diagnostic. The include was restored before candidate checks.",
+  "native_api_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 python3 /tmp/viboceros-stitch-uv-replay.py",
+    "exit_code": 0,
+    "retained": "docs/native-uv-transpose-replay.log.gz",
+    "uncompressed_sha256": "eac7efec32a0cf879d0dc4ab232bd3828fd0da70553d89ae8d891bde97ec9c9a",
+    "script": {
+      "retained": "docs/native-uv-transpose-api-replay-script.py.gz",
+      "uncompressed_sha256": "51a8328dab2b4d8d78b462f0ae5ba46d2433acf3c1e7a10063237b0349a6a688"
+    },
+    "curved_audit": {
+      "retained": "docs/native-uv-transpose-curved-audit.json.gz",
+      "uncompressed_sha256": "130baf51c50e16eff4d313dd59c64c59a182e3db040b3560f51abded65eebeb3"
+    },
+    "curved_report": {
+      "retained": "docs/native-uv-transpose-curved-report.json.gz",
+      "uncompressed_sha256": "3d54e876e93237faf37ca7b3a2de5b3c8c24962ae5d6fb90a4e9fb9865b10d38"
+    },
+    "isocurve_audit": {
+      "retained": "docs/native-uv-transpose-isocurve-audit.json.gz",
+      "uncompressed_sha256": "11bbaa357d8c46d2a2885a597913c4a97d6154a8d013d73faa591e22a8b4fb04"
+    }
+  },
+  "observed_subset_comparisons": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-stitch-uv-observed-subsets.py",
+    "exit_code": 0,
+    "retained": "docs/native-uv-transpose-observed-subsets.log.gz",
+    "uncompressed_sha256": "f2a21356e8c349329a46eebd564bc3477d1f2f306c8d6578c602fabe43559e0d",
+    "script": {
+      "retained": "docs/native-uv-transpose-observed-subsets-script.py.gz",
+      "uncompressed_sha256": "9e65c06a42896a8465607286539c64e464db2bf901196ce052ef4c55b6c89646"
+    },
+    "reports": [
+      {
+        "retained": "docs/native-uv-transpose-join_isocurve_local-report.json.gz",
+        "uncompressed_sha256": "aa4b1ed2de40f3a68709d4f7273a4895a4f1a0c6f26c705a0addb629aabe0316"
+      },
+      {
+        "retained": "docs/native-uv-transpose-join_isocurve_origin-report.json.gz",
+        "uncompressed_sha256": "df4430490d3d51a1bbe12217e90d525edb3406aec3e77f5650965a84f682e4da"
+      }
+    ]
+  },
+  "curved_raw_comparison": {
+    "cases": 48,
+    "matched": 4,
+    "native_failed": 0,
+    "mismatched": 44,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-10
+  },
+  "isocurve_execution": {
+    "cases": 64,
+    "executions": 64,
+    "execution_errors": 0,
+    "previous_execution_errors": 32,
+    "connected_two_face_outputs": 64,
+    "raw_observed_cases": 33,
+    "matched": 0,
+    "raw_mismatched": 33,
+    "native_failed": 0,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "unobserved_translated_cases": 31,
+    "policy": "Compare only the unchanged 32-case local and one-case translated saved Rhino subsets. The other 31 translated cases have execution/topology evidence only; no absent observations are invented. Strict fields are not normalized."
+  },
+  "unresolved_closed_probe": {
+    "materials": {
+      "retained": "docs/native-uv-transpose-closed-probe.rs.gz",
+      "uncompressed_sha256": "da07ce6d2a21cb73a556c174944718aecc0b590e475d02d43ecff9b3512d36cb"
+    },
+    "baseline": {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test stitch_uv remote_charts_keep_closed_box_orientation_and_source_geometry -- --nocapture",
+      "exit_code": 101,
+      "retained": "docs/native-uv-transpose-closed-baseline.log.gz",
+      "uncompressed_sha256": "b4e69d849bd8f318e03ce6e0a0b4b5514ae04089c9620b11791f74fafba86458",
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0
+    },
+    "candidate": {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test stitch_uv -- --nocapture",
+      "exit_code": 101,
+      "retained": "docs/native-uv-transpose-focused-final.log.gz",
+      "uncompressed_sha256": "831cc96fe927f643931df04610cf67f56478b5c177bc1b5b36ad59cd6645c02e",
+      "passed": 2,
+      "failed": 1,
+      "ignored": 0
+    },
+    "finding": "The first translated six-face box fails normal orientation with status 1006 (SM_ERR_NULL_POINTER) in both kernels. The exploratory source includes four planned reversal masks; execution stops at the first and does not qualify the other three. This unresolved probe is retained separately; no failing regression is ignored in the regular suite."
+  },
+  "unqualified_wider_sheet_probe": {
+    "materials": {
+      "retained": "docs/native-uv-transpose-wider-sheet-probe.rs.gz",
+      "uncompressed_sha256": "c531ae6296a7b450317252a22edc42daadab5ed6687ba10f55a4af0510317d67"
+    },
+    "obtained_run": {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-command --features native-smlib --test native_unclamped_join translated_charts -- --nocapture",
+      "exit_code": 101,
+      "retained": "docs/native-uv-transpose-command-trace.log.gz",
+      "uncompressed_sha256": "9acb81c547a28011a66d156cfc46477d3217afc643d79f62489b0ba16fecf21e",
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0
+    },
+    "finding": "The original wider 30-unit profile over translated unequal intervals produces two separate outputs at modeling tolerance 0.001. The planned workflow stops on its first case. A diagnostic native import reports exact active tensors for both sources and stitching returns eight edges; the transpose patch does not qualify general native matching admission.",
+    "supplemental_native_import_trace": {
+      "retained": "docs/native-uv-transpose-wider-sheet-import-trace.log.gz",
+      "uncompressed_sha256": "7fe6a2b219acf672bed246946c5b4da212d831658836cf4b95a1e006804b1083"
+    }
+  },
+  "historical_provenance": {
+    "preserved_entries": 11,
+    "records": 3,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Run focused C ABI and command regressions first, then full release SMLib and command suites because the generated kernel permutation is shared by native modeling operations. Clippy covers all workspace targets/features.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses were not run. This ARM integration compiles the SMLib/SM_API closure through its own CMake bridge; the upstream USD/binding/tool layers are unchanged. No new sanitizer, live-Rhino or performance result is claimed."
+  },
+  "limitations": [
+    "Translated closed-box orientation still returns status 1006 in both the baseline and candidate.",
+    "Some wider natural-boundary sheets remain separate; native admission for all geometric/chart scales is not qualified.",
+    "Forty-four of 48 curved records and the observed isocurve subsets retain strict raw differences.",
+    "No arbitrary trimmed/periodic topology, broad Rhino command parity or performance parity is claimed."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
+    "crates/viboceros-smlib/tests/stitch_uv.rs": "f71753562effc06dbd4110b5cde610e61dddf6c4394e326cd9af48ce6a2a8f86",
+    "crates/viboceros-command/tests/native_unclamped_join.rs": "26bfe641bc244f8b4b4b48dbe6d8fe4b9ab12c7b37ef02f1dc9c5224c78d1b43",
+    "crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
+    "crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
+    "crates/viboceros-smlib/native/brep_import.cpp": "1967e07a45a81d9c441f2230ebeddf4891bde32920687c0f3dbdffc75565b7f7",
+    "third_party/patches/usd-brep-exact-uv-transpose.cmake": "595e1326bec0753de91716be657636d4063441f21b90dcd5b428384cd59be5a8",
+    "third_party/patches/usd-brep-surface-transpose-basis.patch": "ddf3eafe8ad60e6fb30a5434cc8f979d5917944f843949642caad1c6d6506829",
+    "third_party/patches/usd-brep-face-transpose-uv.patch": "f34f0f9b886038e99924c1a39f8e1e64924ddd901b14b84c683e9d550b033630",
+    "third_party/patches/usd-brep-copy-basis.cmake": "b117c6bcd62372e6c558ae044665f7f4be7a98d9465e8b0ad5642bb25ca7a9f3",
+    "third_party/patches/usd-brep-copy-surface-basis.patch": "c202199a64f4f397a304af188c4d0e5c1df541fa2c7a30b8547ecf352cea8f28",
+    "third_party/patches/usd-brep-copy-curve-basis.patch": "7c8510434ba6efcd707326a3919fef4d2724fac3193010ff84ec46686a925810",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp": "93c905a12c4124f6761f63ca9dbe2e2ffe400eb32b493c3d514be42de2c41138",
+    "third_party/usd-brep/source/SMLib/src/SmFace.cpp": "6004846a29074d8f8923904caabc01e194eceaff7f57f33b68ecdbbec08c51f9",
+    "third_party/usd-brep/source/SMLib/src/SmPlane.cpp": "5e554da57cd7b642ceb46c0528d582a906993fcde94779ab8a7a2328ec6e48e5",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-uv-transpose-bridge-full.log.gz": "7ff7208ee5eb54e64a4902dccce3d012cf6f39888c8e935b0443d89afdd491ec",
+    "docs/native-uv-transpose-command-full.log.gz": "b02a85107c1de8b90e62cc918cb6341473b2832a6a95d92c135da9f5afab57de",
+    "docs/native-uv-transpose-clippy.log.gz": "ee44629320eef986af6e17bd2b6720f0bbc8606751c2c5b449dcbcd29db2ee34",
+    "docs/native-uv-transpose-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-uv-transpose-focused-ready-bridge.log.gz": "a872a0a62d24e73eb5991ed4c3507052b79bd999079a7cd2ecf9f901144df59a",
+    "docs/native-uv-transpose-command-focused.log.gz": "62fa1381cb9f96d1b689fc0b206fedc6904b90ef4f5386380a413d38ee7ec780",
+    "docs/native-uv-transpose-existing.log.gz": "1ae02ab526b3a422d1797d6db84a112e008204e34862f803c7206ffe9cf297e7",
+    "docs/native-uv-transpose-baseline-final.log.gz": "cd185ed1a00a1304b7b6d60456e78bdee6eda496dc87c8106bd16e630344d545",
+    "docs/native-uv-transpose-closed-baseline.log.gz": "2bb3d3a5f1f7473fc2ce01f9d956aebeca4198a55e115b395f1061d5736b59ff",
+    "docs/native-uv-transpose-focused-final.log.gz": "b796be592774f75d14278630c88e765098794e848532d00ddb33312fa644017c",
+    "docs/native-uv-transpose-command-trace.log.gz": "e8dafd8fb4cafa9163e9605a3f3dc8a8d5b38c34f2c1bc8a19b4c3f0aaeb27fd",
+    "docs/native-uv-transpose-wider-sheet-import-trace.log.gz": "066e25ecc804b424d8fca0598a1de36bbe7c34c9968df8e61516767698ffb157",
+    "docs/native-uv-transpose-replay.log.gz": "786b1a531d7754b57c9348bdae3b00dd22ce0d8869586ee5c98d7cc7baac1c76",
+    "docs/native-uv-transpose-api-replay-script.py.gz": "47605438aee74159a63695628c4fcac28693854a7cf6391c8a5a2f28f113d9f1",
+    "docs/native-uv-transpose-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-uv-transpose-curved-report.json.gz": "921def0039eb31a1b9939de1ec1bbf4785268389f173cd3e1561dfbb17bade77",
+    "docs/native-uv-transpose-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "docs/native-uv-transpose-observed-subsets.log.gz": "c285c3775485780edb127d61a8e263f9db782321033ec2fdc6f4e02ce2f7ea93",
+    "docs/native-uv-transpose-observed-subsets-script.py.gz": "ce184013f3dcc3dc2dcc9130201cc05dbb77f7a24a66f44f423f8473b8de17fe",
+    "docs/native-uv-transpose-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
+    "docs/native-uv-transpose-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
+    "README.md": "3a49335b2c1380c1f9e2be4aeaf7dfe9405acf7914923e7b9aa7d9c142777ac3",
+    "docs/native-uv-transpose.md": "2601b5de0999824c826283f7398c9ee840b2d01631ec3a4c4c8890753294a3a9",
+    "docs/join-source-uv.md": "b271866252f17102043179f0916bc1e4fb22d7538b2bf9ad93240380b80b5d44",
+    "docs/smlib-joining.md": "09c286476e2eca9ea03bd66c51ac71afa1904602aacc5a0295aa41bd087625f1",
+    "docs/smlib-unclamped-import.md": "8d921ea8f65704a30917ffb93ba7aa2c87becf06535ea91aed8d7616427b70f7",
+    "docs/usd-brep-limitations.md": "71959450e304ca0d4875632b1731ff286b30643e63888f7ad095558a7fb7347e",
+    "docs/native-uv-transpose-closed-probe.rs.gz": "3c11ebf88fc2455d4c366aa8b48161fd343382993476ea01b448c7e15e85cee7",
+    "docs/native-uv-transpose-wider-sheet-probe.rs.gz": "500773e8e824058b5a486ddbe6d69bd69e6abb9176bff31f8a13f8898e3c1879",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
+    "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
+    "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
+    "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
+    "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
+    "docs/smlib-unclamped-import-isocurve-audit.json.gz": "93170bbbc3d86c32b3db0ddc325b78f2728947b1c242f69f32da8bc512791f31",
+    "docs/join-source-uv-validation.json": "787768325042f04c29c840c21c9816be5c51c047a9e7812b7b2daae3f8751322",
+    "docs/native-pole-transfer-validation.json": "a9037f63a73281915615231cae420e976d37552f9d767b94a1348fa8f2b07898",
+    "docs/smlib-unclamped-import-validation.json": "8208903110a312b0db6aed394980190e264bc570603acf6c3226c59cd639b4a9"
+  },
+  "baseline_git_sha256": {
+    "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-smlib/build.rs": "a47e9483a9fde54ad376294db1f40f234b279a76c97e01ece62ad2052f08a42d",
+    "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-smlib/native/CMakeLists.txt": "c04ade9fcd5eab4e385285de898eda218e1530d591cb1ad075939fe5548a1946",
+    "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-command/tests/native_unclamped_join.rs": "d08df6aceeb4984e97f23ec51b9627b898dcbaf22708d11f5ce690128360c53d"
+  },
+  "native_executable_sha256": "537242efd57673bf0bba1064f5b47a5343986f08b6f080dffc291ce9ec149374",
+  "log_policy": "Completed exit codes are observed job/status receipts. Full raw audit/report/log data are retained in gzip. Comparison and execution success remain distinct; elapsed_ns=0 establishes no performance result."
+}

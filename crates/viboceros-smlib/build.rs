@@ -51,6 +51,9 @@ fn build_native() {
         "usd-brep-copy-curve-basis.patch",
         "usd-brep-copy-surface-basis.patch",
         "usd-brep-copy-basis.cmake",
+        "usd-brep-surface-transpose-basis.patch",
+        "usd-brep-face-transpose-uv.patch",
+        "usd-brep-exact-uv-transpose.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");
     }
