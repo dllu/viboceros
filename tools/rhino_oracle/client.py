@@ -169,7 +169,7 @@ class OracleClient:
         validate_replay_inputs(request, observation, absolute_epsilon, relative_epsilon)
         with _owned_artifact_request(request) as prepared:
             native = self.run_viboceros_audit(prepared, timeout)
-        return compare_audit_response(native, observation, absolute_epsilon, relative_epsilon)
+        return compare_audit_response(native, observation, absolute_epsilon, relative_epsilon, request=request)
 
     def _run_native(
         self, request: Mapping[str, Any], timeout: float, *, audit: bool,
@@ -230,6 +230,10 @@ class OracleClient:
         if any(op.get('op') == 'remap_cplane' for op in request.get('operations', [])):
             if self.settings_scheme is None or request.get('iterations', 1) != 1:
                 raise OracleProtocolError('RemapCPlane requires a private scheme and one iteration')
+            from .remap_cplane_probe import validate_capture
+            for op in request['operations']:
+                if op.get('op') == 'remap_cplane':
+                    validate_capture(op)
         if any(op.get('op') == 'fillet_edge_reference' for op in request.get('operations', [])):
             from .fillet_edge_probe import validate
             if self.settings_scheme is None or request.get('iterations', 1) != 1:
@@ -1870,6 +1874,7 @@ Rhino.RhinoApp.Idle += execute_owned_controls
             rhino,
             absolute_epsilon=absolute_epsilon,
             relative_epsilon=relative_epsilon,
+            request=request,
         )
 
 
@@ -1931,8 +1936,12 @@ def compare_responses(
     rhino: Mapping[str, Any],
     absolute_epsilon: float = 1.0e-10,
     relative_epsilon: float = 1.0e-10,
+    *, request: Mapping[str, Any] | None = None,
 ) -> ComparisonReport:
-    """Compare validated engine responses without launching either engine."""
+    """Compare validated responses; explicit requests select command state policies.
+
+    Without a request, values retain the ordinary strict recursive comparison.
+    """
 
     _validate_epsilon(absolute_epsilon, "absolute")
     _validate_epsilon(relative_epsilon, "relative")
@@ -1942,6 +1951,11 @@ def compare_responses(
         raise OracleProtocolError("engine protocol versions do not match")
     if viboceros["iterations"] != rhino["iterations"]:
         raise OracleProtocolError("engine iteration counts do not match")
+    operations = {}
+    if request is not None:
+        from .audit import validate_replay_inputs
+        validate_replay_inputs(request, rhino, absolute_epsilon, relative_epsilon)
+        operations = {op['id']: op for op in request['operations']}
 
     v_results = _result_map(viboceros)
     r_results = _result_map(rhino)
@@ -1960,6 +1974,11 @@ def compare_responses(
         differences: list[str] = []
         local_value=result['value']
         native_value=rhino_result['value']
+        operation = operations.get(operation_id)
+        if operation is not None and operation.get('op') == 'remap_cplane':
+            from .remap_cplane_comparison import canonical
+            local_value = canonical(operation, local_value, native=False)
+            native_value = canonical(operation, native_value, native=True)
         if isinstance(local_value,dict) and local_value.get('comparison_policy')=='block_context_member_permutation':
             if not isinstance(native_value,dict) or native_value.get('comparison_policy')!=local_value['comparison_policy']:
                 raise OracleProtocolError('native context comparison policy mismatch')

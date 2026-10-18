@@ -21,6 +21,15 @@ def validate(op):
         raise ValueError('invalid bounded RemapCPlane recipe')
 
 
+def validate_capture(op):
+    """A live macro must finish, including any rejected-target name getter."""
+    validate(op)
+    same = op['source_plane'] == 'Top' and op['target'] == 'Top'
+    if (same and 'retry_target' not in op
+            or 'retry_target' in op and (not same or op['retry_target'] == 'Top')):
+        raise ValueError('RemapCPlane capture needs one rejected target followed by a distinct retry')
+
+
 def request():
     rows = [dict(source_plane='tilted', target=t, mode='CPlane', source='points',
                  copy=c, postselected=False, group=True, grips=False)
@@ -41,7 +50,7 @@ def request():
 
 
 def run(op, host):
-    validate(op)
+    validate_capture(op)
     R, System = host['Rhino'], host['System']
     G, doc = R.Geometry, R.RhinoDoc.ActiveDoc
     if R.Commands.Command.InCommand() or list(doc.Objects):

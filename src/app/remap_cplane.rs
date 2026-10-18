@@ -244,9 +244,13 @@ impl VibocerosApp {
                 construction_plane: s.source_plane,
             },
         );
+        let postselected = s.postselected;
         match result {
             Ok(message) => {
                 self.cancel_interactive_command(false);
+                if postselected {
+                    self.document.clear_selection();
+                }
                 self.push_log(message);
                 true
             }

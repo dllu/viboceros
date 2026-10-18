@@ -472,7 +472,6 @@
     "crates/viboceros-command/src/arc_input.rs": "8495bc59a1578e08b3176c75f3f171a60e26d78c8e450c4c2cb6127d362c17af",
     "crates/viboceros-command/src/arc_tilted_input.rs": "b4235f0c6a80a9379167855880545b5418b3b9634b9f590c85902709d56215e2",
     "crates/viboceros-oracle/src/arc_extension.rs": "d303c2b5cd163daa0e0b47eb2a7f3f10149798725329a983be3179ed6f8b8bb7",
-    "crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
     "docs/arc-tangent-validation.json": "5b8d0b88af9e6a3471fc3c89d8559e8311ab7c0e48e734e024d2b91de4164181",
     "docs/commands/arc-deformable.md": "d7c549de68029e204e04798ca30c0991b71b6cad4cd2617e37fe8f4504fcc940",
     "docs/commands/arc-extension.md": "5b1e47b109cd00d6f06dc13271c395b27bd3e0565027f7ec795fc33ba28d4365",
@@ -569,6 +568,7 @@
     "f6a107f761905d933e07ddb4ad84c623c8ba42e7:src/viewport.rs": "e204967975793c6d24faa2b56de3fecfacd3b5f6fc15cf5b95146aa7d8a77728",
     "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/client.py": "96d04fd67d9444f81f680d00718c14a13745b0f8c7643a5090eb6d07ff3f9011",
     "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/rhino_worker.py": "65d00106ae72337cc6f706944d5e9a1be96277558d18d3cce6b194b3cb44f6b4",
-    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/structural_sdk.py": "a684b5146cf4d5e72b09f8ce82810cb1369043684dc0757d81d5dea32d545c55"
+    "f6a107f761905d933e07ddb4ad84c623c8ba42e7:tools/rhino_oracle/structural_sdk.py": "a684b5146cf4d5e72b09f8ce82810cb1369043684dc0757d81d5dea32d545c55",
+    "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b"
   }
 }

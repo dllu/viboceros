@@ -2,6 +2,8 @@
 
 Normal comparison still requires successful engine responses. This diagnostic
 schema never turns a native error into a value, zero residual, or timing sample.
+An explicit request may select a command's portable state schema; raw native
+driver diagnostics remain in the retained observation.
 """
 from __future__ import annotations
 
@@ -136,18 +138,25 @@ def validate_replay_inputs(request, observation, absolute_epsilon, relative_epsi
 def compare_audit_response(
     native: Mapping[str, Any], observation: Mapping[str, Any],
     absolute_epsilon: float = 1.0e-10, relative_epsilon: float = 1.0e-10,
+    *, request: Mapping[str, Any] | None = None,
 ) -> AuditReport:
     validate_audit_response(native)
     _validate_response(observation, "rhino")
+    if request is not None:
+        validate_replay_inputs(request, observation, absolute_epsilon, relative_epsilon)
     ids = [o["result"]["id"] if o["status"] == "success" else o["id"] for o in native["outcomes"]]
     if set(ids) != {o["id"] for o in observation["results"]}:
         raise OracleProtocolError("audit and observation ids do not match")
     successes = [o["result"] for o in native["outcomes"] if o["status"] == "success"]
     success_ids = {o["id"] for o in successes}
+    successful_request = None if request is None else dict(request, operations=[
+        op for op in request['operations'] if op['id'] in success_ids
+    ])
     comparison = compare_responses(
         _success_response(native, successes),
         dict(observation, results=[o for o in observation["results"] if o["id"] in success_ids]),
         absolute_epsilon, relative_epsilon,
+        request=successful_request,
     )
     matches = {o.id: o for o in comparison.operations}
     rows = []

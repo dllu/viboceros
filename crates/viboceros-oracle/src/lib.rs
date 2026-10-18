@@ -182,7 +182,9 @@ pub use flow_line::Fixture as FlowLineFixture;
 pub use flow_roadlike::Fixture as FlowRoadlikeFixture;
 mod orient_on_curve;
 mod orient_points;
+mod remap_cplane;
 pub use flow::Fixture as FlowFixture;
+pub use remap_cplane::Fixture as RemapCPlaneFixture;
 mod orient_surface;
 mod orient_surface_grips;
 pub use orient_on_curve::Fixture as OrientOnCurveFixture;
@@ -1864,6 +1866,12 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: OrientPointsFixture,
     },
+    #[serde(rename = "remap_cplane")]
+    RemapCPlane {
+        id: String,
+        #[serde(flatten)]
+        fixture: RemapCPlaneFixture,
+    },
     OrientOnCurve {
         id: String,
         #[serde(flatten)]
@@ -2889,6 +2897,7 @@ impl Operation {
             | Self::LineThroughPoints { id, .. }
             | Self::CurveDeviation { id, .. }
             | Self::OrientPoints { id, .. }
+            | Self::RemapCPlane { id, .. }
             | Self::Flow { id, .. }
             | Self::OrientSurfaceOptions { id, .. }
             | Self::OrientSurface { id, .. }
@@ -6213,6 +6222,9 @@ fn execute(
         }
         Operation::OrientPoints { fixture, .. } => {
             orient_points::run(fixture, iterations, tolerance)?
+        }
+        Operation::RemapCPlane { fixture, .. } => {
+            remap_cplane::run(fixture, iterations, tolerance)?
         }
         Operation::OrientOnCurve { fixture, .. } => {
             orient_on_curve::run(fixture, iterations, tolerance)?

@@ -24,14 +24,14 @@ from .client import (
 )
 
 
-def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
+def _response(engine: str, value: object, elapsed_ns: int = 100, *, operation_ids=("operation",)) -> dict:
     return {
         "protocol_version": 1,
         "engine": engine,
         "engine_version": "test",
         "iterations": 10,
         "results": [
-            {"id": "operation", "value": value, "elapsed_ns": elapsed_ns}
+            {"id": operation_id, "value": value, "elapsed_ns": elapsed_ns} for operation_id in operation_ids
         ],
     }
 
@@ -184,7 +184,7 @@ class OracleClientTests(unittest.TestCase):
         self.assertEqual(request, original)
 
     def test_join_command_shares_owned_brep_sources_without_overwriting_caller_paths(self):
-        request = {"operations": [{"op": "join_command", "id": "../../untrusted", "sources": [
+        request = {"protocol_version": 1, "iterations": 10, "operations": [{"op": "join_command", "id": "../../untrusted", "sources": [
             {"brep": {"source": {"type": "box"}, "artifact_path": "/unowned/source.3dm"}},
             {"brep": {"source": {"type": "box"}}},
         ]}]}
@@ -198,12 +198,12 @@ class OracleClientTests(unittest.TestCase):
                 path.write_bytes(b"shared B-rep")
                 paths.append(path)
             self.assertNotEqual(paths[0], paths[1])
-            return _response("viboceros", 1)
+            return _response("viboceros", 1, operation_ids=[o["id"] for o in prepared["operations"]])
         def rhino(prepared, timeout):
             for source, path in zip(prepared["operations"][0]["sources"], paths):
                 self.assertEqual(Path(source["brep"]["artifact_path"]), path)
                 self.assertEqual(path.read_bytes(), b"shared B-rep")
-            return _response("rhino", 1)
+            return _response("rhino", 1, operation_ids=[o["id"] for o in prepared["operations"]])
         client = OracleClient()
         with patch.object(client, "run_viboceros", side_effect=native), patch.object(client, "run_rhino", side_effect=rhino):
             self.assertTrue(client.compare(request).passed)
@@ -211,7 +211,7 @@ class OracleClientTests(unittest.TestCase):
         self.assertTrue(all(not path.parent.exists() for path in paths))
 
     def test_compare_shares_owned_artifacts_without_mutating_the_request(self):
-        request = {"operations": [
+        request = {"protocol_version": 1, "iterations": 10, "operations": [
             {"id": "../../untrusted", "op": "three_dm_curve_interchange"},
             {"id": "../../untrusted-brep", "op": "three_dm_brep_interchange", "artifact_path": "/unowned/model.3dm"},
             {"id": "../../untrusted-border", "op": "border_command", "source": {"type": "box"}, "artifact_path": "/unowned/model.3dm"},
@@ -230,13 +230,13 @@ class OracleClientTests(unittest.TestCase):
                 self.assertFalse(path.exists())
                 path.write_bytes(b"native artifact")
                 paths.append(path)
-            return _response("viboceros", 1)
+            return _response("viboceros", 1, operation_ids=[o["id"] for o in prepared["operations"]])
 
         def rhino(prepared, timeout):
             for operation, path in zip(prepared["operations"], paths):
                 self.assertEqual(Path(operation["artifact_path"]), path)
                 self.assertEqual(path.read_bytes(), b"native artifact")
-            return _response("rhino", 1)
+            return _response("rhino", 1, operation_ids=[o["id"] for o in prepared["operations"]])
 
         client = OracleClient()
         with patch.object(client, "run_viboceros", side_effect=native), patch.object(

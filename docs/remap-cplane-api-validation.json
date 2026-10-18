@@ -1,0 +1,431 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "cda40e1f68f875244541dee3b697092a42ac4055",
+  "feature": "Expose bounded RemapCPlane recipes through the Rust oracle and Python API; match finished command-first selection cleanup in the application.",
+  "implementation": [
+    "Construct source geometry and frames independently from request recipes; never seed local geometry from native before snapshots.",
+    "Execute the registered command with explicit source/target frames and object or grip source identities, retaining true Undo/Redo states.",
+    "Keep the EndCommand state separate from completed-script selection cleanup. Clear command-first picks after successful app placement; retain preselection.",
+    "Retain the canceled Copy-option preparation separately; parse and discard pending options without updating the command preference.",
+    "Enable command-specific comparison only from the explicit request operation; preserve strict comparison when no request is supplied.",
+    "Reject live capture macros that would leave an identical-target name getter pending."
+  ],
+  "native_capture": {
+    "command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/remap_cplane_views.json --scheme VibocerosOracleRemapApiViews --timeout 300 --output /tmp/viboceros-remap-api-native-views.json",
+    "exit_code": 0,
+    "cases": 12,
+    "engine_version": "8.32.26160.13001",
+    "retained": "docs/remap-cplane-api-native-views.log.gz",
+    "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "native_capture_policy": "Public commands and document geometry on private Xvfb, in an owned empty document and private settings scheme. The twelve new world-target View captures used the unchanged worker at the parent revision before adding the capture preflight guard. The forty earlier native records are byte-for-byte unchanged.",
+  "native_capture_git_sha256": {
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/remap_cplane_probe.py": "343a5d5239fa272b9ac7fcdaad946f782e4b5df944f064dd89a4e7408c42a956",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1"
+  },
+  "cases": {
+    "saved_native_records": 52,
+    "added_world_view_records": 12,
+    "app_main_input_paths": 150,
+    "app_copy_cancellation_workflows": 2,
+    "state_phases": [
+      "before",
+      "after (EndCommand)",
+      "after_script",
+      "undo",
+      "redo"
+    ]
+  },
+  "comparison": {
+    "absolute_epsilon": 1e-09,
+    "relative_epsilon": 0,
+    "fields": "All exported point coordinates, NURBS controls/weights/knots/domains, mesh vertices/faces, grip coordinates/selection/display, source identity, names, object selection, group membership/counts, current plane, outcomes, rejected-target count and optional canceled setup state.",
+    "generated_group_names": "Only generated Group<digits> labels are mapped to stable per-operation identities across all history phases. Membership, ordering, counts, source group names and identity changes across history remain compared.",
+    "native_diagnostics": "Native macros, history and command event traces remain unchanged in the raw captures. Require one consistent RemapCPlane EndCommand observation, and successful SelID children only. English history supplies the identical-target rejection count; local command errors supply the corresponding count.",
+    "selection_witness": "The original command-first Copy cases 17, 21, 25 and 29 retain selected sources at EndCommand and clear them at script completion. The application now matches after_script; the oracle exports both phases.",
+    "negative_tests": "Mutate geometry, knots, mesh faces, grips, source identity, selection, names, groups, planes, outcomes and history identities; reject malformed schemas and inconsistent events; retain failed command outcomes as errors with no numeric/timing comparison."
+  },
+  "python_api_replay": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-remap-api-replay.py",
+    "exit_code": 0,
+    "retained": "docs/remap-cplane-api-replay.log.gz",
+    "uncompressed_sha256": "6e3a8c6534d1ac5e4cff4ec0e922c85cedd801f3ddb84823f9c58a3287b79b26",
+    "script": {
+      "retained": "docs/remap-cplane-api-replay-script.py.gz",
+      "uncompressed_sha256": "74c25dd8a44f8a7ba6e26f325f34cbcc495ef416c25e8309a72c7c3e439c17f9"
+    },
+    "records": [
+      {
+        "fixture": "tools/rhino_oracle/fixtures/remap_cplane.json",
+        "observation": "tools/rhino_oracle/observations/remap_cplane.json",
+        "matched": 38,
+        "failed": 0,
+        "maximum_absolute_error": 2.6645352591003757e-15,
+        "audit": {
+          "retained": "docs/remap-cplane-api-remap_cplane-audit.json.gz",
+          "uncompressed_sha256": "fe9b6fc0b7f2c332af6cbd452e7afdbfd7d474e2de8717601b452acd52297e41"
+        },
+        "report": {
+          "retained": "docs/remap-cplane-api-remap_cplane-report.json.gz",
+          "uncompressed_sha256": "60dda0f3880bf7d11270dff3f4c9a48403f34234c4b9b7b2337dbbe03df046e7"
+        }
+      },
+      {
+        "fixture": "tools/rhino_oracle/fixtures/remap_cplane_copy.json",
+        "observation": "tools/rhino_oracle/observations/remap_cplane_copy.json",
+        "matched": 2,
+        "failed": 0,
+        "maximum_absolute_error": 0.0,
+        "audit": {
+          "retained": "docs/remap-cplane-api-remap_cplane_copy-audit.json.gz",
+          "uncompressed_sha256": "b75aa28b3675d2740bd60d54a06a73b1126ca00a665226d91cc65fc0b3920b81"
+        },
+        "report": {
+          "retained": "docs/remap-cplane-api-remap_cplane_copy-report.json.gz",
+          "uncompressed_sha256": "7f50d61f553c3456884fe203206124981db5c690a27ade460c87c82371eeab7b"
+        }
+      },
+      {
+        "fixture": "tools/rhino_oracle/fixtures/remap_cplane_views.json",
+        "observation": "tools/rhino_oracle/observations/remap_cplane_views.json",
+        "matched": 12,
+        "failed": 0,
+        "maximum_absolute_error": 1.7763568394002505e-15,
+        "audit": {
+          "retained": "docs/remap-cplane-api-remap_cplane_views-audit.json.gz",
+          "uncompressed_sha256": "a85c406865d18f4c34dfe3500e84b37252239054797a66af37dbfc763ebfe502"
+        },
+        "report": {
+          "retained": "docs/remap-cplane-api-remap_cplane_views-report.json.gz",
+          "uncompressed_sha256": "11547a53ebe3fefef089ffece3ad4c62d8cc56fb571083da6d521a568bb2d323"
+        }
+      }
+    ]
+  },
+  "completed_runs": [
+    {
+      "command": "cargo test --release -p viboceros-oracle --no-fail-fast -- --nocapture",
+      "retained": "docs/remap-cplane-api-oracle-default-release.log.gz",
+      "uncompressed_sha256": "6af40921e406c151b72dbf2e1ada3ef4c42c85442828c096631d562c2f5447a8",
+      "passed": 596,
+      "failed": 0,
+      "ignored": 0,
+      "failed_tests": [],
+      "summaries": [
+        "test result: ok. 571 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 51.47s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.47s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "command": "cargo test --release --bin viboceros -- --nocapture",
+      "retained": "docs/remap-cplane-api-app-release.log.gz",
+      "uncompressed_sha256": "f024c38f6bd955bd41481d23d46987b2e82c851a4a015be56b2b974eb6d79098",
+      "passed": 1379,
+      "failed": 0,
+      "ignored": 19,
+      "failed_tests": [],
+      "summaries": [
+        "test result: ok. 1379 passed; 0 failed; 19 ignored; 0 measured; 0 filtered out; finished in 15.06s"
+      ]
+    },
+    {
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --no-fail-fast -- --nocapture",
+      "retained": "docs/remap-cplane-api-oracle-native-release.log.gz",
+      "uncompressed_sha256": "af7b805b220a33cd855fc66095740c475e5e7a9f6c4b26dc7a03c50e45af253e",
+      "passed": 597,
+      "failed": 20,
+      "ignored": 0,
+      "failed_tests": [
+        "audit::tests::captures_a_geometry_rejection_and_runs_both_neighboring_operations",
+        "join_command::tests::boundaries::boundary_matching_replays_partial_crossing_reversed_and_competing_inputs",
+        "join_command::tests::boundaries::zero_volume_orientation_remains_explicit_and_unjoined_gap_rebuilding_matches",
+        "join_command::tests::corners::corner_discovery_audits_every_case_even_after_transitive_cluster_rejections",
+        "join_command::tests::curved_certificates::independent_curved_bases_replay_complete_rhino_command_records",
+        "join_command::tests::curved_certificates::parameter_distance_uncertainty_and_interchange_end_knots_remain_explicit_differences",
+        "join_command::tests::edge_cleanup::redundant_seams_coalesce_at_small_angles_without_copying_cosine_roundoff",
+        "join_command::tests::gaps::chord_projection_matches_raw_geometry_with_independent_area_witnesses",
+        "join_command::tests::gaps::gap_rebuilding_replays_every_raw_geometry_tolerance_and_document_field",
+        "join_command::tests::gaps::transitive_chain_matches_command_first_but_batch_adjustment_is_rejected",
+        "join_command::tests::isocurve_certificates::interior_isocurve_join_certifies_all_boundaries_and_preserves_independent_area_accuracy",
+        "join_command::tests::orientation::native_only_tiny_commands_are_exact_power_of_two_images_of_unit_witnesses",
+        "join_command::tests::orientation::raw_join_replay_retains_large_rhino_orientation_discrepancies",
+        "join_command::tests::projective_correspondence::projective_discovery_keeps_matches_uncertainty_integral_and_topology_limits_distinct",
+        "join_command::tests::selection_distance::ordered_cluster_discovery_keeps_successes_mismatches_and_guard_rejections",
+        "join_command::tests::selection_distance::selection_distances_replay_raw_fields_and_keep_endpoint_only_differences_visible",
+        "join_command::tests::short_overlaps::short_overlap_discovery_preserves_complete_edges_and_exposes_partial_trim_limits",
+        "join_command::tests::surfaces::original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+        "join_command::tests::surfaces::surface_commands_replay_all_raw_geometry_and_document_fields",
+        "join_command::tests::trim_certificates::presplit_curved_boundaries_keep_certified_gaps_without_hiding_edge_cleanup_differences"
+      ],
+      "summaries": [
+        "test result: FAILED. 572 passed; 20 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.01s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.50s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_remap_cplane_comparison tools.rhino_oracle.test_audit tools.rhino_oracle.test_client tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_headless_cli",
+      "exit_code": 0,
+      "tests": 46,
+      "retained": "docs/remap-cplane-api-python.log.gz",
+      "uncompressed_sha256": "ea46db5b2553f0fb28804a7b69c29529fef4d43b8e7c4b723eb8b2b5b1d10e57"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/remap-cplane-api-clippy.log.gz",
+      "uncompressed_sha256": "e6dd779240c1961a6299e63b2a4d16778ee20c35d936d08dd351bd9e1b92700d"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/remap-cplane-api-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "focused_runs": [
+    {
+      "command": "cargo test -p viboceros-oracle --lib remap_cplane -- --nocapture",
+      "retained": "docs/remap-cplane-api-oracle-focused.log.gz",
+      "uncompressed_sha256": "e5fee9ffce422fa6fa8721a600a3667849f5edcf41bff7d903c624ea529e8196",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "failed_tests": [],
+      "exit_code": 0,
+      "summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 569 filtered out; finished in 0.50s"
+      ]
+    },
+    {
+      "command": "cargo test --bin viboceros app::tests::remap_cplane -- --nocapture",
+      "retained": "docs/remap-cplane-api-app-focused.log.gz",
+      "uncompressed_sha256": "8d7bcf11cc4c33a07ae181d532b9bfc932962a61e490c15a8ca114ebe5d09981",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "failed_tests": [],
+      "exit_code": 0,
+      "summaries": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1394 filtered out; finished in 0.34s"
+      ]
+    }
+  ],
+  "existing_native_feature_failures": {
+    "outcome": "The full native-feature oracle run has twenty existing Join/audit failures. The exact failing test names reproduce with parent oracle Rust sources and unchanged dependencies. No tests, tolerances or failure expectations were weakened or ignored. The new RemapCPlane tests pass in the native-feature run.",
+    "current": {
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --no-fail-fast -- --nocapture",
+      "retained": "docs/remap-cplane-api-oracle-native-release.log.gz",
+      "uncompressed_sha256": "af7b805b220a33cd855fc66095740c475e5e7a9f6c4b26dc7a03c50e45af253e",
+      "passed": 597,
+      "failed": 20,
+      "ignored": 0,
+      "failed_tests": [
+        "audit::tests::captures_a_geometry_rejection_and_runs_both_neighboring_operations",
+        "join_command::tests::boundaries::boundary_matching_replays_partial_crossing_reversed_and_competing_inputs",
+        "join_command::tests::boundaries::zero_volume_orientation_remains_explicit_and_unjoined_gap_rebuilding_matches",
+        "join_command::tests::corners::corner_discovery_audits_every_case_even_after_transitive_cluster_rejections",
+        "join_command::tests::curved_certificates::independent_curved_bases_replay_complete_rhino_command_records",
+        "join_command::tests::curved_certificates::parameter_distance_uncertainty_and_interchange_end_knots_remain_explicit_differences",
+        "join_command::tests::edge_cleanup::redundant_seams_coalesce_at_small_angles_without_copying_cosine_roundoff",
+        "join_command::tests::gaps::chord_projection_matches_raw_geometry_with_independent_area_witnesses",
+        "join_command::tests::gaps::gap_rebuilding_replays_every_raw_geometry_tolerance_and_document_field",
+        "join_command::tests::gaps::transitive_chain_matches_command_first_but_batch_adjustment_is_rejected",
+        "join_command::tests::isocurve_certificates::interior_isocurve_join_certifies_all_boundaries_and_preserves_independent_area_accuracy",
+        "join_command::tests::orientation::native_only_tiny_commands_are_exact_power_of_two_images_of_unit_witnesses",
+        "join_command::tests::orientation::raw_join_replay_retains_large_rhino_orientation_discrepancies",
+        "join_command::tests::projective_correspondence::projective_discovery_keeps_matches_uncertainty_integral_and_topology_limits_distinct",
+        "join_command::tests::selection_distance::ordered_cluster_discovery_keeps_successes_mismatches_and_guard_rejections",
+        "join_command::tests::selection_distance::selection_distances_replay_raw_fields_and_keep_endpoint_only_differences_visible",
+        "join_command::tests::short_overlaps::short_overlap_discovery_preserves_complete_edges_and_exposes_partial_trim_limits",
+        "join_command::tests::surfaces::original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+        "join_command::tests::surfaces::surface_commands_replay_all_raw_geometry_and_document_fields",
+        "join_command::tests::trim_certificates::presplit_curved_boundaries_keep_certified_gaps_without_hiding_edge_cleanup_differences"
+      ],
+      "summaries": [
+        "test result: FAILED. 572 passed; 20 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.01s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.50s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    "parent": {
+      "command": "CARGO_TARGET_DIR=/home/dllu/proj/viboceros/target cargo test --release --manifest-path /tmp/viboceros-remap-api-parent-fdxzpw4i/crates/viboceros-oracle/Cargo.toml --features native-smlib --offline --lib -- --nocapture",
+      "retained": "docs/remap-cplane-api-parent-native-lib.log.gz",
+      "uncompressed_sha256": "1bdf7a649a067c9e7dd57d9b746734f938292454294042aee17845abc8c2c4ee",
+      "passed": 570,
+      "failed": 20,
+      "ignored": 0,
+      "failed_tests": [
+        "audit::tests::captures_a_geometry_rejection_and_runs_both_neighboring_operations",
+        "join_command::tests::boundaries::boundary_matching_replays_partial_crossing_reversed_and_competing_inputs",
+        "join_command::tests::boundaries::zero_volume_orientation_remains_explicit_and_unjoined_gap_rebuilding_matches",
+        "join_command::tests::corners::corner_discovery_audits_every_case_even_after_transitive_cluster_rejections",
+        "join_command::tests::curved_certificates::independent_curved_bases_replay_complete_rhino_command_records",
+        "join_command::tests::curved_certificates::parameter_distance_uncertainty_and_interchange_end_knots_remain_explicit_differences",
+        "join_command::tests::edge_cleanup::redundant_seams_coalesce_at_small_angles_without_copying_cosine_roundoff",
+        "join_command::tests::gaps::chord_projection_matches_raw_geometry_with_independent_area_witnesses",
+        "join_command::tests::gaps::gap_rebuilding_replays_every_raw_geometry_tolerance_and_document_field",
+        "join_command::tests::gaps::transitive_chain_matches_command_first_but_batch_adjustment_is_rejected",
+        "join_command::tests::isocurve_certificates::interior_isocurve_join_certifies_all_boundaries_and_preserves_independent_area_accuracy",
+        "join_command::tests::orientation::native_only_tiny_commands_are_exact_power_of_two_images_of_unit_witnesses",
+        "join_command::tests::orientation::raw_join_replay_retains_large_rhino_orientation_discrepancies",
+        "join_command::tests::projective_correspondence::projective_discovery_keeps_matches_uncertainty_integral_and_topology_limits_distinct",
+        "join_command::tests::selection_distance::ordered_cluster_discovery_keeps_successes_mismatches_and_guard_rejections",
+        "join_command::tests::selection_distance::selection_distances_replay_raw_fields_and_keep_endpoint_only_differences_visible",
+        "join_command::tests::short_overlaps::short_overlap_discovery_preserves_complete_edges_and_exposes_partial_trim_limits",
+        "join_command::tests::surfaces::original_discrepancy_archive_tracks_resolved_partial_and_gap_joins",
+        "join_command::tests::surfaces::surface_commands_replay_all_raw_geometry_and_document_fields",
+        "join_command::tests::trim_certificates::presplit_curved_boundaries_keep_certified_gaps_without_hiding_edge_cleanup_differences"
+      ],
+      "exit_code": 101,
+      "summaries": [
+        "test result: FAILED. 570 passed; 20 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.17s"
+      ]
+    },
+    "added_passing_library_tests": 2,
+    "parent_package": {
+      "revision": "cda40e1f68f875244541dee3b697092a42ac4055",
+      "rust_files_checked": 241,
+      "materialization": "Original parent oracle Rust sources extracted with git archive into a standalone package. Workspace manifest values expanded; production dependency crates and adjacent fixtures linked from unchanged workspace inputs. Existing tracked native fixtures/observations verified unchanged. Additional View captures are unused by parent tests. Cargo.lock starts from the workspace lock; the retained standalone lock includes its resolved package graph.",
+      "unchanged_dependency_paths": [
+        "crates/viboceros-command",
+        "crates/viboceros-document",
+        "crates/viboceros-drafting",
+        "crates/viboceros-geometry",
+        "crates/viboceros-io",
+        "crates/viboceros-opennurbs",
+        "crates/viboceros-smlib"
+      ],
+      "retained_materials": [
+        {
+          "retained": "docs/remap-cplane-api-parent-manifest.toml.gz",
+          "uncompressed_sha256": "b791ea747564644d6244082e8c83a37812b879905205474a177b2325e3d44ce1"
+        },
+        {
+          "retained": "docs/remap-cplane-api-parent-lock.lock.gz",
+          "uncompressed_sha256": "7480fe7c57e34310878adc99473ce2dffb256fde8d1ce66d8937f42ebcab505c"
+        }
+      ]
+    }
+  },
+  "historical_provenance": {
+    "preserved_entries": 8,
+    "records": 2,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "log_policy": "Full test output, actual API audits/reports and replay script are retained in gzip files. Test totals come from completed summaries; exit_code is recorded only where the terminal status was retained. Native elapsed_ns=0 records establish no performance comparison.",
+  "limitations": [
+    "Bounded authored sources and frames only: two four-point clouds, a rational curve, rectangular single-face rational surface and mesh; selected grips use indices 0 and 2.",
+    "The headless recipe resolves fixed target frames; application tests cover name resolution and three text-entry paths. Arbitrary scene requests and viewport-click interaction are outside this API recipe.",
+    "Record History dependency propagation, cursor/getter appearance, preview, SelPrev behavior, general trimmed B-reps, arbitrary numerical admission thresholds and performance parity remain unqualified.",
+    "The rejection diagnostic comparison is qualified for the retained English Rhino history only.",
+    "The full native-feature oracle suite remains red on the twenty explicitly retained baseline failures."
+  ],
+  "source_sha256": {
+    "crates/viboceros-oracle/src/lib.rs": "69b6ae9561c272510e9fdc4ae325ab8701fab5d02079ee0d6ca9b7536517ab72",
+    "crates/viboceros-oracle/src/remap_cplane.rs": "73e6951ad0b27000ed5930a1e0b1f2aa126df2f21399e8b6a300d1c96c63b882",
+    "crates/viboceros-oracle/src/remap_cplane/tests.rs": "37c5cb17f0e4b03ac842ad467e86d17ce9dc0c762703e011660bee67dc0decad",
+    "crates/viboceros-oracle/src/orient_surface_grips.rs": "8e48963670e56708986ba1ecf6853749d09da12e5dfd5992713436385879511b",
+    "crates/viboceros-command/src/remap_cplane.rs": "ffab7cb3ef118b25846c6f7bcc3c4685d0624561a3442c19defacf88c24bae43",
+    "crates/viboceros-command/src/copy_options.rs": "8a20c59c7aae5ecbf58ac931cac4a7ab97de2efdc9f59b566da7d02c056b791e",
+    "src/app/remap_cplane.rs": "22c8fd8212d45378575f0abb9548097d3a28118ed9b65a8640015a87e82676f5",
+    "src/app/tests/remap_cplane.rs": "8e57eaf0608e0ab019af555b8176f24ca1bb38f1e9af18e062970679c96ce670",
+    "src/app/transform_sources.rs": "685bf4238bbea20df2c318f0f598521cb106b7d1c37444ea96a3369c1aefa097",
+    "src/app/tests/grip_transform.rs": "2e36e4436e0e1f7dd55464e5051b2c7e7b132d50026390bb57e20ea1682222d3",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/remap_cplane_comparison.py": "5a5184005ef59795a15dfec25ec1ed9f7174681d0720b3ca3fc56ce1404e930d",
+    "tools/rhino_oracle/test_remap_cplane_comparison.py": "0ccd731817d38cf575cf51a86c0665d7ff3ec5394a28203cfb4845ed82963e48",
+    "tools/rhino_oracle/remap_cplane_probe.py": "d2aeff9a9ce25c6695d1943441c317b3332be0776932ab9a644fdbdf19b4f647",
+    "tools/rhino_oracle/test_client.py": "83aa176254fc0872e7363af08aad2b5be9d8ca1e9d9e097d3e05d4f913d6d0aa",
+    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "tools/rhino_oracle/grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/remap-cplane-api-parent-manifest.toml.gz": "fd398541e5e6bda9740b66a81b92e3667d8b5cd1673742b4e671bdc48dd3bcd3",
+    "docs/remap-cplane-api-parent-lock.lock.gz": "8442bf42a84bb6d56b5d4d172e31bad316a899fed6d1d05624ee67d5fc2dbc83",
+    "docs/remap-cplane-api-oracle-native-release.log.gz": "e4bd4150f45eadeb85afb95c359f8c51a49d6146523472d96b2885b147686cbd",
+    "docs/remap-cplane-api-parent-native-lib.log.gz": "3f53ebf6dfec1d1d22666473fb27a4cb67f994f2a77b9d723ffc444612ab2a1d",
+    "docs/remap-cplane-api-oracle-default-release.log.gz": "2c73456acfe36d1b9cc977b71c7c05da0b04420fbdaeeeeb6d6ef6beb3a2db75",
+    "docs/remap-cplane-api-app-release.log.gz": "26015e17b632b4defe326c2140b318d2056bdabb036f587fc1d127ef18d6b3e0",
+    "docs/remap-cplane-api-oracle-focused.log.gz": "ff96c2658f2878802cbfbc75b7e5370aeb4baafb22115605a54eff982fbf4168",
+    "docs/remap-cplane-api-app-focused.log.gz": "d7936aec4ed81e5c6b9ca1aed343ecc85c4247796bf641ed46e903b008b87f10",
+    "docs/remap-cplane-api-python.log.gz": "8badba7ea832f95276f6afaa87144ab90ff336635ccb43afe69ed359d0670695",
+    "docs/remap-cplane-api-clippy.log.gz": "20cdf80a02399e23b9d65da7d10444c71ea45f9948654460841f3971bed9979c",
+    "docs/remap-cplane-api-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "tools/rhino_oracle/fixtures/remap_cplane.json": "78845c80443fd0730e2851810a85e8ee6e4712c648d400349aa0be1905559d42",
+    "tools/rhino_oracle/observations/remap_cplane.json": "0579a324690e6e018108ce499db7517d45025006a976ecb73a40864c8b58b5f8",
+    "docs/remap-cplane-api-remap_cplane-audit.json.gz": "31c5545037c4169e4d60ba19c544dcc313b60167283d4b10b3da6e8d167cc4ca",
+    "docs/remap-cplane-api-remap_cplane-report.json.gz": "3472fef4958d488ebe054ac0effe03ada9497022c205a6638e1c6cd1c9f07891",
+    "tools/rhino_oracle/fixtures/remap_cplane_copy.json": "8d66d83018bf5e4fdbe871722f829c4412049f18240cbd809aa8f5cd6ff56f15",
+    "tools/rhino_oracle/observations/remap_cplane_copy.json": "0279720789ffb202cafaf64ebcc33e3f0d2d13d6032d465bbb9086cc92d79161",
+    "docs/remap-cplane-api-remap_cplane_copy-audit.json.gz": "1e7098e0bf8aed3c8686bda4c33e9b90467fa93be82c10a424626bf529ea2640",
+    "docs/remap-cplane-api-remap_cplane_copy-report.json.gz": "0856740e52b1bcd52b4e015c39d8a30fc3047bc487b806e910ce8c864be0cee9",
+    "tools/rhino_oracle/fixtures/remap_cplane_views.json": "4cd009425e50d157c11d51bfef1f3a1e198112f356943a66f1f3be001ea71d52",
+    "tools/rhino_oracle/observations/remap_cplane_views.json": "674939c6d2211c609ecbc5d1cd85ad21c3dc8bbd586255354ebc9fd4a319773a",
+    "docs/remap-cplane-api-remap_cplane_views-audit.json.gz": "0445e9639b05c1b4246cd56b4ebc3932791574283d1358ea46a42f0682e2249e",
+    "docs/remap-cplane-api-remap_cplane_views-report.json.gz": "f81fcdc47909041dfa71f4167f2dd36abb7f241ad8b6c99d199c8553efd0f72e",
+    "docs/remap-cplane-api-replay.log.gz": "f0a29bbfa981a63630fa907a8316dbc2858d99d799a203cdc2d1d63b88f39640",
+    "docs/remap-cplane-api-replay-script.py.gz": "583db06bcada3728a95ab3f51b67ae8b4d2d3d1193fc14bea2d9b6662c241c6d",
+    "docs/remap-cplane-api-native-views.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "README.md": "98ce8edb477c0acf9b227ae50272a4121fad781034e445f87dbfff86ddbe1b39",
+    "docs/oracle.md": "6c5755ce7b32bccc85ce1cbd1618458a6718e666678596d3d2e55e1df9b316c4",
+    "docs/commands/remap-cplane.md": "f828e120099e5f21ea6a1f1f255e263952f1819ca51cf84a9feddeadebb813f6",
+    "docs/arc-extension-validation.json": "4663fdc56e5baa564cc41063833e1ac54fd2ab85609ef08a5fb0789528aff829",
+    "docs/remap-cplane-validation.json": "a53cd3eb4700cdc932ae1d7c57aa67e126db21de8582fd3212525b781c73bac0"
+  },
+  "baseline_git_sha256": {
+    "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
+    "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-oracle/src/orient_surface_grips.rs": "8e48963670e56708986ba1ecf6853749d09da12e5dfd5992713436385879511b",
+    "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-command/src/remap_cplane.rs": "ffab7cb3ef118b25846c6f7bcc3c4685d0624561a3442c19defacf88c24bae43",
+    "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-command/src/copy_options.rs": "8a20c59c7aae5ecbf58ac931cac4a7ab97de2efdc9f59b566da7d02c056b791e",
+    "cda40e1f68f875244541dee3b697092a42ac4055:src/app/remap_cplane.rs": "beb44401700f2e80149145f21b78e164638c3607174dd492f578966d6ecd1515",
+    "cda40e1f68f875244541dee3b697092a42ac4055:src/app/tests/remap_cplane.rs": "cc2de8c0269ef6811fcbe84a680d42c99ff33fe110409758c725cfb201a84378",
+    "cda40e1f68f875244541dee3b697092a42ac4055:src/app/transform_sources.rs": "685bf4238bbea20df2c318f0f598521cb106b7d1c37444ea96a3369c1aefa097",
+    "cda40e1f68f875244541dee3b697092a42ac4055:src/app/tests/grip_transform.rs": "2e36e4436e0e1f7dd55464e5051b2c7e7b132d50026390bb57e20ea1682222d3",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/client.py": "1f00741a4c07ad6324c735b91d90a38a6ff0cedc4e972fd299a33ce55430e98c",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/audit.py": "d0dde15149ff8f3ddcd175d5078b0678bd7643f80ccb69ea338aa6fb23b606eb",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/remap_cplane_probe.py": "343a5d5239fa272b9ac7fcdaad946f782e4b5df944f064dd89a4e7408c42a956",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/test_client.py": "f99207c03a9cf9121b31891cfb506bf6451d12e978043985a744a28ccd443e93",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5",
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

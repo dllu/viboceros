@@ -1,9 +1,8 @@
-use super::grip_transform::{compare, geometry};
-use super::scale_by_plane::{frame, p};
+use super::grip_transform::compare;
 use super::*;
 use serde_json::{Value, json};
 use viboceros_document::{ControlPointId, ObjectAttributes};
-use viboceros_geometry::{PointCloud3, Vector3};
+use viboceros_geometry::Vector3;
 
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
@@ -57,67 +56,54 @@ fn snapshot(app: &VibocerosApp, sources: &[ObjectId], points: bool) -> Value {
            "plane":{"origin":plane.origin().to_array(),"x_axis":plane.x_axis().as_vector().to_array(),"y_axis":plane.y_axis().as_vector().to_array()}})
 }
 
-fn setup(app: &mut VibocerosApp, op: &Value, native: &Value) -> Vec<ObjectId> {
-    app.active_viewport = 0;
-    app.viewports[0].set_construction_plane(frame(&native["before"]["plane"]));
-    let target = Frame3::try_from_directions(
-        point(-3., 7., 11.),
-        Vector3::try_new(0., 1., 1.).unwrap(),
-        Vector3::try_new(2., 1., -1.).unwrap(),
-        Tolerance::DEFAULT,
-    )
-    .unwrap();
-    app.viewports[1].set_construction_plane(target);
+fn setup(app: &mut VibocerosApp, op: &Value) -> Vec<ObjectId> {
+    let viboceros_oracle::Operation::RemapCPlane { fixture, .. } =
+        serde_json::from_value(op.clone()).unwrap()
+    else {
+        panic!("RemapCPlane fixture");
+    };
+    app.active_viewport = 1;
+    app.viewports[1].set_construction_plane(
+        viboceros_oracle::RemapCPlaneFixture::named_target_frame().unwrap(),
+    );
     app.active_viewport = 1;
     if op["mode"] == "CPlane" {
         assert!(app.try_run_named_cplane_command("NamedCPlane Save Owned target"));
     } else {
         assert!(app.try_run_named_view_command("NamedView Save Owned target"));
     }
-    app.active_viewport = 0;
+    app.viewports[1].set_construction_plane(fixture.source_frame().unwrap());
     let mut ids = Vec::new();
-    for row in native["before"]["objects"].as_array().unwrap() {
-        let geometry = if op["source"] == "points" {
-            Geometry::PointCloud(
-                PointCloud3::try_new(row["points"].as_array().unwrap().iter().map(p).collect())
-                    .unwrap(),
-            )
-        } else {
-            geometry(op, row)
-        };
+    for (i, geometry) in fixture
+        .source_geometries(app.document.tolerance())
+        .unwrap()
+        .into_iter()
+        .enumerate()
+    {
         let id = app
             .document
             .add_geometry_with_attributes(
                 geometry,
                 ObjectAttributes::on_layer(app.document.current_layer_id())
-                    .with_name(row["name"].as_str().unwrap()),
+                    .with_name(format!("remap source {i}")),
             )
             .unwrap();
-        if row["grips_on"] == true {
+        if fixture.grips {
             app.document.enable_control_points([id]).unwrap();
             app.document
                 .select_control_points(
-                    row["grips"]
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .filter(|g| g["selected"] == true)
-                        .map(|g| ControlPointId {
-                            object: id,
-                            index: g["index"].as_u64().unwrap() as usize,
-                        }),
+                    [0, 2].map(|index| ControlPointId { object: id, index }),
                     SelectionMode::Add,
                 )
                 .unwrap();
-        }
-        if row["selected"] == true {
+        } else if !fixture.postselected {
             app.document
                 .select_objects_direct([id], SelectionMode::Add)
                 .unwrap();
         }
         ids.push(id);
     }
-    if op["group"] == true {
+    if fixture.group {
         app.document
             .add_group(Some("Owned remap group".into()), ids.iter().copied())
             .unwrap();
@@ -127,7 +113,7 @@ fn setup(app: &mut VibocerosApp, op: &Value, native: &Value) -> Vec<ObjectId> {
 }
 
 #[test]
-fn remap_cplane_replays_38_native_commands_through_complete_and_incremental_input() {
+fn remap_cplane_replays_50_native_commands_through_complete_and_incremental_input() {
     let q: Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/remap_cplane.json"
     ))
@@ -138,87 +124,99 @@ fn remap_cplane_replays_38_native_commands_through_complete_and_incremental_inpu
     .unwrap();
     assert_eq!(q["operations"].as_array().unwrap().len(), 38);
     assert_eq!(r["results"].as_array().unwrap().len(), 38);
+    let views: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/remap_cplane_views.json"
+    ))
+    .unwrap();
+    let native_views: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/remap_cplane_views.json"
+    ))
+    .unwrap();
+    assert_eq!(views["operations"].as_array().unwrap().len(), 12);
+    assert_eq!(native_views["results"].as_array().unwrap().len(), 12);
     let mut checked = 0;
-    for (op, row) in q["operations"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .zip(r["results"].as_array().unwrap())
-    {
-        assert_eq!(op["id"], row["id"]);
-        let native = &row["value"];
-        assert_eq!(native["success"], true);
-        for mode in 0..3 {
-            let label = format!("{}/input-{mode}", op["id"]);
-            let mut app = test_app();
-            let sources = setup(&mut app, op, native);
-            let points = op["source"] == "points";
-            compare(
-                &normalized(snapshot(&app, &sources, points)),
-                &normalized(native["before"].clone()),
-                &label,
-            );
-            let copy = if op["copy"] == true { "Yes" } else { "No" };
-            let target = format!(
-                "{} \"{}\"",
-                op["mode"].as_str().unwrap(),
-                op["target"].as_str().unwrap()
-            );
-            enter(
-                &mut app,
-                &if mode == 0 {
-                    format!("RemapCPlane Copy={copy} {target}")
-                } else {
-                    format!("RemapCPlane Copy={copy}")
-                },
-            );
-            if op["postselected"] == true {
-                assert!(app.object_prompt.is_some(), "{label}");
-                for id in &sources {
-                    enter(&mut app, &format!("SelID {id}"));
+    for (q, r) in [(&q, &r), (&views, &native_views)] {
+        for (op, row) in q["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(r["results"].as_array().unwrap())
+        {
+            assert_eq!(op["id"], row["id"]);
+            let native = &row["value"];
+            assert_eq!(native["success"], true);
+            for mode in 0..3 {
+                let label = format!("{}/input-{mode}", op["id"]);
+                let mut app = test_app();
+                let sources = setup(&mut app, op);
+                let points = op["source"] == "points";
+                compare(
+                    &normalized(snapshot(&app, &sources, points)),
+                    &normalized(native["before"].clone()),
+                    &label,
+                );
+                let copy = if op["copy"] == true { "Yes" } else { "No" };
+                let target = format!(
+                    "{} \"{}\"",
+                    op["mode"].as_str().unwrap(),
+                    op["target"].as_str().unwrap()
+                );
+                enter(
+                    &mut app,
+                    &if mode == 0 {
+                        format!("RemapCPlane Copy={copy} {target}")
+                    } else {
+                        format!("RemapCPlane Copy={copy}")
+                    },
+                );
+                if op["postselected"] == true {
+                    assert!(app.object_prompt.is_some(), "{label}");
+                    for id in &sources {
+                        enter(&mut app, &format!("SelID {id}"));
+                    }
+                    enter(&mut app, "");
                 }
-                enter(&mut app, "");
+                if mode == 1 {
+                    enter(&mut app, &target);
+                }
+                if mode == 2 {
+                    enter(&mut app, op["mode"].as_str().unwrap());
+                    enter(&mut app, &format!("\"{}\"", op["target"].as_str().unwrap()));
+                }
+                if let Some(retry) = op["retry_target"].as_str() {
+                    assert!(app.remap_cplane_session.is_some(), "{label}");
+                    assert!(!app.document.can_undo(), "{label}");
+                    enter(&mut app, retry);
+                }
+                assert!(
+                    app.active_command.is_none(),
+                    "{label}: {:?}",
+                    app.command_log
+                );
+                assert!(app.remap_cplane_session.is_none(), "{label}");
+                compare(
+                    &normalized(snapshot(&app, &sources, points)),
+                    &normalized(native["after_script"].clone()),
+                    &format!("{label}/after"),
+                );
+                assert_eq!(app.document.undo_label(), Some("RemapCPlane"));
+                app.execute_command("Undo");
+                compare(
+                    &normalized(snapshot(&app, &sources, points)),
+                    &normalized(native["undo"].clone()),
+                    &format!("{label}/undo"),
+                );
+                app.execute_command("Redo");
+                compare(
+                    &normalized(snapshot(&app, &sources, points)),
+                    &normalized(native["redo"].clone()),
+                    &format!("{label}/redo"),
+                );
+                checked += 1;
             }
-            if mode == 1 {
-                enter(&mut app, &target);
-            }
-            if mode == 2 {
-                enter(&mut app, op["mode"].as_str().unwrap());
-                enter(&mut app, &format!("\"{}\"", op["target"].as_str().unwrap()));
-            }
-            if let Some(retry) = op["retry_target"].as_str() {
-                assert!(app.remap_cplane_session.is_some(), "{label}");
-                assert!(!app.document.can_undo(), "{label}");
-                enter(&mut app, retry);
-            }
-            assert!(
-                app.active_command.is_none(),
-                "{label}: {:?}",
-                app.command_log
-            );
-            assert!(app.remap_cplane_session.is_none(), "{label}");
-            compare(
-                &normalized(snapshot(&app, &sources, points)),
-                &normalized(native["after"].clone()),
-                &format!("{label}/after"),
-            );
-            assert_eq!(app.document.undo_label(), Some("RemapCPlane"));
-            app.execute_command("Undo");
-            compare(
-                &normalized(snapshot(&app, &sources, points)),
-                &normalized(native["undo"].clone()),
-                &format!("{label}/undo"),
-            );
-            app.execute_command("Redo");
-            compare(
-                &normalized(snapshot(&app, &sources, points)),
-                &normalized(native["redo"].clone()),
-                &format!("{label}/redo"),
-            );
-            checked += 1;
         }
     }
-    assert_eq!(checked, 114);
+    assert_eq!(checked, 150);
     eprintln!("REMAP_CPLANE_NATIVE cases={checked}");
 }
 
@@ -357,7 +355,7 @@ fn remap_cplane_replays_native_copy_option_cancellation() {
         let native = &row["value"];
         let label = op["id"].as_str().unwrap();
         let mut app = test_app();
-        let sources = setup(&mut app, op, native);
+        let sources = setup(&mut app, op);
         enter(&mut app, "RemapCPlane");
         enter(
             &mut app,

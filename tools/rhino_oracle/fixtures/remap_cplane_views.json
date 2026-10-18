@@ -1,0 +1,150 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-top-0",
+      "source_plane": "tilted",
+      "target": "Top",
+      "mode": "View",
+      "source": "points",
+      "copy": false,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-top-1",
+      "source_plane": "tilted",
+      "target": "Top",
+      "mode": "View",
+      "source": "points",
+      "copy": true,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-bottom-0",
+      "source_plane": "tilted",
+      "target": "Bottom",
+      "mode": "View",
+      "source": "points",
+      "copy": false,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-bottom-1",
+      "source_plane": "tilted",
+      "target": "Bottom",
+      "mode": "View",
+      "source": "points",
+      "copy": true,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-front-0",
+      "source_plane": "tilted",
+      "target": "Front",
+      "mode": "View",
+      "source": "points",
+      "copy": false,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-front-1",
+      "source_plane": "tilted",
+      "target": "Front",
+      "mode": "View",
+      "source": "points",
+      "copy": true,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-back-0",
+      "source_plane": "tilted",
+      "target": "Back",
+      "mode": "View",
+      "source": "points",
+      "copy": false,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-back-1",
+      "source_plane": "tilted",
+      "target": "Back",
+      "mode": "View",
+      "source": "points",
+      "copy": true,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-right-0",
+      "source_plane": "tilted",
+      "target": "Right",
+      "mode": "View",
+      "source": "points",
+      "copy": false,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-right-1",
+      "source_plane": "tilted",
+      "target": "Right",
+      "mode": "View",
+      "source": "points",
+      "copy": true,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-left-0",
+      "source_plane": "tilted",
+      "target": "Left",
+      "mode": "View",
+      "source": "points",
+      "copy": false,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    },
+    {
+      "op": "remap_cplane",
+      "id": "remap-view-left-1",
+      "source_plane": "tilted",
+      "target": "Left",
+      "mode": "View",
+      "source": "points",
+      "copy": true,
+      "postselected": false,
+      "group": true,
+      "grips": false
+    }
+  ]
+}
