@@ -1,0 +1,105 @@
+--- a/SmFilletStandardSolver.cpp
++++ b/SmFilletStandardSolver.cpp
+@@ -3341,11 +3341,8 @@
+ 
+     } // end while inserting knots into curves to make at least 4
+ 
+-  // when center, rail1, and rail2 curves are parallel lines - NewSurf = RuledSurface
+-  // when center, rail1, and rail2 curves are arcs           - NewSurf = SurfaceOfRevolution
+-  // else                                                    - NewSurf = Skinned Surface
++  // Use a ruled surface for parallel linear rails; otherwise skin the rails.
+   SmBoolean bSweep   = FALSE;
+-  SmBoolean bRevolve = FALSE;
+ 
+   // see if newSurf == RuledSurface
+   double    dAnalyticTol = 1.0e-8;
+@@ -3377,47 +3374,12 @@
+               bSweep = FALSE;
+             }
+         }
+-    } // end NewSurf == SurfaceOfRevolution check
+-
+-  // see if NewSurf == SurfaceOfRevolution
+-  double dArcRadius, dStartAng, dEndAng;
+-  SmAxis2Placement sRefFrame;
+-  SmBoolean bIsArc = rCenterLine.IsArc(11, dAnalyticTol,
+-                                       sRefFrame, dArcRadius,
+-                                       dStartAng, dEndAng);
+-  if (bIsArc)
+-    {
+-      //cbi this is never hit in prog_test.
+-      bRevolve = TRUE;
+-      double dRadius2, dStartAng2, dEndAng2;
+-      double dRadius3, dStartAng3, dEndAng3;
+-      SmAxis2Placement sRefFrame2, sRefFrame3;
+-      SmBoolean bIsArc2 = rRail1Curve.IsArc(11, dAnalyticTol, sRefFrame2,
+-                                             dRadius2, dStartAng2, dEndAng2);
+-      if ( !bIsArc2 )
+-        { bRevolve = FALSE; }
+-      else if ( smos_Fabs( dEndAng2 - dEndAng ) * dRadius2 > dThisApproxTol3d )
+-        { bRevolve = FALSE; }
+-      else if ( ! sRefFrame2.AreCoaxial( sRefFrame, dThisApproxTol3d, dRadius2 ) )
+-        { bRevolve = FALSE; }
+-
+-      if ( bRevolve )
+-      {
+-          SmBoolean bIsArc3 = rRail2Curve.IsArc(11, dAnalyticTol, sRefFrame3,
+-                                                 dRadius3, dStartAng3, dEndAng3);
+-          if ( !bIsArc3 )
+-            { bRevolve = FALSE; }
+-          else if ( smos_Fabs( dEndAng3 - dEndAng ) * dRadius3 > dThisApproxTol3d )
+-            { bRevolve = FALSE; }
+-          else if ( ! sRefFrame3.AreCoaxial( sRefFrame, dThisApproxTol3d, dRadius3 ) )
+-            { bRevolve = FALSE; }
+-          // Also check against 1s Rail curve.
+-          else if ( smos_Fabs( dEndAng3 - dEndAng2 ) * dRadius3 > dThisApproxTol3d )
+-            { bRevolve = FALSE; }
+-          else if ( ! sRefFrame3.AreCoaxial( sRefFrame2, dThisApproxTol3d, dRadius3 ) )
+-            { bRevolve = FALSE; }
+-      }
+-    }
++    } // end ruled surface check
++
++  // A revolution rebuilt from sampled arcs has a fresh rational angular
++  // parameterization. Affinely matching its domain does not preserve the
++  // traced rails or their parent UV curves. Keep those paired definitions
++  // and use the existing rail-constrained skinning path below.
+ 
+   // track max/min number of knots in cross-section curves
+   ULONG lMaxNumUniqueKnots = 0;
+@@ -3432,10 +3394,8 @@
+       // for every pRail1Curve->knot
+       for ( ii=1; ii<sKnots.GetSize(); ii++ )
+         {
+-          // skip to end cross section curve for sweeps and revolves
+-          if(   ii > 1
+-             && (   bSweep
+-                 || bRevolve))
++          // Sweeps need only the first and last cross sections.
++          if (ii > 1 && bSweep)
+             { ii = sKnots.GetSize() - 1 ; }
+ 
+           // locals - center, rail1, and rail2 curve sample points
+@@ -3811,22 +3771,6 @@
+       SER(pFilletSurface->Reparameterize(sDomain));
+ 
+     } // end ruled surface case
+-  else if (bRevolve) // when surface can be constructed as a surfaceOfRevolution
+-    {
+-      if ( sCrossSections.GetSize() < 1 )  // [B448]
+-        { SER( SM_ERR ); }
+-
+-      SmBSplineCurve *pGenCurve = sCrossSections[0];
+-      SER(SmBSplineSurface::CreateSurfOfRevolution(crContext, pGenCurve,
+-                                                   sRefFrame.GetOriginRef(),
+-                                                   sRefFrame.GetZAxis(),
+-                                                   dEndAng,
+-                                                   pFilletSurface));
+-      SmExtent1d sIvl = rRail1Curve.GetNaturalInterval();
+-      SmExtent2d sDomain(SmPoint2d(sIvl.GetMin(),0.0),
+-                         SmPoint2d(sIvl.GetMax(),1.0));
+-      SER(pFilletSurface->Reparameterize(sDomain));
+-    }
+   else // build a skin surface to interpolate all crossSection curves and option end crossTangent values
+     {
+       if ( sCrossSections.GetSize() < 2 )  // [B448]

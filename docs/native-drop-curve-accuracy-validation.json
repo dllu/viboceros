@@ -463,8 +463,6 @@
     "ASan instruments SMLib, SM_API, the bridge and the direct native matrix. Rust caller gates run normally. Leak detection is disabled; the initial 120-second runner timeout is retained as incomplete and is not a passing run."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "3979fbc40aa152f00fdb9e9229beed822a3b3418e45a5ba8b2ba71f4de118d6a",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "c498a95494d9d17b2e6818f96ffe33bcc4d59cc9af764497261fbd32d676ad35",
     "third_party/patches/usd-brep-drop-curve-accuracy.patch": "a3cfb968047330364c030626648bb9cf8bdaebcfa02c7889b5a3d2790db61e2c",
     "third_party/patches/usd-brep-drop-curve-accuracy.cmake": "23f4471d1389f1c92c492c95b676920cbe7831d4cd3afd29b28372c477afeaf3",
     "tools/usd_brep/drop_curve_accuracy_probe.cpp": "4cf916f6a22670fc7e56c012c89096e4cfc855a3903b91d1905f0597e4917894",
@@ -522,7 +520,6 @@
     "docs/native-drop-curve-accuracy-preserve-provenance.py.gz": "69265ec3cdb67d09db499d9959cd0780a57596434c4b59a8fc8da9e1cb670477",
     "docs/native-drop-curve-accuracy-provenance.log.gz": "5070e09c022994756b1e339e3fa5c58bbab8a13893c1a52a6e3ad4e6bfe55366",
     "docs/native-drop-curve-accuracy-after-gates.py.gz": "2d5456dc02f39c6c74fa3d72fbba06ded3acbe97e321586c3d4f640bc9fbbfb4",
-    "README.md": "621595dcf1899d1b6a2b1ddd3b673aa1ce8397b30be8d165152050e7bafab945",
     "docs/native-drop-curve-accuracy.md": "daaf3ec4d286418f13921952faf9eccbc94ccc8215867f6cdd108af931b52437"
   },
   "baseline_git_sha256": {
@@ -534,5 +531,12 @@
     "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
     "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/rhino_oracle/fixtures/curve_contacts_tolerance.json": "c79961765c85f953c91d85a625af69f8f6ade6d9bfe86f130f3edafa8f7bbd7f",
     "e4bd95e00761c57e66e0974488d46d3ab4da355b:tools/rhino_oracle/observations/curve_contacts_tolerance.json": "d52bce3c92f8e807d84c756514b036309789af46f5397df34858918f1935cb4f"
+  },
+  "source_git_sha256": {
+    "b0d2354baf7fe42a3b3ae66c4eab4284c36aed45:crates/viboceros-smlib/build.rs": "3979fbc40aa152f00fdb9e9229beed822a3b3418e45a5ba8b2ba71f4de118d6a",
+    "b0d2354baf7fe42a3b3ae66c4eab4284c36aed45:crates/viboceros-smlib/native/CMakeLists.txt": "c498a95494d9d17b2e6818f96ffe33bcc4d59cc9af764497261fbd32d676ad35"
+  },
+  "artifact_git_sha256": {
+    "b0d2354baf7fe42a3b3ae66c4eab4284c36aed45:README.md": "621595dcf1899d1b6a2b1ddd3b673aa1ce8397b30be8d165152050e7bafab945"
   }
 }

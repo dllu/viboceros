@@ -74,6 +74,12 @@ The subsequent [curve contact repair](native-curve-contact-tolerance.md) fixes
 in-tolerance boundary proposals found during this investigation. Curved extended
 fillets remain a required follow-up.
 
+The later [circular rail correspondence repair](native-circular-fillet-rails.md)
+removes a revolution shortcut that changed the rail parameterization. It keeps
+the existing native loft and original parent UV curves together. This also
+unblocks a separate smooth-continuation prototype; the production curved
+extension policy and FilletSrf command workflow remain in progress.
+
 The native bridge retains its degree-17 and input/resource limits, positive
 conditioned weights, and normalized accuracy floor. Full-order discontinuities,
 severe independent weight ratios, arbitrary conditioning, closed-contact

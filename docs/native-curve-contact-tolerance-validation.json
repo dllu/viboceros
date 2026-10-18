@@ -411,7 +411,6 @@
     "docs/native-curve-contact-tolerance-extension-sdk.py.gz": "0dbb7ee9e3968913813c2237b686c7860370c7c8910c493b6536fad18816ff20",
     "docs/smlib-curve-intersections.md": "10792c31670abd43c28eaa5991bc4841403484d5fd592c167a757de0fb215fba",
     "docs/usd-brep-limitations.md": "8df3d14512312a4aabcff8181877082f4f492772b8ac1220b3f8d943c3e86246",
-    "docs/native-surface-fillets.md": "59bd1f23a782ec536cd4c8a3b53b712914d94f3e48a25f7c1746e92544bfd0c0",
     "docs/native-curve-contact-tolerance.md": "f755c70dec505d22356c1b96f9de633b5db335ce85e04525ba55773d5140efc2",
     "third_party/patches/README.md": "99333c2c6ef35f2e8fbd3426f065d4d0e09fc0c1aaff71094f1683db486b3c8f",
     "tools/rhino_oracle/fixtures/curve_contacts_tolerance.json": "c79961765c85f953c91d85a625af69f8f6ade6d9bfe86f130f3edafa8f7bbd7f",
@@ -434,6 +433,7 @@
   },
   "artifact_git_sha256": {
     "e4bd95e00761c57e66e0974488d46d3ab4da355b:README.md": "0062ce15d87594f4c0aa00077e19ca39a23f598ae0db4c5d67b8f3cf163e8857",
-    "109c7fc1ac18506987dafd2435ea4f17c8c92011:docs/native-surface-fillets-validation.json": "c4aa5f1bdf3f2830c8fae8a5c050afc556a2897ba961ed30bc4ccf5ab68f308c"
+    "109c7fc1ac18506987dafd2435ea4f17c8c92011:docs/native-surface-fillets-validation.json": "c4aa5f1bdf3f2830c8fae8a5c050afc556a2897ba961ed30bc4ccf5ab68f308c",
+    "b0d2354baf7fe42a3b3ae66c4eab4284c36aed45:docs/native-surface-fillets.md": "59bd1f23a782ec536cd4c8a3b53b712914d94f3e48a25f7c1746e92544bfd0c0"
   }
 }

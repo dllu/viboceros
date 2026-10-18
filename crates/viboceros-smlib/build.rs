@@ -31,6 +31,7 @@ fn build_native() {
     println!("cargo:rerun-if-changed=../../tools/usd_brep/tensor_bezier_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/curve_contact_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/drop_curve_accuracy_probe.cpp");
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/circular_fillet_rails_probe.cpp");
     println!("cargo:rerun-if-changed=native/face_creases.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/planarity_zone_probe.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-protected-topology.patch");
@@ -90,6 +91,8 @@ fn build_native() {
         "usd-brep-surface-fillet-domain.patch",
         "usd-brep-surface-fillet-header.patch",
         "usd-brep-surface-fillet.cmake",
+        "usd-brep-circular-fillet-rail-parameters.patch",
+        "usd-brep-circular-fillet-rail-parameters.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");
     }
@@ -124,6 +127,12 @@ fn build_native() {
         .define("VIBOCEROS_SMLIB_ASAN", if sanitize { "ON" } else { "OFF" })
         .profile("Release")
         .build();
+    println!(
+        "cargo:rustc-env=VIBOCEROS_NATIVE_CIRCULAR_FILLET_RAILS_PROBE={}",
+        destination
+            .join("build/viboceros_smlib_circular_fillet_rails_probe")
+            .display()
+    );
     println!(
         "cargo:rustc-env=VIBOCEROS_NATIVE_TENSOR_BEZIER_PROBE={}",
         destination

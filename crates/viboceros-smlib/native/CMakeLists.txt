@@ -194,6 +194,8 @@ foreach(repair IN ITEMS
     list(APPEND KERNEL_SOURCES "${repair_output}")
 endforeach()
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-circular-fillet-rail-parameters.cmake")
+
 add_library(SMLib STATIC ${KERNEL_SOURCES})
 target_include_directories(SMLib BEFORE PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched")
 target_compile_definitions(SMLib PUBLIC VIBOCEROS_CURVE_INTERSECTION_DISTANCE_PATCH=1)
@@ -215,6 +217,15 @@ target_compile_options(viboceros_smlib_surface_blend_probe PRIVATE -Wall -Wextra
 add_executable(viboceros_smlib_surface_blend_curved_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_blend_curved_probe.cpp")
 target_link_libraries(viboceros_smlib_surface_blend_curved_probe PRIVATE SM_API)
 target_compile_options(viboceros_smlib_surface_blend_curved_probe PRIVATE -Wall -Wextra -Werror)
+add_executable(viboceros_smlib_circular_fillet_rails_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/circular_fillet_rails_probe.cpp")
+target_link_libraries(viboceros_smlib_circular_fillet_rails_probe PRIVATE SM_API)
+target_compile_options(viboceros_smlib_circular_fillet_rails_probe PRIVATE -Wall -Wextra -Werror)
+add_executable(viboceros_smlib_circular_fillet_rails_baseline EXCLUDE_FROM_ALL
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/circular_fillet_rails_probe.cpp"
+    "${circular_fillet_source}")
+target_link_libraries(viboceros_smlib_circular_fillet_rails_baseline PRIVATE SM_API)
+target_compile_options(viboceros_smlib_circular_fillet_rails_baseline PRIVATE -Wno-write-strings
+    -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
 add_executable(viboceros_smlib_isocurve_pair_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/isocurve_pair_probe.cpp")
 target_link_libraries(viboceros_smlib_isocurve_pair_probe PRIVATE SM_API)
 target_compile_options(viboceros_smlib_isocurve_pair_probe PRIVATE -Wall -Wextra -Werror)
@@ -342,7 +353,7 @@ target_sources(viboceros_smlib_drop_curve_baseline PRIVATE "${drop_accuracy_sour
 # Optional instrumentation of both complete native libraries and the C ABI.
 option(VIBOCEROS_SMLIB_ASAN "Instrument native geometry with AddressSanitizer" OFF)
 if(VIBOCEROS_SMLIB_ASAN)
-    foreach(instrumented_target viboceros_smlib_drop_curve_probe viboceros_smlib_curve_contact_probe viboceros_smlib_surface_fillet_probe viboceros_smlib_tensor_bezier_probe SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe viboceros_smlib_exact_split_probe)
+    foreach(instrumented_target viboceros_smlib_circular_fillet_rails_probe viboceros_smlib_drop_curve_probe viboceros_smlib_curve_contact_probe viboceros_smlib_surface_fillet_probe viboceros_smlib_tensor_bezier_probe SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe viboceros_smlib_exact_split_probe)
         target_compile_options(${instrumented_target} PRIVATE -fsanitize=address -g -fno-omit-frame-pointer)
         target_link_libraries(${instrumented_target} PUBLIC asan)
     endforeach()

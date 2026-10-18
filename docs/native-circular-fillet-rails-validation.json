@@ -1,0 +1,281 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "b0d2354baf7fe42a3b3ae66c4eab4284c36aed45",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "change": "Remove the circular generator revolution shortcut that replaced a traced rail parameterization by a fresh rational angular chart. Keep the original rails and parent UV curves with the existing rail-constrained native loft. Preserve the ruled branch, G2 repair, production extension policy, and caller tolerances.",
+  "completed_runs": [
+    {
+      "name": "geometry",
+      "command": "cargo test --release -p viboceros-geometry --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-circular-fillet-rails-geometry.log.gz",
+        "uncompressed_sha256": "05710a5659a02a33c89548784b792b67ac759053776a8d82acef097c60119324"
+      },
+      "passed": 2408,
+      "failed": 0,
+      "ignored": 8
+    },
+    {
+      "name": "bridge",
+      "command": "cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-circular-fillet-rails-bridge.log.gz",
+        "uncompressed_sha256": "1f5bc276df7c0546deab865ad8331ab0d4f15cc2e0235caee80df2a43d0b9861"
+      },
+      "passed": 432,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "name": "command",
+      "command": "cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-circular-fillet-rails-command.log.gz",
+        "uncompressed_sha256": "d53da9d2865ce1a53b606abb416ee5ad96c04129425afb2d563d2c05ae752aff"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "name": "fillet-oracle",
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib --lib surface_fillet -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-circular-fillet-rails-fillet-oracle.log.gz",
+        "uncompressed_sha256": "1eaf8483ec3daca48eacd626de68966d316b1cffce30826c10cf55e03870e73e"
+      },
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-circular-fillet-rails-clippy.log.gz",
+        "uncompressed_sha256": "d61323f80dec878b0de011e3f651a394a1b3405da59ad2f8f48f06c6780f26d8"
+      }
+    },
+    {
+      "name": "fmt",
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-circular-fillet-rails-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "oracle-build",
+      "command": "cargo build --release -p viboceros-oracle --features native-smlib",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-circular-fillet-rails-oracle-build.log.gz",
+        "uncompressed_sha256": "3647cd3ad549afec4fe7aff545f06f7ec6ac72fa9211f7b8cb638a912043f525"
+      }
+    }
+  ],
+  "direct_matrix": {
+    "cases": 216,
+    "baseline_passed": 72,
+    "baseline_failed": 144,
+    "candidate_passed": 216,
+    "asan_passed": 216,
+    "families": "Three arc angles, three exact rational Mobius parameterizations, both directions, two parameter intervals, three spatial scales, two rigid placements. Exact source curves are expanded independently in homogeneous Bernstein form. Check same-parameter boundaries and unchanged rail geometry, then torus identity after deleting all source curves.",
+    "baseline_maximum_pair_gap": 16.96585095461332,
+    "candidate_maximum_pair_gap": 3.1776437161565096e-14,
+    "candidate_maximum_source_gap": 4.2927602711964753e-14,
+    "candidate_maximum_torus_error": 3.552713678800501e-14,
+    "baseline": {
+      "retained": "docs/native-circular-fillet-rails-baseline.jsonl.gz",
+      "uncompressed_sha256": "8d03339d8db6d7e61c77de670fa9372c5876be6dca0dc098c2ecb38ffd882062"
+    },
+    "candidate": {
+      "retained": "docs/native-circular-fillet-rails-candidate.jsonl.gz",
+      "uncompressed_sha256": "9fd78da0aded1a7def9912a5d21b1455d5781ff8d947e29892135ca94707e000"
+    },
+    "asan": {
+      "retained": "docs/native-circular-fillet-rails-asan-direct.jsonl.gz",
+      "uncompressed_sha256": "9fd78da0aded1a7def9912a5d21b1455d5781ff8d947e29892135ca94707e000"
+    },
+    "baseline_control": "Opt-in CMake executable overrides only the generated SmFilletStandardSolver.cpp from before the new circular patch. It retains the existing G2 patch and all other current repairs."
+  },
+  "native_fillet_matrix": {
+    "normal_passed": 66,
+    "asan_passed": 66,
+    "scope": "56 existing geometry and ownership cases plus 10 invalid requests, with original 1e-8 analytic geometry acceptance. Source buffers and private parent bodies die before export; exported definitions outlive native results.",
+    "normal": {
+      "retained": "docs/native-circular-fillet-rails-fillet.jsonl.gz",
+      "uncompressed_sha256": "171fc6b01e5923764ec2df2cbfec1c0dcd6934cda640517606b8c9b899690c5f"
+    },
+    "asan": {
+      "retained": "docs/native-circular-fillet-rails-asan-fillet.jsonl.gz",
+      "uncompressed_sha256": "a31f96902c381e6036b61dc9b58487798b65444955a15eade6b6a8044fb69268"
+    }
+  },
+  "sdk_comparison": {
+    "saved_mass_recipes": 35,
+    "complete_mass_matches": 35,
+    "mass_absolute_epsilon": 1e-08,
+    "mass_relative_epsilon": 1e-10,
+    "fillet_executed": 6,
+    "fillet_execution_failures": [],
+    "fillet_recipes": [
+      {
+        "id": "planes-0-False",
+        "valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 15.707963267948962,
+        "sdk_area": 15.70796346179396
+      },
+      {
+        "id": "planes-0-True",
+        "valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 15.707963267948971,
+        "sdk_area": 15.70796346179396
+      },
+      {
+        "id": "planes-3-False",
+        "valid": true,
+        "maximum_point_difference": 8.881784197001252e-16,
+        "maximum_bounds_difference": 2.6645352591003757e-15,
+        "native_area": 6.283185307179582,
+        "sdk_area": 6.283185384717587
+      },
+      {
+        "id": "planes-3-True",
+        "valid": true,
+        "maximum_point_difference": 1.7763568394002505e-15,
+        "maximum_bounds_difference": 1.7763568394002505e-15,
+        "native_area": 10.995574287564276,
+        "sdk_area": 10.9955742990552
+      },
+      {
+        "id": "cylinder-False",
+        "valid": true,
+        "maximum_point_difference": 1.5359624683242146e-09,
+        "maximum_bounds_difference": 8.881784197001252e-16,
+        "native_area": 13.233610260247461,
+        "sdk_area": 13.233611430762192
+      },
+      {
+        "id": "cylinder-True",
+        "valid": true,
+        "maximum_point_difference": 4.249335106010221e-09,
+        "maximum_bounds_difference": 9.14987564381133,
+        "native_area": 28.941496050285952,
+        "sdk_area": 14.469328109898152
+      }
+    ],
+    "complete_fillet_matches": 0,
+    "complete_fillet_mismatches": 6,
+    "scope": "All six fillet recipes now return complete protocol values. Only the five previously qualified recipes pass the sampled closest-point/bounds checks. The curved extended recipe retains its large geometry/area mismatch; completing execution is not Rhino parity. No output normalization or tolerance widening."
+  },
+  "limitations": [
+    "This repairs rail correspondence and face construction, not the production curved Extend=Yes endpoint policy or the FilletSrf command workflow.",
+    "A separate NL_CMAX continuation experiment is identical in its baseline and candidate executables and is not a production policy change. Its endpoint and successful-export checks are not a complete Rhino parity claim.",
+    "The loft may retain more control points than the old geometrically coincident revolution. No general throughput claim or compact representation guarantee.",
+    "ASan instruments the complete native libraries and direct probes. Leak detection is disabled; Rust gates run normally. Upstream repo.sh/prog_test, USD, Python-binding and GUI harnesses were not run."
+  ],
+  "experimental_continuation": {
+    "baseline": {
+      "cases": 14,
+      "successes": 2,
+      "raw": {
+        "retained": "docs/native-circular-fillet-rails-continuation-baseline.jsonl.gz",
+        "uncompressed_sha256": "25d7e02786e6c8417e860bf2e17db20d810e8599c061f94511923e853637b077"
+      }
+    },
+    "candidate": {
+      "cases": 14,
+      "successes": 14,
+      "raw": {
+        "retained": "docs/native-circular-fillet-rails-continuation-candidate.jsonl.gz",
+        "uncompressed_sha256": "30a7bad0a5cfb3bfdef03e1779de6524255cc4418c7b16a897280995440ff057"
+      },
+      "vertex_radius_tolerance": 1e-08,
+      "maximum_vertex_radius_error": 4.761372629502603e-09,
+      "maximum_top_endpoint_error": 4.761372629502629e-09
+    }
+  },
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "6893ab8f85b5d982c80d834bc217c4083776516983d65a128e7f560701bf473f",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "3bff3046222869148f338d28fee46ab3a45c4040f7a9bf9b541d5f129997185f",
+    "crates/viboceros-smlib/tests/circular_fillet_rails.rs": "f937435d4d8052441d340604bbd233aa5278797b2f8ab02977ae8800417f5d1a",
+    "third_party/patches/usd-brep-circular-fillet-rail-parameters.cmake": "0cbf34ff925106375272945cf75438eed33c469e23833d8e446e35bcfe361664",
+    "third_party/patches/usd-brep-circular-fillet-rail-parameters.patch": "9620d387dadaf071c0beff59a9b04b8fcb32045734a8c24ad2878fb7a098af3c",
+    "third_party/patches/usd-brep-g2-blend-rail-parameterization.patch": "58086c44341acc50cbb5ee2db18b6d2657dc88a6d1a0d4e5f44b37c965a64ff0",
+    "third_party/usd-brep/source/SMLib/src/SmFilletStandardSolver.cpp": "14837a8f3a279906470ab9c67478dc2fba316952c8ee41043ec67d8662af175f",
+    "third_party/usd-brep/source/SMLib/src/SmOffsetSurface.cpp": "4d41a2903ff0cdffd10f0571385cb1407698a8f06394435323ed5878e8d041c7",
+    "tools/usd_brep/circular_fillet_rails_probe.cpp": "8c1a3c1d2491ebb967fd634ab57b68b26f8bbd28a2a69cc672e13302dee401f2",
+    "tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d",
+    "README.md": "2691486658210e3d14ee4b6be940686fcc5ad0b2758f76ee0bd53a6c36603b00",
+    "docs/native-circular-fillet-rails.md": "a25125d818b21a67c68da52ec36b9f00efb36cb347fc6c0f40337c8d447bee5d",
+    "docs/native-surface-fillets.md": "34caf32f7be3b14fd1d331c9d5a3a77e94ed89404938e7f35926bec472a1019d",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
+    "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
+    "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73"
+  },
+  "artifact_sha256": {
+    "docs/native-circular-fillet-rails-geometry.log.gz": "06c8226d921dade1192c087126523d0bce53fc27d9059ac939fe2473582ae0ba",
+    "docs/native-circular-fillet-rails-bridge.log.gz": "40940fdf8d99380e8a94ea3767eb59760428b2b5786687abc79b674588fdd616",
+    "docs/native-circular-fillet-rails-command.log.gz": "a0c6a8147fed5e19ddaf1aa621c2d410e5a37b5c53ffb6329b5debca02986624",
+    "docs/native-circular-fillet-rails-fillet-oracle.log.gz": "7aaabb3f1158e9d940d84995ca37047d890c20575e65b8561264986e54713de8",
+    "docs/native-circular-fillet-rails-clippy.log.gz": "66d6a2ddf729934e5e5e7a4840238813322c999f80a7e2cbb1f5d58562f5a88b",
+    "docs/native-circular-fillet-rails-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-circular-fillet-rails-oracle-build.log.gz": "6b0e52dd9d6ed35eee6ea38370b62b50d7c7c7820f201e95863ed600e2e51d38",
+    "docs/native-circular-fillet-rails-baseline.jsonl.gz": "77e693d7f05421d1a8d32c3ea137b34d680c9efeb0ea9cfbb0c8d105a95fd642",
+    "docs/native-circular-fillet-rails-candidate.jsonl.gz": "ce399a34f956dc822422415c5d259a9e00422c2c8fff26f51ea017a515f5b2e3",
+    "docs/native-circular-fillet-rails-asan-direct.jsonl.gz": "ce399a34f956dc822422415c5d259a9e00422c2c8fff26f51ea017a515f5b2e3",
+    "docs/native-circular-fillet-rails-fillet.jsonl.gz": "e7489e3d5361050399032835184e22916c45ce02fe9ee991b16e97e1548e4b09",
+    "docs/native-circular-fillet-rails-asan-fillet.jsonl.gz": "f2fa789e0728f5fcb829b28153b0ee6001db4991892db272c3b9a26e0db0f2f8",
+    "docs/native-circular-fillet-rails-continuation-baseline.jsonl.gz": "3795185415182bd8141418bc170935a148342f1e93b04e971e96777feb6983a5",
+    "docs/native-circular-fillet-rails-continuation-candidate.jsonl.gz": "43bfc81fbf1875135890bd62be34cf96a39d2a09de6b210eccbcafa500b80719",
+    "docs/native-circular-fillet-rails-normal-build.log.gz": "d8c3b436266cda4805fd3b6eb898bd7387a6a2183e56ee60dc9b7d7d629e1bf1",
+    "docs/native-circular-fillet-rails-normal-build-runtime.json.gz": "c489654eea0b8902d96ac1e2fef4225428897fc59d6cd78b3d166794802fc0c8",
+    "docs/native-circular-fillet-rails-baseline.log.gz": "8994adeadba892526a3337515895ba537b57e12df45fcc5678f17c8bda18eed9",
+    "docs/native-circular-fillet-rails-baseline-runtime.json.gz": "6d7d1cf4671a530a579fa30005433b2ed403f40302b91a5be066b61719808234",
+    "docs/native-circular-fillet-rails-candidate.log.gz": "6b1744ba01dc5e9aea5cece984ef33671c4f521834637d2e0aeb180f920c38d6",
+    "docs/native-circular-fillet-rails-candidate-runtime.json.gz": "e62b7f110e62d640e9c7ec63fb73834a0effd857a14cbfdc386d7465c3472550",
+    "docs/native-circular-fillet-rails-fillet.log.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-circular-fillet-rails-fillet-runtime.json.gz": "3a102863252a6945ffc1b1ab4010df415be04a4da283d0e5a5239789c55ff884",
+    "docs/native-circular-fillet-rails-compare.log.gz": "72247f54a6b3b7f10d3773c9f71dd0b08e676168ff6910d36d8ee2341d491fee",
+    "docs/native-circular-fillet-rails-compare-runtime.json.gz": "a92cee1d25b83201ef1d7498aa838296aabd20f7261d4fbeeebe056e327f2665",
+    "docs/native-circular-fillet-rails-asan-configure.log.gz": "7fc24548b467ec28448ec49f6f47308e43fe86d359423889b719356c8eba8c8b",
+    "docs/native-circular-fillet-rails-asan-configure-runtime.json.gz": "26aadf61796204039a3ac58fbe7cd88e80bff22055bdfd21baac21780fcaad69",
+    "docs/native-circular-fillet-rails-asan-build.log.gz": "e32b089d20c89a59ea91b82d6bb7c075f34037f2404b2fbb82255ab683f5ec96",
+    "docs/native-circular-fillet-rails-asan-build-runtime.json.gz": "232b6a1e85146784c3314f2a989b1e146b6214f6308d9f48b212d610d86bd928",
+    "docs/native-circular-fillet-rails-asan-direct.log.gz": "6b1744ba01dc5e9aea5cece984ef33671c4f521834637d2e0aeb180f920c38d6",
+    "docs/native-circular-fillet-rails-asan-direct-runtime.json.gz": "3c1adda129b9739ce9b00c43495f8cf077067225f1cb6d84a112b408ad4216d4",
+    "docs/native-circular-fillet-rails-asan-fillet.log.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-circular-fillet-rails-asan-fillet-runtime.json.gz": "b07779d7b6497e76fe5a2ff1b0a0f3bd836a503ebbb9c521022d4dbbfaf56338",
+    "docs/native-circular-fillet-rails-continuation-baseline.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-circular-fillet-rails-continuation-baseline-runtime.json.gz": "794f2c77dce7876218ad2d81e3229a9fa140c87c9480bdea050fec7f30d0065b",
+    "docs/native-circular-fillet-rails-continuation-candidate.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-circular-fillet-rails-continuation-candidate-runtime.json.gz": "4fd5784d153ece4fec4baf94762435ab41a71c0b7496c7784b1b7ceb043b590a",
+    "docs/native-circular-fillet-rails-mass-audit.json.gz": "6ad4c8e90885f9dc73bb33d2c7a2290c3a286d3a2dcfd4e0ea54004bacf8bde6",
+    "docs/native-circular-fillet-rails-mass-report.json.gz": "6d8285c5c0cbd0681730db30c188a19d35caf8c58dfb4e02d6a5aa3600ef857f",
+    "docs/native-circular-fillet-rails-fillet-audit.json.gz": "a1dcdb180da51e0d9a0d93a9c4cffb1574385366f1954e837d481b349c9b30bc",
+    "docs/native-circular-fillet-rails-fillet-raw-report.json.gz": "c8e8192abad588f7a70442bf9a3381d5bb55a7a03da8fbca26e88a44088abebf",
+    "docs/native-circular-fillet-rails-comparison.json.gz": "117472b95d2ecb046b2f249b517220e7de7cd6fa4885bee822408a3e4f05d312",
+    "docs/native-circular-fillet-rails-gates.py.gz": "4eb07649991942e6c156bf3d4387bdf43edd83da90216ee958b22341573e549c",
+    "docs/native-circular-fillet-rails-asan.py.gz": "75302b889892900382d423f1c9957397d29fefccbe86739f7e4a25e6c49af674",
+    "docs/native-circular-fillet-rails-native.py.gz": "81c5520da76c060a3a154742f612f30f6f2bb49357d0cf16a849cdfcf02e6c44",
+    "docs/native-circular-fillet-rails-compare.py.gz": "7e65886465c035f7c6f312bdcb0c816c64f95bef503fd630ee449864f5fc0212",
+    "docs/native-circular-fillet-rails-continuation.py.gz": "3cb8ad80970fb1a2c9de63aa196ecd161fe05c6452a370863fc005854f9d3a96",
+    "docs/native-circular-fillet-rails-preserve-provenance.py.gz": "68624a5f91bb2ca94712d9858254eb18f996b4b34cbc045e899d204dfeabda1e",
+    "docs/native-circular-fillet-rails-record.py.gz": "d233d6a7312a8ceff71e026af2a34bb3954ebef36e774533c20d9d4314cb1baa",
+    "docs/native-circular-fillet-rails-stage.py.gz": "a14a86b91274543f245be610973412e40f41e54ed3b967f5380344c58960ce6c",
+    "docs/native-circular-fillet-rails-experimental-offset.cpp.gz": "b33b4e28d0fc9fe62a38d024046e919f516f08026a517012dd4886baaae8d696",
+    "docs/native-circular-fillet-rails-continuation-driver.cpp.gz": "9f1602b2d022593f16ed664da3a859512a683da430516f57315bbbfddf71febc",
+    "docs/native-circular-fillet-rails-initial-continuation-trace.log.gz": "29533931696d6818757b45c7919d97d63b852692fa212fe39cf21a62f1235d8e"
+  }
+}
