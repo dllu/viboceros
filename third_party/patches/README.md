@@ -1,5 +1,9 @@
 # Local usd-brep fixes
 
+`usd-brep-tensor-bezier.patch` repairs full-order next-block copy bounds,
+privately clamps both active axes and completes degree-zero spans in
+`N_SrfDecomposeToBez`. See the [tensor qualification](../../docs/native-tensor-bezier.md).
+
 `usd-brep-curve-exact-split.patch`, `usd-brep-surface-exact-split.patch` and
 `usd-brep-exact-split-span.h` repair split classification and full-order copy
 bounds in the pinned release below. The surface producer also checks and updates

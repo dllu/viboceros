@@ -502,6 +502,70 @@ std::vector<ControlNet> decompose_axis(const ControlNet &source,int axis) {
     }
     return results;
 }
+
+std::vector<ControlNet> decompose_tensor(const ControlNet &source) {
+    std::array<std::vector<std::array<double,2>>,2> spans;
+    for(size_t d=0;d<2;++d)
+        for(size_t i=source.degree[d];i<source.count[d];++i)
+            if(source.knots[d][i]<source.knots[d][i+1])
+                spans[d].push_back({source.knots[d][i],source.knots[d][i+1]});
+    const size_t width=source.degree[0]+1,height=source.degree[1]+1;
+    require(!spans[0].empty() && !spans[1].empty() && width<=limit/height
+            && spans[0].size()<=limit/(width*height)/spans[1].size(),
+            "Tensor Bezier output resource limit");
+    const std::array<BinaryChart,2> charts={
+        BinaryChart(source.knots[0].data(),source.knots[0].size()),
+        BinaryChart(source.knots[1].data(),source.knots[1].size())};
+    auto basis=source.knots;
+    for(size_t d=0;d<2;++d) charts[d].scale(basis[d]);
+    std::vector<NL_CPOINT> transposed(source.points.size());
+    std::vector<NL_CPOINT *> rows(source.count[0]);
+    for(size_t i=0;i<source.count[0];++i) {
+        rows[i]=transposed.data()+i*source.count[1];
+        for(size_t j=0;j<source.count[1];++j) rows[i][j]=source.points[j*source.count[0]+i];
+    }
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_SURFACE input;
+    N_SrfInitArrays(&input);
+    check(N_SrfFromCPtsAndKnots(&input,rows.data(),source.count[0]-1,source.count[1]-1,
+          source.degree[0],source.degree[1],basis[0].data(),basis[1].data(),
+          basis[0].size()-1,basis[1].size()-1,&stack),"Build native Bezier surface failed");
+    NL_SURFACE ***patches=nullptr;
+    NL_INDEX ku=-1,kv=-1;
+    check(N_SrfDecomposeToBez(&input,&patches,&ku,&kv,&stack),"Decompose native Bezier surface failed");
+    require(ku>=0 && kv>=0 && static_cast<size_t>(ku+1)==spans[0].size()
+            && static_cast<size_t>(kv+1)==spans[1].size(),"Native tensor Bezier span count differs");
+    std::vector<ControlNet> results;
+    results.reserve(spans[0].size()*spans[1].size());
+    // The producer clamps a private surface and retains homogeneous controls
+    // through both axes. A temporary zero weight can yield a finite patch.
+    for(size_t u=0;u<spans[0].size();++u) for(size_t v=0;v<spans[1].size();++v) {
+        const auto &patch=*patches[u][v];
+        require(patch.p==static_cast<NL_DEGREE>(source.degree[0])
+                && patch.q==static_cast<NL_DEGREE>(source.degree[1])
+                && patch.net->n+1==static_cast<NL_INDEX>(width)
+                && patch.net->m+1==static_cast<NL_INDEX>(height),"Native tensor Bezier layout differs");
+        ControlNet net;
+        net.degree=source.degree;net.count={width,height};
+        const NL_KNOTVECTOR *knots[2]={patch.knu,patch.knv};
+        for(size_t d=0;d<2;++d) {
+            const size_t degree=source.degree[d];
+            const auto &interval=spans[d][d?v:u];
+            require(knots[d]->m==static_cast<NL_INDEX>(2*degree+1),"Native tensor Bezier knot count differs");
+            for(size_t i=0;i<2*degree+2;++i)
+                require(knots[d]->U[i]==charts[d].scaled(interval[i<=degree?0:1]),
+                        "Native tensor Bezier interval differs");
+            net.knots[d].assign(degree+1,interval[0]);
+            net.knots[d].insert(net.knots[d].end(),degree+1,interval[1]);
+        }
+        net.points.reserve(width*height);
+        for(size_t j=0;j<height;++j) for(size_t i=0;i<width;++i) net.points.push_back(patch.net->Pw[i][j]);
+        results.push_back(std::move(net));
+    }
+    return results;
+}
+
 }
 
 void vb_bezier_nurbs(const VbNurbsData &data,int direction,VbSurfaceData **output,size_t count) {
@@ -564,7 +628,7 @@ void vb_bezier_nurbs(const VbNurbsData &data,int direction,VbSurfaceData **outpu
     }
     std::array<double,3> origin;
     const int exponent=conditioned_controls(data,source.points,origin);
-    auto first=decompose_axis(source,direction==1?1:0);
+    auto pieces=data.degree[1]?decompose_tensor(source):decompose_axis(source,0);
     std::vector<Owner> snapshots;snapshots.reserve(count);
     auto save=[&](const ControlNet &net) {
         require(snapshots.size()<count,"Native Bezier output count exceeds capacity");
@@ -575,13 +639,7 @@ void vb_bezier_nurbs(const VbNurbsData &data,int direction,VbSurfaceData **outpu
         }
         snapshots.emplace_back(snapshot(view,net.points,exponent,origin),&vb_surface_data_free);
     };
-    // Keep all intermediate controls homogeneous. In particular an intermediate
-    // zero weight need not produce a final control at infinity.
-    for(const auto &strip:first) {
-        if(direction==2) {
-            for(const auto &patch:decompose_axis(strip,1)) save(patch);
-        } else save(strip);
-    }
+    for(const auto &piece:pieces) save(piece);
     require(snapshots.size()==count,"Native Bezier output count differs");
     for(size_t i=0;i<count;++i) output[i]=snapshots[i].release();
 }

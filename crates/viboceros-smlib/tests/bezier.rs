@@ -148,7 +148,7 @@ fn native_tensor_decomposition_keeps_intermediate_zero_weights_homogeneous() {
 }
 
 #[test]
-fn full_order_tensor_breaks_use_native_curve_decomposition_without_tensor_buffer_underflow() {
+fn full_order_tensor_breaks_use_native_tensor_decomposition_without_buffer_underflow() {
     let source = NurbsSurface::try_new_rational(
         2,
         2,

@@ -78,8 +78,9 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [File formats and limitations](docs/file-formats.md)
 - [Analytic normals and tessellation provenance](docs/tessellation-normals.md)
 - [Native curve/surface endpoint evaluation and one-sided derivatives](docs/native-basis-evaluation.md),
-  with [interpolation at supplied parameters](docs/native-point-interpolation.md)
-  and [exact curve/surface splits](docs/native-exact-splits.md)
+  with [interpolation at supplied parameters](docs/native-point-interpolation.md),
+  [exact curve/surface splits](docs/native-exact-splits.md)
+  and [tensor Bezier decomposition](docs/native-tensor-bezier.md)
 - [Architecture and implementation status](docs/architecture.md)
 - [Modelling issue fixes and regression results](docs/modelling-issues.md)
 - [Development and testing](docs/development.md)

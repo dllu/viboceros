@@ -1,7 +1,8 @@
 # Native Bezier and single-span decomposition
 
 Linux `native-smlib` builds delegate `ConvertToBeziers` and
-`ConvertToSingleSpans` to usd-brep's existing `N_CrvDecomposeBez` producer.
+`ConvertToSingleSpans` to usd-brep's `N_CrvDecomposeBez` and
+[repaired tensor producer](native-tensor-bezier.md), `N_SrfDecomposeToBez`.
 Curve conversion first acquires the existing exact analytic/polycurve NURBS
 representation. Command selection, unit-domain output, fresh attributes,
 creation order, deletion choices and atomic undo keep their existing policies.
@@ -9,17 +10,16 @@ The portable extractor remains available to other platforms and tight bounds;
 these native command paths do not call its control-blending routine.
 
 The adapter accepts complete full knot vectors, including periodic and
-unclamped padding. Each selected control curve is privately clamped through
-existing NLib split/reversal operations, including the shared active-end
-workaround. Already full-order endpoint groups remove only their inactive
-control prefix/suffix before native splitting. Exact binary chart conditioning
-protects tiny/large parameter domains, and every output interval and control
-count is checked against the original nonempty spans.
+unclamped padding. Selected curves are privately clamped through the
+[repaired NLib splitters](native-exact-splits.md). The tensor producer prepares
+both axes privately with those same splitters, including inactive endpoint
+padding. Exact binary chart conditioning protects tiny/large parameter
+domains, and every output interval and control count is checked against the original nonempty spans.
 
 One-axis strips decompose each control line independently, preserving its
 common weight gauge and the untouched axis's entire knot vector/control count.
-Both composes native U decomposition with native V decomposition in U-outer,
-V-inner order. Intermediate controls remain homogeneous, so an intermediate
+Both calls the tensor producer directly and retains U-outer, V-inner order.
+Intermediate controls remain homogeneous, so an intermediate
 zero weight can disappear during the second direction without being rejected
 as a final control at infinity. Local coordinate origins and binary weight
 scales reduce avoidable arithmetic overflow and cancellation; final controls
@@ -29,11 +29,13 @@ an unusable coordinate origin falls back to zero. Inactive controls far from
 the active image and vastly different coordinate magnitudes are retained in
 regressions rather than silently collapsing nearby small controls.
 
-The high-level `N_SrfDecomposeToBez` producer is bypassed because its full-order
-interior-break copy loops use negative control indices. This is a source-audited
-hazard, rather than a retained direct-crash reproduction. See the
-[limitations ledger](usd-brep-limitations.md) and
-[adapter regressions](../crates/viboceros-smlib/tests/bezier.rs).
+The tensor producer now clamps a private net, starts independent full-order
+control blocks at index zero, and completes degree-zero spans. The previous
+U-then-V adapter composition has been removed. The
+[direct qualification](native-tensor-bezier.md) retains complete independent
+expected nets, safe-parent comparisons and sanitizer results. Directional
+strips keep their curve producer because they preserve an untouched basis
+and independent control-line gauges.
 
 Kernel calls use the shared process lock. Native output snapshots remain owned
 until every piece is valid; failures release all staged snapshots. Rust copies
@@ -49,8 +51,8 @@ remain unsupported; directional lines may have independent scales such as
 Qualification is bounded evidence, not a continuous geometry or performance
 certificate.
 
-Fresh isolated Rhino 8 command captures retain 44 Bezier and 78 single-span
-cases. All 122 complete serialized records match at absolute `1e-8`, relative
+The retained isolated Rhino 8 command captures contain 44 Bezier and 78
+single-span cases. All 122 complete serialized records match at absolute `1e-8`, relative
 `1e-12`, including output definitions, samples, domains, order, attributes,
 selection and group tables. Maximum observed absolute errors are `2.67e-15`
 and `1.34e-15`, respectively. The [comparison](smlib-bezier-comparison.json)
@@ -58,14 +60,14 @@ retains every outcome and fixture/observation hashes. The existing OpenNURBS
 outer-knot serialization convention is shared by the oracle codecs; no new
 comparison-time coefficient or attribute normalization is applied.
 
-The full native geometry/command/bridge qualification passed 3,548 tests
-(11 ignored); the subsequently expanded decomposition suite passes nine tests.
-Both workspace lint configurations pass with warnings denied, formatting passes,
-and portable Bezier/single-span command regressions pass. All 43 retained native
-knot/degree/nonperiodic editing cases also match after sharing endpoint clamping
-and snapshot validation with decomposition. The live captures used private
-scheme `VibocerosOracleSmlibBridgeFinal20261010` on isolated displays. Harness
-timings do not establish kernel speedups.
+The tensor repair replays all 122 saved command records without comparison-time
+normalization. Fresh public SDK checks separately compare the complete source
+and native patch definitions at 144 paired sample stations. See the
+[current validation record](native-tensor-bezier-validation.json) for completed
+checks and raw artifacts. The original command captures used private scheme
+`VibocerosOracleSmlibBridgeFinal20261010`; the fresh SDK checks use
+`VibocerosOracleTensorBezier20261018`. Harness timings do not establish kernel
+speedups.
 
 ```sh
 CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-smlib \

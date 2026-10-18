@@ -1,0 +1,379 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "e26661d6499415b1da9178cbf3deebb7df6b69a8",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Repair N_SrfDecomposeToBez next-block indices at full-order knots in both axes.",
+    "Privately clamp active surface bounds through the repaired N_SrfSplit, retaining homogeneous intermediates, source definitions and output ownership.",
+    "Include final degree-zero spans and check output counts.",
+    "Replace C ABI Both-direction curve composition with the tensor producer; retain directional curve producers for unselected bases and independent gauges."
+  ],
+  "matrix": {
+    "cases": 1008,
+    "paired_basis_families": 28,
+    "chart_scales": [
+      "2^-360",
+      "1",
+      "2^360"
+    ],
+    "translated_origin": 1000000000000.0,
+    "degrees": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      17
+    ],
+    "representations": [
+      "native polynomial NL_NOW",
+      "homogeneous uniform weights",
+      "homogeneous varying weights"
+    ],
+    "common_weight_gauges": [
+      "1",
+      "-1",
+      "2^-300",
+      "2^300"
+    ],
+    "expected": "Independent explicit univariate polynomial/control-block identities, combined as tensor products using long-double accumulation. Exact degrees/counts/full knot vectors and 5e-13*max(1,abs(expected/gauge)) homogeneous comparisons; polynomial sentinel exact. Isolated block copies additionally compare bitwise.",
+    "ownership": "Compare all active scalar addresses against source and all previous patches; reread every output after ending the separate source stack and after the producer private stack has already been freed.",
+    "scope": "Direct native NLib producer includes degree-zero axes; public Rust NURBS surface degree policy remains unchanged. No zero-weight intermediate projection."
+  },
+  "producers": {
+    "baseline": {
+      "exit_code": 0,
+      "cases": 396,
+      "passed": 396,
+      "independent_storage": 396,
+      "survives_source_and_private_stack_cleanup": 396,
+      "source_unchanged": 396,
+      "bit_exact_isolated_block_cases": 252,
+      "max_scaled_control_error": 0,
+      "raw": {
+        "retained": "docs/native-tensor-bezier-baseline.jsonl.gz",
+        "uncompressed_sha256": "ff27c68227300f20df196d451652972fb865809d99c304c91795f949809909df"
+      },
+      "stderr": {
+        "retained": "docs/native-tensor-bezier-baseline.stderr.gz",
+        "uncompressed_sha256": "83a634be997f8990485b3ea6934d0267fd79f60a0ec1779983ea342268a25e14"
+      },
+      "build": {
+        "command": "cmake --build <debug native tree> --target viboceros_smlib_tensor_bezier_probe viboceros_smlib_tensor_bezier_baseline -j10",
+        "exit_code": 0,
+        "log": {
+          "retained": "docs/native-tensor-bezier-baseline-build.log.gz",
+          "uncompressed_sha256": "c6a3da9ed121941dcef7a3ba5101f9c1bd7da812872615580811545fd3683f57"
+        }
+      },
+      "execution": "viboceros_smlib_tensor_bezier_baseline --safe-control",
+      "method": "Explicitly link preceding NL_SrfToolSplits.cpp object ahead of the candidate archive; preserve every prior extraction/split repair and all other kernel fixes.",
+      "scope": "Only positive-degree clamped sources without interior full-order breaks run on the parent. Unsafe or uninitialized parent paths remain excluded. All 396 complete raw rows are identical to the candidate; this is not a parent crash reproduction."
+    },
+    "candidate": {
+      "exit_code": 0,
+      "cases": 1008,
+      "passed": 1008,
+      "independent_storage": 1008,
+      "survives_source_and_private_stack_cleanup": 1008,
+      "source_unchanged": 1008,
+      "bit_exact_isolated_block_cases": 432,
+      "max_scaled_control_error": 4.440892098500626e-16,
+      "raw": {
+        "retained": "docs/native-tensor-bezier-candidate.jsonl.gz",
+        "uncompressed_sha256": "2b51b693293f03a53da16feb9d2f9c251cf94178eb7e1875cc80ae0e2dfa8f6d"
+      },
+      "stderr": {
+        "retained": "docs/native-tensor-bezier-candidate.stderr.gz",
+        "uncompressed_sha256": "21f373cc617c37aa4443599ae2a716cd60bd8ac98e32724ba97b04da9ba7598f"
+      }
+    },
+    "asan": {
+      "exit_code": 0,
+      "cases": 1008,
+      "passed": 1008,
+      "independent_storage": 1008,
+      "survives_source_and_private_stack_cleanup": 1008,
+      "source_unchanged": 1008,
+      "bit_exact_isolated_block_cases": 432,
+      "max_scaled_control_error": 4.440892098500626e-16,
+      "raw": {
+        "retained": "docs/native-tensor-bezier-asan.jsonl.gz",
+        "uncompressed_sha256": "2b51b693293f03a53da16feb9d2f9c251cf94178eb7e1875cc80ae0e2dfa8f6d"
+      },
+      "stderr": {
+        "retained": "docs/native-tensor-bezier-asan.stderr.gz",
+        "uncompressed_sha256": "21f373cc617c37aa4443599ae2a716cd60bd8ac98e32724ba97b04da9ba7598f"
+      },
+      "build": {
+        "command": "Configure native CMake with VIBOCEROS_SMLIB_ASAN=ON and Release; build viboceros_smlib_tensor_bezier_probe and viboceros_smlib -j10",
+        "exit_code": 0,
+        "log": {
+          "retained": "docs/native-tensor-bezier-asan-build.log.gz",
+          "uncompressed_sha256": "56c8c062247e0c38657c1d001b6a59e9857f57ee00481b404397cf4d10beac78"
+        }
+      },
+      "flags": {
+        "retained": "docs/native-tensor-bezier-asan-flags.txt.gz",
+        "uncompressed_sha256": "3963d98163daab290e33ce9bbf583576ec0e2572663728d6f4a0dd15645ac7bc"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "scope": "Complete SMLib, SM_API and C ABI archives plus direct probe are instrumented. Execute the direct NLib probe, including output ownership and rereading after source destruction. Rust bridge tests execute normally; no leak-free claim."
+    }
+  },
+  "producer_runs": {
+    "command": "python3 /tmp/viboceros-tensor-bezier-probes.py",
+    "exit_code": 0,
+    "log": {
+      "retained": "docs/native-tensor-bezier-probes.log.gz",
+      "uncompressed_sha256": "60b03d9ae5a2804ccef639f7c823f65921fee14b5c34a71cc019399b0734c358"
+    },
+    "script": {
+      "retained": "docs/native-tensor-bezier-probes.py.gz",
+      "uncompressed_sha256": "81588aeaa6a67712f2bb2e70fe16d2fe86029dfcc7c301cbe65a0c07591be45b"
+    }
+  },
+  "runner_scripts": {
+    "gates.py": {
+      "retained": "docs/native-tensor-bezier-gates.py.gz",
+      "uncompressed_sha256": "900573c870e2f49f1d2c0e15f926975b8f9dd6e3c4e9fa3b97fead01648f8eda"
+    },
+    "record.py": {
+      "retained": "docs/native-tensor-bezier-record.py.gz",
+      "uncompressed_sha256": "150dd5e5bbacba53f68267e504b30d721b39ff1263a0b3035c363bf656b8dacc"
+    },
+    "preserve-provenance.py": {
+      "retained": "docs/native-tensor-bezier-preserve-provenance.py.gz",
+      "uncompressed_sha256": "a1d7b3843f1ac6821b08f28017a9b8f4d31dff1cbd49aca911b431a9a27301f1"
+    },
+    "provenance.log": {
+      "retained": "docs/native-tensor-bezier-provenance.log.gz",
+      "uncompressed_sha256": "a687a578f38590b324a3b3cbb9f724ed7e9841a003ccb4b1193dbe8fcaae7185"
+    }
+  },
+  "fresh_rhino": {
+    "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-tensor-bezier-sdk.py",
+    "exit_code": 0,
+    "log": {
+      "retained": "docs/native-tensor-bezier-sdk.log.gz",
+      "uncompressed_sha256": "9ae975574582ffbc650832c64c32999f55c4301c8840b7ef474a40e67664efd6"
+    },
+    "script": {
+      "retained": "docs/native-tensor-bezier-sdk.py.gz",
+      "uncompressed_sha256": "46d7c10b9e90a6dff3be95947d5de554a0c50695eddb5d5d20b41f754472f16a"
+    },
+    "request": {
+      "retained": "docs/native-tensor-bezier-sdk-request.json.gz",
+      "uncompressed_sha256": "5c758e569bcaa087520694ca4504e10c6507e3771c0183ae80cba329a9ba71dc"
+    },
+    "response": {
+      "retained": "docs/native-tensor-bezier-sdk-rhino.json.gz",
+      "uncompressed_sha256": "c6070b618e40c5e87514d91cd65f27c986b02e5249e04450770e42621567f515"
+    },
+    "report": {
+      "retained": "docs/native-tensor-bezier-sdk-report.json.gz",
+      "uncompressed_sha256": "7f72bee826c4d4e94dbdff3dd534a2dfe275320c16c59ffd934d40e7c8d5ab58"
+    },
+    "summary": {
+      "sdk_evaluations": 288,
+      "paired_stations": 144,
+      "point_epsilon": 1e-10,
+      "max_absolute_differences": {
+        "point": 6.661338147750939e-16,
+        "derivative_u": 1.9984014443252818e-15,
+        "derivative_v": 1.7763568394002505e-15,
+        "normal": 8.604228440844963e-16
+      },
+      "passed": true,
+      "scope": "Public SDK evaluates complete source and native tensor Bezier definitions at identical parameters. Six unit-chart varying-weight families include degree 17, unclamped padding, and irregular knots. Derivatives and normals are diagnostic; point agreement is sampled, not a continuous bound or direct Rhino decomposition-definition parity. Independent control-net checks separately cover discontinuities, degree zero, mixed signs and extreme charts/gauges."
+    },
+    "initial_rejected_request": {
+      "exit_code": 1,
+      "request": {
+        "retained": "docs/native-tensor-bezier-sdk-rejected-request.json.gz",
+        "uncompressed_sha256": "b0cc58c428d7d3f55af02168f79abf80bc3e370b99f4ba3073db0b3e3742a8ce"
+      },
+      "error_log": {
+        "retained": "docs/native-tensor-bezier-sdk-rejected.log.gz",
+        "uncompressed_sha256": "4db2aab3d5d56d4ee135e9376793b755ac7de68585808a34fdc0df1488017262"
+      },
+      "reason": "Rhino oracle rejects source 17-0-0-0-source with start: NURBS surface boundary is invalid, before returning the batch. The unchanged inactive-padding family remains covered by independent native control-net checks. The final live batch replaces that family with continuous uniform cubic/quadratic bases; no definition normalization is used."
+    }
+  },
+  "saved_command_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-tensor-bezier-replay.py",
+    "exit_code": 0,
+    "log": {
+      "retained": "docs/native-tensor-bezier-replay.log.gz",
+      "uncompressed_sha256": "955d3f9033af4c8f78209920165f3968882bc6ba84fbd48118b8c8797438084d"
+    },
+    "script": {
+      "retained": "docs/native-tensor-bezier-replay.py.gz",
+      "uncompressed_sha256": "18b00c6902eb294cad9e427451e6623fd63d676227cdd68946654195cd203b8e"
+    },
+    "comparisons": [
+      {
+        "fixture": "bezier_conversion",
+        "cases": 44,
+        "raw_matches": 44,
+        "execution_errors": 0,
+        "report": {
+          "retained": "docs/native-tensor-bezier-bezier_conversion-report.json.gz",
+          "uncompressed_sha256": "2db9e0345e02639ea9c90feb73eac73fc8e941df7710e57b0eed2b447bc0d5d3"
+        },
+        "audit": {
+          "retained": "docs/native-tensor-bezier-bezier_conversion-audit.json.gz",
+          "uncompressed_sha256": "2b5c092a934eb10e58a21e03b1db0b95f7c38a337d1d13bae28b4fb5493e7437"
+        }
+      },
+      {
+        "fixture": "single_span_conversion",
+        "cases": 78,
+        "raw_matches": 78,
+        "execution_errors": 0,
+        "report": {
+          "retained": "docs/native-tensor-bezier-single_span_conversion-report.json.gz",
+          "uncompressed_sha256": "2f8f2d77e49350900d377f0bd8439b211625e0eee149bcc77c1e6c1f8a702991"
+        },
+        "audit": {
+          "retained": "docs/native-tensor-bezier-single_span_conversion-audit.json.gz",
+          "uncompressed_sha256": "44f0c6646f2f639eaf3005c255706d310384de9c56240f20fea8f6f3201c3407"
+        }
+      }
+    ],
+    "policy": "Compare all serialized command outcome fields against saved Rhino observations at absolute 1e-8, relative 1e-12, without comparison-time geometry/attribute normalization. Fresh direct SDK evaluations are a separate sampled check."
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-tensor-bezier-bridge.log.gz",
+        "uncompressed_sha256": "964ece6078850d95d83c64e475ddb8274906d3a76a6c8866383f6f0dee46a189"
+      },
+      "passed": 418,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-tensor-bezier-command.log.gz",
+        "uncompressed_sha256": "c98cea40d8ac260b9ea5b793240a31e262ff7b2e3b9f2e4792f5c81f2b9cb763"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-tensor-bezier-clippy.log.gz",
+        "uncompressed_sha256": "10e1f7f312fe6c35a431e73006f276577ed062cfed964c90aadec6174116be54"
+      }
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-tensor-bezier-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 7,
+    "records": 1,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Independent raw expected nets/ownership and focused bridge conversion first, then sanitizer, actual SDK evaluation and complete release bridge/command suites for the shared producer and C ABI build changes.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses. The ARM bridge compiles actual SMLib/SM_API sources; those other layers and the upstream checkout remain unchanged."
+  },
+  "limitations": [
+    "General extreme span ratios, unrepresentable final controls and independent Both-direction weight ratios without a finite common binary gauge remain unsupported/unqualified.",
+    "The separate object-layer sm_DecomposeSrf already clamps negative copy indices upstream; its unclamped/degree-zero paths are not newly qualified.",
+    "No continuous Rhino error bound, fresh Rhino command-definition parity, kernel speedup, arbitrary backing-buffer aliasing or leak-free claim.",
+    "Original source object/arrays must satisfy native pointer/storage preconditions."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "4d843755e3fca567065f51b9de9f034fb17072685876e5d80defd2085fecc4e2",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "110df0e292e0188b360b5ed5d68d5b726aa150be25d8110d14231eb3a6e2f6a3",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "869ca9682fcebcc41a5bb68181102e6b987955c6afcc1497cdfcb04f214d282d",
+    "crates/viboceros-smlib/tests/bezier.rs": "53aa85fb82438f3fbdf878e7e4b21fa707df7a272bb2ac8ec3cd1163eb49fb0c",
+    "crates/viboceros-smlib/tests/tensor_bezier.rs": "509f46ce715904e6cba8cf4ac677f9596cb68502d695b929b72c26678ce8d5cc",
+    "tools/usd_brep/tensor_bezier_probe.cpp": "7bcb1bc5f5ce4f21fdfa3c0cf68022be2b10e86075fcdecc66f4c3269a778ead",
+    "third_party/patches/usd-brep-tensor-bezier.patch": "2a75e73951f338568e6ae8a80bf6fb416abd146a686fe1049f67b69aca274b8d",
+    "third_party/patches/usd-brep-tensor-bezier.cmake": "9ea03e6c4f1561c35b1852279253deafa878d36edd89a865bc0eaa10ecb95572",
+    "third_party/patches/usd-brep-exact-split.cmake": "783758615b66afbf8a72fa43f5cf272b1bad3233238a2ff6bc1a448d68b82eb9",
+    "third_party/patches/usd-brep-exact-split-span.h": "18e276e4e86a472318431ea073c45c533a291eb1c7fc8505698273d0282c1886",
+    "third_party/patches/usd-brep-curve-exact-split.patch": "d68e4108e6da6f236ad0f55985a4fe879625899b2cbb5b359b3184f5c054d3d6",
+    "third_party/patches/usd-brep-surface-exact-split.patch": "f5d5aa23bd3f18deb7a61d84d7e1d86ca33e1194a2a4a64675c5f93d4a750ae0",
+    "third_party/patches/usd-brep-surface-patch-region.patch": "a91fe033dd1962c2319e265779504c9b46de84ddfc4145d18b56c79cfd46548b",
+    "third_party/patches/usd-brep-surface-patch-output.patch": "8661470b4be7fbe907225951467d270e814e6a59f5bf4d74ccda17d8c6105065",
+    "third_party/patches/usd-brep-isocurve-limits.patch": "e106f93290f2e9dd68d1ad42a18b50430bc8b040cc1ba39cf807a5e5c60c51da",
+    "third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp": "a6a87714703ef3115cdd33e9d79f07090fc7650847a537d5341a692723db243f",
+    "third_party/usd-brep/source/SMLib/src/SmNurbsSrf.cpp": "651bdd172f3289f1b5f2a1bb468e8589a6493293b43283cbc3696f7b12d11c65",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-tensor-bezier-bridge.log.gz": "69ff284b4fb0eeb12e480fa2ecf6684ef22bb33f9844edbfda417ea5c9ef02e5",
+    "docs/native-tensor-bezier-command.log.gz": "60e71f02bf171095ab6f155e6349ca7f0f669974cb55bd52aee3fa69febca9d6",
+    "docs/native-tensor-bezier-clippy.log.gz": "52fcd949019988a4c72f195ec7300ac5b2f69d674b78bbce9683649583922f8f",
+    "docs/native-tensor-bezier-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-tensor-bezier-baseline.jsonl.gz": "c1ee4a470a6387d950e99ece09c352abcbed3e64f9df8e4419ec5a3d63b182e3",
+    "docs/native-tensor-bezier-baseline.stderr.gz": "be5e9b5be8f1cdec6108f34eda673384191aebe791877d64e94191ebe12eb7a3",
+    "docs/native-tensor-bezier-candidate.jsonl.gz": "fc99d7a9f4bfdf3ddbdc838b2ba2c176622fdebe79f46f1b38021172e9cbf567",
+    "docs/native-tensor-bezier-candidate.stderr.gz": "a7331c2d43d4506b6d9e175c73cc52ba0e3e4e87c1d5b2f872baeb42e7e02234",
+    "docs/native-tensor-bezier-asan.jsonl.gz": "fc99d7a9f4bfdf3ddbdc838b2ba2c176622fdebe79f46f1b38021172e9cbf567",
+    "docs/native-tensor-bezier-asan.stderr.gz": "a7331c2d43d4506b6d9e175c73cc52ba0e3e4e87c1d5b2f872baeb42e7e02234",
+    "docs/native-tensor-bezier-baseline-build.log.gz": "f807d25f07e6b295a3d5d681e5647889f488b0582a21216024dc258fbf19264f",
+    "docs/native-tensor-bezier-asan-build.log.gz": "8177e85250f9f1694e558533d55944f2cdae08caa5ba600093b9ae6d3860bd2b",
+    "docs/native-tensor-bezier-asan-flags.txt.gz": "d12884eb7b1d5bc17077bc0c7655d8500828b6a1699f8e4c8060cf841f4edd3b",
+    "docs/native-tensor-bezier-probes.log.gz": "9b851ae5e8638e065f30df0123e579e6940afb4fbc61687806182b7d6d50be2c",
+    "docs/native-tensor-bezier-probes.py.gz": "fe5b5a45418615504649aa3064e2342df5b3f7ded0b2538185a334e4e624502f",
+    "docs/native-tensor-bezier-sdk.log.gz": "ae0a9c67b7eab6fa328c14b9bad1ef8e3f8762409466db3197c13f076cbc8abc",
+    "docs/native-tensor-bezier-sdk.py.gz": "66925a8354b74831588872a5ac044083941a153c72d0c005ad540737f400084f",
+    "docs/native-tensor-bezier-sdk-request.json.gz": "3c3cb077994cb53ec506912939c17d4b774f26421f31ceaff1374887c025ebba",
+    "docs/native-tensor-bezier-sdk-rhino.json.gz": "4ecf0da25381e1d6a85dbbb55b79a191d1a046430621a4e670f855c7af65c4ac",
+    "docs/native-tensor-bezier-sdk-report.json.gz": "2754b339c02c7864f55dda86feccff6960ac4bc69c05fe16151f57fe273d1bcb",
+    "docs/native-tensor-bezier-sdk-rejected-request.json.gz": "4d5cd7d92748c73189102277975c62c662eb29a61a58d0ba060998a81cad188c",
+    "docs/native-tensor-bezier-sdk-rejected.log.gz": "5526b75f9811152201a6d23228c9bfa0dd0e54e4a07216610480780e2f77298d",
+    "docs/native-tensor-bezier-replay.log.gz": "4d77eb9d9aac35421bf48bbe1b14521faed2a8559bad50295aabc025639bafef",
+    "docs/native-tensor-bezier-replay.py.gz": "a8c92b1628557c8d523002c8746af5504761b730e1f44c469bac162626f70878",
+    "docs/native-tensor-bezier-bezier_conversion-report.json.gz": "4832481b1f8e493eab507b2eef2759d7b6f988f5ab4b8be3b25380053d340360",
+    "docs/native-tensor-bezier-bezier_conversion-audit.json.gz": "4099075dd1b97b0100c26e28998bae5f861b753b9833f8f01de7c80d89b0a2d0",
+    "docs/native-tensor-bezier-single_span_conversion-report.json.gz": "7c863671f96371b1d86de04ab8c0ea9c79ce9a7965a37437b391343edd3e217c",
+    "docs/native-tensor-bezier-single_span_conversion-audit.json.gz": "ea18830e7da29f4e60f5e02f276598d3e0d18433caf58c293a1fa28e215e99f8",
+    "README.md": "e4f2c8f54fb4e04c9f4d94af3b06da43d7a3a87bd920dd66db0ba08736deea45",
+    "third_party/patches/README.md": "d2aa714955e119154f8917be13d06d3f9605959f9b744b4023d4f24a37c480b8",
+    "docs/native-tensor-bezier.md": "46a9b5f577b1973e1a85606531aad95995f6aa3df7c965861d96317d87675973",
+    "docs/smlib-bezier.md": "72ae0ddd78e31ec03df2b0661f45af0d4d761f3eb9b1cc2aadf607945ee63058",
+    "docs/usd-brep-limitations.md": "dbae61881279aa23d6cb870982aed9bb900e05495efdca1674b6eb5638d2a7e6",
+    "tools/rhino_oracle/fixtures/bezier_conversion.json": "9b25ccead6ee1ac80c88ad12015af17725bc0caba83784121a0f765ad6bca8ad",
+    "tools/rhino_oracle/observations/bezier_conversion.json": "d86a8214e0917338c41a598c23689a03006939d0eb422cb998ddce8514bff4c5",
+    "tools/rhino_oracle/fixtures/single_span_conversion.json": "a6ab56e4ea5c5e0055be82a333d5c2445ebcd3a98a34e712d492b48cf59c5edc",
+    "tools/rhino_oracle/observations/single_span_conversion.json": "cd89fe7b7f5bd44321c4339a17b8ff98fa33bd9d744c72b3ee29fff4aaee30cf",
+    "docs/native-exact-splits-validation.json": "6d72ea3b6057bc77093a0f964d1be393f25d072af6e852e76bb778adfce337dd",
+    "docs/native-tensor-bezier-gates.py.gz": "c3d12977e92b001e20d7e58ef47f486569db72a69cc31ec0fbab1e0cd1a4ef70",
+    "docs/native-tensor-bezier-record.py.gz": "2d256c6faf5b0d77ac74622c291ae7cea4fedf4cd4c2847c8598647f2391fc36",
+    "docs/native-tensor-bezier-preserve-provenance.py.gz": "534210279e8e4af339d4b157f04bc18eb2688d3911ba08422b7b2942d753b657",
+    "docs/native-tensor-bezier-provenance.log.gz": "694d2029806a1d21bd23aaa735683bb47364bc61435e0ab32a21fd5342d70468"
+  },
+  "baseline_git_sha256": {
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/build.rs": "27c325a882979c1dda24975eb433c88d0ba17c2adf161f173534625c470827d1",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/CMakeLists.txt": "f284f4e5a425b66a55b191d46ea823068df750795718a9cf41f25a3d9ba16559",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/knot_refinement.cpp": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/tests/bezier.rs": "87373ec3b7aa173587d855632d5292794cea2a13a228e0cc875783522a067a3d"
+  },
+  "log_policy": "Retain complete raw source/expected/actual nets, completed build/test statuses, safe-parent rows, sanitizer rows and rejected SDK request. Gzip artifacts are deterministic; older validated hashes are pinned to immutable Git blobs instead of reblessed."
+}

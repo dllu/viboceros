@@ -325,19 +325,20 @@ issues reported by NVIDIA that have not all been reproduced here.
   has not been qualified. Source:
   [NL_CrvFit.h](../third_party/usd-brep/source/SMLib/inc/NL_CrvFit.h) and
   [NL_CrvFit.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvFit.cpp).
-- **Tensor Bezier decomposition uses negative control indices at full-order
-  interior breaks (source audit).** `N_SrfDecomposeToBez` sets `ru = p - mlu`
-  and `rv = q - mlv`. At an interior multiplicity `degree + 1`, those values
-  are `-1`; subsequent copies index `NBw[-1]` or `NQw[k][-1]`. The corresponding
-  curve producer `N_CrvDecomposeBez` explicitly raises negative `r` to zero
-  before its copy loop. Native Bezier/single-span conversion therefore composes
-  the existing curve producer in U then V, retaining homogeneous intermediate
-  controls until final projection. A quadratic 6×6 tensor with full-order `0.5`
-  breaks in both axes is retained as an adapter regression. The unsafe tensor
-  call itself was not executed. Source:
-  [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp),
-  [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp), and
-  [regression](../crates/viboceros-smlib/tests/bezier.rs).
+- **Fixed: tensor Bezier decomposition indexed before full-order control blocks.**
+  `N_SrfDecomposeToBez` used `ru = p - mlu` and `rv = q - mlv`, which
+  become `-1` at multiplicity `degree + 1`. The next-block copies now start
+  at zero. The producer also clamps a private surface through the repaired
+  splitters and completes degree-zero spans. Viboceros now uses the tensor
+  producer directly for Both-direction conversion. The
+  [qualification](native-tensor-bezier.md) retains 1,008 independent expected
+  control nets and sanitizer runs. The 396 safe parent cases retain identical
+  raw outcomes; known unsafe/uninitialized parent paths remain excluded.
+  The separate object-layer `sm_DecomposeSrf` already clamps negative copy
+  indices upstream; its unclamped/degree-zero behavior is not newly qualified.
+  Source: [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp),
+  [patch](../third_party/patches/usd-brep-tensor-bezier.patch), and
+  [bridge regressions](../crates/viboceros-smlib/tests/bezier.rs).
 - **Fixed: full-order active-start splitting wrote outside both control buffers.**
   A valid quadratic with five controls and full knots
   `[-2, 0, 0, 0, 0.5, 1, 2, 3]` has active interval `[0, 1]` and an inactive

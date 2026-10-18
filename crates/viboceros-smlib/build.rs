@@ -28,6 +28,7 @@ fn build_native() {
     println!("cargo:rerun-if-changed=../../tools/usd_brep/basis_evaluation_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/point_interpolation_probe.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/exact_split_probe.cpp");
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/tensor_bezier_probe.cpp");
     println!("cargo:rerun-if-changed=native/face_creases.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/planarity_zone_probe.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-protected-topology.patch");
@@ -78,6 +79,8 @@ fn build_native() {
         "usd-brep-surface-exact-split.patch",
         "usd-brep-exact-split-span.h",
         "usd-brep-exact-split.cmake",
+        "usd-brep-tensor-bezier.patch",
+        "usd-brep-tensor-bezier.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");
     }
@@ -112,6 +115,12 @@ fn build_native() {
         .define("VIBOCEROS_SMLIB_ASAN", if sanitize { "ON" } else { "OFF" })
         .profile("Release")
         .build();
+    println!(
+        "cargo:rustc-env=VIBOCEROS_NATIVE_TENSOR_BEZIER_PROBE={}",
+        destination
+            .join("build/viboceros_smlib_tensor_bezier_probe")
+            .display()
+    );
     println!(
         "cargo:rustc-env=VIBOCEROS_NATIVE_EXACT_SPLIT_PROBE={}",
         destination

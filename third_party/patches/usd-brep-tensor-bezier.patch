@@ -1,0 +1,132 @@
+--- a/NL_SrfToolSplits.cpp
++++ b/NL_SrfToolSplits.cpp
+@@ -862,6 +862,7 @@
+ 
+ NL_FLAG N_SrfDecomposeToBez( NL_SURFACE *surP, NL_SURFACE **** surQ, NL_INDEX *kk, NL_INDEX *ll, NL_STACKS *SQ )
+ {
++    NL_PRIVATE NL_STRING rname = _T("N_SrfDecomposeToBez");
+     NL_FLAG error = NL_NO;
+ 
+     NL_INDEX i, j, k, l, n, m, r, s, ru, su, rv, sv, nsu, nsv, mlu, mlv, isu, ieu, isv, iev, iq, jq, save;
+@@ -875,6 +876,7 @@
+     NL_CPOINT ** Pw, ** Qw, ** NQw = NULL, ** Bw, ** NBw, ** tmp;
+ 
+     NL_SURFACE *** surA;
++    NL_SURFACE prepared;
+ 
+     NL_STACKS SL;
+ 
+@@ -882,15 +884,55 @@
+ 
+     N_InitNurbs( &SL );
+ 
+-    /* Get local notation */
+-
+-    N_SrfGetCPtsDegreesAndKnots( surP, &n, &m, &Pw, &p, &q, &r, &s, &UP, &VP );
+-    N_SrfGetKnotVectors( surP, &knu, &knv );
++    // The de Boor strip reduction assumes complete clamped end groups.
++    // Prepare them once for the whole net, keeping zero-weight intermediate
++    // controls homogeneous. All temporary arrays belong to the local stack.
++    *surQ = NULL;
++    *kk = *ll = -1;
++    N_SrfGetCPtsDegreesAndKnots(surP, &n, &m, &Pw, &p, &q, &r, &s, &UP, &VP);
++    if (p < 0 || q < 0 || p > NL_MAXDEG || q > NL_MAXDEG ||
++        r < 2 * p + 1 || s < 2 * q + 1 || n != r - p - 1 || m != s - q - 1 ||
++        !(UP[p] < UP[n + 1]) || !(VP[q] < VP[m + 1]))
++        NL_ERROR(NL_INP_ERR);
++    for (i = 0; i <= r; ++i)
++        if (!std::isfinite(UP[i]) || (i && UP[i] < UP[i - 1]))
++            NL_ERROR(NL_KNT_ERR);
++    for (i = 0; i <= s; ++i)
++        if (!std::isfinite(VP[i]) || (i && VP[i] < VP[i - 1]))
++            NL_ERROR(NL_KNT_ERR);
++    prepared = *surP;
++    for (NL_INDEX axis = 0; axis < 2; ++axis)
++    {
++        for (NL_INDEX at_end = 0; at_end < 2; ++at_end)
++        {
++            NL_KNOTVECTOR *basis = axis ? prepared.knv : prepared.knu;
++            const NL_DEGREE degree = axis ? prepared.q : prepared.p;
++            const NL_INDEX count = (axis ? prepared.net->m : prepared.net->n) + 1;
++            const NL_REAL parameter = basis->U[at_end ? count : degree];
++            const NL_REAL *edge = basis->U + (at_end ? count : 0);
++            if (std::all_of(edge, edge + degree + 1,
++                            [parameter](NL_REAL value) { return value == parameter; }))
++                continue;
++            NL_SURFACE left, right;
++            N_SrfInitArrays(&left);
++            N_SrfInitArrays(&right);
++            error = N_SrfSplit(&prepared, parameter, axis ? NL_VDIR : NL_UDIR,
++                               &left, &right, &SL);
++            if (error == NL_YES)
++                NL_OUT;
++            prepared = at_end ? left : right;
++        }
++    }
++    surP = &prepared;
++    N_SrfGetCPtsDegreesAndKnots(surP, &n, &m, &Pw, &p, &q, &r, &s, &UP, &VP);
++    N_SrfGetKnotVectors(surP, &knu, &knv);
+ 
+     /* Allocate memory */
+ 
+     N_BasisGetSpanCount( knu, p, &nsu );
+     N_BasisGetSpanCount( knv, q, &nsv );
++    if (nsu < 1 || nsv < 1)
++        NL_ERROR(NL_INP_ERR);
+ 
+     surA = N_Alloc2dArraySrfPtrsParameters( p, q, p, q, 2 * p + 1, 2 * q + 1, nsu - 1, nsv - 1, SQ );
+ 
+@@ -941,9 +983,11 @@
+ 
+     /* Decompose in u-direction into Bezier strips */
+ 
+-    while( ieu LT r )
++    while( ieu LE r )
+     {
+         iq = iq + 1;
++        if (iq >= nsu)
++            NL_ERROR(NL_INP_ERR);
+ 
+         /* Get knot multiplicity */
+ 
+@@ -952,7 +996,8 @@
+         while( ieu LT r AND UP[ieu]EQ UP[ieu + 1] )
+             ieu++;
+         mlu = ieu - i + 1;
+-        ru = p - mlu;
++        // Full-order breaks copy the next independent block from index zero.
++        ru = NL_MAX(0, p - mlu);
+ 
+         /* Insert the knot */
+ 
+@@ -1006,9 +1051,11 @@
+ 
+         /* Decompose in v-direction into Bezier patches */
+ 
+-        while( iev LT s )
++        while( iev LE s )
+         {
+             jq = jq + 1;
++            if (jq >= nsv)
++                NL_ERROR(NL_INP_ERR);
+ 
+             N_SrfGetCPtsAndKnots( surA[iq][jq], &Qw, &UQ, &VQ );
+ 
+@@ -1022,7 +1069,7 @@
+             while( iev LT s AND VP[iev]EQ VP[iev + 1] )
+                 iev++;
+             mlv = iev - i + 1;
+-            rv = q - mlv;
++            rv = NL_MAX(0, q - mlv);
+ 
+             /* Insert the knot */
+ 
+@@ -1106,6 +1153,8 @@
+         NBw = tmp;
+     }
+ 
++    if (iq + 1 != nsu || jq + 1 != nsv)
++        NL_ERROR(NL_INP_ERR);
+     *kk = nsu - 1;
+     *ll = nsv - 1;
+     *surQ = surA;

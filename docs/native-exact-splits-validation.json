@@ -340,9 +340,6 @@
     "The separate native reversal and tensor Bezier-decomposition limitations remain. Public Split uses extraction to produce clamped bases as a representation policy."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "27c325a882979c1dda24975eb433c88d0ba17c2adf161f173534625c470827d1",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "f284f4e5a425b66a55b191d46ea823068df750795718a9cf41f25a3d9ba16559",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c",
     "crates/viboceros-smlib/tests/exact_split.rs": "9985611660c82d25effdcaabfe6a4b68f284237d8fc5cf3252745316f762d062",
     "crates/viboceros-smlib/tests/directed_segments.rs": "723785f026c7f091fb93b58f43b30e89ad45e3f87e596394f6992ac9047919b9",
     "tools/usd_brep/exact_split_probe.cpp": "af01cf6ec43336add0f89913380855fe26e956e77078f9c63b40f984024a18c6",
@@ -396,10 +393,7 @@
     "docs/native-exact-splits-observed-subsets.py.gz": "5d10e3cdf5637fa15e46ab21ed785be5aca8eef0ed50e7c987710813ed0b8c78",
     "docs/native-exact-splits-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
     "docs/native-exact-splits-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
-    "README.md": "eceb1795d7b24fc8b5f35db13f594522079300142fae79667a6d10e1511b0fdd",
-    "third_party/patches/README.md": "735ff54d1a64d1194f54eed22ef85a9efd2f919f63a20340d29e5758c479bc50",
     "docs/native-exact-splits.md": "2b39a36ae25089f889f8d5bb3bc38de9b187f3261c95ff8d47bef32796d840ab",
-    "docs/usd-brep-limitations.md": "ff20141d73ae0ce355610b1fb303b9570c1aaf26415c8ccff0e29e19a77386bb",
     "docs/smlib-knot-refinement.md": "6dd352da82f20f52de3d06012e8d5fbbac8772ea347858ecdda2e2bb0b86d4f0",
     "docs/smlib-nonperiodic.md": "b7166edb1ebf9604e8e9fb2888fd5c44d7b22b9bb6f71b7addcce85062e168af",
     "docs/smlib-directed-segments.md": "1d029e2525255c5fdf84723ed3b871b1c30def76e774de4e2066a05d1649e325",
@@ -409,7 +403,6 @@
     "docs/native-basis-evaluation-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
     "docs/native-basis-evaluation-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
     "crates/viboceros-smlib/tests/knot_refinement.rs": "560bd250706f9ec57e74e88d33ecba900b00c855d9d2484745d50b64c3bf1772",
-    "crates/viboceros-smlib/tests/bezier.rs": "87373ec3b7aa173587d855632d5292794cea2a13a228e0cc875783522a067a3d",
     "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
     "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
     "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
@@ -426,5 +419,16 @@
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/CMakeLists.txt": "8e9817570a773adc9c71f1370bf1cee35eff6627ae273874a3db2de7a5fd9ef9",
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5"
   },
-  "log_policy": "Observe completed statuses, retain complete raw definitions and mismatch reports, use deterministic gzip and pin historical hashes to immutable Git blobs. The compiler-detected unused-helper cleanup and byte-identical optimized-object evidence are recorded explicitly."
+  "log_policy": "Observe completed statuses, retain complete raw definitions and mismatch reports, use deterministic gzip and pin historical hashes to immutable Git blobs. The compiler-detected unused-helper cleanup and byte-identical optimized-object evidence are recorded explicitly.",
+  "source_git_sha256": {
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/build.rs": "27c325a882979c1dda24975eb433c88d0ba17c2adf161f173534625c470827d1",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/CMakeLists.txt": "f284f4e5a425b66a55b191d46ea823068df750795718a9cf41f25a3d9ba16559",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/knot_refinement.cpp": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c"
+  },
+  "artifact_git_sha256": {
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:README.md": "eceb1795d7b24fc8b5f35db13f594522079300142fae79667a6d10e1511b0fdd",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:third_party/patches/README.md": "735ff54d1a64d1194f54eed22ef85a9efd2f919f63a20340d29e5758c479bc50",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:docs/usd-brep-limitations.md": "ff20141d73ae0ce355610b1fb303b9570c1aaf26415c8ccff0e29e19a77386bb",
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/tests/bezier.rs": "87373ec3b7aa173587d855632d5292794cea2a13a228e0cc875783522a067a3d"
+  }
 }
