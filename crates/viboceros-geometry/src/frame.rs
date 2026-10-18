@@ -41,6 +41,25 @@ impl Frame3 {
         })
     }
 
+    /// Orthonormalizes validated X and normal directions using only angular
+    /// admission. X is retained exactly; the preferred normal is projected
+    /// perpendicular to it. Cross products avoid cancellation in a nearly
+    /// parallel normal's projection.
+    pub fn try_from_unit_x_and_normal(
+        origin: Point3,
+        x_axis: UnitVector3,
+        preferred_normal: UnitVector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let frame = Self::try_from_unit_directions(origin, x_axis, preferred_normal, tolerance)?;
+        Ok(Self {
+            origin,
+            x_axis,
+            y_axis: frame.z_axis.opposite(),
+            z_axis: frame.y_axis,
+        })
+    }
+
     /// Constructs the deterministic OpenNURBS-style plane whose z-axis is the
     /// supplied normal. The x-axis is chosen from the two largest normal
     /// components, and y completes a right-handed orthonormal frame.
@@ -122,6 +141,18 @@ impl Frame3 {
     ) -> Result<Self, GeometryError> {
         let x_axis = x_direction.normalized(tolerance)?;
         let xy_axis = xy_direction.normalized(tolerance)?;
+        Self::try_from_unit_directions(origin, x_axis, xy_axis, tolerance)
+    }
+
+    /// Orthonormalizes two validated directions. Only the angular tolerance
+    /// applies; raw point displacements must pass their distance checks before
+    /// conversion to unit directions. The supplied X direction is retained.
+    pub fn try_from_unit_directions(
+        origin: Point3,
+        x_axis: UnitVector3,
+        xy_axis: UnitVector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let cross = x_axis.as_vector().cross(xy_axis.as_vector())?;
         if cross.length()? <= tolerance.angular() {
             return Err(GeometryError::Degenerate {

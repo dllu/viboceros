@@ -174,12 +174,10 @@ pub fn transform(
         if from.as_vector().cross(to.as_vector())?.length()? == 0.0
             && from.as_vector().dot(to.as_vector())? < 0.0
         {
-            let axis = Frame3::try_from_normal(references[0], from.as_vector(), tolerance)?
-                .x_axis()
-                .as_vector();
+            let axis = Frame3::try_from_unit_normal(references[0], from)?.x_axis();
             return Ok(AffineTransform3::try_frame_mapping(
-                Frame3::try_from_directions(references[0], from.as_vector(), axis, tolerance)?,
-                Frame3::try_from_directions(targets[0], to.as_vector(), axis, tolerance)?,
+                Frame3::try_from_unit_directions(references[0], from, axis, tolerance)?,
+                Frame3::try_from_unit_directions(targets[0], to, axis, tolerance)?,
                 [factor, perpendicular, perpendicular],
             )?);
         }

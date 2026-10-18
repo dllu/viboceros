@@ -4853,7 +4853,7 @@ struct AxialPrimitiveOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
     height: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     both_sides: bool,
     solid: bool,
 }
@@ -4864,7 +4864,7 @@ struct TruncatedConeCommandOptions {
     base_radius: AxialPrimitiveRadius,
     height: Real,
     end_radius: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     solid: bool,
 }
 
@@ -4908,7 +4908,7 @@ struct HelixCommandOptions {
 #[derive(Clone, Debug, PartialEq)]
 enum SpiralAxis {
     Segment { start: Point3, end: Point3 },
-    Flat { center: Point3, normal: Vector3 },
+    Flat { center: Point3, normal: UnitVector3 },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -4939,7 +4939,7 @@ struct PyramidCommandOptions {
     center: Point3,
     base_radius: AxialPrimitiveRadius,
     height: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     solid: bool,
 }
 
@@ -4950,7 +4950,7 @@ struct TruncatedPyramidCommandOptions {
     base_radius: AxialPrimitiveRadius,
     height: Real,
     top_radius: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     solid: bool,
 }
 
@@ -4961,7 +4961,7 @@ struct TubeCommandOptions {
     second_radius: Option<AxialPrimitiveRadius>,
     wall_thickness: Option<Real>,
     height: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     both_sides: bool,
 }
 
@@ -4970,7 +4970,7 @@ struct MeshCylinderCommandOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
     height: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     both_sides: bool,
     solid: bool,
     vertical_count: usize,
@@ -4983,7 +4983,7 @@ struct MeshConeCommandOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
     height: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     solid: bool,
     vertical_count: usize,
     around_count: usize,
@@ -4996,7 +4996,7 @@ struct MeshTruncatedConeCommandOptions {
     base_radius: AxialPrimitiveRadius,
     height: Real,
     end_radius: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     solid: bool,
     vertical_count: usize,
     around_count: usize,
@@ -5007,7 +5007,7 @@ struct MeshTruncatedConeCommandOptions {
 struct MeshSphereCommandOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
-    axis: Vector3,
+    axis: UnitVector3,
     topology: MeshSphereCommandTopology,
 }
 
@@ -5046,7 +5046,7 @@ struct MeshTorusCommandOptions {
     center: Point3,
     major_radius: AxialPrimitiveRadius,
     minor_radius: Real,
-    axis: Vector3,
+    axis: UnitVector3,
     vertical_count: usize,
     around_count: usize,
 }
@@ -5249,6 +5249,10 @@ fn parse_axis_option(value: &str, usage: &'static str) -> Result<Vector3, Comman
     Ok(Vector3::try_from(point.to_array())?)
 }
 
+fn parse_unit_axis_option(value: &str, usage: &'static str) -> Result<UnitVector3, CommandError> {
+    Ok(parse_axis_option(value, usage)?.normalized_nonzero()?)
+}
+
 fn parse_axial_primitive_options(
     arguments: &[&str],
     usage: &'static str,
@@ -5256,7 +5260,7 @@ fn parse_axial_primitive_options(
 ) -> Result<AxialPrimitiveOptions, CommandError> {
     let positionals = parse_radial_primitive_positionals(arguments, usage)?;
 
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
     let mut both_sides = false;
     let mut solid = false;
     let mut axis_seen = false;
@@ -5268,7 +5272,7 @@ fn parse_axial_primitive_options(
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_axis_option(value, usage)?;
+            axis = parse_unit_axis_option(value, usage)?;
             axis_seen = true;
         } else if supports_both_sides && option_name_eq(name, "BothSides") && !both_sides_seen {
             both_sides = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
@@ -5294,7 +5298,7 @@ fn parse_truncated_cone_options(
     arguments: &[&str],
 ) -> Result<TruncatedConeCommandOptions, CommandError> {
     let positionals = parse_truncated_cone_positionals(arguments, TRUNCATED_CONE_USAGE)?;
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
     let mut solid = false;
     let mut axis_seen = false;
     let mut solid_seen = false;
@@ -5304,7 +5308,7 @@ fn parse_truncated_cone_options(
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_axis_option(value, TRUNCATED_CONE_USAGE)?;
+            axis = parse_unit_axis_option(value, TRUNCATED_CONE_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "Solid") && !solid_seen {
             solid = parse_yes_no(value).ok_or(CommandError::Usage(TRUNCATED_CONE_USAGE))?;
@@ -5540,7 +5544,7 @@ fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, Comm
             .take_while(|argument| !argument.contains('='))
             .count();
         let radii = parse_spiral_radii(&remaining[..positional_count], SPIRAL_USAGE)?;
-        let mut normal = Vector3::try_new(0.0, 0.0, 1.0)?;
+        let mut normal = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
         let mut axis_seen = false;
         let mut advance_arguments = Vec::new();
         for argument in &remaining[positional_count..] {
@@ -5548,7 +5552,7 @@ fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, Comm
                 && option_name_eq(name, "Axis")
                 && !axis_seen
             {
-                normal = parse_axis_option(value.trim_start_matches('_'), SPIRAL_USAGE)?;
+                normal = parse_unit_axis_option(value.trim_start_matches('_'), SPIRAL_USAGE)?;
                 axis_seen = true;
             } else {
                 advance_arguments.push(*argument);
@@ -5711,7 +5715,7 @@ fn parse_pyramid_side_count(
 fn parse_pyramid_options(arguments: &[&str]) -> Result<PyramidCommandOptions, CommandError> {
     let side_count = parse_pyramid_side_count(arguments, PYRAMID_USAGE)?;
     let positionals = parse_radial_primitive_positionals(&arguments[1..], PYRAMID_USAGE)?;
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
     let mut solid = false;
     let mut axis_seen = false;
     let mut solid_seen = false;
@@ -5721,7 +5725,7 @@ fn parse_pyramid_options(arguments: &[&str]) -> Result<PyramidCommandOptions, Co
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_axis_option(value, PYRAMID_USAGE)?;
+            axis = parse_unit_axis_option(value, PYRAMID_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "Solid") && !solid_seen {
             solid = parse_yes_no(value).ok_or(CommandError::Usage(PYRAMID_USAGE))?;
@@ -5745,7 +5749,7 @@ fn parse_truncated_pyramid_options(
 ) -> Result<TruncatedPyramidCommandOptions, CommandError> {
     let side_count = parse_pyramid_side_count(arguments, TRUNCATED_PYRAMID_USAGE)?;
     let positionals = parse_truncated_cone_positionals(&arguments[1..], TRUNCATED_PYRAMID_USAGE)?;
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
     let mut solid = false;
     let mut axis_seen = false;
     let mut solid_seen = false;
@@ -5755,7 +5759,7 @@ fn parse_truncated_pyramid_options(
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_axis_option(value, TRUNCATED_PYRAMID_USAGE)?;
+            axis = parse_unit_axis_option(value, TRUNCATED_PYRAMID_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "Solid") && !solid_seen {
             solid = parse_yes_no(value).ok_or(CommandError::Usage(TRUNCATED_PYRAMID_USAGE))?;
@@ -5777,7 +5781,7 @@ fn parse_truncated_pyramid_options(
 
 fn parse_tube_options(arguments: &[&str]) -> Result<TubeCommandOptions, CommandError> {
     let positionals = parse_tube_positionals(arguments)?;
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
     let mut both_sides = false;
     let mut wall_thickness = None;
     let mut axis_seen = false;
@@ -5789,7 +5793,7 @@ fn parse_tube_options(arguments: &[&str]) -> Result<TubeCommandOptions, CommandE
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_axis_option(value, TUBE_USAGE)?;
+            axis = parse_unit_axis_option(value, TUBE_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "BothSides") && !both_sides_seen {
             both_sides = parse_yes_no(value).ok_or(CommandError::Usage(TUBE_USAGE))?;
@@ -5954,7 +5958,7 @@ fn parse_mesh_ellipsoid_options(
 
 fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOptions, CommandError> {
     let positionals = parse_radial_radius_positionals(arguments, MESH_SPHERE_USAGE)?;
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
     let mut style = MeshSphereCommandTopology::Uv {
         vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
         around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
@@ -5973,7 +5977,7 @@ fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOpti
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_axis_option(value, MESH_SPHERE_USAGE)?;
+            axis = parse_unit_axis_option(value, MESH_SPHERE_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "Style") && !style_seen {
             style = if value.eq_ignore_ascii_case("UV") {
@@ -6089,7 +6093,7 @@ fn parse_mesh_torus_options(arguments: &[&str]) -> Result<MeshTorusCommandOption
         center: positionals.center,
         major_radius: positionals.radius,
         minor_radius: positionals.value,
-        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+        axis: Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
         vertical_count: DEFAULT_MESH_TORUS_FACE_COUNT,
         around_count: DEFAULT_MESH_TORUS_FACE_COUNT,
     };
@@ -6102,7 +6106,7 @@ fn parse_mesh_torus_options(arguments: &[&str]) -> Result<MeshTorusCommandOption
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            options.axis = parse_axis_option(value, MESH_TORUS_USAGE)?;
+            options.axis = parse_unit_axis_option(value, MESH_TORUS_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
             options.vertical_count = value
@@ -6138,7 +6142,7 @@ fn parse_mesh_cone_options(arguments: &[&str]) -> Result<MeshConeCommandOptions,
         center: positionals.center,
         radius: positionals.radius,
         height: positionals.value,
-        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+        axis: Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
         solid: true,
         vertical_count: DEFAULT_MESH_CONE_FACE_COUNT,
         around_count: DEFAULT_MESH_CONE_FACE_COUNT,
@@ -6155,7 +6159,7 @@ fn parse_mesh_cone_options(arguments: &[&str]) -> Result<MeshConeCommandOptions,
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            options.axis = parse_axis_option(value, MESH_CONE_USAGE)?;
+            options.axis = parse_unit_axis_option(value, MESH_CONE_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "Solid") && !solid_seen {
             options.solid = parse_yes_no(value).ok_or(CommandError::Usage(MESH_CONE_USAGE))?;
@@ -6216,7 +6220,7 @@ fn parse_mesh_truncated_cone_options(
         base_radius: positionals.base_radius,
         height: positionals.height,
         end_radius: positionals.end_radius,
-        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+        axis: Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
         solid: true,
         vertical_count: DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT,
         around_count: DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT,
@@ -6233,7 +6237,7 @@ fn parse_mesh_truncated_cone_options(
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            options.axis = parse_axis_option(value, MESH_TRUNCATED_CONE_USAGE)?;
+            options.axis = parse_unit_axis_option(value, MESH_TRUNCATED_CONE_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "Solid") && !solid_seen {
             options.solid =
@@ -6300,7 +6304,7 @@ fn parse_mesh_cylinder_options(
         center: positionals.center,
         radius: positionals.radius,
         height: positionals.value,
-        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+        axis: Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
         both_sides: false,
         solid: true,
         vertical_count: DEFAULT_MESH_CYLINDER_FACE_COUNT,
@@ -6319,7 +6323,7 @@ fn parse_mesh_cylinder_options(
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            options.axis = parse_axis_option(value, MESH_CYLINDER_USAGE)?;
+            options.axis = parse_unit_axis_option(value, MESH_CYLINDER_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "BothSides") && !both_sides_seen {
             options.both_sides =
@@ -6381,10 +6385,10 @@ fn parse_mesh_cylinder_options(
 fn axial_primitive_frame(
     center: Point3,
     radius: AxialPrimitiveRadius,
-    axis: Vector3,
+    axis: UnitVector3,
     tolerance: Tolerance,
 ) -> Result<(Frame3, Real), CommandError> {
-    let base_frame = Frame3::try_from_normal(center, axis, tolerance)?;
+    let base_frame = Frame3::try_from_unit_normal(center, axis)?;
     if let AxialPrimitiveRadius::Point(point) = radius {
         let radial = center.vector_to(point)?;
         let axial_distance = radial.dot(base_frame.z_axis().as_vector())?;
@@ -6395,7 +6399,12 @@ fn axial_primitive_frame(
             radial.z() - axial.z(),
         )?;
         Ok((
-            Frame3::try_from_x_and_normal(center, projected, axis, tolerance)?,
+            Frame3::try_from_unit_x_and_normal(
+                center,
+                projected.normalized(tolerance)?,
+                axis,
+                tolerance,
+            )?,
             projected.length()?,
         ))
     } else {
@@ -6528,13 +6537,14 @@ impl Command for MeshConeCommand {
             axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
         let base_to_apex = base_frame.z_axis().as_vector().scaled(options.height)?;
         let apex = options.center.translated(base_to_apex)?;
-        let apex_to_base_normal = base_frame
-            .z_axis()
-            .as_vector()
-            .scaled(if options.height > 0.0 { -1.0 } else { 1.0 })?;
-        let apex_frame = Frame3::try_from_x_and_normal(
+        let apex_to_base_normal = if options.height > 0.0 {
+            base_frame.z_axis().opposite()
+        } else {
+            base_frame.z_axis()
+        };
+        let apex_frame = Frame3::try_from_unit_x_and_normal(
             apex,
-            base_frame.x_axis().as_vector(),
+            base_frame.x_axis(),
             apex_to_base_normal,
             tolerance,
         )?;
@@ -6575,13 +6585,14 @@ impl Command for MeshTruncatedConeCommand {
         let tolerance = document.tolerance();
         let (base_frame, base_radius) =
             axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let direction = base_frame
-            .z_axis()
-            .as_vector()
-            .scaled(if options.height > 0.0 { 1.0 } else { -1.0 })?;
-        let frame = Frame3::try_from_x_and_normal(
+        let direction = if options.height > 0.0 {
+            base_frame.z_axis()
+        } else {
+            base_frame.z_axis().opposite()
+        };
+        let frame = Frame3::try_from_unit_x_and_normal(
             options.center,
-            base_frame.x_axis().as_vector(),
+            base_frame.x_axis(),
             direction,
             tolerance,
         )?;
@@ -6755,12 +6766,7 @@ impl Command for ConeCommand {
             let apex = options
                 .center
                 .translated(base_frame.z_axis().as_vector().scaled(options.height)?)?;
-            let apex_frame = Frame3::try_from_directions(
-                apex,
-                base_frame.x_axis().as_vector(),
-                base_frame.y_axis().as_vector(),
-                tolerance,
-            )?;
+            let apex_frame = base_frame.with_origin(apex);
             let surface = NurbsSurface::try_cone(apex_frame, radius, -options.height)?;
             let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
             Ok(format!(
@@ -6796,7 +6802,12 @@ fn parabolic_frame_and_dimensions(
             };
             let vertex = focus.translated(axis.as_vector().scaled(-focal_distance)?)?;
             return Ok((
-                Frame3::try_from_x_and_normal(vertex, radial, axis.as_vector(), tolerance)?,
+                Frame3::try_from_unit_x_and_normal(
+                    vertex,
+                    radial.normalized(tolerance)?,
+                    axis,
+                    tolerance,
+                )?,
                 radius,
                 height,
                 focus,
@@ -6828,7 +6839,7 @@ fn parabolic_frame_and_dimensions(
     let radius = radial.length()?;
     let height = 0.25 * radius * (radius / focal_distance);
     Ok((
-        Frame3::try_from_x_and_normal(vertex, radial, axis.as_vector(), tolerance)?,
+        Frame3::try_from_unit_x_and_normal(vertex, radial.normalized(tolerance)?, axis, tolerance)?,
         radius,
         height,
         focus,
@@ -6894,8 +6905,12 @@ impl Command for HelixCommand {
         let tolerance = document.tolerance();
         let axis = options.axis_start.vector_to(options.axis_end)?;
         let height = axis.length()?;
-        let (frame, radius) =
-            axial_primitive_frame(options.axis_start, options.radius, axis, tolerance)?;
+        let (frame, radius) = axial_primitive_frame(
+            options.axis_start,
+            options.radius,
+            axis.normalized(tolerance)?,
+            tolerance,
+        )?;
         let turn_count = match options.advance {
             SpiralAdvance::Turns(turn_count) => turn_count,
             SpiralAdvance::Pitch(pitch) => height / pitch,
@@ -6949,7 +6964,7 @@ impl Command for SpiralCommand {
             SpiralAxis::Segment { start, end } => {
                 let axis = start.vector_to(end)?;
                 let height = axis.length()?;
-                (start, end, axis, height)
+                (start, end, axis.normalized(tolerance)?, height)
             }
             SpiralAxis::Flat { center, normal } => (center, center, normal, 0.0),
         };
@@ -7084,13 +7099,14 @@ impl Command for TruncatedConeCommand {
         let tolerance = document.tolerance();
         let (base_frame, base_radius) =
             axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let direction = base_frame
-            .z_axis()
-            .as_vector()
-            .scaled(if options.height > 0.0 { 1.0 } else { -1.0 })?;
-        let frame = Frame3::try_from_x_and_normal(
+        let direction = if options.height > 0.0 {
+            base_frame.z_axis()
+        } else {
+            base_frame.z_axis().opposite()
+        };
+        let frame = Frame3::try_from_unit_x_and_normal(
             options.center,
-            base_frame.x_axis().as_vector(),
+            base_frame.x_axis(),
             direction,
             tolerance,
         )?;
@@ -7201,24 +7217,17 @@ impl Command for TubeCommand {
             let start = options
                 .center
                 .translated(base_frame.z_axis().as_vector().scaled(-magnitude)?)?;
-            (
-                Frame3::try_from_x_and_normal(
-                    start,
-                    base_frame.x_axis().as_vector(),
-                    base_frame.z_axis().as_vector(),
-                    tolerance,
-                )?,
-                2.0 * magnitude,
-            )
+            (base_frame.with_origin(start), 2.0 * magnitude)
         } else {
-            let direction = base_frame
-                .z_axis()
-                .as_vector()
-                .scaled(if options.height > 0.0 { 1.0 } else { -1.0 })?;
+            let direction = if options.height > 0.0 {
+                base_frame.z_axis()
+            } else {
+                base_frame.z_axis().opposite()
+            };
             (
-                Frame3::try_from_x_and_normal(
+                Frame3::try_from_unit_x_and_normal(
                     options.center,
-                    base_frame.x_axis().as_vector(),
+                    base_frame.x_axis(),
                     direction,
                     tolerance,
                 )?,
@@ -7250,7 +7259,7 @@ impl Command for TorusCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let positionals = parse_radial_primitive_positionals(arguments, TORUS_USAGE)?;
-        let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+        let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
         let mut axis_seen = false;
         for argument in &arguments[positionals.option_start..] {
             let Some((name, value)) = argument.split_once('=') else {
@@ -7259,7 +7268,7 @@ impl Command for TorusCommand {
             if !option_name_eq(name, "Axis") || axis_seen {
                 return Err(CommandError::Usage(TORUS_USAGE));
             }
-            axis = parse_axis_option(value.trim_start_matches('_'), TORUS_USAGE)?;
+            axis = parse_unit_axis_option(value.trim_start_matches('_'), TORUS_USAGE)?;
             axis_seen = true;
         }
 

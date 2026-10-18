@@ -447,7 +447,12 @@ pub fn vertical(
         (-height).mul_add(up_axis[1], direction[1]),
         (-height).mul_add(up_axis[2], direction[2]),
     )?;
-    Frame3::try_from_directions(origin, horizontal, up, tolerance)
+    Frame3::try_from_unit_directions(
+        origin,
+        horizontal.normalized(tolerance)?,
+        plane.z_axis(),
+        tolerance,
+    )
 }
 
 pub fn three_point_z_axis(
@@ -471,7 +476,12 @@ fn surface_mid_frame(
         midpoint(*v.start(), *v.end()),
     )?;
     let y = if reversed { y.scaled(-1.0)? } else { y };
-    Ok(Frame3::try_from_directions(origin, x, y, tolerance)?)
+    Ok(Frame3::try_from_unit_directions(
+        origin,
+        x.normalized_nonzero()?,
+        y.normalized_nonzero()?,
+        tolerance,
+    )?)
 }
 
 /// Tangent construction plane on a NURBS surface, using its natural U direction
@@ -572,7 +582,12 @@ fn surface_frame_at_parameters(
     } else {
         y
     };
-    let default = Frame3::try_from_directions(origin, x, y, tolerance)?;
+    let default = Frame3::try_from_unit_directions(
+        origin,
+        x.normalized_nonzero()?,
+        y.normalized_nonzero()?,
+        tolerance,
+    )?;
     x_pick.map_or(Ok(default), |pick| {
         surface_frame_with_x(default, pick, tolerance)
     })
@@ -585,11 +600,10 @@ pub fn surface_frame_with_x(
 ) -> Result<Frame3, PlaneCommandError> {
     let [x, y] = frame.projected_coordinates_of(x_pick)?;
     let direction = frame.vector_at([x, y, 0.])?;
-    let tangent_y = frame.z_axis().as_vector().cross(direction)?;
-    Ok(Frame3::try_from_directions(
+    Ok(Frame3::try_from_unit_x_and_normal(
         frame.origin(),
-        direction,
-        tangent_y,
+        direction.normalized(tolerance)?,
+        frame.z_axis(),
         tolerance,
     )?)
 }
@@ -613,12 +627,15 @@ pub fn curve_perpendicular_frame(
     let up = Vector3::try_new(0.0, 0.0, 1.0)?;
     let x = up.cross(tangent)?;
     if x.length()? <= tolerance.angular() {
-        return Ok(Frame3::try_from_normal(origin, up, tolerance)?);
+        return Ok(Frame3::try_from_unit_normal(
+            origin,
+            up.normalized_nonzero()?,
+        )?);
     }
-    Ok(Frame3::try_from_directions(
+    Ok(Frame3::try_from_unit_directions(
         origin,
-        x,
-        tangent.cross(x)?,
+        x.normalized_nonzero()?,
+        tangent.cross(x)?.normalized_nonzero()?,
         tolerance,
     )?)
 }
@@ -642,22 +659,22 @@ pub fn frame_from_object(
 ) -> Result<Frame3, PlaneCommandError> {
     Ok(match geometry {
         Geometry::Line(line) => line_object_frame(*line, tolerance)?,
-        Geometry::Circle(circle) => Frame3::try_from_directions(
+        Geometry::Circle(circle) => Frame3::try_from_unit_directions(
             circle.center(),
-            circle.x_axis().as_vector(),
-            circle.y_axis().as_vector(),
+            circle.x_axis(),
+            circle.y_axis(),
             tolerance,
         )?,
-        Geometry::Arc(arc) => Frame3::try_from_directions(
+        Geometry::Arc(arc) => Frame3::try_from_unit_directions(
             arc.center(),
-            arc.plane_x_axis().as_vector(),
-            arc.plane_y_axis()?.as_vector(),
+            arc.plane_x_axis(),
+            arc.plane_y_axis()?,
             tolerance,
         )?,
-        Geometry::Ellipse(ellipse) => Frame3::try_from_directions(
+        Geometry::Ellipse(ellipse) => Frame3::try_from_unit_directions(
             ellipse.point_at_angle(0.0)?,
-            ellipse.y_axis().as_vector(),
-            ellipse.x_axis().as_vector().scaled(-1.0)?,
+            ellipse.y_axis(),
+            ellipse.x_axis().opposite(),
             tolerance,
         )?,
         Geometry::Polyline(_) | Geometry::NurbsCurve(_) => {
@@ -691,6 +708,7 @@ fn line_object_frame(line: LineSegment, tolerance: Tolerance) -> Result<Frame3, 
     // OpenNURBS ON_Line::InPlane prefers XY, YZ, then ZX before using the
     // line direction and its deterministic perpendicular.
     let direction = line.start().vector_to(line.end())?;
+    let direction_unit = direction.normalized(tolerance)?;
     let [x, y, z] = direction.to_array();
     let small = [x, y, z].map(|value| value.abs() <= tolerance.absolute());
     let (x_axis, y_axis) = if small[2] && (!small[0] || !small[1]) {
@@ -709,13 +727,13 @@ fn line_object_frame(line: LineSegment, tolerance: Tolerance) -> Result<Frame3, 
             Vector3::try_new(1.0, 0.0, 0.0)?,
         )
     } else {
-        let perpendicular = Frame3::try_from_normal(line.start(), direction, tolerance)?;
+        let perpendicular = Frame3::try_from_unit_normal(line.start(), direction_unit)?;
         (direction, perpendicular.x_axis().as_vector())
     };
-    Ok(Frame3::try_from_directions(
+    Ok(Frame3::try_from_unit_directions(
         line.start(),
-        x_axis,
-        y_axis,
+        x_axis.normalized_nonzero()?,
+        y_axis.normalized_nonzero()?,
         tolerance,
     )?)
 }
@@ -737,10 +755,10 @@ fn curve_object_frame(
         .tangent()
         .as_vector();
     if let Some(center) = nurbs.circular_center(tolerance)? {
-        return Ok(Frame3::try_from_directions(
+        return Ok(Frame3::try_from_unit_directions(
             center,
-            center.vector_to(origin)?,
-            tangent,
+            center.vector_to(origin)?.normalized_nonzero()?,
+            tangent.normalized_nonzero()?,
             tolerance,
         )?);
     }
@@ -752,11 +770,16 @@ fn curve_object_frame(
         {
             curvature
         } else {
-            Frame3::try_from_normal(origin, tangent, tolerance)?
+            Frame3::try_from_unit_normal(origin, tangent.normalized_nonzero()?)?
                 .x_axis()
                 .as_vector()
         };
-        return Ok(Frame3::try_from_directions(origin, tangent, y, tolerance)?);
+        return Ok(Frame3::try_from_unit_directions(
+            origin,
+            tangent.normalized_nonzero()?,
+            y.normalized_nonzero()?,
+            tolerance,
+        )?);
     }
     let controls = nurbs.control_points();
     // ON_NurbsCurve::IsPlanar tests the largest triangle anchored at the
@@ -777,10 +800,10 @@ fn curve_object_frame(
         }
     }
     let normal = normal.ok_or(PlaneCommandError::UnsupportedObject)?;
-    Ok(Frame3::try_from_directions(
+    Ok(Frame3::try_from_unit_x_and_normal(
         origin,
-        tangent,
-        normal.cross(tangent)?,
+        tangent.normalized_nonzero()?,
+        normal.normalized_nonzero()?,
         tolerance,
     )?)
 }
@@ -831,8 +854,11 @@ fn polycurve_object_frame(
             }
             let dot = (tangent.dot(offset)? / length).abs();
             if dot < parallel_cosine {
-                return Ok(Frame3::try_from_directions(
-                    origin, tangent, offset, tolerance,
+                return Ok(Frame3::try_from_unit_directions(
+                    origin,
+                    tangent.normalized_nonzero()?,
+                    offset.normalized_nonzero()?,
+                    tolerance,
                 )?);
             }
             if dot < best_dot {
@@ -842,8 +868,11 @@ fn polycurve_object_frame(
         }
     }
     if let Some(offset) = best_parallel {
-        return Ok(Frame3::try_from_directions(
-            origin, tangent, offset, tolerance,
+        return Ok(Frame3::try_from_unit_directions(
+            origin,
+            tangent.normalized_nonzero()?,
+            offset.normalized_nonzero()?,
+            tolerance,
         )?);
     }
     for segment in polycurve.segments().iter().skip(1) {
@@ -853,8 +882,11 @@ fn polycurve_object_frame(
         if offset.length()? > 0.0
             && tangent.cross(offset)?.length()? > tolerance.angular() * offset.length()?
         {
-            return Ok(Frame3::try_from_directions(
-                origin, tangent, offset, tolerance,
+            return Ok(Frame3::try_from_unit_directions(
+                origin,
+                tangent.normalized_nonzero()?,
+                offset.normalized_nonzero()?,
+                tolerance,
             )?);
         }
     }
@@ -864,7 +896,7 @@ fn polycurve_object_frame(
 pub fn frame_from_mesh_face(
     mesh: &TriangleMesh,
     face_index: usize,
-    tolerance: Tolerance,
+    _tolerance: Tolerance,
 ) -> Result<Frame3, PlaneCommandError> {
     let face = mesh
         .faces()
@@ -885,10 +917,9 @@ pub fn frame_from_mesh_face(
     // been stored as f32, then normalize that stored direction for the frame.
     let normal = mesh.polygon_face_normal(face_index)?.as_vector().to_array();
     let stored_normal = Vector3::try_from(normal.map(|component| (component as f32) as f64))?;
-    Ok(Frame3::try_from_normal(
+    Ok(Frame3::try_from_unit_normal(
         Point3::try_from(center)?,
-        stored_normal,
-        tolerance,
+        stored_normal.normalized_nonzero()?,
     )?)
 }
 
@@ -911,7 +942,7 @@ pub fn rotated_by_reference_points(
     tolerance: Tolerance,
 ) -> Result<Frame3, GeometryError> {
     let axis = start.vector_to(end)?.normalized(tolerance)?;
-    let frame = Frame3::try_from_normal(start, axis.as_vector(), tolerance)?;
+    let frame = Frame3::try_from_unit_normal(start, axis)?;
     let projected_unit = |point: Point3| -> Result<[f64; 2], GeometryError> {
         let [x, y, _] = frame.coordinates_of(point)?;
         let vector = Vector3::try_new(x, y, 0.0)?.normalized(tolerance)?;
@@ -934,10 +965,14 @@ fn rotated_radians(
 ) -> Result<Frame3, GeometryError> {
     let axis = start.vector_to(end)?.normalized(tolerance)?;
     let transform = AffineTransform3::try_rotation(start, axis, angle)?;
-    Frame3::try_from_directions(
+    Frame3::try_from_unit_directions(
         transform.transform_point(plane.origin())?,
-        transform.transform_vector(plane.x_axis().as_vector())?,
-        transform.transform_vector(plane.y_axis().as_vector())?,
+        transform
+            .transform_vector(plane.x_axis().as_vector())?
+            .normalized_nonzero()?,
+        transform
+            .transform_vector(plane.y_axis().as_vector())?
+            .normalized_nonzero()?,
         tolerance,
     )
 }

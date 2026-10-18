@@ -215,7 +215,6 @@
     "crates/viboceros-geometry/src/nurbs_surface/grips.rs": "1432ed9695c5448544ba2e023d2a95b44b4e4f829411b4f049a6610c620f99bc",
     "docs/curvature-graph-validation.json": "21617a612175f7165b4d4146d0d4316c7f60200f7ab3b046daf48d1fc158375e",
     "docs/edit-points-qualification.json": "42c67c74abc8bc872cf26c4b4d54db1621f6cb8305daaf677dde97acfd5afbe5",
-    "docs/orient-points-validation.json": "43ce2695092cda27fab6772fc9e3988d503bf9632edaeed1949a101d770a3ef8",
     "docs/point-selection-qualification.json": "64caa03bbce227928e635c069f1c7e8f6c7686468dcfd9069d4ed1ab6ebe689c",
     "docs/set-point-grips-qualification.json": "03b9f00005a9e14ae4035471650b4cca6fb5a9c934d9c8fb1bfc70a209ec77df",
     "docs/set-point-preview-qualification.json": "6adb46f577442a2e62eb112ef509fb5ea2f59386a7a475ef493cfd897336d340",
@@ -250,6 +249,7 @@
     "329f872a16919c12f94566186d7d2248db675ed1:src/app/transform_sources.rs": "5d17f42b1a372aea9b8b0e336b54ec3229a0cf687e1dc93f886919ab8146cb21",
     "e1609e6c150d0e26f9d0d0e9f80e8654f677dfd7:docs/sphere-fit-points-validation.json": "8f3c2c8ca53e5627120e48d7c1241691df5364829577759954ebae06f966431d",
     "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/line-through-points-validation.json": "0d175866fb3fe7c882d438a4197ea21c90bb8014771e28a444d141c4ee4df76d",
-    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/plane-through-points-validation.json": "2cdd76a9153edcc872ae61100fa47e7db1fce4fec3cfcb3f580ce67356382892"
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/plane-through-points-validation.json": "2cdd76a9153edcc872ae61100fa47e7db1fce4fec3cfcb3f580ce67356382892",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:docs/orient-points-validation.json": "43ce2695092cda27fab6772fc9e3988d503bf9632edaeed1949a101d770a3ef8"
   }
 }

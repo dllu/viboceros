@@ -480,11 +480,13 @@ impl Input {
             .start
             .ok_or_else(|| invalid("axis start is required"))?;
         let normal = if let Some(rail) = &self.rail {
-            rail.ends[0].tangent().as_vector()
+            rail.ends[0].tangent()
         } else if self.axis == Axis::Flat {
-            self.plane.z_axis().as_vector()
+            self.plane.z_axis()
         } else {
-            start.vector_to(self.end.ok_or_else(|| invalid("axis end is required"))?)?
+            start
+                .vector_to(self.end.ok_or_else(|| invalid("axis end is required"))?)?
+                .normalized(self.tolerance)?
         };
         axial_primitive_frame(
             start,

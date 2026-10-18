@@ -2418,8 +2418,8 @@ impl Brep {
         let height_domain = wall.domain_v();
         let low_height = *height_domain.start();
         let high_height = *height_domain.end();
-        let low_frame = frame_at_height(frame, low_height, tolerance)?;
-        let high_frame = frame_at_height(frame, high_height, tolerance)?;
+        let low_frame = frame_at_height(frame, low_height)?;
+        let high_frame = frame_at_height(frame, high_height)?;
         let u_domain = wall.domain_u();
         let low_seam = wall.evaluate(*u_domain.start(), low_height)?;
         let high_seam = wall.evaluate(*u_domain.start(), high_height)?;
@@ -2525,7 +2525,7 @@ impl Brep {
             [outer_domain_end, inner_domain_end],
             true,
         )?;
-        let end_frame = frame_at_height(frame, height, tolerance)?;
+        let end_frame = frame_at_height(frame, height)?;
         let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
         let cap_bounds = [[-cap_extent, cap_extent], [-cap_extent, cap_extent]];
         let start_cap = planar_cap_surface(frame, zero, cap_bounds)?;
@@ -2630,8 +2630,7 @@ impl Brep {
         let inner = radii[0].min(radii[1]);
         let outer = radii[0].max(radii[1]);
         let first_cap = NurbsSurface::try_annulus(frame, inner, outer)?;
-        let last_cap =
-            NurbsSurface::try_annulus(frame_at_height(frame, height, tolerance)?, inner, outer)?;
+        let last_cap = NurbsSurface::try_annulus(frame_at_height(frame, height)?, inner, outer)?;
         tube.edges.push(BrepEdge::try_new(
             [0, 2],
             LineSegment::try_new(
@@ -2689,11 +2688,11 @@ impl Brep {
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let wall = NurbsSurface::try_truncated_cone(frame, radii, height)?;
-        let end_frame = frame_at_height(frame, height, tolerance)?;
-        let base_cap_frame = Frame3::try_from_directions(
+        let end_frame = frame_at_height(frame, height)?;
+        let base_cap_frame = Frame3::try_from_unit_directions(
             frame.origin(),
-            frame.x_axis().as_vector(),
-            frame.y_axis().as_vector().scaled(-1.0)?,
+            frame.x_axis(),
+            frame.y_axis().opposite(),
             tolerance,
         )?;
         let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
@@ -2769,7 +2768,7 @@ impl Brep {
         height: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        let apex_frame = frame_at_height(base_frame, height, tolerance)?;
+        let apex_frame = frame_at_height(base_frame, height)?;
         let wall = NurbsSurface::try_cone(apex_frame, radius, -height)?;
         let u_domain = wall.domain_u();
         let base_parameter = -height;
@@ -2880,7 +2879,7 @@ impl Brep {
         )?;
         let mut faces = vec![BrepFace::try_new(wall, false, vec![wall_loop])?];
         if solid {
-            let cap_frame = frame_at_height(vertex_frame, height, tolerance)?;
+            let cap_frame = frame_at_height(vertex_frame, height)?;
             let cap = planar_cap_surface(
                 cap_frame,
                 Vector3::try_new(0.0, 0.0, 0.0)?,
@@ -7038,10 +7037,10 @@ fn fitted_polygon_cap_frame(
         (points[0].y() + points[1].y() + points[2].y()) / 3.0,
         (points[0].z() + points[1].z() + points[2].z()) / 3.0,
     )?;
-    Frame3::try_from_x_and_normal(
+    Frame3::try_from_unit_x_and_normal(
         origin,
-        points[0].vector_to(points[1])?,
-        normal.as_vector(),
+        points[0].vector_to(points[1])?.normalized(tolerance)?,
+        normal,
         tolerance,
     )
 }
@@ -7940,20 +7939,11 @@ fn cap_closure_tolerance(
     Ok(maximum)
 }
 
-fn frame_at_height(
-    frame: Frame3,
-    height: Real,
-    tolerance: Tolerance,
-) -> Result<Frame3, GeometryError> {
+fn frame_at_height(frame: Frame3, height: Real) -> Result<Frame3, GeometryError> {
     let origin = frame
         .origin()
         .translated(frame.z_axis().as_vector().scaled(height)?)?;
-    Frame3::try_from_directions(
-        origin,
-        frame.x_axis().as_vector(),
-        frame.y_axis().as_vector(),
-        tolerance,
-    )
+    Ok(frame.with_origin(origin))
 }
 
 fn surface_u_control_curve(

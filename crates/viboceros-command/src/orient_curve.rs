@@ -274,22 +274,21 @@ impl Placement {
             y = y.opposite();
             z = z.opposite();
         }
-        let mut target = Frame3::try_from_directions(
-            frame.origin(),
-            x.as_vector(),
-            y.as_vector(),
-            self.tolerance,
-        )?;
+        let mut target = Frame3::try_from_unit_directions(frame.origin(), x, y, self.tolerance)?;
         if self.options.rotation != 0. {
             let rotation = AffineTransform3::try_rotation(
                 frame.origin(),
                 z,
                 self.options.rotation.to_radians(),
             )?;
-            target = Frame3::try_from_directions(
+            target = Frame3::try_from_unit_directions(
                 frame.origin(),
-                rotation.transform_vector(target.x_axis().as_vector())?,
-                rotation.transform_vector(target.y_axis().as_vector())?,
+                rotation
+                    .transform_vector(target.x_axis().as_vector())?
+                    .normalized_nonzero()?,
+                rotation
+                    .transform_vector(target.y_axis().as_vector())?
+                    .normalized_nonzero()?,
                 self.tolerance,
             )?;
         }
@@ -342,8 +341,7 @@ fn curve_frame(
         let seed = if cross.length()? > 64. * Real::EPSILON {
             cross.normalized_nonzero()?
         } else {
-            Frame3::try_from_normal(curve.evaluate(start)?, tangent.as_vector(), tolerance)?
-                .x_axis()
+            Frame3::try_from_unit_normal(curve.evaluate(start)?, tangent)?.x_axis()
         };
         let parameters = if parameter == start {
             vec![start]
@@ -362,10 +360,10 @@ fn curve_frame(
             )?
             .pop()
             .unwrap();
-        return Frame3::try_from_directions(
+        return Frame3::try_from_unit_directions(
             frame.origin(),
-            frame.z_axis().as_vector(),
-            frame.x_axis().as_vector(),
+            frame.z_axis(),
+            frame.x_axis(),
             tolerance,
         );
     }
@@ -383,12 +381,7 @@ fn curve_frame(
     } else {
         unreachable!("spatial curve frames are transported above")
     };
-    Frame3::try_from_directions(
-        sample.point(),
-        sample.tangent().as_vector(),
-        y.as_vector(),
-        tolerance,
-    )
+    Frame3::try_from_unit_directions(sample.point(), sample.tangent(), y, tolerance)
 }
 
 #[derive(Default)]

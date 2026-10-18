@@ -259,7 +259,7 @@ fn canonicalize(
         .find(|v| *v != 0.)
         .is_some_and(|v| v < 0.);
     let seam_frame = if reverse {
-        Frame3::try_from_normal(frame.origin(), normal.scaled(-1.)?, tolerance)?
+        Frame3::try_from_unit_normal(frame.origin(), frame.z_axis().opposite())?
     } else {
         frame
     };

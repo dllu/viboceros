@@ -395,7 +395,6 @@
     "preexisting_unverifiable_records_unchanged": 69
   },
   "sha256": {
-    "crates/viboceros-command/src/spiral_input.rs": "eb38a303403cbfa9d23e24ffbedc40bd2956be998790ab17d8a340e66308710d",
     "crates/viboceros-command/src/spiral_input/rail.rs": "e93e58a6d99bd0eb4f0b45ec3eba9190bfdfedee1e9d3762596226e3af3fabad",
     "crates/viboceros-geometry/src/interpolation/periodic_uniform.rs": "e05a2f925f8359f6eb41d1d657588802d56e3e76457e7b38aeca5591c4a7cb04",
     "crates/viboceros-geometry/src/spiral.rs": "885d4d985accadfb49df417331d3a80a8a0dd217c8b4e9437e80dbaf62e0b2d5",
@@ -437,6 +436,7 @@
     "dbb6bf38e387d24a920d7452e338284261d24406:src/app/component_selection.rs": "279a8fc0815881916b199568280b84910d3847263109df96cde2019825605ec1",
     "dbb6bf38e387d24a920d7452e338284261d24406:tools/rhino_oracle/spiral_command_probe.py": "18b5afb7a04ede25c1132c723ae2b4474e9d7db76dcd908bc134fdcba79ec9cf",
     "dbb6bf38e387d24a920d7452e338284261d24406:tools/rhino_oracle/test_spiral_command.py": "b9e8e9d2a0f13c637d59d822cd7d7f92b3d61238969452673dc97464d3c6cf8a",
-    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:src/app/object_selection.rs": "65ee720e2f970cb480f87770ced8a02f5e795f3f75c4af8761088b90e23998f9"
+    "00eb63a35ed0cc55ad9116f35eb56fbd6261cb35:src/app/object_selection.rs": "65ee720e2f970cb480f87770ced8a02f5e795f3f75c4af8761088b90e23998f9",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/spiral_input.rs": "eb38a303403cbfa9d23e24ffbedc40bd2956be998790ab17d8a340e66308710d"
   }
 }

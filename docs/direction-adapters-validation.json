@@ -1,0 +1,251 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097",
+  "problem": "Explicit primitive directions, stored frame axes and UV derivatives were subject to model-distance admission, rejecting valid commands after equivalent changes of units or direction magnitude.",
+  "implementation": [
+    "Add typed direction-pair and X/normal frame constructors with the existing sine-angle admission, retaining supplied X exactly and using cross-based projection.",
+    "Parse primitive Axis options as UnitVector3; retain model-distance admission on point-defined axis displacements and projected radius picks.",
+    "Translate cap frames without rebuilding their axes; use typed normals for signed-height frames and polygon caps, retaining polygon-edge distance checks.",
+    "Use typed directions for construction-plane object/tangent frames, rotations, surface derivatives, OrientOnCrv placement, antiparallel Orient frames and contour seam normals."
+  ],
+  "matrix": {
+    "model_scale_exponents": [
+      -20,
+      0,
+      20,
+      40,
+      80
+    ],
+    "absolute_tolerance": "1e-7 times scale",
+    "relative_tolerance": 1e-12,
+    "angular_tolerance": 1e-09,
+    "explicit_axis": [
+      2,
+      3,
+      6
+    ],
+    "axis_magnitude_exponents": [
+      -200,
+      0,
+      200
+    ],
+    "UV_domain_width_exponents": [
+      -200,
+      0,
+      200
+    ]
+  },
+  "baseline": {
+    "run": {
+      "command": "cargo test -p viboceros-command --test direction_adapters -- --nocapture",
+      "exit_code": 101,
+      "retained_log": "docs/direction-adapters-baseline.log.gz",
+      "uncompressed_log_sha256": "1681e633afa512f09a36ca56bee2d4dcb9362b95d59634d76395d006f28f5371",
+      "passed": 0,
+      "failed": 2,
+      "ignored": 0
+    },
+    "primitive_cases": 360,
+    "primitive_successful": 164,
+    "primitive_failed": 196,
+    "construction_plane_cases": 65,
+    "construction_plane_successful": 41,
+    "construction_plane_failed": 24,
+    "test_source": "docs/direction-adapters-baseline-test.rs.gz",
+    "uncompressed_test_source_sha256": "db2dc773ca9977b94c238d3564f8411ae91438819a6455910f69725a36b727cc",
+    "replay": "Check out the baseline revision in an isolated checkout and decompress the retained test source into crates/viboceros-command/tests/direction_adapters.rs. Run the recorded baseline command. This source uses only baseline APIs and contains the two original matrices."
+  },
+  "candidate": {
+    "primitive_cases": 360,
+    "construction_plane_cases": 65,
+    "helix_spiral_cases": 25,
+    "curve_guided_placement_cases": 45,
+    "expected_rejection_cases": 70,
+    "all_cases": 565,
+    "failed_cases": 0
+  },
+  "geometry_assertions": {
+    "primitive_samples": "analytic cylinder/cone/frustum/sphere/torus equations, closed mesh topology or normalized solid volumes",
+    "normalized_surface_or_vertex_residual_limit": 1e-10,
+    "normalized_solid_volume_error_limit": 1e-06,
+    "expected_volumes": {
+      "cylinder": "12*pi",
+      "tube": "9*pi",
+      "pyramid": 8,
+      "truncated_pyramid": 14
+    },
+    "axis_magnitude_variation": "exactly equal geometry",
+    "undo_redo": "exact objects, including geometry and identity",
+    "surface_parameter_variation": "frame origin normalized error <1e-12 and corresponding-axis dot >1-1e-12; source surface unchanged",
+    "helix_spiral": "analytic interpolation stations normalized point error <1e-12; sampled between-station helix radial error <1e-6, endpoint and plane checks retained",
+    "curve_placement": "tangent alignment and rigid normalized distances within 1e-12; line/circle/spatial guide, perpendicular/flip/rotation options",
+    "rejected_commands": "objects, selection and both history directions preserved"
+  },
+  "kernel_frame_assertions": {
+    "absolute_tolerances": [
+      1e-24,
+      1e-07,
+      0.1,
+      1,
+      1e+17,
+      1e+100
+    ],
+    "angular_threshold": 1e-09,
+    "near_parallel_separations": [
+      0,
+      5e-10,
+      2e-09,
+      1e-06
+    ],
+    "acceptance": [
+      false,
+      false,
+      true,
+      true
+    ],
+    "exact_retention": [
+      "origin",
+      "supplied X"
+    ],
+    "orthogonality_dot_absolute_limit": "16 machine epsilons",
+    "raw_vector_distance_rejection": "retained"
+  },
+  "completed_runs": [
+    {
+      "command": "cargo test -p viboceros-command --test direction_adapters -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/direction-adapters-focused.log.gz",
+      "uncompressed_log_sha256": "40b2db7992112a4448e45f256012b807836fd2a37491920632427ad2bf8bbd46",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --test direction_frames -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/direction-adapters-frames.log.gz",
+      "uncompressed_log_sha256": "0f31e724e61b33291f642685ff9b80f07efdca0897a95f51c5ed255a46bc306d",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-geometry -p viboceros-command --features viboceros-command/native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/direction-adapters-full-release.log.gz",
+      "uncompressed_log_sha256": "af1ad3ed76c8c325130e994a6d269d6414e6d8cabd926e3895570bbf3cc90ace",
+      "passed": 3977,
+      "failed": 0,
+      "ignored": 11
+    },
+    {
+      "command": "cargo test --release --bin viboceros -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/direction-adapters-app-release.log.gz",
+      "uncompressed_log_sha256": "49be7c2cc42b960b2363154be7682b57673ff9dca046b372475b802eda98f73b",
+      "passed": 1375,
+      "failed": 0,
+      "ignored": 19
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained_log": "docs/direction-adapters-clippy.log.gz",
+      "uncompressed_log_sha256": "109b92b9e90f6b4b6ae927505726574d11be2343cd433da1ad5cb3959f688185"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained_log": "docs/direction-adapters-fmt.log.gz",
+      "uncompressed_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_release_sections": [
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_command-dc4b87f7d01e2a4e)",
+      "summary": "test result: ok. 1579 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 107.64s"
+    },
+    {
+      "header": "Running tests/direction_adapters.rs (target/release/deps/direction_adapters-874e97ceb405d0e2)",
+      "summary": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-a159ed14312ccb02)",
+      "summary": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+    },
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_geometry-8704133541059e5f)",
+      "summary": "test result: ok. 2380 passed; 0 failed; 8 ignored; 0 measured; 0 filtered out; finished in 18.83s"
+    },
+    {
+      "header": "Running tests/direction_frames.rs (target/release/deps/direction_frames-138a83af0bbf186d)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/planar_boolean_scale.rs (target/release/deps/planar_boolean_scale-3ea37b1a5b00911b)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-85517c4bb1d9ab3f)",
+      "summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s"
+    },
+    {
+      "header": "Doc-tests viboceros_command",
+      "summary": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Doc-tests viboceros_geometry",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 10,
+    "records": 6,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "log_policy": "Gzip files retain all original Cargo output bytes. Exit codes are the observed process statuses. The initial focused helix test incorrectly required exact radius between cubic interpolation stations; the final test checks analytic station positions and the existing cubic approximation separately. No production helix approximation change was needed.",
+  "limitations": [
+    "No new licensed Rhino capture or performance measurement; retained native observations remain exercised by the full suite.",
+    "The angular threshold retains the existing frame-style sine-angle policy; arbitrary angular degeneracies and model scales are not qualified.",
+    "This covers the recorded primitive, construction-plane and orientation adapters. Other direction consumers, including the kernel surface frame_at helper, remain outside this correction.",
+    "General modeling topology, viewport pixel parity and complete Rhino command parity are not established by these cases."
+  ],
+  "source_sha256": {
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/brep.rs": "55297e3b4843abfff0ae532f1b4ea40dfac1c52f03222bd45cd0aec408ac6aba",
+    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "crates/viboceros-geometry/tests/direction_frames.rs": "51b0b0a34664342c63ea9cf1cf37c3d62f92b5196a1ac71c4ff58692f434c630",
+    "crates/viboceros-command/src/lib.rs": "194a637d2acca12a50947fabc259b09978d0d9c2a8f7db4c0c15edcbcde586d7",
+    "crates/viboceros-command/src/construction_plane.rs": "af26cf1f1e9cad0a2b1428826b6237f22a5dbc7458dfa6ae162a1d1c617052c2",
+    "crates/viboceros-command/src/contour/brep.rs": "85e8f4877fa00aa73fb92b6a40211cf4dc06e6eb414f10f8088de56773363794",
+    "crates/viboceros-command/src/orient_curve.rs": "698e1999d424f88b05245a943a3478e98f7fcab14f1e39b4ab71a465b9717e8c",
+    "crates/viboceros-command/src/orient_points.rs": "709e1c81a3c8d64bbd550d09e8cfd5c5ba5c5af795207c33004e41ad9254878f",
+    "crates/viboceros-command/src/spiral_input.rs": "06a7e8cd1e1151ee073b88bd376790ae01e43afadb3e35a11d19f8572926d550",
+    "crates/viboceros-command/tests/direction_adapters.rs": "d09a8c8cacbac1fc9b426f5afaafb6d806c1937f703ab5b9f6a1aabb16d758e3",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "README.md": "43e00d00ca513765c2c0844728dcf5a932d63c774301404f0a5cf4eb384f74b6",
+    "docs/direction-adapters.md": "d5d8c97965b1a0e199b3c806c3e4a18b8d9ab09205e50eea55f02506e3d270eb",
+    "docs/direction-adapters-baseline-test.rs.gz": "3abf96b988f93d20c696984a34be3991b9b7c570482bba1c17b716a9917ba6a9",
+    "docs/direction-adapters-baseline.log.gz": "5f4c12941054ddd55e3ab6df9b4193e4552fda9a3d2efe708039a9eb477fbbcd",
+    "docs/direction-adapters-focused.log.gz": "34b50ac7e78aabaed5a447667f75bb70b0a45f6e3f1b7f420c2277e9dc33d08d",
+    "docs/direction-adapters-frames.log.gz": "c06190d2dcaf97dd10f04bb72626b02e040bf61e1703708c9767c7bdc1dcc259",
+    "docs/direction-adapters-full-release.log.gz": "4e3fe577d88c8574721ce221eed4a85c5a3e776346c2e6236c5faa6da4a2de1d",
+    "docs/direction-adapters-app-release.log.gz": "24a8fb1d5a3e14564dded04e939c915e0c04d605e343ff84efdcd211887e6067",
+    "docs/direction-adapters-clippy.log.gz": "5773586f5c99ef71b3d79522f27c48486bd8c9153d7e83519fccdb530c93551c",
+    "docs/direction-adapters-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+  },
+  "baseline_git_sha256": {
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-geometry/src/frame.rs": "ebccd74e9f151b1aff6ee287a52a541b4feaa0b8282ba79f71e176abc8896ebd",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-geometry/src/brep.rs": "be4390a80dafe15e65f7e3eaac6dbc64871b7d6fb3515c69c81fd50d93c76cd8",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/lib.rs": "0a1a82c04ecaea6e94277139ebdfbe3ee6461bd59c0eabf7b63772aee0aa303b",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/construction_plane.rs": "8b1ce8bf47825d94140d0eb23b3bacada7cfa4293cf8fbf3eb6147a94b15c09f",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/contour/brep.rs": "d8092795e307150ba9c16b27fe0b81096e1729dfc87e7f913de41159f0f65f41",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/orient_curve.rs": "46a450e2b8dd936a73196d92e4d8b11e83445e0d661bb2d306f6368203f7610a",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/orient_points.rs": "ec422490eb48e0e7c72724be015167431145143e2895d413b666b251c5caa7a4",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:crates/viboceros-command/src/spiral_input.rs": "eb38a303403cbfa9d23e24ffbedc40bd2956be998790ab17d8a340e66308710d",
+    "e1c2afa3ff9a1a36619ea0bf2771e018b20d7097:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}

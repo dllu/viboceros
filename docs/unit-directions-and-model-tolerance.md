@@ -57,10 +57,10 @@ case-insensitive prefix now correctly expects `ExtrudeCrvTapered` followed by
 See the [validation record](unit-direction-validation.json) for retained
 baseline/candidate logs, exact source hashes and completed suite results.
 This is analytic and retained-capture regression evidence, with no new Rhino
-capture or performance claim. Other raw-direction adapters, including axial
-primitive direction options and some construction-plane/orientation helpers,
-still require a separate dimensional-policy audit. Arbitrary scales, angular
-degeneracies and general modeling topology are not established by these cases.
+capture or performance claim. The follow-up [direction-adapter correction](direction-adapters.md)
+covers axial primitive options and construction-plane/orientation helpers.
+Arbitrary scales, angular degeneracies and general modeling topology are not
+established by these cases.
 
 ```sh
 cargo test -p viboceros-geometry --test unit_direction_scale --test planar_boolean_scale
