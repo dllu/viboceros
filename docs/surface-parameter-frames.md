@@ -52,8 +52,8 @@ sources, complete logs and source hashes. Existing native observations remain
 part of the full suite; these matrices add analytic evidence, with no new Rhino
 capture or performance measurement. They do not establish arbitrary parameter
 or model scales, general surface singularity handling, all morph consumers,
-or general topology. Other derivative consumers, including surface pullback,
-remain outside this correction.
+or general topology. The follow-up [pullback correction](pullback-parameter-units.md)
+covers the regular pullback differential, source-span sampling and UV borders.
 
 ```sh
 cargo test -p viboceros-geometry --test surface_parameter_frames

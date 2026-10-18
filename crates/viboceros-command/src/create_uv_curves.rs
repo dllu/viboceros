@@ -243,14 +243,14 @@ impl Chart<'_> {
         if curves.len() == 1 {
             return Ok(Geometry::NurbsCurve(curves[0].clone()));
         }
-        let mut t = *curves[0].domain().start();
-        let mut segments = Vec::new();
-        for curve in curves {
-            let end = t + (*curve.domain().end() - *curve.domain().start());
-            segments.push(curve.try_reparameterized(t..=end)?);
-            t = end;
-        }
         let _ = tolerance;
-        Ok(Geometry::PolyCurve(PolyCurve3::try_new(segments)?))
+        // Keep each trim's local knots. Independent U/V units can make
+        // cumulative outer intervals collapse or overflow; bounded outer
+        // segment indices still represent every unchanged local curve.
+        let polycurve = PolyCurve3::try_new(curves.clone()).or_else(|_| {
+            let parameters = (0..=curves.len()).map(|i| i as Real).collect();
+            PolyCurve3::try_with_segment_domains(curves, parameters)
+        })?;
+        Ok(Geometry::PolyCurve(polycurve))
     }
 }

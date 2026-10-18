@@ -1,6 +1,7 @@
 use crate::{
-    GeometryError, MAX_CURVE_DIVISION_POINTS, NurbsCurve, NurbsCurve2, NurbsSurface, Point2,
-    Point3, Real, Tolerance, Vector3, WeightedPoint2, require_finite,
+    Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, NurbsCurve, NurbsCurve2,
+    NurbsCurveSamplingSpan, NurbsSurface, Point2, Point3, Real, Tolerance, Vector3, WeightedPoint2,
+    remap_scalar, require_finite,
 };
 mod certificate;
 pub use certificate::PreparedSurfaceCurveBounds;
@@ -19,7 +20,8 @@ const MAX_PULLBACK_SEGMENTS: usize = (MAX_CURVE_DIVISION_POINTS - 1) / PULLBACK_
 struct PullbackNode {
     parameter: Real,
     point: Point2,
-    derivative: [Real; 2],
+    // Model-space derivative with respect to this original span's fraction.
+    derivative: Vector3,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -31,7 +33,8 @@ struct PullbackSegment {
 
 struct PullbackFitter<'a> {
     surface: &'a NurbsSurface,
-    curve: &'a NurbsCurve,
+    span: NurbsCurveSamplingSpan<'a>,
+    native_domain: [Real; 2],
     tolerance: Tolerance,
     numerical_tolerance: Tolerance,
     segments: Vec<PullbackSegment>,
@@ -54,11 +57,15 @@ fn model_points_near(
 }
 
 fn snap_domain_roundoff(parameter: Real, domain: [Real; 2]) -> Real {
-    let scale = domain[0].abs().max(domain[1].abs()).max(1.0);
-    let epsilon = 4096.0 * Real::EPSILON * scale;
-    if (parameter - domain[0]).abs() <= epsilon {
+    // Roundoff is relative to chart width, not model units or the chart's
+    // absolute origin. A large origin must not swallow valid interior picks.
+    let Ok(fraction) = remap_scalar(parameter, domain, [0., 1.]) else {
+        return parameter;
+    };
+    let epsilon = 4096. * Real::EPSILON;
+    if fraction.abs() <= epsilon {
         domain[0]
-    } else if (parameter - domain[1]).abs() <= epsilon {
+    } else if (fraction - 1.).abs() <= epsilon {
         domain[1]
     } else {
         parameter
@@ -80,51 +87,37 @@ fn numerical_pullback_tolerance(tolerance: Tolerance) -> Result<Tolerance, Geome
     )
 }
 
-fn subtract_scaled_vector(
-    vector: Vector3,
-    direction: Vector3,
-    scale: Real,
-) -> Result<Vector3, GeometryError> {
-    let vector = vector.to_array();
-    let direction = direction.to_array();
-    Vector3::try_new(
-        (-scale).mul_add(direction[0], vector[0]),
-        (-scale).mul_add(direction[1], vector[1]),
-        (-scale).mul_add(direction[2], vector[2]),
-    )
-}
-
-fn pullback_derivative(
+fn pullback_step(
     surface: &NurbsSurface,
     point: Point2,
-    model_derivative: Vector3,
+    model_step: Vector3,
     tolerance: Tolerance,
 ) -> Result<[Real; 2], GeometryError> {
-    let (_, derivative_u, derivative_v) =
+    let (origin, derivative_u, derivative_v) =
         surface.evaluate_with_derivatives(point.x(), point.y())?;
-    let u_speed = derivative_u.length()?;
-    let u_axis = derivative_u.normalized(tolerance)?.as_vector();
-    let v_along_u = derivative_v.dot(u_axis)?;
-    let v_perpendicular = subtract_scaled_vector(derivative_v, u_axis, v_along_u)?;
-    let v_speed = v_perpendicular.length()?;
-    let v_axis = v_perpendicular.normalized(tolerance)?.as_vector();
-    let derivative_v_parameter = model_derivative.dot(v_axis)? / v_speed;
-    let derivative_u_parameter =
-        (model_derivative.dot(u_axis)? - v_along_u * derivative_v_parameter) / u_speed;
-    let derivative = [derivative_u_parameter, derivative_v_parameter];
-    require_finite(derivative, "surface pullback derivative")?;
-    Ok(derivative)
+    let u = derivative_u.normalized_nonzero()?;
+    let v = derivative_v.normalized_nonzero()?;
+    let frame = Frame3::try_from_unit_directions(origin, u, v, tolerance)?;
+    let cosine = u.as_vector().dot(v.as_vector())?;
+    let sine = u.as_vector().cross(v.as_vector())?.length()?;
+    let v_motion = model_step.dot(frame.y_axis().as_vector())? / sine;
+    let u_motion = (-cosine).mul_add(v_motion, model_step.dot(u.as_vector())?);
+    let step = [
+        derivative_u.parameter_step(u_motion),
+        derivative_v.parameter_step(v_motion),
+    ];
+    require_finite(step, "surface pullback parameter step")?;
+    Ok(step)
 }
 
 fn pullback_node(
     surface: &NurbsSurface,
-    curve: &NurbsCurve,
-    parameter: Real,
-    derivative_parameter: Real,
+    span: NurbsCurveSamplingSpan<'_>,
+    fraction: Real,
     tolerance: Tolerance,
     numerical_tolerance: Tolerance,
 ) -> Result<PullbackNode, GeometryError> {
-    let model_point = curve.evaluate(parameter)?;
+    let (model_point, derivative) = span.evaluate_with_derivative(fraction)?;
     let point = pullback_parameters(surface, model_point, numerical_tolerance)?;
     if !model_points_near(
         surface.evaluate(point.x(), point.y())?,
@@ -135,11 +128,10 @@ fn pullback_node(
             context: "curve must lie on the surface for parameter-space pullback",
         });
     }
-    let (_, model_derivative) = curve.evaluate_with_derivative(derivative_parameter)?;
     Ok(PullbackNode {
-        parameter,
+        parameter: fraction,
         point,
-        derivative: pullback_derivative(surface, point, model_derivative, numerical_tolerance)?,
+        derivative,
     })
 }
 
@@ -158,55 +150,65 @@ fn pullback_parameters(
 }
 
 fn hermite_segment(
+    surface: &NurbsSurface,
     start: PullbackNode,
     end: PullbackNode,
+    native_domain: [Real; 2],
+    tolerance: Tolerance,
 ) -> Result<PullbackSegment, GeometryError> {
     let extent = end.parameter - start.parameter;
-    require_finite([extent], "surface pullback span extent")?;
-    if extent <= 0.0 {
+    if extent <= 0. {
         return Err(GeometryError::InvalidKnotVector {
             context: "surface pullback span must advance",
         });
     }
-    let handle_scale = extent / PULLBACK_DEGREE as Real;
-    let first_handle = Point2::try_new(
-        start.derivative[0].mul_add(handle_scale, start.point.x()),
-        start.derivative[1].mul_add(handle_scale, start.point.y()),
+    // Scale the fractional model derivative before solving for UV motion.
+    // Neither a native dUV/dt nor a native model-space speed need fit in f64.
+    let first = pullback_step(
+        surface,
+        start.point,
+        start.derivative.scaled(extent / 3.)?,
+        tolerance,
     )?;
-    let second_handle = Point2::try_new(
-        (-end.derivative[0]).mul_add(handle_scale, end.point.x()),
-        (-end.derivative[1]).mul_add(handle_scale, end.point.y()),
+    let last = pullback_step(
+        surface,
+        end.point,
+        end.derivative.scaled(-extent / 3.)?,
+        tolerance,
     )?;
     Ok(PullbackSegment {
-        start: start.parameter,
-        end: end.parameter,
-        controls: [start.point, first_handle, second_handle, end.point],
+        start: remap_scalar(start.parameter, [0., 1.], native_domain)?,
+        end: remap_scalar(end.parameter, [0., 1.], native_domain)?,
+        controls: [
+            start.point,
+            Point2::try_new(start.point.x() + first[0], start.point.y() + first[1])?,
+            Point2::try_new(end.point.x() + last[0], end.point.y() + last[1])?,
+            end.point,
+        ],
     })
 }
 
 fn fixed_pullback_node(
     surface: &NurbsSurface,
-    curve: &NurbsCurve,
-    parameter: Real,
-    derivative_parameter: Real,
+    span: NurbsCurveSamplingSpan<'_>,
+    fraction: Real,
     point: Point2,
     tolerance: Tolerance,
-    numerical_tolerance: Tolerance,
 ) -> Result<PullbackNode, GeometryError> {
+    let (model_point, derivative) = span.evaluate_with_derivative(fraction)?;
     if surface
         .evaluate(point.x(), point.y())?
-        .distance_to(curve.evaluate(parameter)?)?
+        .distance_to(model_point)?
         > tolerance.absolute()
     {
         return Err(GeometryError::InvalidControlNet {
             context: "fixed pullback endpoint exceeds the model-space tolerance",
         });
     }
-    let (_, tangent) = curve.evaluate_with_derivative(derivative_parameter)?;
     Ok(PullbackNode {
-        parameter,
+        parameter: fraction,
         point,
-        derivative: pullback_derivative(surface, point, tangent, numerical_tolerance)?,
+        derivative,
     })
 }
 
@@ -258,20 +260,19 @@ fn evaluate_cubic(controls: [Point2; 4], parameter: Real) -> Result<Point2, Geom
 
 fn segment_matches_curve(
     surface: &NurbsSurface,
-    curve: &NurbsCurve,
+    span: NurbsCurveSamplingSpan<'_>,
+    interval: [Real; 2],
     segment: PullbackSegment,
     tolerance: Tolerance,
 ) -> Result<bool, GeometryError> {
     for sample in 1..PULLBACK_SAMPLES_PER_SPAN {
         let normalized = sample as Real / PULLBACK_SAMPLES_PER_SPAN as Real;
-        let parameter = segment
-            .start
-            .mul_add(1.0 - normalized, segment.end * normalized);
+        let fraction = interval[0].mul_add(1. - normalized, interval[1] * normalized);
         let uv = evaluate_cubic(segment.controls, normalized)?;
         let Ok(surface_point) = surface.evaluate(uv.x(), uv.y()) else {
             return Ok(false);
         };
-        if !model_points_near(surface_point, curve.evaluate(parameter)?, tolerance)? {
+        if !model_points_near(surface_point, span.evaluate(fraction)?, tolerance)? {
             return Ok(false);
         }
     }
@@ -285,8 +286,25 @@ impl PullbackFitter<'_> {
         end: PullbackNode,
         depth: usize,
     ) -> Result<(), GeometryError> {
-        let candidate = hermite_segment(start, end)?;
-        let matches = segment_matches_curve(self.surface, self.curve, candidate, self.tolerance)?;
+        let candidate = hermite_segment(
+            self.surface,
+            start,
+            end,
+            self.native_domain,
+            self.numerical_tolerance,
+        )?;
+        if candidate.end <= candidate.start {
+            return Err(GeometryError::SurfacePullbackDidNotConverge {
+                tolerance: self.tolerance.absolute(),
+            });
+        }
+        let matches = segment_matches_curve(
+            self.surface,
+            self.span,
+            [start.parameter, end.parameter],
+            candidate,
+            self.tolerance,
+        )?;
         let certified = if matches {
             match &mut self.certificate {
                 Some(certificate) => certificate.segment(candidate, self.tolerance.absolute())?,
@@ -309,16 +327,20 @@ impl PullbackFitter<'_> {
                 tolerance: self.tolerance.absolute(),
             });
         }
-        let middle_parameter = start.parameter.mul_add(0.5, end.parameter * 0.5);
-        if middle_parameter == start.parameter || middle_parameter == end.parameter {
+        let middle_native = candidate.start.mul_add(0.5, candidate.end * 0.5);
+        let middle_parameter = remap_scalar(middle_native, self.native_domain, [0., 1.])?;
+        if middle_native == candidate.start
+            || middle_native == candidate.end
+            || middle_parameter <= start.parameter
+            || middle_parameter >= end.parameter
+        {
             return Err(GeometryError::SurfacePullbackDidNotConverge {
                 tolerance: self.tolerance.absolute(),
             });
         }
         let middle = pullback_node(
             self.surface,
-            self.curve,
-            middle_parameter,
+            self.span,
             middle_parameter,
             self.tolerance,
             self.numerical_tolerance,
@@ -502,69 +524,37 @@ impl NurbsSurface {
         } else {
             None
         };
-
-        let curve_domain = curve.domain();
-        let domain_start = *curve_domain.start();
-        let domain_end = *curve_domain.end();
+        let sampler = curve.parameter_sampler()?;
+        let mut spans = curve.spans().zip(sampler.spans()).peekable();
+        let Some(&((first_start, first_end), first_span)) = spans.peek() else {
+            return Err(GeometryError::InvalidControlNet {
+                context: "surface pullback requires a nonempty source span",
+            });
+        };
+        let domain = curve.domain();
         let mut fitter = PullbackFitter {
             surface: self,
-            curve,
+            span: first_span,
+            native_domain: [first_start, first_end],
             tolerance,
             numerical_tolerance: numerical_pullback_tolerance(tolerance)?,
             segments: Vec::new(),
             certificate,
         };
-        for (span_start, span_end) in curve.spans() {
-            let derivative_start = if span_start == domain_start {
-                span_start
-            } else {
-                span_start.next_up().min(span_end)
-            };
-            let derivative_end = if span_end == domain_end {
-                span_end
-            } else {
-                span_end.next_down().max(span_start)
-            };
+        for ((span_start, span_end), span) in spans {
+            fitter.span = span;
+            fitter.native_domain = [span_start, span_end];
             let start =
-                if let Some(points) = fitting_endpoints.filter(|_| span_start == domain_start) {
-                    fixed_pullback_node(
-                        self,
-                        curve,
-                        span_start,
-                        derivative_start,
-                        points[0],
-                        tolerance,
-                        fitter.numerical_tolerance,
-                    )?
+                if let Some(points) = fitting_endpoints.filter(|_| span_start == *domain.start()) {
+                    fixed_pullback_node(self, span, 0., points[0], tolerance)?
                 } else {
-                    pullback_node(
-                        self,
-                        curve,
-                        span_start,
-                        derivative_start,
-                        tolerance,
-                        fitter.numerical_tolerance,
-                    )?
+                    pullback_node(self, span, 0., tolerance, fitter.numerical_tolerance)?
                 };
-            let end = if let Some(points) = fitting_endpoints.filter(|_| span_end == domain_end) {
-                fixed_pullback_node(
-                    self,
-                    curve,
-                    span_end,
-                    derivative_end,
-                    points[1],
-                    tolerance,
-                    fitter.numerical_tolerance,
-                )?
+            let end = if let Some(points) = fitting_endpoints.filter(|_| span_end == *domain.end())
+            {
+                fixed_pullback_node(self, span, 1., points[1], tolerance)?
             } else {
-                pullback_node(
-                    self,
-                    curve,
-                    span_end,
-                    derivative_end,
-                    tolerance,
-                    fitter.numerical_tolerance,
-                )?
+                pullback_node(self, span, 1., tolerance, fitter.numerical_tolerance)?
             };
             fitter.append_span(start, end, 0)?;
         }

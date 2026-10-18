@@ -26,6 +26,10 @@ onto the same surface. This preserves the full chart bounds even if trim contour
 or extra objects occupy only part of the surface. The viewport construction plane
 does not change the World-XY output.
 
+See [parameter-unit qualification](../pullback-parameter-units.md) for UV and
+source-domain scaling, on-surface input classification, and local border-knot
+preservation when cumulative outer intervals cannot be represented.
+
 ## Sizing and accuracy
 
 Public native observations indicate eight isocurve stations at domain fractions

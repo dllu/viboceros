@@ -285,8 +285,6 @@
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
-    "README.md": "f48bc69b8f61c5bdb8f9b7acc4bc58b65d98beab4609e7ec2e9ebf480d739646",
-    "docs/surface-parameter-frames.md": "9a0f316d214852604e05572d831f376356c0a86ead22338fc08d7579a6540ffd",
     "docs/direction-adapters.md": "7a708f65212fd89f2f0cd1de25c69e0befb79e31d4f692879b3702000edaecff",
     "docs/surface-parameters-baseline-geometry.rs.gz": "d9319ab5d4424cc930f6a31016f80df1a1bb06f7f3e7892aa7dae5e1ab8abe73",
     "docs/surface-parameters-baseline-command.rs.gz": "3fb9dab64176f26d99130f98e48f88c807d5de03f78f4641d11d35abb518128d",
@@ -307,5 +305,9 @@
     "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-command/src/lib.rs": "194a637d2acca12a50947fabc259b09978d0d9c2a8f7db4c0c15edcbcde586d7",
     "4106aeb2aaf4ffdeaf4573a1373aef7895647011:crates/viboceros-command/src/orient_surface.rs": "429defbef089762a2f4a538568329b23b12e0b6c042955992f77428522c9a664",
     "4106aeb2aaf4ffdeaf4573a1373aef7895647011:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_git_sha256": {
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:README.md": "f48bc69b8f61c5bdb8f9b7acc4bc58b65d98beab4609e7ec2e9ebf480d739646",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:docs/surface-parameter-frames.md": "9a0f316d214852604e05572d831f376356c0a86ead22338fc08d7579a6540ffd"
   }
 }

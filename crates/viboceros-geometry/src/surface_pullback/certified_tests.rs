@@ -21,9 +21,11 @@ fn a_sample_accepted_pullback_is_refined_until_its_complete_image_is_certified()
     .unwrap();
     let initial_tolerance = Tolerance::try_new(1e-6, 1e-14, 1e-12).unwrap();
     let numeric = numerical_pullback_tolerance(initial_tolerance).unwrap();
-    let start = pullback_node(&surface, &spatial, 0., 0., initial_tolerance, numeric).unwrap();
-    let end = pullback_node(&surface, &spatial, 1., 1., initial_tolerance, numeric).unwrap();
-    let proposal = hermite_segment(start, end).unwrap();
+    let sampler = spatial.parameter_sampler().unwrap();
+    let span = sampler.spans().next().unwrap();
+    let start = pullback_node(&surface, span, 0., initial_tolerance, numeric).unwrap();
+    let end = pullback_node(&surface, span, 1., initial_tolerance, numeric).unwrap();
+    let proposal = hermite_segment(&surface, start, end, [0., 1.], numeric).unwrap();
     let distance = |t| {
         let uv = evaluate_cubic(proposal.controls, t).unwrap();
         surface
@@ -40,7 +42,7 @@ fn a_sample_accepted_pullback_is_refined_until_its_complete_image_is_certified()
         .fold(0_f64, Real::max);
     assert!(witnessed > sampled);
     let tolerance = Tolerance::try_new((sampled + witnessed) * 0.5, 1e-14, 1e-12).unwrap();
-    assert!(segment_matches_curve(&surface, &spatial, proposal, tolerance).unwrap());
+    assert!(segment_matches_curve(&surface, span, [0., 1.], proposal, tolerance).unwrap());
     let old = surface.try_pullback_curve(&spatial, tolerance).unwrap();
     assert_eq!(old.control_points().len(), 4);
     assert_eq!(

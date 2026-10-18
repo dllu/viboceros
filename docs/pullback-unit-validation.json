@@ -1,0 +1,302 @@
+{
+  "date": "2026-10-17",
+  "baseline_revision": "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2",
+  "problem": "Dimensioned derivative checks and UV snapping based on absolute chart origin rejected valid pullbacks after changes of parameter units. Native dUV/dt could overflow before finite Hermite handles were formed. Independently scaled U/V border domains could not be concatenated in f64.",
+  "implementation": [
+    "Snap endpoint roundoff using a normalized chart fraction instead of a UV-origin magnitude with a minimum of one.",
+    "Reuse one-sided fractional source-span sampling, scale model derivatives before the inverse surface differential, and retain original native source knot intervals.",
+    "Build the inverse step from typed directions, angular admission and scaled parameter-step helpers; retain complete original-source continuous certificate checks and existing resource limits.",
+    "Keep UV border local knots. Use native cumulative outer intervals when representable and bounded segment-index outer intervals when concatenation fails, revalidating the same local geometry."
+  ],
+  "matrix": {
+    "model_scale_exponents": [
+      -20,
+      0,
+      40,
+      80
+    ],
+    "absolute_tolerance": "1e-7 times scale",
+    "relative_tolerance": 1e-12,
+    "angular_tolerance": 1e-09,
+    "pose": "origin [5,-7,11] times scale; normal [2,3,6]",
+    "UV_width_exponent_pairs": [
+      [
+        0,
+        0
+      ],
+      [
+        -200,
+        -200
+      ],
+      [
+        200,
+        200
+      ],
+      [
+        -600,
+        -600
+      ],
+      [
+        600,
+        600
+      ],
+      [
+        -600,
+        600
+      ],
+      [
+        600,
+        -600
+      ]
+    ],
+    "source_domain_width_exponents": [
+      -600,
+      0,
+      600
+    ],
+    "analytic_surface": "S(u,v)=((10-2*v)*u,10*v,0), transformed by model pose",
+    "analytic_UV": "u(t)=t, v(t)=1/5+7*t/5-t^2",
+    "APIs": [
+      "legacy sampled",
+      "certified",
+      "certified with fixed endpoints"
+    ]
+  },
+  "baseline": {
+    "runs": [
+      {
+        "command": "cargo test -p viboceros-geometry --test surface_pullback_units -- --nocapture",
+        "exit_code": 101,
+        "retained_log": "docs/pullback-units-geometry-baseline.log.gz",
+        "uncompressed_log_sha256": "3bc6bbe5cc340b6d5e3da48a26a9252ce8b5bda56e23f413056659f2fa760a1b",
+        "passed": 0,
+        "failed": 2,
+        "ignored": 0
+      },
+      {
+        "command": "cargo test -p viboceros-command --test create_uv_curve_units -- --nocapture",
+        "exit_code": 101,
+        "retained_log": "docs/pullback-units-command-baseline.log.gz",
+        "uncompressed_log_sha256": "eb70b6ebcb2aa5e942419a8f8475a1c2605e3adeb70866c41c1757297d968b14",
+        "passed": 0,
+        "failed": 1,
+        "ignored": 0
+      }
+    ],
+    "test_sources": [
+      {
+        "path": "crates/viboceros-geometry/tests/surface_pullback_units.rs",
+        "retained": "docs/pullback-units-baseline-geometry.rs.gz",
+        "uncompressed_sha256": "b3a38647ae311e7ff57e155a81f1ab078c164d1df79fef6c5b1a3717f6172aee"
+      },
+      {
+        "path": "crates/viboceros-command/tests/create_uv_curve_units.rs",
+        "retained": "docs/pullback-units-baseline-command.rs.gz",
+        "uncompressed_sha256": "6d269cb91fcdbae48ea208f5eac4391d48eb839ae56c10a158852bbf7c9a86a4"
+      }
+    ],
+    "replay": "In an isolated baseline checkout, decompress each retained test source to its recorded path and run the two baseline commands. The snapshots contain the original three matrices before further span/admission/border checks were added."
+  },
+  "matrices": [
+    {
+      "name": "pullback units",
+      "cases": 252,
+      "baseline_successful": 128,
+      "baseline_failed": 124,
+      "candidate_failed": 0
+    },
+    {
+      "name": "translated UV origins",
+      "cases": 24,
+      "baseline_successful": 3,
+      "baseline_failed": 21,
+      "candidate_failed": 0
+    },
+    {
+      "name": "CreateUVCrv",
+      "cases": 56,
+      "baseline_successful": 24,
+      "baseline_failed": 32,
+      "candidate_failed": 0,
+      "baseline_false_distant_reports": 16,
+      "baseline_border_parameter_errors": 16
+    }
+  ],
+  "additional_cases": {
+    "fractional_one_sided_spans_and_coarse_domains": 36,
+    "absolute_error_and_fixed_endpoint_admission": 84,
+    "total_cases": 452
+  },
+  "assertions": {
+    "all_primary_outputs": "independently certified complete model-space correspondence, including results of the legacy sampled API",
+    "source_domain": "exactly retained",
+    "source_preservation": true,
+    "UV_error_limit": 2e-08,
+    "normalized_model_error_limit": 1e-07,
+    "maximum_primary_UV_error": 2.220446049250313e-16,
+    "maximum_primary_normalized_model_error": 3.0767402982137025e-15,
+    "translated_UV_origins": "U origin 2^20 widths; V origin -2^18 widths; valid source U endpoints 1e-7 and 1-1e-7",
+    "span_cases": "C0 kink one-sided derivatives and adjacent-float source domains",
+    "admission": "accept half-absolute-tolerance normal offsets; reject eight-tolerance offsets and incorrect fixed endpoints",
+    "command": "0 distant input reports; flat samples and border edge midpoints within normalized error 2e-7; closed borders and strictly increasing outer breaks; exact local domains; source retention and exact object Undo/Redo"
+  },
+  "completed_runs": [
+    {
+      "command": "cargo test -p viboceros-geometry --test surface_pullback_units -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/pullback-units-geometry-focused.log.gz",
+      "uncompressed_log_sha256": "54a40684adb06e67fe827214b3942691e2b2c8b58aef152da8849df898f41d56",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test -p viboceros-command --test create_uv_curve_units -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/pullback-units-command-focused.log.gz",
+      "uncompressed_log_sha256": "6b93771aa3029bc44566a930f58b97a80027a044c239a8debf8fbf89cbdb4b46",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-geometry -p viboceros-command --features viboceros-command/native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/pullback-units-full-release.log.gz",
+      "uncompressed_log_sha256": "0f9051e90883c6f441d9215cb9e76d76f3ca094656b906146e330c2c1fb66ebc",
+      "passed": 3989,
+      "failed": 0,
+      "ignored": 11
+    },
+    {
+      "command": "cargo test --release --bin viboceros -- --nocapture",
+      "exit_code": 0,
+      "retained_log": "docs/pullback-units-app-release.log.gz",
+      "uncompressed_log_sha256": "246f75d1fced1a16069eec80c198bc5e185584c365b6f24da119fe342e268543",
+      "passed": 1375,
+      "failed": 0,
+      "ignored": 19
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained_log": "docs/pullback-units-clippy.log.gz",
+      "uncompressed_log_sha256": "1b1a1cb5ad7f0fc37d2c63c1dd9ca0974ffb5f11851303ffcfb10ec8d52ef52c"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained_log": "docs/pullback-units-fmt.log.gz",
+      "uncompressed_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_release_sections": [
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_command-dc4b87f7d01e2a4e)",
+      "summary": "test result: ok. 1579 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 104.69s"
+    },
+    {
+      "header": "Running tests/create_uv_curve_units.rs (target/release/deps/create_uv_curve_units-5518b9de7cd0c437)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s"
+    },
+    {
+      "header": "Running tests/direction_adapters.rs (target/release/deps/direction_adapters-874e97ceb405d0e2)",
+      "summary": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s"
+    },
+    {
+      "header": "Running tests/surface_parameter_placement.rs (target/release/deps/surface_parameter_placement-ba025f0f8f7af331)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-a159ed14312ccb02)",
+      "summary": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+    },
+    {
+      "header": "Running unittests src/lib.rs (target/release/deps/viboceros_geometry-8704133541059e5f)",
+      "summary": "test result: ok. 2380 passed; 0 failed; 8 ignored; 0 measured; 0 filtered out; finished in 18.53s"
+    },
+    {
+      "header": "Running tests/direction_frames.rs (target/release/deps/direction_frames-138a83af0bbf186d)",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/planar_boolean_scale.rs (target/release/deps/planar_boolean_scale-3ea37b1a5b00911b)",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+    },
+    {
+      "header": "Running tests/surface_parameter_frames.rs (target/release/deps/surface_parameter_frames-d1e7e0e45209a384)",
+      "summary": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Running tests/surface_pullback_units.rs (target/release/deps/surface_pullback_units-7583c26bfe779b68)",
+      "summary": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.20s"
+    },
+    {
+      "header": "Running tests/unit_direction_scale.rs (target/release/deps/unit_direction_scale-85517c4bb1d9ab3f)",
+      "summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s"
+    },
+    {
+      "header": "Doc-tests viboceros_command",
+      "summary": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    },
+    {
+      "header": "Doc-tests viboceros_geometry",
+      "summary": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 15,
+    "records": 8,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "log_policy": "Gzip files retain complete original output. Recorded statuses are observed process exits. Final release suites qualify the exact recorded source.",
+  "limitations": [
+    "No new Rhino capture or performance measurement; retained native observations remain exercised by the full suites.",
+    "Legacy try_pullback_curve remains sampled acceptance. Its particular matrix results are additionally certified; the existing adversarial regression continues to distinguish the APIs.",
+    "Arbitrary floating-point scales, singular/noninjective surfaces and general trim topology are not established by these cases.",
+    "Segment-index outer border domains retain geometry and local knots when concatenation is unrepresentable; native outer-domain parity in that case is unproven.",
+    "Full native CreateUVCrv sizing and off-surface projection parity remain outside this correction."
+  ],
+  "source_sha256": {
+    "crates/viboceros-geometry/src/surface_pullback.rs": "4d7d97377bd6b9abefc8e9080dab50b688d2fa35f830ddd179a3ea23c6e7bb0c",
+    "crates/viboceros-geometry/src/surface_pullback/certified_tests.rs": "ea8cdfc0f7fb2512a45ae64bb46e177c9f3049348de179671d34b006489e34f8",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
+    "crates/viboceros-geometry/src/nurbs/sampling.rs": "bca2aa4e92def49fa00ccc1158c61987c2294ebd350fc90311047121e59993e4",
+    "crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "crates/viboceros-geometry/src/polycurve.rs": "7e12b570052bb53a128d576809af3b209ff25b3e63ac2aebe31c1b9c84f92115",
+    "crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "crates/viboceros-geometry/tests/surface_pullback_units.rs": "54de9950dafc3f4145daaea8a6e0d36070f8b46edb95243b63102191a62e0852",
+    "crates/viboceros-command/src/create_uv_curves.rs": "c9532940abee280b73ec8a144cade8b87cd1d5df8694e15509c1c070416998a6",
+    "crates/viboceros-command/tests/create_uv_curve_units.rs": "7a7d4c27c28f78b25d1fe4863ba748e0f66d67ab99ee6e1e6f8d1de9df2a3fc8",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "README.md": "e68964eee562f38398b0736ce19bfd9e324ad327ad1009adcdf4c7afb396cbf7",
+    "docs/pullback-parameter-units.md": "a70fc479f92e071121b71c5855217b9fd2c6df104915f8e8ef17068b0d597a36",
+    "docs/surface-parameter-frames.md": "fdb4fc17b146100f2b93c90bf9ac5767af85ddd09ade08eb7281aa7ec55184c0",
+    "docs/commands/create-uv-curves.md": "f8d5e90519fcb3b906cc90c79a10987a72b319049fac18dd7382306f5d3cce8f",
+    "docs/pullback-units-baseline-geometry.rs.gz": "3b6944cd8bc45136ee129b683f2bc38bd479e7345a0a2aa68767c2b1df3f262f",
+    "docs/pullback-units-baseline-command.rs.gz": "c1f6deb3d6c2f247f56592833658570f63500152bc79166e72596aa5de414d90",
+    "docs/pullback-units-geometry-baseline.log.gz": "2c94da6eb94f84da5e8d1cbabd8fb5d8c5bf246cfbd50dc5c12cb2ba6ea67a77",
+    "docs/pullback-units-command-baseline.log.gz": "c96eb07aab6de863fa728451f80b2faf203082b7518b0ba320e4724ad2cf0090",
+    "docs/pullback-units-geometry-focused.log.gz": "9191155f55e08d2c36dd8992fa369c7d78337ca51195fa4fa3102db8a69fd680",
+    "docs/pullback-units-command-focused.log.gz": "85d13b74c296299d2fbf5b034b99efe5dc7823de882acf809af65df3e07a4abb",
+    "docs/pullback-units-full-release.log.gz": "d618338ce2ee747f3b66698cda19e1dd763842ea6610874909b0ec62aeb5a977",
+    "docs/pullback-units-app-release.log.gz": "c0d2efde3ca4a8018039672ada7d99ce777199a16457697d0f3c22f799a2463f",
+    "docs/pullback-units-clippy.log.gz": "64d30e897dab1ab36502f3befc7afbff95542cc276d258f119b4528307072fe1",
+    "docs/pullback-units-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+  },
+  "baseline_git_sha256": {
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/surface_pullback.rs": "393e7424dde66b72cda6290f50b13239644aeeef3f30f354f08aa7adba4f505b",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/surface_pullback/certified_tests.rs": "212bbe984461d712d0df789e4e16854d64a8ffade9102becfa746474e2cc13a8",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "e4978946b2b73bc595c4c2828503865377b0064e503ed0a982ddc8fb99bb62a0",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/nurbs/sampling.rs": "bca2aa4e92def49fa00ccc1158c61987c2294ebd350fc90311047121e59993e4",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/polycurve.rs": "7e12b570052bb53a128d576809af3b209ff25b3e63ac2aebe31c1b9c84f92115",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-geometry/src/exact_scalar.rs": "38f0e4c3f64f63e30cb63694447afaf2d2bb502faaa5875ae09b889f2d89aadf",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:crates/viboceros-command/src/create_uv_curves.rs": "1b009148dbe4a509168daf8a8e8cba0b673644805d8b9b2944f72f32c4d87152",
+    "d7c9fb9fe3d91a9fdd5a143bb179d6156c6646b2:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  }
+}
