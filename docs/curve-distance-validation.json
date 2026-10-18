@@ -134,8 +134,6 @@
     "crates/viboceros-oracle/Cargo.toml": "3d35e43364806c9d0b8ac316a7f8dbe19da79d6c3927ae6b5e73dae3421c6f8d",
     "crates/viboceros-smlib/Cargo.toml": "9f807997ed9ea93a81d24c28956dd2fb609007d050b150c0c46ef9f47db0a5f3",
     "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
-    "crates/viboceros-smlib/src/lib.rs": "44d87c302af42393ec269563ebb2fd366923732638353189d74b995b8c5a8706",
-    "crates/viboceros-smlib/src/native.rs": "0f2390f800625ce7e730ae2973150a635154778c29380e35f6bde975219ddcba",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "tools/rhino_oracle/geometry_validity_probe.py": "741ea3dc089760ae93efb8166ceb7e4ab8f73bf97e7870f0eab7f8cd4c0f3bea",
     "tools/usd_brep/run_curve_distance_probe.py": "424d54b6ee9781751cfd2f8356fea63a636fe97daaa60bf642c7a6c5429ee395",
@@ -183,6 +181,8 @@
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/CMakeLists.txt": "a0992825dd1b73925e3a08b719cf05597893a44d9d4b7e5b239cb076379f6273",
     "650fa1c854c05003a45311fc531c421cb45f680d:crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
-    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/native/bridge.h": "4cad5ac98c5926157732afd7b9557c9b7a4df0f334ff69b5a619691bccfd18bb"
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/native/bridge.h": "4cad5ac98c5926157732afd7b9557c9b7a4df0f334ff69b5a619691bccfd18bb",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/src/lib.rs": "44d87c302af42393ec269563ebb2fd366923732638353189d74b995b8c5a8706",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/src/native.rs": "0f2390f800625ce7e730ae2973150a635154778c29380e35f6bde975219ddcba"
   }
 }

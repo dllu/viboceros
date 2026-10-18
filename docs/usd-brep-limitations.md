@@ -325,6 +325,18 @@ issues reported by NVIDIA that have not all been reproduced here.
   has not been qualified. Source:
   [NL_CrvFit.h](../third_party/usd-brep/source/SMLib/inc/NL_CrvFit.h) and
   [NL_CrvFit.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvFit.cpp).
+- **Fixed: minimal surface fillets included extrapolated curved rails.**
+  `SmFilletExecutive::SurfaceSurfaceFillet` previously left the solver's
+  default half-span extension active for `SM_BT_MINIMAL`. A plane/quarter-cylinder
+  fillet then contained points off its analytic torus. Minimal mode now uses
+  zero extension; other modes accept an explicit search factor. The native
+  adapter uses beveled end caps and expands its private search for unequal
+  finite parent lengths. A controlled original-policy comparison fails 24 of
+  56 independent geometry cases; the repair passes all 56, including under
+  AddressSanitizer. See [the qualification](native-surface-fillets.md).
+  Curved `Extend=Yes` remains incomplete: the retained plane/quarter-cylinder
+  SDK recipe succeeds in Rhino and returns native status 1001 in Viboceros.
+  That failure is retained, rather than counted as a match.
 - **Fixed: tensor Bezier decomposition indexed before full-order control blocks.**
   `N_SrfDecomposeToBez` used `ru = p - mlu` and `rv = q - mlv`, which
   become `-1` at multiplicity `degree + 1`. The next-block copies now start

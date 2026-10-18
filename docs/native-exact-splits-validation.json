@@ -356,7 +356,6 @@
     "third_party/usd-brep/source/SMLib/src/NL_SrfBasic.cpp": "ccd0d31902c9699d2653549a816f9789850587d249acbaf4036bc323fe1a7409",
     "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
-    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
@@ -409,10 +408,7 @@
     "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
     "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
-    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
-    "docs/native-basis-evaluation-validation.json": "4f5084a178706a4fafe25eebbd9f365f4da878968d9931a342c20be99710b98d",
-    "docs/native-curve-segment-limits-validation.json": "034abc1bf0227b911187e3a226e976cf0f79644b9be0830b523500abf4d4af1c",
-    "docs/native-point-interpolation-validation.json": "f2786dc9691f5cab1acebba039557bf9ec767e437758b3833c09980faef7ba4f"
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c"
   },
   "baseline_git_sha256": {
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/build.rs": "450781a1e7bc97d313e698918b0f881d6a477bf18d2fca5877a61e8e5d76da0c",
@@ -423,12 +419,16 @@
   "source_git_sha256": {
     "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/build.rs": "27c325a882979c1dda24975eb433c88d0ba17c2adf161f173534625c470827d1",
     "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/CMakeLists.txt": "f284f4e5a425b66a55b191d46ea823068df750795718a9cf41f25a3d9ba16559",
-    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/knot_refinement.cpp": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c"
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/knot_refinement.cpp": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c"
   },
   "artifact_git_sha256": {
     "e26661d6499415b1da9178cbf3deebb7df6b69a8:README.md": "eceb1795d7b24fc8b5f35db13f594522079300142fae79667a6d10e1511b0fdd",
     "e26661d6499415b1da9178cbf3deebb7df6b69a8:third_party/patches/README.md": "735ff54d1a64d1194f54eed22ef85a9efd2f919f63a20340d29e5758c479bc50",
     "e26661d6499415b1da9178cbf3deebb7df6b69a8:docs/usd-brep-limitations.md": "ff20141d73ae0ce355610b1fb303b9570c1aaf26415c8ccff0e29e19a77386bb",
-    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/tests/bezier.rs": "87373ec3b7aa173587d855632d5292794cea2a13a228e0cc875783522a067a3d"
+    "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/tests/bezier.rs": "87373ec3b7aa173587d855632d5292794cea2a13a228e0cc875783522a067a3d",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-basis-evaluation-validation.json": "4f5084a178706a4fafe25eebbd9f365f4da878968d9931a342c20be99710b98d",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-curve-segment-limits-validation.json": "034abc1bf0227b911187e3a226e976cf0f79644b9be0830b523500abf4d4af1c",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-point-interpolation-validation.json": "f2786dc9691f5cab1acebba039557bf9ec767e437758b3833c09980faef7ba4f"
   }
 }

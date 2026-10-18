@@ -2,6 +2,7 @@
 #include "basis_preservation.h"
 #include "knot_refinement.h"
 #include "network_fit.h"
+#include "surface_fillet.h"
 #include <SmApiBrep.h>
 #include <SmApiCurves.h>
 #include <SmApiGeneral.h>
@@ -1365,6 +1366,17 @@ extern "C" int vb_curve_list_take(VbCurveList *curves,size_t index,VbSurfaceData
 }
 extern "C" void vb_curve_list_free(VbCurveList *curves) {
     std::lock_guard<std::mutex> lock(kernel_mutex);delete curves;
+}
+
+extern "C" int vb_surface_fillet(const VbNurbsData *first,const VbNurbsData *second,
+    double radius,const int sides[2],int extend,double extension_factor,double accuracy,VbSolid **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(first && second && out && (extend==0 || extend==1),"Invalid surface fillet input");
+        auto owner=std::make_unique<VbSolid>();
+        owner->value.reset(vb_fillet_surfaces(*first,*second,radius,sides,extend!=0,extension_factor,accuracy));
+        if(owner->value) *out=owner.release();
+    });
 }
 
 extern "C" int vb_surface_intersect(const VbNurbsData *first,const VbNurbsData *second,

@@ -1,5 +1,10 @@
 # Local usd-brep fixes
 
+`usd-brep-surface-fillet-domain.patch` keeps minimal surface fillets inside their
+original offset domains. The accompanying header patch exposes the existing
+solver extension factor, retaining its 0.5 default for existing callers. See
+[the surface-fillet producer](../../docs/native-surface-fillets.md).
+
 `usd-brep-tensor-bezier.patch` repairs full-order next-block copy bounds,
 privately clamps both active axes and completes degree-zero spans in
 `N_SrfDecomposeToBez`. See the [tensor qualification](../../docs/native-tensor-bezier.md).

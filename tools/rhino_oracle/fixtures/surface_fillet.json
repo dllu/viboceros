@@ -1,0 +1,911 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-08,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "surface_fillet",
+      "id": "planes-0-False",
+      "surfaces": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                5,
+                0,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                0,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                10,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                10,
+                5
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "picks": [
+        [
+          0.2,
+          0.5
+        ],
+        [
+          0.8,
+          0.5
+        ]
+      ],
+      "radius": 1.0,
+      "extend": false,
+      "queries": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          10,
+          0
+        ],
+        [
+          5,
+          5,
+          1
+        ],
+        [
+          4.707106781186548,
+          5,
+          0.29289321881345254
+        ]
+      ]
+    },
+    {
+      "op": "surface_fillet",
+      "id": "planes-0-True",
+      "surfaces": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                5,
+                0,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                0,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                10,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                10,
+                5
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "picks": [
+        [
+          0.2,
+          0.5
+        ],
+        [
+          0.8,
+          0.5
+        ]
+      ],
+      "radius": 1.0,
+      "extend": true,
+      "queries": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          10,
+          0
+        ],
+        [
+          5,
+          5,
+          1
+        ],
+        [
+          4.707106781186548,
+          5,
+          0.29289321881345254
+        ]
+      ]
+    },
+    {
+      "op": "surface_fillet",
+      "id": "planes-3-False",
+      "surfaces": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                5,
+                3,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                7,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                7,
+                5
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "picks": [
+        [
+          0.2,
+          0.5
+        ],
+        [
+          0.8,
+          0.5
+        ]
+      ],
+      "radius": 1.0,
+      "extend": false,
+      "queries": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          10,
+          0
+        ],
+        [
+          5,
+          5,
+          1
+        ],
+        [
+          4.707106781186548,
+          5,
+          0.29289321881345254
+        ]
+      ]
+    },
+    {
+      "op": "surface_fillet",
+      "id": "planes-3-True",
+      "surfaces": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                5,
+                3,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                7,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                7,
+                5
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "picks": [
+        [
+          0.2,
+          0.5
+        ],
+        [
+          0.8,
+          0.5
+        ]
+      ],
+      "radius": 1.0,
+      "extend": true,
+      "queries": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          10,
+          0
+        ],
+        [
+          5,
+          5,
+          1
+        ],
+        [
+          4.707106781186548,
+          5,
+          0.29289321881345254
+        ]
+      ]
+    },
+    {
+      "op": "surface_fillet",
+      "id": "cylinder-False",
+      "surfaces": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                -10,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -10,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_point_count_u": 3,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                5,
+                0,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                5,
+                -5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                5,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                0,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                5,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                5,
+                5
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "picks": [
+        [
+          0.9,
+          0.6
+        ],
+        [
+          0.5,
+          0.8
+        ]
+      ],
+      "radius": 1.0,
+      "extend": false,
+      "queries": [
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ],
+        [
+          5,
+          0,
+          1
+        ],
+        [
+          4.242640687119285,
+          4.242640687119285,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "surface_fillet",
+      "id": "cylinder-True",
+      "surfaces": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                -10,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -10,
+                10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree_u": 2,
+          "degree_v": 1,
+          "control_point_count_u": 3,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                5,
+                0,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                5,
+                -5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                5,
+                -5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                0,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                5,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                5,
+                5
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "picks": [
+        [
+          0.9,
+          0.6
+        ],
+        [
+          0.5,
+          0.8
+        ]
+      ],
+      "radius": 1.0,
+      "extend": true,
+      "queries": [
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          6,
+          0
+        ],
+        [
+          5,
+          0,
+          1
+        ],
+        [
+          4.242640687119285,
+          4.242640687119285,
+          0
+        ]
+      ]
+    }
+  ]
+}

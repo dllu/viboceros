@@ -303,8 +303,6 @@
     "Original source object/arrays must satisfy native pointer/storage preconditions."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "4d843755e3fca567065f51b9de9f034fb17072685876e5d80defd2085fecc4e2",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "110df0e292e0188b360b5ed5d68d5b726aa150be25d8110d14231eb3a6e2f6a3",
     "crates/viboceros-smlib/native/knot_refinement.cpp": "869ca9682fcebcc41a5bb68181102e6b987955c6afcc1497cdfcb04f214d282d",
     "crates/viboceros-smlib/tests/bezier.rs": "53aa85fb82438f3fbdf878e7e4b21fa707df7a272bb2ac8ec3cd1163eb49fb0c",
     "crates/viboceros-smlib/tests/tensor_bezier.rs": "509f46ce715904e6cba8cf4ac677f9596cb68502d695b929b72c26678ce8d5cc",
@@ -322,7 +320,6 @@
     "third_party/usd-brep/source/SMLib/src/SmNurbsSrf.cpp": "651bdd172f3289f1b5f2a1bb468e8589a6493293b43283cbc3696f7b12d11c65",
     "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
-    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
@@ -354,16 +351,12 @@
     "docs/native-tensor-bezier-bezier_conversion-audit.json.gz": "4099075dd1b97b0100c26e28998bae5f861b753b9833f8f01de7c80d89b0a2d0",
     "docs/native-tensor-bezier-single_span_conversion-report.json.gz": "7c863671f96371b1d86de04ab8c0ea9c79ce9a7965a37437b391343edd3e217c",
     "docs/native-tensor-bezier-single_span_conversion-audit.json.gz": "ea18830e7da29f4e60f5e02f276598d3e0d18433caf58c293a1fa28e215e99f8",
-    "README.md": "e4f2c8f54fb4e04c9f4d94af3b06da43d7a3a87bd920dd66db0ba08736deea45",
-    "third_party/patches/README.md": "d2aa714955e119154f8917be13d06d3f9605959f9b744b4023d4f24a37c480b8",
     "docs/native-tensor-bezier.md": "46a9b5f577b1973e1a85606531aad95995f6aa3df7c965861d96317d87675973",
     "docs/smlib-bezier.md": "72ae0ddd78e31ec03df2b0661f45af0d4d761f3eb9b1cc2aadf607945ee63058",
-    "docs/usd-brep-limitations.md": "dbae61881279aa23d6cb870982aed9bb900e05495efdca1674b6eb5638d2a7e6",
     "tools/rhino_oracle/fixtures/bezier_conversion.json": "9b25ccead6ee1ac80c88ad12015af17725bc0caba83784121a0f765ad6bca8ad",
     "tools/rhino_oracle/observations/bezier_conversion.json": "d86a8214e0917338c41a598c23689a03006939d0eb422cb998ddce8514bff4c5",
     "tools/rhino_oracle/fixtures/single_span_conversion.json": "a6ab56e4ea5c5e0055be82a333d5c2445ebcd3a98a34e712d492b48cf59c5edc",
     "tools/rhino_oracle/observations/single_span_conversion.json": "cd89fe7b7f5bd44321c4339a17b8ff98fa33bd9d744c72b3ee29fff4aaee30cf",
-    "docs/native-exact-splits-validation.json": "6d72ea3b6057bc77093a0f964d1be393f25d072af6e852e76bb778adfce337dd",
     "docs/native-tensor-bezier-gates.py.gz": "c3d12977e92b001e20d7e58ef47f486569db72a69cc31ec0fbab1e0cd1a4ef70",
     "docs/native-tensor-bezier-record.py.gz": "2d256c6faf5b0d77ac74622c291ae7cea4fedf4cd4c2847c8598647f2391fc36",
     "docs/native-tensor-bezier-preserve-provenance.py.gz": "534210279e8e4af339d4b157f04bc18eb2688d3911ba08422b7b2942d753b657",
@@ -375,5 +368,16 @@
     "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/native/knot_refinement.cpp": "a028651d33e07266e6bdc54e369663ba7839d45af8e82aa7bfc248296b585e7c",
     "e26661d6499415b1da9178cbf3deebb7df6b69a8:crates/viboceros-smlib/tests/bezier.rs": "87373ec3b7aa173587d855632d5292794cea2a13a228e0cc875783522a067a3d"
   },
-  "log_policy": "Retain complete raw source/expected/actual nets, completed build/test statuses, safe-parent rows, sanitizer rows and rejected SDK request. Gzip artifacts are deterministic; older validated hashes are pinned to immutable Git blobs instead of reblessed."
+  "log_policy": "Retain complete raw source/expected/actual nets, completed build/test statuses, safe-parent rows, sanitizer rows and rejected SDK request. Gzip artifacts are deterministic; older validated hashes are pinned to immutable Git blobs instead of reblessed.",
+  "source_git_sha256": {
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/build.rs": "4d843755e3fca567065f51b9de9f034fb17072685876e5d80defd2085fecc4e2",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/native/CMakeLists.txt": "110df0e292e0188b360b5ed5d68d5b726aa150be25d8110d14231eb3a6e2f6a3",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c"
+  },
+  "artifact_git_sha256": {
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:README.md": "e4f2c8f54fb4e04c9f4d94af3b06da43d7a3a87bd920dd66db0ba08736deea45",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:third_party/patches/README.md": "d2aa714955e119154f8917be13d06d3f9605959f9b744b4023d4f24a37c480b8",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/usd-brep-limitations.md": "dbae61881279aa23d6cb870982aed9bb900e05495efdca1674b6eb5638d2a7e6",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-exact-splits-validation.json": "6d72ea3b6057bc77093a0f964d1be393f25d072af6e852e76bb778adfce337dd"
+  }
 }

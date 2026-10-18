@@ -138,6 +138,8 @@ pub use plane_through_points::{
     Fixture as SphereFitPointsFixture, Source as SphereFitPointsSource,
 };
 pub use point_deviation::Fixture as PointDeviationFixture;
+mod surface_fillet;
+pub use surface_fillet::Fixture as SurfaceFilletFixture;
 mod rail_revolve;
 mod two_rail_sweep;
 pub use divide_creases::Fixture as DivideCreasesFixture;
@@ -1897,6 +1899,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SphereFitPointsFixture,
     },
+    SurfaceFillet {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceFilletFixture,
+    },
     RailRevolve {
         id: String,
         #[serde(flatten)]
@@ -2927,6 +2934,7 @@ impl Operation {
             | Self::ExtractCurvatureGraph { id, .. }
             | Self::PointDeviation { id, .. }
             | Self::SphereFitPoints { id, .. }
+            | Self::SurfaceFillet { id, .. }
             | Self::RailRevolve { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
@@ -3016,6 +3024,9 @@ pub struct OperationResult {
 
 #[derive(Debug, Error)]
 pub enum ProbeError {
+    #[cfg(feature = "native-smlib")]
+    #[error(transparent)]
+    Native(#[from] viboceros_smlib::Error),
     #[error("face UV oracle probe requires 2..8 surfaces, 1..32 queries, and valid face indices")]
     InvalidSurfaceFaceUvFixture,
     #[error("invalid Match option: {0}")]
@@ -6244,6 +6255,9 @@ fn execute(
             tolerance,
             viboceros_command::point_fitting::PointFitKind::Sphere,
         )?,
+        Operation::SurfaceFillet { fixture, .. } => {
+            surface_fillet::run(fixture, iterations, tolerance)?
+        }
         Operation::RailRevolve { fixture, .. } => {
             rail_revolve::run(fixture, iterations, tolerance)?
         }

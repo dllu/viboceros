@@ -54,6 +54,8 @@ pub use curve_extension::{
 mod curve_offset;
 pub use curve_blend::blend_curve;
 pub use curve_offset::{curve_offset_operations, offset_curve_parts, offset_curve_through_point};
+mod surface_fillet;
+pub use surface_fillet::{SurfaceFilletOptions, SurfaceFilletSide, fillet_surfaces};
 mod surface_blend;
 pub use surface_blend::{blend_surfaces, trim_blend_parent};
 mod morph_preview;

@@ -30,6 +30,10 @@ adapters, and removing those remaining duplicate routes is ongoing. Command cont
 outside the kernel's geometric operations. See [the native integration](smlib-import.md).
 Closed [Boolean2Objects](smlib-boolean-two.md) choices also enter usd-brep directly
 and reuse the same preview and document acceptance flow.
+The [surface-fillet producer](native-surface-fillets.md) now delegates offset
+intersections, rolling-ball tracing and rational circular sections to SMLib.
+It shares normalized surface preparation and exports owned sheet topology.
+The FilletSrf command workflow and curved extended-fillet parity remain in progress.
 [OffsetSrf](smlib-offset-surfaces.md) now shares native sheet/solid transfer and
 offset/shell operations; the planar offset adapter is excluded from native builds.
 [Join and JoinCopy](smlib-joining.md) also use native sheet stitching and edge

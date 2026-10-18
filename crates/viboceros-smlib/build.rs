@@ -81,6 +81,9 @@ fn build_native() {
         "usd-brep-exact-split.cmake",
         "usd-brep-tensor-bezier.patch",
         "usd-brep-tensor-bezier.cmake",
+        "usd-brep-surface-fillet-domain.patch",
+        "usd-brep-surface-fillet-header.patch",
+        "usd-brep-surface-fillet.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");
     }

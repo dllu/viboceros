@@ -1,0 +1,12 @@
+--- a/SmFilletExecutive.h
++++ b/SmFilletExecutive.h
+@@ -370,7 +370,8 @@
+                                                                    ///<      :                 maximal intersections on each end of fillet.                             <br>
+     ULONG                  lBaseTrimType=0,                        ///< [in] : base surface trimming: 0=none; 1=normal; 2=reverse trim.                                 <br>
+     SmBoolean              bMirror    =FALSE,                      ///< [in] : TRUE = mirror fillet to produce an inside out fillet, FALSE=don't                        <br>
+-    SmBoolean              bComplement=FALSE                       ///< [in] : TRUE = complement circular and approx circular cross sections, FALSE=don't.              <br>                     
++    SmBoolean              bComplement=FALSE,                       ///< [in] : TRUE = complement circular and approx circular cross sections, FALSE=don't.              <br>                     
++    double                 dExtensionFactor=0.5                    ///< [in] : Fraction of each parent UV span to search beyond its natural domain. <br>
+   );    
+ 
+   SmStatus GetPreviewFilletSurfaces

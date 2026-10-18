@@ -302,7 +302,6 @@
     "third_party/usd-brep/source/SMLib/src/NL_SrfNurb.cpp": "430533d6a34f31f23290262f7ce8bdee4c956660b2694633b2f70c29cbbc1eda",
     "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
-    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
@@ -343,10 +342,7 @@
     "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
     "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
-    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
-    "docs/native-isocurve-limits-validation.json": "ca9078ab022072454f90497f21e137aba295c52e5ba5a06504c8fa329627830a",
-    "docs/native-isocurve-pairs-validation.json": "be4b78a57a0c60c7af487a5a9e5c69ca6092018b1c7235517083e30b131a8573",
-    "docs/native-surface-patches-validation.json": "bb71f9ab2595b839455409729cdfed234eec35ca70fe91b16fa79f106b14d6c9"
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c"
   },
   "baseline_git_sha256": {
     "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:crates/viboceros-smlib/build.rs": "b1e0da66d73572f24ffcada31aa6c1e9bac2ae8bde6f9a91ff082c4c34475c7b",
@@ -355,7 +351,8 @@
   "log_policy": "Observed completed exit statuses, deterministic gzip of raw results and logs, exact request/response capture without normalization, and historical hashes pinned to immutable Git blobs.",
   "source_git_sha256": {
     "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/build.rs": "81924334d38a10984e93e7ce6c5b1039a3bce7b7400b5a77a63e06b3552a9f1e",
-    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/native/CMakeLists.txt": "261855c291fe8da7b19700fe7f2a225023186cf95e868f4d4976cbfd30fd56ff"
+    "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:crates/viboceros-smlib/native/CMakeLists.txt": "261855c291fe8da7b19700fe7f2a225023186cf95e868f4d4976cbfd30fd56ff",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c"
   },
   "artifact_git_sha256": {
     "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:README.md": "7a33f93a6d216523fc16218b93479890c25f7ffaf1a29af78f0089f8045ea611",
@@ -363,6 +360,9 @@
     "985ed0a9bb0e9510efe781ab11af93fd1c7972e3:docs/usd-brep-limitations.md": "d2423f62e1d710fd2a27d7bbc5b16c65a89e31f337e9c486ce9de5a79215051f",
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:docs/native-basis-evaluation.md": "d67cbba57e2d498740dcc7f40bcec42a09e179a6b7ecc1da8c52afbc4dcd31ad",
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:docs/native-curve-segment-limits.md": "726954443992bf51c260cdddb8f358644f3d9bfb1b46bd87cf356a644c0732ef",
-    "23378e8e32fa540e1c0999ca8903de1870cefe0d:docs/native-curve-segment-limits-validation.json": "70c98b033fdc65ba28b960af1afe2d39375a98d055e8307ab15dd6eb16377798"
+    "23378e8e32fa540e1c0999ca8903de1870cefe0d:docs/native-curve-segment-limits-validation.json": "70c98b033fdc65ba28b960af1afe2d39375a98d055e8307ab15dd6eb16377798",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-isocurve-limits-validation.json": "ca9078ab022072454f90497f21e137aba295c52e5ba5a06504c8fa329627830a",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-isocurve-pairs-validation.json": "be4b78a57a0c60c7af487a5a9e5c69ca6092018b1c7235517083e30b131a8573",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-surface-patches-validation.json": "bb71f9ab2595b839455409729cdfed234eec35ca70fe91b16fa79f106b14d6c9"
   }
 }

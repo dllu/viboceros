@@ -112,9 +112,12 @@ pub(super) fn prepared_surface(
         (source.knots_u(), result.knots_u()),
         (source.knots_v(), result.knots_v()),
     ] {
-        if before
+        // Reparameterization reconstructs the two artificial full-vector
+        // endpoints from the stored OpenNURBS short basis. Only intervals
+        // between stored knots can affect the active geometric image.
+        if before[1..before.len() - 1]
             .windows(2)
-            .zip(after.windows(2))
+            .zip(after[1..after.len() - 1].windows(2))
             .any(|(a, b)| a[0] < a[1] && b[0] >= b[1])
         {
             return Ok(None);
@@ -239,4 +242,49 @@ fn propose(
         })
         .collect::<Result<Vec<_>, _>>()
         .map(Some)
+}
+
+#[cfg(test)]
+mod preparation_tests {
+    use super::*;
+    #[test]
+    fn unclamped_outer_padding_survives_native_preparation_without_a_fallback() {
+        for gauge in [-1e280, 1e-280] {
+            let source = NurbsSurface::try_new_rational(
+                2,
+                1,
+                3,
+                2,
+                [0., 10.]
+                    .into_iter()
+                    .flat_map(|y| {
+                        [-5., 5., 15.].into_iter().map(move |x| {
+                            WeightedPoint3::try_new(Point3::try_new(x, y, 0.).unwrap(), gauge)
+                                .unwrap()
+                        })
+                    })
+                    .collect(),
+                [-2., -1., 0., 1., 2., 3.]
+                    .map(|k| k * 2_f64.powi(-360))
+                    .to_vec(),
+                vec![1e12, 1e12, 1e12 + 10., 1e12 + 10.],
+            )
+            .unwrap();
+            let before = source.clone();
+            let origin = Point3::try_new(0., 0., 0.).unwrap();
+            let result = prepared_surface(&source, origin, 10.)
+                .unwrap()
+                .expect("valid unclamped source must enter the native producer");
+            assert_eq!(result.domain_u(), 0. ..=1.);
+            assert_eq!(result.domain_v(), 0. ..=1.);
+            for i in 0..=8 {
+                for j in 0..=8 {
+                    let a = result.evaluate(i as f64 / 8., j as f64 / 8.).unwrap();
+                    let expected = Point3::try_new(i as f64 / 8., j as f64 / 8., 0.).unwrap();
+                    assert!(a.distance_to(expected).unwrap() < 1e-12);
+                }
+            }
+            assert_eq!(source, before);
+        }
+    }
 }

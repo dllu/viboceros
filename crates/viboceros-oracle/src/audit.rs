@@ -30,6 +30,8 @@ impl From<ProbeError> for OperationFailure {
             ProbeError::Io(_) => "io",
             ProbeError::Json(_) => "json",
             ProbeError::Geometry(_) => "geometry",
+            #[cfg(feature = "native-smlib")]
+            ProbeError::Native(_) => "geometry",
             ProbeError::Document(_) => "document",
             ProbeError::Command(_) => "command",
             ProbeError::ThreeDm(_) => "interchange",

@@ -342,8 +342,6 @@
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
     "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
     "docs/divide-along-creases-qualification.json": "8b16a89e66725b7285b9c545f94982eaa1ef96052781efef6f07ad2907013b01",
-    "docs/native-closed-join-validation.json": "c24041f21e9c0b82ba07f6a372550d844234c39ccee59011698e4d76335ce24d",
-    "docs/native-uv-transpose-validation.json": "a58532a701f3f33d57a0a65019990c6d65eceec0ca5796846329e5685a3ac321",
     "docs/rail-revolve-qualification.json": "bacc34d34ec22a8462df4ac9ab5d3b3894aded0b9cd9d5166d6deace27933172"
   },
   "baseline_git_sha256": {
@@ -364,6 +362,8 @@
     "bdef540085515d56b7d222d15cadea16c159a118:docs/native-isocurve-pairs.md": "4d59bee54aae22c613a4fdfc82ff075685ded64a2008c923ecbf317539323f8c",
     "bdef540085515d56b7d222d15cadea16c159a118:docs/smlib-isocurves.md": "09a31efd0d4837feae8636ae94fcd405fb3368f1751d0bd357471bb6b3c7f0a4",
     "bdef540085515d56b7d222d15cadea16c159a118:docs/usd-brep-limitations.md": "7c9142b05e867bdf2cf32ef72d1038d3bfcb0eddfee4b3d2264d1647e58e9e4a",
-    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:README.md": "f33d2c41048d4f3bedf301e0eec284fe5aed47b76ef6f4540725954c9d0487da"
+    "387c821af5c3bb4f945da14235b6d3f6de6ab9b6:README.md": "f33d2c41048d4f3bedf301e0eec284fe5aed47b76ef6f4540725954c9d0487da",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-closed-join-validation.json": "c24041f21e9c0b82ba07f6a372550d844234c39ccee59011698e4d76335ce24d",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-uv-transpose-validation.json": "a58532a701f3f33d57a0a65019990c6d65eceec0ca5796846329e5685a3ac321"
   }
 }

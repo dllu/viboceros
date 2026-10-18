@@ -1,0 +1,35 @@
+--- a/SmFilletExecutive.cpp
++++ b/SmFilletExecutive.cpp
+@@ -1,3 +1,4 @@
++#include <cmath>
+ // SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ // SPDX-License-Identifier: Apache-2.0
+ 
+@@ -1327,12 +1328,15 @@
+                                           //      default:[0]
+   SmBoolean              bMirror,         // in : TRUE = mirror fillet to produce an inside out fillet, FALSE=don't 
+                                           //      default:[FALSE]
+-  SmBoolean              bComplement)     // in : TRUE = complement circular and approx circular cross sections, FALSE=don't.
++  SmBoolean              bComplement,
++  double                 dExtensionFactor)     // in : TRUE = complement circular and approx circular cross sections, FALSE=don't.
+                                           //      default:[FALSE]
+                                           // note: It is possible to both mirror and complement circular cross sections.
+ {
+   // Init outputs
+   rpResult = NULL;
++  if (!std::isfinite(dExtensionFactor) || dExtensionFactor < 0.0)
++      return SM_ERR_INVALID_INPUT;
+ 
+   // Create temporary offset surfaces
+   SmOffsetSurface * pOff1 = new(crContext) SmOffsetSurface(dFilletRadius1,*pSur1,FALSE);
+@@ -1526,6 +1530,10 @@
+       
+       // Set the user-specified quantities for this solver.
+       pFS->SetFilletTrimType( eFilTrimType );
++      // Minimal fillets stay within the original parent domains. Extrapolated
++      // curved rails must not become part of their generated sheet.
++      // Other modes can request a larger search for unequal parent extents.
++      pFS->SetExtensionFactor(eFilTrimType == SM_BT_MINIMAL ? 0.0 : dExtensionFactor);
+       pFS->SetReverseTrim( bReverseTrim );
+       
+       // Attach the fillet surface generator to the fillet solver

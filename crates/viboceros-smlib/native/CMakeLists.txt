@@ -132,6 +132,7 @@ list(APPEND KERNEL_SOURCES "${REMOVE_PATCHED}")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-segment-limits.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-exact-split.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-tensor-bezier.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-surface-fillet.cmake")
 
 set(CURVE_FILLET_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/SmCurveFilletExecutive.cpp")
 set(CURVE_FILLET_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-fillet-sides.patch")
@@ -203,7 +204,7 @@ target_include_directories(SM_API SYSTEM PUBLIC "${USD_BREP_ROOT}/source/SM_API/
 target_compile_definitions(SM_API PRIVATE SM_API_EXPORTS)
 target_compile_options(SM_API PRIVATE -Wno-write-strings)
 target_link_libraries(SM_API PUBLIC SMLib)
-add_library(viboceros_smlib STATIC bridge.cpp basis_preservation.cpp brep_export.cpp brep_import.cpp boundary_validation.cpp coplanar_merge.cpp face_creases.cpp knot_refinement.cpp network_fit.cpp)
+add_library(viboceros_smlib STATIC surface_fillet.cpp bridge.cpp basis_preservation.cpp brep_export.cpp brep_import.cpp boundary_validation.cpp coplanar_merge.cpp face_creases.cpp knot_refinement.cpp network_fit.cpp)
 target_link_libraries(viboceros_smlib PUBLIC SM_API)
 target_compile_options(viboceros_smlib PRIVATE -Wall -Wextra -Werror)
 add_executable(viboceros_smlib_surface_blend_probe "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_blend_probe.cpp")
@@ -297,10 +298,24 @@ target_link_libraries(viboceros_smlib_planarity_baseline PRIVATE SM_API)
 # API library also exports a different StdAfx.h directory.
 target_compile_options(viboceros_smlib_planarity_baseline PRIVATE -Wno-write-strings -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
 
+add_executable(viboceros_smlib_surface_fillet_probe EXCLUDE_FROM_ALL
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_fillet_probe.cpp")
+target_link_libraries(viboceros_smlib_surface_fillet_probe PRIVATE viboceros_smlib)
+target_include_directories(viboceros_smlib_surface_fillet_probe PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_compile_options(viboceros_smlib_surface_fillet_probe PRIVATE -Wall -Wextra -Werror)
+
+add_executable(viboceros_smlib_surface_fillet_baseline EXCLUDE_FROM_ALL
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_fillet_probe.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmFilletExecutiveBaseline.cpp")
+target_link_libraries(viboceros_smlib_surface_fillet_baseline PRIVATE viboceros_smlib)
+target_include_directories(viboceros_smlib_surface_fillet_baseline PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_compile_options(viboceros_smlib_surface_fillet_baseline PRIVATE -Wno-write-strings
+    -include "${USD_BREP_ROOT}/source/SMLib/inc/StdAfx.h")
+
 # Optional instrumentation of both complete native libraries and the C ABI.
 option(VIBOCEROS_SMLIB_ASAN "Instrument native geometry with AddressSanitizer" OFF)
 if(VIBOCEROS_SMLIB_ASAN)
-    foreach(instrumented_target viboceros_smlib_tensor_bezier_probe SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe viboceros_smlib_exact_split_probe)
+    foreach(instrumented_target viboceros_smlib_surface_fillet_probe viboceros_smlib_tensor_bezier_probe SMLib SM_API viboceros_smlib viboceros_smlib_isocurve_pair_probe viboceros_smlib_surface_patch_probe viboceros_smlib_curve_segment_probe viboceros_smlib_basis_evaluation_probe viboceros_smlib_point_interpolation_probe viboceros_smlib_exact_split_probe)
         target_compile_options(${instrumented_target} PRIVATE -fsanitize=address -g -fno-omit-frame-pointer)
         target_link_libraries(${instrumented_target} PUBLIC asan)
     endforeach()

@@ -276,8 +276,7 @@
     "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
     "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
-    "docs/smlib-unclamped-import-isocurve-audit.json.gz": "93170bbbc3d86c32b3db0ddc325b78f2728947b1c242f69f32da8bc512791f31",
-    "docs/native-pole-transfer-validation.json": "a9037f63a73281915615231cae420e976d37552f9d767b94a1348fa8f2b07898"
+    "docs/smlib-unclamped-import-isocurve-audit.json.gz": "93170bbbc3d86c32b3db0ddc325b78f2728947b1c242f69f32da8bc512791f31"
   },
   "baseline_git_sha256": {
     "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-smlib/build.rs": "a47e9483a9fde54ad376294db1f40f234b279a76c97e01ece62ad2052f08a42d",
@@ -298,6 +297,7 @@
     "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/smlib-joining.md": "09c286476e2eca9ea03bd66c51ac71afa1904602aacc5a0295aa41bd087625f1",
     "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/usd-brep-limitations.md": "71959450e304ca0d4875632b1731ff286b30643e63888f7ad095558a7fb7347e",
     "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/join-source-uv-validation.json": "787768325042f04c29c840c21c9816be5c51c047a9e7812b7b2daae3f8751322",
-    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/smlib-unclamped-import-validation.json": "8208903110a312b0db6aed394980190e264bc570603acf6c3226c59cd639b4a9"
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/smlib-unclamped-import-validation.json": "8208903110a312b0db6aed394980190e264bc570603acf6c3226c59cd639b4a9",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/native-pole-transfer-validation.json": "a9037f63a73281915615231cae420e976d37552f9d767b94a1348fa8f2b07898"
   }
 }

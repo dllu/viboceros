@@ -42,6 +42,7 @@ PROBES = {
     'line_through_points': ('line_through_points_probe', ('plane_through_points_probe',)),
     'plane_through_points': ('plane_through_points_probe', ()),
     'network_surface': ('network_surface_probe', ('curve_recipe',)),
+    'surface_fillet': ('surface_fillet_probe', ()),
     'rail_revolve': ('rail_revolve_probe', ()),
     'two_rail_sweep': ('two_rail_sweep_probe', ()),
     'divide_along_creases': ('divide_creases_probe', ('geometry_validity_probe',)),

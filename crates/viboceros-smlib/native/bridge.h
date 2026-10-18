@@ -11,6 +11,8 @@ typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
 typedef struct VbCurveList VbCurveList;
+int vb_surface_fillet(const VbNurbsData *first,const VbNurbsData *second,double radius,
+    const int sides[2],int extend,double extension_factor,double accuracy,VbSolid **out,char *error,size_t capacity);
 int vb_shape_extrude_faces(const VbSolid *shape, const double displacement[3], int cap_ends,
     double tolerance, VbSolid **out, char *error, size_t capacity);
 int vb_shape_extrude_faces_to_point(const VbSolid *shape, const double apex[3],

@@ -272,8 +272,6 @@
     "src/app/tests/grip_transform.rs": "2e36e4436e0e1f7dd55464e5051b2c7e7b132d50026390bb57e20ea1682222d3",
     "src/app/tests/scale_by_plane.rs": "1a9ac5cb62f19fefdc62adf0c9e031b49467816033d2534a28ca1eb574907788",
     "src/viewport.rs": "e271daeaa134718b40427356e7a39ee33948076d4e8221d8756f4683e05cfebf",
-    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
-    "tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5",
     "tools/rhino_oracle/grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
@@ -284,7 +282,6 @@
   "artifact_sha256": {
     "docs/commands/README.md": "1a755f0e7449d244a50c57b20f930b3867e98480465144170a7b7bc54614628d",
     "docs/commands/transforms.md": "ec28a574c96567b6dc138594729dc7f69fa31a4030b2cd5b36f7939d519e0634",
-    "docs/architecture.md": "8d5d30126c2433b17c10265d7134356449c491d1c4e74b25ac00302d62dc789d",
     "tools/rhino_oracle/fixtures/remap_cplane.json": "78845c80443fd0730e2851810a85e8ee6e4712c648d400349aa0be1905559d42",
     "tools/rhino_oracle/observations/remap_cplane.json": "0579a324690e6e018108ce499db7517d45025006a976ecb73a40864c8b58b5f8",
     "tools/rhino_oracle/fixtures/remap_cplane_copy.json": "8d66d83018bf5e4fdbe871722f829c4412049f18240cbd809aa8f5cd6ff56f15",
@@ -324,11 +321,14 @@
     "cda40e1f68f875244541dee3b697092a42ac4055:src/app/remap_cplane.rs": "beb44401700f2e80149145f21b78e164638c3607174dd492f578966d6ecd1515",
     "cda40e1f68f875244541dee3b697092a42ac4055:src/app/tests/remap_cplane.rs": "cc2de8c0269ef6811fcbe84a680d42c99ff33fe110409758c725cfb201a84378",
     "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/remap_cplane_probe.py": "343a5d5239fa272b9ac7fcdaad946f782e4b5df944f064dd89a4e7408c42a956",
-    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/client.py": "1f00741a4c07ad6324c735b91d90a38a6ff0cedc4e972fd299a33ce55430e98c"
+    "cda40e1f68f875244541dee3b697092a42ac4055:tools/rhino_oracle/client.py": "1f00741a4c07ad6324c735b91d90a38a6ff0cedc4e972fd299a33ce55430e98c",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5"
   },
   "artifact_git_sha256": {
     "cda40e1f68f875244541dee3b697092a42ac4055:README.md": "e15ebd4b03ea4be604ea4e8d241eb9a2ac7f271cdc12a08f542b9108fbde8d0e",
     "cda40e1f68f875244541dee3b697092a42ac4055:docs/commands/remap-cplane.md": "b5de3f82e229d303c1df393caed41fac73611df2c0ea95605ff9daeb9780628c",
-    "cda40e1f68f875244541dee3b697092a42ac4055:docs/oracle.md": "e487d5d7d95b1d54e0f3e7b45e78a46d72b45bf1122a3d44fb01d3883c7ad409"
+    "cda40e1f68f875244541dee3b697092a42ac4055:docs/oracle.md": "e487d5d7d95b1d54e0f3e7b45e78a46d72b45bf1122a3d44fb01d3883c7ad409",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/architecture.md": "8d5d30126c2433b17c10265d7134356449c491d1c4e74b25ac00302d62dc789d"
   }
 }

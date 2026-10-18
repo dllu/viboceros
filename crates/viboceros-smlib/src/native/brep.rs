@@ -2,6 +2,7 @@
 use super::*;
 use std::borrow::Cow;
 
+mod joints;
 mod poles;
 use poles::close_pole_gaps;
 use viboceros_geometry::{
@@ -1027,6 +1028,25 @@ impl Solid {
         tolerance: Tolerance,
         approximation: Option<f64>,
     ) -> Result<Brep, Error> {
+        self.export_brep(tolerance, approximation, false)
+    }
+
+    /// Request exact UV closure before a caller rescales a private output.
+    /// Each numerical joint change requires a continuous spatial certificate.
+    pub(super) fn to_brep_with_closed_uv_joints(
+        &self,
+        tolerance: Tolerance,
+        approximation: Option<f64>,
+    ) -> Result<Brep, Error> {
+        self.export_brep(tolerance, approximation, true)
+    }
+
+    fn export_brep(
+        &self,
+        tolerance: Tolerance,
+        approximation: Option<f64>,
+        close_uv_joints: bool,
+    ) -> Result<Brep, Error> {
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {
             match approximation {
@@ -1139,6 +1159,11 @@ impl Solid {
                         [0.; 2],
                     )?);
                 }
+                let trims = if close_uv_joints {
+                    joints::close_numerical_joints(&surface, &edges, trims, tolerance)?
+                } else {
+                    trims
+                };
                 let trims = close_pole_gaps(&surface, &vertices, trims, tolerance)?;
                 loops.push(BrepLoop::try_new(
                     if loop_data.inner != 0 {

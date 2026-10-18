@@ -13524,6 +13524,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'network_surface':
         from network_surface_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'surface_fillet':
+        from surface_fillet_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'rail_revolve':
         from rail_revolve_probe import run
         return run(operation, globals(), iterations, tolerance)

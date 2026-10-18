@@ -354,7 +354,6 @@
     "The full native-feature oracle suite remains red on the twenty explicitly retained baseline failures."
   ],
   "source_sha256": {
-    "crates/viboceros-oracle/src/lib.rs": "69b6ae9561c272510e9fdc4ae325ab8701fab5d02079ee0d6ca9b7536517ab72",
     "crates/viboceros-oracle/src/remap_cplane.rs": "73e6951ad0b27000ed5930a1e0b1f2aa126df2f21399e8b6a300d1c96c63b882",
     "crates/viboceros-oracle/src/remap_cplane/tests.rs": "37c5cb17f0e4b03ac842ad467e86d17ce9dc0c762703e011660bee67dc0decad",
     "crates/viboceros-oracle/src/orient_surface_grips.rs": "8e48963670e56708986ba1ecf6853749d09da12e5dfd5992713436385879511b",
@@ -370,10 +369,8 @@
     "tools/rhino_oracle/test_remap_cplane_comparison.py": "0ccd731817d38cf575cf51a86c0665d7ff3ec5394a28203cfb4845ed82963e48",
     "tools/rhino_oracle/remap_cplane_probe.py": "d2aeff9a9ce25c6695d1943441c317b3332be0776932ab9a644fdbdf19b4f647",
     "tools/rhino_oracle/test_client.py": "83aa176254fc0872e7363af08aad2b5be9d8ca1e9d9e097d3e05d4f913d6d0aa",
-    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
     "tools/rhino_oracle/grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
-    "tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
@@ -405,8 +402,7 @@
     "docs/remap-cplane-api-native-views.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
     "docs/oracle.md": "6c5755ce7b32bccc85ce1cbd1618458a6718e666678596d3d2e55e1df9b316c4",
     "docs/commands/remap-cplane.md": "f828e120099e5f21ea6a1f1f255e263952f1819ca51cf84a9feddeadebb813f6",
-    "docs/arc-extension-validation.json": "4663fdc56e5baa564cc41063833e1ac54fd2ab85609ef08a5fb0789528aff829",
-    "docs/remap-cplane-validation.json": "a53cd3eb4700cdc932ae1d7c57aa67e126db21de8582fd3212525b781c73bac0"
+    "docs/arc-extension-validation.json": "4663fdc56e5baa564cc41063833e1ac54fd2ab85609ef08a5fb0789528aff829"
   },
   "baseline_git_sha256": {
     "cda40e1f68f875244541dee3b697092a42ac4055:crates/viboceros-oracle/src/lib.rs": "bbaca71f56e0eef34f682cb4557f995c430bad92daab93f2c142be218140541b",
@@ -428,6 +424,12 @@
     "cda40e1f68f875244541dee3b697092a42ac4055:tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_git_sha256": {
-    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:README.md": "98ce8edb477c0acf9b227ae50272a4121fad781034e445f87dbfff86ddbe1b39"
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:README.md": "98ce8edb477c0acf9b227ae50272a4121fad781034e445f87dbfff86ddbe1b39",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:docs/remap-cplane-validation.json": "a53cd3eb4700cdc932ae1d7c57aa67e126db21de8582fd3212525b781c73bac0"
+  },
+  "source_git_sha256": {
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-oracle/src/lib.rs": "69b6ae9561c272510e9fdc4ae325ab8701fab5d02079ee0d6ca9b7536517ab72",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5"
   }
 }

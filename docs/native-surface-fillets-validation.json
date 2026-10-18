@@ -1,0 +1,449 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "4debb4e1cbe7dbf884fe578413a8c7d360be89a0",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Add a native rolling-ball surface fillet API with signed normal sides and independent output ownership, reusing normalized preparation and NURBS/B-rep transfer.",
+    "Disable offset-domain extrapolation for minimal surface fillets; expose the existing extension factor with its original default.",
+    "Use beveled caps for extended inputs and double the private search until rail endpoints reach original finite parent boundaries, with 32 attempts.",
+    "Preserve stored short-basis intervals during normalized surface preparation, excluding artificial full-vector endpoints.",
+    "Offer explicit certified numerical UV closure for fillet output rescaling; keep existing native transfer behavior."
+  ],
+  "completed_runs": [
+    {
+      "command": "cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-bridge.log.gz",
+        "uncompressed_sha256": "26803e6256b46346590ba8880bcf350b0c3d2be8f59c44187d2bacc8d4c5ba38"
+      },
+      "passed": 429,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-command.log.gz",
+        "uncompressed_sha256": "dffbf8c0ab518bc65f8486759aaa588970419e6ea7ac6ed129d5ee482bfdbf87"
+      },
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "cargo test --release -p viboceros-oracle --features native-smlib surface_fillet -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-oracle.log.gz",
+        "uncompressed_sha256": "d2c1a2bcc246d7e1a4b527b431eaa917fb8269047f8306b3fc034a40b97cdc0e"
+      },
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test --release -p viboceros-oracle surface_fillet -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-oracle-portable.log.gz",
+        "uncompressed_sha256": "7223ab472aa1d7048f0c5dcbbde3bd877f4bd24009fdf1bd2b177209e91b9b0f"
+      },
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-clippy.log.gz",
+        "uncompressed_sha256": "73f70b29467d4353c80fc3171d55f1bfc7180ecda35cc273ce23f96646037692"
+      }
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-fmt.log.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": "python3 -m unittest discover -s tools/rhino_oracle -t .",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-python.log.gz",
+        "uncompressed_sha256": "945c9ab8a356a5353bfe174e022f345b0b0cb6914faf60b0d8b9f1143cb44537"
+      }
+    },
+    {
+      "command": "cargo build --release -p viboceros-oracle --features native-smlib",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-oracle-build-final.log.gz",
+        "uncompressed_sha256": "0b5fe2277fd2b29cc111b76604c482f8ec516047dbc0954657203c5614f4e4db"
+      }
+    }
+  ],
+  "execution_environment": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 for Cargo; normal and sanitizer ARM native libraries built from actual pinned SMLib/SM_API.",
+  "direct_probes": {
+    "baseline": {
+      "exit_code": 1,
+      "valid_cases": 56,
+      "passed_cases": 32,
+      "rejected_requests": 10,
+      "maximum_geometry_error": 4.980000000000006,
+      "failed_by_family": {
+        "0": 0,
+        "1": 8,
+        "2": 8,
+        "3": 8
+      },
+      "raw": {
+        "retained": "docs/native-surface-fillets-baseline.jsonl.gz",
+        "uncompressed_sha256": "4b3a754303a294986c1c7a3487afefe0b57f7b4f69577d80f3e2006c8ddf33b4"
+      },
+      "stderr": {
+        "retained": "docs/native-surface-fillets-baseline.stderr.gz",
+        "uncompressed_sha256": "78c966dddaf2644c2791b064280f6df01bfc951064eed929085cbc7768587edb"
+      },
+      "build": {
+        "command": "Configure native CMake ; build opt-in surface_fillet_baseline target -j10",
+        "exit_code": 0,
+        "log": {
+          "retained": "docs/native-surface-fillets-baseline-build.log.gz",
+          "uncompressed_sha256": "816db725781555805e7417a624df8736c1d730c6d102c3d00490ee3e2ac0bea7"
+        }
+      },
+      "scope": "Link the original half-span producer policy ahead of the repaired archive. A new-argument linkage shim retains the original constructor default and ignores the new factor; the Rust/C ABI producer did not exist in the parent. This controlled comparison isolates domain/search behavior, preserving all other repairs. Sixteen finite-extent and eight curved-minimal cases fail; raw results remain retained."
+    },
+    "normal": {
+      "exit_code": 0,
+      "valid_cases": 56,
+      "passed_cases": 56,
+      "rejected_requests": 10,
+      "maximum_geometry_error": 7.075476204931874e-09,
+      "failed_by_family": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "raw": {
+        "retained": "docs/native-surface-fillets-normal.jsonl.gz",
+        "uncompressed_sha256": "19bdd98e36ceb45c2eafe2b1189e42ba3b5245db13b55f39091456c5192bff37"
+      },
+      "stderr": {
+        "retained": "docs/native-surface-fillets-normal.stderr.gz",
+        "uncompressed_sha256": "eacaff3d01bbc31e2c651bddc659add9fa04a0dfc26d46f506a56b5088188dbd"
+      },
+      "build": {
+        "command": "Configure native CMake ; build opt-in surface_fillet_probe target -j10",
+        "exit_code": 0,
+        "log": {
+          "retained": "docs/native-surface-fillets-normal-build.log.gz",
+          "uncompressed_sha256": "e9d10f7e4a69846be662dc0bb1c939d17ad57d1783ef825a204ce28c68f87f59"
+        }
+      }
+    },
+    "asan": {
+      "exit_code": 0,
+      "valid_cases": 56,
+      "passed_cases": 56,
+      "rejected_requests": 10,
+      "maximum_geometry_error": 7.075476204931874e-09,
+      "failed_by_family": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "raw": {
+        "retained": "docs/native-surface-fillets-asan.jsonl.gz",
+        "uncompressed_sha256": "a33ff8b0b64fb1dcdbc221a8140a0702cd3bb569fd9ac50d44a9f1a9bb6996e2"
+      },
+      "stderr": {
+        "retained": "docs/native-surface-fillets-asan.stderr.gz",
+        "uncompressed_sha256": "eacaff3d01bbc31e2c651bddc659add9fa04a0dfc26d46f506a56b5088188dbd"
+      },
+      "build": {
+        "command": "Configure native CMake with VIBOCEROS_SMLIB_ASAN=ON; build opt-in surface_fillet_probe target -j10",
+        "exit_code": 0,
+        "log": {
+          "retained": "docs/native-surface-fillets-asan-build.log.gz",
+          "uncompressed_sha256": "1753f15d40bff475d91c4a2098d5fcf4961a83b5cad486dd391f540854624fe8"
+        }
+      },
+      "flags": {
+        "retained": "docs/native-surface-fillets-asan-flags.txt.gz",
+        "uncompressed_sha256": "a722777efa2a796e7f95b127cb6319c3d5f80b56aa7d3b1431eea3285f933d20"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "scope": "Complete SMLib, SM_API and C ABI archives and the direct C ABI probe are instrumented. Source buffers/private parents die before export, native output dies before reading serialized definitions. Rust preparation, UV certificates and adaptive coordination execute normally, not under ASan in this record. Leak detection is disabled."
+    }
+  },
+  "probe_runner": {
+    "command": "python3 /tmp/viboceros-surface-fillet-probes.py",
+    "exit_code": 0,
+    "log": {
+      "retained": "docs/native-surface-fillets-probes.log.gz",
+      "uncompressed_sha256": "f6fea373e86386588eec9b96e0541b624f87f78c67e926dcfabeac8424ae3464"
+    },
+    "script": {
+      "retained": "docs/native-surface-fillets-probes.py.gz",
+      "uncompressed_sha256": "cb7843777d5b82a429a92d2643450d12046c309418f8c8a3c956cbdda906c2a0"
+    },
+    "baseline_script": {
+      "retained": "docs/native-surface-fillets-baseline.py.gz",
+      "uncompressed_sha256": "595183766e6a56320f3ae83ab2499b3562034c79ac1b867629a491d770b340a9"
+    }
+  },
+  "sdk_comparison": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-surface-fillet-compare.py",
+    "exit_code": 0,
+    "log": {
+      "retained": "docs/native-surface-fillets-compare.log.gz",
+      "uncompressed_sha256": "79bd643028a7a1b29aaf20edc541d4048c63cd59da4afaa92bed0bd415eb6f67"
+    },
+    "script": {
+      "retained": "docs/native-surface-fillets-compare.py.gz",
+      "uncompressed_sha256": "b8712989512e8b956168fc52bf0ef3e4f4a961ac623db80cdadb66b4aab3a2d6"
+    },
+    "audit": {
+      "retained": "docs/native-surface-fillets-native-final-audit.json.gz",
+      "uncompressed_sha256": "79b962359a37ee3b6c7d5b891c7ead1d4d56636c11073f0523cbdc3997b2c41d"
+    },
+    "raw_report": {
+      "retained": "docs/native-surface-fillets-raw-report.json.gz",
+      "uncompressed_sha256": "9d0ecc1a048a3cc1d9dc382913712dc604de4b2ccddebec79ce48049ba63be97"
+    },
+    "summary": {
+      "retained": "docs/native-surface-fillets-comparison.json.gz",
+      "uncompressed_sha256": "77f9d89fab1da8b2a8d99dd84a9058208fedebd24e8e61b683130be59711a1c5"
+    },
+    "scope": {
+      "executed": 6,
+      "api_successes": 5,
+      "execution_failures": [
+        {
+          "status": "failure",
+          "id": "cylinder-True",
+          "error": {
+            "kind": "geometry",
+            "message": "SMLib: fillet native surfaces status 1001"
+          }
+        }
+      ],
+      "sampled_matches": 5,
+      "paired_closest_points": 20,
+      "point_epsilon": 1e-08,
+      "maximum_point_coordinate_difference": 5.07015229800345e-09,
+      "maximum_bounds_coordinate_difference": 1.908758778786167e-09,
+      "complete_raw_matches": 0,
+      "complete_raw_mismatches": 5,
+      "complete_raw_execution_errors": 1,
+      "scope": "Five qualified producer recipes compare sampled closest points and tight bounds. Areas remain diagnostics against an independent analytic value. Complete serialized NURBS/topology records differ between constructors and all raw mismatches remain retained. Curved Extend=Yes is an actual native failure and a required follow-up. No continuous global Rhino geometry or performance claim."
+    }
+  },
+  "initial_integration_regression": {
+    "initial_exit_code": 101,
+    "initial_log": {
+      "retained": "docs/native-surface-fillets-command-initial.log.gz",
+      "uncompressed_sha256": "2b6bd1bdd8ecaf9d3f916a4836a3cb4e4899b42534ddde8bd363b815783eb154"
+    },
+    "cause": "Unconditional numerical UV welding changed existing native payload/orientation and triggered an unnecessary spherical-edge certificate work limit in three Boolean tests. Four existing command tests failed.",
+    "resolution": "Make exact UV closure an explicit private export request, used by the normalized fillet path before world rescaling. Ordinary native export retains its previous definition/uncertainty policy. No tolerance or certificate budget was loosened.",
+    "focused": {
+      "command": "cargo test --release -p viboceros-command --features native-smlib --lib boolean_solids:: -- --nocapture",
+      "exit_code": 0,
+      "log": {
+        "retained": "docs/native-surface-fillets-boolean-final.log.gz",
+        "uncompressed_sha256": "636c6f7e0c1f38165b669173707ee9f7d3256aea875569bc8b2e294e32ed4f1e"
+      },
+      "passed": 17,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "intermediate_documentation_build_failure": {
+    "exit_code": 101,
+    "log": {
+      "retained": "docs/native-surface-fillets-command-doc-build-failure.log.gz",
+      "uncompressed_sha256": "ff954f6258f4f11554c0702578d5b6d8f8c6544fb9485eaa8b7393310711932f"
+    },
+    "scope": "During overlapping Cargo invocations, all 1600 runtime command tests passed but rustdoc could not find the native bridge rlib. Final Cargo checks run sequentially and the command suite is repeated including documentation tests."
+  },
+  "initial_focused_logs": [
+    {
+      "retained": "docs/native-surface-fillets-focused.log.gz",
+      "uncompressed_sha256": "9871dc1558ca499c4e6f56c2c6246b49a42a5722ad18a8f225a472089fd4ebb1"
+    },
+    {
+      "retained": "docs/native-surface-fillets-focused-2.log.gz",
+      "uncompressed_sha256": "6cb4fb114ba77d3df47d997003ccc64e2f9bf5ac69e56e24a7c8a164314c32b2"
+    },
+    {
+      "retained": "docs/native-surface-fillets-focused-3.log.gz",
+      "uncompressed_sha256": "afff8ec8dc85daeabc24a0f887d216ffd6f60611bae8edfa8606a67399007729"
+    },
+    {
+      "retained": "docs/native-surface-fillets-focused-4.log.gz",
+      "uncompressed_sha256": "8c4c63e6d8a6bc023f641382aada558591214cc074fc3d618aceea54c3675799"
+    },
+    {
+      "retained": "docs/native-surface-fillets-focused-5.log.gz",
+      "uncompressed_sha256": "6222e7f1c4154e0f8ade3bab926c5f665eb1ced6aedd9a1b8a592a93b98d6a56"
+    }
+  ],
+  "runner_scripts": {
+    "gates.py": {
+      "retained": "docs/native-surface-fillets-gates.py.gz",
+      "uncompressed_sha256": "f5d992b49eba41ef4f67bb2e89c494e3705dccb21384c1dea7f8995455d43f08"
+    },
+    "record.py": {
+      "retained": "docs/native-surface-fillets-record.py.gz",
+      "uncompressed_sha256": "629c7ba6e9de976a36613a39f9059f1d66f6f7be105ee2a047024f72b346e52f"
+    },
+    "preserve-provenance.py": {
+      "retained": "docs/native-surface-fillets-preserve-provenance.py.gz",
+      "uncompressed_sha256": "e18ab43784cb98d7f025cfaaec7c8208eec3a8fe467bc7414561a23179723b6c"
+    },
+    "provenance.log": {
+      "retained": "docs/native-surface-fillets-provenance.log.gz",
+      "uncompressed_sha256": "f73ec2442f888b8036c62b6dd75f356e0e79003ebfa61c87ea6618272039cea8"
+    },
+    "rhino.py": {
+      "retained": "docs/native-surface-fillets-rhino.py.gz",
+      "uncompressed_sha256": "cceee3f7e2c9d2662d2c7cabf009b2b10b652bea2ae0994501f77c21f1fefc79"
+    },
+    "rhino.log": {
+      "retained": "docs/native-surface-fillets-rhino.log.gz",
+      "uncompressed_sha256": "0db2bb288b36a2f0dfce2617995658880e96f43f2ea483eb9d57547398a21a1b"
+    }
+  },
+  "historical_provenance": {
+    "preserved_entries": 41,
+    "records": 18,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-fillets/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Independent cylinder/torus identities and owned C ABI snapshots first; then controlled original-policy comparison, full native bridge and command suites for shared preparation/export/header changes, native and portable oracle schema tests, all-feature workspace lint and all Python oracle tests.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python-binding, OCCT and GUI harnesses; this ARM bridge builds the actual native libraries and those other layers remain unchanged."
+  },
+  "limitations": [
+    "FilletSrf command picking, parent trims, joining, metadata/history and preview workflow remain in progress; no stub command is registered.",
+    "The retained curved Extend=Yes recipe succeeds in Rhino and returns native status 1001 here. It is an execution failure and required follow-up.",
+    "All five successful complete serialized records differ between constructors. Twenty sampled closest points and tight bounds agree within 1e-8; no comparison-time geometry normalization is applied. No continuous global Rhino geometry or kernel-speed claim.",
+    "Input preparation retains its degree/weight/resource limits and the native normalized accuracy floor. Full-order discontinuities, arbitrary conditioning and closed-contact extension behavior remain unqualified.",
+    "AddressSanitizer executes direct C ABI geometry/ownership/rejection cases, not Rust coordination; leak detection is disabled."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "df2d2e1f273ebd01fd60f6c7978768cd21857378c9547c02057d078a9374cd7e",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "f15a0f9b3e6affbbea3ace9040d0ee9d53b611362f9f0f6bb0650fbe1d3edf0c",
+    "crates/viboceros-smlib/native/bridge.cpp": "71de4241ccfba0ead693555e9c3046212bf84cf97819d05dd4b87552c2ff9118",
+    "crates/viboceros-smlib/native/bridge.h": "bf59d13258ccb604153b56ed7578dda07fdd1a144912ed94fe8ab601e0dc12da",
+    "crates/viboceros-smlib/native/surface_fillet.cpp": "38d7fcb64c32d54c241ed99fba84a270e45180905f3a459992ae2220ec1c2e3c",
+    "crates/viboceros-smlib/native/surface_fillet.h": "a3a79e0c92cd6b521fb7a573228cfbed984185f879ab8a31464fac03bbd022be",
+    "crates/viboceros-smlib/src/lib.rs": "1e7f2fc776132218a25d28b32905d2d3b128261c22beabc5e01a0a7925c3560d",
+    "crates/viboceros-smlib/src/native.rs": "c13a920a70a844b3050cc432e1c2cafbced1109cc27e4d52ef839e3deea390d0",
+    "crates/viboceros-smlib/src/native/surface_fillet.rs": "bfbbcf84e4cb219ad6c29c8805e6b1374732bce69fe5478efbd38b5a33bb1d89",
+    "crates/viboceros-smlib/src/native/curve_surface_intersections.rs": "ca5ebd99f64c85f06a302706d050a4e2602e1b4debce58709edebf9b05e0a8f2",
+    "crates/viboceros-smlib/src/native/brep.rs": "a25ec4f459059781c63c238296c79084d5ec823a5569c218ef6d7159d606f3b8",
+    "crates/viboceros-smlib/src/native/brep/joints.rs": "99fd73bfff755b6874ebc56ba1c8ebf3885c8fe5484ba0e4060a61c4d5c602c4",
+    "crates/viboceros-smlib/tests/surface_fillets.rs": "83cc70584ebdf971b788905da94b50918ca1fd330f1b532dfc3e9045cd3404fc",
+    "crates/viboceros-oracle/src/lib.rs": "5a6313c512497354e94c717fc130e3b9daa5c0608f0f3d1c15faafbcee9d66cb",
+    "crates/viboceros-oracle/src/audit.rs": "34f5610b57a7be73fec28d591a2f6565e382e403c4256f49d9d0bfe7dde49476",
+    "crates/viboceros-oracle/src/surface_fillet.rs": "3abe4a6509fdb83ba2f4b867f6d778b4deb845a07f005c457013e1791b41bd80",
+    "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
+    "tools/rhino_oracle/structural_sdk.py": "c884e0ef025f1d1aba239a399fc23089c626590b40ab395e940f93ab1a6aed88",
+    "tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
+    "tools/rhino_oracle/test_surface_fillet_probe.py": "b98556c353f6496553d5ed2e947d4ae981da5dea732d33378031413fe9727700",
+    "tools/usd_brep/surface_fillet_probe.cpp": "1e2424e8780d5dcdea7f9484f633a5adc85ffd1bc61c76f63fe6169a9293c82d",
+    "third_party/patches/usd-brep-surface-fillet.cmake": "c07265226016db090d997c00561dfc0dd6a8f0b6233af7eafe0395b1acd33ac2",
+    "third_party/patches/usd-brep-surface-fillet-domain.patch": "fbd34cd46f89b6865facf8d54005e0d08ec0074d644d84439c30072a1763ac30",
+    "third_party/patches/usd-brep-surface-fillet-header.patch": "8616f472b2560c5399c0ccac2102e785151987f92c7ae7403c3428af1570c5bc",
+    "third_party/usd-brep/source/SMLib/src/SmFilletExecutive.cpp": "b747e04cd9f2c760bd9cdd06b7d82222828dba043531bfc489e4711ce68c567c",
+    "third_party/usd-brep/source/SMLib/inc/SmFilletExecutive.h": "0f919f96da4d3b400734d3971dddd49535365da7451a61e346772572fb8de632",
+    "third_party/usd-brep/source/SMLib/src/SmFilletStandardSolver.cpp": "14837a8f3a279906470ab9c67478dc2fba316952c8ee41043ec67d8662af175f",
+    "third_party/usd-brep/source/SM_API/src/SmApiBrep.cpp": "c1dcdf9899a386199dd9cc3ee3bef9626d324d5558a8b7b6132b19e18fb70df1",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-surface-fillets-bridge.log.gz": "c26d391091ec2641d8b2ca60f139ec0be1a23b23d69512e968ee86f36e867ea0",
+    "docs/native-surface-fillets-command.log.gz": "8352f44699f385347d355bfe623ee8541b1d14ae52f95558662580b3c6442981",
+    "docs/native-surface-fillets-oracle.log.gz": "e243efad73fc39153beef5fddb4302aa1216bf918e47c89a805ff941f88e9b4a",
+    "docs/native-surface-fillets-oracle-portable.log.gz": "b02b4d49034c323758f9fee21303040c2339537b2e242987f05f7e014bceb811",
+    "docs/native-surface-fillets-clippy.log.gz": "79dd930fac06f3eb4806d7b93608147162289444ab5441b719032e2b558f13c6",
+    "docs/native-surface-fillets-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-surface-fillets-python.log.gz": "4a143a7aab2344c7c5dc4d99ba488cc16fe395fb4f9058d3dd3d2ea8569c8fd4",
+    "docs/native-surface-fillets-oracle-build-final.log.gz": "45e57b16428bb31a6acc12329fda5e312f630c421d991c8002fd78badcff45bf",
+    "docs/native-surface-fillets-baseline.jsonl.gz": "17377436c7b549a4d1ba800b58de4957ea0c61af0f6b6fb410b67bd715698072",
+    "docs/native-surface-fillets-baseline.stderr.gz": "5a7053e24d4e9daf4d935eb9008e4b68229de08fb06c6045c1d8873b8a137cd0",
+    "docs/native-surface-fillets-baseline-build.log.gz": "74403e195d2dc81aa45288e196a151db3f8c6f01424590ec574ca907c90a7863",
+    "docs/native-surface-fillets-normal.jsonl.gz": "7589f6e52f15d98ee9497d355758dea73909ac65c451a181ac08b64868c80b4f",
+    "docs/native-surface-fillets-normal.stderr.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-surface-fillets-normal-build.log.gz": "00ec52a6bec434b330b18011af1fa1fcd5403c9342d84ec11191ffad750b00e6",
+    "docs/native-surface-fillets-asan.jsonl.gz": "830b9a23bae9a21a27d1c79f12da8104b182d067d8cc3bc9bbf401c52aa480ea",
+    "docs/native-surface-fillets-asan.stderr.gz": "d457548bb2be66e6a717d23b91452a85011b8228dd1e97bb1e43c840c1ac303e",
+    "docs/native-surface-fillets-asan-build.log.gz": "2f9e51d57f52c64db584d3a428dd52567b4b1d2c713a0c184b64b9c87e6fa728",
+    "docs/native-surface-fillets-asan-flags.txt.gz": "1d71add89ff7d7ac8c463d4dd44ec6bcb54af931564cb249ecf564b05f931b3d",
+    "docs/native-surface-fillets-probes.log.gz": "13c5e46b53e6eded6e3795aaa57b59913c5ecf1a62272975e742758d7fe2c321",
+    "docs/native-surface-fillets-probes.py.gz": "73e56e2d3e2109c5f16f69c763172834c797c540cee3cc9eb985bdffa9fb717c",
+    "docs/native-surface-fillets-baseline.py.gz": "e400fddef153fc986f556f7e7d1f0e8f23431a2981ce4000dcb39e9aa7c82a98",
+    "docs/native-surface-fillets-compare.log.gz": "66d175a64330668c7c5dd5e23a96ddbda5e7aaab332ead385196e001ef927598",
+    "docs/native-surface-fillets-compare.py.gz": "b3b6a7ba1a666665ec13c3995b09dffaddb8dff11e4618ce90bb8c825ac51f9c",
+    "docs/native-surface-fillets-native-final-audit.json.gz": "4f3314eecdacb70ccc1cc54022f59dc18d7b7bec94aee480ec4d83dac9d0a708",
+    "docs/native-surface-fillets-raw-report.json.gz": "b76c1bf2c9af60a54e115db7705b2f527f6e567cadfafe43ddf88777c6928318",
+    "docs/native-surface-fillets-comparison.json.gz": "c5a1965fff39eacf2e77b3c4b3be18ea059920edb201dce1652ff2e10adddc6b",
+    "docs/native-surface-fillets-command-doc-build-failure.log.gz": "148f1e840034fe91060b2d3abeaa14c6b5497e688a3797268755b46dec9dcbfd",
+    "docs/native-surface-fillets-command-initial.log.gz": "18990e5b2e0042aa122c66b4c8258d7aed377e9a4b5e0a7c8af1053e35c6c0fc",
+    "docs/native-surface-fillets-boolean-final.log.gz": "93c33f5282f6710e140ea5c34ef22d0821f70912cfdf8a0d8a60232c9bcf42ca",
+    "docs/native-surface-fillets-focused.log.gz": "97ac789119e693b8febb72103c8636c22ac761da079b4e921da9898d745b9186",
+    "docs/native-surface-fillets-focused-2.log.gz": "9b8cb82c96714ae8565fc6fdb3ee309348cded6891951039201bb40ee8125234",
+    "docs/native-surface-fillets-focused-3.log.gz": "a16eff263c323d1ebf8a8d7c9757745e4d8cd375b69708c4adc50b3851a3747f",
+    "docs/native-surface-fillets-focused-4.log.gz": "680f6326dfc82578b5b69700b239aece309bde44cfabda8034fe02885c9ab358",
+    "docs/native-surface-fillets-focused-5.log.gz": "d43c633715cb9720785659187f4e2eb3f3c3253024d9ddfa595ddca38df4ca0f",
+    "README.md": "4ccc486e80f8fb015b5865ce8952f5dfa7085f70cc0faf8dfd9802e8ff432056",
+    "docs/architecture.md": "caa5f1e3bd84c9db44be111a01db23c5d725a36b10090168fc624a100e1222e1",
+    "docs/usd-brep-limitations.md": "66dba7d2d390249abfc976c4236980528837451ae79d06188cedf34e00ae4c4f",
+    "docs/native-surface-fillets.md": "086bc23cf92a082bd8af9460e210f42fc3109a9f8fb8754829010a712199be95",
+    "third_party/patches/README.md": "9bf84d3ba0dcdca8d2e1bda92c1cd660b752474a4d53a2a5a42a13b785bfc185",
+    "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
+    "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
+    "docs/curve-distance-validation.json": "680ec981adc8f633ba6a1aebd66418eceef211ab1a51d6e17d2a226759075eab",
+    "docs/native-basis-evaluation-validation.json": "039624b652c4080dfad370595bc23cb0b835862c56e2a4c18b8c22ad468dff64",
+    "docs/native-closed-join-validation.json": "26a8b7e381fdb73b575b00a7974e4f073efba62275285f622406a4859b750bad",
+    "docs/native-curve-segment-limits-validation.json": "bbee8e47ec00f6c123bdddf46cb90ab8bafe154411b30d451099cd371e64ecd8",
+    "docs/native-exact-splits-validation.json": "87d60b9d56067fd494aae29df964dfd6fac41e4fe0a3f0a482d9b9894de63452",
+    "docs/native-isocurve-limits-validation.json": "268d7b624d9d43fae12c9ccd6052782b83bbb6eff2dcd98dc159873bda8f5696",
+    "docs/native-isocurve-pairs-validation.json": "032c45ace050fd2994f6ca8c6f06dde2e6eab2d2aab067db77c7398b64bd8dbd",
+    "docs/native-point-interpolation-validation.json": "4eb36b344baf33ea18945b79723b428c347ab39df074190855aeda43d25c1dab",
+    "docs/native-pole-transfer-validation.json": "764d084552c0f71907d0170510d0d159f57a963f55e84dee451978d4d6868416",
+    "docs/native-surface-patches-validation.json": "8e31c61d52fac3f65f431970b51332733748083fa5ba0b5904246033f7d56169",
+    "docs/native-tensor-bezier-validation.json": "bca48d3517b1220db59a9ee22ca401db034c90090d11538e797f99c0e44dc458",
+    "docs/native-uv-transpose-validation.json": "b7255f741861ff42d960437e52e92fc7be9792778104ff53aa1a0120981ab5f4",
+    "docs/remap-cplane-api-validation.json": "0ff7c58d2160bf49e1a263b4c1a532b62337c01a06207047af396ad2aef384f8",
+    "docs/remap-cplane-validation.json": "7994d359aaa162cbf71dcbd8c2390d7f135dab6bb2eac124cc3913b935184986",
+    "docs/smlib-surface-surface-intersections-comparison.json": "f99e18fe003d9685993bcf7ffb72d51c47cb41acf105a798f4b452780a9e2b95",
+    "docs/smlib-surface-trim-intersections-comparison.json": "46444813a51c27e888a4f366544ada4d22e351e13dedd9bd013ba75f531dbc8a",
+    "docs/smlib-surface-trim-tangencies-comparison.json": "1ec5f69f283e84bfd3cc191ceceb27f379ecfa1f787b39b9fdecb265242953b1",
+    "docs/smlib-unclamped-import-validation.json": "3f855c7983d1d482ed66b54794738fb881bab3e19dcdf6e61a4a0c1bd4bfe587",
+    "docs/native-surface-fillets-gates.py.gz": "664fe7d985ca3bf354206b2298616096959daf5ea2abd7ddbea082c9b2059361",
+    "docs/native-surface-fillets-record.py.gz": "8086a01cb3ea15b88218d47e8e806b0a0004828a5189a43e66a3e60aefd8f202",
+    "docs/native-surface-fillets-preserve-provenance.py.gz": "72b4f7468275ba277ab7cb0d34f217357052137c55d28d0ca2dd2afc515fd86f",
+    "docs/native-surface-fillets-provenance.log.gz": "e7e373e9f7b98b865a433b57b2e5b6802167742fdd75d4334dc65fd31bc791d5",
+    "docs/native-surface-fillets-rhino.py.gz": "9c8a66182b966c0edfbeb2c256e908079bcd69d0902a7fb846bea41f171446d9",
+    "docs/native-surface-fillets-rhino.log.gz": "86250d9bfd7915ca200ce66b10d40534ea4913b6b2c177e281ef5c3dd7a18ffa"
+  },
+  "baseline_git_sha256": {
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/native/CMakeLists.txt": "110df0e292e0188b360b5ed5d68d5b726aa150be25d8110d14231eb3a6e2f6a3",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/src/native/curve_surface_intersections.rs": "1dcb976798e8a1b79c2e8e379f859e87b2526b326924fd93ebb548e0d717d14e",
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a"
+  }
+}
