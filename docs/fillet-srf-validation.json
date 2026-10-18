@@ -145,10 +145,8 @@
     "crates/viboceros-command/src/join/breps.rs": "9d4cde8ec05538a5685fe03101f13b70881ba4d4b075c741871e188e6ffa9f9e",
     "crates/viboceros-command/src/join/breps/native.rs": "ce33e70b06c07f53f17a220de1a2b635ffbb1cf7b6d2719b73157e0dcdfdd205",
     "crates/viboceros-command/src/join/mod.rs": "2291c5e4791fdbbc7b11653a638b15371c66532dfa1c5ccb4abbbe1034c94ede",
-    "crates/viboceros-command/src/lib.rs": "1854ffe5417392a94718435cbc076991c4b48e7b2c54016e92268dc5bed48ec2",
     "crates/viboceros-smlib/native/surface_fillet.cpp": "86e1727253f401172817b4a431b6d0887b501f8f922def207d4b3981b95948a7",
     "docs/architecture.md": "8dd115cf53c346a97dc5b644a59979a3a45cbda53358861d0b7b90a51c4bdce1",
-    "docs/commands/README.md": "58844b8833d161d118ffd074989300f9cd0274e4bb2f95679d4ad9ad448332f1",
     "docs/native-surface-fillet-picks.md": "f2b386cad3c84e37c7aa9610a733b446f67ff1e325c619cd1c20beba14d9ceba",
     "docs/native-surface-fillets.md": "eb6b48ef44b5b39fd753d101dce563025ca953cf09d71c6f49957fad0b5e02ef",
     "src/app.rs": "6a6cd5d936a568880cd1a07238f12ae2fefd89ace07435509c22b4741416de6c",
@@ -189,6 +187,8 @@
     "2d049746b4717fdbfea76c2b000f277253cb59e4:crates/viboceros-smlib/src/native/surface_fillet.rs": "2d3d6028a2f5f0bdf8be4ec30798a9e94fd2bd116d2d6bc41730398d880d806f",
     "2d049746b4717fdbfea76c2b000f277253cb59e4:docs/commands/fillet-srf.md": "06e4a6ff0707e78e2486d6ca60836ecd237d8b661071f863d84364027922460f",
     "2d049746b4717fdbfea76c2b000f277253cb59e4:docs/native-surface-fillet-parents.md": "447df32a7e50160b2cf5daec40f3d1d3154178266d89e7415be97d9fc332a09e",
-    "2d049746b4717fdbfea76c2b000f277253cb59e4:src/app/tests/fillet_surface.rs": "55e460cec2c84a528c3e8ea0776913c0f321b3ade6a3a1ae3511dbb8c77c1f3b"
+    "2d049746b4717fdbfea76c2b000f277253cb59e4:src/app/tests/fillet_surface.rs": "55e460cec2c84a528c3e8ea0776913c0f321b3ade6a3a1ae3511dbb8c77c1f3b",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:crates/viboceros-command/src/lib.rs": "1854ffe5417392a94718435cbc076991c4b48e7b2c54016e92268dc5bed48ec2",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/commands/README.md": "58844b8833d161d118ffd074989300f9cd0274e4bb2f95679d4ad9ad448332f1"
   }
 }

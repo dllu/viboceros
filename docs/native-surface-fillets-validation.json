@@ -349,8 +349,6 @@
     "crates/viboceros-smlib/src/native/brep/joints.rs": "99fd73bfff755b6874ebc56ba1c8ebf3885c8fe5484ba0e4060a61c4d5c602c4",
     "crates/viboceros-oracle/src/lib.rs": "5a6313c512497354e94c717fc130e3b9daa5c0608f0f3d1c15faafbcee9d66cb",
     "crates/viboceros-oracle/src/audit.rs": "34f5610b57a7be73fec28d591a2f6565e382e403c4256f49d9d0bfe7dde49476",
-    "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
-    "tools/rhino_oracle/structural_sdk.py": "c884e0ef025f1d1aba239a399fc23089c626590b40ab395e940f93ab1a6aed88",
     "third_party/patches/usd-brep-surface-fillet.cmake": "c07265226016db090d997c00561dfc0dd6a8f0b6233af7eafe0395b1acd33ac2",
     "third_party/patches/usd-brep-surface-fillet-domain.patch": "fbd34cd46f89b6865facf8d54005e0d08ec0074d644d84439c30072a1763ac30",
     "third_party/patches/usd-brep-surface-fillet-header.patch": "8616f472b2560c5399c0ccac2102e785151987f92c7ae7403c3428af1570c5bc",
@@ -397,16 +395,7 @@
     "docs/native-surface-fillets-focused-5.log.gz": "d43c633715cb9720785659187f4e2eb3f3c3253024d9ddfa595ddca38df4ca0f",
     "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
     "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73",
-    "docs/native-basis-evaluation-validation.json": "039624b652c4080dfad370595bc23cb0b835862c56e2a4c18b8c22ad468dff64",
-    "docs/native-curve-segment-limits-validation.json": "bbee8e47ec00f6c123bdddf46cb90ab8bafe154411b30d451099cd371e64ecd8",
-    "docs/native-exact-splits-validation.json": "87d60b9d56067fd494aae29df964dfd6fac41e4fe0a3f0a482d9b9894de63452",
-    "docs/native-isocurve-limits-validation.json": "268d7b624d9d43fae12c9ccd6052782b83bbb6eff2dcd98dc159873bda8f5696",
-    "docs/native-isocurve-pairs-validation.json": "032c45ace050fd2994f6ca8c6f06dde2e6eab2d2aab067db77c7398b64bd8dbd",
-    "docs/native-point-interpolation-validation.json": "4eb36b344baf33ea18945b79723b428c347ab39df074190855aeda43d25c1dab",
     "docs/native-pole-transfer-validation.json": "764d084552c0f71907d0170510d0d159f57a963f55e84dee451978d4d6868416",
-    "docs/native-surface-patches-validation.json": "8e31c61d52fac3f65f431970b51332733748083fa5ba0b5904246033f7d56169",
-    "docs/native-tensor-bezier-validation.json": "bca48d3517b1220db59a9ee22ca401db034c90090d11538e797f99c0e44dc458",
-    "docs/native-uv-transpose-validation.json": "b7255f741861ff42d960437e52e92fc7be9792778104ff53aa1a0120981ab5f4",
     "docs/smlib-surface-surface-intersections-comparison.json": "f99e18fe003d9685993bcf7ffb72d51c47cb41acf105a798f4b452780a9e2b95",
     "docs/smlib-surface-trim-intersections-comparison.json": "46444813a51c27e888a4f366544ada4d22e351e13dedd9bd013ba75f531dbc8a",
     "docs/smlib-surface-trim-tangencies-comparison.json": "1ec5f69f283e84bfd3cc191ceceb27f379ecfa1f787b39b9fdecb265242953b1",
@@ -436,7 +425,9 @@
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/native/surface_fillet.h": "a3a79e0c92cd6b521fb7a573228cfbed984185f879ab8a31464fac03bbd022be",
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/src/lib.rs": "1e7f2fc776132218a25d28b32905d2d3b128261c22beabc5e01a0a7925c3560d",
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/src/native.rs": "c13a920a70a844b3050cc432e1c2cafbced1109cc27e4d52ef839e3deea390d0",
-    "dd679da03801f26d54bf7a61b8ad5467ea99739d:tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94"
+    "dd679da03801f26d54bf7a61b8ad5467ea99739d:tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/structural_sdk.py": "c884e0ef025f1d1aba239a399fc23089c626590b40ab395e940f93ab1a6aed88"
   },
   "artifact_git_sha256": {
     "a7b8350068e8dd366464f31e207b896f17cf0ab3:README.md": "4ccc486e80f8fb015b5865ce8952f5dfa7085f70cc0faf8dfd9802e8ff432056",
@@ -448,6 +439,15 @@
     "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-closed-join-validation.json": "26a8b7e381fdb73b575b00a7974e4f073efba62275285f622406a4859b750bad",
     "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/remap-cplane-api-validation.json": "0ff7c58d2160bf49e1a263b4c1a532b62337c01a06207047af396ad2aef384f8",
     "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/remap-cplane-validation.json": "7994d359aaa162cbf71dcbd8c2390d7f135dab6bb2eac124cc3913b935184986",
-    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/smlib-unclamped-import-validation.json": "3f855c7983d1d482ed66b54794738fb881bab3e19dcdf6e61a4a0c1bd4bfe587"
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/smlib-unclamped-import-validation.json": "3f855c7983d1d482ed66b54794738fb881bab3e19dcdf6e61a4a0c1bd4bfe587",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-basis-evaluation-validation.json": "039624b652c4080dfad370595bc23cb0b835862c56e2a4c18b8c22ad468dff64",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-curve-segment-limits-validation.json": "bbee8e47ec00f6c123bdddf46cb90ab8bafe154411b30d451099cd371e64ecd8",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-exact-splits-validation.json": "87d60b9d56067fd494aae29df964dfd6fac41e4fe0a3f0a482d9b9894de63452",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-isocurve-limits-validation.json": "268d7b624d9d43fae12c9ccd6052782b83bbb6eff2dcd98dc159873bda8f5696",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-isocurve-pairs-validation.json": "032c45ace050fd2994f6ca8c6f06dde2e6eab2d2aab067db77c7398b64bd8dbd",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-point-interpolation-validation.json": "4eb36b344baf33ea18945b79723b428c347ab39df074190855aeda43d25c1dab",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-surface-patches-validation.json": "8e31c61d52fac3f65f431970b51332733748083fa5ba0b5904246033f7d56169",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-tensor-bezier-validation.json": "bca48d3517b1220db59a9ee22ca401db034c90090d11538e797f99c0e44dc458",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/native-uv-transpose-validation.json": "b7255f741861ff42d960437e52e92fc7be9792778104ff53aa1a0120981ab5f4"
   }
 }

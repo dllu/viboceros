@@ -16069,7 +16069,7 @@ pub enum CommandError {
     SurfaceSeamBothDirectionsRequireUv,
 
     #[error(
-        "Reparameterize requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
+        "Reparameterize requires exactly one curve or surface face, got {actual}; use Face=index for a polysurface"
     )]
     ReparameterizeRequiresOneObject { actual: usize },
 

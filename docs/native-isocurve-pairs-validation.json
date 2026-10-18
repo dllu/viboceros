@@ -297,7 +297,6 @@
     "third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp": "93c905a12c4124f6761f63ca9dbe2e2ffe400eb32b493c3d514be42de2c41138",
     "third_party/usd-brep/source/SMLib/src/SmIsoCurve.cpp": "b3e0a1ff9ed8d80d4975c74609370c91684f74eae583a4fd9c4585aca6cdc2c9",
     "third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp": "a6a87714703ef3115cdd33e9d79f07090fc7650847a537d5341a692723db243f",
-    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
@@ -356,7 +355,8 @@
     "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
     "bdef540085515d56b7d222d15cadea16c159a118:crates/viboceros-smlib/tests/isocurve_pairs.rs": "4eaeddfaf109c3367b0ec1805b1079913abc09885fe3f3d3b95fe25883b4e4ed",
     "bdef540085515d56b7d222d15cadea16c159a118:tools/usd_brep/isocurve_pair_probe.cpp": "d1b412697e597d87a7e7b8fe6171a0bd3da063f9eeec9d88ff2052c3653775e1",
-    "bdef540085515d56b7d222d15cadea16c159a118:third_party/patches/usd-brep-isocurve-pairs.cmake": "1c4fd9b19b94d69e8dfe09fa593cc038a33259fe3d38ed3187c6086211e59726"
+    "bdef540085515d56b7d222d15cadea16c159a118:third_party/patches/usd-brep-isocurve-pairs.cmake": "1c4fd9b19b94d69e8dfe09fa593cc038a33259fe3d38ed3187c6086211e59726",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a"
   },
   "artifact_git_sha256": {
     "bdef540085515d56b7d222d15cadea16c159a118:docs/native-isocurve-pairs.md": "4d59bee54aae22c613a4fdfc82ff075685ded64a2008c923ecbf317539323f8c",

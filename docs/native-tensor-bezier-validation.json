@@ -318,7 +318,6 @@
     "third_party/patches/usd-brep-isocurve-limits.patch": "e106f93290f2e9dd68d1ad42a18b50430bc8b040cc1ba39cf807a5e5c60c51da",
     "third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp": "a6a87714703ef3115cdd33e9d79f07090fc7650847a537d5341a692723db243f",
     "third_party/usd-brep/source/SMLib/src/SmNurbsSrf.cpp": "651bdd172f3289f1b5f2a1bb468e8589a6493293b43283cbc3696f7b12d11c65",
-    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
@@ -372,7 +371,8 @@
   "source_git_sha256": {
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/build.rs": "4d843755e3fca567065f51b9de9f034fb17072685876e5d80defd2085fecc4e2",
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/native/CMakeLists.txt": "110df0e292e0188b360b5ed5d68d5b726aa150be25d8110d14231eb3a6e2f6a3",
-    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c"
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a"
   },
   "artifact_git_sha256": {
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:README.md": "e4f2c8f54fb4e04c9f4d94af3b06da43d7a3a87bd920dd66db0ba08736deea45",

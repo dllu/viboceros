@@ -363,7 +363,6 @@
     "src/app/tests/remap_cplane.rs": "8e57eaf0608e0ab019af555b8176f24ca1bb38f1e9af18e062970679c96ce670",
     "src/app/transform_sources.rs": "685bf4238bbea20df2c318f0f598521cb106b7d1c37444ea96a3369c1aefa097",
     "src/app/tests/grip_transform.rs": "2e36e4436e0e1f7dd55464e5051b2c7e7b132d50026390bb57e20ea1682222d3",
-    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
     "tools/rhino_oracle/remap_cplane_comparison.py": "5a5184005ef59795a15dfec25ec1ed9f7174681d0720b3ca3fc56ce1404e930d",
     "tools/rhino_oracle/test_remap_cplane_comparison.py": "0ccd731817d38cf575cf51a86c0665d7ff3ec5394a28203cfb4845ed82963e48",
@@ -430,6 +429,7 @@
   "source_git_sha256": {
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-oracle/src/lib.rs": "69b6ae9561c272510e9fdc4ae325ab8701fab5d02079ee0d6ca9b7536517ab72",
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
-    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5"
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/structural_sdk.py": "8c55f29394b501d0736aba3c876fc56b7530fe946bd570cc91032906307c7ea5",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a"
   }
 }

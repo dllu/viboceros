@@ -427,6 +427,8 @@ ExtendSrf Edge=East Distance=2 Type=Smooth Merge=No
 ExtendSrf Distance=-2 Type=Smooth Merge=Yes
 Reparameterize -4 6
 Reparameterize Automatic
+Reparameterize Face=2 -2,8,10,30
+Reparameterize Surface=object-id Face=2 Automatic
 Dir SwapUV
 Dir Mode=FlipU
 GCon
@@ -476,6 +478,9 @@ Import3dm path/to/model.3dm
 Export3dm path/to/model.3dm
 Help
 ```
+
+[Reparameterize face domains](reparameterize.md) documents trimmed surfaces,
+explicit polysurface faces and the remaining curved Automatic differences.
 
 - [FilletEdge: circular solid-edge rounding and component input](fillet-edge.md)
 - [FilletSrf: surface picks, trim/split, joining and previews](fillet-srf.md)

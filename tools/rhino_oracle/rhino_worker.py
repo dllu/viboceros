@@ -13527,6 +13527,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'surface_fillet':
         from surface_fillet_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'reparameterize_face_command':
+        from reparameterize_face_probe import run
+        return run(operation, globals(), iterations)
     if kind == 'rail_revolve':
         from rail_revolve_probe import run
         return run(operation, globals(), iterations, tolerance)
@@ -17500,6 +17503,10 @@ def _main(at_idle=False):
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
         if not at_idle and any(op.get('op') == 'smlib_reference' for op in request.get('operations', [])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
+        if not at_idle and any(op.get('op') == 'reparameterize_face_command' for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

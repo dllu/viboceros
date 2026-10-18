@@ -300,7 +300,6 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "README.md": "14aa437da2097bc6841dee4536b763634ac58c8918810849f57ea0c364bf9973",
     "crates/viboceros-command/src/fillet_surface/options.rs": "a048ff709f986f6982ba0608b4a5f528a8fdcaf38463a3ba9e7c7382ff5fac34",
     "crates/viboceros-command/src/fillet_surface/prepare.rs": "5584a4d40428b0007adebd1528e34c4921ed8ece9d0663775f9df92076636ae9",
     "crates/viboceros-command/src/fillet_surface/recorded.rs": "e39f15fa09a8aa363e098685626e636db5194e103886d4b8cf0c8e718445d8da",
@@ -318,7 +317,6 @@
     "docs/commands/fillet-srf.md": "b32c0b8d83f486558232adb21ccc2a7c67e967a57a67e2876c4063c6f99719ef",
     "docs/direction-adapters-validation.json": "391ef9a5e42e8bcfad5ecadf37f2ca0a78cd014dc7cc3d5b099a3354e91bf59f",
     "docs/fillet-parent-charts.md": "7deaeb4fde02ea9df9b2a02ad3966dfacae97e833d021ccd21bd21161c5b60b8",
-    "docs/fillet-srf-validation.json": "a780b5a487b7238e138007abde31eb7642a1afe08c72b1c5f5fd7e8b114ce15d",
     "docs/native-surface-fillet-parents-validation.json": "f38038266557e4904710c23bb1671153e56b18669ccb377b73e3f0b7809940fe",
     "docs/native-surface-fillet-parents.md": "5af0721daa272235af3569fdcc1f327e23b61c34bfb7a4631a7d68ffd96e44a3",
     "src/app/tests/fillet_surface.rs": "7fc635744a0315b695f594c747ac75b5bf69720e9511583f8ae10b8c883deeb8",
@@ -378,5 +376,9 @@
     "docs/fillet-parent-charts-original-six-candidate-audit.json.gz": "8dde0e4d38fdb6be29cb8ad22dad0342d0bf482e71a2d649ba7ef322b66c9b40",
     "docs/fillet-parent-charts-original-picks-baseline-audit.json.gz": "cdac3a5a1182e222dc0da398fc5ca51019d83b44e471a922ceda7de1cebf87df",
     "docs/fillet-parent-charts-original-picks-candidate-audit.json.gz": "5175b79cc3ae01b3865ee7fbb5b18d3a0996818e0e953336a0436dd0b8a06034"
+  },
+  "source_git_sha256": {
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:README.md": "14aa437da2097bc6841dee4536b763634ac58c8918810849f57ea0c364bf9973",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/fillet-srf-validation.json": "a780b5a487b7238e138007abde31eb7642a1afe08c72b1c5f5fd7e8b114ce15d"
   }
 }

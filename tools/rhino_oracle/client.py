@@ -833,6 +833,9 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('CreateUVCrv requires a private Rhino settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'reparameterize_face_command' for op in request.get('operations', [])):
+            if self.settings_scheme is None or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Face reparameterization commands require a private Rhino settings scheme and one iteration')
         if any(op.get('op') == 'uv_face_reference_command' for op in request.get('operations', [])):
             from .uv_face_reference_probe import validate_request
             if self.settings_scheme is None:

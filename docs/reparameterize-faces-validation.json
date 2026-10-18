@@ -1,0 +1,280 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb",
+  "opennurbs_commit": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "change": "Reparameterize trimmed single surfaces and explicit polysurface faces with covariant UV trims, unchanged shared spatial topology, original identity/metadata, one-step history and 3dm round trips. Extract the existing curve/surface command into its own module and preserve geometry user text for every representation.",
+  "completed_runs": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "reparameterize_faces"
+      ],
+      "status": 0,
+      "seconds": 45.561700814869255,
+      "name": "native-replay",
+      "log": "docs/reparameterize-faces-native-replay.log.gz",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib"
+      ],
+      "status": 0,
+      "seconds": 296.1886602740269,
+      "name": "native-command",
+      "log": "docs/reparameterize-faces-native-command.log.gz",
+      "passed": 1594,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "reparameterize"
+      ],
+      "status": 0,
+      "seconds": 182.10714013199322,
+      "name": "portable-focused",
+      "log": "docs/reparameterize-faces-portable-focused.log.gz",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "reparameterize_faces"
+      ],
+      "status": 0,
+      "seconds": 98.86090760095976,
+      "name": "portable-replay",
+      "log": "docs/reparameterize-faces-portable-replay.log.gz",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "seconds": 22.559623450040817,
+      "name": "clippy",
+      "log": "docs/reparameterize-faces-clippy.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets"
+      ],
+      "status": 0,
+      "seconds": 16.771801803959534,
+      "name": "portable-check",
+      "log": "docs/reparameterize-faces-portable-check.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "seconds": 4.547764176968485,
+      "name": "fmt",
+      "log": "docs/reparameterize-faces-fmt.log.gz"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_reparameterize_face_probe",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "status": 0,
+      "seconds": 0.12098501506261528,
+      "name": "python",
+      "log": "docs/reparameterize-faces-python.log.gz"
+    }
+  ],
+  "reference": {
+    "engine_version": "8.32.26160.13001",
+    "public_commands": 30,
+    "explicit_range_commands": 20,
+    "source_files": 30,
+    "sphere_source": "A public NURBS sphere and its natural B-rep; this shares the same rational parameterization across file import and the SDK command. An earlier analytic-sphere sample-index comparison was invalid because angle and NURBS parameters differ. Its diagnostic and raw observations are retained.",
+    "command_metadata_selection_undo_redo_verified": true,
+    "complete_observations_unchanged_except_json_whitespace": true,
+    "request_path_relocation": "The executed request uses absolute artifact destinations; the portable fixture differs only by storing their repo-relative names.",
+    "source_model_tolerance": "Shared source files store 1e-8 and command replay decodes them at 1e-8.",
+    "comparison": "Replay the exact source 3dm geometry through the command. Check unchanged spatial tables and neighboring faces, topology, senses, normalized surface and lifted-trim samples at 1e-8, explicit domains, metadata, undo/redo, and edited 3dm readback. All raw SDK and command observations, including differing Automatic size estimates, remain retained.",
+    "sdk_size_query_differences": "The actual Rhino command and public GetSurfaceSize + BrepFace.SetDomain controls also disagree on curved inputs. The latter is retained as an independent diagnostic, not substituted for the actual command."
+  },
+  "literal_automatic_domain_followups": [
+    {
+      "id": "cylinder_automatic",
+      "rhino_u": [
+        0.0,
+        12.566370643255096
+      ],
+      "native_policy": "maximum NURBS control-polygon length, U=16"
+    },
+    {
+      "id": "sphere_automatic",
+      "rhino_u": [
+        0.0,
+        8.781407175018794
+      ],
+      "native_policy": "maximum NURBS control-polygon length; both axes differ from the command"
+    }
+  ],
+  "interchange_note": "An initial bitwise B-rep equality assertion failed on a rational trim coefficient by one ULP. The final round-trip check preserves exact surfaces, topology, component tolerances, and p-curve rational weights and knots; bounds normalized p-curve coefficient changes by 1e-14 and compares lifted geometry at 1e-8. The read-side ordinary continuous boundary checks also run.",
+  "limitations": [
+    "Matching the exact curved Automatic command-domain policy remains unfinished; geometric preservation is checked separately from the two literal domain failures.",
+    "Viewport face picking, block-instance copies, multi-face batch editing and continuous global Rhino parity are not claimed.",
+    "SDK-only reference operation: replay is in the command tests, not a new Rust oracle protocol enum variant.",
+    "Curved FilletSrf Extend=Yes retains its prior endpoint-policy restriction; no fillet construction or extension algorithm changed.",
+    "No C++/FFI implementation changed; no new ASan or general performance claim."
+  ],
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "4891aad4026a3c9c6487ebe0b98603fb2d00e8560dbf3fa37743b28f09eb0e89",
+    "crates/viboceros-command/src/curve_domain.rs": "57f4877dfa61e217feb13db4f32f6f5a04ede81c513e6a0675ff649ba877a075",
+    "crates/viboceros-command/src/curve_domain/reparameterize.rs": "70dd31e247925938fefe514af2f3e1856f8b6de1601f7feaaeca9363049430c5",
+    "crates/viboceros-command/src/curve_domain/reparameterize/tests.rs": "51f579f0cbc7521a3a203643938e96e350351f054d7174978f9a18b5b70d6127",
+    "crates/viboceros-command/src/lib.rs": "3b2201a3037853a997c53f1832ee4271bd1af758cb910e3d4ff2059ba7cec791",
+    "crates/viboceros-command/tests/reparameterize_faces.rs": "e241bef0ffad216e848b39c1765c3fb19b7273fca1327944f7fc784efb978528",
+    "crates/viboceros-geometry/src/brep/reparameterize.rs": "3211c14cbf16c583b0110d3597c3031f00168363cf74211dd94cb14785c0fb8b",
+    "crates/viboceros-geometry/src/brep/reparameterize/tests.rs": "3982fdc154f1405007aa4fc30e9e5a531eae3754634bf41bfb2921350db2b9a2",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
+    "docs/commands/README.md": "8416807c0478d240d03cbadf69cd4c3fc259164f09be39ed2511d3615f3c3101",
+    "docs/commands/reparameterize.md": "91f971c20155e5628973a85bddd7ba2280eab08e8bb2fb67a910997ac7cbff4e",
+    "docs/fillet-parent-charts-validation.json": "bb0f370863f0d552d0024a0ef920285ab5d27bc105d107782f823323e785d90f",
+    "docs/fillet-srf-validation.json": "19887b09b98e2fc6f15891be80b796d1d30d6009e6aa5f1d4ebd3d64f789309d",
+    "docs/native-basis-evaluation-validation.json": "9bcacb1a32923aebe6fea3cd5e25806c8731594a3a7aaca73753f580ff636c70",
+    "docs/native-closed-join-validation.json": "62a562824f0865882fe25e46152be65222d14dd4af3a9aa7ec7acbfad2acb018",
+    "docs/native-curve-contact-tolerance-validation.json": "14b60c9bc2ea1cd27e8288ec586d923aa6f2b916fead957f152c9c19e8d66c33",
+    "docs/native-curve-segment-limits-validation.json": "5bc3aafb7f4bf5f6b0828d28a82256b628c2edf878a00c50524f407e8014eda6",
+    "docs/native-exact-splits-validation.json": "1ea9f4e1658a45fc6a5173f9704036ef4bfbf7dacc6a46cdca6a1aad6973075e",
+    "docs/native-isocurve-limits-validation.json": "80068b4d61fdbd071461fafdc58e2a6ff283b7af3634802e9eac01b2ef90d55a",
+    "docs/native-isocurve-pairs-validation.json": "0661e6752c8d902e61ffbe3ee98f6b2541aae4d3e834111f448ff474eb25b17a",
+    "docs/native-point-interpolation-validation.json": "bece4fe1dd2463810819eb0a9f2e0980b486b5c3131017b267344c3a9f32b0c2",
+    "docs/native-surface-fillet-picks-validation.json": "ebefb72646dd69c1c269715399a072197ddc829e93bf24432891a4a46bd5690e",
+    "docs/native-surface-fillets-validation.json": "c64b6817f8a049c6241d6c13dbc8f3304352b2b4112471ca60124a44031d3c16",
+    "docs/native-surface-patches-validation.json": "b6b73561c87bf7a83973ebd4710ea07b06aaa0c67dfad98670549c7c8db52452",
+    "docs/native-tensor-bezier-validation.json": "f41256badd0c56154bd23c1796478cbeaff035dca10c134f4d784557ba20c99e",
+    "docs/native-uv-transpose-validation.json": "7b3ffbdcdbf2a5fba771bd91677ef1f44a259ece5d3d7821347cb1934ef0a333",
+    "docs/orient-on-curve-edge-validation.json": "5efabc395b763dab4256844f2d37743dfdf25600c7258a42e31b27266743bba9",
+    "docs/remap-cplane-api-validation.json": "439d792520c131224810f63699be12b56728e23e3342967768c74aa63165747f",
+    "docs/smlib-unclamped-import-validation.json": "3e6125f857ccd86a9421aca627e2d2378f36c7a8739bcc2b60f572f3ff473f88",
+    "tools/rhino_oracle/client.py": "3927fa5651a4f85adf5610976538cb13800460b2996ec3232a799cdef09184ed",
+    "tools/rhino_oracle/fixtures/reparameterize_faces.json": "ed4ed91f8e93c618a65cc3e08be29458680a80852f7585ed7a3473330c733d7f",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/annulus_anisotropic.3dm": "f9db0aea6d64a0c50e58856933c2c9b63fe4dfadfe9e88ed39800356e381bd3a",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/annulus_automatic.3dm": "229e17492192f078f108e4208d70017078f000e8c8c3f3252230c88c958c9e77",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/annulus_explicit.3dm": "9566e509cb462f70c84f1e53ff3d011b0c7d40c9df4bb60b4a83a8da46db96d8",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_0_anisotropic.3dm": "5af8a191f4751f8d980dfab79d3cd1deab9f78d2905a290476fabdeed913d971",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_0_automatic.3dm": "c26cd2fe10a4c9f576cebd88b41f7726e1ed278846baca1bc183f510deaa8e84",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_0_explicit.3dm": "a44c4389c0e22b415e74894a52c62fb6d806564ef219d4a3e9794e1990c13f4c",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_1_anisotropic.3dm": "77203251367447684c56b48449b923130aa250e16465453a590c6e4a1a598492",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_1_automatic.3dm": "52c3e146ab0a528f43afe794b997a952e134f8d2de7c7f1d8d5551f2e3c2670d",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_1_explicit.3dm": "91c8593dfd7a1195c1c6e6a518cc46aa42f5d8b213d6764d1504f1601aa0460a",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_2_anisotropic.3dm": "17ed7c0e359ab3895c8726deaba5b92ce943e7e9ee437a4a6827c12f69a138de",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_2_automatic.3dm": "851566b2eb9e51966bd86ad11d77a7881bdc4214ecfc55c7e2268808d8c67123",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_2_explicit.3dm": "47f0e4a62a5a54c631daecad58c423b2c845f739e393680de2d197b152c202b2",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_3_anisotropic.3dm": "590e9cdfedd9d539ba9775fdb8bdd39810f7f7fad88449cff78635ab92f0f2fa",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_3_automatic.3dm": "f7e4f3ff69c617ad0f7a234deb34fd44c03ecf5b95d820d71d07b4d6248249d8",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_3_explicit.3dm": "13101f93bfdab86c9d15479ae35f487f94b23489253e726b7f65fc2958ae5658",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_4_anisotropic.3dm": "ed80b4dad79ae3734e4c20e9992cd1b1581bdb29f6e4b6f21ac19f929cdce966",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_4_automatic.3dm": "9d2d93c9d595eeb062b12560d99a62f164c6511da73a6c0ae7119dc2a8164760",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_4_explicit.3dm": "4528c96e545b1ed0781a28c62da7fdbbffe61d3305cb474c77a40c6b936f64ea",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_5_anisotropic.3dm": "8d25af5271282498ac0c18ecc362a6c5a51e1cbd79e60b2cc8a64a8f31517dcd",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_5_automatic.3dm": "fa2e6407926ed8609367a93b929ff8caccee3a30103375b661a12728b4619ed6",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/box_5_explicit.3dm": "1146012b13b0f1a81b8e279ea052ad2b7841a8942d372e43eba1b1c8cd39c8b7",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/cylinder_anisotropic.3dm": "8d0a8ce637bc7b75055ae256fd3ffd8b4a4153494819abc8ef74ee6ae7da798a",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/cylinder_automatic.3dm": "498b87a911ebb5b34bf6924667ea6401829e35ceadf86d6664d9154a715f4a8c",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/cylinder_explicit.3dm": "d278fa41f7156c1406353d56756567cece034726d335df58ef5e065a3247b156",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/reversed_rectangle_anisotropic.3dm": "8a13f9d3f201a8054a602f61260c984f5b1d8bbaff91e74674ecaba7371de40a",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/reversed_rectangle_automatic.3dm": "80880ccc2d09669626ad21e67567ee6813bf047d9839e1210f1b9442e9f2e387",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/reversed_rectangle_explicit.3dm": "6aefb9dc7eeb330f3c4197a7918a4d7ada5310c9f0dbc5419f3b9efe1c462dde",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/sphere_anisotropic.3dm": "cbe62287b82f95fb428ad7157fb88abcbf5299825e79f25bf382c32464eb5be2",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/sphere_automatic.3dm": "b923b5f67dd1a22ce098342a7b8b6356e8c20a4acb4dbd8594f58da716656605",
+    "tools/rhino_oracle/fixtures/reparameterize_faces/sphere_explicit.3dm": "daad440754e681b78e4ba473d5d1d365e09c57fd9ea154103724cbd3c214beb8",
+    "tools/rhino_oracle/observations/reparameterize_faces.json": "908832248ef9cbc48c8f88c71db309cef4a3b6024cc04386ce1f155c495298ff",
+    "tools/rhino_oracle/reparameterize_face_probe.py": "1c7ad6a960e311eda0d3fcdd96664f58ee3fbda62d85673fc3d65a41138102e9",
+    "tools/rhino_oracle/rhino_worker.py": "72b4c213b45db67145769a434ec4fa30ddc5ec3bbdf57e48602a74ffcedbd669",
+    "tools/rhino_oracle/structural_sdk.py": "5a936912f90c53a5cb76ca2873943a53c13b0839a14543c3d2534548df6c6b1a",
+    "tools/rhino_oracle/test_reparameterize_face_probe.py": "d89eaa967aebb5c8bf43a66a575a77fa3c72ba72032fa7b9fe45f5b6187be842"
+  },
+  "artifact_sha256": {
+    "docs/reparameterize-faces-native-replay.log.gz": "376af83324da7ca1d22ff42efe6ccfdfa621c535bcfddeaa1b056f5ec820037d",
+    "docs/reparameterize-faces-native-replay-runtime.json.gz": "66d62ee78c5d59362965970ea793bd0ba3abe352c11772de0ee646a30a88083d",
+    "docs/reparameterize-faces-native-command.log.gz": "5a9da753cfc0f8a5ce20ef2535aae30eb62daf4f75dceafe650c2fb267ef5be5",
+    "docs/reparameterize-faces-native-command-runtime.json.gz": "4edd17c503f4086e6cfd869c2f9a7af2c504420829914e522c59ab451c5201f2",
+    "docs/reparameterize-faces-portable-focused.log.gz": "248315c6e1efa12817e3d7112d57532243019810b912d06eb3b9b2907967b9ad",
+    "docs/reparameterize-faces-portable-focused-runtime.json.gz": "7177a3f7b48db6cf17bfd3ed19392e2a06b3cade2d168f6c101b4a388a6fe81e",
+    "docs/reparameterize-faces-portable-replay.log.gz": "61e24f8d52a9098046c6f278866ffbc792da56d915d49a76952f2f15cfc4a2cb",
+    "docs/reparameterize-faces-portable-replay-runtime.json.gz": "3cd16fb0e054c54b936c706802832e4802301b74374e9764c07c6b05f7da50bf",
+    "docs/reparameterize-faces-clippy.log.gz": "ce49b9521efdbf6177fc55c4c5fab38145a934bb70946546a1e0e3ec2432b74a",
+    "docs/reparameterize-faces-clippy-runtime.json.gz": "f9cc671c6c6ddb6bf12c3f94a6e6da077f325102409ca737bf9f6c79eb4138ff",
+    "docs/reparameterize-faces-portable-check.log.gz": "91bf30890b590ccc90d01edf508b9a8b009c98dbe521931a772fb15049d5fb16",
+    "docs/reparameterize-faces-portable-check-runtime.json.gz": "89283c680de38baabcd227f64711a679ce85d879577aa3b7269ae9270252d832",
+    "docs/reparameterize-faces-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/reparameterize-faces-fmt-runtime.json.gz": "07d9c719a2691c2392c46cbf9220885f25d7b215e2a3d82baf51fb627f0034a9",
+    "docs/reparameterize-faces-python.log.gz": "216c01cb73b88612cc3b363938bd13b75d10d8cd961e745293945e3f6100aa79",
+    "docs/reparameterize-faces-python-runtime.json.gz": "e7b25457cc29c94c15e7082956dcf37870c62a00e4561362d74a797c94056d05",
+    "docs/reparameterize-faces-gates.py.gz": "64b5c1787c7b79638818c2ab01e34e3ca8c3f11cb05ca9e99c54c29ea802dd05",
+    "docs/reparameterize-faces-finish.py.gz": "d2b3f40a19562ce9570a292acc23fed6dacf4205f8f9847e32b43e53a4e38c57",
+    "docs/reparameterize-faces-analytic-sphere-diagnostic.log.gz": "586932e5b63b61c4b02d4d3d2a9e7e850d4a1d087b8cc5380cdf8c8f3e5a621a",
+    "docs/reparameterize-faces-analytic-sphere-sdk.json.gz": "2a0c83e714677fa0142cfd82cc3b1c628afa0640669a246b49982b02225a39d8",
+    "docs/reparameterize-faces-analytic-sphere_explicit.3dm.gz": "070dcccee8aaacfeceb4db356572bde7ad2986a4696cfece77e6340fb5bcddd0",
+    "docs/reparameterize-faces-analytic-sphere_anisotropic.3dm.gz": "931a177a1e6e5cac5100da5239883108e0574d54bc2a715f1a390e691594b9c8",
+    "docs/reparameterize-faces-analytic-sphere_automatic.3dm.gz": "5681ee985751c820528841daddc7f2130e0a7ab0648b576ef9a656dece54164a",
+    "docs/reparameterize-faces-recorded-diagnostic.log.gz": "99bb0b2eb711a31efac55addeed074b6b0ff71d1ef5d653db375422621857425",
+    "docs/reparameterize-faces-preserve-provenance.py.gz": "58c34be5a4b8e8afb14c4433f683afaec6ae73ae11fa5b5091cb5a37d00a7d89",
+    "docs/reparameterize-faces-sdk.py.gz": "54eb1cbd172e2c9a4e4335ed408c7844ae7f1b8157612e898f88c6301b6abfa7",
+    "docs/reparameterize-faces-sdk.log.gz": "b1335d98ab3faf025ca791692b43385a5b85abe20584774e496ab8a8e5acb1bb",
+    "docs/reparameterize-faces-sdk-runtime.json.gz": "1e9109da848fe873bc2b3291222d00b1a1348eabaf0124f6dd09bccb8c8e5efc",
+    "docs/reparameterize-faces-request.json.gz": "ae5ece06d22eee9be92c892b841447a7e28f20e7d2562f970080398561606f50",
+    "docs/reparameterize-faces-record.py.gz": "1eabfb301f084eaf8d705e6b03ca5aa92458f4e5f57f4f2653f1d81a117a225c",
+    "docs/reparameterize-faces-stage.py.gz": "34b6503f07d52e51c657049069772258412c963f864b9cea0b62c7502f9edee0"
+  }
+}

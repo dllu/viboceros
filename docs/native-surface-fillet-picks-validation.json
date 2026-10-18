@@ -1131,8 +1131,6 @@
     "tools/rhino_oracle/observations/surface_fillet_picks.json": "e2cd2635d87e28240748476ff71df87bac9d2d90f0830139c53abe15bbfc8b2b",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
     "third_party/usd-brep/source/SMLib/src/SmOffsetSurface.cpp": "4d41a2903ff0cdffd10f0571385cb1407698a8f06394435323ed5878e8d041c7",
-    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
-    "tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "tools/rhino_oracle/fixtures/surface_fillet.json": "1366f99af5aa38159a9f87bccfff963551694a818404ed42af2286dd194fcba8",
     "tools/rhino_oracle/observations/surface_fillet.json": "bd37c0edd702d2fb3e2ac7702d0214104832c47beb102b5a94216b49774c4c73"
@@ -1150,7 +1148,9 @@
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:crates/viboceros-smlib/build.rs": "6893ab8f85b5d982c80d834bc217c4083776516983d65a128e7f560701bf473f",
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:tools/rhino_oracle/surface_fillet_probe.py": "c732ea51a4d57088118094dc6a2e15713ce3a010848ca4549f91143717798a94",
     "dd679da03801f26d54bf7a61b8ad5467ea99739d:docs/native-surface-fillets.md": "0b0279ba36d47c488b82660031beb79f9c658a2679ca4251578f18dc1e3ba879",
-    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillet-picks.md": "9470d677ba52364697f79fdcda77271693292d39ecfe723f33a2b804fa510d98"
+    "17edd759a15358489de6fb6b1c2e2d8ab3409abe:docs/native-surface-fillet-picks.md": "9470d677ba52364697f79fdcda77271693292d39ecfe723f33a2b804fa510d98",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/rhino_worker.py": "909a5fa98eddb78b37474623fc69484a7b171e728a92921b73534b81c67b64a9"
   },
   "artifact_sha256": {
     "docs/native-surface-fillet-picks-geometry.log.gz": "b10c1122bcfd4b7c55b7127c3094cd7c2b3da8ce8802b67da30d97be39b91dda",

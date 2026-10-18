@@ -305,7 +305,6 @@
     "third_party/usd-brep/source/SMLib/inc/NL_Geometry.h": "5ad6a4389f4fbbae4949df7cfef3d0469fe69998b0fde0aa28e07e77dc9c7baf",
     "third_party/usd-brep/source/SMLib/inc/SmNurbsCrv.h": "cc710f8a410a141579335f03b509516a3936a9039dd7d85b7f92a46f3994620e",
     "tools/usd_brep/rebuild_interpolation_probe.cpp": "6bc8c02b181f9e2a3f6ed3745d30bc6aafb0c53c5fcb3dbf7012aeed148a95c3",
-    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
   },
   "artifact_sha256": {
@@ -353,7 +352,8 @@
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/build.rs": "450781a1e7bc97d313e698918b0f881d6a477bf18d2fca5877a61e8e5d76da0c",
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/CMakeLists.txt": "8e9817570a773adc9c71f1370bf1cee35eff6627ae273874a3db2de7a5fd9ef9",
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5",
-    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c"
+    "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a"
   },
   "artifact_git_sha256": {
     "23378e8e32fa540e1c0999ca8903de1870cefe0d:README.md": "b2530d0bbb1a35b00ed9a9fc827f21697af53cc424124e9650241695ad823a42",
