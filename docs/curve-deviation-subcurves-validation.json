@@ -149,7 +149,6 @@
     "crates/viboceros-command/src/curve_segments.rs": "8ebc02ab7410317e3354cc633301bc4b7c41c9235d9e89bb2edbff03a10bb7a9",
     "crates/viboceros-command/src/uv_inputs.rs": "701fbf86647af7008005da458ead883e084fc9acb61b5686c4ab9bfc6dfdfb7c",
     "crates/viboceros-oracle/src/curve_deviation.rs": "711426760d6c37a1552a67a85c8e446837392a340f5d0d3aa0819097fe98bcd4",
-    "crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f",
     "crates/viboceros-smlib/src/native/curve_distances.rs": "1afe28e963bcd0382cfdf4a28a992f777376c1744ebf8aaaba937137a16dd000",
     "crates/viboceros-smlib/src/native/curve_distances/tests.rs": "45a7c361a9286607ce82a75317d010d31f7b44deee877aa7cdebf1c4e0bbed68",
     "docs/commands/crv-deviation.md": "114409fd22001b4e1b6fa7fb46b5949e49921974932c780fcf03ba5c65fb16a1",
@@ -201,6 +200,7 @@
     "30059acfb157ee4995c538fb07b2212dc4d05b75:src/app/object_selection.rs": "2c030504acc68f52c5a250345abc2d58c14af330d8f976b667f31c9816c5ea8c",
     "2348c030682b04b278c62b1d5e139d1c632c488b:src/app/subcurve_preview.rs": "91a68964235ad670d9d74c39c7b63c48a652bbc9e63707a2ac722455be684708",
     "04f7e1923710f12ee4228b34083f8b10048d068d:crates/viboceros-command/src/subcurve_input.rs": "f0765acef3a926429066695f43181c8dc485faf52b5da8e5f01727bcb6326ed2",
-    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/pull-command-qualification.json": "2c2bbf4705eb007ac785bdf8560ed1be9ff89d654c4011b741c01d2a5930c503"
+    "de24538d30e14997ac0ca5ff17193ce17f516dc3:docs/pull-command-qualification.json": "2c2bbf4705eb007ac785bdf8560ed1be9ff89d654c4011b741c01d2a5930c503",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f"
   }
 }

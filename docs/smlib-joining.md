@@ -34,12 +34,15 @@ The executive uses precise edge comparison, manifold edge pairing and vertex
 splitting. Small-edge squeezing and sliver removal are disabled to retain
 source geometry. Individual glue failures leave boundaries open. Solid-region
 nesting during stitching is disabled for sheet assemblies; the native
-orientation operation follows stitching. This does not certify arbitrary
-self-intersections or zero-volume double sheets.
-When open sheets remain alongside a newly closed component, the adapter also
-reuses the existing exact spatial orientation witness to correct a provably
-inward component. This needs no representable volume. Unknown witnesses remain
-unqualified; this check is not a nesting or solid-validity certificate.
+orientation operation consistently unifies normals using topology. For every
+newly closed edge-connected component, the command reuses its existing exact
+spatial orientation witness to correct a provably inward result, including when
+unrelated open sheets remain. This needs no representable volume. Unknown
+witnesses remain unqualified. A wholly closed assembly containing an unknown
+new component retries once from original sources using the previous native
+ray-orientation path, retaining its results or errors. This check is not a
+nesting or solid-validity certificate. The [translated closed-box qualification](native-closed-join.md)
+checks source geometry, outward command orientation and complete history.
 
 Extreme spatial extents are translated and scaled before import, then restored
 on export. Their edge/surface domains are mapped to `[0,1]` together with the
@@ -69,8 +72,9 @@ topology remain ongoing work. Input sheet components are limited to 128 by the
 shared importer. Command-first participation probes use copied two-source
 kernel operations in addition to the growing batch assembly. They now compare
 only the newest pick against original accepted sources, stopping at its first
-confirmed contact. At most `n` native assemblies replace `1 + n(n-1)/2` for an
-attempt with `n > 2` sources. A batch with no surviving cross-source join needs
+confirmed contact. At most `n` source assemblies replace `1 + n(n-1)/2` for an
+attempt with `n > 2` sources. A source assembly whose closed orientation remains
+unknown may repeat native stitching once for the ray-orientation fallback. A batch with no surviving cross-source join needs
 no participation probes. See the [operation counts and unchanged replay](join-pick-probes.md).
 
 The [October 11 Rhino replay](smlib-join-comparison.json) retains all 66 original

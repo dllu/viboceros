@@ -17,6 +17,7 @@ unsafe extern "C" {
     fn vb_shape_stitch(
         shape: *const NativeSolid,
         distance: f64,
+        ray_classify_closed: c_int,
         face_origins: *mut usize,
         face_capacity: usize,
         face_count: *mut usize,
@@ -101,7 +102,24 @@ impl Shape {
     /// The effective radius is the larger of `distance` and the sum of each
     /// candidate pair's stored tolerances. Individual glue failures are skipped;
     /// remaining open boundaries are retained. Source geometry is preserved.
+    /// Normals are unified using topology. A closed result may retain either
+    /// global sense; callers choose outward orientation per connected component.
     pub fn stitch(&self, distance: f64) -> Result<StitchResult, Error> {
+        self.stitch_with_orientation(distance, false)
+    }
+
+    /// Stitch using the native ray-based orientation path for closed assemblies.
+    /// This preserves the previous kernel behavior when a caller has no exact
+    /// spatial orientation witness. Translated charts may still fail its queries.
+    pub fn stitch_with_ray_orientation(&self, distance: f64) -> Result<StitchResult, Error> {
+        self.stitch_with_orientation(distance, true)
+    }
+
+    fn stitch_with_orientation(
+        &self,
+        distance: f64,
+        ray_classify_closed: bool,
+    ) -> Result<StitchResult, Error> {
         if !distance.is_finite() || distance <= 0. {
             return Err(Error::Kernel(
                 "Stitch distance must be finite and positive".into(),
@@ -127,6 +145,7 @@ impl Shape {
             vb_shape_stitch(
                 self.model.handle.as_ptr(),
                 distance,
+                c_int::from(ray_classify_closed),
                 face_origins.as_mut_ptr(),
                 face_capacity,
                 &mut face_count,

@@ -11,6 +11,15 @@ fn assemble(
     distance: Real,
     tolerance: Tolerance,
 ) -> Result<BrepJoinReport, CommandError> {
+    assemble_with_orientation(sources, distance, tolerance, false)
+}
+
+fn assemble_with_orientation(
+    sources: &[&Brep],
+    distance: Real,
+    tolerance: Tolerance,
+    native_ray_orientation: bool,
+) -> Result<BrepJoinReport, CommandError> {
     if !distance.is_finite() || distance <= 0. {
         return Err(GeometryError::InvalidBrepTopology {
             context: "B-rep join distance",
@@ -62,7 +71,11 @@ fn assemble(
     } else {
         Shape::from_brep(&prepared, local_tolerance)?
     };
-    let stitched = shape.stitch(local_distance)?;
+    let stitched = if native_ray_orientation {
+        shape.stitch_with_ray_orientation(local_distance)?
+    } else {
+        shape.stitch(local_distance)?
+    };
     let output = stitched.to_brep_preserving_source_uv(&prepared, local_tolerance)?;
     let output = if let Some(inverse) = inverse {
         output.transformed(inverse, tolerance)?
@@ -105,6 +118,7 @@ fn assemble(
         }
     }
     let mut components = Vec::new();
+    let mut unknown_orientation = false;
     for faces in output.edge_connected_face_components() {
         let source_indices = faces
             .iter()
@@ -128,14 +142,24 @@ fn assemble(
         // unrelated open sheet remains, a newly closed component may retain
         // its inward source sense. Reuse the existing exact spatial witness
         // rather than relying on a mass integral at extreme scales.
-        if joined_edge_count > 0 && brep.solid_orientation()? == BrepSolidOrientation::Inward {
-            brep.reverse_orientation();
+        if joined_edge_count > 0 {
+            match brep.solid_orientation()? {
+                BrepSolidOrientation::Inward => brep.reverse_orientation(),
+                BrepSolidOrientation::Unknown => unknown_orientation = true,
+                _ => {}
+            }
         }
         components.push(BrepJoinComponent {
             brep,
             source_indices,
             joined_edge_count,
         });
+    }
+    // Keep the previous native orientation behavior for a closed assembly
+    // whose embedding the exact witness cannot classify. Retry from untouched
+    // original sources; never reuse an orientation pass's partially edited B-rep.
+    if unknown_orientation && output.is_solid() && !native_ray_orientation {
+        return assemble_with_orientation(sources, distance, tolerance, true);
     }
     Ok(BrepJoinReport {
         components,

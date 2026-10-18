@@ -230,8 +230,6 @@
     "crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
     "crates/viboceros-smlib/tests/stitch_uv.rs": "f71753562effc06dbd4110b5cde610e61dddf6c4394e326cd9af48ce6a2a8f86",
     "crates/viboceros-command/tests/native_unclamped_join.rs": "26bfe641bc244f8b4b4b48dbe6d8fe4b9ab12c7b37ef02f1dc9c5224c78d1b43",
-    "crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
-    "crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
     "crates/viboceros-smlib/native/brep_import.cpp": "1967e07a45a81d9c441f2230ebeddf4891bde32920687c0f3dbdffc75565b7f7",
     "third_party/patches/usd-brep-exact-uv-transpose.cmake": "595e1326bec0753de91716be657636d4063441f21b90dcd5b428384cd59be5a8",
     "third_party/patches/usd-brep-surface-transpose-basis.patch": "ddf3eafe8ad60e6fb30a5434cc8f979d5917944f843949642caad1c6d6506829",
@@ -269,12 +267,8 @@
     "docs/native-uv-transpose-observed-subsets-script.py.gz": "ce184013f3dcc3dc2dcc9130201cc05dbb77f7a24a66f44f423f8473b8de17fe",
     "docs/native-uv-transpose-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
     "docs/native-uv-transpose-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
-    "README.md": "3a49335b2c1380c1f9e2be4aeaf7dfe9405acf7914923e7b9aa7d9c142777ac3",
-    "docs/native-uv-transpose.md": "2601b5de0999824c826283f7398c9ee840b2d01631ec3a4c4c8890753294a3a9",
     "docs/join-source-uv.md": "b271866252f17102043179f0916bc1e4fb22d7538b2bf9ad93240380b80b5d44",
-    "docs/smlib-joining.md": "09c286476e2eca9ea03bd66c51ac71afa1904602aacc5a0295aa41bd087625f1",
     "docs/smlib-unclamped-import.md": "8d921ea8f65704a30917ffb93ba7aa2c87becf06535ea91aed8d7616427b70f7",
-    "docs/usd-brep-limitations.md": "71959450e304ca0d4875632b1731ff286b30643e63888f7ad095558a7fb7347e",
     "docs/native-uv-transpose-closed-probe.rs.gz": "3c11ebf88fc2455d4c366aa8b48161fd343382993476ea01b448c7e15e85cee7",
     "docs/native-uv-transpose-wider-sheet-probe.rs.gz": "500773e8e824058b5a486ddbe6d69bd69e6abb9176bff31f8a13f8898e3c1879",
     "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
@@ -285,9 +279,7 @@
     "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
     "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
     "docs/smlib-unclamped-import-isocurve-audit.json.gz": "93170bbbc3d86c32b3db0ddc325b78f2728947b1c242f69f32da8bc512791f31",
-    "docs/join-source-uv-validation.json": "787768325042f04c29c840c21c9816be5c51c047a9e7812b7b2daae3f8751322",
-    "docs/native-pole-transfer-validation.json": "a9037f63a73281915615231cae420e976d37552f9d767b94a1348fa8f2b07898",
-    "docs/smlib-unclamped-import-validation.json": "8208903110a312b0db6aed394980190e264bc570603acf6c3226c59cd639b4a9"
+    "docs/native-pole-transfer-validation.json": "a9037f63a73281915615231cae420e976d37552f9d767b94a1348fa8f2b07898"
   },
   "baseline_git_sha256": {
     "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-smlib/build.rs": "a47e9483a9fde54ad376294db1f40f234b279a76c97e01ece62ad2052f08a42d",
@@ -295,5 +287,17 @@
     "98feba44af87655d4d4fe96a793b686de7dd1e3e:crates/viboceros-command/tests/native_unclamped_join.rs": "d08df6aceeb4984e97f23ec51b9627b898dcbaf22708d11f5ce690128360c53d"
   },
   "native_executable_sha256": "537242efd57673bf0bba1064f5b47a5343986f08b6f080dffc291ce9ec149374",
-  "log_policy": "Completed exit codes are observed job/status receipts. Full raw audit/report/log data are retained in gzip. Comparison and execution success remain distinct; elapsed_ns=0 establishes no performance result."
+  "log_policy": "Completed exit codes are observed job/status receipts. Full raw audit/report/log data are retained in gzip. Comparison and execution success remain distinct; elapsed_ns=0 establishes no performance result.",
+  "source_git_sha256": {
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360"
+  },
+  "artifact_git_sha256": {
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:README.md": "3a49335b2c1380c1f9e2be4aeaf7dfe9405acf7914923e7b9aa7d9c142777ac3",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/native-uv-transpose.md": "2601b5de0999824c826283f7398c9ee840b2d01631ec3a4c4c8890753294a3a9",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/smlib-joining.md": "09c286476e2eca9ea03bd66c51ac71afa1904602aacc5a0295aa41bd087625f1",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/usd-brep-limitations.md": "71959450e304ca0d4875632b1731ff286b30643e63888f7ad095558a7fb7347e",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/join-source-uv-validation.json": "787768325042f04c29c840c21c9816be5c51c047a9e7812b7b2daae3f8751322",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/smlib-unclamped-import-validation.json": "8208903110a312b0db6aed394980190e264bc570603acf6c3226c59cd639b4a9"
+  }
 }

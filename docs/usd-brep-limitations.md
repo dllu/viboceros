@@ -16,9 +16,18 @@ issues reported by NVIDIA that have not all been reproduced here.
   [trim](../third_party/patches/usd-brep-face-transpose-uv.patch) repairs use the
   existing NLib tensor transpose and an axis-aligned coordinate transform.
   Source domains, knots and homogeneous controls survive the permutation.
-  Remote-chart closed-box orientation still returns status 1006 in both the
-  parent and candidate. Some natural-boundary sheets remain unjoined despite
-  exact imported coefficients. See [qualification and retained failures](native-uv-transpose.md).
+  Some natural-boundary sheets remain unjoined despite exact imported
+  coefficients. See [qualification and retained failures](native-uv-transpose.md).
+
+- **Fixed in the Join adapter: closed remote charts failed normal orientation.**
+  Ray-based orientation returned status 1006 after stitching a valid six-sheet
+  box. The adapter now uses native topological normal unification for all
+  assemblies; the existing command-level exact spatial witness chooses outward
+  sense for each provable newly closed component. Unknown closed assemblies
+  retain the previous native ray path through one bounded retry. Eight bridge
+  cases and 64 complete
+  Join/JoinCopy workflows retain the source charts and geometry. The upstream
+  ray query path itself remains unqualified. See [scope and control runs](native-closed-join.md).
 
 - **Fixed: NURBS copies merged valid source knot groups.** Both B-spline copy
   constructors ran tolerance-based knot fixup after copying. In the direct

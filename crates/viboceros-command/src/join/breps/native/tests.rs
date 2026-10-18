@@ -115,3 +115,61 @@ fn competing_pick_participation_retains_original_contacts_and_source_order() {
         }
     }
 }
+
+#[test]
+fn unknown_curved_component_orientation_retains_the_native_ray_path() {
+    let t = Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap();
+    let surface =
+        NurbsSurface::try_sphere(CommandContext::default().construction_plane, 2.).unwrap();
+    let u = [0.25, 0.5, 0.75].map(|x| surface.parameter_at_u(x).unwrap());
+    let v = [surface.parameter_at_v(0.5).unwrap()];
+    let sphere = Brep::try_surface_grid(&surface, &u, &v, Tolerance::DEFAULT).unwrap();
+    let rotation = AffineTransform3::try_rotation(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 2., 3.).unwrap().normalized(t).unwrap(),
+        0.7,
+    )
+    .unwrap();
+    let sphere = sphere.transformed(rotation, Tolerance::DEFAULT).unwrap();
+    assert_eq!(
+        sphere.solid_orientation().unwrap(),
+        BrepSolidOrientation::Unknown
+    );
+    for reversed in [false, true] {
+        let sources = (0..sphere.faces().len())
+            .map(|i| {
+                let b = sphere.sub_brep(&[i], Tolerance::DEFAULT).unwrap();
+                if reversed { b.reversed() } else { b }
+            })
+            .collect::<Vec<_>>();
+        let before = sources.clone();
+        let combined = Brep::try_combine(sources.clone(), t).unwrap();
+        let shape = Shape::from_brep(&combined, t).unwrap();
+        let stitched = shape.stitch(0.0018).unwrap();
+        assert!(stitched.stitched_edges > 0);
+        let topology = stitched.to_brep_preserving_source_uv(&combined, t).unwrap();
+        assert!(topology.is_solid());
+        assert_eq!(
+            topology.solid_orientation().unwrap(),
+            BrepSolidOrientation::Unknown
+        );
+        let refs = sources.iter().collect::<Vec<_>>();
+        let legacy = assemble_with_orientation(&refs, 0.0018, t, true);
+        let actual = assemble(&refs, 0.0018, t);
+        match (actual, legacy) {
+            (Ok(actual), Ok(expected)) => {
+                eprintln!(
+                    "UNKNOWN_CURVED reversed={reversed} native_ray=success components={}",
+                    expected.components.len()
+                );
+                assert_eq!(actual, expected);
+            }
+            (Err(actual), Err(expected)) => {
+                eprintln!("UNKNOWN_CURVED reversed={reversed} native_ray=error {expected}");
+                assert_eq!(actual.to_string(), expected.to_string());
+            }
+            (actual, expected) => panic!("reversed={reversed}: {actual:?} != {expected:?}"),
+        }
+        assert_eq!(sources, before);
+    }
+}

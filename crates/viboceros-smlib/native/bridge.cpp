@@ -788,7 +788,7 @@ extern "C" int vb_shape_bounds(const VbSolid *shape, double bounds[6], char *err
     });
 }
 
-extern "C" int vb_shape_stitch(const VbSolid *shape, double distance, size_t *face_origins,
+extern "C" int vb_shape_stitch(const VbSolid *shape, double distance, int ray_classify_closed, size_t *face_origins,
                                 size_t face_capacity, size_t *face_count,
                                 size_t *stitched_edges, double gaps[2], VbSolid **out,
                                 char *error, size_t capacity) {
@@ -796,7 +796,7 @@ extern "C" int vb_shape_stitch(const VbSolid *shape, double distance, size_t *fa
         *out = nullptr;
     return guarded(error, capacity, [&] {
         require(shape && out && face_origins && face_count && stitched_edges && gaps &&
-                    std::isfinite(distance) && distance > 0,
+                    std::isfinite(distance) && distance > 0 && (ray_classify_closed == 0 || ray_classify_closed == 1),
                 "Invalid stitching arguments");
         auto owner = std::make_unique<VbSolid>();
         owner->value.reset(vb_copy_brep(*shape->value));
@@ -821,7 +821,15 @@ extern "C" int vb_shape_stitch(const VbSolid *shape, double distance, size_t *fa
         check(executive.DoStitching(owner->value.get(), nullptr, nullptr, stitched, lamina,
                                     vertex_gap, edge_gap), "stitch boundaries");
         SmBoolean maybe_open = FALSE;
-        check(owner->value->OrientTrimmedSurfaces(TRUE, maybe_open, lamina > 0),
+        // Stitching needs consistent face normals for both open and closed
+        // components. Use topology throughout; the command's exact spatial
+        // witness chooses outward sense for each newly closed component.
+        // Ray classification introduces unrelated surface/curve queries that
+        // can reject valid translated parameter charts.
+        // Preserve the previous native ray path when an exact component
+        // witness is unavailable. Open assemblies still use topology.
+        const bool just_unify = !ray_classify_closed || lamina > 0;
+        check(owner->value->OrientTrimmedSurfaces(TRUE, maybe_open, just_unify),
               "orient stitched boundaries");
         owner->value->GetFaces(faces);
         require(faces.GetSize() <= face_capacity, "Stitching exceeded face buffer");

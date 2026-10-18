@@ -371,13 +371,10 @@
   },
   "source_sha256": {
     "crates/viboceros-command/src/join/breps.rs": "881357e5dc2ea7e793295a6846101079cf090c94974ef6669cd5d827bafb27a1",
-    "crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
-    "crates/viboceros-command/src/join/breps/native/tests.rs": "bf870ed3c3a4d2f2a8e034ced5d3c6ea6f8d55f8ad1bdbc067c004fd5514bde0",
     "crates/viboceros-command/src/join/tests/breps.rs": "6d4ffe06f2d899a9f6e5d21eeb3b7142325e727b5c73a7a34ba1336f5e417e64",
     "crates/viboceros-command/src/join/tests/breps/orientation.rs": "393bdcec465651bf166dfd53d419acc22162a0fe960a958a2a06df16f7fbb52b",
     "crates/viboceros-command/src/join/tests/breps/thresholds.rs": "96fe271a0e64af1e707511dc615ef9c551fdd8d10ace56d1d154052ea3fe538e",
     "src/app/tests/object_selection.rs": "73951b4cab312716d7d3d3065a4faea504978f7b914e10b530e2ba9fd389068f",
-    "docs/join-pick-probes.md": "2d812fa18e97fcd3e3e8dce8d8134f71525f5c7a88ac5520e74f5a4694fd3428",
     "crates/viboceros-oracle/src/join_command/tests/surfaces.rs": "dc3f904771bafc308cf56066b00351ddc7e651e0b028a5f88edf355dd89b4d80",
     "crates/viboceros-oracle/src/join_command/tests/boundaries.rs": "dbd90668ab2c4ee840b3c834ca58eb593bb0ced8ba988deebb149827c29df97f",
     "tools/rhino_oracle/observations/join_surface_differences.json": "4066ffa7f53dbabda14369e60ef43e4c7eedd82b8fd584a555010ad722057ec0",
@@ -399,6 +396,9 @@
   "unchanged_assembly_section_sha256": "80420a9e28c9a9b953b06a4620d6649eaf6639e289ef605cbf8edee689641cbe",
   "source_git_sha256": {
     "650fa1c854c05003a45311fc531c421cb45f680d:docs/join-source-uv-validation.json": "83c787e000ded90cef496a5fdef9ea73ba22f117019bb06a43ef2c11df823af7",
-    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:docs/smlib-joining.md": "ab89750c29b7c119d2a9e433a7668ec99ba97c9097af53b8240e784913411438"
+    "d2cb74ce405599ec4492f83bc3dd23977c14fcc5:docs/smlib-joining.md": "ab89750c29b7c119d2a9e433a7668ec99ba97c9097af53b8240e784913411438",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native/tests.rs": "bf870ed3c3a4d2f2a8e034ced5d3c6ea6f8d55f8ad1bdbc067c004fd5514bde0",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:docs/join-pick-probes.md": "2d812fa18e97fcd3e3e8dce8d8134f71525f5c7a88ac5520e74f5a4694fd3428"
   }
 }

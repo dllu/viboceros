@@ -54,3 +54,9 @@ cargo run -p viboceros-oracle --features native-smlib -- --audit \
   tools/rhino_oracle/fixtures/join_surfaces.json /tmp/join-pick-surfaces.json
 gzip -dc docs/join-pick-surfaces-reference.json.gz | cmp - /tmp/join-pick-surfaces.json
 ```
+
+The [closed-Join orientation](native-closed-join.md) policy can repeat a logical
+source assembly once when an exact orientation witness is unknown, using the
+previous native ray path. The open-sheet operation counts above are unchanged;
+the bound on logical source assemblies does not include that closed-orientation
+retry.

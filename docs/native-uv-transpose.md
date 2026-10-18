@@ -47,10 +47,11 @@ archive executes completely, with four full raw matches and 44 differences at
 `1e-10` absolute/relative epsilon. Saved observations and comparators are
 unchanged.
 
-Qualification is limited to the retained cases. A six-face box over translated
-charts returns `orient stitched boundaries status 1006` (`SM_ERR_NULL_POINTER`)
-in both the parent and candidate. Its complete test source and both failure
-logs are retained separately in the validation record. Some coincident natural
+At the transpose revision, a six-face box over translated charts returned
+`orient stitched boundaries status 1006` (`SM_ERR_NULL_POINTER`) in both the
+parent and candidate. The complete probe source and both failure logs remain
+in that validation record. The [closed-Join orientation repair](native-closed-join.md)
+subsequently lets this assembly reach the document as an outward solid. Some coincident natural
 boundaries also remain unjoined: the retained wider curved-sheet probe imports
 the correct active coefficients but returns eight separate edges. Native
 matching at every chart scale, general trimmed/periodic topology and performance

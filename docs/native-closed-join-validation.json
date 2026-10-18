@@ -1,0 +1,298 @@
+{
+  "date": "2026-10-18",
+  "baseline_revision": "3fba75ffc22e2adf74b34cde1355debe41515fee",
+  "feature": "Close native Join assemblies over translated UV charts using topological normal unification and existing exact spatial orientation, with native ray fallback for unknown closed assemblies.",
+  "upstream_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "implementation": [
+    "Use usd-brep topology-based normal unification as the initial stitching orientation path, preserving source geometry and chart restoration.",
+    "Reuse the existing command-level exact spatial witness for each newly joined closed component. Reverse provably inward components without a mass integral.",
+    "If a wholly closed assembly has a newly joined component with an unknown exact witness, retry once from untouched original sources with the previous native ray-orientation policy. Preserve its complete results or errors.",
+    "Keep matching distances, stored tolerances, source-face permutations, native status checks, nesting and document transactions intact. Add an internal C ABI mode and a Rust method for the retained native path."
+  ],
+  "cases": {
+    "bridge_cases": 8,
+    "command_workflows": 64,
+    "unknown_curved_cases": 2,
+    "box_dimensions": [
+      2,
+      3,
+      4
+    ],
+    "source_volume": 24,
+    "u_interval": [
+      1000000000000.0,
+      1000000000001.0
+    ],
+    "v_interval": [
+      -2000000000000.0,
+      -1999999999998.0
+    ],
+    "chart_orientations": 2,
+    "face_reversal_masks": [
+      0,
+      3,
+      21,
+      63
+    ],
+    "construction_tolerance": 1e-09,
+    "document_tolerance": 0.001,
+    "bridge_comparison": "Six exact complete source surfaces; 12 stitched/shared edges; closed manifold topology; source-face permutation; source chart restoration retains native spatial geometry and signed volume; Rust/native inputs unchanged. Low-level normal unification can retain volume +24 or -24.",
+    "command_comparison": "Full original surface coefficients/charts; exact eight vertices and unique complete images of all 12 two-control degree-one edges against independently authored box; positive signed volume 24 within 1e-9; seed attributes, groups, selection, source retention and two Undo/Redo cycles.",
+    "pick_sequence": [
+      0,
+      2,
+      1,
+      3,
+      4,
+      5
+    ],
+    "pick_policy": "Use a connected prefix so all command-first selections can participate; opposite caps need a side before joining.",
+    "unknown_comparison": "Rotated rational sphere, both source senses. Require a closed topological result with Unknown exact orientation; compare the complete automatic result/error with the explicitly forced native ray path and preserve original sources.",
+    "unknown_observed_outcomes": [
+      "UNKNOWN_CURVED reversed=false native_ray=success components=1",
+      "UNKNOWN_CURVED reversed=true native_ray=success components=1"
+    ]
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-closed-join-bridge-full.log.gz",
+      "uncompressed_sha256": "7f61fcad014886247440a98cf332df2373fbbc81e6e7aa2eeabaf12f0893fd74",
+      "passed": 407,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-closed-join-command-full.log.gz",
+      "uncompressed_sha256": "4c5a7f3eec97490e4ba30038f7cd8a64f82658101408fac79a0bb5d67345a78d",
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-closed-join-clippy.log.gz",
+      "uncompressed_sha256": "10f8c19e894f529ca2c85294b15c2fad6e03206b978a990e7100edc63f75b32d"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-closed-join-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "focused_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib -p viboceros-command --features viboceros-command/native-smlib --test stitch_remote_solid --test native_closed_join -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-closed-join-focused-with-fallback.log.gz",
+      "uncompressed_sha256": "f9a4e25ca8cba3f8a4cb5af353eb3c7a121e3aff38815cbfd3d9f7b736624ddc",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-command --features native-smlib unknown_curved_component_orientation -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-closed-join-unknown-focused.log.gz",
+      "uncompressed_sha256": "e6575cf12e6af80ca647a72f0c09d100d577513f9d35ba317ce0b75b9cee8e7b",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "parent_control": {
+    "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib -p viboceros-command --features viboceros-command/native-smlib --test stitch_remote_solid --test native_closed_join --no-fail-fast -- --nocapture",
+    "exit_code": 101,
+    "retained": "docs/native-closed-join-baseline-final.log.gz",
+    "uncompressed_sha256": "9e41388befda59ce72d4daaeea25d4e6d7ddfcd9442a39e08b1231e23bf86280",
+    "passed": 0,
+    "failed": 2,
+    "ignored": 0,
+    "runner": {
+      "retained": "docs/native-closed-join-baseline-runner.py.gz",
+      "uncompressed_sha256": "2679d41afc90a975bc7405850ce4ac001292caa92440c6bef6bb7717c6cd522b"
+    },
+    "receipt": {
+      "retained": "docs/native-closed-join-baseline-runner.log.gz",
+      "uncompressed_sha256": "42e289d92f4a8c2440977e5999eafce7583ca31c4af6b3e0d95e56fdf0731fd8"
+    },
+    "scope": "Temporarily compile the exact parent bridge.cpp with the unchanged new box integration tests and matching parent C ABI. Restore the candidate afterward. The parent completes 32 local command cases then fails the first translated command case; the bridge test fails its first case. These are two test failures, not an error count for every planned case. The later unknown-orientation fallback adds a C ABI mode and a separate curved regression; the box test sources remain unchanged."
+  },
+  "parent_trace": {
+    "retained": "docs/native-closed-join-parent-orientation-trace.log.gz",
+    "uncompressed_sha256": "ec68ae3c5b0f6a0070da524f6f85186ac7bd20ac1339263da0749beaa5813baa",
+    "scope": "Development instrumentation of the parent generated SmBrep/SmFace sources. The first annotated failure propagates from CurveOnClassify/IntersectVertices through CreateCurvesByTrimming during OrientTrimmedSurfaces with just-unify false. All trace instrumentation is absent from the final candidate."
+  },
+  "native_api_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-remote-solid-replay.py",
+    "exit_code": 0,
+    "retained": "docs/native-closed-join-replay.log.gz",
+    "uncompressed_sha256": "c7c4a849ee8799721e31d83739301386e03699594d9cb4f2043dca945613074d",
+    "script": {
+      "retained": "docs/native-closed-join-replay-script.py.gz",
+      "uncompressed_sha256": "1b30ebef764ffb4a57dcda1b6951d8cb2a08395c9f107fb48786c92ce6713f57"
+    },
+    "curved_audit": {
+      "retained": "docs/native-closed-join-curved-audit.json.gz",
+      "uncompressed_sha256": "130baf51c50e16eff4d313dd59c64c59a182e3db040b3560f51abded65eebeb3"
+    },
+    "curved_report": {
+      "retained": "docs/native-closed-join-curved-report.json.gz",
+      "uncompressed_sha256": "3d54e876e93237faf37ca7b3a2de5b3c8c24962ae5d6fb90a4e9fb9865b10d38"
+    },
+    "isocurve_audit": {
+      "retained": "docs/native-closed-join-isocurve-audit.json.gz",
+      "uncompressed_sha256": "11bbaa357d8c46d2a2885a597913c4a97d6154a8d013d73faa591e22a8b4fb04"
+    }
+  },
+  "observed_subset_comparisons": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-remote-solid-observed-subsets.py",
+    "exit_code": 0,
+    "retained": "docs/native-closed-join-observed-subsets.log.gz",
+    "uncompressed_sha256": "f2a21356e8c349329a46eebd564bc3477d1f2f306c8d6578c602fabe43559e0d",
+    "script": {
+      "retained": "docs/native-closed-join-observed-subsets-script.py.gz",
+      "uncompressed_sha256": "86ca7baadd822424228fcf44717bc31a13b71b3b4f627eb6fd5e7d32ec1b9dbf"
+    },
+    "reports": [
+      {
+        "retained": "docs/native-closed-join-join_isocurve_local-report.json.gz",
+        "uncompressed_sha256": "aa4b1ed2de40f3a68709d4f7273a4895a4f1a0c6f26c705a0addb629aabe0316"
+      },
+      {
+        "retained": "docs/native-closed-join-join_isocurve_origin-report.json.gz",
+        "uncompressed_sha256": "df4430490d3d51a1bbe12217e90d525edb3406aec3e77f5650965a84f682e4da"
+      }
+    ]
+  },
+  "parent_raw_outcome_comparisons": [
+    {
+      "audit": "curved",
+      "cases": 48,
+      "identical": 48,
+      "changed_ids": [],
+      "policy": "Compare complete raw audit outcomes, including all fields. No coefficient, domain, geometry, metadata, tolerance or ordering normalization."
+    },
+    {
+      "audit": "isocurve",
+      "cases": 64,
+      "identical": 64,
+      "changed_ids": [],
+      "policy": "Compare complete raw audit outcomes, including all fields. No coefficient, domain, geometry, metadata, tolerance or ordering normalization."
+    }
+  ],
+  "curved_strict_comparison": {
+    "cases": 48,
+    "matched": 4,
+    "native_failed": 0,
+    "mismatched": 44,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-10
+  },
+  "isocurve_strict_comparison": {
+    "executed_cases": 64,
+    "connected_two_face_outputs": 64,
+    "execution_errors": 0,
+    "observed_cases": 33,
+    "raw_matches": 0,
+    "raw_mismatches": 33,
+    "native_errors": 0,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "unobserved_translated_cases": 31,
+    "policy": "Only the unchanged 32-case local and one-case translated Rhino subsets have raw comparison evidence. Do not invent observations for the other 31 cases."
+  },
+  "historical_provenance": {
+    "preserved_entries": 18,
+    "records": 6,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Focus on copied stitching, complete closed command workflows and a real unknown curved component first. Run full release SMLib/command suites and all-target/all-feature Clippy after the C ABI mode and fallback are frozen.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses were not run. This ARM integration builds the SMLib/SM_API closure through its CMake bridge; upstream sources and those other layers are unchanged. No new sanitizer, live-Rhino or performance measurement is claimed."
+  },
+  "superseded_runs": "Initial topology-only broad checks were superseded after review added the unknown-orientation fallback. The initial full bridge job completed; the initial command/API jobs were explicitly interrupted. Only completed final jobs above supply final validation totals.",
+  "limitations": [
+    "An unknown exact witness retains the prior native ray result or error and is not an outward certificate.",
+    "The underlying kernel ray-based surface/curve query path remains unqualified for translated charts; it is not repaired by this adapter change.",
+    "Some wider natural-boundary sheets still remain unjoined; arbitrary chart scales and weight ranges remain unqualified.",
+    "General nested/self-intersecting shells and raw Rhino geometry/representation parity remain unfinished.",
+    "The unknown-orientation retry can require a second native assembly; no performance parity is claimed."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/native/bridge.cpp": "9b464b04c066eb43c55abf66c13ddbb481c9d8f975e05700e926835dcd83eb37",
+    "crates/viboceros-smlib/native/bridge.h": "c626e2457787cd131947c43f4e6cc8df0b94fd3410c505df81d2ff6d2745f4a7",
+    "crates/viboceros-smlib/src/native/shape.rs": "c6b973d1d6e49293bcefc673c47f7f8a2cfde8ca03d6da889d52eb8eb87fd90e",
+    "crates/viboceros-smlib/tests/stitch_remote_solid.rs": "c8be43c1bf1e971b4fd406c4e59bffd595a3d2d67f35e48f45ec90dbd8178812",
+    "crates/viboceros-command/src/join/breps/native.rs": "b6f24e664a5cb3f81137e6c1333d7199c7b7c46f5c3a75163a82782fd3c26bc4",
+    "crates/viboceros-command/src/join/breps/native/tests.rs": "75d76f46bdb6e8797933b9a0c879868c2aa5e3417d78707013f0de688003fb90",
+    "crates/viboceros-command/tests/native_closed_join.rs": "ccd8575ad1eb7e0e033f0708971e31bed34551d3fe3c80ef65ed0916b77350d1",
+    "crates/viboceros-geometry/src/brep/solid_orientation.rs": "2359984c7f911ace4c2cdb5d3c471431e183d4c073b60d9334b833ca855a72fd",
+    "crates/viboceros-smlib/build.rs": "c240887ca828460c5a0b5fd7543a517b878868db1eb452cf5226287889d70987",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "70df1e3fa02ac38ef2493bae5680c21ce065149c9791fa64d10e613307f95590",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
+    "third_party/usd-brep/source/SMLib/src/SmBrep.cpp": "5d44d6ac347fa42e4e83fead8bbde82ce46c5ff48e0a973b5c7cddc778a2fca1",
+    "third_party/usd-brep/source/SMLib/src/SmFace.cpp": "6004846a29074d8f8923904caabc01e194eceaff7f57f33b68ecdbbec08c51f9"
+  },
+  "artifact_sha256": {
+    "docs/native-closed-join-bridge-full.log.gz": "3fb1231b14877f5d8dbfd8725e278415f3b1d969b40477b420c0f093bbb3465b",
+    "docs/native-closed-join-command-full.log.gz": "29cd5d113a41649b5f24f9c5586e03077498d416b0bf1c07da3aac901ba7019a",
+    "docs/native-closed-join-clippy.log.gz": "4b92249cd22f6d963838f043a970a65f7552a071215a9ce958b380fea1456777",
+    "docs/native-closed-join-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-closed-join-focused-with-fallback.log.gz": "027d6ced4486c56bb3f1d4185a45b527b096ab7182994599b2a5c319e911254b",
+    "docs/native-closed-join-unknown-focused.log.gz": "b1b2fedab5c1384e8429fdc05bb29a11e4ee2ec4a746c85acadedd2bf675db37",
+    "docs/native-closed-join-baseline-final.log.gz": "6ee202b383a83be01f772fe56c7964a2d73d54873c0c607dde8c073e03da381e",
+    "docs/native-closed-join-baseline-runner.py.gz": "fb1f59074310672645a33c7dfe72be6487c35eed27adc91119e71d71763201ed",
+    "docs/native-closed-join-baseline-runner.log.gz": "354ab294e2224b0961e3dec3abc8fb607dda7859b8d255d201f2a89f4f684921",
+    "docs/native-closed-join-replay.log.gz": "2aadd5b71baeb182edec863b932439353149767e7e182736d19c8bf4c1b3f733",
+    "docs/native-closed-join-replay-script.py.gz": "3f7039c94df684500bfe3d3b7fd55f521f87641fc9b49bd7bf73dc5d5e07fc53",
+    "docs/native-closed-join-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-closed-join-curved-report.json.gz": "921def0039eb31a1b9939de1ec1bbf4785268389f173cd3e1561dfbb17bade77",
+    "docs/native-closed-join-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "docs/native-closed-join-observed-subsets.log.gz": "c285c3775485780edb127d61a8e263f9db782321033ec2fdc6f4e02ce2f7ea93",
+    "docs/native-closed-join-observed-subsets-script.py.gz": "53908ed7d2d389a0b23491cd20f1f1791223630e026834712c489d48b69b0d40",
+    "docs/native-closed-join-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
+    "docs/native-closed-join-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
+    "docs/native-closed-join-parent-orientation-trace.log.gz": "5ed779d8b5591be83a9638d8fe7bbd5e77b219127ee1e0e9471319ea2b82e1f2",
+    "README.md": "9cc07dc43a448f572ce4c9a3af0842b438e028f96585fd6383306db5041834e9",
+    "docs/native-closed-join.md": "c194471b5163408a5c654dfb367fc79c4148d6f48ee8307d281dddf8eb08bb8d",
+    "docs/native-uv-transpose.md": "83879a97bff265660733b9edaf6d23172fcc7db5c9af38719e6e3fe1ecbb8548",
+    "docs/smlib-joining.md": "e6520202be143d7ccb47f0c9e1ce817f0bf781a8c38517f4c937a35fca660bd1",
+    "docs/usd-brep-limitations.md": "3023e3adebae7442d810ac36d2ce505ed93032f4da22011e3e1539ef924b9bab",
+    "docs/join-pick-probes.md": "99806c193eb8ea2582ce4a9af90e7e15a19901d501c9ed8a0d7d68fb72c60fe4",
+    "docs/native-uv-transpose-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-uv-transpose-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
+    "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
+    "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
+    "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
+    "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
+    "docs/curve-deviation-subcurves-validation.json": "364688fa86746b4229a97c4fd181b07aad17ff9541f134fa667fa7422116f689",
+    "docs/curve-distance-validation.json": "d950d707b44fc9d47e7a515db14d06a1f2761eeafedeafc3a59d16d43db4f181",
+    "docs/join-pick-validation.json": "9145085e97b96cd0b0304f7f9bdbf7ff29e8e58bed67e62ee199c8ddefc7e27d",
+    "docs/join-source-uv-validation.json": "0794300adf0ba0801f3228f024007e8fe051d22a1206ab74f9a22b2ba0424105",
+    "docs/native-uv-transpose-validation.json": "b46d1d465dcc3964df6e35eb85454088fe17ed80026d58697b510db48c9fba3a",
+    "docs/smlib-unclamped-import-validation.json": "8e66c5f693356ca2dfa7d8c09b9a85109055a1f2a5e2e1aebe4373dbab314cdc"
+  },
+  "baseline_git_sha256": {
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/native/bridge.cpp": "d4a59b9a0961d835580abb48f842537bc9bdbeb0c81b04e527832b35eb8eb87f",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/native/bridge.h": "4cad5ac98c5926157732afd7b9557c9b7a4df0f334ff69b5a619691bccfd18bb",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-smlib/src/native/shape.rs": "69a66671e91488d3c891bb32030a16933939229dbfd85403cb86e3e4eac27323",
+    "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360"
+  },
+  "native_executable_sha256": "db8a7243d71376b41e8e608514c4f7c7bbc65d89cd10ed53a218117eff7ba0e1",
+  "log_policy": "All completed exit codes are observed job/status receipts. Full raw logs, audits and strict reports are retained in gzip. Execution, exact authored geometry checks and raw Rhino comparison are distinct evidence; elapsed_ns=0 establishes no speed result."
+}
