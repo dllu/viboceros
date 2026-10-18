@@ -643,13 +643,16 @@ VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double e
     const double active_start=full[degree],active_end=full[count];
     require(start>=active_start && end<=active_end,"Native trim interval outside active domain");
     if(start==active_start && end==active_end) return vb_copy_nurbs_payload(data);
-    if(std::count(full,full+data.knot_count[0],start)==static_cast<ptrdiff_t>(degree+1)
-       && std::count(full,full+data.knot_count[0],end)==static_cast<ptrdiff_t>(degree+1)) {
+    const auto start_group=std::equal_range(full,full+data.knot_count[0],start);
+    const auto end_group=std::equal_range(full,full+data.knot_count[0],end);
+    const bool isolated_start=start_group.second-start_group.first==static_cast<ptrdiff_t>(degree+1);
+    const bool isolated_end=end_group.second-end_group.first==static_cast<ptrdiff_t>(degree+1);
+    if(isolated_start && isolated_end) {
         // Full-order boundaries already isolate independent control blocks.
         // Copy them exactly, retaining arbitrary gauges without an unnecessary
         // Euclidean/homogeneous round trip or native interpolation.
-        const size_t first=std::lower_bound(full,full+data.knot_count[0],start)-full;
-        const size_t after=std::lower_bound(full,full+data.knot_count[0],end)-full;
+        const size_t first=start_group.first-full;
+        const size_t after=end_group.first-full;
         require(after>first+degree && after<=count,"Invalid isolated curve segment");
         VbNurbsData output=data;
         output.count[0]=after-first;output.knot_count[0]=output.count[0]+degree+1;
@@ -662,35 +665,16 @@ VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double e
     std::vector<NL_CPOINT> points;
     std::array<double,3> origin;
     const int exponent=conditioned_controls(data,points,origin);
-    // ExtractCrvSeg assumes a clamped active end. A full-order group can
-    // instead have inactive suffix controls; remove those exact entries first.
-    if(end==active_end && std::count(full,full+data.knot_count[0],active_end)==static_cast<ptrdiff_t>(degree+1)) {
-        const size_t first=std::lower_bound(full,full+data.knot_count[0],active_end)-full;
-        const size_t suffix=count-first;
-        require(suffix<count-degree,"Invalid native trim inactive suffix");
-        points.resize(count-suffix);basis.resize(basis.size()-suffix);
-    }
     NL_STACKS stack;
     SmStackHandler cleanup(&stack);
     NL_CURVE input,result;
     N_CrvInitArrays(&input);N_CrvInitArrays(&result);
     check(N_CrvFromCPtsAndKnots(&input,points.data(),points.size()-1,degree,
           basis.data(),basis.size()-1,&stack),"Build native trim curve failed");
-    if(end==active_end) {
-        const size_t width=input.pol->n+1;
-        const auto *padding=input.knt->U+width;
-        const double endpoint=chart.scaled(end);
-        if(!std::all_of(padding,padding+degree+1,[endpoint](double knot){return knot==endpoint;})) {
-            NL_CURVE clamped;
-            N_CrvInitArrays(&clamped);
-            clamp_curve_endpoint(input,true,clamped,stack);
-            input=clamped;
-        }
-    }
     check(N_CrvExtractCrvSeg(&input,chart.scaled(start),chart.scaled(end),&result,&stack,&stack),
           "Extract native curve segment failed");
     std::vector<double> expected(degree+1,start);
-    for(size_t i=0;i<data.knot_count[0];++i) if(full[i]>start && full[i]<end) expected.push_back(full[i]);
+    expected.insert(expected.end(),start_group.second,end_group.first);
     expected.insert(expected.end(),degree+1,end);
     require(result.p==static_cast<NL_DEGREE>(degree) && result.knt->m+1==static_cast<NL_INDEX>(expected.size())
             && result.pol->n+1==static_cast<NL_INDEX>(expected.size()-degree-1),"Native trim layout differs");
@@ -699,13 +683,12 @@ VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double e
     VbNurbsData output=data;
     output.count[0]=result.pol->n+1;output.knots[0]=expected.data();output.knot_count[0]=expected.size();
     points.assign(result.pol->Pw,result.pol->Pw+output.count[0]);
-    const bool exact_start=start==active_start && std::all_of(full,full+degree+1,
-        [active_start](double knot){return knot==active_start;});
-    const bool exact_end=end==active_end && std::all_of(full+count,full+data.knot_count[0],
-        [active_end](double knot){return knot==active_end;});
+    // Full-order bounds isolate an original control, including interior
+    // groups and inactive endpoint padding. Preserve its exact payload.
+    const double *exact_first=isolated_start?data.points_xyzw+4*(start_group.first-full):nullptr;
+    const double *exact_last=isolated_end?data.points_xyzw+4*(end_group.first-full-1):nullptr;
     return snapshot(output,points,exponent,origin,
-                    exact_start?data.points_xyzw:nullptr,
-                    exact_end?data.points_xyzw+4*(count-1):nullptr);
+                    exact_first,exact_last);
 }
 
 VbSurfaceData *vb_trim_nurbs_surface_axis(const VbNurbsData &data,int axis,double start,double end) {

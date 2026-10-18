@@ -1,0 +1,620 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-0",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          }
+        ]
+      },
+      "start": 0.125,
+      "end": 0.875
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-1",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.5
+          }
+        ]
+      },
+      "start": 0.125,
+      "end": 0.875
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-2",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              6.0,
+              9.0,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ]
+      },
+      "start": 0.125,
+      "end": 0.875
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-3",
+      "curve": {
+        "degree": 5,
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              6.0,
+              9.0,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              8.0,
+              16.0,
+              0.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10.0,
+              25.0,
+              1.0
+            ],
+            "weight": 1.75
+          }
+        ]
+      },
+      "start": 0.125,
+      "end": 0.875
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-4",
+      "curve": {
+        "degree": 17,
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              6.0,
+              9.0,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              8.0,
+              16.0,
+              0.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10.0,
+              25.0,
+              1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              12.0,
+              36.0,
+              -1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              14.0,
+              49.0,
+              0.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              16.0,
+              64.0,
+              1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              18.0,
+              81.0,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              20.0,
+              100.0,
+              0.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              22.0,
+              121.0,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              24.0,
+              144.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              26.0,
+              169.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              28.0,
+              196.0,
+              1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              30.0,
+              225.0,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              32.0,
+              256.0,
+              0.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              34.0,
+              289.0,
+              1.0
+            ],
+            "weight": 1.75
+          }
+        ]
+      },
+      "start": 0.125,
+      "end": 0.875
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-5",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              6.0,
+              9.0,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ]
+      },
+      "start": 1e-09,
+      "end": 4e-09
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-7",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              6.0,
+              9.0,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ]
+      },
+      "start": 0.25,
+      "end": 2
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-8",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ],
+        "control_points": [
+          {
+            "point": [
+              -2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0.0,
+              4.0,
+              1.0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5.0,
+              -2.0,
+              -1.0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              8.0,
+              3.0,
+              2.0
+            ],
+            "weight": 1.25
+          }
+        ]
+      },
+      "start": 0.25,
+      "end": 2
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "native-segment-limit-9",
+      "curve": {
+        "degree": 3,
+        "knots": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              4.0,
+              4.0,
+              1.0
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              6.0,
+              9.0,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              8.0,
+              16.0,
+              0.0
+            ],
+            "weight": 1
+          }
+        ]
+      },
+      "start": 0,
+      "end": 2
+    }
+  ]
+}

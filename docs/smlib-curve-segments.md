@@ -21,13 +21,14 @@ all source coordinates, sharing the checked conditioning used by native Bezier
 conversion. Source definitions are unchanged. Every output knot and control count
 is checked against the expected clamped interval before projection.
 
-The kernel assumes clamped active endpoints in segment extraction and basis
-point evaluation. For a requested unclamped active end, the adapter uses the
-existing reverse/start-split/reverse workaround without projecting intermediate
-controls. Full-order endpoint groups with inactive suffix controls are sliced
-exactly before extraction. The [limitations ledger](usd-brep-limitations.md)
-and [direct native probe](../tools/usd_brep/segment_extraction_probe.cpp)
-retain the independently verified endpoint discrepancy.
+The [repaired native extractor](native-curve-segment-limits.md) uses actual
+endpoint multiplicities and exact knot groups. Unclamped active ends and inactive
+suffix controls no longer need the adapter's reverse/split/reverse clamp or
+suffix removal. Full-order endpoint payloads are copied from their exact source
+rows, including interior groups and inactive padding. The historical
+[direct probe](../tools/usd_brep/segment_extraction_probe.cpp) and
+[limitations ledger](usd-brep-limitations.md) retain the original discrepancy.
+Unclamped native point evaluation remains a separate limitation.
 
 The public `trim_curve` API follows the existing geometry interval checks.
 Native limits remain degree 17 and one million controls. Binary weight gauges
@@ -57,7 +58,7 @@ intersection and surface-cutting cases; all match at absolute `1e-8`, relative
 use scheme `VibocerosOracleSmlibBridgeFinal20261010`; their timings include the
 harness and are not kernel-speed measurements.
 
-Qualification passed 3,555 native geometry/command/bridge tests (11 ignored),
+The original qualification passed 3,555 native geometry/command/bridge tests (11 ignored),
 the expanded four segment regressions, all 1,097 Python tests, formatting and
 workspace lint in native and portable configurations. The existing 165 retained
 native editing/decomposition comparisons also still match.

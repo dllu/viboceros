@@ -280,15 +280,17 @@ issues reported by NVIDIA that have not all been reproduced here.
   See [directed segments](smlib-directed-segments.md),
   [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp), and
   [regressions](../crates/viboceros-smlib/tests/directed_segments.rs).
-- **Segment extraction assumes a clamped active end.** For the rational
+- **Fixed: segment extraction assumed a clamped active end.** For the rational
   quadratic with knots `[-2,-1,0,0.8,2,3,4]`, `N_CrvExtractCrvSeg(0.25,2)`
-  retains the last source control as its endpoint `[8,3,2]`, rather than the
-  actual endpoint `[7.25,1.75,1.25]`. Its active-end branch sets the right span
+  previously retained the last source control as its endpoint `[8,3,2]`, rather than the
+  actual endpoint `[7.25,1.75,1.25]`. Its active-end branch set the right span
   to the full vector's last index without extracting the unclamped end.
   The independent de Boor limit and the retained Rhino trim definition agree.
-  The adapter privately clamps only a requested active end through existing
-  reverse/split/reverse operations, or slices off an inactive full-order suffix.
-  It verifies the complete resulting interval and interior knot basis. See
+  A generated-source repair now uses actual endpoint multiplicities and exact
+  knot groups with the existing homogeneous restriction. The adapter's private
+  end clamp and inactive-suffix removal are deleted; conditioning, complete
+  basis checks and exact isolated endpoint payloads remain. See
+  [512-case producer qualification](native-curve-segment-limits.md),
   [native segment extraction](smlib-curve-segments.md),
   [direct probe](../tools/usd_brep/segment_extraction_probe.cpp), and
   [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp).

@@ -1,0 +1,499 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "d299e0618dfeaf2723b509f71654c1749a0c4c6e",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "changes": [
+    "Select exact in-domain segment groups and actual multiplicities. Retain the existing homogeneous restriction and allocation contracts instead of pretending all active ends are clamped.",
+    "Remove C ABI reverse/split/reverse end clamping and inactive-suffix slicing. Retain conditioning and complete basis gates, preserve isolated endpoint payloads exactly, and reuse binary group ranges."
+  ],
+  "cases": {
+    "cases": 512,
+    "families": 16,
+    "paths": [
+      "allocated",
+      "preallocated_null_stack",
+      "in_place"
+    ],
+    "degrees": [
+      1,
+      2,
+      3,
+      5,
+      17
+    ],
+    "chart_scales": [
+      "2^-40",
+      "1",
+      "2^40"
+    ],
+    "translated_origin": 1000000000000.0,
+    "common_gauges": [
+      "1",
+      "-1",
+      "2^-300",
+      "2^300"
+    ],
+    "polynomial_or_rational": 2,
+    "expected_geometry": "Independent Bernstein polar-form polynomial products, uniform quadratic/cubic identities and isolated blocks.",
+    "comparison": "Exact degree/count/full knots. Homogeneous differences divided by common gauge are bounded by 5e-13*max(1,abs(expected/gauge)). Separate source/output allocation stacks prove retained data after source destruction; in-place input is consumed."
+  },
+  "producers": {
+    "baseline": {
+      "exit_code": 1,
+      "cases": 512,
+      "correct_by_path": {
+        "allocated": 312,
+        "preallocated_null_stack": 312,
+        "in_place": 312
+      },
+      "source_unchanged_cases": 512,
+      "raw": {
+        "retained": "docs/native-curve-segment-limits-baseline.jsonl.gz",
+        "uncompressed_sha256": "236720aa3632b807025f3b080a519cd7644cfa7f98f6b2ccbf54039a11375ae4"
+      },
+      "stderr": {
+        "retained": "docs/native-curve-segment-limits-baseline.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "build": {
+        "command": "cmake --build <focused debug native tree> --target viboceros_smlib_curve_segment_probe viboceros_smlib_curve_segment_baseline -j10",
+        "exit_code": 0,
+        "retained": "docs/native-curve-segment-limits-baseline-build.log.gz",
+        "uncompressed_sha256": "cdf182295f28accecbc43823b290b526db9e44decb702c9dcc015530e97ac13d"
+      },
+      "method": "Link the preceding generated NL_CrvTool.cpp explicitly ahead of the candidate archive, preserving its knot-removal repair. Only the segment-limit repair is removed.",
+      "caution": "The combined independent_ownership check also requires both calls to succeed and finite equal snapshots. A baseline failure does not establish a dangling allocation. Residuals are computed only after matching structure; a default zero on a different failure is not a geometry match."
+    },
+    "candidate": {
+      "exit_code": 0,
+      "cases": 512,
+      "correct_by_path": {
+        "allocated": 512,
+        "preallocated_null_stack": 512,
+        "in_place": 512
+      },
+      "source_unchanged_cases": 512,
+      "raw": {
+        "retained": "docs/native-curve-segment-limits-candidate.jsonl.gz",
+        "uncompressed_sha256": "6bea0293744ec56fd4ed8fc442f26199fbd0d1e948645dc608b28bcdc7d4988a"
+      },
+      "stderr": {
+        "retained": "docs/native-curve-segment-limits-candidate.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "post_source_destruction_cases": 512,
+      "max_gauge_normalized_homogeneous_residual": 2.842170943040401e-14
+    },
+    "asan": {
+      "exit_code": 0,
+      "cases": 512,
+      "correct_by_path": {
+        "allocated": 512,
+        "preallocated_null_stack": 512,
+        "in_place": 512
+      },
+      "source_unchanged_cases": 512,
+      "raw": {
+        "retained": "docs/native-curve-segment-limits-asan.jsonl.gz",
+        "uncompressed_sha256": "6bea0293744ec56fd4ed8fc442f26199fbd0d1e948645dc608b28bcdc7d4988a"
+      },
+      "stderr": {
+        "retained": "docs/native-curve-segment-limits-asan.stderr.gz",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "post_source_destruction_cases": 512,
+      "max_gauge_normalized_homogeneous_residual": 2.842170943040401e-14,
+      "build": {
+        "command": "cmake -S crates/viboceros-smlib/native -B /tmp/viboceros-isocurve-pair-asan -DUSD_BREP_ROOT=/home/dllu/proj/viboceros/third_party/usd-brep -DVIBOCEROS_SMLIB_ASAN=ON -DCMAKE_BUILD_TYPE=Release; cmake --build /tmp/viboceros-isocurve-pair-asan --target viboceros_smlib_curve_segment_probe viboceros_smlib -j10",
+        "exit_code": 0,
+        "retained": "docs/native-curve-segment-limits-asan-build.log.gz",
+        "uncompressed_sha256": "e04a75721fa70d9c4ab8e2a8afcd5ac8eb9eb64a76cf44afd7ce69f54a61ac23"
+      },
+      "flags": {
+        "retained": "docs/native-curve-segment-limits-asan-flags.txt.gz",
+        "uncompressed_sha256": "23ce6ffed3740b51937f468da4941be7a28b28acbe9a8a9bb4021ab3993a02e6"
+      },
+      "environment": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+      "scope": "Instrument complete SMLib/SM_API/C ABI and the direct curve probe. Execute all 512 cases in three allocation paths, including rereads after destroying the separately allocated source stack. C ABI matrix tests execute in normal builds, not under ASan in this record.",
+      "leak_policy": "Leak detection is disabled. This run checks invalid memory access and allocation lifetime; no leak-free result is claimed."
+    }
+  },
+  "producer_runs": {
+    "command": "python3 /tmp/viboceros-curve-segment-limits-probes.py",
+    "exit_code": 0,
+    "retained": "docs/native-curve-segment-limits-probes.log.gz",
+    "uncompressed_sha256": "b50e193a22dbc0804ef7d5d639331d174282c2a0f39cb9a7dd060dd190c17eaf",
+    "runner": {
+      "retained": "docs/native-curve-segment-limits-probes.py.gz",
+      "uncompressed_sha256": "e08ad5ae951758716222965dee6534bde1864f68d321f7dde46aca336b199cbe"
+    }
+  },
+  "focused_run": {
+    "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --test curve_segment_limits --test curve_segments --test directed_segments --test surface_segments --test surface_seams -- --nocapture",
+    "exit_code": 0,
+    "retained": "docs/native-curve-segment-limits-focused-final.log.gz",
+    "uncompressed_sha256": "7db40a09526b2c4fe6b480eaeea4cb3415a0c42aae4ddeb2e41979e37757f680",
+    "passed": 20,
+    "failed": 0,
+    "ignored": 0,
+    "checked_matrix": {
+      "cases": 512,
+      "isolated_endpoint_payloads_exact": 96,
+      "whole_domain_noops_exact": 128,
+      "sample_stations_per_case": 17,
+      "point_samples": 8704,
+      "absolute_point_epsilon": 1e-10,
+      "weight_ratio_epsilon": 1e-12
+    }
+  },
+  "completed_runs": [
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-smlib --features native --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-curve-segment-limits-bridge-full.log.gz",
+      "uncompressed_sha256": "473aedb9b7216b6fd166bf2e4eacfa46c27810963bb72fc78ccc684ce36e693f",
+      "passed": 414,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo test --release -p viboceros-command --features native-smlib --no-fail-fast -- --nocapture",
+      "exit_code": 0,
+      "retained": "docs/native-curve-segment-limits-command-full.log.gz",
+      "uncompressed_sha256": "e4edb5a980bf3d6c96aecb57f26b0497860cccc8b2e31e0a16f349bad5ce445f",
+      "passed": 1600,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "retained": "docs/native-curve-segment-limits-clippy.log.gz",
+      "uncompressed_sha256": "6dc82e9d402ed15752fd236e8b4eb620d708193d3ca602c602b27852beb0ee13"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "retained": "docs/native-curve-segment-limits-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "fresh_rhino_definitions": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-curve-segment-limits-sdk.py",
+    "exit_code": 0,
+    "retained": "docs/native-curve-segment-limits-sdk.log.gz",
+    "uncompressed_sha256": "a4bfcb44f49a37f3de83d025aa62fe697e731925b0649c20258b4e7ef8f6c024",
+    "script": {
+      "retained": "docs/native-curve-segment-limits-sdk.py.gz",
+      "uncompressed_sha256": "65e2c21e059a37c859e649f1363d63e100c49e6f441651351e1a3e43c917d375"
+    },
+    "capture": {
+      "command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_segment_limits_geometry.json --scheme VibocerosOracleCurveSegmentLimits20261018 --timeout 180 --output /tmp/viboceros-curve-segment-limits-rhino.json",
+      "exit_code": 0,
+      "retained": "docs/native-curve-segment-limits-rhino.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "paths": [
+      {
+        "mode": 0,
+        "cases": 9,
+        "raw_matches": 8,
+        "raw_mismatches": 1,
+        "mismatched_ids": [
+          "native-segment-limit-9"
+        ],
+        "audit": {
+          "retained": "docs/native-curve-segment-limits-sdk-0-audit.json.gz",
+          "uncompressed_sha256": "33518cc095bdf8a04c5e34d2d2d70f6994c5fc3e565b93c106703d242592bc68"
+        },
+        "report": {
+          "retained": "docs/native-curve-segment-limits-sdk-0-report.json.gz",
+          "uncompressed_sha256": "9820d4377b6ee421c4b38bd6667a4ea5c2f5884d9789ea01dbce6049b897e590"
+        }
+      },
+      {
+        "mode": 1,
+        "cases": 9,
+        "raw_matches": 8,
+        "raw_mismatches": 1,
+        "mismatched_ids": [
+          "native-segment-limit-9"
+        ],
+        "audit": {
+          "retained": "docs/native-curve-segment-limits-sdk-1-audit.json.gz",
+          "uncompressed_sha256": "33518cc095bdf8a04c5e34d2d2d70f6994c5fc3e565b93c106703d242592bc68"
+        },
+        "report": {
+          "retained": "docs/native-curve-segment-limits-sdk-1-report.json.gz",
+          "uncompressed_sha256": "9820d4377b6ee421c4b38bd6667a4ea5c2f5884d9789ea01dbce6049b897e590"
+        }
+      },
+      {
+        "mode": 2,
+        "cases": 9,
+        "raw_matches": 8,
+        "raw_mismatches": 1,
+        "mismatched_ids": [
+          "native-segment-limit-9"
+        ],
+        "audit": {
+          "retained": "docs/native-curve-segment-limits-sdk-2-audit.json.gz",
+          "uncompressed_sha256": "33518cc095bdf8a04c5e34d2d2d70f6994c5fc3e565b93c106703d242592bc68"
+        },
+        "report": {
+          "retained": "docs/native-curve-segment-limits-sdk-2-report.json.gz",
+          "uncompressed_sha256": "9820d4377b6ee421c4b38bd6667a4ea5c2f5884d9789ea01dbce6049b897e590"
+        }
+      }
+    ],
+    "policy": "Nine fresh observations supply 27 native path comparisons. Preserve complete raw definitions and 1e-10 absolute/1e-12 relative reports without normalization. Rhino whole-domain Trim retains its unclamped representation; the native primitive clamps its endpoints."
+  },
+  "sdk_geometry_equivalence": {
+    "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 /tmp/viboceros-curve-segment-limits-equivalence.py",
+    "exit_code": 0,
+    "retained": "docs/native-curve-segment-limits-equivalence.log.gz",
+    "uncompressed_sha256": "e57557170bedde71a2b1939488d1ccd8f14bc9162f723d8b3db64a70c546d89c",
+    "script": {
+      "retained": "docs/native-curve-segment-limits-equivalence.py.gz",
+      "uncompressed_sha256": "dc8fecb50cf8da7a271615f8ce1edb46243e1baa13e42012b00ffac358e8f66f"
+    },
+    "request": {
+      "retained": "docs/native-curve-segment-limits-equivalence-request.json.gz",
+      "uncompressed_sha256": "bd9de7a06db5221fa6a5e4bf05ff8590e0ed77ab150e6e49878e0b08d53871d0"
+    },
+    "raw": {
+      "retained": "docs/native-curve-segment-limits-equivalence-rhino.json.gz",
+      "uncompressed_sha256": "fb4879e6fe4df93dd257c97f713aba632ccb6695f67c5aa868b231a9d6f4032a"
+    },
+    "report": {
+      "retained": "docs/native-curve-segment-limits-equivalence-report.json.gz",
+      "uncompressed_sha256": "7079a94f0b3700d77a52f22184ac1f2ea63ecc4ffae11157b6308976f9cf01cd"
+    },
+    "summary": {
+      "engine": "rhino",
+      "sdk_evaluations": 130,
+      "comparison_pairs": 65,
+      "absolute_epsilon": 1e-10,
+      "max_absolute_differences": {
+        "point": 2.6645352591003757e-15,
+        "derivative": 3.552713678800501e-15
+      },
+      "passed": true,
+      "normalization": "None. Rhino evaluates both retained definitions at identical parameter stations; the raw definition mismatch remains."
+    },
+    "scope": "Rhino evaluates the unchanged retained in-place output and SDK whole-domain definitions at identical parameters. These 65 paired point/derivative stations supplement the raw mismatch; they are not continuous parity, a native evaluator check, or definition normalization."
+  },
+  "checked_reference_replays": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-curve-segment-limits-checked-replays.py",
+    "exit_code": 0,
+    "retained": "docs/native-curve-segment-limits-checked-replays.log.gz",
+    "uncompressed_sha256": "51681df0bef81ea08926821e543f81bb89709c0414b001daa74c96ccfc7178bc",
+    "script": {
+      "retained": "docs/native-curve-segment-limits-checked-replays.py.gz",
+      "uncompressed_sha256": "1a6d35e20aa6b5787bc98c5050fcbbe7f5e79748349ad6c1d4a5c45f8b4f6d31"
+    },
+    "fixtures": [
+      {
+        "fixture": "curve_trim_geometry",
+        "cases": 9,
+        "raw_matches": 8,
+        "raw_mismatches": 1,
+        "mismatched_ids": [
+          "trim-rational-whole"
+        ],
+        "audit": {
+          "retained": "docs/native-curve-segment-limits-curve_trim_geometry-audit.json.gz",
+          "uncompressed_sha256": "9377fc34f17157cdc7760529b1a871ef71611e73c769e5526f1eaa81691a1e40"
+        },
+        "report": {
+          "retained": "docs/native-curve-segment-limits-curve_trim_geometry-report.json.gz",
+          "uncompressed_sha256": "38c65b08beb7e1b8755516ccf8255d2430a58cfa6c2af7828b3ea70307c03378"
+        }
+      },
+      {
+        "fixture": "curve_segment_limits_geometry",
+        "cases": 9,
+        "raw_matches": 8,
+        "raw_mismatches": 1,
+        "mismatched_ids": [
+          "native-segment-limit-9"
+        ],
+        "audit": {
+          "retained": "docs/native-curve-segment-limits-curve_segment_limits_geometry-audit.json.gz",
+          "uncompressed_sha256": "bc5e1640a23e1904809b88d490b7f2e82f8a1e3685cbf1ebecda3e970867b6d1"
+        },
+        "report": {
+          "retained": "docs/native-curve-segment-limits-curve_segment_limits_geometry-report.json.gz",
+          "uncompressed_sha256": "121521b24b2dcf55647d55de65143205bff1e9806bd5d1c89f386a85d0638ccf"
+        }
+      }
+    ]
+  },
+  "native_api_replay": {
+    "command": "PYTHONPATH=. CMAKE_BUILD_PARALLEL_LEVEL=10 CARGO_BUILD_JOBS=8 python3 /tmp/viboceros-curve-segment-limits-replay.py",
+    "exit_code": 0,
+    "retained": "docs/native-curve-segment-limits-replay.log.gz",
+    "uncompressed_sha256": "c7c4a849ee8799721e31d83739301386e03699594d9cb4f2043dca945613074d",
+    "script": {
+      "retained": "docs/native-curve-segment-limits-replay.py.gz",
+      "uncompressed_sha256": "dc44ba9b2e6f865992bf4eebce1d3aae71f56523fc9b3eb6eca83faf21e46fed"
+    },
+    "curved_audit": {
+      "retained": "docs/native-curve-segment-limits-curved-audit.json.gz",
+      "uncompressed_sha256": "130baf51c50e16eff4d313dd59c64c59a182e3db040b3560f51abded65eebeb3"
+    },
+    "isocurve_audit": {
+      "retained": "docs/native-curve-segment-limits-isocurve-audit.json.gz",
+      "uncompressed_sha256": "11bbaa357d8c46d2a2885a597913c4a97d6154a8d013d73faa591e22a8b4fb04"
+    },
+    "curved_report": {
+      "retained": "docs/native-curve-segment-limits-curved-report.json.gz",
+      "uncompressed_sha256": "3d54e876e93237faf37ca7b3a2de5b3c8c24962ae5d6fb90a4e9fb9865b10d38"
+    }
+  },
+  "observed_subset_comparisons": {
+    "command": "PYTHONPATH=. python3 /tmp/viboceros-curve-segment-limits-observed-subsets.py",
+    "exit_code": 0,
+    "retained": "docs/native-curve-segment-limits-observed-subsets.log.gz",
+    "uncompressed_sha256": "f2a21356e8c349329a46eebd564bc3477d1f2f306c8d6578c602fabe43559e0d",
+    "script": {
+      "retained": "docs/native-curve-segment-limits-observed-subsets.py.gz",
+      "uncompressed_sha256": "88a35c5ca9a060c15b1b7f46055c9f822f3dd3402f45f9cfc69aba27c7c9375d"
+    },
+    "reports": [
+      {
+        "retained": "docs/native-curve-segment-limits-join_isocurve_local-report.json.gz",
+        "uncompressed_sha256": "aa4b1ed2de40f3a68709d4f7273a4895a4f1a0c6f26c705a0addb629aabe0316"
+      },
+      {
+        "retained": "docs/native-curve-segment-limits-join_isocurve_origin-report.json.gz",
+        "uncompressed_sha256": "df4430490d3d51a1bbe12217e90d525edb3406aec3e77f5650965a84f682e4da"
+      }
+    ]
+  },
+  "parent_raw_outcome_comparisons": [
+    {
+      "audit": "curved",
+      "cases": 48,
+      "identical": 48,
+      "changed_indices": [],
+      "policy": "Complete raw outcomes, including every field, without normalization."
+    },
+    {
+      "audit": "isocurve",
+      "cases": 64,
+      "identical": 64,
+      "changed_indices": [],
+      "policy": "Complete raw outcomes, including every field, without normalization."
+    }
+  ],
+  "historical_provenance": {
+    "preserved_entries": 4,
+    "records": 1,
+    "preexisting_unverifiable_unchanged": 69
+  },
+  "validation_selection": {
+    "guides": [
+      "third_party/usd-brep/.agents/skills/smlib-kernel-operations/SKILL.md",
+      "third_party/usd-brep/.agents/skills/usd-brep-test-selection/SKILL.md"
+    ],
+    "rationale": "Independent direct-producer controls and three allocation paths first, then the complete matrix through the checked C ABI including policy bypasses and exact endpoint payloads. Native curve/surface segments, directed splits and seams precede broad release bridge/command suites, all-target/all-feature lint, instrumented direct probes and raw API replays.",
+    "not_run": "Upstream repo.sh/prog_test, USD, Python binding, OCCT and GUI harnesses were not run. This ARM bridge builds actual SMLib/SM_API; upstream checkout and those other layers are unchanged."
+  },
+  "limitations": [
+    "Unclamped native point evaluation and the underlying N_CrvSplit full-order buffer indexing remain separate limitations.",
+    "The native primitive clamps whole intervals while the public adapter preserves exact whole-domain source definitions. Raw whole-domain SDK differences remain visible.",
+    "SDK equivalence checks sample retained definitions through Rhino, not the native evaluator; they do not prove continuous parity.",
+    "No arbitrary degree, chart/weight ratio, out-of-domain accuracy, full Rhino command parity or performance/leak-free result is claimed."
+  ],
+  "source_sha256": {
+    "crates/viboceros-smlib/build.rs": "b1e0da66d73572f24ffcada31aa6c1e9bac2ae8bde6f9a91ff082c4c34475c7b",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "ef9821365cdb54f41f4a31b33489a5c77dbc7382fbf9edbc93d8494c8032a9e6",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "c93e82b0df987c383433ccba5898bfc70a7a1e4b18521e0a93c42961250accf5",
+    "crates/viboceros-smlib/tests/curve_segment_limits.rs": "31b136c4c9f8d5f22d7cecb00f3ff2d317c430af2fa2b8cd9c3a6a7fb32fc561",
+    "tools/usd_brep/curve_segment_limits_probe.cpp": "b6e0392b5671e48fee83f41dc439e0c397f6fa1c3a9ff324f7bd1f8d2d26ce19",
+    "third_party/patches/usd-brep-curve-segment-limits.patch": "40609e039eb5b65b6355018ff0b62e1bb48dbcae56224e326af3f9176b0fa5f6",
+    "third_party/patches/usd-brep-curve-segment-limits.cmake": "2f337ebe9614790b48a3304cf153eabc97e2e5e349e6fcfcac4c636d21e3eb0b",
+    "third_party/patches/usd-brep-knot-removal-bound-error.patch": "c9e71c83111dd69c7c3d2c248fa243dc87201d11d75fe6e415f95abd660e538e",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp": "e6a619f83d147c5bb5db29cdf7ade29e2392406ef1b433dc769b7d80ba99b21c",
+    "third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp": "7d2e20b8e12e14ae843b117c19272f4eec9efa13d78485bbb6bac7adc236b57b",
+    "crates/viboceros-smlib/tests/curve_segments.rs": "b1123c86cc7329674c727ef344ac55221829dda9075c321a9c660666541c889d",
+    "crates/viboceros-smlib/tests/surface_segments.rs": "3562b93d67ef35507970c23712e8fc7f31fb86c01ec94535b04884cf69239fef",
+    "crates/viboceros-smlib/tests/directed_segments.rs": "5fe955c7437721e26c7e518c1cf5799869aab39615b6cac05d2a71edc576ea6c",
+    "crates/viboceros-smlib/tests/surface_seams.rs": "2ecbf55921417cb0ed67c16dc7c3a96614b209bf4141fa6f453b6461e82c4ce5",
+    "tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
+    "tools/rhino_oracle/rhino_worker.py": "46dd09cbecf3d692434c87c5c8be46145afebf4933d170aaa90510f012b9182c",
+    "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0"
+  },
+  "artifact_sha256": {
+    "docs/native-curve-segment-limits-bridge-full.log.gz": "87dc41f1d585b1b1eeb098331e376ce7c46f6d609f8555daaff7926bb1339752",
+    "docs/native-curve-segment-limits-command-full.log.gz": "4c4555085548ec94eea485fef2bc22c3c3b7d52b1022f93a2efa39b6e8b6550f",
+    "docs/native-curve-segment-limits-clippy.log.gz": "7aaab4c29bbda61a838ff3a67ef07de53929c9a847e2a76c4d105250f8f5d0ff",
+    "docs/native-curve-segment-limits-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-curve-segment-limits-focused-final.log.gz": "d16c7786fe4415c28324b4e500b3da7e422922bd71e9f61d3c22ee1a5ee8b816",
+    "docs/native-curve-segment-limits-baseline.jsonl.gz": "71a9b940ac18e559c27066c6b0a316bd491827136007dc428e9452061d732c56",
+    "docs/native-curve-segment-limits-baseline.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-curve-segment-limits-candidate.jsonl.gz": "f6a2b6e40c454eab5796fba78c38bd313090437f8a7d1f863fe638beb845bf01",
+    "docs/native-curve-segment-limits-candidate.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-curve-segment-limits-asan.jsonl.gz": "f6a2b6e40c454eab5796fba78c38bd313090437f8a7d1f863fe638beb845bf01",
+    "docs/native-curve-segment-limits-asan.stderr.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-curve-segment-limits-baseline-build.log.gz": "166a5778ef1a5834535b7f118df8034f97ba97128c652179f7a00a1f697024a3",
+    "docs/native-curve-segment-limits-asan-build.log.gz": "53b9f6f9c122af26baba55b76398c8c99bf7d03683cf1b2a82a0cf5679d4597e",
+    "docs/native-curve-segment-limits-asan-flags.txt.gz": "e9e59eb703a677acf7d4b83ddf2cf982b6d987ccba49075dfe5e5cdd0a7c7a8f",
+    "docs/native-curve-segment-limits-probes.log.gz": "0315c1239f13f17200b54949e5fb2e4721d830e0413ef17411a2554b696aea81",
+    "docs/native-curve-segment-limits-probes.py.gz": "9ae8c15b493558bc5ba21612d7503541b8aebd35a9d9b790b17ba30bdd619fba",
+    "docs/native-curve-segment-limits-sdk.log.gz": "533ab34261a0d866fc38a675a01059336f55bf62c1367c7a3d8a69b298fc5a8f",
+    "docs/native-curve-segment-limits-sdk.py.gz": "b305f336e565f0f417d5c83b45ceddbfcc75d7da15cd4663486817fc2e0fb052",
+    "docs/native-curve-segment-limits-rhino.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/native-curve-segment-limits-sdk-0-audit.json.gz": "beff338e95309923560899e1421086f1c7d7d40d42dca927462d9c98909ca096",
+    "docs/native-curve-segment-limits-sdk-0-report.json.gz": "50d03dfc33a42de3c277a9cac5b28697985a43d6ea19a16357d32a9b4eaa728d",
+    "docs/native-curve-segment-limits-sdk-1-audit.json.gz": "beff338e95309923560899e1421086f1c7d7d40d42dca927462d9c98909ca096",
+    "docs/native-curve-segment-limits-sdk-1-report.json.gz": "50d03dfc33a42de3c277a9cac5b28697985a43d6ea19a16357d32a9b4eaa728d",
+    "docs/native-curve-segment-limits-sdk-2-audit.json.gz": "beff338e95309923560899e1421086f1c7d7d40d42dca927462d9c98909ca096",
+    "docs/native-curve-segment-limits-sdk-2-report.json.gz": "50d03dfc33a42de3c277a9cac5b28697985a43d6ea19a16357d32a9b4eaa728d",
+    "docs/native-curve-segment-limits-equivalence.log.gz": "1ba4a34c939e9d07194368e674b83bdad2cf125dc8c17f6b089a3f173a787b29",
+    "docs/native-curve-segment-limits-equivalence.py.gz": "2b2a21bcd60cc8115cebeefbc6e504e2c4080c12a179ecb7a90892d6c4f026ba",
+    "docs/native-curve-segment-limits-equivalence-request.json.gz": "6f1cd433c417b1f387c3eb6fc0d7eadfe1f0956b597e18f941420b24b893e185",
+    "docs/native-curve-segment-limits-equivalence-rhino.json.gz": "d41239da2b18606c64be4efd18a45e2b92ca65290c19fa9149c20aa90e24978d",
+    "docs/native-curve-segment-limits-equivalence-report.json.gz": "f03fe1e19b4b8294683d128f208d880df64932440d148f9e0a37728eadd94e0f",
+    "docs/native-curve-segment-limits-checked-replays.log.gz": "0d790bf1e6b8c72667c679ae59dcd2058b2f06832dcafa5e28d5d7a42ad0e429",
+    "docs/native-curve-segment-limits-checked-replays.py.gz": "bb087dc07ad5fa74d6d941e3c0eb2d5021b65ccdfb25fbaec921a5f29697acc4",
+    "docs/native-curve-segment-limits-curve_trim_geometry-audit.json.gz": "8d8dd648c840cccdda0e7c4880ee6954eb6b6f2c3d13356c0f29237ffcd85c03",
+    "docs/native-curve-segment-limits-curve_trim_geometry-report.json.gz": "5590661d6ce92735cb9827fb1c7c01ba2ed4a17878c839e91b458e0bfd02253f",
+    "docs/native-curve-segment-limits-curve_segment_limits_geometry-audit.json.gz": "7e1a2156069e48f8a5ab61dd6bcc3fb0084ee0a5c79641103005abf9c41b45ad",
+    "docs/native-curve-segment-limits-curve_segment_limits_geometry-report.json.gz": "cb23c518f17793bc480483d2190eaa9ceac7656baa0de20a882f420b21ce9c99",
+    "docs/native-curve-segment-limits-replay.log.gz": "2aadd5b71baeb182edec863b932439353149767e7e182736d19c8bf4c1b3f733",
+    "docs/native-curve-segment-limits-replay.py.gz": "3fb410198c91f5501efb015cff6066782e52a16c6c00e5a196b068a0363c2bab",
+    "docs/native-curve-segment-limits-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-curve-segment-limits-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "docs/native-curve-segment-limits-curved-report.json.gz": "921def0039eb31a1b9939de1ec1bbf4785268389f173cd3e1561dfbb17bade77",
+    "docs/native-curve-segment-limits-observed-subsets.log.gz": "c285c3775485780edb127d61a8e263f9db782321033ec2fdc6f4e02ce2f7ea93",
+    "docs/native-curve-segment-limits-observed-subsets.py.gz": "da23a895f0a75b43ccb33b1a93c55c227bdddc4fc082a71b8f2468013a90e2fc",
+    "docs/native-curve-segment-limits-join_isocurve_local-report.json.gz": "7306b550203b764884bb9fa89b8ecc332830150b2df4cc06facf7b2ab5d61321",
+    "docs/native-curve-segment-limits-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
+    "docs/native-curve-segment-limits.md": "b0767942ee807631ac1e7cd0240c49248a9c0be8c941f2c55324f0946382fcd9",
+    "docs/smlib-curve-segments.md": "dc650f402a01e71a1a453bbe1a9ad5325ea3623aee8d6c180f3999b4b690fe61",
+    "docs/usd-brep-limitations.md": "3665367d4146e1a565d10a1dbb07c07adcfc88df65fbb909a0edf332af6ad53c",
+    "tools/rhino_oracle/fixtures/curve_segment_limits_geometry.json": "2082600304613cfe0efc523ea471d7d320232bab44edea54a3b5f41003ea8e93",
+    "tools/rhino_oracle/observations/curve_segment_limits_geometry.json": "e718f0335d97ac0acc34d282cd8cbde8ab0d752a137b4c2b0fa6f39872b78f7d",
+    "tools/rhino_oracle/fixtures/curve_trim_geometry.json": "d95bc9038eabfad11a6194de2d9c1179d23128f04024b252c1dff0fdc2334e64",
+    "tools/rhino_oracle/observations/curve_trim_geometry.json": "a8b192e3cb319744d53a9d7167e456725083f8916ca5039e70e11ffe82854390",
+    "docs/native-surface-patches-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
+    "docs/native-surface-patches-isocurve-audit.json.gz": "c0e09d99fd371261cc72e7dffbb81c0d7ef9834c6f3ba1120c482764639be36f",
+    "tools/rhino_oracle/fixtures/join_curved_certificates.json": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835",
+    "tools/rhino_oracle/observations/join_curved_certificates.json": "b027f3996251dac06f3b2ddd0282ecf4902834fad40065d39245bffb9846e01a",
+    "tools/rhino_oracle/fixtures/join_isocurve_local.json": "9cab143748a1b8a2fd885b5488d0bcabe54bbf09dd252a7b2650ee5698167bb8",
+    "tools/rhino_oracle/observations/join_isocurve_local.json": "8e2f8687e335dda9476f8af7b3d9cbc06af5e90ec863c2929b880bdc88246c90",
+    "tools/rhino_oracle/fixtures/join_isocurve_origin.json": "1832b436dbaf08722f59076a9928cfa273f2505f8ea626ea6c89057782d898b0",
+    "tools/rhino_oracle/observations/join_isocurve_origin.json": "ce4f1b3e28f7c1f753a4dccaf1a66f0baa2bcb8b1c36ca17f6386b8445ca3154",
+    "tools/rhino_oracle/fixtures/join_isocurve_certificates.json": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c",
+    "docs/native-surface-patches-validation.json": "febb0457f3586f7c62451d52666b95426ccfa3af1fb9f65aa7ffe35ecf60c1d8"
+  },
+  "baseline_git_sha256": {
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/build.rs": "36983bab4d704d5f84c754fc9340dd73309d1c760900a0b06148ab44e5cd3b99",
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/native/CMakeLists.txt": "1583462ef0357c4ec37e7ac38ee99cfe674a652145db93bfe33c973b90c9ebd6",
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/native/knot_refinement.cpp": "f06dfbfb920038755fb53482ef45b9cf60031ef9906cb6c91158bc77b4da3e55"
+  },
+  "log_policy": "Use completed status receipts, retain all raw controls and strict mismatch reports, and keep authored geometry, SDK sampled equivalence and API execution as distinct evidence. Deterministic gzip and Git-backed source maps preserve historical bytes."
+}

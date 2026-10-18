@@ -370,9 +370,6 @@
     "No performance or leak-free result is claimed."
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/build.rs": "36983bab4d704d5f84c754fc9340dd73309d1c760900a0b06148ab44e5cd3b99",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "1583462ef0357c4ec37e7ac38ee99cfe674a652145db93bfe33c973b90c9ebd6",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "f06dfbfb920038755fb53482ef45b9cf60031ef9906cb6c91158bc77b4da3e55",
     "crates/viboceros-smlib/tests/surface_patch.rs": "dc1010de0cfc88cd9958dddc0c39621008b3cf38ec390119e308887bea5e4c93",
     "tools/usd_brep/surface_patch_probe.cpp": "ee6161423fc0633a8bca8317bbac80108363aac42ec022c1f0ef060e9a40f5be",
     "third_party/patches/usd-brep-surface-patch-region.patch": "a91fe033dd1962c2319e265779504c9b46de84ddfc4145d18b56c79cfd46548b",
@@ -433,7 +430,6 @@
     "docs/native-surface-patches-join_isocurve_origin-report.json.gz": "568ef1361ff517c253970cd965d3edddf3e7dd86db2354975aa9bb804e5d0997",
     "docs/native-surface-patches.md": "db5deef742e5456d644c78c0410226d961a311c5b89e02336d5ba778fdba1ab6",
     "docs/smlib-surface-seams.md": "9fc413207d77e07b5e56f58d16af06908fd59b1a5e26cba846c559abd2ce5223",
-    "docs/usd-brep-limitations.md": "a924d8fffb5dd4fa1841dd855b34c129fa316e3fe02e4e3ed38b58a6c07ad9dd",
     "tools/rhino_oracle/fixtures/surface_patch_geometry.json": "c0dc9b1860b7507ed7d49aaada2a38b4cf57a58067a4788a771ac10b955b20b7",
     "tools/rhino_oracle/observations/surface_patch_geometry.json": "7abc977d20672385447784918ac75b48249751846197696dcd4ac9dd7be312ad",
     "docs/native-isocurve-limits-curved-audit.json.gz": "f32070adae63742de73bbcc0c15adf4e98e4c62b5992b5145a009fbfe3ecdeac",
@@ -452,5 +448,13 @@
     "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/native/CMakeLists.txt": "6dbde2bfe9862ad7130ef8139195e0a17faa99e94d1a55fa0c9d2f2b28c50310",
     "fc9f50e921d449f0845da00252da5adb142d5042:crates/viboceros-smlib/native/knot_refinement.cpp": "7352074510f0c849f4af5c409d54ac52ffea1862f2a735e402ed17db8c2b9098"
   },
-  "log_policy": "Use completed exit/status receipts. Retain raw controls, SDK definitions, strict mismatches and sampled geometry separately. Deterministic gzip and Git-backed history preserve the actual evidence."
+  "log_policy": "Use completed exit/status receipts. Retain raw controls, SDK definitions, strict mismatches and sampled geometry separately. Deterministic gzip and Git-backed history preserve the actual evidence.",
+  "source_git_sha256": {
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/build.rs": "36983bab4d704d5f84c754fc9340dd73309d1c760900a0b06148ab44e5cd3b99",
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/native/CMakeLists.txt": "1583462ef0357c4ec37e7ac38ee99cfe674a652145db93bfe33c973b90c9ebd6",
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:crates/viboceros-smlib/native/knot_refinement.cpp": "f06dfbfb920038755fb53482ef45b9cf60031ef9906cb6c91158bc77b4da3e55"
+  },
+  "artifact_git_sha256": {
+    "d299e0618dfeaf2723b509f71654c1749a0c4c6e:docs/usd-brep-limitations.md": "a924d8fffb5dd4fa1841dd855b34c129fa316e3fe02e4e3ed38b58a6c07ad9dd"
+  }
 }

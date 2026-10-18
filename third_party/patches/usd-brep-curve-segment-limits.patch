@@ -1,0 +1,66 @@
+--- a/NL_CrvTool.cpp
++++ b/NL_CrvTool.cpp
+@@ -10,6 +10,7 @@
+ 
+ #include <nurbs.h>
+ #include <NL_Globals.h>
++#include <algorithm>
+ 
+ 
+ NL_PRIVATE NL_REAL cto = 1.0e-05;
+@@ -1576,6 +1577,23 @@
+ 
+     NL_CURVE curA;
+ 
++    /* Actual endpoint groups are required for unclamped and inactive padding.
++       Keep the prior lookup policy for parameters outside the active domain. */
++    auto exactGroup = [](NL_KNOTVECTOR *knots, NL_DEGREE degree, NL_PARAMETER t,
++                         NL_INDEX *span, NL_INDEX *multiplicity) -> NL_FLAG
++    {
++        NL_REAL *K = knots->U;
++        if( t GE K[degree] AND t LE K[knots->m - degree] )
++        {
++            NL_REAL *first = std::lower_bound(K, K + knots->m + 1, t);
++            NL_REAL *last = std::upper_bound(first, K + knots->m + 1, t);
++            *span = (NL_INDEX)(last - K) - 1;
++            *multiplicity = (NL_INDEX)(last - first);
++            return NL_NO;
++        }
++        return N_BasisFindSpanAndMult(knots, degree, t, NL_LEFT, span, multiplicity);
++    };
++
+     /* Get local notation */
+ 
+     N_CrvGetCPtsDegreeAndKnots( curP, &n, &Pw, &p, &m, &UP );
+@@ -1583,28 +1601,23 @@
+ 
+     /* Check parameters */
+ 
+-    if( ur LE ul )
++    if( !(ur GT ul) )
+         NL_ERROR( NL_INP_ERR );
+ 
+     /* Find knot spans and set new indexes */
+ 
+-    error = N_BasisFindSpanAndMult( knt, p, ul, NL_LEFT, &spl, &mll );
++    error = exactGroup( knt, p, ul, &spl, &mll );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+-    error = N_BasisFindSpanAndMult( knt, p, ur, NL_LEFT, &spr, &mlr );
++    error = exactGroup( knt, p, ur, &spr, &mlr );
+ 
+     if( error EQ NL_YES )
+         NL_OUT;
+ 
+     is = spl - p;
+ 
+-    if( ur EQ UP[m - p] )
+-    {
+-        spr = m;
+-        mlr = p + 1;
+-    }
+     ie = spr - mlr;
+ 
+     n = ie - is;
