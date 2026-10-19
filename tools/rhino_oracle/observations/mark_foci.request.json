@@ -1,0 +1,1730 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_axis",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_axis.3dm",
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_preselected",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_preselected.3dm",
+      "preselect": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_tilted",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_tilted.3dm",
+      "draw_axis": true,
+      "tilted": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_elevated",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_elevated.3dm",
+      "draw_axis": true,
+      "elevate": 5
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_polycurve",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_polycurve.3dm",
+      "draw_axis": true,
+      "polycurve": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_arc",
+      "family": "ellipse_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_arc.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_arc_axis",
+      "family": "ellipse_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_arc_axis.3dm",
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_arc_preselected",
+      "family": "ellipse_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_arc_preselected.3dm",
+      "preselect": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_arc_tilted",
+      "family": "ellipse_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_arc_tilted.3dm",
+      "draw_axis": true,
+      "tilted": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_arc_elevated",
+      "family": "ellipse_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_arc_elevated.3dm",
+      "draw_axis": true,
+      "elevate": 5
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_arc_polycurve",
+      "family": "ellipse_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_arc_polycurve.3dm",
+      "draw_axis": true,
+      "polycurve": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola",
+      "family": "hyperbola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_axis",
+      "family": "hyperbola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_axis.3dm",
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_preselected",
+      "family": "hyperbola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_preselected.3dm",
+      "preselect": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_tilted",
+      "family": "hyperbola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_tilted.3dm",
+      "draw_axis": true,
+      "tilted": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_elevated",
+      "family": "hyperbola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_elevated.3dm",
+      "draw_axis": true,
+      "elevate": 5
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_polycurve",
+      "family": "hyperbola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_polycurve.3dm",
+      "draw_axis": true,
+      "polycurve": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola",
+      "family": "parabola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola_axis",
+      "family": "parabola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola_axis.3dm",
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola_preselected",
+      "family": "parabola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola_preselected.3dm",
+      "preselect": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola_tilted",
+      "family": "parabola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola_tilted.3dm",
+      "draw_axis": true,
+      "tilted": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola_elevated",
+      "family": "parabola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola_elevated.3dm",
+      "draw_axis": true,
+      "elevate": 5
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola_polycurve",
+      "family": "parabola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola_polycurve.3dm",
+      "draw_axis": true,
+      "polycurve": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle",
+      "family": "circle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_axis",
+      "family": "circle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_axis.3dm",
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_preselected",
+      "family": "circle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_preselected.3dm",
+      "preselect": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_tilted",
+      "family": "circle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_tilted.3dm",
+      "draw_axis": true,
+      "tilted": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_elevated",
+      "family": "circle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_elevated.3dm",
+      "draw_axis": true,
+      "elevate": 5
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_polycurve",
+      "family": "circle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_polycurve.3dm",
+      "draw_axis": true,
+      "polycurve": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_arc",
+      "family": "circle_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_arc.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_arc_axis",
+      "family": "circle_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_arc_axis.3dm",
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_arc_preselected",
+      "family": "circle_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_arc_preselected.3dm",
+      "preselect": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_arc_tilted",
+      "family": "circle_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_arc_tilted.3dm",
+      "draw_axis": true,
+      "tilted": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_arc_elevated",
+      "family": "circle_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_arc_elevated.3dm",
+      "draw_axis": true,
+      "elevate": 5
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "circle_arc_polycurve",
+      "family": "circle_arc",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/circle_arc_polycurve.3dm",
+      "draw_axis": true,
+      "polycurve": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_ellipse",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_ellipse.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              6.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_quarter",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_quarter.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_elevated-12",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_elevated-12.3dm",
+      "curve": {
+        "degree": 12,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.876100656900704,
+              0.0
+            ],
+            "weight": 0.9511844635310913
+          },
+          {
+            "point": [
+              2.0332545557163564,
+              -3.74822750361801,
+              0.0
+            ],
+            "weight": 0.9112444791474388
+          },
+          {
+            "point": [
+              2.103284653219005,
+              -3.6197079193140302,
+              0.0
+            ],
+            "weight": 0.8801800468490423
+          },
+          {
+            "point": [
+              2.211911484509885,
+              -3.4944601305230645,
+              0.0
+            ],
+            "weight": 0.857991166635902
+          },
+          {
+            "point": [
+              2.3587525198548542,
+              -3.3766901458475966,
+              0.0
+            ],
+            "weight": 0.8446778385080177
+          },
+          {
+            "point": [
+              2.5409709377719385,
+              -3.2704854688859695,
+              0.0
+            ],
+            "weight": 0.8402400624653896
+          },
+          {
+            "point": [
+              2.7533802916951933,
+              -3.1793762599274276,
+              0.0
+            ],
+            "weight": 0.8446778385080176
+          },
+          {
+            "point": [
+              2.9889202610461285,
+              -3.105955742254942,
+              0.0
+            ],
+            "weight": 0.8579911666359018
+          },
+          {
+            "point": [
+              3.23941583862806,
+              -3.0516423266095027,
+              0.0
+            ],
+            "weight": 0.880180046849042
+          },
+          {
+            "point": [
+              3.4964550072360203,
+              -3.0166272778581784,
+              0.0
+            ],
+            "weight": 0.9112444791474384
+          },
+          {
+            "point": [
+              3.7522013138014096,
+              -3.0000000000000004,
+              0.0
+            ],
+            "weight": 0.9511844635310912
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_refined-0p5",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_refined-0p5.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.585786437626905,
+              0.0
+            ],
+            "weight": 0.8535533905932737
+          },
+          {
+            "point": [
+              2.585786437626905,
+              -3.2928932188134525,
+              0.0
+            ],
+            "weight": 0.8535533905932737
+          },
+          {
+            "point": [
+              3.17157287525381,
+              -3.0000000000000004,
+              0.0
+            ],
+            "weight": 0.8535533905932737
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_negative-gauge",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_negative-gauge.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": -8.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": -5.656854249492381
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": -8.0
+          },
+          {
+            "point": [
+              6.0,
+              -3.0,
+              0.0
+            ],
+            "weight": -5.656854249492381
+          },
+          {
+            "point": [
+              6.0,
+              -4.0,
+              0.0
+            ],
+            "weight": -8.0
+          },
+          {
+            "point": [
+              6.0,
+              -5.0,
+              0.0
+            ],
+            "weight": -5.656854249492381
+          },
+          {
+            "point": [
+              4.0,
+              -5.0,
+              0.0
+            ],
+            "weight": -8.0
+          },
+          {
+            "point": [
+              2.0,
+              -5.0,
+              0.0
+            ],
+            "weight": -5.656854249492381
+          },
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": -8.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_projective-weights",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_projective-weights.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.1767766952966369
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.0625
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_stationary-quartic",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_stationary-quartic.3dm",
+      "curve": {
+        "degree": 4,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.7387961250362585,
+              0.0
+            ],
+            "weight": 0.9023689270621826
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_sheared",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_sheared.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.5,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.5,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_eccentric-0p1",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_eccentric-0p1.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.9,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -3.9,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -3.9,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              6.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -4.1,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -4.1,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -4.1,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_altered-span",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_altered-span.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              6.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.2,
+              -5.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_nonplanar",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_nonplanar.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              6.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -5.0,
+              0.2
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "definition_near-conic",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/definition_near-conic.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              6.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              6.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              4.0,
+              -5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.00001,
+              -5.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          3.0,
+          3.0,
+          4.0,
+          4.0,
+          4.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_refined",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_refined.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.5384615384615388,
+              0.0
+            ],
+            "weight": 1.2999999999999998
+          },
+          {
+            "point": [
+              2.1267605633802815,
+              -3.3450704225352115,
+              0.0
+            ],
+            "weight": 1.42
+          },
+          {
+            "point": [
+              2.3529411764705883,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.7
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.3,
+          0.3,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_elevated12",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_elevated12.3dm",
+      "curve": {
+        "degree": 12,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.7142857142857144,
+              0.0
+            ],
+            "weight": 1.1666666666666665
+          },
+          {
+            "point": [
+              2.023255813953488,
+              -3.523255813953488,
+              0.0
+            ],
+            "weight": 1.3030303030303034
+          },
+          {
+            "point": [
+              2.064516129032258,
+              -3.3870967741935485,
+              0.0
+            ],
+            "weight": 1.4090909090909092
+          },
+          {
+            "point": [
+              2.1224489795918364,
+              -3.2857142857142865,
+              0.0
+            ],
+            "weight": 1.484848484848485
+          },
+          {
+            "point": [
+              2.1980198019801978,
+              -3.207920792079208,
+              0.0
+            ],
+            "weight": 1.5303030303030303
+          },
+          {
+            "point": [
+              2.2941176470588234,
+              -3.1470588235294112,
+              0.0
+            ],
+            "weight": 1.5454545454545456
+          },
+          {
+            "point": [
+              2.415841584158416,
+              -3.099009900990099,
+              0.0
+            ],
+            "weight": 1.5303030303030305
+          },
+          {
+            "point": [
+              2.5714285714285716,
+              -3.061224489795918,
+              0.0
+            ],
+            "weight": 1.4848484848484849
+          },
+          {
+            "point": [
+              2.7741935483870974,
+              -3.0322580645161286,
+              0.0
+            ],
+            "weight": 1.4090909090909092
+          },
+          {
+            "point": [
+              3.0465116279069764,
+              -3.0116279069767433,
+              0.0
+            ],
+            "weight": 1.3030303030303034
+          },
+          {
+            "point": [
+              3.4285714285714275,
+              -2.999999999999999,
+              0.0
+            ],
+            "weight": 1.166666666666667
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola_refined",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola_refined.3dm",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.6999999999999997,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.1799999999999997,
+              -3.4899999999999998,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.5999999999999996,
+              -2.9999999999999996,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.3,
+          0.3,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "parabola_elevated12",
+      "family": "definition",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/parabola_elevated12.3dm",
+      "curve": {
+        "degree": 12,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              -4.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -3.833333333333333,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.030303030303031,
+              -3.6818181818181817,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0909090909090917,
+              -3.5454545454545454,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.1818181818181825,
+              -3.4242424242424248,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.303030303030303,
+              -3.318181818181818,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.454545454545455,
+              -3.227272727272727,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.6363636363636367,
+              -3.1515151515151514,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.848484848484849,
+              -3.090909090909091,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.090909090909091,
+              -3.045454545454545,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.3636363636363638,
+              -3.015151515151515,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.6666666666666665,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              -3.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "line",
+      "family": "line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/line.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "line_mixed",
+      "family": "line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/line_mixed.3dm",
+      "mixed": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "cubic",
+      "family": "cubic",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/cubic.3dm"
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "cubic_mixed",
+      "family": "cubic",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/cubic_mixed.3dm",
+      "mixed": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "ellipse_reverse",
+      "family": "ellipse",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/ellipse_reverse.3dm",
+      "reverse": true,
+      "draw_axis": true
+    },
+    {
+      "op": "mark_foci_command",
+      "id": "hyperbola_domain",
+      "family": "hyperbola",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/mark_foci/hyperbola_domain.3dm",
+      "domain": [
+        -3.0,
+        17.0
+      ],
+      "draw_axis": true
+    }
+  ]
+}

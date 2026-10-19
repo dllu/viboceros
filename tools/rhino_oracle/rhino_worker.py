@@ -13527,6 +13527,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'surface_fillet':
         from surface_fillet_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'mark_foci_command':
+        import mark_foci_probe
+        return mark_foci_probe.run(operation, globals(), iterations, tolerance)
     if kind == 'reduce_polyline_command':
         import reduce_polyline_probe
         return reduce_polyline_probe.run(operation, globals(), iterations, tolerance)
@@ -17547,7 +17550,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op') in ('reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('mark_foci_command','reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

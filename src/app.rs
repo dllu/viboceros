@@ -11028,6 +11028,7 @@ mod tests {
     mod length;
     mod line_through_points;
     mod maelstrom;
+    mod mark_foci;
     mod merge_edge;
     mod mesh_face_prompt;
     mod mirror_preview;

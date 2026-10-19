@@ -1,0 +1,191 @@
+{
+  "feature": "MarkFoci, DrawAxis and conic focal geometry",
+  "base_commit": "97ec94121fbca6d61a35e7f87af4d41c9a5a31bc",
+  "native_version": "8.32.26160.13001",
+  "native_cases": 58,
+  "matching_cases": 57,
+  "guarded_cases": [
+    "definition_near-conic"
+  ],
+  "native_command_results": {
+    "Success": 58
+  },
+  "comparison_epsilon": 1e-08,
+  "maximum_recorded_error": {
+    "portable": 2.4158453015843406e-13,
+    "native_smlib": 2.4158453015843406e-13
+  },
+  "coverage": [
+    "Circles, circular arcs, ellipses, partial ellipses, hyperbolas and parabolas",
+    "Elevated degrees through 12, refined spans, composite curves, projective weights, negative gauges and stationary quartics",
+    "Spatial placement, reversal, affine shear, eccentric ellipses and custom domains",
+    "Source identity/representation/attributes/groups/user text; fresh annotation attributes",
+    "Preselection, command-first picking, DrawAxis, cancellation, remembered options, Undo/Redo and no-op redo preservation",
+    "768 open-conic representation/placement/domain/weight/reversal combinations with independent expected focal geometry",
+    "11 shared ellipse-recognition regressions"
+  ],
+  "limits": [
+    "One perturbed non-conic is skipped conservatively; Rhino marks an approximate ellipse",
+    "Axis direction and focus insertion order can differ; pairs and axis endpoints are compared without ordering",
+    "Floating-point conic bounds and conditioning guards are conservative tests, not an exact predicate or a certified focus-error interval",
+    "Mixed-sign weights and numerically unresolved conics are skipped; very tight tolerances can reject accurate conics",
+    "The retained matrix does not establish arbitrary Rhino equivalence, a continuous-error proof or general performance",
+    "Focused tests and workspace Clippy passed; the complete workspace/application test suites were not run"
+  ],
+  "capture": "tools/rhino_oracle/observations/mark_foci.json",
+  "capture_provenance": {
+    "base_commit": "97ec94121fbca6d61a35e7f87af4d41c9a5a31bc",
+    "seconds": 105.30371448607184,
+    "sources": {
+      "mark_foci_probe.py": "117f3364be5f6c98239bef14e672fddfa3585a88f68cd5b892f7b17a41aa90c0",
+      "generate_mark_foci.py": "655dc998e1eaf7777705018d1b45de32fab6e7e7c61270fa701424306c680cea",
+      "rhino_worker.py": "1d874484891b8f6d7a3d1245c094077d4d181ea1bf16b7437dcc36a618596076",
+      "structural_sdk.py": "db190c92df8f06531fde413328931e6d23bd1f3611b8a7c22822dcbf78920e8e",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "references/conic_centers.py": "bbdc874f2d3c5fdb0e3bab30698bf255bff9d5a401abcb9c6c025efb0c35af67"
+    },
+    "fixtures": {
+      "ellipse.3dm": "1dbcddde06fa927638db53ca72b6acc8f6275d6fc7d5e616f91d86311a1a260a",
+      "ellipse_axis.3dm": "2322ca73d1f2eb4f861ecf4bdaab9b060d251ec92c71df9e1697c48e77c5ab49",
+      "ellipse_preselected.3dm": "99b7b5c3ab08c79c4a41f1aa59d7409a9969b8871ae738856b96b3965d131dfa",
+      "ellipse_tilted.3dm": "e4f49132edec197b761da69a34672d1cb251ba41db3f86ac13188a73df54df9b",
+      "ellipse_elevated.3dm": "e84b77841baec99213cecfa0b3bf45ab9f8cbf7391bec15fc721f9efc52dc35e",
+      "ellipse_polycurve.3dm": "d6992268c7ff4a0eb72dd27df34570b67ee9868cb55c6bd04c030ea9a7539afd",
+      "ellipse_arc.3dm": "c09c1170834945ba27c79d1b1dd5eb8b44e3e2635bb2a3a1d144c5c926a3d94c",
+      "ellipse_arc_axis.3dm": "bef7ea2d0a57e8230416f1ca7cc4dc426fa31584ae031e4c44e974c00b78b4bb",
+      "ellipse_arc_preselected.3dm": "94ead823cfab87bf2503f330be75201c90526880cb795af9b601d1d9965dc255",
+      "ellipse_arc_tilted.3dm": "908438430fed42cff089c1effb2d5493c793260f9fc2440e0348112e503c47ec",
+      "ellipse_arc_elevated.3dm": "c4d92d959b72c77e4cb00fa1f0473bf4e776ea753901bc084b02ae67db4733e1",
+      "ellipse_arc_polycurve.3dm": "0f72926e0bf98175ec69dfb4de99ae2b7cbedaca08c96402f3ea8ba17fbb2b1a",
+      "hyperbola.3dm": "c6f1c99f610a359fcffe054f7b95e1d220adacd05f49869d74f0473f049803b5",
+      "hyperbola_axis.3dm": "4d3617d0aa31f749766c394c2ba34b7f0674a630874beac96c331ff73de767fb",
+      "hyperbola_preselected.3dm": "80813785dfe3b798721af50d06d356e6258baf97ec21749cea9df1069a51d426",
+      "hyperbola_tilted.3dm": "8e4aba1da20268f7bbda85f96dc53ce373b1289941bd8621609d7cd1ddd4bfff",
+      "hyperbola_elevated.3dm": "d645866f100133173714a0a08ee686cf04a087964230042f6a315999c67878ee",
+      "hyperbola_polycurve.3dm": "80915ca538cfdd2c71bc260087f2ebfd2320267ffe4e7bdea8926dbd16b4ab93",
+      "parabola.3dm": "dad8f2f8d821829d9db582ff5ad9882e7ebdb4325463e149e0bf095b20f7248a",
+      "parabola_axis.3dm": "cc18265465de3896ed252da4cebb697c2288e826fd5c630eb4f3a2f5ce35f1ed",
+      "parabola_preselected.3dm": "05b4f1e2e589985b14a554377a9bac27027a23e3f06ec30c39d9e10ec1847e5b",
+      "parabola_tilted.3dm": "6aad38f539b789344b35b52a7099d50b60c3eb3d5e99535f8860ab65af09023a",
+      "parabola_elevated.3dm": "e489f2478d354b75638a94a804dfb7f9469fa280b48539d730bb2a14b89e6441",
+      "parabola_polycurve.3dm": "96f5595a370b04c5d5c2895a38c5898a0d0a3e127f7369c8526318e974986c43",
+      "circle.3dm": "b335074892042f135bcd5be24b5581c6240ce887bb6e486e7886d691ec0a62b5",
+      "circle_axis.3dm": "6ff790dc2a619fc7843b8a3e034a0dbc5ecaf08f3c18cbee5b54a9b3c94dec6a",
+      "circle_preselected.3dm": "e3e136846cf3bbe1ffd9a60a4fe791d12385c88c42dab2995c7b8b4555d600cd",
+      "circle_tilted.3dm": "88f54c7de1d5f29651828f7e146eb713d709d2dc68c3f45bd941c8b8e92df88e",
+      "circle_elevated.3dm": "9ec1229e6298ea12b2a0908872ecebefdba5a5e517864c55ef955c477c1b9452",
+      "circle_polycurve.3dm": "5061cbc29a49094b883491423887c5a527dce2efbab5544b4875a5519b2d4728",
+      "circle_arc.3dm": "e35e6c4aa132c688cc75c4cc4dc860a0a1c0b4bc6bc0376fd17a19b48a50bfa8",
+      "circle_arc_axis.3dm": "1571cb5b371121ef61dcadafeeed014dc86777c7dd3638f05e761c6aa006348c",
+      "circle_arc_preselected.3dm": "95b1288b3881f3bd87787294c2b47e5e66c782a5a8e63183f30fffbbe09cc680",
+      "circle_arc_tilted.3dm": "da802ea55d7224f19ba1f4df5b1f5dd2bd8a9a5d7055c5701338989fc4566680",
+      "circle_arc_elevated.3dm": "6c44b790693209ec616fce81497eff00e4dc900352f982c6bdcd3ae8c0462d55",
+      "circle_arc_polycurve.3dm": "48202c74f28026effa66aa38f143b6f41a18fcf197e86ab71c49fca42abfe901",
+      "definition_ellipse.3dm": "e785cdfcb23ae1861c73f3c2fe050ed5cdd3a05368de7ab52b33076393ac5331",
+      "definition_quarter.3dm": "81d365b07e2b4b8f47d014359614b03f61783876ca344cb515f9e6ccfb487b0c",
+      "definition_elevated-12.3dm": "35223fe9cc472ca9ea8847577da170f6e57ae291ba461e23da1b31d01e11bb59",
+      "definition_refined-0p5.3dm": "902132fb85e48e11734479f0e217079863fe6fa4d917a4059586bfd4678beee4",
+      "definition_negative-gauge.3dm": "f9ce817d621483d613e782a5ae5a9a38afc7fd02e57d463545a3d2b40d48bc37",
+      "definition_projective-weights.3dm": "3af339ec64458e47b28bc00317b048213ab301db2603ddace4c5b04ba9171b43",
+      "definition_stationary-quartic.3dm": "6abc976c075b229182123cca9deea765edad21fe58cbfa6e610b2b0f8b419ec9",
+      "definition_sheared.3dm": "b6c9d551148890c79b68f88ed88fe1bf4436d4eac5b1370132af962a28cbbe6e",
+      "definition_eccentric-0p1.3dm": "4f94dc2afc30654a42fd7a5f5d1f1f4ccdbb1dab78ee00e280299186a70fcf16",
+      "definition_altered-span.3dm": "5d0f9981fde996d834a286035ee13888167d9e42bdb1d0d864d1b5b4b5a64245",
+      "definition_nonplanar.3dm": "11dce449e94575044f320c6aa5f78aafa1b15222764b71955deb5c15b9090cfa",
+      "definition_near-conic.3dm": "e747fa934f56ee08306a70cb6b33401502beba95584866d7fb2342270d8a3b3f",
+      "hyperbola_refined.3dm": "a98e2be1837a91d2811c81d31b990465191bdc64043beed467eabc4d58f4f8f4",
+      "hyperbola_elevated12.3dm": "68fd5a014a5cede30c7c070ac2d50f1772c488a6b54d9c7f7f166b9c8c9f351a",
+      "parabola_refined.3dm": "49459b0d7f0dbecb34ab9756c46a61773471a659b6993fa19c191adb32be062c",
+      "parabola_elevated12.3dm": "f6b8ac5daf6d3e5378d82c3f982afd1dfb501d256877b72ea897329fdb110eb7",
+      "line.3dm": "1d705d31885f39438bd63ce70c7b457bf20f322113bbc5e0c3db2b7c6c45d1fd",
+      "line_mixed.3dm": "075809f0cf2a3468a4fe542a2d9f3591689ce62053b65889c747c38143b9b0a2",
+      "cubic.3dm": "e0dd24ed86341f33009e2bd94c8226d624f17a77cc6a46e05009646a511e8bf7",
+      "cubic_mixed.3dm": "ba9cdd4b785878212a35b5b5c6b5dce0039ac27e565e728fa952c0d528292806",
+      "ellipse_reverse.3dm": "055e8e5af3440aeca8debabcd75c6f2f8e82b782119d866364d67d38c2fa7ac3",
+      "hyperbola_domain.3dm": "bbbb984d97e219f55a19eb4df6fd490cfaa2c774a00b62e2db304e5744950b53"
+    }
+  },
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "3bd36adaccedc38783ab9e681b17740fdd46f339347d71c07c4ea499b542b412",
+    "crates/viboceros-command/src/mark_foci.rs": "96e8180c1079ccbf41de1f0a7776dcc0585c87d22df533ea3571ce3718f1e717",
+    "crates/viboceros-command/tests/mark_foci.rs": "e3edf7876c00eaabed2e34194030d26bfc6e9102d85a461e136ec89e4cf8ed0f",
+    "crates/viboceros-command/tests/support/mark_foci.rs": "7e187d1f4ee719951bf75132807a09c4302ef3c8a20199c0299199725dc626de",
+    "crates/viboceros-geometry/src/lib.rs": "828a6ff919a14287a833e133a73e4565336616a9a9279221811abcd8198cce17",
+    "crates/viboceros-geometry/src/nurbs.rs": "6d08ca5c7102f48ecbe473000cdc17d7c9d1cf4d392bf2169f99e1213c1d43fe",
+    "crates/viboceros-geometry/src/nurbs/ellipticity.rs": "b17e2f7b9a62eaff8e79a4d3013f466b142f7f28625911534b693a80d127f2fb",
+    "crates/viboceros-geometry/src/nurbs/ellipticity/foci.rs": "ab0777252112c5e2cc87bdebbcec771fdf070b28175b457ea92aa99f13fea8da",
+    "crates/viboceros-geometry/tests/conic_foci.rs": "a17cc76ad17e7a2f03fcffbb3b4e8e08c0454f8776c82074f86208394ed38da2",
+    "src/app.rs": "8235df4e8761e1f647a611bd2d5a36dd86c0404c3354e0ce021b61db1d28d182",
+    "src/app/tests/mark_foci.rs": "a6c12b5e829c106dac589ba2fd03b9cf9b033ef9230804e00c59e908260a35e7",
+    "tools/rhino_oracle/test_mark_foci_probe.py": "ee7d9d49e08f8cd5e585425435cdb23d679ed0fb516480e256c73c9695976a4b"
+  },
+  "checks": [
+    {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_mark_foci",
+      "status": "passed",
+      "log": "docs/mark-foci-capture.log.gz",
+      "uncompressed_sha256": "8ad4c56ef4d2365c985d6bd7ee6abb4b07c615b4c7f5e383cfc24cafbb5cbed6"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --test conic_foci",
+      "status": "passed",
+      "log": "docs/mark-foci-kernel.log.gz",
+      "uncompressed_sha256": "6d7ed4cb3d0e0c335cf3c796232e094596654b8e9ae230dcc03bf2d8171b7ba0"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --test conic_foci --lib nurbs::ellipticity",
+      "status": "passed",
+      "log": "docs/mark-foci-ellipse-regression.log.gz",
+      "uncompressed_sha256": "5e20bc35e4d7e9d8a2407f6a83f51446356cffe8aab6b4699b62137921e47371"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test mark_foci --test reduce_polyline --test modify_radius --test simplify_curves -- --nocapture",
+      "status": "passed",
+      "log": "docs/mark-foci-command-portable.log.gz",
+      "uncompressed_sha256": "71612ef86fbdd9ff3dd4c424749178e8594f9c8df74701b66d92860003a242db"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test mark_foci -- --nocapture",
+      "status": "passed",
+      "log": "docs/mark-foci-command-native.log.gz",
+      "uncompressed_sha256": "583f8af1901ea2b9ae22972ad888d026884de5cb0ac654284d3eeab3bc7bd26a"
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros app::tests::mark_foci",
+      "status": "passed",
+      "log": "docs/mark-foci-ui-portable.log.gz",
+      "uncompressed_sha256": "667417f96421caaf89b7804237180b1c3c8f9e981c3cf975327cfa65743aae73"
+    },
+    {
+      "command": "cargo test -p viboceros --features native-smlib app::tests::mark_foci",
+      "status": "passed",
+      "log": "docs/mark-foci-ui-native.log.gz",
+      "uncompressed_sha256": "08773c516661631fa8fcd14a1bec921d5d4acb21915b845796f1f7c72c064028"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "status": "passed",
+      "log": "docs/mark-foci-help.log.gz",
+      "uncompressed_sha256": "c177d16250dfd98635951e8f645eb8b0839e066bc7932b2afb7d942118f9115a"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_mark_foci_probe tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_worker tools.rhino_oracle.test_client tools.rhino_oracle.test_curve_conic_centers tools.rhino_oracle.test_reduce_polyline_probe tools.rhino_oracle.test_nested_rational",
+      "status": "passed",
+      "log": "docs/mark-foci-python.log.gz",
+      "uncompressed_sha256": "355d0d8d4f9873c6712b7f39c4b47d5dcd50256ee97ce37d0386062c739edc9f"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "log": "docs/mark-foci-clippy.log.gz",
+      "uncompressed_sha256": "b63f3a123b6fbe990e76a696e18d585ad701cae9139c17ea07b15cfd1ddef2f0"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "status": "passed",
+      "log": "docs/mark-foci-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

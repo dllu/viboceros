@@ -17,6 +17,7 @@ Rhino's complete command set is still a work in progress.
 - [In-place BlockEdit](block-edit.md)
 
 - [Ellipse construction, AroundCurve, deformable output and focus markers](ellipse.md)
+- [MarkFoci and conic axes](mark-foci.md)
 - [Deformable Circle, construction modes and FitPoints](circle-deformable.md)
 - [Circle AroundCurve, size getters and guide picking](circle-around-curve.md)
 - [Circle Tangent, picked contacts, radii and free points](circle-tangent.md)
@@ -173,6 +174,7 @@ CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
 ReducePolyline 0.01 Copy=No
+MarkFoci DrawAxis=Yes
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
 ChangeDegree 5,3 Deformable=No
 MakeUniform

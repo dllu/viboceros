@@ -10,6 +10,7 @@ mod closest_point;
 pub(crate) use closest_point::PreparedCurveClosest;
 mod decompose;
 mod ellipticity;
+pub use ellipticity::ConicFoci;
 mod evaluate;
 pub(crate) mod exact;
 mod grips;

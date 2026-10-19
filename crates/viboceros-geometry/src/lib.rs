@@ -284,7 +284,7 @@ pub use morph::{
     SurfacePreviewCage,
 };
 pub use nurbs::{
-    ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,
+    ConicFoci, ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,
     CurveCurveIntersectionParameters, CurveCurveOverlap, CurveExtensionBoundary,
     CurveExtensionOperations, CurveExtensionSide, CurveExtensionStyle, NurbsCurve,
     NurbsCurveParameterSampler, NurbsCurveSamplingSpan, WeightedPoint3, degree_change_knots,

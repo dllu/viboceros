@@ -2,7 +2,9 @@
 use super::*;
 use circularity::{binomial, unit_sphere_bound};
 use nalgebra::{Matrix2, Vector2};
+mod foci;
 mod frame;
+pub use foci::ConicFoci;
 mod quadratic;
 use frame::CoefficientFrame;
 
@@ -45,6 +47,13 @@ impl NurbsCurve {
     /// required. Inconclusive, degenerate or ill-conditioned cases return `None`.
     /// This is a conservative floating-point test, not an exact conic predicate.
     pub fn elliptical_center(&self, tolerance: Tolerance) -> Result<Option<Point3>, GeometryError> {
+        Ok(self.elliptical_locus(tolerance)?.map(|locus| locus.center))
+    }
+
+    fn elliptical_locus(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Option<EllipticLocus>, GeometryError> {
         if self.degree() < 2 {
             return Ok(None);
         }
@@ -59,7 +68,7 @@ impl NurbsCurve {
                 }
             })?
         {
-            return Ok(Some(proposal.center));
+            return Ok(Some(proposal));
         }
         let Some(proposal) = ellipse_proposal(&spans, tolerance).ok().flatten() else {
             return Ok(None);
@@ -69,7 +78,7 @@ impl NurbsCurve {
                 return Ok(None);
             }
         }
-        Ok(Some(proposal.center))
+        Ok(Some(proposal))
     }
 }
 
@@ -78,10 +87,16 @@ impl NurbsCurve {
 /// Unlike five sampled points this also works for stationary/nonlinear rational
 /// parameterizations. It is only a proposal: acceptance separately checks all
 /// spans in model units, including planarity and numerical conditioning.
-fn ellipse_proposal(
+struct ImplicitConic {
+    frame: CoefficientFrame,
+    coefficients: [Real; 6],
+    noise: Real,
+}
+
+fn coefficient_fit(
     spans: &[NurbsCurve],
     tolerance: Tolerance,
-) -> Result<Option<EllipticLocus>, GeometryError> {
+) -> Result<Option<ImplicitConic>, GeometryError> {
     let controls: Vec<_> = spans.iter().flat_map(|s| s.control_points()).collect();
     // Whiten the planar data before fitting its implicit conic. Isotropic
     // scaling mistakes a thin, well-defined ellipse for an unstable conic.
@@ -164,6 +179,25 @@ fn ellipse_proposal(
         return Ok(None);
     }
     let coefficients: [Real; 6] = std::array::from_fn(|i| svd.V()[(i, smallest)]);
+    Ok(Some(ImplicitConic {
+        frame,
+        coefficients,
+        noise: 64. * (n + 1) as Real * Real::EPSILON * (largest / gap),
+    }))
+}
+
+fn ellipse_proposal(
+    spans: &[NurbsCurve],
+    tolerance: Tolerance,
+) -> Result<Option<EllipticLocus>, GeometryError> {
+    let Some(ImplicitConic {
+        frame,
+        coefficients,
+        noise,
+    }) = coefficient_fit(spans, tolerance)?
+    else {
+        return Ok(None);
+    };
     let [a, b, c, d, e, f] = coefficients;
     let sign = (a + c).signum();
     let quadratic = Matrix2::new(a, b, b, c) * sign;
@@ -207,7 +241,6 @@ fn ellipse_proposal(
     // |dc| <= eta (sqrt(2) + 2|c|) / (lambda_min(A) - 2 eta).
     // Convert that coordinate sensitivity through the affine frame, rather
     // than penalizing the physical aspect ratio of a well-determined ellipse.
-    let noise = 64. * (n + 1) as Real * Real::EPSILON * (largest / gap);
     if lo <= 2. * noise {
         return Ok(None);
     }
