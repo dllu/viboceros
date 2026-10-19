@@ -35,6 +35,26 @@ impl Candidate {
 }
 
 impl NurbsCurve {
+    /// Local point-getter refinement with geometric coincidence as an early
+    /// stopping condition. This does not certify a global closest parameter;
+    /// callers selecting topology must bound it against their global hit.
+    /// The ordinary closest-parameter query retains its precise stopping rule.
+    pub fn point_getter_parameter_from_seed(
+        &self,
+        target: Point3,
+        seed: Real,
+        tolerance: Tolerance,
+    ) -> Result<Real, GeometryError> {
+        self.validate_parameter(seed)?;
+        let domain = self.domain();
+        CurveQuery::new(self).refine_with_point_getter_stop(
+            target,
+            seed,
+            [*domain.start(), *domain.end()],
+            tolerance,
+            true,
+        )
+    }
     /// Finds an active-domain parameter nearest to a finite model-space point.
     ///
     /// Each nonempty span contributes endpoint/midpoint seeds, supplemented by

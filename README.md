@@ -82,6 +82,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [RemoveKnot picking, shape previews, cyclic removal and staged Undo](docs/commands/remove-knot.md)
 - [RemoveControlPoint viewport grips, composite curves and surface rows](docs/commands/remove-control-point.md)
 - [InsertControlPoint repeated picks, shape previews, Midpoint and surface-net extension](docs/commands/insert-control-point.md)
+- [InsertEditPoint shape-preserving refinement, edit markers and temporary portions](docs/commands/insert-edit-point.md)
 - [Control and edit-point workflows, HidePt and ShowPt](docs/control-points.md), including [curve closure and shared seam grips](docs/curve-closure.md)
 - [Delete selected control points, edit points, surface rows and mesh vertices](docs/commands/delete-grips.md)
 - [Control point weights with live previews and Undo/Redo](docs/commands/weight.md)

@@ -59,6 +59,7 @@ Rhino's complete command set is still a work in progress.
 - [Grip visibility and selection: HidePt, ShowPt, directional rows, SelPt and InvertPt](point-selection.md)
 - [Delete selected grips and objects with Undo/Redo](delete-grips.md)
 - [Weight: rational curve and surface controls with a live preview](weight.md)
+- [InsertEditPoint: shape-preserving edit-point insertion and SubCrv](insert-edit-point.md)
 - [SetPt coordinate alignment for objects and grips](set-point.md)
 - [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)

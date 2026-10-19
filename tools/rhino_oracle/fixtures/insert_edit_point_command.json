@@ -1,0 +1,1482 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_left",
+      "family": "cubic",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_middle",
+      "family": "cubic",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_right",
+      "family": "cubic",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_start",
+      "family": "cubic",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_end",
+      "family": "cubic",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_greville_left",
+      "family": "cubic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_greville_right",
+      "family": "cubic",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_two",
+      "family": "cubic",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_repeat",
+      "family": "cubic",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_empty",
+      "family": "cubic",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_cancel",
+      "family": "cubic",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_cancel_after",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_post",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_subcurve",
+      "family": "cubic",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_refined",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_left",
+      "family": "rational",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_middle",
+      "family": "rational",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_right",
+      "family": "rational",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_start",
+      "family": "rational",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_end",
+      "family": "rational",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_greville_left",
+      "family": "rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_greville_right",
+      "family": "rational",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_two",
+      "family": "rational",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_repeat",
+      "family": "rational",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_empty",
+      "family": "rational",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_cancel",
+      "family": "rational",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_cancel_after",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_post",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_subcurve",
+      "family": "rational",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_refined",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_left",
+      "family": "periodic",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_middle",
+      "family": "periodic",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_right",
+      "family": "periodic",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_start",
+      "family": "periodic",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_end",
+      "family": "periodic",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_greville_left",
+      "family": "periodic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_greville_right",
+      "family": "periodic",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_two",
+      "family": "periodic",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_repeat",
+      "family": "periodic",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_empty",
+      "family": "periodic",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_cancel",
+      "family": "periodic",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_cancel_after",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_post",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_subcurve",
+      "family": "periodic",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_refined",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle",
+      "family": "circle",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_left",
+      "family": "circle",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_middle",
+      "family": "circle",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_right",
+      "family": "circle",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_start",
+      "family": "circle",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_end",
+      "family": "circle",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_greville_left",
+      "family": "circle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_greville_right",
+      "family": "circle",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_two",
+      "family": "circle",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_repeat",
+      "family": "circle",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_empty",
+      "family": "circle",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_cancel",
+      "family": "circle",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_cancel_after",
+      "family": "circle",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_post",
+      "family": "circle",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_subcurve",
+      "family": "circle",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "circle_refined",
+      "family": "circle",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/circle_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse",
+      "family": "ellipse",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_left",
+      "family": "ellipse",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_middle",
+      "family": "ellipse",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_right",
+      "family": "ellipse",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_start",
+      "family": "ellipse",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_end",
+      "family": "ellipse",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_greville_left",
+      "family": "ellipse",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_greville_right",
+      "family": "ellipse",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_two",
+      "family": "ellipse",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_repeat",
+      "family": "ellipse",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_empty",
+      "family": "ellipse",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_cancel",
+      "family": "ellipse",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_cancel_after",
+      "family": "ellipse",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_post",
+      "family": "ellipse",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_subcurve",
+      "family": "ellipse",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "ellipse_refined",
+      "family": "ellipse",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/ellipse_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line",
+      "family": "line",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_left",
+      "family": "line",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_middle",
+      "family": "line",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_right",
+      "family": "line",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_start",
+      "family": "line",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_end",
+      "family": "line",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_greville_left",
+      "family": "line",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_greville_right",
+      "family": "line",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_two",
+      "family": "line",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_repeat",
+      "family": "line",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_empty",
+      "family": "line",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_cancel",
+      "family": "line",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_cancel_after",
+      "family": "line",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_post",
+      "family": "line",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_subcurve",
+      "family": "line",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "line_refined",
+      "family": "line",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/line_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline",
+      "family": "polyline",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_left",
+      "family": "polyline",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_middle",
+      "family": "polyline",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_right",
+      "family": "polyline",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_start",
+      "family": "polyline",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_end",
+      "family": "polyline",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_greville_left",
+      "family": "polyline",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_greville_right",
+      "family": "polyline",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_two",
+      "family": "polyline",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_repeat",
+      "family": "polyline",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_empty",
+      "family": "polyline",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_cancel",
+      "family": "polyline",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_cancel_after",
+      "family": "polyline",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_post",
+      "family": "polyline",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_subcurve",
+      "family": "polyline",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polyline_refined",
+      "family": "polyline",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polyline_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve",
+      "family": "polycurve",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_left",
+      "family": "polycurve",
+      "stations": [
+        0.2
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_middle",
+      "family": "polycurve",
+      "stations": [
+        0.5
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_middle.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_right",
+      "family": "polycurve",
+      "stations": [
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_start",
+      "family": "polycurve",
+      "stations": [
+        0.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_start.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_end",
+      "family": "polycurve",
+      "stations": [
+        1.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_end.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_greville_left",
+      "family": "polycurve",
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_greville_left.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_greville_right",
+      "family": "polycurve",
+      "stations": [
+        0.6666666666666666
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_greville_right.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_two",
+      "family": "polycurve",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_two.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_repeat",
+      "family": "polycurve",
+      "stations": [
+        0.35,
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_repeat.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_empty",
+      "family": "polycurve",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_empty.3dm"
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_cancel",
+      "family": "polycurve",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_cancel_after",
+      "family": "polycurve",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_cancel_after.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_post",
+      "family": "polycurve",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_subcurve",
+      "family": "polycurve",
+      "stations": [
+        0.35,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_subcurve.3dm",
+      "preselect": false,
+      "subcurve": [
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "polycurve_refined",
+      "family": "polycurve",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/polycurve_refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_domain",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_domain.3dm",
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_reverse",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_reverse.3dm",
+      "reverse": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_tilted",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_negative",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_negative.3dm",
+      "gauge": -8.0
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_small",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_small.3dm",
+      "gauge": 1e-50
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_large",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_large.3dm",
+      "gauge": 1e+50
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_domain",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_domain.3dm",
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_reverse",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_reverse.3dm",
+      "reverse": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_tilted",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_negative",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_negative.3dm",
+      "gauge": -8.0
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_small",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_small.3dm",
+      "gauge": 1e-50
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_large",
+      "family": "rational",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_large.3dm",
+      "gauge": 1e+50
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_domain",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_domain.3dm",
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_reverse",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_reverse.3dm",
+      "reverse": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_tilted",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_negative",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_negative.3dm",
+      "gauge": -8.0
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_small",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_small.3dm",
+      "gauge": 1e-50
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "periodic_large",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/periodic_large.3dm",
+      "gauge": 1e+50
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_degree_4",
+      "family": "cubic",
+      "stations": [
+        0.2,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_degree_4.3dm",
+      "elevate": 4
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_degree_4",
+      "family": "rational",
+      "stations": [
+        0.2,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_degree_4.3dm",
+      "elevate": 4
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_degree_5",
+      "family": "cubic",
+      "stations": [
+        0.2,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_degree_5.3dm",
+      "elevate": 5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_degree_5",
+      "family": "rational",
+      "stations": [
+        0.2,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_degree_5.3dm",
+      "elevate": 5
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "cubic_degree_7",
+      "family": "cubic",
+      "stations": [
+        0.2,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/cubic_degree_7.3dm",
+      "elevate": 7
+    },
+    {
+      "op": "insert_edit_point_command",
+      "id": "rational_degree_7",
+      "family": "rational",
+      "stations": [
+        0.2,
+        0.7
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_command/rational_degree_7.3dm",
+      "elevate": 7
+    }
+  ]
+}

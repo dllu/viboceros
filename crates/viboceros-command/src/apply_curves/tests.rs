@@ -172,6 +172,17 @@ fn replays_native_mapping_metadata_selection_and_undo_redo() {
         } else {
             assert_eq!(document.selected_object_count(), sources.len() + 1);
             assert!(!document.can_undo());
+            // This older capture drives an extra Enter after ApplyCrv has
+            // already ended. Its post-script snapshot is deselected before
+            // Undo runs; empty Undo itself preserves current selection.
+            assert!(
+                value["after_script"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .all(|o| o["selected"] == false)
+            );
+            document.clear_selection();
             assert_eq!(
                 registry.execute(&mut document, "Undo").unwrap(),
                 "Nothing to undo"

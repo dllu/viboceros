@@ -4,6 +4,17 @@ fn point(value: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[f64; 3]>(value.clone()).unwrap()).unwrap()
 }
 pub fn compare(curve: CurveRef<'_>, reference: &Value, name: &str) -> f64 {
+    compare_with_weight_tolerance(curve, reference, name, 0.)
+}
+
+/// Preserve the usual absolute checks while admitting relative rounding only
+/// for raw homogeneous weights spanning very large gauges.
+pub fn compare_with_weight_tolerance(
+    curve: CurveRef<'_>,
+    reference: &Value,
+    name: &str,
+    relative_weight_epsilon: f64,
+) -> f64 {
     let mut gap = 0_f64;
     let samples = reference["samples"].as_array().unwrap();
     let d = curve.domain();
@@ -82,9 +93,21 @@ pub fn compare(curve: CurveRef<'_>, reference: &Value, name: &str) -> f64 {
                 .iter()
                 .zip(definition["control_points"].as_array().unwrap())
             {
-                gap = gap
-                    .max(a.point().distance_to(point(&b["point"])).unwrap())
-                    .max((a.weight() - b["weight"].as_f64().unwrap()).abs());
+                gap = gap.max(a.point().distance_to(point(&b["point"])).unwrap());
+                let expected = b["weight"].as_f64().unwrap();
+                let difference = (a.weight() - expected).abs();
+                if relative_weight_epsilon > 0. {
+                    assert!(
+                        difference
+                            <= 1e-8_f64.max(
+                                relative_weight_epsilon * a.weight().abs().max(expected.abs())
+                            ),
+                        "{name}: weight {} != {expected}",
+                        a.weight()
+                    );
+                } else {
+                    gap = gap.max(difference);
+                }
             }
         }
         (CurveRef::PolyCurve(c), "polycurve") => {
@@ -105,7 +128,12 @@ pub fn compare(curve: CurveRef<'_>, reference: &Value, name: &str) -> f64 {
                 .iter()
                 .zip(reference["segments"].as_array().unwrap())
             {
-                gap = gap.max(compare(a.as_ref(), b, name));
+                gap = gap.max(compare_with_weight_tolerance(
+                    a.as_ref(),
+                    b,
+                    name,
+                    relative_weight_epsilon,
+                ));
             }
         }
         _ => panic!(

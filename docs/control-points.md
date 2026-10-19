@@ -76,3 +76,6 @@ further implementation or verification. Oriented Circle frames remain a
 
 `Weight` edits rational curve and surface control weights with a live preview,
 command-line input, and Undo/Redo. See [Weight](commands/weight.md).
+
+[InsertEditPoint](commands/insert-edit-point.md) adds edit stations without
+changing the curve shape, with repeated picking, temporary portions and Undo/Redo.

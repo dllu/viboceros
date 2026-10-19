@@ -39,6 +39,17 @@ pub fn surface(s: &NurbsSurface, v: &Value) -> f64 {
     gap
 }
 pub fn check(doc: &Document, v: &Value, source: ObjectId, label: &str) -> f64 {
+    check_with_weight_tolerance(doc, v, source, label, 0.)
+}
+/// Keep the absolute geometry checks and optionally admit relative rounding
+/// in raw rational-curve weights. No controls or weights are normalized.
+pub fn check_with_weight_tolerance(
+    doc: &Document,
+    v: &Value,
+    source: ObjectId,
+    label: &str,
+    relative_weight_epsilon: f64,
+) -> f64 {
     assert_eq!(
         doc.objects().len(),
         v.as_array().unwrap().len(),
@@ -71,7 +82,7 @@ pub fn check(doc: &Document, v: &Value, source: ObjectId, label: &str) -> f64 {
         }
         let g = &row["geometry"];
         if let Some(curve) = object.geometry().curve_ref() {
-            gap = gap.max(compare_curve(curve, g, label));
+            gap = gap.max(compare_curve(curve, g, label, relative_weight_epsilon));
         } else if let Geometry::Brep(b) = object.geometry() {
             assert_eq!(b.faces().len(), g["faces"].as_u64().unwrap() as usize);
             let topology = &g["topology"];
@@ -162,6 +173,16 @@ fn normalize_outer_knots(curve: viboceros_geometry::CurveRef<'_>, g: &Value) -> 
     }
     expected
 }
-fn compare_curve(curve: viboceros_geometry::CurveRef<'_>, g: &Value, label: &str) -> f64 {
-    curves::compare(curve, &normalize_outer_knots(curve, g), label)
+fn compare_curve(
+    curve: viboceros_geometry::CurveRef<'_>,
+    g: &Value,
+    label: &str,
+    relative_weight_epsilon: f64,
+) -> f64 {
+    curves::compare_with_weight_tolerance(
+        curve,
+        &normalize_outer_knots(curve, g),
+        label,
+        relative_weight_epsilon,
+    )
 }

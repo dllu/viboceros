@@ -9,6 +9,7 @@ pub(crate) use boundary_extension::with_portable_extension_operations;
 mod closest_point;
 pub(crate) use closest_point::PreparedCurveClosest;
 mod decompose;
+mod edit_point_insertion;
 mod ellipticity;
 pub use ellipticity::ConicFoci;
 mod evaluate;

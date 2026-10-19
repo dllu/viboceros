@@ -1,0 +1,30 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "empty_undo_selection",
+      "id": "point_empty",
+      "kind": "point",
+      "redo": false
+    },
+    {
+      "op": "empty_undo_selection",
+      "id": "point_redo",
+      "kind": "point",
+      "redo": true
+    },
+    {
+      "op": "empty_undo_selection",
+      "id": "curve_empty",
+      "kind": "curve",
+      "redo": false
+    },
+    {
+      "op": "empty_undo_selection",
+      "id": "curve_redo",
+      "kind": "curve",
+      "redo": true
+    }
+  ]
+}

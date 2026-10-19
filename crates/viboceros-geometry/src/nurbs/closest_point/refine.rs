@@ -5,13 +5,25 @@ impl CurveQuery<'_> {
     pub(super) fn refine_closest_parameter_only(
         &mut self,
         target: Point3,
-        mut parameter: Real,
+        parameter: Real,
         domain: [Real; 2],
         tolerance: Tolerance,
     ) -> Result<Real, GeometryError> {
+        self.refine_with_point_getter_stop(target, parameter, domain, tolerance, false)
+    }
+    pub(super) fn refine_with_point_getter_stop(
+        &mut self,
+        target: Point3,
+        mut parameter: Real,
+        domain: [Real; 2],
+        tolerance: Tolerance,
+        stop_at_coincidence: bool,
+    ) -> Result<Real, GeometryError> {
         let mut current = PointDistance::new(target, self.evaluate(parameter)?);
         for _ in 0..64 {
-            if current.point() == target {
+            if current.point() == target
+                || stop_at_coincidence && crate::curve_points_coincident(current.point(), target)
+            {
                 break;
             }
             let (derivative, second) = match self.evaluate_with_second_derivative(parameter) {

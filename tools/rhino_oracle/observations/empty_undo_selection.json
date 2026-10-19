@@ -1,0 +1,212 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "engine": "rhino",
+  "iterations": 1,
+  "results": [
+    {
+      "value": {
+        "steps": [
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": false,
+              "selected": true
+            },
+            "after_script": {
+              "marker": false,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Undo"
+          },
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": false,
+              "selected": true
+            },
+            "after_script": {
+              "marker": false,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Redo"
+          }
+        ],
+        "before": {
+          "marker": false,
+          "selected": true
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "point_empty"
+    },
+    {
+      "value": {
+        "steps": [
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": false,
+              "selected": true
+            },
+            "after_script": {
+              "marker": false,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Undo"
+          },
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": true,
+              "selected": true
+            },
+            "after_script": {
+              "marker": true,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Redo"
+          }
+        ],
+        "before": {
+          "marker": false,
+          "selected": true
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "point_redo"
+    },
+    {
+      "value": {
+        "steps": [
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": false,
+              "selected": true
+            },
+            "after_script": {
+              "marker": false,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Undo"
+          },
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": false,
+              "selected": true
+            },
+            "after_script": {
+              "marker": false,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Redo"
+          }
+        ],
+        "before": {
+          "marker": false,
+          "selected": true
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "curve_empty"
+    },
+    {
+      "value": {
+        "steps": [
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": false,
+              "selected": true
+            },
+            "after_script": {
+              "marker": false,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Undo"
+          },
+          {
+            "results": [
+              "Success"
+            ],
+            "after": {
+              "marker": true,
+              "selected": true
+            },
+            "after_script": {
+              "marker": true,
+              "selected": true
+            },
+            "before": {
+              "marker": false,
+              "selected": true
+            },
+            "command": "Redo"
+          }
+        ],
+        "before": {
+          "marker": false,
+          "selected": true
+        }
+      },
+      "elapsed_ns": 0,
+      "id": "curve_redo"
+    }
+  ],
+  "protocol_version": 1,
+  "provenance": {
+    "base_commit": "38bd0edefbd511f3dc63c1d04c41a3f8f1dcb087",
+    "request_sha256": "505d6f18e260a971e09944566a26bf296d9a7d70b94100a100dc8eb14df4d034",
+    "sources": {
+      "generate_empty_undo_selection.py": "8b1b206e9599a33479c3e01aaf8b574c691e28b622871e0c39e8aed434e3f6bb",
+      "empty_undo_selection_probe.py": "3d9f9f12e4b0b677956ef62ff0a00a3f1c72f3d4897da9fcee20abd0faf654a6",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+      "rhino_worker.py": "cb38b05052bda67eae2cc41a7a1458ea6238c51fda013f533fe90fe6b2e66752",
+      "structural_sdk.py": "c7439a0999c8454967b00c69ae40d907efde9734d727f5695d902178ec6f3393"
+    }
+  }
+}

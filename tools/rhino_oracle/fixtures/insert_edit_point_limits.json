@@ -1,0 +1,501 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_0",
+      "family": "cubic",
+      "stations": [
+        0.3332333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_0.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_1",
+      "family": "cubic",
+      "stations": [
+        0.3334333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_1.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_2",
+      "family": "cubic",
+      "stations": [
+        0.33333233333333334
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_2.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_3",
+      "family": "cubic",
+      "stations": [
+        0.3333343333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_3.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_4",
+      "family": "cubic",
+      "stations": [
+        0.3333333233333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_4.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_5",
+      "family": "cubic",
+      "stations": [
+        0.3333333433333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_5.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_6",
+      "family": "cubic",
+      "stations": [
+        0.3333333332333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_6.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_7",
+      "family": "cubic",
+      "stations": [
+        0.3333333334333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_7.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_8",
+      "family": "cubic",
+      "stations": [
+        0.33333333333233334
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_8.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_9",
+      "family": "cubic",
+      "stations": [
+        0.3333333333343333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_9.3dm",
+      "scale": 0.001
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_10",
+      "family": "cubic",
+      "stations": [
+        0.3332333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_10.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_11",
+      "family": "cubic",
+      "stations": [
+        0.3334333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_11.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_12",
+      "family": "cubic",
+      "stations": [
+        0.33333233333333334
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_12.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_13",
+      "family": "cubic",
+      "stations": [
+        0.3333343333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_13.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_14",
+      "family": "cubic",
+      "stations": [
+        0.3333333233333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_14.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_15",
+      "family": "cubic",
+      "stations": [
+        0.3333333433333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_15.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_16",
+      "family": "cubic",
+      "stations": [
+        0.3333333332333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_16.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_17",
+      "family": "cubic",
+      "stations": [
+        0.3333333334333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_17.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_18",
+      "family": "cubic",
+      "stations": [
+        0.33333333333233334
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_18.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_19",
+      "family": "cubic",
+      "stations": [
+        0.3333333333343333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_19.3dm",
+      "scale": 1.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_20",
+      "family": "cubic",
+      "stations": [
+        0.3332333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_20.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_21",
+      "family": "cubic",
+      "stations": [
+        0.3334333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_21.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_22",
+      "family": "cubic",
+      "stations": [
+        0.33333233333333334
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_22.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_23",
+      "family": "cubic",
+      "stations": [
+        0.3333343333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_23.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_24",
+      "family": "cubic",
+      "stations": [
+        0.3333333233333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_24.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_25",
+      "family": "cubic",
+      "stations": [
+        0.3333333433333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_25.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_26",
+      "family": "cubic",
+      "stations": [
+        0.3333333332333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_26.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_27",
+      "family": "cubic",
+      "stations": [
+        0.3333333334333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_27.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_28",
+      "family": "cubic",
+      "stations": [
+        0.33333333333233334
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_28.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "near_29",
+      "family": "cubic",
+      "stations": [
+        0.3333333333343333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/near_29.3dm",
+      "scale": 1000000.0
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_30",
+      "family": "periodic",
+      "stations": [
+        0.01
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_30.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_31",
+      "family": "periodic",
+      "stations": [
+        0.05
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_31.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_32",
+      "family": "periodic",
+      "stations": [
+        0.1
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_32.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_33",
+      "family": "periodic",
+      "stations": [
+        0.9
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_33.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_34",
+      "family": "periodic",
+      "stations": [
+        0.95
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_34.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_35",
+      "family": "periodic",
+      "stations": [
+        0.99
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_35.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "cubic_post_cancel",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/cubic_post_cancel.3dm",
+      "preselect": false,
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "cubic_post_empty",
+      "family": "cubic",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/cubic_post_empty.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "cubic_subcurve_cancel",
+      "family": "cubic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/cubic_subcurve_cancel.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false,
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "circle_post_cancel",
+      "family": "circle",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/circle_post_cancel.3dm",
+      "preselect": false,
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "circle_post_empty",
+      "family": "circle",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/circle_post_empty.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "circle_subcurve_cancel",
+      "family": "circle",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/circle_subcurve_cancel.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false,
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_post_cancel",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_post_cancel.3dm",
+      "preselect": false,
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_post_empty",
+      "family": "periodic",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_post_empty.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_subcurve_cancel",
+      "family": "periodic",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/periodic_subcurve_cancel.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false,
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "polycurve_post_cancel",
+      "family": "polycurve",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/polycurve_post_cancel.3dm",
+      "preselect": false,
+      "cancel": true
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "polycurve_post_empty",
+      "family": "polycurve",
+      "stations": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/polycurve_post_empty.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "polycurve_subcurve_cancel",
+      "family": "polycurve",
+      "stations": [
+        0.35
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_limits/polycurve_subcurve_cancel.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false,
+      "cancel": true
+    }
+  ]
+}

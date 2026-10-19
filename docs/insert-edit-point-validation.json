@@ -1,0 +1,263 @@
+{
+  "validated_at": "2026-10-19T22:02:56.744226+00:00",
+  "base_commit": "38bd0edefbd511f3dc63c1d04c41a3f8f1dcb087",
+  "feature": "InsertEditPoint: Greville refinement, immutable previews, repeated input, SubCrv, object regeneration and history; preserve selection on empty Undo",
+  "captures": [
+    {
+      "request": "tools/rhino_oracle/fixtures/insert_edit_point_command.json",
+      "request_sha256": "3465ce2dc8c900767784edb4b62d38947733e741a10fcbc64fda7cb7629a2048",
+      "observation": "tools/rhino_oracle/observations/insert_edit_point_command.json",
+      "observation_sha256": "e73ea10303e09a27ae217fc9ae251f1d2c7bb5c9534605a36758604826d089ea",
+      "cases": 152,
+      "engine_version": "8.32.26160.13001",
+      "capture_sources": {
+        "generate_insert_edit_point.py": "951dd166c7a947f580c05d644be823ca6b8a35addca450c764c1ab8b3f0aa67d",
+        "insert_edit_point_probe.py": "bfd6d97b5fe57d0895719b5d711c4bde720194e19b5fd7f3bfcd75e5ab2b82fb",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "a5a38ee5acd5e82e0ef53992d4288166909c914e98c5aa1b6a3f1605a940153d",
+        "structural_sdk.py": "9aeed4ec08217f6142ab7e718c8d1e44a3b2f9c3afef44af86b2e8e3b9d1f5d0"
+      },
+      "fixture_count": 152
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/insert_edit_point_limits.json",
+      "request_sha256": "4188432e0e35f579e7d98b68c4bfa6bfbf3aba4574932d68f30c0b6d1f22a168",
+      "observation": "tools/rhino_oracle/observations/insert_edit_point_limits.json",
+      "observation_sha256": "76c366348045e728bc28597a376c553189fb27d1a9b72b78baac336773630a2e",
+      "cases": 48,
+      "engine_version": "8.32.26160.13001",
+      "capture_sources": {
+        "generate_insert_edit_point_limits.py": "9f6fa088b4c84e2205b5407b40dc8cd2598a026ca3aaf0b2a94eb586cb68c5bc",
+        "insert_edit_point_limits_probe.py": "44795c97835e5e567c562640d713fd156b453d9c363347f7980712502730a576",
+        "insert_edit_point_probe.py": "bfd6d97b5fe57d0895719b5d711c4bde720194e19b5fd7f3bfcd75e5ab2b82fb",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "0dc89b5a13a6442a988ef46c3fe5e1a94ce06fbc8a7b717bdf5641726a6d6621",
+        "structural_sdk.py": "88cea82e1cd4ee7afa34618653a57ad4c5107cfe00f3b81c9de863ed3cebc5b1"
+      },
+      "fixture_count": 48
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/insert_edit_point_projection.json",
+      "request_sha256": "2e6a065699ad64b50f93004ed129c6a01b6ff2f0807a195e9ae2b7d4cd6bdcd7",
+      "observation": "tools/rhino_oracle/observations/insert_edit_point_projection.json",
+      "observation_sha256": "e398ff4bf02428e5b7e5133dae2b7799e53b7e3cdcb47f7fe7a3726010e47aa7",
+      "cases": 16,
+      "engine_version": "8.32.26160.13001",
+      "capture_sources": {
+        "generate_insert_edit_point_projection.py": "16fadbcadb5237de8c926af34551c2f822230ea69d8e4f299859f7504bff4cc8",
+        "insert_edit_point_limits_probe.py": "f07ed9784cd60b9734cc70619b48092af8d7f7a2423e1facc8beb313f50a3abb",
+        "insert_edit_point_probe.py": "bfd6d97b5fe57d0895719b5d711c4bde720194e19b5fd7f3bfcd75e5ab2b82fb",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "0dc89b5a13a6442a988ef46c3fe5e1a94ce06fbc8a7b717bdf5641726a6d6621",
+        "structural_sdk.py": "88cea82e1cd4ee7afa34618653a57ad4c5107cfe00f3b81c9de863ed3cebc5b1"
+      },
+      "fixture_count": 16
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/insert_edit_point_history.json",
+      "request_sha256": "c29265113c3b831d2f58c969ad316d0bc90ad9f3d83cf0a8ec071acc798b898f",
+      "observation": "tools/rhino_oracle/observations/insert_edit_point_history.json",
+      "observation_sha256": "c35940092372eff70f1269567d2e52dabbd72a3b42bc1e53730ac6c2bc210472",
+      "cases": 24,
+      "engine_version": "8.32.26160.13001",
+      "capture_sources": {
+        "generate_insert_edit_point_history.py": "a586a0e5a777e6d2c17afad017e22b07969266857458d2dafdd7e7ca7e9e20f9",
+        "insert_edit_point_history_probe.py": "b1ac949625f3f1909dbd77e81b3c0d747678faa5159e96fbeee1360319b82ad8",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "b9845399dc3807c3a607ad13d4566badc0f3963e9b98ca4f8b1a052160c97134",
+        "structural_sdk.py": "3ddeac428d9689cf89a70eaf78ee7c02f457c0e07910c5fcbc79fe5458f7c70e"
+      },
+      "fixture_count": 0
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/empty_undo_selection.json",
+      "request_sha256": "505d6f18e260a971e09944566a26bf296d9a7d70b94100a100dc8eb14df4d034",
+      "observation": "tools/rhino_oracle/observations/empty_undo_selection.json",
+      "observation_sha256": "9d1a512c894363593279404ad45e71c5cccd9f96695d54d83a6f8ab659c2c028",
+      "cases": 4,
+      "engine_version": "8.32.26160.13001",
+      "capture_sources": {
+        "generate_empty_undo_selection.py": "8b1b206e9599a33479c3e01aaf8b574c691e28b622871e0c39e8aed434e3f6bb",
+        "empty_undo_selection_probe.py": "3d9f9f12e4b0b677956ef62ff0a00a3f1c72f3d4897da9fcee20abd0faf654a6",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "cb38b05052bda67eae2cc41a7a1458ea6238c51fda013f533fe90fe6b2e66752",
+        "structural_sdk.py": "c7439a0999c8454967b00c69ae40d907efde9734d727f5695d902178ec6f3393"
+      },
+      "fixture_count": 0
+    }
+  ],
+  "checks": {
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib edit_point_insertion -- --nocapture",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/kernel.log.gz",
+      "sha256": "7c2f39a4dc37aa14f2965f5f494fdbbbd125e78d9ba45d11d178f695f6dc1cdb",
+      "passed_tests": 3
+    },
+    "api": {
+      "command": "cargo test -p viboceros-command --test insert_edit_point_command -- --nocapture",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/api.log.gz",
+      "sha256": "c1c09e71fa57e72a1f7998a1154b753bc2091558efc1c0f65bf6b13c59cec97b",
+      "passed_tests": 4
+    },
+    "application": {
+      "command": "cargo test -p viboceros --bin viboceros tests::insert_edit_point -- --nocapture",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/application.log.gz",
+      "sha256": "5e4654a5d1b137b23d8822a33a1c28c1a270892193537189edfaa49c16dc4350",
+      "passed_tests": 2
+    },
+    "native_api": {
+      "command": "cargo test -p viboceros-command --features native-smlib --test insert_edit_point_command -- --nocapture",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/native_api.log.gz",
+      "sha256": "6635404c197b009d401fe786be07fc1f4a450ceeaac133aa5f8994766e571957",
+      "passed_tests": 4
+    },
+    "native_application": {
+      "command": "cargo test -p viboceros --features native-smlib --bin viboceros tests::insert_edit_point -- --nocapture",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/native_application.log.gz",
+      "sha256": "531094c0f2b5e7ec73249ad19f82c5cbda7dffaec808f4cdf117b1a1c9335b20",
+      "passed_tests": 2
+    },
+    "portable_release": {
+      "command": "cargo test --release -p viboceros-command --test insert_edit_point_command -- --nocapture",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/portable_release.log.gz",
+      "sha256": "5854c3d090521b15179eebf594bd0cbf16b451ee55e0b0138b170bb2016a1c27",
+      "passed_tests": 4
+    },
+    "native_release": {
+      "command": "cargo test --release -p viboceros-command --features native-smlib --test insert_edit_point_command -- --nocapture",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/native_release.log.gz",
+      "sha256": "0244008ddb38dafe7f67f2b9cc72e6cb4b561041fd896ed19b9e0c939e5a3b26",
+      "passed_tests": 4
+    },
+    "precise_closest_regression": {
+      "command": "cargo test -p viboceros-geometry --lib nurbs::closest_point",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/precise_closest_regression.log.gz",
+      "sha256": "6308b0c6d9656397d8718038da203e0ec8814216236520f9649bb7f3aac138d8",
+      "passed_tests": 12
+    },
+    "help": {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/help.log.gz",
+      "sha256": "f0df732ab36b5b19ebe1484f248efa0da7919a43c81d926675f8903bb89e3d23",
+      "passed_tests": 1
+    },
+    "apply_curves_regression": {
+      "command": "cargo test -p viboceros-command --lib apply_curves::tests",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/apply_curves_regression.log.gz",
+      "sha256": "fee0c9bcd89e0f85f5d20dd71b135b896268eb118cdf10122f54373f80fbae93",
+      "passed_tests": 3
+    },
+    "grip_application_regression": {
+      "command": "cargo test -p viboceros --bin viboceros grip_",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/grip_application_regression.log.gz",
+      "sha256": "edeabd127a26a1c2c0b5f93159cfc87df8710734c20862d3220c5aa27dee536f",
+      "passed_tests": 27
+    },
+    "delete_application_regression": {
+      "command": "cargo test -p viboceros --bin viboceros complete_native_delete_grips_application_and_history",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/delete_application_regression.log.gz",
+      "sha256": "b8f1f036dbf4012c6ec32a555b725944678bbc9aace167b568333e10d17e00de",
+      "passed_tests": 1
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_insert_edit_point tools.rhino_oracle.test_grip_weight tools.rhino_oracle.test_structural_sdk",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/python.log.gz",
+      "sha256": "a17b2528272a6f604c074030d95abbf4e6525b2b50853878b69f0a1910234d2a",
+      "passed_tests": 8
+    },
+    "clippy": {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/clippy.log.gz",
+      "sha256": "1351eb79f537d94ab599bad2aa059d8364cc6e30c375457ddd8f5817fb603fb5"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "passed": true,
+      "log": "docs/insert-edit-point-proof/format.log.gz",
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    }
+  },
+  "application_audits": {
+    "portable": {
+      "geometry_input_cases": 216,
+      "history_witness_cases": 24,
+      "max_absolute_geometry_error": 1.8646903894424145e-09
+    },
+    "native": {
+      "geometry_input_cases": 216,
+      "history_witness_cases": 24,
+      "max_absolute_geometry_error": 1.8662795822463695e-09
+    }
+  },
+  "implementation_sources": {
+    "crates/viboceros-command/src/apply_curves/tests.rs": "3c78561b2fb3a98f604ec890f5ba4d1243ca51fb0324ce4e9367aef086c039ed",
+    "crates/viboceros-command/src/lib.rs": "78875a114793ae09048c5e71a560ce14bab24a2ca3c727c13c8eb3f78332c1b2",
+    "crates/viboceros-command/tests/support/insert_kink.rs": "60aa9c38b2ab3b623b1a5298522b000c97371e9dfe26a8272d2056857ab7dfa0",
+    "crates/viboceros-command/tests/support/simplify_curves.rs": "a5add29d507135988b20e2131a510550f988e8b2b32446d8096b77b047a167ba",
+    "crates/viboceros-geometry/src/nurbs.rs": "9de7aebb77473d42d5df4d8d2a37a726bd4ab2a731cb7101958ec908902c9233",
+    "crates/viboceros-geometry/src/nurbs/closest_point.rs": "bd25e488155e0f3028b569f91fe57caf48c262cbaf375b8c73b99ef2e1c541cb",
+    "crates/viboceros-geometry/src/nurbs/closest_point/refine.rs": "2c764819f604e4dea0786b0a3b70e7be2ed56aa740c43701f753052d1333f008",
+    "src/app.rs": "b5811b80dfc6e18fa1600f168dfa815e8fdedab65f5acb7e8385a20b5f620582",
+    "src/app/refinement.rs": "f8d4dda9fecf4e5c8dd7867d8e23565ac4c0bda58fe49854151043664318986a",
+    "tools/rhino_oracle/rhino_worker.py": "cb38b05052bda67eae2cc41a7a1458ea6238c51fda013f533fe90fe6b2e66752",
+    "tools/rhino_oracle/structural_sdk.py": "c7439a0999c8454967b00c69ae40d907efde9734d727f5695d902178ec6f3393",
+    "crates/viboceros-command/src/insert_edit_point.rs": "7a958c72488ca9358994ca401c185711b13e1291a60987fa8c26fd282f9168b3",
+    "crates/viboceros-command/tests/insert_edit_point_command.rs": "2e381f66658f8db9c3f649e748ff2a3122e2b06a24292236d070b9b4b888802e",
+    "crates/viboceros-command/tests/support/insert_edit_point.rs": "07bfca37ad51e897c0bb076fe6fcd939ac292c3e0a25a4218b81980e656c74e2",
+    "crates/viboceros-geometry/src/nurbs/edit_point_insertion.rs": "3b50568f70afe11cb59dc2a787b66c58a64e4679948a6e0cc9bc594592e85a0c",
+    "crates/viboceros-geometry/src/nurbs/edit_point_insertion/tests.rs": "36a2b67430fd2554cb0bfacdf829e816e3fe79797c76c3e32e3f2e2f25ceed56",
+    "src/app/tests/insert_edit_point.rs": "cdec3d3720a5eea5e4c7df522ac08b7e1e6026a62933485653a8739e2fdb1b1c",
+    "tools/rhino_oracle/empty_undo_selection_probe.py": "3d9f9f12e4b0b677956ef62ff0a00a3f1c72f3d4897da9fcee20abd0faf654a6",
+    "tools/rhino_oracle/generate_empty_undo_selection.py": "8b1b206e9599a33479c3e01aaf8b574c691e28b622871e0c39e8aed434e3f6bb",
+    "tools/rhino_oracle/generate_insert_edit_point.py": "951dd166c7a947f580c05d644be823ca6b8a35addca450c764c1ab8b3f0aa67d",
+    "tools/rhino_oracle/generate_insert_edit_point_history.py": "a586a0e5a777e6d2c17afad017e22b07969266857458d2dafdd7e7ca7e9e20f9",
+    "tools/rhino_oracle/generate_insert_edit_point_limits.py": "9f6fa088b4c84e2205b5407b40dc8cd2598a026ca3aaf0b2a94eb586cb68c5bc",
+    "tools/rhino_oracle/generate_insert_edit_point_projection.py": "16fadbcadb5237de8c926af34551c2f822230ea69d8e4f299859f7504bff4cc8",
+    "tools/rhino_oracle/insert_edit_point_history_probe.py": "b1ac949625f3f1909dbd77e81b3c0d747678faa5159e96fbeee1360319b82ad8",
+    "tools/rhino_oracle/insert_edit_point_limits_probe.py": "f07ed9784cd60b9734cc70619b48092af8d7f7a2423e1facc8beb313f50a3abb",
+    "tools/rhino_oracle/insert_edit_point_probe.py": "bfd6d97b5fe57d0895719b5d711c4bde720194e19b5fd7f3bfcd75e5ab2b82fb",
+    "tools/rhino_oracle/test_insert_edit_point.py": "727988834453ee219c16bfd6f89ffa528b5097c212f10b34b1f3778b17a4d721"
+  },
+  "comparison": "216 geometry/input workflows compare source and result curve representation, degree, complete control net, weights, active knots, domains, sampled geometry, geometry text and selection; source attributes/groups remain equal to their imported originals. Temporary outputs have native default attributes/groups. Undo and Redo replay captured states. Twenty-four additional workflows compare every recorded history snapshot field across empty/existing/new picks, cancellation, pre/postselection and geometry-text presence. Four independent ordinary point/curve selection workflows compare empty Undo/Redo with and without available redo.",
+  "epsilon": {
+    "absolute_geometry": 1e-08,
+    "relative_curve_weights": 1e-12,
+    "kernel_spatial_locus_properties": 1e-12
+  },
+  "protocol_representation": "Only the two unused outer full-knot slots are adapted to the native short-vector encoding. No active knots, controls, weights or locus are projected or fitted. Relative tolerance applies directly to raw curve weights with large gauges, preserving the prior absolute-only comparator default.",
+  "numeric_policy": "A new edit station inverts the Greville average and delegates exact insertion to the existing portable/native refinement backend. The precise global closest-point query keeps its original stopping rule. The point getter reuses local refinement with a geometric-coincidence stop only near an edit station, bounded against the global hit; public SDK projection diagnostics establish comparison limits without inspecting proprietary code.",
+  "history_findings": "Accepted InsertEditPoint regenerates even an equal control net, clears geometry user text and replaces the redo branch. Cancel preserves source and redo. Empty Undo preserves ordinary selection. The prior ApplyCrv test attributed the deselection of its trailing macro Enter to Undo; its driving sequence now explicitly applies the captured post-script cleanup. Product ApplyCrv behavior is unchanged.",
+  "public_reference_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/removeknot.htm",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/closestpoint",
+    "third_party/opennurbs/opennurbs_knot.cpp: ON_DomainTolerance / ON_SpanTolerance"
+  ],
+  "limitations": [
+    "Pre-existing grip displays and arbitrary mixed selection are not exhaustively qualified.",
+    "Unclamped, disconnected and repeated-knot layouts are not exhaustive.",
+    "All mouse/high-DPI configurations and large-net performance remain unqualified.",
+    "Harness runtimes do not establish kernel speedups."
+  ]
+}

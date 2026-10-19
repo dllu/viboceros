@@ -1,0 +1,164 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_0",
+      "family": "cubic",
+      "scale": 0.001,
+      "stations": [
+        0.3333333233333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_0.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_1",
+      "family": "cubic",
+      "scale": 0.001,
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_1.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_2",
+      "family": "cubic",
+      "scale": 0.001,
+      "stations": [
+        0.3333333433333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_2.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_3",
+      "family": "cubic",
+      "scale": 1.0,
+      "stations": [
+        0.3333333233333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_3.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_4",
+      "family": "cubic",
+      "scale": 1.0,
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_4.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_5",
+      "family": "cubic",
+      "scale": 1.0,
+      "stations": [
+        0.3333333433333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_5.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_6",
+      "family": "cubic",
+      "scale": 1000000.0,
+      "stations": [
+        0.3333333233333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_6.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_7",
+      "family": "cubic",
+      "scale": 1000000.0,
+      "stations": [
+        0.3333333333333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_7.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "projection_8",
+      "family": "cubic",
+      "scale": 1000000.0,
+      "stations": [
+        0.3333333433333333
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/projection_8.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_9",
+      "family": "periodic",
+      "stations": [
+        0.249999
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/periodic_9.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_10",
+      "family": "periodic",
+      "stations": [
+        0.24999999
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/periodic_10.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_11",
+      "family": "periodic",
+      "stations": [
+        0.2499999999
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/periodic_11.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_12",
+      "family": "periodic",
+      "stations": [
+        0.25
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/periodic_12.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_13",
+      "family": "periodic",
+      "stations": [
+        0.2500000001
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/periodic_13.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_14",
+      "family": "periodic",
+      "stations": [
+        0.25000001
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/periodic_14.3dm"
+    },
+    {
+      "op": "insert_edit_point_limits",
+      "id": "periodic_15",
+      "family": "periodic",
+      "stations": [
+        0.250001
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_edit_point_projection/periodic_15.3dm"
+    }
+  ]
+}

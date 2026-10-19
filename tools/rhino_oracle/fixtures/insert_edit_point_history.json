@@ -1,0 +1,198 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_0",
+      "station": "empty",
+      "cancel": false,
+      "preselect": false,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_1",
+      "station": "empty",
+      "cancel": true,
+      "preselect": false,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_2",
+      "station": "existing",
+      "cancel": false,
+      "preselect": false,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_3",
+      "station": "existing",
+      "cancel": true,
+      "preselect": false,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_4",
+      "station": "new",
+      "cancel": false,
+      "preselect": false,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_5",
+      "station": "new",
+      "cancel": true,
+      "preselect": false,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_6",
+      "station": "empty",
+      "cancel": false,
+      "preselect": true,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_7",
+      "station": "empty",
+      "cancel": true,
+      "preselect": true,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_8",
+      "station": "existing",
+      "cancel": false,
+      "preselect": true,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_9",
+      "station": "existing",
+      "cancel": true,
+      "preselect": true,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_10",
+      "station": "new",
+      "cancel": false,
+      "preselect": true,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_11",
+      "station": "new",
+      "cancel": true,
+      "preselect": true,
+      "geometry_text": false
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_12",
+      "station": "empty",
+      "cancel": false,
+      "preselect": false,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_13",
+      "station": "empty",
+      "cancel": true,
+      "preselect": false,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_14",
+      "station": "existing",
+      "cancel": false,
+      "preselect": false,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_15",
+      "station": "existing",
+      "cancel": true,
+      "preselect": false,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_16",
+      "station": "new",
+      "cancel": false,
+      "preselect": false,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_17",
+      "station": "new",
+      "cancel": true,
+      "preselect": false,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_18",
+      "station": "empty",
+      "cancel": false,
+      "preselect": true,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_19",
+      "station": "empty",
+      "cancel": true,
+      "preselect": true,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_20",
+      "station": "existing",
+      "cancel": false,
+      "preselect": true,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_21",
+      "station": "existing",
+      "cancel": true,
+      "preselect": true,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_22",
+      "station": "new",
+      "cancel": false,
+      "preselect": true,
+      "geometry_text": true
+    },
+    {
+      "op": "insert_edit_point_history",
+      "id": "history_23",
+      "station": "new",
+      "cancel": true,
+      "preselect": true,
+      "geometry_text": true
+    }
+  ]
+}
