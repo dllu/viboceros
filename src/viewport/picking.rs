@@ -228,6 +228,18 @@ impl Viewport {
         mode: FacePickMode,
         excluded: Option<ObjectId>,
     ) -> Option<(ObjectId, usize, Option<Point3>)> {
+        self.pick_selected_face_with_point_restricted(pointer, rect, document, mode, excluded, None)
+    }
+
+    pub(super) fn pick_selected_face_with_point_restricted(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        mode: FacePickMode,
+        excluded: Option<ObjectId>,
+        allowed: Option<&std::collections::BTreeSet<ObjectId>>,
+    ) -> Option<(ObjectId, usize, Option<Point3>)> {
         let mut nearest: Option<(PickHit, ObjectId, usize, Option<Point3>)> = None;
         let candidates: Box<dyn Iterator<Item = &viboceros_document::Object> + '_> = if matches!(
             mode,
@@ -238,7 +250,10 @@ impl Viewport {
             Box::new(document.selected_objects())
         };
         for object in candidates {
-            if Some(object.id()) == excluded || !selection_candidate(document, object, None) {
+            if Some(object.id()) == excluded
+                || allowed.is_some_and(|ids| !ids.contains(&object.id()))
+                || !selection_candidate(document, object, None)
+            {
                 continue;
             }
             let display = if matches!(

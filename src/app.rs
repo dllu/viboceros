@@ -209,6 +209,7 @@ mod radius;
 mod rail_revolve;
 mod rectangle;
 mod remap_cplane;
+mod reparameterize;
 mod replace_block;
 mod scale_by_plane;
 mod scale_nu;
@@ -2329,6 +2330,7 @@ pub struct VibocerosApp {
     tween_surfaces_prompt: Option<tween_surfaces::Prompt>,
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
+    reparameterize_prompt: Option<reparameterize::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
@@ -2462,6 +2464,7 @@ impl VibocerosApp {
             tween_surfaces_prompt: None,
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
+            reparameterize_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
@@ -2665,6 +2668,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_reparameterize(&input) {
+            return;
+        }
         if self.continue_fillet_surface(&input) {
             return;
         }
@@ -2793,6 +2799,7 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
+            || self.start_reparameterize(&input)
             || self.start_fillet_surface(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
@@ -5799,6 +5806,7 @@ impl VibocerosApp {
         self.block_session = None;
         self.blend_surface_prompt = None;
         self.fillet_surface_prompt = None;
+        self.reparameterize_prompt = None;
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
         self.cancel_boolean_two();
@@ -8629,13 +8637,19 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_reparameterize_object(click.object_id) {
+            return;
+        }
         if self.remap_cplane_session.is_some() && self.plane_prompt.is_none() {
             return;
         }
         if self.pick_surface_extrusion_path(click.object_id) {
             return;
         }
-        if self.blend_surface_prompt.is_some() || self.fillet_surface_prompt.is_some() {
+        if self.blend_surface_prompt.is_some()
+            || self.fillet_surface_prompt.is_some()
+            || self.reparameterize_prompt.is_some()
+        {
             return;
         }
         if self.pick_block_edit_sources(click.object_id, click.mode) {
@@ -8940,6 +8954,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self.reparameterize_prompt.is_some()
         {
             return;
         }
@@ -8990,6 +9005,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self.reparameterize_prompt.is_some()
         {
             self.fence_selection = None;
             return;
@@ -9085,6 +9101,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self.reparameterize_prompt.is_some()
         {
             self.boundary_selection = None;
             return;
@@ -9228,6 +9245,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self.reparameterize_prompt.is_some()
         {
             return;
         }
@@ -9396,6 +9414,9 @@ impl VibocerosApp {
             }
             return true;
         }
+        if self.reparameterize_viewport_hit(&output) {
+            return true;
+        }
         if output.source_viewport_click && self.copy_cplane_source.is_some() {
             self.accept_copy_cplane_source(self.active_viewport);
         } else if output.zoom_target_cancelled {
@@ -9555,6 +9576,7 @@ impl VibocerosApp {
             || self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
+            || self.reparameterize_prompt.is_some()
         {
             self.cancel_interactive_command(false);
         }
@@ -9651,6 +9673,8 @@ impl VibocerosApp {
             self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.reparameterize_prompt.take().is_some() {
+            self.push_log("Reparameterize canceled".into());
         } else if self.fillet_surface_prompt.is_some() {
             self.fillet_surface_prompt = None;
         } else if self.blend_surface_prompt.is_some() {
@@ -9754,6 +9778,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
+        self.validate_reparameterize();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
         self.validate_rebuild_preview();
@@ -9775,6 +9800,7 @@ impl eframe::App for VibocerosApp {
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
+            && self.reparameterize_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
@@ -9908,6 +9934,11 @@ impl eframe::App for VibocerosApp {
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         selection_preview_ids.extend(self.block_edit_picked_sources());
+        selection_preview_ids.extend(
+            self.reparameterize_prompt
+                .as_ref()
+                .and_then(|p| p.preview_id()),
+        );
         if let Some(id) = self
             .selection_menu
             .as_ref()
@@ -10013,7 +10044,8 @@ impl eframe::App for VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.merge_face_prompt.is_some() {
             Some(FacePickMode::MeshAndBrepAny)
-        } else if self.picking_fillet_surface()
+        } else if self.picking_reparameterize()
+            || self.picking_fillet_surface()
             || self.picking_orient_surface()
             || self.picking_flow_surface()
             || self.picking_surface_flow()
@@ -10190,6 +10222,11 @@ impl eframe::App for VibocerosApp {
         component_highlights.extend(
             self.merge_face_highlight()
                 .filter(|p| p.kind != viboceros_command::ComponentSelectionKind::MeshFace),
+        );
+        component_highlights.extend(
+            self.reparameterize_prompt
+                .as_ref()
+                .and_then(|p| p.highlight()),
         );
         let component_highlight_segments = self.merge_face_mesh_wires();
         let component_preselection = self.component_preselection_available();
@@ -10405,7 +10442,14 @@ impl eframe::App for VibocerosApp {
         let selection_allowed_objects = self
             .object_prompt
             .as_ref()
-            .and_then(|p| self.curvature_graph_selection_ids(p.description.command));
+            .and_then(|p| self.curvature_graph_selection_ids(p.description.command))
+            .or_else(|| {
+                self.reparameterize_prompt
+                    .as_ref()
+                    .filter(|p| p.selecting())
+                    .and_then(|p| p.source_id())
+                    .map(|id| [id].into_iter().collect())
+            });
         let viewport_positions = &self.viewport_positions;
         let catenary_input = self
             .catenary_session
@@ -10961,6 +11005,7 @@ mod tests {
     mod rebuild_preview;
     mod rectangle;
     mod remap_cplane;
+    mod reparameterize;
     mod rhino_curve_prompt;
     mod scale_by_plane;
     mod scale_by_plane_curve;
@@ -11072,6 +11117,7 @@ mod tests {
             tween_surfaces_prompt: None,
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
+            reparameterize_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,

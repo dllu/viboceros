@@ -10,7 +10,7 @@ FAMILIES = ('annulus', 'reversed_rectangle', 'cylinder', 'sphere') + tuple('box_
 
 
 def validate(op):
-    if (not isinstance(op, dict) or set(op)-{'surface'} != {'op', 'id', 'family', 'domains', 'artifact_path'}
+    if (not isinstance(op, dict) or set(op)-{'surface', 'default_indices'} != {'op', 'id', 'family', 'domains', 'artifact_path'}
             or op['op'] != 'reparameterize_face_command' or op['family'] not in FAMILIES+('nurbs',)
             or not isinstance(op['id'], str) or re.match(r'^[A-Za-z0-9_-]{1,100}\Z', op['id']) is None
             or not isinstance(op['artifact_path'], str) or not op['artifact_path'].endswith('.3dm')):
@@ -19,6 +19,11 @@ def validate(op):
         raise ValueError('NURBS cases require one explicit surface definition')
     if 'surface' in op: validate_surface(op['surface'])
     domains = op['domains']
+    defaults = op.get('default_indices', [])
+    if (not isinstance(defaults, list) or len(defaults) > 4
+            or any(type(i) is not int or not 0 <= i < 4 for i in defaults)
+            or len(set(defaults)) != len(defaults) or (defaults and domains == 'Automatic')):
+        raise ValueError('default indices must be distinct parameter getter indices')
     if domains == 'Automatic': return
     if (not isinstance(domains, list) or len(domains) != 2
             or any(not isinstance(d, list) or len(d) != 2 or any(type(x) not in (int, float) or math.isnan(x) or math.isinf(x) for x in d) or d[0] >= d[1] for d in domains)):
@@ -100,7 +105,11 @@ def run(op, host, iterations, tolerance):
             success, width, height = source.Faces[face_index].GetSurfaceSize()
             if not success: raise ValueError('surface size failed')
             target = [[0., float(width)], [0., float(height)]]
-        else: target = domains
+        else:
+            target = [list(d) for d in domains]
+            for i in op.get('default_indices', []):
+                domain = source.Faces[face_index].Domain(i//2)
+                target[i//2][i%2] = float(domain.T0 if i%2 == 0 else domain.T1)
         for axis, domain in enumerate(target):
             if not control.Faces[face_index].SetDomain(axis, G.Interval(*domain)):
                 raise ValueError('public face SetDomain failed')
@@ -126,7 +135,10 @@ def run(op, host, iterations, tolerance):
                         groups=int(obj.Attributes.GroupCount), selected=bool(obj.IsSelected(False)))
         doc.ClearUndoRecords(True)
         before = snapshot()
-        macro = '_Reparameterize '+('_Automatic' if domains == 'Automatic' else ' '.join('%.17g'%x for d in domains for x in d))+' _Enter'
+        tokens = (['_Automatic'] if domains == 'Automatic' else
+                  ['_Enter' if i in op.get('default_indices', []) else '%.17g'%x
+                   for i, x in enumerate(x for d in domains for x in d)])
+        macro = '_Reparameterize '+' '.join(tokens)+' _Enter'
         marker = 'Viboceros Reparameterize '+str(System.Guid.NewGuid());Rhino.RhinoApp.WriteLine(marker)
         success, after, events = observe_command(Rhino.Commands.Command, 'Reparameterize',
             lambda: Rhino.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)
@@ -136,7 +148,8 @@ def run(op, host, iterations, tolerance):
         Rhino.RhinoApp.RunScript('_Redo', False);redo = snapshot()
         return dict(face=face_index, domains=target, success=success, before=before, after=after,
                     undo=undo, redo=redo, events=events, history=history, sdk=record(control),
-                    source_admission='no_kink' if family == 'nurbs' else 'default'), 0
+                    source_admission='no_kink' if family == 'nurbs' else 'default',
+                    inputs=tokens), 0
     finally:
         if Rhino.Commands.Command.InCommand():Rhino.RhinoApp.RunScript('!', False)
         doc.Objects.UnselectAll()

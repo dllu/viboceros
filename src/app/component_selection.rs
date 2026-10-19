@@ -163,6 +163,7 @@ impl VibocerosApp {
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
+            && self.reparameterize_prompt.is_none()
             && self.selection_menu.is_none()
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()

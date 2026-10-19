@@ -48,6 +48,7 @@ impl VibocerosApp {
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
+            && self.reparameterize_prompt.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
@@ -183,6 +184,8 @@ impl VibocerosApp {
                         "CPlane"
                     } else if set_view_prompt.is_some() {
                         "SetView"
+                    } else if self.reparameterize_prompt.is_some() {
+                        "Reparameterize"
                     } else if self.fillet_surface_prompt.is_some() {
                         "FilletSrf"
                     } else if self.blend_surface_prompt.is_some() {
@@ -277,6 +280,8 @@ impl VibocerosApp {
                                 "All, Current, Next, Previous or Mark; Enter or Esc ends"
                             } else if let Some(prompt) = set_view_prompt {
                                 prompt.message()
+                            } else if let Some(p) = &self.reparameterize_prompt {
+                                p.hint()
                             } else if let Some(p) = &self.fillet_surface_prompt {
                                 p.hint()
                             } else if let Some(p) = &self.blend_surface_prompt {

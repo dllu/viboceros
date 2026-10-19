@@ -149,14 +149,7 @@
     "docs/architecture.md": "8dd115cf53c346a97dc5b644a59979a3a45cbda53358861d0b7b90a51c4bdce1",
     "docs/native-surface-fillet-picks.md": "f2b386cad3c84e37c7aa9610a733b446f67ff1e325c619cd1c20beba14d9ceba",
     "docs/native-surface-fillets.md": "eb6b48ef44b5b39fd753d101dce563025ca953cf09d71c6f49957fad0b5e02ef",
-    "src/app.rs": "6a6cd5d936a568880cd1a07238f12ae2fefd89ace07435509c22b4741416de6c",
-    "src/app/command_line.rs": "cb73e343d16457c26dc1f65c4a90b945b5492f4496473e24614b12fc6ed383b9",
-    "src/app/component_selection.rs": "58c36ef1bccd27ee262a450ce83d9d1bcd59ea57dd6f22e77c43c4f1a4e03586",
     "src/app/fillet_surface.rs": "a4e4dbbafe0344113910a06ae3049223862778b2cde475564bb0bdb4054a65a4",
-    "src/app/mesh_face_prompt.rs": "0b97b60ab40c7ddf65fdaa9ce2d68a365e3d34ac1a769adba01826b258a87fba",
-    "src/app/object_selection.rs": "fcb54ea3c7d73f159f2ed7c630c34eca1b373b91074d2d3099b533dc6be75de2",
-    "src/viewport.rs": "456e432485af45be2bf31ef662c17f3ea69adba8903ba23394ffa130c1034532",
-    "src/viewport/picking.rs": "71869291039e95632848a32932f100308cdb00cb74360805e15fbd96feb2e12c",
     "tools/rhino_oracle/fixtures/surface_fillet_parents.json": "9305619c2c508d0a958da34e14cd29be48142899f7be962a17bbf344de77fb92",
     "tools/rhino_oracle/fixtures/surface_fillet_picks.json": "469e2909cf1abd489d8e93b4cdb08d337e4d810e2ab8a2d680f9f0c66db70b42",
     "tools/rhino_oracle/observations/surface_fillet_parents.json": "3bfdb0ada0d77935624c31ec97ca556581606259701cff38105ec4f508bfca47"
@@ -189,6 +182,13 @@
     "2d049746b4717fdbfea76c2b000f277253cb59e4:docs/native-surface-fillet-parents.md": "447df32a7e50160b2cf5daec40f3d1d3154178266d89e7415be97d9fc332a09e",
     "2d049746b4717fdbfea76c2b000f277253cb59e4:src/app/tests/fillet_surface.rs": "55e460cec2c84a528c3e8ea0776913c0f321b3ade6a3a1ae3511dbb8c77c1f3b",
     "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:crates/viboceros-command/src/lib.rs": "1854ffe5417392a94718435cbc076991c4b48e7b2c54016e92268dc5bed48ec2",
-    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/commands/README.md": "58844b8833d161d118ffd074989300f9cd0274e4bb2f95679d4ad9ad448332f1"
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/commands/README.md": "58844b8833d161d118ffd074989300f9cd0274e4bb2f95679d4ad9ad448332f1",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:src/app.rs": "6a6cd5d936a568880cd1a07238f12ae2fefd89ace07435509c22b4741416de6c",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:src/app/command_line.rs": "cb73e343d16457c26dc1f65c4a90b945b5492f4496473e24614b12fc6ed383b9",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:src/app/component_selection.rs": "58c36ef1bccd27ee262a450ce83d9d1bcd59ea57dd6f22e77c43c4f1a4e03586",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:src/app/mesh_face_prompt.rs": "0b97b60ab40c7ddf65fdaa9ce2d68a365e3d34ac1a769adba01826b258a87fba",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:src/app/object_selection.rs": "fcb54ea3c7d73f159f2ed7c630c34eca1b373b91074d2d3099b533dc6be75de2",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:src/viewport.rs": "456e432485af45be2bf31ef662c17f3ea69adba8903ba23394ffa130c1034532",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:src/viewport/picking.rs": "71869291039e95632848a32932f100308cdb00cb74360805e15fbd96feb2e12c"
   }
 }

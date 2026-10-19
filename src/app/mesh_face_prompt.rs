@@ -10,6 +10,9 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self.accept_reparameterize_face(object, face) {
+            return;
+        }
         if self.accept_fillet_surface_face(object, face, point) {
             return;
         }

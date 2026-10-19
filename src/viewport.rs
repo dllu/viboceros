@@ -2525,12 +2525,13 @@ impl Viewport {
             && response.clicked_by(PointerButton::Primary))
         .then(|| {
             response.interact_pointer_pos().and_then(|pointer| {
-                self.pick_selected_face_with_point_excluding(
+                self.pick_selected_face_with_point_restricted(
                     pointer,
                     rect,
                     document,
                     input.face_pick.unwrap(),
                     input.selection_excluded_object,
+                    input.selection_allowed_objects,
                 )
             })
         })

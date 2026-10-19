@@ -1347,9 +1347,6 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "README.md": "61b2c75f032b8dc189794d3da8d2f59c9f38cfc31b1e5518a126a6fccda21b79",
-    "crates/viboceros-command/src/curve_domain/reparameterize.rs": "4c67c5a48cfdb0d1cf42f35c995a097d9e8f2b5b505855eaddc2d1f60e13c079",
-    "crates/viboceros-command/src/curve_domain/reparameterize/tests.rs": "065195b8433014c872e6e3e6a9ede455869f95facea6a3663867412ea81c7b0e",
     "crates/viboceros-command/src/lib.rs": "3491251117399cc12c426ea8c69e886bd218966f697254a4ac9603a9b0faee1f",
     "crates/viboceros-command/tests/reparameterize_faces.rs": "e7432a5c0712fccfbd95589bcdccf94dc5d0f8713792e3d2d834f2b8d901c726",
     "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "c62469d1cf5b2be88fb4008baf219c9147ddcd8929fa75dd28ce7b07920a450c",
@@ -1357,12 +1354,10 @@
     "crates/viboceros-geometry/src/nurbs_surface.rs": "a1faeeee86cf6510b1a5a50ef93d37db2b1e19b633e9af174844bf74b59b88e1",
     "docs/automatic-surface-domains.md": "4492cd732862a09c4718158c03a19151bd9b96b014fb2706823a60d729642770",
     "docs/commands/README.md": "7aa09b56fff172b18e6ca0ec1fe6af660ba4c36a726f0ba8ac822557dc72b7f6",
-    "docs/commands/reparameterize.md": "bf7da3dd8896e19f561535ac59035749cf386892636cf36b17214cb4c4c828c9",
     "docs/fillet-parent-charts-validation.json": "3bf486141475cc98dab899db63e42658ea0f05cdee0260481d6f24c2f0ade1b5",
     "docs/flow-nurbs-validation.json": "6270076154265b3886da44fba72ff5a1b6cb1f04175773a1167941f21e073009",
     "docs/flow-target-surface-validation.json": "ab6f6ebcd7b89832cb9ad942656975977a6b7ef7c1e6356e4058c10e42b27b5b",
     "docs/native-surface-fillet-parents-validation.json": "b682907b90045874a3cd94e6cd162cd144ba7a692fb4162ea438f78d39f5432a",
-    "docs/reparameterize-faces-validation.json": "41d961abd18b9077ba45c9af032f348fc27285bbf150bc60ac0800101208ef87",
     "docs/smlib-unclamped-import-validation.json": "e226d72a9754f45251157d62156f95db287c303d357cdb1c569f9bb27423d1f8",
     "docs/surface-parameter-validation.json": "096dabaf538092bf4bef5038eb684bb6e54020d29faf1e17de932dc26b9043b4",
     "tools/rhino_oracle/fixtures/reparameterize_automatic/bilinear_warp_automatic.3dm": "f29d6995f36f299eb5d91f6d94d48cd191cdccccd6fd27feb6f883cdd21d6684",
@@ -1398,11 +1393,9 @@
     "tools/rhino_oracle/observations/reparameterize_automatic_tight.json": "98df16d6da0fce7b919791c3683b8e2245a0a3a2e67972d96cae278849065c8c",
     "tools/rhino_oracle/observations/reparameterize_faces.json": "908832248ef9cbc48c8f88c71db309cef4a3b6024cc04386ce1f155c495298ff",
     "tools/rhino_oracle/reparameterize_automatic_cases.py": "0fcb2668a8a9070060944c0188e634045c277ae7f02acca603a697c9151e1158",
-    "tools/rhino_oracle/reparameterize_face_probe.py": "098ec0b200996a0f9a4878aa018626ba05f03601b8fddd8bda9ee1129656fcf1",
     "tools/rhino_oracle/rhino_worker.py": "9dd023e1084bce20093630d107f60a4c99d91a2e7e64722a0755d426f26b91ba",
     "tools/rhino_oracle/structural_sdk.py": "95cc28d5882ab5c83e6f75f9d19c54b4371572b6caa379b199e17b5f5c1663dd",
-    "tools/rhino_oracle/surface_fillet_probe.py": "c2db12aef0d2689eadfeb7b4ac20b9009e51f914827888fb144c41c91df1f96e",
-    "tools/rhino_oracle/test_reparameterize_face_probe.py": "7b29187dca2039c622fae73fb5e95a8cfa1133e72de2d1df72833b33456d59c6"
+    "tools/rhino_oracle/surface_fillet_probe.py": "c2db12aef0d2689eadfeb7b4ac20b9009e51f914827888fb144c41c91df1f96e"
   },
   "artifact_sha256": {
     "docs/automatic-surface-domains-geometry.log.gz": "4fd445f14317a2cc27d969c8e774ffac993d761dbd2477957dacaf4249580c57",
@@ -1453,5 +1446,14 @@
     "docs/automatic-surface-domains-loose-request.json.gz": "aca28cfdfb8b40e63a05399277cdaff31a99fd1bb8c27301cea007918ff2bdb8",
     "docs/automatic-surface-domains-loose-runtime.json.gz": "5a6c55048ef381eb5a03038ab6ba82f8728b72f35f1114230583e3ceaeff0ba6",
     "docs/automatic-surface-domains-audit-runtime.json.gz": "e669d040c0f3edcb849b10dfe07734122048a2451ea94b25b4a0fd665706fa54"
+  },
+  "source_git_sha256": {
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:README.md": "61b2c75f032b8dc189794d3da8d2f59c9f38cfc31b1e5518a126a6fccda21b79",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:crates/viboceros-command/src/curve_domain/reparameterize.rs": "4c67c5a48cfdb0d1cf42f35c995a097d9e8f2b5b505855eaddc2d1f60e13c079",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:crates/viboceros-command/src/curve_domain/reparameterize/tests.rs": "065195b8433014c872e6e3e6a9ede455869f95facea6a3663867412ea81c7b0e",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:docs/commands/reparameterize.md": "bf7da3dd8896e19f561535ac59035749cf386892636cf36b17214cb4c4c828c9",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:tools/rhino_oracle/reparameterize_face_probe.py": "098ec0b200996a0f9a4878aa018626ba05f03601b8fddd8bda9ee1129656fcf1",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:tools/rhino_oracle/test_reparameterize_face_probe.py": "7b29187dca2039c622fae73fb5e95a8cfa1133e72de2d1df72833b33456d59c6",
+    "d6c1a82d1c90433323b55e947676f3fa4e889c14:docs/reparameterize-faces-validation.json": "41d961abd18b9077ba45c9af032f348fc27285bbf150bc60ac0800101208ef87"
   }
 }

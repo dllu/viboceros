@@ -196,6 +196,73 @@ fn curve_and_surface_parameter_edits_retain_geometry_user_text() {
 }
 
 #[test]
+fn object_reference_edits_an_unselected_curve_without_changing_other_selection() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Line 0,0,0 3,4,0").unwrap();
+    let id = doc.objects().next().unwrap().id();
+    registry.execute(&mut doc, "Circle 0,0,0 3").unwrap();
+    let other = doc.objects().find(|o| o.id() != id).unwrap().id();
+    doc.select_object(other, SelectionMode::Replace).unwrap();
+    doc.set_object_geometry_user_text([id], "Code", Some("retained"))
+        .unwrap();
+    doc.clear_history().unwrap();
+    let before = doc.object(id).unwrap().clone();
+    let untouched = doc.object(other).unwrap().clone();
+    registry
+        .execute(&mut doc, &format!("Reparameterize Object={id} -2,8"))
+        .unwrap();
+    assert_eq!(
+        doc.object(id)
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap()
+            .domain(),
+        -2. ..=8.
+    );
+    assert_eq!(
+        doc.object(id).unwrap().geometry_user_text(),
+        before.geometry_user_text()
+    );
+    assert!(!doc.is_selected(id));
+    assert!(doc.is_selected(other));
+    assert_eq!(doc.object(other).unwrap(), &untouched);
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.object(id).unwrap(), &before);
+    assert!(!doc.can_undo());
+    for args in [
+        format!("Surface={id} -2,8"),
+        format!("Object={id} Surface={id} -2,8"),
+        format!("Object={id} Object={id} -2,8"),
+        format!("Object={id} Face=0 -2,8"),
+    ] {
+        assert!(
+            registry
+                .execute(&mut doc, &format!("Reparameterize {args}"))
+                .is_err()
+        );
+        assert_eq!(doc.object(id).unwrap(), &before);
+        assert!(doc.can_redo());
+        assert!(!doc.can_undo());
+    }
+    registry.execute(&mut doc, "Redo").unwrap();
+    registry
+        .execute(&mut doc, &format!("Reparameterize Object={id} Automatic"))
+        .unwrap();
+    assert_eq!(
+        doc.object(id)
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap()
+            .domain(),
+        0. ..=5.
+    );
+    assert_eq!(doc.object(other).unwrap(), &untouched);
+}
+
+#[test]
 fn automatic_size_handles_an_interior_collapsed_isocurve_and_rejects_zero_width_atomically() {
     let surface = |end: Real| {
         NurbsSurface::try_new(

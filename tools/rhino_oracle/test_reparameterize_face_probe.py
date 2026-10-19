@@ -49,3 +49,14 @@ class ReparameterizeFaceProbeTests(TestCase):
             q['iterations']=2
             with self.assertRaisesRegex(OracleError, 'Face reparameterization'):OracleClient(settings_scheme='VibocerosOracleFaceProbe').run_rhino(q)
             launch.assert_not_called()
+
+    def test_default_indices_are_bounded_unique_and_require_numeric_domains(self):
+        op = request('/tmp/owned-face-defaults')['operations'][0]
+        for defaults in ([0, 1, 2, 3], [1, 2], []):
+            candidate = dict(op, default_indices=defaults)
+            validate(candidate)
+        for defaults in (True, [True], [0, 0], [-1], [4], [0, 1, 2, 3, 4]):
+            with self.subTest(defaults=defaults), self.assertRaises(ValueError):
+                validate(dict(op, default_indices=defaults))
+        with self.assertRaises(ValueError):
+            validate(dict(op, default_indices=[0], domains='Automatic'))

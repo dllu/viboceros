@@ -4,12 +4,19 @@ use super::*;
 #[cfg(test)]
 mod tests;
 
-pub(crate) const REPARAMETERIZE_USAGE: &str = "Reparameterize [Surface=id] [Face=index] Automatic | Reparameterize start end | Reparameterize [Surface=id] [Face=index] u_start u_end v_start v_end";
+pub(crate) const REPARAMETERIZE_USAGE: &str = "Reparameterize [Object=id | Surface=id] [Face=index] Automatic | Reparameterize [Object=id] start end | Reparameterize [Object=id | Surface=id] [Face=index] u_start u_end v_start v_end";
 
 #[derive(Clone, Debug, PartialEq)]
 enum ReparameterizeOptions {
     Automatic,
     Explicit(Vec<Real>),
+}
+
+struct ReparameterizeInput {
+    options: ReparameterizeOptions,
+    source: Option<ObjectId>,
+    face: Option<usize>,
+    surface_only: bool,
 }
 
 enum ReparameterizeTarget {
@@ -26,7 +33,12 @@ impl Command for ReparameterizeCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (options, source, face) = parse_arguments(arguments)?;
+        let ReparameterizeInput {
+            options,
+            source,
+            face,
+            surface_only,
+        } = parse_arguments(arguments)?;
         let objects = if let Some(id) = source {
             vec![
                 document
@@ -53,7 +65,7 @@ impl Command for ReparameterizeCommand {
                         None => None,
                     }
                 }
-                geometry if source.is_none() && face.is_none() => geometry
+                geometry if !surface_only && face.is_none() => geometry
                     .curve_ref()
                     .map(|curve| ReparameterizeTarget::Curve(curve.to_owned())),
                 _ => None,
@@ -194,15 +206,18 @@ fn automatic_surface_size(
     Ok(size)
 }
 
-fn parse_arguments(
-    arguments: &[&str],
-) -> Result<(ReparameterizeOptions, Option<ObjectId>, Option<usize>), CommandError> {
+fn parse_arguments(arguments: &[&str]) -> Result<ReparameterizeInput, CommandError> {
     let mut source = None;
     let mut face = None;
+    let mut surface_only = false;
     let mut values = Vec::new();
     for argument in arguments {
         match argument.split_once('=') {
-            Some((name, value)) if option_name_eq(name, "Surface") && source.is_none() => {
+            Some((name, value))
+                if (option_name_eq(name, "Surface") || option_name_eq(name, "Object"))
+                    && source.is_none() =>
+            {
+                surface_only = option_name_eq(name, "Surface");
                 source = Some(
                     value
                         .parse::<ObjectId>()
@@ -219,7 +234,12 @@ fn parse_arguments(
             _ => values.push(*argument),
         }
     }
-    Ok((parse_reparameterize_options(&values)?, source, face))
+    Ok(ReparameterizeInput {
+        options: parse_reparameterize_options(&values)?,
+        source,
+        face,
+        surface_only,
+    })
 }
 
 fn reparameterize_native_curve(
