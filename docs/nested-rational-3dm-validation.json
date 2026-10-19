@@ -1,0 +1,108 @@
+{
+  "feature": "Preserve explicit 3D NURBS storage in polycurve leaves and B-rep edges",
+  "base_commit": "e65a4b602563b00b02168164e90add7f32eee707",
+  "native_version": "8.32.26160.13001",
+  "native_source_files": 16,
+  "native_readback_files": 16,
+  "comparison_epsilon": 1e-12,
+  "maximum_recorded_scalar_error": {
+    "viboceros": 3.552713678800501e-15,
+    "rhino_readback": 0.0
+  },
+  "codec_versions": {
+    "polycurve": 3,
+    "brep": 2,
+    "arc": 1
+  },
+  "coverage": [
+    "Polynomial, explicit rational unit-weight and mixed storage; constant projective gauge seven",
+    "Flat and nested polycurves, rectangular face and box; flattening retains per-leaf domains",
+    "Degrees, complete knot vectors, Euclidean controls, weights, domains and 33 curve samples",
+    "Curve classes, closure, solid state, vertices, edge endpoints, face sense, loop types and trim associations",
+    "Source immutability and object/geometry user text",
+    "Rust and native legacy polycurve v1/v2 and B-rep v1 decoding",
+    "Both decoders reject malformed/missing flags, truncated data and conflicting polynomial weights",
+    "85 focused 3dm tests, 2 transfer integration tests, 159 Python tests, portable/native command regressions, workspace Clippy and formatting"
+  ],
+  "limits": [
+    "Surface and UV trim allocation flags are not represented explicitly",
+    "Nesting hierarchy is flattened on a private copy",
+    "Bounded source matrix and parameter samples are not a continuous error certificate",
+    "No full workspace/application test run or kernel performance benchmark is claimed"
+  ],
+  "source_sha256": {
+    "crates/viboceros-io/src/three_dm.rs": "5504c707b1f8a10d36e4028ccdecd9e320be6c7034582dac74fa6c659df40980",
+    "crates/viboceros-io/src/three_dm_geometry.rs": "28b64e507091b1f8c2f47324fe3f22b0478b23751d97b440b8a245894ea9d509",
+    "crates/viboceros-io/src/three_dm/nested_codec_tests.rs": "dc949e048e9de425c05fa3fc498386dbe7611767cf7a881bc9b19003db87e848",
+    "crates/viboceros-io/tests/nested_rational.rs": "e43a01b48e4698ceff454bb3b55938b737b7644ac545e53de7b5c54c7cdfda05",
+    "crates/viboceros-io/examples/roundtrip_3dm.rs": "c07d6ef5e00f46befdc05049b13fc906427b5a636bc90010fd0f5dc9d9d30e29",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "ea2d390cfff4237f7ea2200be8571434c47cb7d005132eda5f67c20c314b32c2",
+    "tools/rhino_oracle/nested_rational_probe.py": "b1bc45e45c8594b0130943fcad7355eb15e3cb300b5db7978a21622510bf8d74",
+    "tools/rhino_oracle/generate_nested_rational.py": "d921dfde140e1d6a678c88c73d70562ed254ebb67a2fdc577564a0b8aac1718a",
+    "tools/rhino_oracle/rhino_worker.py": "4ad24ee7cf397f1bdbf7c9c406811a9e491a7769d1b5abb33a87029000c5b2f8",
+    "tools/rhino_oracle/structural_sdk.py": "0b98914e35b4867965481bce7372d524cc5ee2e0e77feca585ae3442d42d0e78",
+    "tools/rhino_oracle/test_nested_rational.py": "a21b3872b19b5eafdfb1338e5d7b693b01fb93985d20c5a17dacd92d1cacfd44"
+  },
+  "capture_sha256": {
+    "tools/rhino_oracle/observations/nested_rational.json": "51acc0e2b7778391629a06e20ae538c3c3c35d794b4971ca2a62446bce4407b3",
+    "tools/rhino_oracle/observations/nested_rational.request.json": "8c3e8985a927ec5e4b1fc886bde624c377947817f9cc33d4be705cefa7231130",
+    "tools/rhino_oracle/observations/nested_rational_readback.json": "6519e39e7d3e61aca7cbef3197337fc19c7a1f675cd54f689010a48f4af0f92b",
+    "tools/rhino_oracle/observations/nested_rational_readback.request.json": "9760764ffef4b75c474887f9b993a65b4f1e5fd5e4424eaec14c16c3403578f8"
+  },
+  "runs": [
+    {
+      "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_nested_rational",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-capture.log.gz",
+      "uncompressed_sha256": "4febf39dc4c253a61fcf8bec50036c8c0b778935c5d5057e78941b51019ab951"
+    },
+    {
+      "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_nested_rational /tmp/viboceros-nested-rational-rewrites",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-readback.log.gz",
+      "uncompressed_sha256": "c83bd203f18b0b0087498736c0ed6bb9a44ab5e0d05bd9a8ca1212d224f29fe0"
+    },
+    {
+      "command": "cargo test -p viboceros-io --lib three_dm",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-io.log.gz",
+      "uncompressed_sha256": "21120fe47b39fe05c3201138d57be37bd740ff20d2d22bae2bd118cba87c14de"
+    },
+    {
+      "command": "cargo test -p viboceros-io --test nested_rational -- --nocapture",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-transfer.log.gz",
+      "uncompressed_sha256": "9d544722f6363defb66687803933c570abbbabd7e1f33368807f26e2859ff985"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test delete_subcurve --test simplify_curves --test modify_radius",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-command-regression.log.gz",
+      "uncompressed_sha256": "f718c057f7d75b499576956e57a7410173aad39233efb354f455f5ad9d9f5cbc"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test delete_subcurve --test simplify_curves --test modify_radius",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-native-regression.log.gz",
+      "uncompressed_sha256": "6ff71cc3c6df315039ad7cb7652f0b765206bce9113ebd019b75e6f502930198"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_nested_rational tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_worker tools.rhino_oracle.test_client tools.rhino_oracle.test_delete_subcurve_probe tools.rhino_oracle.test_modify_radius_probe tools.rhino_oracle.test_simplify_curve_probe",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-python.log.gz",
+      "uncompressed_sha256": "fcf6ff5464a321cd339f41334943cb88f9472360e13db51fba43bc52e4d47fa3"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-clippy.log.gz",
+      "uncompressed_sha256": "02c85adde77558e59e4c2117b3fca1bd390c2a6d4b7e3b5f6248872bbfebecd3"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "status": "passed",
+      "log": "docs/nested-rational-3dm-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

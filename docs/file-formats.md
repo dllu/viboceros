@@ -132,8 +132,12 @@ composites are flattened on a private copy. Circular segments retain angular
 evaluation and endpoint-editing behavior; they are not silently converted to NURBS.
 The bridge shares a versioned, validated binary codec
 for B-reps and polycurves, checks payload sizes before allocation, and rejects
-malformed or trailing data. The typed polycurve payload is version 2; the reader
-also accepts version 1 NURBS-only payloads. It does not fit curves or average endpoints.
+malformed or trailing data. The private typed polycurve payload is version 3 and
+the B-rep payload is version 2. Both retain explicit rational storage for 3D NURBS
+with unit weights. Readers accept earlier payloads, inferring storage from weights
+when the flag is absent. These are bridge versions, independent of the 3dm archive
+version. See [nested rational storage](nested-rational-3dm.md) for independent
+Rhino source and readback evidence. The bridge does not fit curves or average endpoints.
 Free NURBS curves with internal full-order knots are decomposed into valid native
 pieces before export. Connected pieces become PolyCurves; positional gaps produce
 separate objects with the original attributes. Export reports the actual object

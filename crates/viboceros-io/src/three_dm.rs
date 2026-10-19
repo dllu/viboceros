@@ -25,6 +25,8 @@ mod mesh_ngon;
 pub use check::{
     GeometryCheck, GeometryCheckStatus, check_3dm_geometry, check_3dm_instance_reference,
 };
+#[cfg(test)]
+mod nested_codec_tests;
 mod point_cloud_data;
 
 const ERROR_CAPACITY: usize = 4096;

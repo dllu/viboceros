@@ -13527,6 +13527,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'surface_fillet':
         from surface_fillet_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'nested_rational_transfer':
+        import nested_rational_probe
+        return nested_rational_probe.run(operation, globals(), iterations, tolerance)
     if kind == 'delete_subcurve_command':
         import delete_subcurve_probe
         return delete_subcurve_probe.run(operation, globals(), iterations, tolerance)

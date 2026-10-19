@@ -209,9 +209,9 @@ bool finite_coordinates(const double* values, size_t count) {
 }
 
 constexpr uint8_t kBrepMagic[8] = {'V', 'I', 'B', 'O', 'B', 'R', 'P', 0};
-constexpr uint32_t kBrepVersion = 1;
+constexpr uint32_t kBrepVersion = 2;
 constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
-constexpr uint32_t kPolyCurveVersion = 2;
+constexpr uint32_t kPolyCurveVersion = 3;
 constexpr uint8_t kNgonMagic[8] = {'V', 'I', 'B', 'O', 'N', 'G', 'O', 'N'};
 constexpr uint32_t kNgonVersion = 2;
 constexpr uint8_t kPointCloudMagic[8] = {'V', 'I', 'B', 'O', 'P', 'C', 'L', 'D'};
@@ -227,6 +227,7 @@ constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
 class ByteWriter {
  public:
   explicit ByteWriter(std::vector<uint8_t>& bytes) : bytes_(bytes) {}
+  bool curve3_flags = false;
 
   void U8(uint8_t value) { bytes_.push_back(value); }
 
@@ -261,6 +262,7 @@ class ByteReader {
  public:
   ByteReader(const uint8_t* bytes, size_t count)
       : bytes_(bytes), count_(count) {}
+  bool curve3_flags = false;
 
   bool U8(uint8_t& value) {
     if (position_ >= count_) {
@@ -551,6 +553,8 @@ bool write_nurbs_curve(const ON_Curve& source, int dimension,
     writer.Double(curve.Knot(index));
   }
   writer.Double(curve.SuperfluousKnot(1));
+  if (dimension == 3 && writer.curve3_flags)
+    writer.U8(curve.IsRational() ? 1 : 0);
   return true;
 }
 
@@ -604,6 +608,7 @@ bool append_polycurve(const ON_PolyCurve& source, BridgeObject& output) {
   ByteWriter writer(output.geometry_data);
   writer.Bytes(kPolyCurveMagic, sizeof(kPolyCurveMagic));
   writer.U32(kPolyCurveVersion);
+  writer.curve3_flags = true;
   writer.U64(static_cast<uint64_t>(curve.Count()));
   writer.Double(curve.Domain()[0]);
   for (int index = 0; index < curve.Count(); ++index) {
@@ -679,6 +684,7 @@ bool append_brep(const ON_Brep& source, BridgeObject& output) {
   ByteWriter writer(output.geometry_data);
   writer.Bytes(kBrepMagic, sizeof(kBrepMagic));
   writer.U32(kBrepVersion);
+  writer.curve3_flags = true;
   writer.U64(static_cast<uint64_t>(brep.m_V.Count()));
   writer.U64(static_cast<uint64_t>(brep.m_E.Count()));
   writer.U64(static_cast<uint64_t>(brep.m_F.Count()));
@@ -972,6 +978,21 @@ std::unique_ptr<ON_NurbsCurve> read_nurbs_curve(ByteReader& reader,
       return nullptr;
     }
   }
+  if (dimension == 3) {
+    bool unit_weights = true;
+    for (size_t i = 0; i < control_count; ++i)
+      unit_weights = unit_weights && control(i)[dimension] == 1.0;
+    // Legacy 3D payloads infer storage from weights. UV storage is unchanged.
+    bool rational = !unit_weights;
+    if (reader.curve3_flags && !reader.Bool(rational)) {
+      error = "NURBS rational representation flag is malformed";
+      return nullptr;
+    }
+    if (!rational && (!unit_weights || !curve->MakeNonRational())) {
+      error = "NURBS polynomial representation conflicts with its weights";
+      return nullptr;
+    }
+  }
   if (!curve->IsValid()) {
     error = "B-rep NURBS curve is invalid in OpenNURBS";
     return nullptr;
@@ -1071,7 +1092,7 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error,
   size_t edge_count = 0;
   size_t face_count = 0;
   if (!reader.Bytes(kBrepMagic, sizeof(kBrepMagic)) ||
-      !reader.U32(version) || version != kBrepVersion ||
+      !reader.U32(version) || version < 1 || version > kBrepVersion ||
       !reader.Count(vertex_count) || !reader.Count(edge_count) ||
       !reader.Count(face_count) || vertex_count == 0 || edge_count == 0 ||
       face_count == 0 ||
@@ -1081,6 +1102,8 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error,
     error = "B-rep header is malformed";
     return nullptr;
   }
+
+  reader.curve3_flags = version >= 2;
 
   auto brep = std::make_unique<ON_Brep>();
   brep->m_V.Reserve(static_cast<int>(vertex_count));
@@ -1337,13 +1360,14 @@ ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
   uint32_t version = 0;
   size_t segment_count = 0;
   if (!reader.Bytes(kPolyCurveMagic, sizeof(kPolyCurveMagic)) ||
-      !reader.U32(version) || (version != 1 && version != kPolyCurveVersion) ||
+      !reader.U32(version) || version < 1 || version > kPolyCurveVersion ||
       !reader.Count(segment_count) || segment_count == 0 ||
       segment_count > kMaxPolyCurveSegments ||
       segment_count + 1 > reader.Remaining() / sizeof(double)) {
     error = "polycurve header is malformed";
     return nullptr;
   }
+  reader.curve3_flags = version >= 3;
   std::vector<double> parameters(segment_count + 1);
   for (size_t index = 0; index <= segment_count; ++index) {
     if (!reader.Double(parameters[index]) || !std::isfinite(parameters[index]) ||

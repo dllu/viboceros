@@ -7,8 +7,9 @@ use viboceros_geometry::{
 
 const MAGIC: &[u8; 8] = b"VIBOBRP\0";
 const POLYCURVE_MAGIC: &[u8; 8] = b"VIBOPLY\0";
-const VERSION: u32 = 1;
-const POLYCURVE_VERSION: u32 = 2;
+const ARC_VERSION: u32 = 1;
+const BREP_VERSION: u32 = 2;
+const POLYCURVE_VERSION: u32 = 3;
 const NO_EDGE: u64 = u64::MAX;
 
 #[derive(Debug)]
@@ -25,7 +26,10 @@ impl From<GeometryError> for GeometryCodecError {
 }
 
 pub(crate) fn encode_polycurve(curve: &PolyCurve3) -> Result<Vec<u8>, GeometryCodecError> {
-    let mut writer = Writer::default();
+    let mut writer = Writer {
+        curve3_flags: true,
+        ..Default::default()
+    };
     writer.bytes.extend_from_slice(POLYCURVE_MAGIC);
     writer.u32(POLYCURVE_VERSION);
     writer.len(curve.segments().len())?;
@@ -40,14 +44,18 @@ pub(crate) fn encode_polycurve(curve: &PolyCurve3) -> Result<Vec<u8>, GeometryCo
 
 pub(crate) fn encode_arc(arc: CircularArc3) -> Result<Vec<u8>, GeometryCodecError> {
     let mut writer = Writer::default();
-    writer.u32(VERSION);
+    writer.u32(ARC_VERSION);
     writer.segment(&CurveSegment3::Arc(arc))?;
     Ok(writer.bytes)
 }
 
 pub(crate) fn decode_arc(bytes: &[u8]) -> Result<CircularArc3, GeometryCodecError> {
-    let mut reader = Reader { bytes, position: 0 };
-    if reader.u32()? != VERSION {
+    let mut reader = Reader {
+        bytes,
+        position: 0,
+        curve3_flags: false,
+    };
+    if reader.u32()? != ARC_VERSION {
         return Err(GeometryCodecError::Malformed);
     }
     let CurveSegment3::Arc(arc) = reader.segment()? else {
@@ -60,14 +68,19 @@ pub(crate) fn decode_arc(bytes: &[u8]) -> Result<CircularArc3, GeometryCodecErro
 }
 
 pub(crate) fn decode_polycurve(bytes: &[u8]) -> Result<PolyCurve3, GeometryCodecError> {
-    let mut reader = Reader { bytes, position: 0 };
+    let mut reader = Reader {
+        bytes,
+        position: 0,
+        curve3_flags: false,
+    };
     if reader.take(POLYCURVE_MAGIC.len())? != POLYCURVE_MAGIC {
         return Err(GeometryCodecError::Malformed);
     }
     let version = reader.u32()?;
-    if version != 1 && version != POLYCURVE_VERSION {
+    if !(1..=POLYCURVE_VERSION).contains(&version) {
         return Err(GeometryCodecError::Malformed);
     }
+    reader.curve3_flags = version >= 3;
     let count = reader.len()?;
     if count == 0 || count > MAX_POLYCURVE_SEGMENTS {
         return Err(GeometryCodecError::Malformed);
@@ -91,9 +104,12 @@ pub(crate) fn decode_polycurve(bytes: &[u8]) -> Result<PolyCurve3, GeometryCodec
 }
 
 pub(crate) fn encode_brep(brep: &Brep) -> Result<Vec<u8>, GeometryCodecError> {
-    let mut writer = Writer::default();
+    let mut writer = Writer {
+        curve3_flags: true,
+        ..Default::default()
+    };
     writer.bytes.extend_from_slice(MAGIC);
-    writer.u32(VERSION);
+    writer.u32(BREP_VERSION);
     writer.len(brep.vertices().len())?;
     writer.len(brep.edges().len())?;
     writer.len(brep.faces().len())?;
@@ -154,10 +170,19 @@ pub(crate) fn encode_brep(brep: &Brep) -> Result<Vec<u8>, GeometryCodecError> {
 }
 
 pub(crate) fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, GeometryCodecError> {
-    let mut reader = Reader { bytes, position: 0 };
-    if reader.take(MAGIC.len())? != MAGIC || reader.u32()? != VERSION {
+    let mut reader = Reader {
+        bytes,
+        position: 0,
+        curve3_flags: false,
+    };
+    if reader.take(MAGIC.len())? != MAGIC {
         return Err(GeometryCodecError::Malformed);
     }
+    let version = reader.u32()?;
+    if !(1..=BREP_VERSION).contains(&version) {
+        return Err(GeometryCodecError::Malformed);
+    }
+    reader.curve3_flags = version >= 2;
     let vertex_count = reader.len()?;
     let edge_count = reader.len()?;
     let face_count = reader.len()?;
@@ -270,6 +295,8 @@ pub(crate) fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, Ge
 #[derive(Default)]
 struct Writer {
     bytes: Vec<u8>,
+    // Only 3D curves gained storage metadata; UV curves retain their old layout.
+    curve3_flags: bool,
 }
 
 impl Writer {
@@ -318,6 +345,9 @@ impl Writer {
         }
         for knot in curve.knots() {
             self.f64(*knot);
+        }
+        if self.curve3_flags {
+            self.boolean(curve.has_rational_representation());
         }
         Ok(())
     }
@@ -403,6 +433,8 @@ impl Writer {
 struct Reader<'a> {
     bytes: &'a [u8],
     position: usize,
+    // Only 3D curves gained storage metadata; UV curves retain their old layout.
+    curve3_flags: bool,
 }
 
 impl Reader<'_> {
@@ -498,7 +530,17 @@ impl Reader<'_> {
         for _ in 0..knot_count {
             knots.push(self.f64()?);
         }
-        Ok(NurbsCurve::try_new_rational(degree, controls, knots)?)
+        let curve = NurbsCurve::try_new_rational(degree, controls, knots)?;
+        if !self.curve3_flags {
+            return Ok(curve);
+        }
+        if self.boolean()? {
+            Ok(curve.with_rational_representation())
+        } else if curve.has_rational_representation() {
+            Err(GeometryCodecError::Malformed)
+        } else {
+            Ok(curve)
+        }
     }
 
     fn segment(&mut self) -> Result<CurveSegment3, GeometryCodecError> {
@@ -635,7 +677,7 @@ mod tests {
         .unwrap();
         let arc = CircularArc3::try_from_circle_sweep(circle, 1.0).unwrap();
         let mut legacy = Writer::default();
-        legacy.u32(VERSION);
+        legacy.u32(ARC_VERSION);
         legacy.u8(2);
         legacy.point3(arc.center());
         legacy.point3(Point3::try_from(arc.x_axis().as_vector().to_array()).unwrap());

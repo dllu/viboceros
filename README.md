@@ -83,6 +83,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Viewport controls and drafting](docs/interface.md)
 - [Command input, completion, history, and file paths](docs/command-line.md)
 - [File formats and limitations](docs/file-formats.md)
+- [Preserving rational NURBS storage inside polycurves and B-rep edges](docs/nested-rational-3dm.md)
 - [Analytic normals and tessellation provenance](docs/tessellation-normals.md)
 - [Native curve/surface endpoint evaluation and one-sided derivatives](docs/native-basis-evaluation.md),
   with [interpolation at supplied parameters](docs/native-point-interpolation.md),

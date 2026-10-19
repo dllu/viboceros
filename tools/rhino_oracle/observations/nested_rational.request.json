@@ -1,0 +1,155 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "polycurve_polynomial_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/polycurve_polynomial_1.3dm",
+      "family": "polycurve",
+      "mask": "polynomial",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "polycurve_mixed_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/polycurve_mixed_1.3dm",
+      "family": "polycurve",
+      "mask": "mixed",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "polycurve_rational_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/polycurve_rational_1.3dm",
+      "family": "polycurve",
+      "mask": "rational",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "polycurve_mixed_7",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/polycurve_mixed_7.3dm",
+      "family": "polycurve",
+      "mask": "mixed",
+      "gauge": 7.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "nested_polycurve_polynomial_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/nested_polycurve_polynomial_1.3dm",
+      "family": "nested_polycurve",
+      "mask": "polynomial",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "nested_polycurve_mixed_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/nested_polycurve_mixed_1.3dm",
+      "family": "nested_polycurve",
+      "mask": "mixed",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "nested_polycurve_rational_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/nested_polycurve_rational_1.3dm",
+      "family": "nested_polycurve",
+      "mask": "rational",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "nested_polycurve_mixed_7",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/nested_polycurve_mixed_7.3dm",
+      "family": "nested_polycurve",
+      "mask": "mixed",
+      "gauge": 7.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "face_polynomial_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/face_polynomial_1.3dm",
+      "family": "face",
+      "mask": "polynomial",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "face_mixed_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/face_mixed_1.3dm",
+      "family": "face",
+      "mask": "mixed",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "face_rational_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/face_rational_1.3dm",
+      "family": "face",
+      "mask": "rational",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "face_mixed_7",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/face_mixed_7.3dm",
+      "family": "face",
+      "mask": "mixed",
+      "gauge": 7.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "box_polynomial_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/box_polynomial_1.3dm",
+      "family": "box",
+      "mask": "polynomial",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "box_mixed_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/box_mixed_1.3dm",
+      "family": "box",
+      "mask": "mixed",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "box_rational_1",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/box_rational_1.3dm",
+      "family": "box",
+      "mask": "rational",
+      "gauge": 1.0
+    },
+    {
+      "op": "nested_rational_transfer",
+      "mode": "create",
+      "id": "box_mixed_7",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/nested_rational/box_mixed_7.3dm",
+      "family": "box",
+      "mask": "mixed",
+      "gauge": 7.0
+    }
+  ]
+}

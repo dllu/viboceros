@@ -58,8 +58,8 @@ certificate. See the [validation record](../delete-subcurve-validation.json).
 Top-level NURBS file transfer now retains an explicit rational representation
 with unit weights. `has_rational_representation` reports that representation;
 `is_rational` continues to report varying weights. Basic trims, direction/domain
-edits and affine transforms preserve the flag. Nested geometry codecs still
-infer their representation from their controls.
+edits and affine transforms preserve the flag. File transfer also preserves it
+for [polycurve leaves and B-rep edges](../nested-rational-3dm.md).
 
 ```sh
 cargo test -p viboceros-command --test delete_subcurve
