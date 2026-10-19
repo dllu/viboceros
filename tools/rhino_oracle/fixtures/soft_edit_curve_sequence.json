@@ -1,0 +1,955 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "cubic_repeat",
+      "family": "cubic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/cubic_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "cubic_copy",
+      "family": "cubic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/cubic_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "cubic_cancel",
+      "family": "cubic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/cubic_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "cubic_distance",
+      "family": "cubic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/cubic_distance.3dm",
+      "distance_point": 0.8
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "rational_repeat",
+      "family": "rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/rational_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "rational_copy",
+      "family": "rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/rational_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "rational_cancel",
+      "family": "rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/rational_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "rational_distance",
+      "family": "rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/rational_distance.3dm",
+      "distance_point": 0.8
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "periodic_repeat",
+      "family": "periodic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/periodic_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "periodic_copy",
+      "family": "periodic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/periodic_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "periodic_cancel",
+      "family": "periodic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/periodic_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "periodic_distance",
+      "family": "periodic",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/periodic_distance.3dm",
+      "distance_point": 0.8
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "circle_repeat",
+      "family": "circle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/circle_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "circle_copy",
+      "family": "circle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/circle_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "circle_cancel",
+      "family": "circle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/circle_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "circle_distance",
+      "family": "circle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/circle_distance.3dm",
+      "distance_point": 0.8
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "ellipse_repeat",
+      "family": "ellipse",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/ellipse_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "ellipse_copy",
+      "family": "ellipse",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/ellipse_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "ellipse_cancel",
+      "family": "ellipse",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/ellipse_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "ellipse_distance",
+      "family": "ellipse",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/ellipse_distance.3dm",
+      "distance_point": 0.8
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "line_repeat",
+      "family": "line",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/line_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "line_copy",
+      "family": "line",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/line_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "line_cancel",
+      "family": "line",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/line_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "line_distance",
+      "family": "line",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/line_distance.3dm",
+      "distance_point": 0.8
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polyline_repeat",
+      "family": "polyline",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polyline_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polyline_copy",
+      "family": "polyline",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polyline_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polyline_cancel",
+      "family": "polyline",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polyline_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polyline_distance",
+      "family": "polyline",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polyline_distance.3dm",
+      "distance_point": 0.8
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polycurve_repeat",
+      "family": "polycurve",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polycurve_repeat.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polycurve_copy",
+      "family": "polycurve",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polycurve_copy.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "copy": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polycurve_cancel",
+      "family": "polycurve",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polycurve_cancel.3dm",
+      "moves": [
+        {
+          "station": 0.2,
+          "offset": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "station": 0.7,
+          "offset": [
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_curve_sequence",
+      "id": "polycurve_distance",
+      "family": "polycurve",
+      "stations": [
+        0.3333333333333333
+      ],
+      "distance": 4.0,
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_curve_sequence/polycurve_distance.3dm",
+      "distance_point": 0.8
+    }
+  ]
+}

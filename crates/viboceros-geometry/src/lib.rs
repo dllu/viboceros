@@ -286,7 +286,7 @@ pub use morph::{
 pub use nurbs::{
     ConicFoci, ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,
     CurveCurveIntersectionParameters, CurveCurveOverlap, CurveExtensionBoundary,
-    CurveExtensionOperations, CurveExtensionSide, CurveExtensionStyle, NurbsCurve,
+    CurveExtensionOperations, CurveExtensionSide, CurveExtensionStyle, CurveSoftEdit, NurbsCurve,
     NurbsCurveParameterSampler, NurbsCurveSamplingSpan, WeightedPoint3, degree_change_knots,
     knot_group_removal_knots, knot_removal_knots,
 };

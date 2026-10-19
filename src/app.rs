@@ -9440,6 +9440,7 @@ impl VibocerosApp {
                 s.cursor = Some(point);
             }
             self.update_subcurve_hover(point);
+            self.update_soft_edit_hover(point);
         }
         if self.picking_scale_by_plane_view() {
             if output.source_viewport_click {
@@ -10622,10 +10623,10 @@ impl eframe::App for VibocerosApp {
                 self.refinement_prompt
                     .as_ref()
                     .filter(|p| p.selecting())
-                    .map(|_| {
+                    .map(|p| {
                         self.document
                             .selectable_objects()
-                            .filter(|o| viboceros_command::refinement::accepts(o.geometry()))
+                            .filter(|o| p.accepts(o.geometry()))
                             .map(|o| o.id())
                             .collect()
                     })
@@ -11254,6 +11255,7 @@ mod tests {
     mod simplify_curve;
     mod single_span_selection;
     mod smooth;
+    mod soft_edit_curve;
     mod sphere_fit_points;
     mod spiral;
     mod spiral_rail;

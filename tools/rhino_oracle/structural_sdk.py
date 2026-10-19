@@ -6,6 +6,9 @@ import shutil
 # The validator module is also the worker entry. Dependencies stay beside it in
 # the isolated job directory so standalone Rhino imports resolve transitively.
 PROBES = {
+    'soft_edit_curve_sequence': ('soft_edit_sequence_probe', ('soft_edit_curve_probe','insert_kink_probe','join_probe','merge_edges_probe')),
+    'soft_edit_curve_lengths': ('soft_edit_lengths_probe', ()),
+    'soft_edit_curve_command': ('soft_edit_curve_probe', ('insert_kink_probe','join_probe','merge_edges_probe')),
     'empty_undo_selection': ('empty_undo_selection_probe', ('join_probe','merge_edges_probe')),
     'insert_edit_point_history': ('insert_edit_point_history_probe', ('join_probe','merge_edges_probe')),
     'insert_edit_point_limits': ('insert_edit_point_limits_probe', ('insert_edit_point_probe','insert_kink_probe','join_probe','merge_edges_probe')),

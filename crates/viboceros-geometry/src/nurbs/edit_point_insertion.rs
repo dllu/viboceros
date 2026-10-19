@@ -74,6 +74,14 @@ impl NurbsCurve {
     /// display. Unlike edit-grip interpolation, this also admits a curve with
     /// only one clamped end. Closed seams have one marker.
     pub fn greville_points_in_active_domain(&self) -> Result<Vec<Point3>, GeometryError> {
+        self.greville_parameters_in_active_domain()?
+            .into_iter()
+            .map(|t| self.evaluate(t))
+            .collect()
+    }
+    /// Domain-aligned, distinct edit marker stations without interpolation or
+    /// a control-count limit. A closed seam has one station.
+    pub fn greville_parameters_in_active_domain(&self) -> Result<Vec<Real>, GeometryError> {
         let parameters = if self.is_periodic() {
             periodic_greville_parameters(
                 self.degree,
@@ -88,18 +96,20 @@ impl NurbsCurve {
                 .collect::<Result<Vec<_>, _>>()?
         };
         let domain = self.domain();
-        let mut points = parameters
+        let mut parameters = parameters
             .into_iter()
             .filter(|t| domain.contains(t))
-            .map(|t| self.evaluate(t))
-            .collect::<Result<Vec<_>, _>>()?;
-        if points.len() > 1
+            .collect::<Vec<_>>();
+        if parameters.len() > 1
             && self.is_closed()?
-            && crate::curve_points_coincident(points[0], *points.last().unwrap())
+            && crate::curve_points_coincident(
+                self.evaluate(parameters[0])?,
+                self.evaluate(*parameters.last().unwrap())?,
+            )
         {
-            points.pop();
+            parameters.pop();
         }
-        Ok(points)
+        Ok(parameters)
     }
 
     /// Add a Greville edit station without changing the curve's locus.

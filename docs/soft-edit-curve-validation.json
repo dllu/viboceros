@@ -1,0 +1,432 @@
+{
+  "validated_at": "2026-10-19T23:04:45.435094+00:00",
+  "base_commit": "0b5529a42902246f40a42a9df8f351878d97a719",
+  "feature": "SoftEditCrv: Gaussian control falloff, periodic aliases, repeated copies, curve-point distance getter, immutable previews and one-step history",
+  "captures": [
+    {
+      "request": "tools/rhino_oracle/fixtures/soft_edit_curve_command.json",
+      "request_sha256": "3d3a1f9ddc2a10218fb56174e92395de545b7710538f047553a34ec1b3cfb078",
+      "observation": "tools/rhino_oracle/observations/soft_edit_curve_command.json",
+      "observation_sha256": "5e2dcb7a4d7d82f1b838adf1b012ebf40e939c728185843f826f918b867e89b2",
+      "cases": 187,
+      "engine_version": "8.32.26160.13001",
+      "sources": {
+        "generate_soft_edit_curve.py": "5964a17b276a8b8637aa30bc0758128d3db60da4b3665632ed87e48ec739fd3b",
+        "soft_edit_curve_probe.py": "bfbce0c14c5e813372a8770cea410926dd0f0d2daa264fb9e68aed37b668831e",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "e8cd8d40369ddb3c21b4c40895e0999a79b85e2392723d0defa2544a126971c5",
+        "structural_sdk.py": "84bd8439f1c49419983638d61dbd0c7e41fd2cca0aabf0276b96eacb23b85902"
+      },
+      "fixture_count": 187
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/soft_edit_curve_lengths.json",
+      "request_sha256": "cc314154b4b821d4641f4b3f0567caf5eeb2987a338139ca750cd8854a8e4b23",
+      "observation": "tools/rhino_oracle/observations/soft_edit_curve_lengths.json",
+      "observation_sha256": "26475e2e400399ca38a658293648847756c55c59231a0abe514f927d9224a0c3",
+      "cases": 187,
+      "engine_version": "8.32.26160.13001",
+      "sources": {
+        "generate_soft_edit_lengths.py": "da6f13d68575e64983904013a1ffd40021f0207424ae4dedb0560f88f7eb63fa",
+        "soft_edit_lengths_probe.py": "738fee1c9ab0e6675522ff5200af459d65651e3df10089b3433d3a87b8b43b7b",
+        "rhino_worker.py": "db667d215b6af9c94053e0bdda7fe804800fd1f661966b69a2d8c0ee4592b5e0",
+        "structural_sdk.py": "c7b7007afc5d7fbb1fbece030267f2b822f9a5f1d024335ce0f8816fcf58d4c2"
+      },
+      "fixture_count": 187
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/soft_edit_curve_sequence.json",
+      "request_sha256": "38d863c9a5ba657ad19ab4eeead7b65b9a5aa7a1a68f7aa40079fa5f785d33a8",
+      "observation": "tools/rhino_oracle/observations/soft_edit_curve_sequence.json",
+      "observation_sha256": "16fd8377116acd501f1ca11fcc9c2697015d8f30673cde3a33c7b8cbae26d78b",
+      "cases": 32,
+      "engine_version": "8.32.26160.13001",
+      "sources": {
+        "generate_soft_edit_sequence.py": "ce2959db707eb39b04c25a1682efdc4510718681700b2bf866f4712053ffe08f",
+        "soft_edit_sequence_probe.py": "2d6266e545ce69751854f288b21f0c409b9776e4c1ce55a60972711b811ce355",
+        "soft_edit_curve_probe.py": "bfbce0c14c5e813372a8770cea410926dd0f0d2daa264fb9e68aed37b668831e",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "330df92bb29fbf17981c72bcde3215d62a87fec49b8d33ceff4b109f0ee1a919",
+        "structural_sdk.py": "3348d447cf5aa79c2b77d3b4debce5660b0051b24736011166166bec04be579e"
+      },
+      "fixture_count": 32
+    }
+  ],
+  "checks": {
+    "kernel": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "soft_edit"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/kernel.log.gz",
+      "sha256": "4fc2d61a7247a6092de13b9b41aaa9d64595f2aa1a92718bd341744254013eaa",
+      "passed_tests": 3
+    },
+    "insertion_kernel": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-geometry",
+        "--lib",
+        "edit_point_insertion"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/insertion_kernel.log.gz",
+      "sha256": "bc824a51b414bc679ecccc228cce929cead9f583a6d4ba2f3172dd3c30538916",
+      "passed_tests": 3
+    },
+    "api": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "soft_edit_curve_command",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/api.log.gz",
+      "sha256": "126a509c999d0af3a2a688b85dac228b58e2232d3aaf8415cbc565ff01c470c8",
+      "passed_tests": 3
+    },
+    "ui": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "tests::soft_edit_curve",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/ui.log.gz",
+      "sha256": "b0feb25b229615265b76c8e233e247ffc3fcea3c628c3184340ba88dd5479479",
+      "passed_tests": 3
+    },
+    "prior_insert_edit_ui": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "tests::insert_edit_point"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/prior_insert_edit_ui.log.gz",
+      "sha256": "5f8a46185ad1caea1fdb5052026ff69d7106c1ccedfe49e2d73fd201a838da04",
+      "passed_tests": 2
+    },
+    "prior_insert_control_ui": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "tests::insert_control_point"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/prior_insert_control_ui.log.gz",
+      "sha256": "74d9276c79018a4c215e03fa111c461c33bf42dd14bb5a11e94d58b6c0439f77",
+      "passed_tests": 6
+    },
+    "prior_remove_knot_ui": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "tests::remove_knot"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/prior_remove_knot_ui.log.gz",
+      "sha256": "a1ab51abfccea7f7f1a80251141ed9d2d9eb82a4f21723807590cdc159287bdb",
+      "passed_tests": 6
+    },
+    "prior_insert_knot_ui": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--bin",
+        "viboceros",
+        "tests::insert_knot"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/prior_insert_knot_ui.log.gz",
+      "sha256": "00b512e768f9ef5eb4e66a7494dea6399312ddf7ad3e81f0ff6aae5e4f300a13",
+      "passed_tests": 4
+    },
+    "help": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "reports_sorted_help"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/help.log.gz",
+      "sha256": "8c9a899a1735cd697ab187df165733a5896d6a7e6c7a4c463faedfdea30b8547",
+      "passed_tests": 1
+    },
+    "native_api": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "soft_edit_curve_command",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/native_api.log.gz",
+      "sha256": "1c9987a4e8d3bc261f85faf6f0d89dce6d54ba4280f1c1b8f48adc4ea83b8211",
+      "passed_tests": 3
+    },
+    "native_ui": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros",
+        "--features",
+        "native-smlib",
+        "--bin",
+        "viboceros",
+        "tests::soft_edit_curve",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/native_ui.log.gz",
+      "sha256": "3a875cc4d6b4241e0a023e8da0b0e2720b473964496a877b4135c4b20931a19f",
+      "passed_tests": 3
+    },
+    "release_api": {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "soft_edit_curve_command",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/release_api.log.gz",
+      "sha256": "2e1a314463cadc7f47e14f222b4cce3704b3567482fb09f96cdf4f68066bccf0",
+      "passed_tests": 3
+    },
+    "native_release_api": {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "soft_edit_curve_command",
+        "--",
+        "--nocapture"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/native_release_api.log.gz",
+      "sha256": "995386097ec7d144871be5bcd900717224d47da35faa6b840c349cfc3a86ed99",
+      "passed_tests": 3
+    },
+    "python": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_soft_edit_curve",
+        "tools.rhino_oracle.test_insert_edit_point",
+        "tools.rhino_oracle.test_grip_weight",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/python.log.gz",
+      "sha256": "4e6e39526834b5f1a156785ab7eb1c98c7525b70b1d243a48e0c9869d84a9981"
+    },
+    "format": {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/format.log.gz",
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    "clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "passed": true,
+      "log": "docs/soft-edit-curve-proof/clippy.log.gz",
+      "sha256": "7c32b0f38ee25aef751cdba47b7816539a9ab21c39da2d8fee221144702274b0"
+    }
+  },
+  "metrics": {
+    "api": {
+      "single": {
+        "cases": 187,
+        "maximum_error": 3.51071346374771e-08,
+        "worst_case": "rational_20"
+      },
+      "repeated": {
+        "cases": 32,
+        "maximum_error": 4.617428116772132e-08,
+        "worst_case": "rational_repeat"
+      }
+    },
+    "ui": {
+      "single": {
+        "cases": 187,
+        "maximum_error": 3.51071346374771e-08,
+        "worst_case": "rational_20"
+      },
+      "repeated": {
+        "cases": 32,
+        "maximum_error": 4.617428116772132e-08,
+        "worst_case": "rational_repeat"
+      }
+    },
+    "native_api": {
+      "single": {
+        "cases": 187,
+        "maximum_error": 3.51071346374771e-08,
+        "worst_case": "rational_20"
+      },
+      "repeated": {
+        "cases": 32,
+        "maximum_error": 4.617428116772132e-08,
+        "worst_case": "rational_repeat"
+      }
+    },
+    "native_ui": {
+      "single": {
+        "cases": 187,
+        "maximum_error": 3.51071346374771e-08,
+        "worst_case": "rational_20"
+      },
+      "repeated": {
+        "cases": 32,
+        "maximum_error": 4.617428116772132e-08,
+        "worst_case": "rational_repeat"
+      }
+    },
+    "release_api": {
+      "single": {
+        "cases": 187,
+        "maximum_error": 3.51071346374771e-08,
+        "worst_case": "rational_20"
+      },
+      "repeated": {
+        "cases": 32,
+        "maximum_error": 4.617428116772132e-08,
+        "worst_case": "rational_repeat"
+      }
+    },
+    "native_release_api": {
+      "single": {
+        "cases": 187,
+        "maximum_error": 3.51071346374771e-08,
+        "worst_case": "rational_20"
+      },
+      "repeated": {
+        "cases": 32,
+        "maximum_error": 4.617428116772132e-08,
+        "worst_case": "rational_repeat"
+      }
+    }
+  },
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "35fcdc1a8346b2cb7865b94f7a91d73416b2ee776004060cb4fff4f2b5845cae",
+    "crates/viboceros-command/tests/support/insert_kink.rs": "73ef8be7b99f8d2f5145b5e1f0f14d4a958f4846be1e406e5f3feb7543f88fe8",
+    "crates/viboceros-geometry/src/lib.rs": "1088df706116e58a442240d5d455694f7256ecbb3a6f344857ef45ea908fdb05",
+    "crates/viboceros-geometry/src/nurbs.rs": "ecc06179517238415be8c72e7ddb7a9e293fdf86dad441c546f146a50882c500",
+    "crates/viboceros-geometry/src/nurbs/edit_point_insertion.rs": "5cc9fbed941f08d707aa029e4385cd91017d6939ca6670ac6f5119590cf7fbfd",
+    "src/app.rs": "f711151c1f22defc3c969ac303353f7c757cdf213f1c6cc8cb9736409be91afd",
+    "src/app/refinement.rs": "aada9103eb50075631cad9ce54d4d5517c286ec6a8e23957b460c5d609365845",
+    "tools/rhino_oracle/rhino_worker.py": "330df92bb29fbf17981c72bcde3215d62a87fec49b8d33ceff4b109f0ee1a919",
+    "tools/rhino_oracle/structural_sdk.py": "3348d447cf5aa79c2b77d3b4debce5660b0051b24736011166166bec04be579e",
+    "crates/viboceros-command/src/soft_edit_curve.rs": "092ae218d11647a27bd7747c41f65d5b14ce5f242548912acd7ce05b1b076433",
+    "crates/viboceros-command/tests/soft_edit_curve_command.rs": "d73ec8b56443bd2eebe7ed59d156b59bcdef6c7b88df5492d555b5c8d619adca",
+    "crates/viboceros-command/tests/support/soft_edit_curve.rs": "9a85117d3ed550254cf10d9f51679aa0d46965ea53b7b35906d82d89252e7c48",
+    "crates/viboceros-geometry/src/nurbs/soft_edit.rs": "72729b852e3bbf92fd856c6124cbd10f1377b030214ac3f6aacd4acb8bfdf4ff",
+    "src/app/refinement/soft_edit.rs": "6684815c74c23ba6cfa9bf756bbd5cf5fc6293d75ac02eae8d8c43fb49480287",
+    "src/app/tests/soft_edit_curve.rs": "c55f909956392cfbe04c2dd3c88958f39ab178da4354587887df7e90984fb171",
+    "tools/rhino_oracle/generate_soft_edit_curve.py": "5964a17b276a8b8637aa30bc0758128d3db60da4b3665632ed87e48ec739fd3b",
+    "tools/rhino_oracle/generate_soft_edit_lengths.py": "da6f13d68575e64983904013a1ffd40021f0207424ae4dedb0560f88f7eb63fa",
+    "tools/rhino_oracle/generate_soft_edit_sequence.py": "ce2959db707eb39b04c25a1682efdc4510718681700b2bf866f4712053ffe08f",
+    "tools/rhino_oracle/soft_edit_curve_probe.py": "bfbce0c14c5e813372a8770cea410926dd0f0d2daa264fb9e68aed37b668831e",
+    "tools/rhino_oracle/soft_edit_lengths_probe.py": "738fee1c9ab0e6675522ff5200af459d65651e3df10089b3433d3a87b8b43b7b",
+    "tools/rhino_oracle/soft_edit_sequence_probe.py": "2d6266e545ce69751854f288b21f0c409b9776e4c1ce55a60972711b811ce355",
+    "tools/rhino_oracle/test_soft_edit_curve.py": "b09d5563661b207ca56eaab9ab4adfd4ac76bf834c4f4ce277a06fc9eb24e906"
+  },
+  "numerical_policy": {
+    "command_epsilon": 5e-08,
+    "precise_sdk_control_epsilon": 1e-09,
+    "raw_weight_relative_epsilon": 1e-12,
+    "gaussian_sigma": "Distance / 3",
+    "integration": "Existing precise ArcLengthSampler; no output fitting or lowered integration precision",
+    "sdk_interval_origin": "anchor_parameter is the capture producer's chosen integration origin, not a native command getter observation; signed precise lengths translate the origin to the selected station."
+  },
+  "scope": {
+    "native_commands": 219,
+    "independent_sdk_length_cases": 187,
+    "comparisons": [
+      "complete degrees, active knots, control locations and weights",
+      "sampled curve loci, domains, closure and representation",
+      "source metadata, default copy metadata and selection",
+      "copy creation order, cancellation and Undo/Redo",
+      "immutable previews, malformed batches, stale source and preserved redo",
+      "typed unit distance input"
+    ]
+  },
+  "limitations": [
+    "No performance speedup claim",
+    "SubCrv, arbitrary B-rep edge input, large nets and extreme coordinate ranges remain unqualified",
+    "Native default integration differs slightly from precise mathematics; full command comparisons retain an explicit 5e-8 epsilon"
+  ]
+}

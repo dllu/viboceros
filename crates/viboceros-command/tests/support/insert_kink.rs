@@ -173,7 +173,7 @@ fn normalize_outer_knots(curve: viboceros_geometry::CurveRef<'_>, g: &Value) -> 
     }
     expected
 }
-fn compare_curve(
+pub fn compare_curve(
     curve: viboceros_geometry::CurveRef<'_>,
     g: &Value,
     label: &str,

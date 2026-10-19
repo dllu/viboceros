@@ -2,6 +2,7 @@
 use super::*;
 use viboceros_command::refinement::{self as edits, Options};
 use viboceros_geometry::NurbsCurve;
+mod soft_edit;
 mod subcurve;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Kind {
@@ -11,6 +12,7 @@ enum Kind {
     Control,
     InsertControl,
     InsertEdit,
+    SoftEdit,
 }
 impl Kind {
     fn name(self) -> &'static str {
@@ -21,6 +23,7 @@ impl Kind {
             Self::Control => "RemoveControlPoint",
             Self::InsertControl => "InsertControlPoint",
             Self::InsertEdit => "InsertEditPoint",
+            Self::SoftEdit => "SoftEditCrv",
         }
     }
     fn noun(self) -> &'static str {
@@ -29,6 +32,7 @@ impl Kind {
             Self::Knot | Self::Remove => "a knot",
             Self::Control | Self::InsertControl => "a control point",
             Self::InsertEdit => "an edit point",
+            Self::SoftEdit => "a soft edit",
         }
     }
     fn accept(
@@ -36,7 +40,7 @@ impl Kind {
         options: &mut Options,
         word: &str,
     ) -> Result<bool, viboceros_command::CommandError> {
-        if self == Self::InsertEdit {
+        if matches!(self, Self::InsertEdit | Self::SoftEdit) {
             Ok(false)
         } else if self == Self::InsertControl {
             viboceros_command::insert_control_point::accept_option(options, word)
@@ -79,6 +83,7 @@ enum Draft {
     Control(viboceros_command::remove_control_point::Draft),
     InsertControl(viboceros_command::insert_control_point::Draft),
     InsertEdit(viboceros_command::insert_edit_point::Draft),
+    SoftEdit(Box<viboceros_command::soft_edit_curve::Draft>),
 }
 impl std::ops::Deref for Draft {
     type Target = viboceros_command::refinement::Draft;
@@ -90,6 +95,7 @@ impl std::ops::Deref for Draft {
             Self::Control(d) => d,
             Self::InsertControl(d) => d,
             Self::InsertEdit(d) => d,
+            Self::SoftEdit(d) => d,
         }
     }
 }
@@ -101,6 +107,16 @@ impl Draft {
         kind: Kind,
     ) -> Result<Self, viboceros_command::CommandError> {
         Ok(match kind {
+            Kind::SoftEdit => {
+                if range.is_some() {
+                    return Err(viboceros_command::CommandError::Usage(
+                        "SoftEditCrv requires a complete curve",
+                    ));
+                }
+                Self::SoftEdit(Box::new(viboceros_command::soft_edit_curve::Draft::new(
+                    doc, id,
+                )?))
+            }
             Kind::InsertEdit => Self::InsertEdit(viboceros_command::insert_edit_point::Draft::new(
                 doc, id, range,
             )?),
@@ -141,6 +157,7 @@ impl Draft {
             Self::Control(d) => d.commit(doc, post),
             Self::InsertControl(d) => d.commit(doc, post),
             Self::InsertEdit(d) => d.commit(doc, post),
+            Self::SoftEdit(d) => d.commit(doc, post),
             _ => std::ops::Deref::deref(self).commit(doc, post),
         }
     }
@@ -157,6 +174,7 @@ impl Draft {
             Self::Control(d) => d.point_in_view(point, options, projection),
             Self::InsertControl(d) => d.point(point, options),
             Self::InsertEdit(d) => d.point(point),
+            Self::SoftEdit(d) => d.point(point),
         }
     }
 }
@@ -178,10 +196,18 @@ pub(super) struct Prompt {
     guides: Vec<NurbsCurve>,
     guide_points: Vec<Point3>,
     extend_on_select: bool,
+    soft_options: viboceros_command::soft_edit_curve::Options,
+    soft_distance_input: bool,
 }
 impl Prompt {
     pub(super) fn scene(&self) -> Option<&Document> {
         self.scene.as_ref()
+    }
+    pub(super) fn anchor(&self) -> Option<Point3> {
+        match &self.draft {
+            Some(Draft::SoftEdit(d)) => d.anchor(),
+            _ => None,
+        }
     }
     fn refresh_scene(
         &mut self,
@@ -189,7 +215,7 @@ impl Prompt {
     ) -> Result<(), viboceros_command::CommandError> {
         if !matches!(
             self.kind,
-            Kind::Remove | Kind::InsertControl | Kind::InsertEdit
+            Kind::Remove | Kind::InsertControl | Kind::InsertEdit | Kind::SoftEdit
         ) {
             return Ok(());
         }
@@ -201,6 +227,11 @@ impl Prompt {
         if self.shortening {
             return Ok(());
         }
+        if let Draft::SoftEdit(d) = draft {
+            self.cursor = Some(d.source_curve().clone());
+            self.scene = Some(d.scene(document, None)?);
+            return Ok(());
+        }
         self.cursor = draft
             .geometry()
             .curve_ref()
@@ -208,7 +239,7 @@ impl Prompt {
             .transpose()?;
         let mut scene = document.clone();
         scene.clear_history()?;
-        if self.subcurve {
+        if self.subcurve || (self.kind == Kind::SoftEdit && self.soft_options.copy) {
             scene.add_geometry(draft.geometry().clone())?;
         } else {
             scene.replace_object_geometries([(draft.object(), draft.geometry().clone())])?;
@@ -222,10 +253,20 @@ impl Prompt {
     pub(super) fn selecting(&self) -> bool {
         self.draft.is_none()
     }
+    pub(super) fn accepts(&self, geometry: &viboceros_document::Geometry) -> bool {
+        edits::accepts(geometry)
+            && (!matches!(self.kind, Kind::InsertEdit | Kind::SoftEdit)
+                || geometry.curve_ref().is_some())
+    }
     pub(super) fn wants_point(&self) -> bool {
         self.draft.is_some()
     }
     pub(super) fn cursor_curve(&self) -> Option<&NurbsCurve> {
+        if matches!(&self.draft,Some(Draft::SoftEdit(d)) if d.anchor().is_some())
+            && !self.soft_distance_input
+        {
+            return None;
+        }
         self.cursor.as_ref().filter(|_| self.kind != Kind::Control)
     }
     pub(super) fn hint(&self) -> &str {
@@ -251,6 +292,10 @@ impl Prompt {
         let Some(draft) = &self.draft else {
             return;
         };
+        if let Draft::SoftEdit(d) = draft {
+            self.guide_points = d.marker_points().unwrap_or_default();
+            return;
+        }
         if let Draft::InsertEdit(d) = draft {
             self.guide_points = d.marker_points().unwrap_or_default();
             return;
@@ -353,7 +398,9 @@ impl Prompt {
     }
     fn update_hint(&mut self) {
         self.hint = if self.selecting() {
-            if self.kind == Kind::InsertEdit {
+            if self.kind == Kind::SoftEdit {
+                "Select one curve to edit; Esc cancels".into()
+            } else if self.kind == Kind::InsertEdit {
                 "Select one curve (SubCrv temporarily shortens a curve); Esc cancels".into()
             } else if self.extend_on_select {
                 "Select one surface to extend its control net; Esc cancels".into()
@@ -365,6 +412,19 @@ impl Prompt {
                 "Select one curve or surface (SubCrv temporarily shortens a curve); Esc cancels"
                     .into()
             }
+        } else if self.kind == Kind::SoftEdit {
+            let offset = matches!(&self.draft,Some(Draft::SoftEdit(d)) if d.anchor().is_some());
+            format!(
+                "{} ({}); Enter finishes; Esc cancels",
+                if self.soft_distance_input {
+                    "Pick a distance point or enter a positive distance"
+                } else if offset {
+                    "Pick offset point"
+                } else {
+                    "Pick base point on curve"
+                },
+                self.soft_options.arguments()
+            )
         } else if self.shortening {
             if self.input.start.is_none() {
                 "Pick temporary subcurve start; Enter or Esc returns".into()
@@ -505,6 +565,28 @@ impl VibocerosApp {
         if self
             .refinement_prompt
             .as_ref()
+            .is_some_and(|p| p.kind == Kind::SoftEdit)
+        {
+            // Each accepted offset survives leaving the repeated point getter.
+            if self
+                .refinement_prompt
+                .as_ref()
+                .is_some_and(|p| p.draft.as_ref().is_some_and(|d| d.picks() > 0))
+            {
+                if let Some(Draft::SoftEdit(d)) = self
+                    .refinement_prompt
+                    .as_mut()
+                    .and_then(|p| p.draft.as_mut())
+                {
+                    d.cancel_offset();
+                }
+                self.continue_refinement("");
+            }
+            self.document.clear_selection();
+        }
+        if self
+            .refinement_prompt
+            .as_ref()
             .is_some_and(|p| p.kind.removes())
         {
             self.document.clear_selection();
@@ -527,7 +609,7 @@ impl VibocerosApp {
         } else if let Some(p) = &mut self.refinement_prompt
             && matches!(
                 p.kind,
-                Kind::Remove | Kind::InsertControl | Kind::InsertEdit
+                Kind::Remove | Kind::InsertControl | Kind::InsertEdit | Kind::SoftEdit
             )
             && p.background
                 .as_ref()
@@ -552,6 +634,8 @@ impl VibocerosApp {
             Kind::Control
         } else if command.eq_ignore_ascii_case("InsertEditPoint") {
             Kind::InsertEdit
+        } else if command.eq_ignore_ascii_case("SoftEditCrv") {
+            Kind::SoftEdit
         } else if command.eq_ignore_ascii_case("InsertControlPoint") {
             Kind::InsertControl
         } else {
@@ -563,11 +647,24 @@ impl VibocerosApp {
             Kind::Remove => self.commands.remove_knot_options(),
             Kind::Control => self.commands.remove_control_point_options(),
             Kind::InsertControl => self.commands.insert_control_point_options(),
-            Kind::InsertEdit => Options::default(),
+            Kind::InsertEdit | Kind::SoftEdit => Options::default(),
         };
+        let mut soft_options = self.commands.soft_edit_curve_options();
+        if kind == Kind::SoftEdit {
+            soft_options.copy = self
+                .commands
+                .begin_copy_options("SoftEditCrv")
+                .unwrap_or(false);
+        }
         let mut subcurve = false;
         let mut extend_on_select = false;
         for w in words {
+            if kind == Kind::SoftEdit {
+                if !matches!(soft_options.accept(w), Ok(true)) {
+                    return false;
+                }
+                continue;
+            }
             if kind == Kind::InsertControl
                 && w.trim_start_matches('_').eq_ignore_ascii_case("Extend")
             {
@@ -590,7 +687,8 @@ impl VibocerosApp {
             .filter(|o| {
                 self.document.is_object_selectable(o.id())
                     && edits::accepts(o.geometry())
-                    && (kind != Kind::InsertEdit || o.geometry().curve_ref().is_some())
+                    && (!matches!(kind, Kind::InsertEdit | Kind::SoftEdit)
+                        || o.geometry().curve_ref().is_some())
             })
             .map(|o| o.id())
             .collect::<Vec<_>>();
@@ -612,6 +710,8 @@ impl VibocerosApp {
             guides: Vec::new(),
             guide_points: Vec::new(),
             extend_on_select,
+            soft_options,
+            soft_distance_input: false,
         };
         prompt.update_hint();
         self.refinement_prompt = Some(prompt);
@@ -641,7 +741,7 @@ impl VibocerosApp {
             Kind::InsertControl => {
                 self.commands.remember_insert_control_point_options(options);
             }
-            Kind::InsertEdit => {}
+            Kind::InsertEdit | Kind::SoftEdit => {}
         }
     }
     fn log_refinement(&mut self) {
@@ -682,6 +782,12 @@ impl VibocerosApp {
         };
         match prepared {
             Ok(mut draft) => {
+                if let Draft::SoftEdit(d) = &mut draft
+                    && let Err(e) = d.set_options(p.soft_options)
+                {
+                    self.push_log(format!("Error: {e}"));
+                    return true;
+                }
                 if p.extend_on_select
                     && let Draft::InsertControl(d) = &mut draft
                     && let Err(e) = d.extend()
@@ -696,6 +802,9 @@ impl VibocerosApp {
                     .transpose();
                 match cursor {
                     Ok(cursor) => {
+                        if p.kind == Kind::SoftEdit {
+                            self.document.clear_selection();
+                        }
                         let p = self.refinement_prompt.as_mut().unwrap();
                         p.cursor = cursor;
                         p.input.object = Some(draft.object());
@@ -719,11 +828,34 @@ impl VibocerosApp {
         let Some(d) = &mut p.draft else {
             return false;
         };
+        if p.soft_distance_input
+            && let Draft::SoftEdit(d) = d
+        {
+            let result = d.distance_to_pick(point).and_then(|distance| {
+                let mut options = p.soft_options;
+                options.distance = distance;
+                d.set_options(options)?;
+                Ok(options)
+            });
+            match result {
+                Ok(options) => {
+                    p.soft_options = options;
+                    p.soft_distance_input = false;
+                    self.commands.remember_soft_edit_curve_options(options);
+                    self.log_refinement();
+                }
+                Err(e) => self.push_log(format!("Error: {e}")),
+            }
+            return true;
+        }
         if p.shortening {
             return self.refinement_subcurve_point(point);
         }
         match d.point(point, p.options, projection) {
             Ok(()) => {
+                if let Draft::SoftEdit(d) = d {
+                    self.last_point = d.anchor().or(Some(point));
+                }
                 if matches!(d, Draft::InsertControl(d) if d.cancelled()) {
                     self.cancel_refinement();
                 } else if p.kind == Kind::Control {
@@ -760,12 +892,15 @@ impl VibocerosApp {
             return true;
         }
         self.validate_refinement();
+        if self.continue_soft_edit_option(text) {
+            return true;
+        }
         if self.continue_refinement_subcurve(text) {
             return true;
         }
         if key.eq_ignore_ascii_case("SubCrv")
             && self.refinement_prompt.as_ref().is_some_and(|p| {
-                !matches!(p.kind, Kind::Control | Kind::InsertControl)
+                !matches!(p.kind, Kind::Control | Kind::InsertControl | Kind::SoftEdit)
                     && p.selecting()
                     && !p.shortening
             })
@@ -804,6 +939,17 @@ impl VibocerosApp {
             return true;
         };
         if text.is_empty() {
+            if p.kind == Kind::SoftEdit && p.anchor().is_some() {
+                if p.soft_distance_input {
+                    p.soft_distance_input = false;
+                    self.log_refinement();
+                } else {
+                    self.push_log(
+                        "Pick an offset point; Esc discards the unfinished offset".into(),
+                    );
+                }
+                return true;
+            }
             if p.selecting() {
                 self.cancel_refinement();
                 return true;
@@ -817,7 +963,15 @@ impl VibocerosApp {
             }
             match d.commit(&mut self.document, p.postselected) {
                 Ok(message) => match self.document.commit_transaction() {
-                    Ok(_) => self.push_log(message),
+                    Ok(_) => {
+                        if p.kind == Kind::SoftEdit {
+                            self.commands
+                                .complete_copy_options("SoftEditCrv", p.soft_options.copy);
+                            self.commands
+                                .remember_soft_edit_curve_options(p.soft_options);
+                        }
+                        self.push_log(message);
+                    }
                     Err(e) => self.push_log(format!("Error: {e}")),
                 },
                 Err(e) => {
@@ -867,7 +1021,7 @@ impl VibocerosApp {
                     .filter(|id| {
                         self.document
                             .object(*id)
-                            .is_some_and(|o| edits::accepts(o.geometry()))
+                            .is_some_and(|o| p.accepts(o.geometry()))
                     })
                     .collect::<std::collections::BTreeSet<_>>();
                 if ids.len() == 1 {

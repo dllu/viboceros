@@ -2,6 +2,8 @@ use std::ops::RangeInclusive;
 mod analytic;
 mod arc_length;
 mod arc_length_from;
+mod soft_edit;
+pub use soft_edit::CurveSoftEdit;
 mod boundary_extension;
 mod circularity;
 pub use boundary_extension::CurveExtensionOperations;
