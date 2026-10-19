@@ -1770,6 +1770,11 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/insert_control_point.json
 
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/insert_control_point_protocol.json \
+  --observations tools/rhino_oracle/observations/insert_control_point_protocol.json \
+  --absolute-epsilon 1e-8 --relative-epsilon 1e-12
+
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_change_seam.json
 

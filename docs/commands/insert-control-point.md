@@ -44,6 +44,16 @@ lookup and first-control fallback. Surface edits retain their UV domains.
 The lower-level `NurbsCurve::try_insert_control_point` remains available for
 parameter-preserving insertion.
 
+The Python oracle's `curve_insert_control_point_geometry` and
+`surface_insert_control_point_geometry` operations also use this draft. Their
+parameter locates a model point on the source; the command then finds its own
+closest parameter. Coincident source points can therefore select a different
+parameter. Surface protocol directions name the changing parameter axis,
+whereas the command names the row orientation. A completed native cancellation
+returns the unchanged definition; command failures remain errors. A separate
+[44-case protocol validation](../insert-control-point-protocol-validation.json)
+checks complete NURBS definitions with both backends at `1e-8`.
+
 Picks at a full-multiplicity knot in a nonuniform chart, including closed
 circle/ellipse seams, cancel without committing staged edits. Exact open
 surface boundary inputs also cancel. Uniform open curve endpoint picks can

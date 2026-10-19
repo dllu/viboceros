@@ -56,6 +56,7 @@ pub use maelstrom_points::MaelstromPointFixture;
 mod centroid_command;
 mod connect_command;
 mod construction_plane;
+mod control_point_insertion;
 #[cfg(test)]
 mod curve_closest_tests;
 mod curve_conic_centers;
@@ -6551,9 +6552,19 @@ fn execute(
             ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_insert_control_point(black_box(*parameter), black_box(*midpoint))
+            let point = source.evaluate(*parameter)?;
+            let (geometry, elapsed) = measure_probe(iterations, || {
+                control_point_insertion::run(
+                    Geometry::NurbsCurve(source.clone()),
+                    black_box(point),
+                    SurfaceKnotDirection::U,
+                    black_box(*midpoint),
+                    tolerance,
+                )
             })?;
+            let Geometry::NurbsCurve(curve) = geometry else {
+                unreachable!("NURBS insertion preserves the geometry type")
+            };
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
         Operation::CurveInsertKnotGeometry {
@@ -6763,14 +6774,25 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || {
-                source.try_insert_control_point(
-                    black_box(direction.geometry()),
-                    black_box(parameter[0]),
-                    black_box(parameter[1]),
+            let point = source.evaluate(parameter[0], parameter[1])?;
+            // Protocol directions name the changing parameter axis. The
+            // command's Direction names the orientation of the inserted row.
+            let row_direction = match direction {
+                SurfaceKnotAxis::U => SurfaceKnotDirection::V,
+                SurfaceKnotAxis::V => SurfaceKnotDirection::U,
+            };
+            let (geometry, elapsed) = measure_probe(iterations, || {
+                control_point_insertion::run(
+                    Geometry::NurbsSurface(source.clone()),
+                    black_box(point),
+                    row_direction,
                     black_box(*midpoint),
+                    tolerance,
                 )
             })?;
+            let Geometry::NurbsSurface(surface) = geometry else {
+                unreachable!("NURBS insertion preserves the geometry type")
+            };
             (uniform_surface_definition_value(&surface), elapsed)
         }
         Operation::SurfaceDirectionEditGeometry {
@@ -15602,9 +15624,14 @@ mod tests {
         let surface = &response.results[1].value;
         assert_eq!(surface["degree"], json!([2, 2]));
         assert_eq!(surface["control_count"], json!([6, 4]));
-        assert_eq!(
-            surface["knots_u"],
-            json!([0.0, 0.0, 0.0, 2.0, 3.0, 5.0, 8.0, 8.0, 8.0])
+        // The command recovers the parameter from a model point, introducing
+        // floating-point roundoff in the inserted knot.
+        crate::test_json::close(
+            &surface["knots_u"],
+            &json!([0.0, 0.0, 0.0, 2.0, 3.0, 5.0, 8.0, 8.0, 8.0]),
+            "insert-surface-u-control-row/knots_u",
+            1e-12,
+            1e-12,
         );
         assert_eq!(
             surface["knots_v"],

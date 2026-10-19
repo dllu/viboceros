@@ -1,0 +1,117 @@
+{
+  "scope": "Original Python curve/surface InsertControlPoint geometry operations use actual command picks and cancellation semantics.",
+  "source_base_commit": "ea0a32545de03717101b1743aeb7a56b700ec287",
+  "rhino_version": "8.32.26160.13001",
+  "request": {
+    "path": "tools/rhino_oracle/fixtures/insert_control_point_protocol.json",
+    "sha256": "10b1997397dea630458842bc7b58a152dfe9af34ae151f9822699c278dfd67cd"
+  },
+  "observation": {
+    "path": "tools/rhino_oracle/observations/insert_control_point_protocol.json",
+    "sha256": "6438ecf4b4f1febcbab135aa7c24f1b0776a71c56f94852b1c089c57b6aacdaa",
+    "provenance": {
+      "base_commit": "ea0a32545de03717101b1743aeb7a56b700ec287",
+      "sources": {
+        "generate_insert_control_point_protocol.py": "f09220d205caaa4175da6c329e33cdfe57d00ba156853e1cd512c6793bddb1e0",
+        "insert_control_point_geometry_probe.py": "07be93dd6cfe0cfe6a89d77a23f4173201bc1107404fd4248e00b17238534ef9",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "a3014686af0ab6e525e37bbcd6ebf63f41cb7795cb48ef7f4f7f3ca69830fcad",
+        "structural_sdk.py": "266ad5bcbd43496a53365ddee4635885d74d0b2e835f73c479153c08f51d4167"
+      },
+      "inputs": {
+        "tools/rhino_oracle/fixtures/insert_control_point.json": "e96de6a2d6bfe1cddb86025f939c6852fe4f2392b9461968595112c42d3f7809",
+        "tools/rhino_oracle/observations/insert_control_point_command.json": "c81253f3466492e3cf117e3166f03041d8c81ead56453a2b62203c062cb7d95b"
+      },
+      "request_sha256": "10b1997397dea630458842bc7b58a152dfe9af34ae151f9822699c278dfd67cd"
+    }
+  },
+  "baseline": {
+    "matched": 13,
+    "mismatched": 23,
+    "execution_errors": 8,
+    "cases": 44
+  },
+  "profiles": {
+    "portable": {
+      "cases": 44,
+      "matched": 44,
+      "mismatched": 0,
+      "execution_errors": 0,
+      "maximum_absolute_error": 5.1742610196470196e-11
+    },
+    "native": {
+      "cases": 44,
+      "matched": 44,
+      "mismatched": 0,
+      "execution_errors": 0,
+      "maximum_absolute_error": 5.1742610196470196e-11
+    }
+  },
+  "absolute_epsilon": 1e-08,
+  "relative_epsilon": 1e-12,
+  "test_geometry_optimization": "profile.test.package.viboceros-geometry.opt-level=2",
+  "checks": {
+    "portable_rust": 4,
+    "native_rust": 4,
+    "python": 25,
+    "harness_python": 43,
+    "clippy": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+    "format": "cargo fmt --all --check"
+  },
+  "production_and_test_sources": {
+    "crates/viboceros-oracle/src/lib.rs": "ec2d8993c71752980dfbe3f1d0a5bc51ec4931569f465bac433a48b25a73494a",
+    "crates/viboceros-oracle/src/control_point_insertion.rs": "5775913afa95e81e7ee9f5cf79d38df5f4cabd7164af9b734f93ed79e802af9f",
+    "crates/viboceros-command/src/insert_control_point.rs": "d18b3aeeaa0ea0f6b568a93bac64760079f163c2323625ecc63e493c0263375c",
+    "tools/rhino_oracle/test_insert_control_point_protocol.py": "9c966e88489c9e5ededf5df5d0da0c19dba0bbca3c5413d2e722890ee6262bb0"
+  },
+  "proof_files": {
+    "docs/insert-control-point-protocol-proof/baseline-audit.json.gz": {
+      "sha256": "19250ea8101513073cf8628422067daffe4ace91be665badcef1c14e5e605974",
+      "raw_sha256": "7524061ef8f0e74dc5744365b9a299a640a7e1600f88f787dabffafefb9192bf"
+    },
+    "docs/insert-control-point-protocol-proof/baseline-comparison.json.gz": {
+      "sha256": "99480f309663c7e7d74dbc33aeb8be992cea723000f721e344482c5656c343b1",
+      "raw_sha256": "0b1f3cd0f431b92ee58cb1d67961c48e3d3582d170c96d33c6d2d8d068d680d1"
+    },
+    "docs/insert-control-point-protocol-proof/portable-replay.json.gz": {
+      "sha256": "2d20710b2bcc6d65dbac1b0107a8af857ec391e650c7aafe2c63ce2f3483fd50",
+      "raw_sha256": "dda1ed328475b06674139bec429e62f327b6eae6130a7b8fa4695e391b6fc7a1"
+    },
+    "docs/insert-control-point-protocol-proof/native-replay.json.gz": {
+      "sha256": "3f1100545c952f13c23d800ad8a30185dfcc2a56994dd6ce48ea7abe65538a0f",
+      "raw_sha256": "aa418d115b6c54f878b23c932703ba053d9dce48d8695b068c96fb8187cf5812"
+    },
+    "docs/insert-control-point-protocol-proof/portable-test.log.gz": {
+      "sha256": "104bebb5ef71a641c1443c33e68eeb5730b127aab09220e8853d36db1f5e4a53",
+      "raw_sha256": "30a723562dcb1f2fb08efa1b7986eddcb9a1b5e8e32b17125f00be14623d2f3a"
+    },
+    "docs/insert-control-point-protocol-proof/native-test.log.gz": {
+      "sha256": "69dbfa97882ea6770790881469ed1a5c7ba12b8218b7d4da5e0e42e835f16f12",
+      "raw_sha256": "c192e9b870d4a7f25d437bb82f40407b590188f62732ad25901f8ecd91fbdb72"
+    },
+    "docs/insert-control-point-protocol-proof/python.log.gz": {
+      "sha256": "52f4aafbf61d3ef892b1d2e8c3be395c1dac0688f6697ebc5acac18ffe026f32",
+      "raw_sha256": "6094ebde47eee89f6b732f750579991f046697be3c588c4eea947889475a664e"
+    },
+    "docs/insert-control-point-protocol-proof/harness-tests.log.gz": {
+      "sha256": "d54a8f5f0bfeb3ec3061854ea7637e13abe3f9b4ff36184abf928b8cd3da59b9",
+      "raw_sha256": "b7c40bedc38edc493a6041df7a96e223ec1304dc1a6be5082bc74d746b736809"
+    },
+    "docs/insert-control-point-protocol-proof/clippy.log.gz": {
+      "sha256": "8e37675ede6b434ae9a0bd2bd81c1c3bfe7e4d067622675d067e7c8f8202748d",
+      "raw_sha256": "f7a8b011f90c1fb94fe8f3f373720a81f705afd3786493e9ceca91d3333b703a"
+    },
+    "docs/insert-control-point-protocol-proof/format.log.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "limits": [
+    "The parameter locates a world point; coincident source points may select a different closest parameter.",
+    "Surface protocol directions name the changing parameter axis; command directions name row orientation.",
+    "Only one observed Success or Cancel is accepted. Missing, duplicate, failed commands and snapshot failures remain errors.",
+    "Raw definitions are compared, including knots, weights, domains, counts and periodic flags. No edited-file or native mouse qualification is added.",
+    "Timings include document, command and harness overhead. No performance claim is made."
+  ]
+}
