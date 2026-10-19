@@ -174,6 +174,11 @@ int32_t vibo_polyline_simplify_indices(size_t count, const double* points, doubl
 int32_t vibo_curve_analytic_form(uint32_t degree, size_t count, const double* controls,
     size_t knot_count, const double* knots, double tolerance, int32_t* kind, double* result, char* error, size_t capacity);
 
+// IsPolyline on an owned NURBS copy. Output capacity is count XYZ points.
+int32_t vibo_curve_polyline_vertices(uint32_t degree, size_t count, const double* controls,
+    size_t knot_count, const double* knots, size_t* retained, double* result,
+    char* error, size_t capacity);
+
 int32_t vibo_arc_through_points(const double* points, int32_t* found,
     double* result, char* error, size_t capacity);
 int32_t vibo_transform_analytic_circle(const double* frame, const double* matrix,

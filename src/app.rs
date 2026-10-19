@@ -11036,6 +11036,8 @@ mod tests {
     mod named_view;
     #[path = "../../../crates/viboceros-command/tests/support/simplify_curves.rs"]
     mod native_curve_comparison;
+    #[path = "../../../crates/viboceros-command/tests/support/modify_radius.rs"]
+    mod native_object_comparison;
     mod nurbs_selection;
     mod object_selection;
     #[cfg(feature = "native-smlib")]
@@ -11060,6 +11062,7 @@ mod tests {
     mod rail_revolve;
     mod rebuild_preview;
     mod rectangle;
+    mod reduce_polyline;
     mod remap_cplane;
     mod reparameterize;
     mod rhino_curve_prompt;

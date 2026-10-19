@@ -1,5 +1,9 @@
 # Third-party code
 
+- `rhino3dm-polyline` retains pinned MIT-licensed public C# polyline code as a
+  reference for Rust reduction; see its [README](rhino3dm-polyline/README.md) and
+  [license](rhino3dm-polyline/LICENSE).
+
 - `opennurbs` is a shallow, pinned submodule of McNeel's official OpenNURBS
   toolkit. It provides genuine 3DM archive compatibility through Viboceros's
   narrow C ABI bridge. OpenNURBS and its bundled dependencies remain under the

@@ -172,6 +172,7 @@ CurveThroughPt CurveType=Interpolated Knots=Chord Closed=No
 CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
+ReducePolyline 0.01 Copy=No
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
 ChangeDegree 5,3 Deformable=No
 MakeUniform

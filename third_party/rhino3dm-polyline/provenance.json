@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/mcneel/rhino3dm",
+  "revision": "068baee9e853929139af486fc22a6da7c730fb2f",
+  "files": {
+    "opennurbs_polyline.cs": "74f133cb2e37d3180b800471cd66800f714f15beef0f10ee6fec8b9d9b19f852",
+    "LICENSE": "f57a154acc534312b7e7b2bff29748bcef5e1202713b891759a027f7c015f0bd"
+  }
+}

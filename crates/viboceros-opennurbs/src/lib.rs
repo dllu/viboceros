@@ -8,4 +8,6 @@ pub use curve::{
     transform_analytic_circle,
 };
 
-pub use curve::{AnalyticCurve, curve_analytic_form, polyline_simplify_indices};
+pub use curve::{
+    AnalyticCurve, curve_analytic_form, curve_polyline_vertices, polyline_simplify_indices,
+};

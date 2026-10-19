@@ -5,6 +5,7 @@ use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSele
 use viboceros_document::{Geometry, ObjectId, SelectionMode};
 mod divide;
 mod modify_radius;
+mod reduce_polyline;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ObjectPromptPhase {
@@ -32,6 +33,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) special_selection: Option<BTreeSet<ObjectId>>,
     pub(super) divide: Option<divide::Session>,
     pub(super) modify_radius: Option<modify_radius::Session>,
+    pub(super) reduce_polyline: Option<reduce_polyline::Session>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -64,6 +66,13 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "ReducePolyline" {
+            return if self.phase == ObjectPromptPhase::Selecting {
+                "Select polylines; Enter specifies the reduction tolerance, Esc cancels"
+            } else {
+                "Enter a positive reduction tolerance, Copy=Yes|No; Enter uses the shown tolerance, Esc cancels"
+            };
+        }
         if self.description.command == "ModifyRadius" {
             return if self.phase == ObjectPromptPhase::Selecting {
                 "Select arcs or circles; Enter specifies a radius, Esc cancels"
@@ -435,6 +444,7 @@ impl VibocerosApp {
                 special_selection: Some(BTreeSet::new()),
                 divide: None,
                 modify_radius: None,
+                reduce_polyline: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -483,6 +493,7 @@ impl VibocerosApp {
                 special_selection: None,
                 divide: None,
                 modify_radius: None,
+                reduce_polyline: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -516,6 +527,7 @@ impl VibocerosApp {
                 special_selection: None,
                 divide: None,
                 modify_radius: None,
+                reduce_polyline: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -554,6 +566,7 @@ impl VibocerosApp {
                 special_selection: None,
                 divide: None,
                 modify_radius: None,
+                reduce_polyline: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -623,6 +636,12 @@ impl VibocerosApp {
             return false;
         }
         if preselected {
+            if description.command == "ReducePolyline"
+                && viboceros_command::reduce_polyline::parse(&words[1..], Default::default())
+                    .is_ok_and(|i| i.tolerance.is_some())
+            {
+                return false;
+            }
             if description.command == "ModifyRadius"
                 && viboceros_command::modify_radius::parse(&words[1..], Default::default())
                     .is_ok_and(|i| i.value.is_some())
@@ -667,6 +686,7 @@ impl VibocerosApp {
                         special_selection: None,
                         divide: None,
                         modify_radius: None,
+                        reduce_polyline: None,
                     });
                 }
                 Ok(None) => return false,
@@ -732,6 +752,7 @@ impl VibocerosApp {
                 special_selection: None,
                 divide: None,
                 modify_radius: None,
+                reduce_polyline: None,
             });
         }
         self.command_input.clear();
@@ -739,6 +760,7 @@ impl VibocerosApp {
         self.initialize_rebuild_options();
         self.initialize_divide_prompt();
         self.initialize_modify_radius(input);
+        self.initialize_reduce_polyline(input);
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
         true
@@ -791,6 +813,9 @@ impl VibocerosApp {
             return true;
         }
         if self.continue_modify_radius(input) {
+            return true;
+        }
+        if self.continue_reduce_polyline(input) {
             return true;
         }
         if self.continue_rebuild_options(input) {

@@ -1,7 +1,5 @@
-use super::native_curve_comparison;
+use super::native_object_comparison as comparison;
 use super::*;
-#[path = "../../../crates/viboceros-command/tests/support/modify_radius.rs"]
-mod comparison;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();

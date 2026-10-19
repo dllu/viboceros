@@ -22,6 +22,7 @@ pub enum ObjectSelectionFilter {
     CoplanarFaces,
     Curves,
     CircularCurves,
+    Polylines,
     ApplyCurves,
     ProjectTargets,
     Join,
@@ -112,6 +113,9 @@ impl ObjectSelectionFilter {
                 Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
             ),
             Self::Curves => geometry.curve_ref().is_some(),
+            Self::Polylines => geometry
+                .curve_ref()
+                .is_some_and(crate::reduce_polyline::accepts_curve),
             Self::CircularCurves => geometry
                 .curve_ref()
                 .is_some_and(crate::modify_radius::accepts_curve),

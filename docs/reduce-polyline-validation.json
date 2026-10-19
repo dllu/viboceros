@@ -1,0 +1,194 @@
+{
+  "feature": "ReducePolyline with native recognition, numeric/copy prompts, history and invalid-collapse rejection",
+  "base_commit": "a0a0e42b69dc1cd6df2434d7bcf3f36fb67c73df",
+  "native_version": "8.32.26160.13001",
+  "native_cases": 58,
+  "matching_valid_geometry_cases": 56,
+  "guarded_invalid_native_cases": [
+    "closed_large",
+    "narrow_closed"
+  ],
+  "native_command_results": {
+    "Success": 43,
+    "Failure": 15
+  },
+  "native_no_reduction_cases": 15,
+  "comparison_epsilon": 1e-08,
+  "maximum_recorded_error": {
+    "portable": 1.9860273225978185e-15,
+    "native_smlib": 1.9860273225978185e-15
+  },
+  "coverage": [
+    "Finite-chord Douglas-Peucker decisions, exact threshold and tie policy, closed seam and triangle rules",
+    "Polyline, rational/weighted degree-one NURBS, elevated linear spans, flat/nested composites and mixed input",
+    "Unit replacement parameters, chord-length copy parameters, custom domains and untouched representations",
+    "Identity, source attributes/groups, fresh copy attributes, cleared reconstructed geometry text",
+    "Preselection, command-first picks, numeric/default tolerance, Copy, Undo/Redo and redo retention",
+    "Both invalid native closed collapses reject atomically across batches",
+    "Subnormal derived chords, extreme scales and a 100000-vertex flat input",
+    "Bounded native buffer rejection, source receipts and pinned MIT C# reference"
+  ],
+  "limits": [
+    "Native Failure for the 15 no-reduction cases is represented by a normal no-change message; model state and history are compared",
+    "Invalid native outputs are rejected rather than inserted",
+    "Sampled native comparison covers the retained matrix and is not a continuous-error certificate",
+    "The kernel timing is one retained input; it does not establish general command/application performance",
+    "Focused regressions and workspace Clippy were run; the full workspace/application test suites were not rerun"
+  ],
+  "timing": {
+    "debug": false,
+    "points": 1024,
+    "rhino_fex_sdk_ns": [
+      47200,
+      72800,
+      47200
+    ],
+    "rust_ns": [
+      17568,
+      17616,
+      17488,
+      17616,
+      17536,
+      17472,
+      17440
+    ],
+    "rust_median_ns": 17536,
+    "rhino_fex_sdk_median_ns": 47200,
+    "warmups_per_runtime": 2,
+    "scope": "1024 near-straight vertices, tolerance 0.01; reduction only, excluding input construction, document and file I/O; native ARM Rust release vs licensed Rhino 8 x86_64 SDK under FEX"
+  },
+  "upstream_reference": {
+    "repository": "https://github.com/mcneel/rhino3dm",
+    "revision": "068baee9e853929139af486fc22a6da7c730fb2f",
+    "files": {
+      "opennurbs_polyline.cs": "74f133cb2e37d3180b800471cd66800f714f15beef0f10ee6fec8b9d9b19f852",
+      "LICENSE": "f57a154acc534312b7e7b2bff29748bcef5e1202713b891759a027f7c015f0bd"
+    }
+  },
+  "capture": "tools/rhino_oracle/observations/reduce_polyline.json",
+  "capture_sha256": "f942fca28cdd30257bace360cdfae1c63b068bb91bf2f3e09b40125e7c8f1c0f",
+  "request_sha256": "a2d3b74cbde956ae1b4e5a481dcf36105ee7ad6147d64cd105443464fd4c5699",
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "f3543fc3aaa14c3f18c4d46755591176ebf2c61f3ed48aa39c6fcd0a1cee0e81",
+    "crates/viboceros-command/src/object_selection.rs": "b524d122b0458b5855a9174b2dd13b62ea8263ed4d4bc952f3d69447fea537e2",
+    "crates/viboceros-command/src/reduce_polyline.rs": "42438f056be602854357d02a6eee8dec5980f0e8df073f0bc20a03fcdc58f6af",
+    "crates/viboceros-command/src/reduce_polyline/tests.rs": "cc067348447599a9800a02beb9ff8dcb85a177c08b1d4691a13a82df17be4fa7",
+    "crates/viboceros-command/tests/reduce_polyline.rs": "8a2793163f6d0663bf62672de7298570468f27ba755aa0c599ee6445ccefdee1",
+    "crates/viboceros-geometry/src/curve.rs": "b280d705b8c26126ab5e2a644ac404911963b517f2dfc3f57d5b6cd1cc0b8111",
+    "crates/viboceros-geometry/src/curve/polyline.rs": "33e31ba0221e36a585868a4485dbfb97bd52e46f037b74057bd7d02907e42817",
+    "crates/viboceros-geometry/src/error.rs": "baf6ff100e99cd5bfbb7fc7d833c4cd3c3cb6dcb15b869580ac3067df0aadb04",
+    "crates/viboceros-geometry/src/polyline.rs": "4e8bf1b7399ac4fea710cf7514dae4727f89f945956ec13ac42d7bdf7a951ac8",
+    "crates/viboceros-geometry/src/polyline/reduction.rs": "0ea54db2376b4f945c5ff1a67ec5930253260be2fd3e983ff7f2e51c380ffb79",
+    "crates/viboceros-geometry/tests/polyline_reduction.rs": "baa7be2eea1bac4149028c362612731bdf43d00c25bdb9b501bbd0709934cabd",
+    "crates/viboceros-opennurbs/native/curve_queries.h": "0fe8b48766cb5e1111fe64a53cd8b6c0a31bdab567990526de3ed39089eedbbe",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "4192f6eff42f0d354de86444ccade8124d595fbb6fd2710f909b53b37430ca1d",
+    "crates/viboceros-opennurbs/src/curve.rs": "c1cc8dc676feb8a39d6cee397731a8129a0ca477771daa5fa48f448aed13909b",
+    "crates/viboceros-opennurbs/src/curve/polyline.rs": "f9fa45c4543bf558ddf1851ad68eb13210a6cc1874f1724032a5062e3c48ad15",
+    "crates/viboceros-opennurbs/src/lib.rs": "ca5119be1486dc6efa1d815e247b1ea90c62a0a6745309110b4f6c1b4ba2de7c",
+    "src/app.rs": "b329dd3b02cdc1b81b3c270c1c48b40dc9f75897bb5f69cdea2388a4ebad1648",
+    "src/app/object_selection.rs": "51108eac2ef5639fc958c9bb063be40acbb3568bba57c99461d0eb0db861539c",
+    "src/app/object_selection/reduce_polyline.rs": "d44f9464ef2c87dde6bb5f3aa0c9d6184dd7a268a8484e862980d5f4eab95c34",
+    "src/app/tests/modify_radius.rs": "55f20a9ed66177c6530151a74527e7e2e7429cea026b901a7273f8e5f8e66d2f",
+    "src/app/tests/reduce_polyline.rs": "f2e26c518665f3b6aa13d0ccc1bc1a95c02b0700e67ef10d335ef104d30d44b9",
+    "src/app/transform_sources.rs": "b52b90c7dd7f37b45d51910fdba5b3c803c9ef6d8b4fbdc2658ca2a19a44a30f",
+    "tools/rhino_oracle/generate_reduce_polyline.py": "bdebd934cc7e59ceda613462fe7facb02004e15f8e8b72c75d86c1a733013fff",
+    "tools/rhino_oracle/reduce_polyline_probe.py": "ff10ac50ad980bdc651c607d764eae4bfb56f6e2efb202377bd1617a90e07db5",
+    "tools/rhino_oracle/rhino_worker.py": "ab7531abd25d7da4f2c24cfd8eedee3d05867721b80da8ae7d77499c11b9f33a",
+    "tools/rhino_oracle/structural_sdk.py": "09ac1e795093af406f9da48b0f01361829af3a46b5bbc325d2e316e54d87c10f",
+    "tools/rhino_oracle/test_nested_rational.py": "5e66e0c91c98a1231e410996bd15fa3b80646a4d5992118ed63e4d1a93812a5f",
+    "tools/rhino_oracle/test_reduce_polyline_probe.py": "d8a0eaef8dbb891cb6afa185cd48e434592cbff6d7a7614e0db179c6b668b62e",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "ea2d390cfff4237f7ea2200be8571434c47cb7d005132eda5f67c20c314b32c2"
+  },
+  "runs": [
+    {
+      "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_reduce_polyline",
+      "status": "passed",
+      "log": "docs/reduce-polyline-capture.log.gz",
+      "uncompressed_sha256": "9d6288c9da8d0bafc2d8c32ffd847a166737be05918503e8bcd731efa4e200e1"
+    },
+    {
+      "command": "cargo test -p viboceros-opennurbs --lib curve",
+      "status": "passed",
+      "log": "docs/reduce-polyline-native-query.log.gz",
+      "uncompressed_sha256": "c1e1a762a07ff5a6ae6457000e9783d2f73b44393faf4d979ff923730e84cb5d"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --test polyline_reduction -- --nocapture",
+      "status": "passed",
+      "log": "docs/reduce-polyline-kernel-debug.log.gz",
+      "uncompressed_sha256": "81a63df294ac5ee6c7d573ef157edaaa3659f99fe72df3b810e81a797d6c3986"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --release --test polyline_reduction -- --nocapture",
+      "status": "passed",
+      "log": "docs/reduce-polyline-kernel-release.log.gz",
+      "uncompressed_sha256": "d059184e010b460173214780db522979ac1120e00e7acf905bbc282793235fda"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib reduce_polyline",
+      "status": "passed",
+      "log": "docs/reduce-polyline-command-unit.log.gz",
+      "uncompressed_sha256": "a803588fc84aa534bca736c7708320e9014ac51be9d9f8bc8747a4b077a5c2ad"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test reduce_polyline -- --nocapture",
+      "status": "passed",
+      "log": "docs/reduce-polyline-command-portable.log.gz",
+      "uncompressed_sha256": "45ec1a665c67aeafc0db0d999d0475639daaedce2f3751e8dd842b4763609d4f"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test reduce_polyline -- --nocapture",
+      "status": "passed",
+      "log": "docs/reduce-polyline-command-native.log.gz",
+      "uncompressed_sha256": "8532f83e3af1afa14fd947e7508231888ef798a91facce15166025d736ef4944"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::reduce_polyline",
+      "status": "passed",
+      "log": "docs/reduce-polyline-ui.log.gz",
+      "uncompressed_sha256": "3d8a691a6cb703a868589d7b6e4dd4bb9ac6ed1aff4387dcd96b4fc901bb5208"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::modify_radius",
+      "status": "passed",
+      "log": "docs/reduce-polyline-ui-regression.log.gz",
+      "uncompressed_sha256": "8244c8cab0977e3d0b465a7897810d6b7ff09b87e0e8450d30236429cc37770f"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "status": "passed",
+      "log": "docs/reduce-polyline-help.log.gz",
+      "uncompressed_sha256": "491adb3a12a38b4d98b6c3bfa356288f9a8940c2cf27f32fe9c0252ecf61e34b"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test modify_radius --test simplify_curves --test delete_subcurve",
+      "status": "passed",
+      "log": "docs/reduce-polyline-command-regression.log.gz",
+      "uncompressed_sha256": "7d33df3f949eb7e251a168b9ffbdfe2c0032097705616ceae0c85c0926c65d40"
+    },
+    {
+      "command": "cargo test -p viboceros-io --test nested_rational",
+      "status": "passed",
+      "log": "docs/reduce-polyline-io-regression.log.gz",
+      "uncompressed_sha256": "f8d7168ef9bf794f724829fffb5fffa3cb520b2d3029d148e41d0f5356bc64ad"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_reduce_polyline_probe tools.rhino_oracle.test_nested_rational tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_worker tools.rhino_oracle.test_client tools.rhino_oracle.test_modify_radius_probe tools.rhino_oracle.test_simplify_curve_probe tools.rhino_oracle.test_delete_subcurve_probe",
+      "status": "passed",
+      "log": "docs/reduce-polyline-python.log.gz",
+      "uncompressed_sha256": "ed49766a179d3c1742d2495891e9182e4fb585ec01d705bbdf7d0296c7f88846"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "log": "docs/reduce-polyline-clippy.log.gz",
+      "uncompressed_sha256": "81601ce90f1c5aa2f8f934fa73e9f0f7e4f0b65973f6bc9097531272532f90f7"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "status": "passed",
+      "log": "docs/reduce-polyline-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

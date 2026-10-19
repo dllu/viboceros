@@ -1,3 +1,47 @@
+// Reuse exact public OpenNURBS recognition rather than fitting a polyline.
+extern "C" int32_t vibo_curve_polyline_vertices(uint32_t degree, size_t count,
+    const double* controls, size_t knot_count, const double* knots,
+    size_t* retained, double* result, char* error, size_t capacity) {
+  if (retained) *retained = 0;
+  set_error(error, capacity, "");
+  try {
+    if (!retained || !result || count < 2 || count > 1000000) {
+      set_error(error, capacity, "Invalid polyline recognition buffers");
+      return 0;
+    }
+    vibo_begin_open_nurbs();
+    ViboWriteObject source{};
+    source.object_type = VIBO_OBJECT_NURBS_CURVE;
+    source.degree_u = degree;
+    source.control_point_count_u = count;
+    source.coordinates = controls;
+    source.coordinate_count = count * 4;
+    source.knots_u = knots;
+    source.knot_u_count = knot_count;
+    std::string message;
+    std::unique_ptr<ON_Object> object(geometry_for(source, message));
+    const ON_Curve* curve = ON_Curve::Cast(object.get());
+    if (!curve) {
+      set_error(error, capacity, message.empty() ? "Polyline curve transfer failed" : message);
+      return 0;
+    }
+    ON_SimpleArray<ON_3dPoint> points;
+    const int found = curve->IsPolyline(&points, nullptr);
+    if (found == 0) return 1;
+    if (found < 2 || found != points.Count() || static_cast<size_t>(found) > count) {
+      set_error(error, capacity, "Invalid native polyline recognition result");
+      return 0;
+    }
+    for (int i=0; i<found; ++i) for (int j=0; j<3; ++j)
+      result[3*i+j] = points[i][j];
+    *retained = static_cast<size_t>(found);
+    return 1;
+  } catch (const std::exception& exception) {
+    set_error(error, capacity, std::string("Polyline recognition failed: ") + exception.what());
+  } catch (...) {set_error(error, capacity, "Unknown polyline recognition failure");}
+  return 0;
+}
+
 // Reuse the file bridge's rational constructor and OpenNURBS' plane query.
 extern "C" int32_t vibo_arc_through_points(const double* points, int32_t* found,
     double* result, char* error, size_t capacity) {

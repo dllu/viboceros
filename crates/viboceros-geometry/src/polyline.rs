@@ -3,6 +3,7 @@ use std::f64::consts::TAU;
 
 mod fillet;
 mod integration_frame;
+mod reduction;
 
 use crate::{
     AffineTransform3, BoundingBox3, Circle3, GeometryError, LineSegment, NurbsCurve, Point3, Real,

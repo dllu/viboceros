@@ -1,6 +1,8 @@
 //! Owned OpenNURBS curve queries through the shared exact file constructor.
 use std::ffi::{c_char, c_int};
+mod polyline;
 mod recognition;
+pub use polyline::curve_polyline_vertices;
 pub use recognition::{AnalyticCurve, curve_analytic_form, polyline_simplify_indices};
 
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]

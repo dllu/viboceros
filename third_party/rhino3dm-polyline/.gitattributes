@@ -1,0 +1,3 @@
+# Preserve the pinned upstream file, including its original trailing spaces.
+opennurbs_polyline.cs -text whitespace=-blank-at-eol
+LICENSE -text
