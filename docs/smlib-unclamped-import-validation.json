@@ -335,7 +335,6 @@
     "crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
     "crates/viboceros-smlib/tests/unclamped_brep.rs": "5dfd2f730cd1eb2d4287619748e61cfe0cf2c658ab1fba0c4c08523559250d03",
     "crates/viboceros-geometry/src/nurbs.rs": "6050a03ba4cca4a943be70e71f820158c8006f06101931276aef521227f8c3b1",
-    "crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
     "tools/rhino_oracle/audit.py": "9bc635ead76127a049c4751f0cd6b20de01ce7b65dc5bda873987169943c76e1",
     "tools/rhino_oracle/references/join_isocurve_areas.py": "bf5df5b9ac08f7707e00be23b0608dff24399c14541e0774e04c003ac1f573d3",
     "tools/verify_provenance.py": "392984f3a786ecc1e8e758e0e3bccf3ea6d319776b2bfd4ebc10884590d29bc0",
@@ -395,7 +394,8 @@
     "3fba75ffc22e2adf74b34cde1355debe41515fee:crates/viboceros-command/src/join/breps/native.rs": "ed1ba7831a6e95fa9fc1ac1c69d1940ed038d144a9bbd9770b5ce0d069eb2360",
     "4debb4e1cbe7dbf884fe578413a8c7d360be89a0:crates/viboceros-smlib/src/native/brep.rs": "e96a3aee3952e9df11fa273c7ad2194a7fb39a77ffaa7556bbedcc320b9a505a",
     "17edd759a15358489de6fb6b1c2e2d8ab3409abe:crates/viboceros-command/src/join/breps.rs": "881357e5dc2ea7e793295a6846101079cf090c94974ef6669cd5d827bafb27a1",
-    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a"
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:tools/rhino_oracle/client.py": "f3fbacda3ed8e9db3b8e877fb936c81a9194d60ed6bef9c4a6e7736e3d3fc89a",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930"
   },
   "artifact_git_sha256": {
     "98feba44af87655d4d4fe96a793b686de7dd1e3e:README.md": "787b60291db63992a6ecd9ebf23fb80467f09a8336fb0c7296e07ab8140dae63",

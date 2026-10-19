@@ -480,7 +480,7 @@ Help
 ```
 
 [Reparameterize face domains](reparameterize.md) documents trimmed surfaces,
-explicit polysurface faces and the remaining curved Automatic differences.
+explicit polysurface faces and Automatic surface sizing.
 
 - [FilletEdge: circular solid-edge rounding and component input](fillet-edge.md)
 - [FilletSrf: surface picks, trim/split, joining and previews](fillet-srf.md)

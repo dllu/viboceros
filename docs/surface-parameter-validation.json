@@ -274,7 +274,6 @@
     "Arbitrary floating-point model/parameter scales, all morph consumers, general topology, and viewport parity remain unproven. Other derivative consumers, including surface pullback, remain outside this correction."
   ],
   "source_sha256": {
-    "crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
     "crates/viboceros-geometry/src/morph.rs": "31780be5c5f03f316d070e839b731bda82b80cbf3b69a101e70e0c8acb773641",
     "crates/viboceros-geometry/src/frame.rs": "49a80b2225fd5dff34329906ce68c11c8242570c0deaeda14fcd8b02ad44bf92",
     "crates/viboceros-geometry/tests/surface_parameter_frames.rs": "7974797de9df1e66843b22a01eb2ec9e03213caa543213dcb0a60d188c231b1f",
@@ -310,6 +309,7 @@
   },
   "source_git_sha256": {
     "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/vector.rs": "fef812b445c3d6d9dfb622f074f717ecc872e57c48b07f27c6a4fbcba6764df6",
-    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-command/src/lib.rs": "bbfdac649c90d8cccd4be6262e8bcaf3da4e53d5c7cd930b974a58f657aa77c4"
+    "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-command/src/lib.rs": "bbfdac649c90d8cccd4be6262e8bcaf3da4e53d5c7cd930b974a58f657aa77c4",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930"
   }
 }

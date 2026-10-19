@@ -1,16 +1,23 @@
 """Owned Reparameterize commands and public BrepFace.SetDomain controls."""
 import math
 import re
+if __package__:
+    from .surface_fillet_probe import validate_surface
+else:
+    from surface_fillet_probe import validate_surface
 
 FAMILIES = ('annulus', 'reversed_rectangle', 'cylinder', 'sphere') + tuple('box_'+str(i) for i in range(6))
 
 
 def validate(op):
-    if (not isinstance(op, dict) or set(op) != {'op', 'id', 'family', 'domains', 'artifact_path'}
-            or op['op'] != 'reparameterize_face_command' or op['family'] not in FAMILIES
+    if (not isinstance(op, dict) or set(op)-{'surface'} != {'op', 'id', 'family', 'domains', 'artifact_path'}
+            or op['op'] != 'reparameterize_face_command' or op['family'] not in FAMILIES+('nurbs',)
             or not isinstance(op['id'], str) or re.match(r'^[A-Za-z0-9_-]{1,100}\Z', op['id']) is None
             or not isinstance(op['artifact_path'], str) or not op['artifact_path'].endswith('.3dm')):
         raise ValueError('invalid face reparameterization recipe')
+    if (op['family'] == 'nurbs') != ('surface' in op):
+        raise ValueError('NURBS cases require one explicit surface definition')
+    if 'surface' in op: validate_surface(op['surface'])
     domains = op['domains']
     if domains == 'Automatic': return
     if (not isinstance(domains, list) or len(domains) != 2
@@ -28,7 +35,7 @@ def request(artifact_root):
     return dict(protocol_version=1, iterations=1, tolerance=dict(absolute=1e-8, relative=1e-12, angular=1e-8), operations=operations)
 
 
-def run(op, host, iterations):
+def run(op, host, iterations, tolerance):
     validate(op)
     if iterations != 1: raise ValueError('face command probes require one iteration')
     import Rhino
@@ -42,18 +49,22 @@ def run(op, host, iterations):
     source = control = None
     owned = []
     saved_tolerance = doc.ModelAbsoluteTolerance
-    doc.ModelAbsoluteTolerance = 1e-8
+    epsilon = tolerance['absolute']
+    doc.ModelAbsoluteTolerance = epsilon
     def keep(g):
         if g is None or not g.IsValid: raise ValueError('invalid face reparameterization source')
         owned.append(g);return g
     def record(b):
         return dict(valid=bool(b.IsValid), geometry=host['_interchange_brep_record'](b))
     try:
-        if family.startswith('box_'):
+        if family == 'nurbs':
+            surface = keep(host['_nurbs_surface_from_definition'](op['surface']))
+            source = keep(surface.ToBrep())
+        elif family.startswith('box_'):
             source = keep(G.BoundingBox(G.Point3d(0., 0., 0.), G.Point3d(4., 6., 2.)).ToBrep())
         elif family == 'annulus':
             curves = [keep(G.Circle(G.Plane.WorldXY, r).ToNurbsCurve()) for r in (5., 2.)]
-            parts = list(G.Brep.CreatePlanarBreps(curves, 1e-8) or [])
+            parts = list(G.Brep.CreatePlanarBreps(curves, epsilon) or [])
             if len(parts) != 1: raise ValueError('annulus source failed')
             source = keep(parts[0])
         elif family == 'reversed_rectangle':
@@ -61,7 +72,7 @@ def run(op, host, iterations):
             source = keep(outer.ToBrep())
             # Shrinking the natural domain is a genuine rectangular trim on
             # the full support when performed through the public face API.
-            trimmed = list(source.Trim(G.Plane(G.Point3d(-3.,0.,0.), G.Vector3d(-1.,0.,0.)), 1e-8) or [])
+            trimmed = list(source.Trim(G.Plane(G.Point3d(-3.,0.,0.), G.Vector3d(-1.,0.,0.)), epsilon) or [])
             if len(trimmed) != 1: raise ValueError('rectangular source trim failed')
             source = keep(trimmed[0]);source.Flip()
         elif family == 'cylinder':
@@ -80,7 +91,7 @@ def run(op, host, iterations):
         if path.startswith('/'): path = 'Z:'+path.replace('/', '\\')
         model = Rhino.FileIO.File3dm();owned.append(model)
         model.Settings.ModelUnitSystem = Rhino.UnitSystem.Millimeters
-        model.Settings.ModelAbsoluteTolerance = 1e-8
+        model.Settings.ModelAbsoluteTolerance = epsilon
         model.Objects.AddBrep(source, attrs)
         if not model.Write(path, 8): raise ValueError('shared source artifact write failed')
         control = keep(source.DuplicateBrep())
@@ -93,11 +104,14 @@ def run(op, host, iterations):
         for axis, domain in enumerate(target):
             if not control.Faces[face_index].SetDomain(axis, G.Interval(*domain)):
                 raise ValueError('public face SetDomain failed')
-        key = doc.Objects.AddBrep(source, attrs)
+        key = (doc.Objects.AddBrep(source, attrs, None, False, False)
+               if family == 'nurbs' else doc.Objects.AddBrep(source, attrs))
         if key == System.Guid.Empty: raise ValueError('source insertion failed')
         group = doc.Groups.Add('UV source group', [key])
         if group < 0: raise ValueError('source group failed')
         obj = doc.Objects.FindId(key)
+        if obj.Geometry.Faces.Count != source.Faces.Count:
+            raise ValueError('source admission changed the supplied face count')
         if family.startswith('box_'):
             if not obj.SelectSubObject(G.ComponentIndex(G.ComponentIndexType.BrepFace, face_index), True, True, False):
                 raise ValueError('face preselection failed')
@@ -121,7 +135,8 @@ def run(op, host, iterations):
         Rhino.RhinoApp.RunScript('_Undo', False);undo = snapshot()
         Rhino.RhinoApp.RunScript('_Redo', False);redo = snapshot()
         return dict(face=face_index, domains=target, success=success, before=before, after=after,
-                    undo=undo, redo=redo, events=events, history=history, sdk=record(control)), 0
+                    undo=undo, redo=redo, events=events, history=history, sdk=record(control),
+                    source_admission='no_kink' if family == 'nurbs' else 'default'), 0
     finally:
         if Rhino.Commands.Command.InCommand():Rhino.RhinoApp.RunScript('!', False)
         doc.Objects.UnselectAll()

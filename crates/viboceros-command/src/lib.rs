@@ -21384,7 +21384,7 @@ mod tests {
     }
 
     #[test]
-    fn reparameterize_automatic_uses_curve_length_and_surface_control_polygon_size() {
+    fn reparameterize_automatic_uses_curve_length_and_planar_surface_size() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         registry.execute(&mut document, "Line 0,0,0 3,4,0").unwrap();

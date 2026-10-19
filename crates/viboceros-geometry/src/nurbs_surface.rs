@@ -2534,6 +2534,28 @@ impl NurbsSurface {
         direction: SurfaceKnotDirection,
         parameter: Real,
     ) -> bool {
+        self.boundary_controls_coincident(direction, parameter, |a, b| a == b)
+    }
+
+    /// Whether a clamped boundary's sign-coherent controls coincide under the
+    /// existing OpenNURBS point comparison. This includes origin-relative
+    /// roundoff; it is not a certificate of an exactly collapsed surface side.
+    pub fn has_coincident_boundary_controls(&self, edge: SurfaceExtensionEdge) -> bool {
+        let (direction, parameter) = match edge {
+            SurfaceExtensionEdge::South => (SurfaceKnotDirection::U, *self.domain_v().start()),
+            SurfaceExtensionEdge::North => (SurfaceKnotDirection::U, *self.domain_v().end()),
+            SurfaceExtensionEdge::West => (SurfaceKnotDirection::V, *self.domain_u().start()),
+            SurfaceExtensionEdge::East => (SurfaceKnotDirection::V, *self.domain_u().end()),
+        };
+        self.boundary_controls_coincident(direction, parameter, curve_points_coincident)
+    }
+
+    fn boundary_controls_coincident(
+        &self,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+        coincident: fn(Point3, Point3) -> bool,
+    ) -> bool {
         let (degree, knots, domain, count, width) = match direction {
             SurfaceKnotDirection::U => (
                 self.degree_v,
@@ -2569,9 +2591,12 @@ impl NurbsSurface {
             SurfaceKnotDirection::Both => unreachable!(),
         };
         let first = control(0);
+        if !coincident(first.point(), control(width - 1).point()) {
+            return false;
+        }
         (0..width).all(|i| {
             let p = control(i);
-            p.point() == first.point()
+            (i == 0 || coincident(p.point(), control(i - 1).point()))
                 && p.weight() != 0.
                 && p.weight().is_sign_negative() == first.weight().is_sign_negative()
         })
@@ -9483,5 +9508,42 @@ mod tests {
             }
         }
         assert_eq!(surface.try_trimmed_u(surface.domain_u()).unwrap(), surface);
+    }
+    #[test]
+    fn boundary_coincidence_is_distinct_from_exact_collapse_and_requires_clamping() {
+        let surface = |knots: Vec<Real>| {
+            NurbsSurface::try_new(
+                1,
+                1,
+                2,
+                2,
+                [
+                    [10000., 3000., 0.],
+                    [10000. + 1e-10, 3000., 0.],
+                    [10000., 3002., 0.],
+                    [10002., 3002., 0.],
+                ]
+                .into_iter()
+                .map(|p| Point3::try_from(p).unwrap())
+                .collect(),
+                vec![0., 0., 1., 1.],
+                knots,
+            )
+            .unwrap()
+        };
+        let s = surface(vec![0., 0., 1., 1.]);
+        assert!(s.has_coincident_boundary_controls(SurfaceExtensionEdge::South));
+        assert!(!s.is_collapsed_clamped_boundary(SurfaceKnotDirection::U, 0.));
+        for side in [
+            SurfaceExtensionEdge::North,
+            SurfaceExtensionEdge::East,
+            SurfaceExtensionEdge::West,
+        ] {
+            assert!(!s.has_coincident_boundary_controls(side));
+        }
+        assert!(
+            !surface(vec![-1., 0., 1., 2.])
+                .has_coincident_boundary_controls(SurfaceExtensionEdge::South)
+        );
     }
 }

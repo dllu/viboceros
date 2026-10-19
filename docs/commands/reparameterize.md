@@ -26,22 +26,24 @@ The command uses the shared validated affine
 [face chart mapper](../fillet-parent-charts.md), including its refusal of charts
 that lose excessive coordinate precision.
 
-`Automatic` retains the existing size policy: curve length for curves and the
-maximum control-polygon length in each direction for NURBS surfaces and faces.
-This corresponds to the open-source NURBS `GetSurfaceSize` estimate. It differs
-from Rhino's actual command on the recorded curved examples: for a radius-two
-cylinder Rhino chooses a U range near `0..12.56637`, while this estimate gives
-`0..16`. The sphere example also differs. These two command-domain mismatches
-remain explicit regression controls; matching Rhino's curved Automatic policy
-is unfinished. Explicit ranges match all recorded command cases at `1e-8`,
-and normalized surface/trim image checks separately exercise all 30 recipes.
+`Automatic` uses curve length for curves. For surfaces and faces, it averages
+positive isocurve length estimates at eleven evenly spaced parameter values in
+each transverse direction, including the boundaries. Collapsed isocurves are
+excluded. The length estimates use the existing bounded Cash–Karp integrator
+with the public default fractional tolerance of `1e-8`.
+
+This [automatic surface sizing policy](../automatic-surface-domains.md) resolves
+the earlier cylinder and sphere range mismatches. The general NURBS
+`estimated_size` query continues to report maximum control-polygon lengths.
 
 The saved public-command observations include all six individual faces of a
 joined box, an annulus, a reversed rectangular trim, a cylinder and a sphere,
-with ordinary ranges, unequal U/V scales and Automatic. Shared source 3dm files
+with ordinary ranges, unequal U/V scales and Automatic. An additional 24
+Automatic captures cover warped and weighted patches, an unclamped surface,
+cones, knot edits, chart edits, scales, weight gauges and document tolerances. Shared source 3dm files
 preserve the actual reference topology and parameterization. Both the command
-and public `BrepFace.SetDomain` results are retained; the latter's size query
-also differs from the actual command on some curved inputs. The reference is
+and public `BrepFace.SetDomain` results are retained; its control-polygon size
+query differs from the actual command on curved inputs. The reference is
 SDK-only; replay runs through the Viboceros command tests, rather than a new
 Rust oracle protocol operation. Viewport face picking and automatic copying
 from block instances remain outside this command's current workflow.

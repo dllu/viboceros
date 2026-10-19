@@ -32,24 +32,28 @@ def validate(op):
     if not all(vector(p, 2) for p in op['picks']) or not all(vector(p, 3) for p in op['queries']):
         raise ValueError('invalid surface fillet picks/queries')
     for s in op['surfaces']:
-        if not isinstance(s, dict) or set(s) != {'degree_u', 'degree_v', 'control_point_count_u', 'control_point_count_v',
-                                               'control_points', 'knots_u', 'knots_v'}:
-            raise ValueError('invalid surface fillet definition')
-        counts = []
-        for axis in ['u', 'v']:
-            p, n, knots = s['degree_'+axis], s['control_point_count_'+axis], s['knots_'+axis]
-            if (type(p) is not int or type(n) is not int or not 1 <= p <= 17 or not p < n <= 1000000
-                    or not isinstance(knots, list) or len(knots) != n+p+1 or not all(finite(x) for x in knots)
-                    or any(a > b for a, b in zip(knots, knots[1:])) or not knots[p] < knots[n]):
-                raise ValueError('invalid surface fillet basis')
-            counts.append(n)
-        if (counts[0]*counts[1] > 1000000 or not isinstance(s['control_points'], list)
-                or len(s['control_points']) != counts[0]*counts[1]):
-            raise ValueError('surface fillet resource limit')
-        for p in s['control_points']:
-            if (not isinstance(p, dict) or set(p) != {'point', 'weight'} or not vector(p['point'], 3)
-                    or not finite(p['weight']) or p['weight'] == 0):
-                raise ValueError('invalid surface fillet control')
+        validate_surface(s)
+
+
+def validate_surface(s):
+    if not isinstance(s, dict) or set(s) != {'degree_u', 'degree_v', 'control_point_count_u', 'control_point_count_v',
+                                           'control_points', 'knots_u', 'knots_v'}:
+        raise ValueError('invalid surface fillet definition')
+    counts = []
+    for axis in ['u', 'v']:
+        p, n, knots = s['degree_'+axis], s['control_point_count_'+axis], s['knots_'+axis]
+        if (type(p) is not int or type(n) is not int or not 1 <= p <= 17 or not p < n <= 1000000
+                or not isinstance(knots, list) or len(knots) != n+p+1 or not all(finite(x) for x in knots)
+                or any(a > b for a, b in zip(knots, knots[1:])) or not knots[p] < knots[n]):
+            raise ValueError('invalid surface fillet basis')
+        counts.append(n)
+    if (counts[0]*counts[1] > 1000000 or not isinstance(s['control_points'], list)
+            or len(s['control_points']) != counts[0]*counts[1]):
+        raise ValueError('surface fillet resource limit')
+    for p in s['control_points']:
+        if (not isinstance(p, dict) or set(p) != {'point', 'weight'} or not vector(p['point'], 3)
+                or not finite(p['weight']) or p['weight'] == 0):
+            raise ValueError('invalid surface fillet control')
 
 
 def run(op, host, iterations, tolerance):

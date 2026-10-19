@@ -194,3 +194,43 @@ fn curve_and_surface_parameter_edits_retain_geometry_user_text() {
         assert_eq!(doc.object(id).unwrap(), &before);
     }
 }
+
+#[test]
+fn automatic_size_handles_an_interior_collapsed_isocurve_and_rejects_zero_width_atomically() {
+    let surface = |end: Real| {
+        NurbsSurface::try_new(
+            1,
+            1,
+            2,
+            2,
+            [[0., 0., 0.], [end, 0., 0.], [0., 1., 0.], [-end, 1., 0.]]
+                .into_iter()
+                .map(|p| Point3::try_from(p).unwrap())
+                .collect(),
+            vec![0., 0., 1., 1.],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap()
+    };
+    let tolerance = Tolerance::try_new(1e-8, 1e-12, 1e-8).unwrap();
+    let size = automatic_surface_size(&surface(1.), tolerance).unwrap();
+    assert!((size[0] - 0.6).abs() < 1e-14);
+    assert!(size[1] > 1. && size[1] < 5_f64.sqrt());
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::new(tolerance);
+    let id = doc
+        .add_geometry(Geometry::NurbsSurface(surface(0.)))
+        .unwrap();
+    doc.select_object(id, SelectionMode::Replace).unwrap();
+    doc.clear_history().unwrap();
+    registry.execute(&mut doc, "SetObjectName changed").unwrap();
+    registry.execute(&mut doc, "Undo").unwrap();
+    let before = doc.object(id).unwrap().clone();
+    assert!(matches!(
+        registry.execute(&mut doc, &format!("Reparameterize Surface={id} Automatic")),
+        Err(CommandError::Geometry(_))
+    ));
+    assert_eq!(doc.object(id).unwrap(), &before);
+    assert!(!doc.can_undo());
+    assert!(doc.can_redo());
+}

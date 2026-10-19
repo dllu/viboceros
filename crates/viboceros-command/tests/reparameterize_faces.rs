@@ -10,21 +10,44 @@ fn point(value: &Value) -> Point3 {
 
 #[test]
 fn recorded_faces_keep_topology_geometry_explicit_charts_and_one_step_history() {
-    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let capture: Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/observations/reparameterize_faces.json"
     ))
     .unwrap();
+    check_capture(
+        &capture,
+        "reparameterize_faces",
+        Tolerance::try_new(1e-8, 1e-12, 1e-8).unwrap(),
+    );
+}
+
+#[test]
+fn automatic_domains_match_curved_rational_multispan_chart_and_tolerance_controls() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
+    for (label, epsilon) in [("main", 1e-8), ("tight", 1e-12), ("loose", 1e-5)] {
+        let capture: Value = serde_json::from_str(
+            &std::fs::read_to_string(root.join(format!(
+                "observations/reparameterize_automatic_{label}.json"
+            )))
+            .unwrap(),
+        )
+        .unwrap();
+        check_capture(
+            &capture,
+            "reparameterize_automatic",
+            Tolerance::try_new(epsilon, 1e-12, 1e-8).unwrap(),
+        );
+    }
+}
+
+fn check_capture(capture: &Value, folder: &str, tolerance: Tolerance) {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let registry = CommandRegistry::with_builtins();
-    let tolerance = Tolerance::try_new(1e-8, 1e-12, 1e-8).unwrap();
-    let mut automatic_mismatches = Vec::new();
     for row in capture["results"].as_array().unwrap() {
         let key = row["id"].as_str().unwrap();
         let v = &row["value"];
         assert_eq!(v["success"], true, "{key}");
-        let file = root.join(format!(
-            "tools/rhino_oracle/fixtures/reparameterize_faces/{key}.3dm"
-        ));
+        let file = root.join(format!("tools/rhino_oracle/fixtures/{folder}/{key}.3dm"));
         let model = viboceros_io::read_3dm_file(file, tolerance).unwrap();
         assert_eq!(model.unsupported_object_count(), 0, "{key}");
         assert_eq!(model.objects.len(), 1);
@@ -104,8 +127,7 @@ fn recorded_faces_keep_topology_geometry_explicit_charts_and_one_step_history() 
                     .max((domain.start() - d[0].as_f64().unwrap()).abs())
                     .max((domain.end() - d[1].as_f64().unwrap()).abs());
             }
-            // Compare at normalized parameters so a recorded Automatic policy
-            // mismatch remains a domain mismatch, not a hidden shape change.
+            // Check the surface image independently of the literal domains.
             for (j, p) in reference["samples"].as_array().unwrap().iter().enumerate() {
                 let a = s
                     .evaluate(
@@ -145,9 +167,29 @@ fn recorded_faces_keep_topology_geometry_explicit_charts_and_one_step_history() 
                 }
             }
         }
-        if domain_gap > tolerance.absolute() {
-            assert!(automatic, "{key}: explicit domain error {domain_gap}");
-            automatic_mismatches.push(key.to_string());
+        assert!(
+            domain_gap <= tolerance.absolute().min(1e-8),
+            "{key}: domain error {domain_gap}"
+        );
+        if automatic {
+            let baseline = brep.faces()[face].surface().estimated_size().unwrap();
+            let definition = &expected["faces"][face]["definition"];
+            let baseline_error = (baseline[0] - definition["domain_u"][1].as_f64().unwrap())
+                .abs()
+                .max((baseline[1] - definition["domain_v"][1].as_f64().unwrap()).abs());
+            let surface = result.faces()[face].surface();
+            eprintln!(
+                "AUTOMATIC_DOMAIN_AUDIT {}",
+                serde_json::json!({
+                    "fixture": folder, "id": key, "model_epsilon": tolerance.absolute(),
+                    "domain_epsilon": tolerance.absolute().min(1e-8),
+                    "candidate_domains": [surface.domain_u(),surface.domain_v()],
+                    "reference_domains": [definition["domain_u"].clone(),definition["domain_v"].clone()],
+                    "candidate_error": domain_gap,
+                    "baseline_control_polygon_size": baseline,
+                    "baseline_policy_error": baseline_error
+                })
+            );
         }
         if before.geometry() != after.geometry() {
             registry.execute(&mut doc, "Undo").unwrap();
@@ -167,13 +209,27 @@ fn recorded_faces_keep_topology_geometry_explicit_charts_and_one_step_history() 
             panic!()
         };
         check_roundtrip(restored, result, tolerance);
+        if automatic && brep.faces().len() == 1 {
+            let mut raw_doc = Document::new(tolerance);
+            let raw_id = raw_doc
+                .add_geometry(Geometry::NurbsSurface(brep.faces()[0].surface().clone()))
+                .unwrap();
+            raw_doc
+                .select_object(raw_id, SelectionMode::Replace)
+                .unwrap();
+            registry
+                .execute(&mut raw_doc, "Reparameterize Automatic")
+                .unwrap();
+            let Geometry::NurbsSurface(surface) = raw_doc.object(raw_id).unwrap().geometry() else {
+                panic!()
+            };
+            assert_eq!(
+                surface,
+                result.faces()[0].surface(),
+                "{key}: raw surface and face sizing"
+            );
+        }
     }
-    // Existing Automatic uses the NURBS control-polygon size estimate. These
-    // literal curved-command domain discrepancies remain required follow-ups.
-    assert_eq!(
-        automatic_mismatches,
-        vec!["cylinder_automatic", "sphere_automatic"]
-    );
 }
 
 fn check_roundtrip(actual: &Brep, expected: &Brep, tolerance: Tolerance) {

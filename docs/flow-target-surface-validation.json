@@ -240,7 +240,6 @@
     "crates/viboceros-oracle/src/flow_line.rs": "22ce157420876ff9b28321694233af588bcb675aedfe694417cda8bbbf706135",
     "docs/flow-auto-direction-validation.json": "86ad0e2cfb129be7866e59104ea6ac137d020cccea911711750d98f185db67a1",
     "docs/flow-development.md": "48e5750f3e560351f3945843dc08fe9c3cfe1e2294c287d17ddd03a38b2831c9",
-    "docs/flow-nurbs-validation.json": "46ed14a25e1a56719bf02f90c2ca2b76686b58a088c68e2ebed55b448c97fad0",
     "src/app/flow.rs": "9a0ae4172fba8595118b38502b64886871bbdfb5a09a1fbc34a327e24f6ab728",
     "src/app/tests/flow.rs": "481cae7f07d11562c758698e7228da8c54f8520d5cb35d2729b971a54a11e042",
     "src/viewport/flow_preview.rs": "0deb37859cfcc94b55645bdf412f34e89a48f077d59f21ab863a77323ff671a0",
@@ -278,6 +277,7 @@
     "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/flow-command-validation.json": "43f9f815233afa4f9eb891645117123c85fdaf5fd94d67edbf0f744330dbfbf2",
     "fd61b3687b2fb7b21845bb680ee621cbd758e2c3:docs/orient-surface-validation.json": "ea75a5a3ad8030645bd5b0d8fd0c7d6ad046d5b3d812a4d755d429a3615df16a",
     "0c85fd337d79601e2051193599f802203e25b60b:crates/viboceros-geometry/src/morph/flow.rs": "bc1f9f17b10b16f460f1303b444d35a119390c5780774089f5f4ddcca818a9e7",
-    "0c85fd337d79601e2051193599f802203e25b60b:docs/commands/flow.md": "0e2ce2cabe2377a992609421c8a2f377a1557a11da4bb818230ba6a10dd52f80"
+    "0c85fd337d79601e2051193599f802203e25b60b:docs/commands/flow.md": "0e2ce2cabe2377a992609421c8a2f377a1557a11da4bb818230ba6a10dd52f80",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/flow-nurbs-validation.json": "46ed14a25e1a56719bf02f90c2ca2b76686b58a088c68e2ebed55b448c97fad0"
   }
 }

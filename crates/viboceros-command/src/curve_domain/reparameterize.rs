@@ -92,7 +92,7 @@ impl Command for ReparameterizeCommand {
                 )
             }
             (ReparameterizeTarget::Surface(surface), ReparameterizeOptions::Automatic) => {
-                let [width, height] = surface.estimated_size()?;
+                let [width, height] = automatic_surface_size(&surface, document.tolerance())?;
                 let surface = surface.try_reparameterized(0.0..=width, 0.0..=height)?;
                 (
                     Geometry::NurbsSurface(surface),
@@ -112,7 +112,10 @@ impl Command for ReparameterizeCommand {
             (ReparameterizeTarget::Face(brep, index), options) => {
                 let values = match options {
                     ReparameterizeOptions::Automatic => {
-                        let [width, height] = brep.faces()[index].surface().estimated_size()?;
+                        let [width, height] = automatic_surface_size(
+                            brep.faces()[index].surface(),
+                            document.tolerance(),
+                        )?;
                         [0., width, 0., height]
                     }
                     ReparameterizeOptions::Explicit(v) if v.len() == 4 => [v[0], v[1], v[2], v[3]],
@@ -137,6 +140,58 @@ impl Command for ReparameterizeCommand {
         }
         Ok(format!("Reparameterized the selected {description}"))
     }
+}
+
+fn automatic_surface_size(
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<[Real; 2], GeometryError> {
+    use viboceros_geometry::{ArcLengthSampler, CurveRef, FiniteSum, SurfaceExtensionEdge as Edge};
+    let mut lengths = [[0.; 11]; 2];
+    let [u_lengths, v_lengths] = &mut lengths;
+    for (i, (u_length, v_length)) in u_lengths.iter_mut().zip(v_lengths).enumerate() {
+        let fraction = i as Real / 10.;
+        let curves = [
+            surface.isocurve_u(surface.parameter_at_v(fraction)?)?,
+            surface.isocurve_v(surface.parameter_at_u(fraction)?)?,
+        ];
+        for (axis, (curve, length)) in curves.iter().zip([u_length, v_length]).enumerate() {
+            let boundary = match (axis, i) {
+                (0, 0) => Some(Edge::South),
+                (0, 10) => Some(Edge::North),
+                (1, 0) => Some(Edge::West),
+                (1, 10) => Some(Edge::East),
+                _ => None,
+            };
+            if boundary.is_some_and(|edge| surface.has_coincident_boundary_controls(edge)) {
+                continue;
+            }
+            // Match the command's default length query through the existing
+            // bounded Cash–Karp trace. The general precise length API and
+            // caller's geometry acceptance tolerance remain independent.
+            *length = match ArcLengthSampler::try_new(CurveRef::NurbsCurve(curve), tolerance) {
+                Ok(sampler) => sampler.quadrature_length_estimate(1e-8)?,
+                Err(GeometryError::Degenerate {
+                    context: "arc-length curve",
+                }) if curve.length(tolerance)? == 0. => 0.,
+                Err(error) => return Err(error),
+            };
+        }
+    }
+    let mut size = [0.; 2];
+    for (axis, lengths) in lengths.iter().enumerate() {
+        let maximum = lengths.iter().copied().fold(0_f64, Real::max);
+        if maximum > 0. {
+            let mut sum = FiniteSum::default();
+            let mut count = 0;
+            for length in lengths.iter().filter(|&&length| length > 0.) {
+                sum.add(length / maximum)?;
+                count += 1;
+            }
+            size[axis] = (sum.total()? / count as Real) * maximum;
+        }
+    }
+    Ok(size)
 }
 
 fn parse_arguments(

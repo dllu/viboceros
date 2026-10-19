@@ -317,7 +317,6 @@
     "docs/commands/fillet-srf.md": "b32c0b8d83f486558232adb21ccc2a7c67e967a57a67e2876c4063c6f99719ef",
     "docs/direction-adapters-validation.json": "391ef9a5e42e8bcfad5ecadf37f2ca0a78cd014dc7cc3d5b099a3354e91bf59f",
     "docs/fillet-parent-charts.md": "7deaeb4fde02ea9df9b2a02ad3966dfacae97e833d021ccd21bd21161c5b60b8",
-    "docs/native-surface-fillet-parents-validation.json": "f38038266557e4904710c23bb1671153e56b18669ccb377b73e3f0b7809940fe",
     "docs/native-surface-fillet-parents.md": "5af0721daa272235af3569fdcc1f327e23b61c34bfb7a4631a7d68ffd96e44a3",
     "src/app/tests/fillet_surface.rs": "7fc635744a0315b695f594c747ac75b5bf69720e9511583f8ae10b8c883deeb8",
     "tools/rhino_oracle/fixtures/surface_fillet_charts.json": "ec9a51b0a2cdce7df1ba84a5526b90362546e689f7dbae722c4cd3594677a002",
@@ -379,6 +378,7 @@
   },
   "source_git_sha256": {
     "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:README.md": "14aa437da2097bc6841dee4536b763634ac58c8918810849f57ea0c364bf9973",
-    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/fillet-srf-validation.json": "a780b5a487b7238e138007abde31eb7642a1afe08c72b1c5f5fd7e8b114ce15d"
+    "c3f3d4250d6e82bf784fe36cdeb9d79dc90c0bdb:docs/fillet-srf-validation.json": "a780b5a487b7238e138007abde31eb7642a1afe08c72b1c5f5fd7e8b114ce15d",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/native-surface-fillet-parents-validation.json": "f38038266557e4904710c23bb1671153e56b18669ccb377b73e3f0b7809940fe"
   }
 }

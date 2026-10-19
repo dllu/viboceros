@@ -24,6 +24,32 @@ impl ArcLengthCheckpoint {
 }
 
 impl ArcLengthSampler<'_> {
+    /// Estimate length with Cash–Karp quadrature, including variable-speed
+    /// rational line spans. Constant-speed spans retain their exact lengths.
+    /// This numerical compatibility estimate is separate from `total_length`
+    /// and precise distance queries. It uses the trace's existing error and
+    /// resource limits, not a continuous error certificate.
+    pub fn quadrature_length_estimate(
+        &self,
+        fractional_tolerance: Real,
+    ) -> Result<Real, GeometryError> {
+        // Ordinary degree-one sampling uses exact rational line algebra and
+        // does not need a private unit chart. Numerical quadrature does.
+        if let CurveRef::NurbsCurve(curve) = self.curve()
+            && curve.degree() == 1
+            && curve.domain() != (0. ..=1.)
+        {
+            let normalized = curve.try_reparameterized(0. ..=1.)?;
+            return ArcLengthSampler::try_new(CurveRef::NurbsCurve(&normalized), self.tolerance)?
+                .quadrature_length_estimate(fractional_tolerance);
+        }
+        Ok(self
+            .integration_trace(fractional_tolerance, false, false, true)?
+            .last()
+            .unwrap()
+            .distance())
+    }
+
     /// Retain accepted adaptive integration checkpoints for numerical analysis.
     ///
     /// Each variable-speed span uses the embedded Cash–Karp 5/4 rule, an initial
@@ -51,6 +77,16 @@ impl ArcLengthSampler<'_> {
         fractional_tolerance: Real,
         source_parameters: bool,
         retain_all: bool,
+    ) -> Result<Vec<ArcLengthCheckpoint>, GeometryError> {
+        self.integration_trace(fractional_tolerance, source_parameters, retain_all, false)
+    }
+
+    fn integration_trace(
+        &self,
+        fractional_tolerance: Real,
+        source_parameters: bool,
+        retain_all: bool,
+        quadrature_linear: bool,
     ) -> Result<Vec<ArcLengthCheckpoint>, GeometryError> {
         if !fractional_tolerance.is_finite()
             || fractional_tolerance <= 0.
@@ -83,7 +119,10 @@ impl ArcLengthSampler<'_> {
             if out.last().unwrap().parameter != start {
                 push(&mut out, start, prefix, 0.)?;
             }
-            if !span.variable_speed {
+            let variable_line = quadrature_linear
+                && matches!(span.linear,
+                Some(LinearSpan::Rational { controls }) if controls[0].weight() != controls[1].weight());
+            if !span.variable_speed && !variable_line {
                 neumaier_add(&mut sum, &mut correction, span.length);
                 push(&mut out, map(span.end)?, sum + correction, 0.)?;
                 continue;
@@ -281,5 +320,51 @@ mod tests {
                 .any(|w| w[0].parameter() == w[1].parameter())
         );
         assert!((trace.last().unwrap().distance() - std::f64::consts::FRAC_PI_2).abs() < 1e-8);
+    }
+
+    #[test]
+    fn rational_line_quadrature_is_opt_in_and_independent_of_chart_and_weight_gauge() {
+        let mut reference: Option<Real> = None;
+        for domain in [[0., 1.], [-2., 8.], [1e12, 1e12 + 10.]] {
+            for gauge in [1., 1e20, -1e20] {
+                let curve = NurbsCurve::try_new_rational(
+                    1,
+                    vec![
+                        WeightedPoint3::try_new(Point3::try_new(0., 0., 0.).unwrap(), gauge)
+                            .unwrap(),
+                        WeightedPoint3::try_new(Point3::try_new(3., 4., 0.).unwrap(), 8. * gauge)
+                            .unwrap(),
+                    ],
+                    vec![domain[0], domain[0], domain[1], domain[1]],
+                )
+                .unwrap();
+                let sampler =
+                    ArcLengthSampler::try_new(CurveRef::NurbsCurve(&curve), Tolerance::DEFAULT)
+                        .unwrap();
+                let estimate = sampler.quadrature_length_estimate(1e-8).unwrap();
+                assert!((estimate - 5.).abs() < 1e-7);
+                if let Some(expected) = reference {
+                    assert!((estimate - expected).abs() < 1e-12);
+                } else {
+                    reference = Some(estimate);
+                }
+                assert_eq!(sampler.total_length(), 5.);
+                assert_eq!(
+                    sampler
+                        .integration_checkpoints(1e-8)
+                        .unwrap()
+                        .last()
+                        .unwrap()
+                        .distance(),
+                    5.
+                );
+                for tolerance in [0., 1., Real::NAN, Real::INFINITY] {
+                    assert_eq!(
+                        sampler.quadrature_length_estimate(tolerance).err(),
+                        Some(GeometryError::InvalidArcLengthIntegrationTolerance)
+                    );
+                }
+            }
+        }
     }
 }

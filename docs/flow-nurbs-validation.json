@@ -205,7 +205,6 @@
   "sha256": {
     "crates/viboceros-geometry/src/curve/arc_length.rs": "27af2e1cba847223edd9811534352b85347b7a9ad5bfa9bf0824a32d4e4cbf4b",
     "crates/viboceros-geometry/src/curve/arc_length/incremental.rs": "5b566778f28cc47d52109a7f474443a05795e1b4ce8102bd116fd1c4340ac086",
-    "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "5eff0dab39e2ebfc98ad794e38630f07822a698ab17936c79a8dd42396bd7bc5",
     "crates/viboceros-oracle/src/flow.rs": "c78d8dd0c36d60109cefafe9b01be090a4d6b791ed087d5c120894613e86bd13",
     "crates/viboceros-oracle/src/flow_roadlike.rs": "efaaa733ca94d27471d97d8b88637f996616ff7c5849bdc9abcbd9805018755b",
     "docs/prepared-curve-length.md": "faadeb3fbbfce8f9b764b518967c8607d7c6ebaeef63535d9dd291e525d25534",
@@ -251,6 +250,7 @@
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-integration-validation.json": "577da9315bfac803db0c320f9560d7508abdc287cffee491425f26da8ac266cb",
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:src/app/tests/flow.rs": "aac9d862aeda49d39f76d3720afc4a299f6c7587fa27b3d444e211a1d8333b9f",
     "5fc97cb611224a92b4386b261f1321ce6b05c38b:docs/flow-poles-validation.json": "a4bd3e6307a0ee30a49f92b9051806df28a6ae33975f58bc120b36212dc6882d",
-    "76ae3d7a661bd54636a2b05e7e11a716523d1210:tools/rhino_oracle/flow_probe.py": "eb3f7c53789ec04e5675121a640f98a281b2db92a0cf55ee14ea8ba6b011e7f8"
+    "76ae3d7a661bd54636a2b05e7e11a716523d1210:tools/rhino_oracle/flow_probe.py": "eb3f7c53789ec04e5675121a640f98a281b2db92a0cf55ee14ea8ba6b011e7f8",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-geometry/src/curve/arc_length/trace.rs": "5eff0dab39e2ebfc98ad794e38630f07822a698ab17936c79a8dd42396bd7bc5"
   }
 }

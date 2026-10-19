@@ -1,0 +1,1457 @@
+{
+  "date": "2026-10-18",
+  "baseline_commit": "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03",
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "opennurbs_commit": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "change": "Match Automatic surface domains using eleven boundary-inclusive isocurves, collapse recognition and the existing Cash-Karp length estimate. Add opt-in rational-line quadrature while retaining precise queries and the previous checkpoint policy.",
+  "completed_runs": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-geometry",
+        "--lib"
+      ],
+      "status": 0,
+      "seconds": 390.33734523691237,
+      "name": "geometry",
+      "log": "docs/automatic-surface-domains-geometry.log.gz",
+      "passed": 2392,
+      "failed": 0,
+      "ignored": 8
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "reparameterize_faces"
+      ],
+      "status": 0,
+      "seconds": 160.94835727009922,
+      "name": "portable-replay",
+      "log": "docs/automatic-surface-domains-portable-replay.log.gz",
+      "command_helper_version": "before iterator-only cleanup; exact source retained as artifact",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "reparameterize_faces"
+      ],
+      "status": 0,
+      "seconds": 130.88031237805262,
+      "name": "native-replay",
+      "log": "docs/automatic-surface-domains-native-replay.log.gz",
+      "command_helper_version": "before iterator-only cleanup; exact source retained as artifact",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--lib"
+      ],
+      "status": 0,
+      "seconds": 407.369053702103,
+      "name": "native-command",
+      "log": "docs/automatic-surface-domains-native-command.log.gz",
+      "command_helper_version": "before iterator-only cleanup; exact source retained as artifact",
+      "passed": 1595,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "reparameterize"
+      ],
+      "status": 0,
+      "seconds": 253.71535414108075,
+      "name": "portable-focused",
+      "log": "docs/automatic-surface-domains-portable-focused.log.gz",
+      "command_helper_version": "before iterator-only cleanup; exact source retained as artifact",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--test",
+        "reparameterize_faces"
+      ],
+      "status": 0,
+      "seconds": 19.216795863816515,
+      "name": "post-cleanup-portable-replay",
+      "log": "docs/automatic-surface-domains-post-cleanup-portable-replay.log.gz",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--features",
+        "native-smlib",
+        "--test",
+        "reparameterize_faces"
+      ],
+      "status": 0,
+      "seconds": 35.235787821002305,
+      "name": "post-cleanup-native-replay",
+      "log": "docs/automatic-surface-domains-post-cleanup-native-replay.log.gz",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "viboceros-command",
+        "--lib",
+        "reparameterize"
+      ],
+      "status": 0,
+      "seconds": 31.817378300940618,
+      "name": "post-cleanup-portable-focused",
+      "log": "docs/automatic-surface-domains-post-cleanup-portable-focused.log.gz",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": 0,
+      "seconds": 22.61640704399906,
+      "name": "clippy",
+      "log": "docs/automatic-surface-domains-clippy.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets"
+      ],
+      "status": 0,
+      "seconds": 20.448004459030926,
+      "name": "portable-check",
+      "log": "docs/automatic-surface-domains-portable-check.log.gz"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": 0,
+      "seconds": 5.400141668040305,
+      "name": "fmt",
+      "log": "docs/automatic-surface-domains-fmt.log.gz"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.rhino_oracle.test_reparameterize_face_probe",
+        "tools.rhino_oracle.test_surface_fillet_probe",
+        "tools.rhino_oracle.test_structural_sdk"
+      ],
+      "status": 0,
+      "seconds": 0.2862479751929641,
+      "name": "python",
+      "log": "docs/automatic-surface-domains-python.log.gz"
+    },
+    {
+      "command": [
+        "target/debug/deps/reparameterize_faces-66ed153862cef3e5",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "status": 0,
+      "seconds": 3.7910251209978014,
+      "name": "domain-policy-audit",
+      "log": "docs/automatic-surface-domains-audit.log.gz"
+    }
+  ],
+  "reference": {
+    "engine": "Rhino 8.32.26160.13001",
+    "existing_commands": 30,
+    "fresh_main_commands": 20,
+    "document_tolerance_controls": 4,
+    "source_files": 24,
+    "domains": "Literal domains pass at the caller epsilon capped at 1e-8; model geometry uses caller epsilon. No normalization of raw observations or widening of acceptance tolerance.",
+    "admission": "The main capture uses public no-kink object insertion to preserve the supplied source graph. Initial generic insertion split the unclamped source; the failed observation, shared input and then-current probe are retained. Tight/loose controls used the preceding probe on regular sources whose admission preserved their face count; that probe version is retained.",
+    "request_paths": "The portable requests differ from the executed requests only in replacing absolute artifact destinations with repo-relative paths."
+  },
+  "policy_comparison": {
+    "automatic_cases": 34,
+    "candidate_domain_failures": 0,
+    "baseline_policy_failures": 26,
+    "maximum_candidate_domain_error": 3.637978807091713e-12,
+    "old_cylinder_and_sphere_failures_fixed": 2,
+    "reference_commands": 54,
+    "rows": [
+      {
+        "baseline_control_polygon_size": [
+          8.94427190999916,
+          6.4031242374328485
+        ],
+        "baseline_policy_error": 2.563212512071268,
+        "candidate_domains": [
+          {
+            "end": 6.381059397927892,
+            "start": 0.0
+          },
+          {
+            "end": 4.347854434113149,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 8.881784197001252e-16,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "bilinear_warp_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            6.381059397927891
+          ],
+          [
+            0.0,
+            4.347854434113148
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          5.0,
+          12.0
+        ],
+        "baseline_policy_error": 3.21838542303996,
+        "candidate_domains": [
+          {
+            "end": 8.218385423039962,
+            "start": 0.0
+          },
+          {
+            "end": 12.33905518456516,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "rational_bilinear_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8.21838542303996
+          ],
+          [
+            0.0,
+            12.33905518456516
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          12.083027339891947,
+          11.789120946107312
+        ],
+        "baseline_policy_error": 8.048276159065358,
+        "candidate_domains": [
+          {
+            "end": 4.605454853935458,
+            "start": 0.0
+          },
+          {
+            "end": 3.7408447870419543,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "wave_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            4.6054548539354565
+          ],
+          [
+            0.0,
+            3.7408447870419548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          12.083027339891947,
+          11.789120946107312
+        ],
+        "baseline_policy_error": 6.72399714790901,
+        "candidate_domains": [
+          {
+            "end": 5.915713539452672,
+            "start": 0.0
+          },
+          {
+            "end": 5.065123798198304,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "weighted_wave_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            5.91571353945267
+          ],
+          [
+            0.0,
+            5.065123798198302
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          7.595393340703297,
+          6.734983296193095
+        ],
+        "baseline_policy_error": 2.0001217921644017,
+        "candidate_domains": [
+          {
+            "end": 5.5952715485388955,
+            "start": 0.0
+          },
+          {
+            "end": 6.286817777215684,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "unclamped_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            5.5952715485388955
+          ],
+          [
+            0.0,
+            6.286817777215682
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981206,
+        "candidate_domains": [
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627546,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018794
+          ],
+          [
+            0.0,
+            6.283185321627548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          9.65685424949238,
+          16.0
+        ],
+        "baseline_policy_error": 7.218592824981206,
+        "candidate_domains": [
+          {
+            "end": 6.283185321627546,
+            "start": 0.0
+          },
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_transposed_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            6.283185321627548
+          ],
+          [
+            0.0,
+            8.781407175018794
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981206,
+        "candidate_domains": [
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627546,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_affine_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018794
+          ],
+          [
+            0.0,
+            6.283185321627548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981206,
+        "candidate_domains": [
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627546,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_anisotropic_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018794
+          ],
+          [
+            0.0,
+            6.283185321627548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          0.016,
+          0.009656854249492381
+        ],
+        "baseline_policy_error": 0.007218592824981206,
+        "candidate_domains": [
+          {
+            "end": 0.008781407175018793,
+            "start": 0.0
+          },
+          {
+            "end": 0.006283185321627547,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 2.6020852139652106e-18,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_scale_small_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            0.008781407175018794
+          ],
+          [
+            0.0,
+            0.006283185321627549
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16000.0,
+          9656.85424949238
+        ],
+        "baseline_policy_error": 7218.592824981206,
+        "candidate_domains": [
+          {
+            "end": 8781.40717501879,
+            "start": 0.0
+          },
+          {
+            "end": 6283.185321627546,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 3.637978807091713e-12,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_scale_large_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8781.407175018794
+          ],
+          [
+            0.0,
+            6283.185321627549
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981364,
+        "candidate_domains": [
+          {
+            "end": 8.78140717501856,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627486,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 2.2293278334473143e-13,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_translated_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018636
+          ],
+          [
+            0.0,
+            6.283185321627263
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981208,
+        "candidate_domains": [
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627547,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 8.881784197001252e-16,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "sphere_weight_gauge_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018792
+          ],
+          [
+            0.0,
+            6.283185321627548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          3.0
+        ],
+        "baseline_policy_error": 3.4336293567449037,
+        "candidate_domains": [
+          {
+            "end": 12.566370643255095,
+            "start": 0.0
+          },
+          {
+            "end": 3.0000000000000004,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "cylinder_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            12.566370643255096
+          ],
+          [
+            0.0,
+            3.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          4.527692569068709
+        ],
+        "baseline_policy_error": 8.146018347965565,
+        "candidate_domains": [
+          {
+            "end": 7.853981652034433,
+            "start": 0.0
+          },
+          {
+            "end": 4.272001872658765,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "cone_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            7.853981652034434
+          ],
+          [
+            0.0,
+            4.272001872658763
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          4.0,
+          4.0
+        ],
+        "baseline_policy_error": 0.8584073391862259,
+        "candidate_domains": [
+          {
+            "end": 3.1415926608137728,
+            "start": 0.0
+          },
+          {
+            "end": 4.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.3322676295501878e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "quarter_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            3.141592660813774
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          4.0,
+          4.0
+        ],
+        "baseline_policy_error": 0.8584073418602869,
+        "candidate_domains": [
+          {
+            "end": 3.1415926581397113,
+            "start": 0.0
+          },
+          {
+            "end": 4.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "mobius_1_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            3.141592658139713
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          4.0,
+          4.0
+        ],
+        "baseline_policy_error": 0.8584073575614499,
+        "candidate_domains": [
+          {
+            "end": 3.141592642438553,
+            "start": 0.0
+          },
+          {
+            "end": 4.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 3.1086244689504383e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "mobius_4_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            3.14159264243855
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          3.5147186257614296,
+          4.0
+        ],
+        "baseline_policy_error": 0.3731259649476555,
+        "candidate_domains": [
+          {
+            "end": 3.1415926608137736,
+            "start": 0.0
+          },
+          {
+            "end": 4.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 4.440892098500626e-16,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "elevated_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            3.141592660813774
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          3.420787069270852,
+          4.0
+        ],
+        "baseline_policy_error": 0.2791944117468339,
+        "candidate_domains": [
+          {
+            "end": 3.141592657524017,
+            "start": 0.0
+          },
+          {
+            "end": 4.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 8.881784197001252e-16,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "split_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            3.141592657524018
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          8.94427190999916,
+          6.4031242374328485
+        ],
+        "baseline_policy_error": 2.563212512071268,
+        "candidate_domains": [
+          {
+            "end": 6.381059397927892,
+            "start": 0.0
+          },
+          {
+            "end": 4.347854434113149,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 8.881784197001252e-16,
+        "domain_epsilon": 1e-12,
+        "fixture": "reparameterize_automatic",
+        "id": "tight_bilinear_warp_automatic",
+        "model_epsilon": 1e-12,
+        "reference_domains": [
+          [
+            0.0,
+            6.381059397927891
+          ],
+          [
+            0.0,
+            4.347854434113148
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981206,
+        "candidate_domains": [
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627546,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-12,
+        "fixture": "reparameterize_automatic",
+        "id": "tight_sphere_automatic",
+        "model_epsilon": 1e-12,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018794
+          ],
+          [
+            0.0,
+            6.283185321627548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          8.94427190999916,
+          6.4031242374328485
+        ],
+        "baseline_policy_error": 2.563212512071268,
+        "candidate_domains": [
+          {
+            "end": 6.381059397927892,
+            "start": 0.0
+          },
+          {
+            "end": 4.347854434113149,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 8.881784197001252e-16,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "loose_bilinear_warp_automatic",
+        "model_epsilon": 1e-05,
+        "reference_domains": [
+          [
+            0.0,
+            6.381059397927891
+          ],
+          [
+            0.0,
+            4.347854434113148
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981206,
+        "candidate_domains": [
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627546,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_automatic",
+        "id": "loose_sphere_automatic",
+        "model_epsilon": 1e-05,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018794
+          ],
+          [
+            0.0,
+            6.283185321627548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          10.2,
+          10.2
+        ],
+        "baseline_policy_error": 1.7763568394002505e-15,
+        "candidate_domains": [
+          {
+            "end": 10.2,
+            "start": 0.0
+          },
+          {
+            "end": 10.2,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "annulus_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            10.200000000000001
+          ],
+          [
+            0.0,
+            10.200000000000001
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          10.0,
+          8.0
+        ],
+        "baseline_policy_error": 0.0,
+        "candidate_domains": [
+          {
+            "end": 10.0,
+            "start": 0.0
+          },
+          {
+            "end": 8.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 0.0,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "reversed_rectangle_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            10.0
+          ],
+          [
+            0.0,
+            8.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          3.0
+        ],
+        "baseline_policy_error": 3.4336293567449037,
+        "candidate_domains": [
+          {
+            "end": 12.566370643255095,
+            "start": 0.0
+          },
+          {
+            "end": 3.0000000000000004,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "cylinder_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            12.566370643255096
+          ],
+          [
+            0.0,
+            3.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          16.0,
+          9.65685424949238
+        ],
+        "baseline_policy_error": 7.218592824981206,
+        "candidate_domains": [
+          {
+            "end": 8.781407175018792,
+            "start": 0.0
+          },
+          {
+            "end": 6.283185321627546,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 1.7763568394002505e-15,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "sphere_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            8.781407175018794
+          ],
+          [
+            0.0,
+            6.283185321627548
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          4.0,
+          2.0
+        ],
+        "baseline_policy_error": 0.0,
+        "candidate_domains": [
+          {
+            "end": 4.0,
+            "start": 0.0
+          },
+          {
+            "end": 2.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 0.0,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "box_0_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            2.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          6.0,
+          2.0
+        ],
+        "baseline_policy_error": 0.0,
+        "candidate_domains": [
+          {
+            "end": 6.0,
+            "start": 0.0
+          },
+          {
+            "end": 2.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 0.0,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "box_1_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            6.0
+          ],
+          [
+            0.0,
+            2.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          4.0,
+          2.0
+        ],
+        "baseline_policy_error": 0.0,
+        "candidate_domains": [
+          {
+            "end": 4.0,
+            "start": 0.0
+          },
+          {
+            "end": 2.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 0.0,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "box_2_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            2.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          6.0,
+          2.0
+        ],
+        "baseline_policy_error": 0.0,
+        "candidate_domains": [
+          {
+            "end": 6.0,
+            "start": 0.0
+          },
+          {
+            "end": 2.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 0.0,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "box_3_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            6.0
+          ],
+          [
+            0.0,
+            2.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          6.0,
+          4.0
+        ],
+        "baseline_policy_error": 0.0,
+        "candidate_domains": [
+          {
+            "end": 6.0,
+            "start": 0.0
+          },
+          {
+            "end": 4.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 0.0,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "box_4_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            6.0
+          ],
+          [
+            0.0,
+            4.0
+          ]
+        ]
+      },
+      {
+        "baseline_control_polygon_size": [
+          4.0,
+          6.0
+        ],
+        "baseline_policy_error": 0.0,
+        "candidate_domains": [
+          {
+            "end": 4.0,
+            "start": 0.0
+          },
+          {
+            "end": 6.0,
+            "start": 0.0
+          }
+        ],
+        "candidate_error": 0.0,
+        "domain_epsilon": 1e-08,
+        "fixture": "reparameterize_faces",
+        "id": "box_5_automatic",
+        "model_epsilon": 1e-08,
+        "reference_domains": [
+          [
+            0.0,
+            4.0
+          ],
+          [
+            0.0,
+            6.0
+          ]
+        ]
+      }
+    ],
+    "scope": "Prior policy evaluation on the exact loaded sources, using unchanged estimated_size; not an old executable run. Candidate domains are compared literally at caller epsilon capped at 1e-8. Test assertions separately cover images, topology, metadata, history and 3dm readback in both kernel feature modes."
+  },
+  "source_scope": "The baseline comparison evaluates the unchanged public estimated_size formula on the same loaded sources; the baseline Git call sites establish that it was the prior command policy. It is not a retained old-executable runtime comparison.",
+  "coverage": [
+    "The original explicit/trimmed/polysurface cases now require literal Automatic domain agreement as well as geometry, topology, attributes, groups, geometry text, history and 3dm readback.",
+    "Fresh cases include weighted bilinear and quadratic patches, unclamped and split knots, rational changes of parameter, degree elevation, cones, sphere transposition, affine/anisotropic UV ranges, spatial scale, translation and common weight gauge.",
+    "Raw single-surface targets match face-target results; zero-width requests preserve redo, and an interior collapsed sample remains supported.",
+    "New quadrature and boundary-coincidence controls retain precise length/checkpoint behavior, large parameter origins, signed gauges and strict exact-collapse classification."
+  ],
+  "limitations": [
+    "Inference and replay qualify the recorded inputs, not private Rhino implementation identity, continuous global Rhino equality, arbitrary conditioning or general performance.",
+    "Numerical quadrature estimates have bounded resource use and estimated local error, not a rigorous continuous error certificate.",
+    "Source/trim acceptance tolerances and general estimated_size remain independent; no C++/FFI changes or new ASan claim.",
+    "Viewport face picking, block-instance copying and curved FilletSrf extension remain separate unfinished work."
+  ],
+  "validation_order": "Release suites passed before an iterator-only Clippy cleanup in the command helper. That exact helper and the lint failure are retained. Final-source portable/native command replays, focused portable units, domain audit, Clippy, workspace check, format and Python checks pass afterward.",
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "61b2c75f032b8dc189794d3da8d2f59c9f38cfc31b1e5518a126a6fccda21b79",
+    "crates/viboceros-command/src/curve_domain/reparameterize.rs": "4c67c5a48cfdb0d1cf42f35c995a097d9e8f2b5b505855eaddc2d1f60e13c079",
+    "crates/viboceros-command/src/curve_domain/reparameterize/tests.rs": "065195b8433014c872e6e3e6a9ede455869f95facea6a3663867412ea81c7b0e",
+    "crates/viboceros-command/src/lib.rs": "3491251117399cc12c426ea8c69e886bd218966f697254a4ac9603a9b0faee1f",
+    "crates/viboceros-command/tests/reparameterize_faces.rs": "e7432a5c0712fccfbd95589bcdccf94dc5d0f8713792e3d2d834f2b8d901c726",
+    "crates/viboceros-geometry/src/curve/arc_length/trace.rs": "c62469d1cf5b2be88fb4008baf219c9147ddcd8929fa75dd28ce7b07920a450c",
+    "crates/viboceros-geometry/src/integration/cash_karp.rs": "48fc397c8ecbab908d5aaa2189931c476d8cd64eb1bca76fd85de201316c630f",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "a1faeeee86cf6510b1a5a50ef93d37db2b1e19b633e9af174844bf74b59b88e1",
+    "docs/automatic-surface-domains.md": "4492cd732862a09c4718158c03a19151bd9b96b014fb2706823a60d729642770",
+    "docs/commands/README.md": "7aa09b56fff172b18e6ca0ec1fe6af660ba4c36a726f0ba8ac822557dc72b7f6",
+    "docs/commands/reparameterize.md": "bf7da3dd8896e19f561535ac59035749cf386892636cf36b17214cb4c4c828c9",
+    "docs/fillet-parent-charts-validation.json": "3bf486141475cc98dab899db63e42658ea0f05cdee0260481d6f24c2f0ade1b5",
+    "docs/flow-nurbs-validation.json": "6270076154265b3886da44fba72ff5a1b6cb1f04175773a1167941f21e073009",
+    "docs/flow-target-surface-validation.json": "ab6f6ebcd7b89832cb9ad942656975977a6b7ef7c1e6356e4058c10e42b27b5b",
+    "docs/native-surface-fillet-parents-validation.json": "b682907b90045874a3cd94e6cd162cd144ba7a692fb4162ea438f78d39f5432a",
+    "docs/reparameterize-faces-validation.json": "41d961abd18b9077ba45c9af032f348fc27285bbf150bc60ac0800101208ef87",
+    "docs/smlib-unclamped-import-validation.json": "e226d72a9754f45251157d62156f95db287c303d357cdb1c569f9bb27423d1f8",
+    "docs/surface-parameter-validation.json": "096dabaf538092bf4bef5038eb684bb6e54020d29faf1e17de932dc26b9043b4",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/bilinear_warp_automatic.3dm": "f29d6995f36f299eb5d91f6d94d48cd191cdccccd6fd27feb6f883cdd21d6684",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/cone_automatic.3dm": "459930a7f8703c1d2bf3996d411569a427cfdef8995edb86d39c76b3ff543b03",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/cylinder_automatic.3dm": "0846ba0d1e420664b732bd31220417a8f7b5e570ba00f76d8aeec110e1ec2e5d",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/elevated_automatic.3dm": "e153d2941555f7eedf87c832ed23153508036fd2adb98aac9bb7bbefe32bacdb",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/loose_bilinear_warp_automatic.3dm": "8878aca8322ee484aae34eaed9ba8f5038e1c9501ff01362cc1f02d21997097e",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/loose_sphere_automatic.3dm": "8dd8386f92b6354f07dc537c13dd5c5cfcde76d5742d3be5e23a658ac004db4c",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/mobius_1_automatic.3dm": "dd8a7f03b83a094081b68a31954ed935e81c36dee0df3cf5cbc7385f99004fde",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/mobius_4_automatic.3dm": "2aac940b9ed8798dadcdfe4640e8adf96862fb2668aed62b21cfbb7c7bed36f5",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/quarter_automatic.3dm": "6db68281c17b2cd0183fadabe5ce5c738649a7de03a97c02f2ff1f09541884bd",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/rational_bilinear_automatic.3dm": "e4a312d81115837bd9e9de1226b3123b84826220f55aee792aeaa8cbe7124f1b",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_affine_automatic.3dm": "619e638606588510103d71453c5fa7226916c9d095babf3e566942386318376d",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_anisotropic_automatic.3dm": "d1794dc36e71a6e088594d067d2903e5ad0791a97bfb6c2b40476cd3aea5ea29",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_automatic.3dm": "53f37ecbe8778ddd2d987f421a7e85945258073c1eac6a6914cc79e0a307339e",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_scale_large_automatic.3dm": "1b0ff4b71363acfe396faa739f84a6ec1aec2d56ad723ca8bf2388da6f4422db",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_scale_small_automatic.3dm": "7950fef7826ba77def6f2422d81851eec1674fe5d8062e42d66dc0e40715dc8e",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_translated_automatic.3dm": "fd7985b3b0d32ddbe9841722a86978b08e6544a5a90350256b635be4ce6d54e6",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_transposed_automatic.3dm": "6338ba34bb30f180c081609694a1dde7bf27652da74b210fb70fa7745255db3b",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/sphere_weight_gauge_automatic.3dm": "c263a8a94b47cc1ca05a06365075df48318d4edb60add2172dda7459628be080",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/split_automatic.3dm": "693a0a29bfffa906469aa423f3047807807d50372be3c3395ac59b2b66a7c3b8",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/tight_bilinear_warp_automatic.3dm": "95d3bd8091d023d3f1412512febf9fc28bb0b10fa513bf4ec67fdb34e75e01be",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/tight_sphere_automatic.3dm": "87b23a052e0b6f76c08a74b73a2e612f978eebbccc28acc3f065da6d2e86de32",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/unclamped_automatic.3dm": "806a74f393b42c85db69324d4fdd4e1f8dc7549f606a598dc8787783fbe1aff7",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/wave_automatic.3dm": "779d9597a67cd78cf8ad3574b1f1698c90f817b6ec9bf307a0194ea92985708c",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic/weighted_wave_automatic.3dm": "f0baf58c83a8281f55890dfebc035da908a808f3baa7951a5bef919e6656b240",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic_loose.json": "335f9d0fbbb1c57ac788a91b306391cc670f60b519d51c4cc82612f070507c78",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic_main.json": "a9cc3e2388b194f29720c5f141c475e0bd63427320c1f5d7b3036e34c57375bc",
+    "tools/rhino_oracle/fixtures/reparameterize_automatic_tight.json": "69fb7cf7fbb99c10fdb0f364bac2f6b4d8a53e2045073f2423d8cc82e3051517",
+    "tools/rhino_oracle/fixtures/reparameterize_faces.json": "ed4ed91f8e93c618a65cc3e08be29458680a80852f7585ed7a3473330c733d7f",
+    "tools/rhino_oracle/observations/reparameterize_automatic_loose.json": "1073fcf3b684aa252a2584294bcfe50b35cd59a0236769bc334d3d29e24b0182",
+    "tools/rhino_oracle/observations/reparameterize_automatic_main.json": "45c93880faca4cdd5d514344b0665696c7f44a6b7986cf16f1f49d48ba7da9c9",
+    "tools/rhino_oracle/observations/reparameterize_automatic_tight.json": "98df16d6da0fce7b919791c3683b8e2245a0a3a2e67972d96cae278849065c8c",
+    "tools/rhino_oracle/observations/reparameterize_faces.json": "908832248ef9cbc48c8f88c71db309cef4a3b6024cc04386ce1f155c495298ff",
+    "tools/rhino_oracle/reparameterize_automatic_cases.py": "0fcb2668a8a9070060944c0188e634045c277ae7f02acca603a697c9151e1158",
+    "tools/rhino_oracle/reparameterize_face_probe.py": "098ec0b200996a0f9a4878aa018626ba05f03601b8fddd8bda9ee1129656fcf1",
+    "tools/rhino_oracle/rhino_worker.py": "9dd023e1084bce20093630d107f60a4c99d91a2e7e64722a0755d426f26b91ba",
+    "tools/rhino_oracle/structural_sdk.py": "95cc28d5882ab5c83e6f75f9d19c54b4371572b6caa379b199e17b5f5c1663dd",
+    "tools/rhino_oracle/surface_fillet_probe.py": "c2db12aef0d2689eadfeb7b4ac20b9009e51f914827888fb144c41c91df1f96e",
+    "tools/rhino_oracle/test_reparameterize_face_probe.py": "7b29187dca2039c622fae73fb5e95a8cfa1133e72de2d1df72833b33456d59c6"
+  },
+  "artifact_sha256": {
+    "docs/automatic-surface-domains-geometry.log.gz": "4fd445f14317a2cc27d969c8e774ffac993d761dbd2477957dacaf4249580c57",
+    "docs/automatic-surface-domains-geometry-runtime.json.gz": "38c43e75c70479196a0e2bed02cfe3990f0929214973e0133a11f474a9ece05e",
+    "docs/automatic-surface-domains-portable-replay.log.gz": "8068454164fa3f477fde29019e3bd58c7d9c5f44becfa4bad6bca8c5325ee164",
+    "docs/automatic-surface-domains-portable-replay-runtime.json.gz": "2544c368c5cad845c1d352c65dbe848ae3cc0781db7eb0fe0d0fa0a734865c42",
+    "docs/automatic-surface-domains-native-replay.log.gz": "9165c81c3050cfcc8b7c2ecf8059bca5a40fdcc0e655a12ca5dcd37710a9d2c3",
+    "docs/automatic-surface-domains-native-replay-runtime.json.gz": "dc6207de28b7d5189c6d2cffe1087a4320f33d4c6a69a2a1aacd212ed2c18e4d",
+    "docs/automatic-surface-domains-native-command.log.gz": "0c2a69a1e6c68a579a188c7bc4d363f5504e8bc6e3a554d2b10778e3f736c558",
+    "docs/automatic-surface-domains-native-command-runtime.json.gz": "84a2edd6aa8cbcc8f79444d236921b2b4aece6814450dee4434c843e3bf23277",
+    "docs/automatic-surface-domains-portable-focused.log.gz": "77947a524c3cebd54be30d79a528e53266f390126e014e790a915be0157a7120",
+    "docs/automatic-surface-domains-portable-focused-runtime.json.gz": "daf2012cbe14abea483dd1967bb5bddb13add87869887d74e23488bf04b03ecb",
+    "docs/automatic-surface-domains-post-cleanup-portable-replay.log.gz": "466c69396ee0635b54d6fa7d49c7bc0000d53fd63c3453724f14fcab877d6d9f",
+    "docs/automatic-surface-domains-post-cleanup-portable-replay-runtime.json.gz": "16913070cbc96f58f5e2cd5eed5f32b5b0c5af893c742127703abbce3f0c6e8c",
+    "docs/automatic-surface-domains-post-cleanup-native-replay.log.gz": "d1674c16d6b2eafd89907b38a407dbcb67effd68ba07a58647a9bddef428bb99",
+    "docs/automatic-surface-domains-post-cleanup-native-replay-runtime.json.gz": "01d0c4223f24736b18ef5a36472c6beba2caa9753700dbb4c8c6123824af9806",
+    "docs/automatic-surface-domains-post-cleanup-portable-focused.log.gz": "bea8633476de630bd24207ec49107bdd60bb2c2c803d82e1e01d41518d42e175",
+    "docs/automatic-surface-domains-post-cleanup-portable-focused-runtime.json.gz": "c5ce6fc57057d12c1ef6d3b498b9f1aa3f7be6c4cae52506e662402f7459020c",
+    "docs/automatic-surface-domains-clippy.log.gz": "d34a8884eafa18b5b443d6501f1e822516096760e69410beeae6e379f71ba1c8",
+    "docs/automatic-surface-domains-clippy-runtime.json.gz": "9bf06d0dfb35b7a298ae66c7d36e63a3a9e22ce20675ae508f7f54d619a6d182",
+    "docs/automatic-surface-domains-portable-check.log.gz": "4033820fefafdf44eb05bcbd238afa8571c42e67306b9a644e0c69dc7eff2664",
+    "docs/automatic-surface-domains-portable-check-runtime.json.gz": "99863c307a39962a787e2be838ea19ad4c7c599819db820349118526ab3ccce9",
+    "docs/automatic-surface-domains-fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/automatic-surface-domains-fmt-runtime.json.gz": "d8f5c4250644c60fd8ffbf803f53d68e44dedcc5cbb2485bb0e3de64189ab449",
+    "docs/automatic-surface-domains-python.log.gz": "05b84be0c92fcdbfffb8c9955214e9323ece4ff587a226639ebb64d68c5d0360",
+    "docs/automatic-surface-domains-python-runtime.json.gz": "cceba1a310c46ff4e84325904887eec06febb03bc1903d0b8d2a6997df99383a",
+    "docs/automatic-surface-domains-tested-before-iterator-cleanup.rs.gz": "950872798c7282fa2e961bdb3d2918053ead59cd9fefcf8fea5fe21347f8da50",
+    "docs/automatic-surface-domains-clippy-before-cleanup.log.gz": "8e1cee267cf64b6d658ecc21114f02a2dd7044bc4764d8d1cb9ca78df6a3321d",
+    "docs/automatic-surface-domains-post-cleanup-gates.py.gz": "c4fa0c3e654433af429f04382a73d5307b07dd3ad6f4b68dbfa40a7680325a02",
+    "docs/automatic-surface-domains-sdk.py.gz": "21f669398b8c7bb6ef38e0217a971ac882c000bca0903121df08b28c1c7d6c23",
+    "docs/automatic-surface-domains-sdk.log.gz": "63a36f8876359f4da5d7750d225db342eb6ac4c67ad62731a95341a43ed1ede0",
+    "docs/automatic-surface-domains-sdk-main.log.gz": "b2cb0c0d1832529ef6bd68a56cdc7b6ac277105cc0fefe44166e5e8f79418f38",
+    "docs/automatic-surface-domains-split-admission-diagnostic.json.gz": "dc48e66dca0df7125385633ead05e5c1470f6edd8055aeea7f3805c619c75574",
+    "docs/automatic-surface-domains-split-admission-probe.py.gz": "6ac90ff6ce30215bc9fdeca3dce8985b9ccbf28cb20fb4bf09479f6a7fce1ac2",
+    "docs/automatic-surface-domains-split-admission-source.3dm.gz": "a6760bbab1e5b611baf6f9e7b6a5726715a4e9e0fc0501dda39328acdc7dbd61",
+    "docs/automatic-surface-domains-pole-diagnostic.log.gz": "2f848252e456669d04628e1ccedd5f937e7008df30524446ece718e3e69839bd",
+    "docs/automatic-surface-domains-gates.py.gz": "3b38696519340abf487c1e8be6b5a5d4dac213958394997ea86b7aa9e7c8535e",
+    "docs/automatic-surface-domains-preserve-provenance.py.gz": "458b5c2a392e28863900de6258a151abe7fb63b740cd47d4bbf37fc98661fab6",
+    "docs/automatic-surface-domains-audit.log.gz": "fb9338bff96f7cd0650ca86ff045570098ddb22b4ee32e2ea2a9e47b379c8a9b",
+    "docs/automatic-surface-domains-comparison.json.gz": "22438907425ca941ddb161c4d432a55506bedbaeb6e47daaa2c10225573187a6",
+    "docs/automatic-surface-domains-record.py.gz": "fb65b98df0238b1688ed32765ac70787a2027697a14f05683f1ea84ce6c3b164",
+    "docs/automatic-surface-domains-stage.py.gz": "cc74ca331104e94f535be9e92d304dc3bd2d25718efe2309859ea20f4f1b0599",
+    "docs/automatic-surface-domains-finish.py.gz": "6d32416a9ea5ec05ffe1adb983aacf8af314f0ca562ac905b5d0afda53c4ec84",
+    "docs/automatic-surface-domains-main-request.json.gz": "ca929a6e29b2c6fb1ccd83da306898e01a9df3f1e40e9b442510d4d226ce0573",
+    "docs/automatic-surface-domains-main-runtime.json.gz": "46fa073669b8f73d575076821d3074d070b79c97f9de5a668489889ce9de5b2b",
+    "docs/automatic-surface-domains-tight-request.json.gz": "c32b4ac70bcb0ae1966ad75f183b8074865ed2696c1a66749e44b3310bfcad63",
+    "docs/automatic-surface-domains-tight-runtime.json.gz": "e9fc79dd66924294eb948870d86adbdf8a70a6a6366177808deca11a60e3fe28",
+    "docs/automatic-surface-domains-loose-request.json.gz": "aca28cfdfb8b40e63a05399277cdaff31a99fd1bb8c27301cea007918ff2bdb8",
+    "docs/automatic-surface-domains-loose-runtime.json.gz": "5a6c55048ef381eb5a03038ab6ba82f8728b72f35f1114230583e3ceaeff0ba6",
+    "docs/automatic-surface-domains-audit-runtime.json.gz": "e669d040c0f3edcb849b10dfe07734122048a2451ea94b25b4a0fd665706fa54"
+  }
+}

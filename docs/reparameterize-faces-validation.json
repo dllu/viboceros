@@ -177,18 +177,9 @@
   "source_sha256": {
     "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
     "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
-    "README.md": "4891aad4026a3c9c6487ebe0b98603fb2d00e8560dbf3fa37743b28f09eb0e89",
     "crates/viboceros-command/src/curve_domain.rs": "57f4877dfa61e217feb13db4f32f6f5a04ede81c513e6a0675ff649ba877a075",
-    "crates/viboceros-command/src/curve_domain/reparameterize.rs": "70dd31e247925938fefe514af2f3e1856f8b6de1601f7feaaeca9363049430c5",
-    "crates/viboceros-command/src/curve_domain/reparameterize/tests.rs": "51f579f0cbc7521a3a203643938e96e350351f054d7174978f9a18b5b70d6127",
-    "crates/viboceros-command/src/lib.rs": "3b2201a3037853a997c53f1832ee4271bd1af758cb910e3d4ff2059ba7cec791",
-    "crates/viboceros-command/tests/reparameterize_faces.rs": "e241bef0ffad216e848b39c1765c3fb19b7273fca1327944f7fc784efb978528",
     "crates/viboceros-geometry/src/brep/reparameterize.rs": "3211c14cbf16c583b0110d3597c3031f00168363cf74211dd94cb14785c0fb8b",
     "crates/viboceros-geometry/src/brep/reparameterize/tests.rs": "3982fdc154f1405007aa4fc30e9e5a531eae3754634bf41bfb2921350db2b9a2",
-    "crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
-    "docs/commands/README.md": "8416807c0478d240d03cbadf69cd4c3fc259164f09be39ed2511d3615f3c3101",
-    "docs/commands/reparameterize.md": "91f971c20155e5628973a85bddd7ba2280eab08e8bb2fb67a910997ac7cbff4e",
-    "docs/fillet-parent-charts-validation.json": "bb0f370863f0d552d0024a0ef920285ab5d27bc105d107782f823323e785d90f",
     "docs/fillet-srf-validation.json": "19887b09b98e2fc6f15891be80b796d1d30d6009e6aa5f1d4ebd3d64f789309d",
     "docs/native-basis-evaluation-validation.json": "9bcacb1a32923aebe6fea3cd5e25806c8731594a3a7aaca73753f580ff636c70",
     "docs/native-closed-join-validation.json": "62a562824f0865882fe25e46152be65222d14dd4af3a9aa7ec7acbfad2acb018",
@@ -205,7 +196,6 @@
     "docs/native-uv-transpose-validation.json": "7b3ffbdcdbf2a5fba771bd91677ef1f44a259ece5d3d7821347cb1934ef0a333",
     "docs/orient-on-curve-edge-validation.json": "5efabc395b763dab4256844f2d37743dfdf25600c7258a42e31b27266743bba9",
     "docs/remap-cplane-api-validation.json": "439d792520c131224810f63699be12b56728e23e3342967768c74aa63165747f",
-    "docs/smlib-unclamped-import-validation.json": "3e6125f857ccd86a9421aca627e2d2378f36c7a8739bcc2b60f572f3ff473f88",
     "tools/rhino_oracle/client.py": "3927fa5651a4f85adf5610976538cb13800460b2996ec3232a799cdef09184ed",
     "tools/rhino_oracle/fixtures/reparameterize_faces.json": "ed4ed91f8e93c618a65cc3e08be29458680a80852f7585ed7a3473330c733d7f",
     "tools/rhino_oracle/fixtures/reparameterize_faces/annulus_anisotropic.3dm": "f9db0aea6d64a0c50e58856933c2c9b63fe4dfadfe9e88ed39800356e381bd3a",
@@ -238,11 +228,7 @@
     "tools/rhino_oracle/fixtures/reparameterize_faces/sphere_anisotropic.3dm": "cbe62287b82f95fb428ad7157fb88abcbf5299825e79f25bf382c32464eb5be2",
     "tools/rhino_oracle/fixtures/reparameterize_faces/sphere_automatic.3dm": "b923b5f67dd1a22ce098342a7b8b6356e8c20a4acb4dbd8594f58da716656605",
     "tools/rhino_oracle/fixtures/reparameterize_faces/sphere_explicit.3dm": "daad440754e681b78e4ba473d5d1d365e09c57fd9ea154103724cbd3c214beb8",
-    "tools/rhino_oracle/observations/reparameterize_faces.json": "908832248ef9cbc48c8f88c71db309cef4a3b6024cc04386ce1f155c495298ff",
-    "tools/rhino_oracle/reparameterize_face_probe.py": "1c7ad6a960e311eda0d3fcdd96664f58ee3fbda62d85673fc3d65a41138102e9",
-    "tools/rhino_oracle/rhino_worker.py": "72b4c213b45db67145769a434ec4fa30ddc5ec3bbdf57e48602a74ffcedbd669",
-    "tools/rhino_oracle/structural_sdk.py": "5a936912f90c53a5cb76ca2873943a53c13b0839a14543c3d2534548df6c6b1a",
-    "tools/rhino_oracle/test_reparameterize_face_probe.py": "d89eaa967aebb5c8bf43a66a575a77fa3c72ba72032fa7b9fe45f5b6187be842"
+    "tools/rhino_oracle/observations/reparameterize_faces.json": "908832248ef9cbc48c8f88c71db309cef4a3b6024cc04386ce1f155c495298ff"
   },
   "artifact_sha256": {
     "docs/reparameterize-faces-native-replay.log.gz": "376af83324da7ca1d22ff42efe6ccfdfa621c535bcfddeaa1b056f5ec820037d",
@@ -276,5 +262,21 @@
     "docs/reparameterize-faces-request.json.gz": "ae5ece06d22eee9be92c892b841447a7e28f20e7d2562f970080398561606f50",
     "docs/reparameterize-faces-record.py.gz": "1eabfb301f084eaf8d705e6b03ca5aa92458f4e5f57f4f2653f1d81a117a225c",
     "docs/reparameterize-faces-stage.py.gz": "34b6503f07d52e51c657049069772258412c963f864b9cea0b62c7502f9edee0"
+  },
+  "source_git_sha256": {
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-command/src/curve_domain/reparameterize.rs": "70dd31e247925938fefe514af2f3e1856f8b6de1601f7feaaeca9363049430c5",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-command/src/curve_domain/reparameterize/tests.rs": "51f579f0cbc7521a3a203643938e96e350351f054d7174978f9a18b5b70d6127",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-command/src/lib.rs": "3b2201a3037853a997c53f1832ee4271bd1af758cb910e3d4ff2059ba7cec791",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-command/tests/reparameterize_faces.rs": "e241bef0ffad216e848b39c1765c3fb19b7273fca1327944f7fc784efb978528",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/commands/README.md": "8416807c0478d240d03cbadf69cd4c3fc259164f09be39ed2511d3615f3c3101",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/commands/reparameterize.md": "91f971c20155e5628973a85bddd7ba2280eab08e8bb2fb67a910997ac7cbff4e",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:tools/rhino_oracle/reparameterize_face_probe.py": "1c7ad6a960e311eda0d3fcdd96664f58ee3fbda62d85673fc3d65a41138102e9",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:tools/rhino_oracle/rhino_worker.py": "72b4c213b45db67145769a434ec4fa30ddc5ec3bbdf57e48602a74ffcedbd669",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:tools/rhino_oracle/structural_sdk.py": "5a936912f90c53a5cb76ca2873943a53c13b0839a14543c3d2534548df6c6b1a",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:tools/rhino_oracle/test_reparameterize_face_probe.py": "d89eaa967aebb5c8bf43a66a575a77fa3c72ba72032fa7b9fe45f5b6187be842",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/fillet-parent-charts-validation.json": "bb0f370863f0d552d0024a0ef920285ab5d27bc105d107782f823323e785d90f",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:README.md": "4891aad4026a3c9c6487ebe0b98603fb2d00e8560dbf3fa37743b28f09eb0e89",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:crates/viboceros-geometry/src/nurbs_surface.rs": "4e5ac70f2be98295bde6342ae752db25c49c79bf3b2b7c271d99bc0306689930",
+    "8bb4b9fa2d7a7185976adb1f9cb6a0ca50c23d03:docs/smlib-unclamped-import-validation.json": "3e6125f857ccd86a9421aca627e2d2378f36c7a8739bcc2b60f572f3ff473f88"
   }
 }

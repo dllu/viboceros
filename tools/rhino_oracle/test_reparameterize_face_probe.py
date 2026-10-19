@@ -1,6 +1,8 @@
 """Reject malformed or unowned document edits before launching Rhino."""
 import copy
 import os
+import subprocess
+import sys
 from pathlib import Path
 import tempfile
 from unittest import TestCase, mock
@@ -17,7 +19,23 @@ class ReparameterizeFaceProbeTests(TestCase):
         with tempfile.TemporaryDirectory() as directory:
             stage_helpers(q,Path(__file__).parent,Path(directory))
             self.assertEqual({p.name for p in Path(directory).iterdir()},
-                {'reparameterize_face_probe.py','join_probe.py','merge_edges_probe.py'})
+                {'reparameterize_face_probe.py','join_probe.py','merge_edges_probe.py','surface_fillet_probe.py'})
+            subprocess.run([sys.executable, '-I', '-c',
+                'import sys;sys.path.insert(0,sys.argv[1]);import reparameterize_face_probe',
+                directory], check=True, capture_output=True, text=True)
+
+    def test_explicit_surface_recipes_share_bounded_definition_validation(self):
+        from .reparameterize_automatic_cases import request as automatic_request
+        q = automatic_request('/tmp/owned-automatic-charts')
+        self.assertEqual(len(q['operations']), 20)
+        validate_operations(q)
+        original = q['operations'][0]
+        for field, value in [('degree_u', True), ('control_point_count_u', 1000001),
+                             ('knots_u', [0., 1.]), ('control_points', [])]:
+            op = copy.deepcopy(original);op['surface'][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):validate(op)
+        op = copy.deepcopy(original);del op['surface']
+        with self.assertRaises(ValueError):validate(op)
 
     def test_invalid_domains_and_unowned_execution_are_rejected_before_launch(self):
         q=request('/tmp/owned-face-charts');original=q['operations'][0]

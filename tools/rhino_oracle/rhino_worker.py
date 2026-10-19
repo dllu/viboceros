@@ -13529,7 +13529,7 @@ def _execute(operation, iterations, tolerance):
         return run(operation, globals(), iterations, tolerance)
     if kind == 'reparameterize_face_command':
         from reparameterize_face_probe import run
-        return run(operation, globals(), iterations)
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'rail_revolve':
         from rail_revolve_probe import run
         return run(operation, globals(), iterations, tolerance)
