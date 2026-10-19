@@ -829,6 +829,7 @@ pub fn write_3dm_file(
                     user_text_count: text.len(),
                     geometry_user_text: pointer_or_null(geometry_text),
                     geometry_user_text_count: geometry_text.len(),
+                    rational_curve: u8::from(matches!(&object.geometry, ThreeDmGeometry::NurbsCurve(c) if c.has_rational_representation())),
                 }
             },
         )
@@ -1381,11 +1382,16 @@ fn decode_object(
                 .chunks_exact(4)
                 .map(|value| WeightedPoint3::try_new(point(value)?, value[3]))
                 .collect::<Result<Vec<_>, GeometryError>>()?;
-            ThreeDmGeometry::NurbsCurve(NurbsCurve::try_new_rational(
+            let curve = NurbsCurve::try_new_rational(
                 info.degree_u as usize,
                 control_points,
                 knots_u.to_vec(),
-            )?)
+            )?;
+            ThreeDmGeometry::NurbsCurve(if info.rational_curve != 0 {
+                curve.with_rational_representation()
+            } else {
+                curve
+            })
         }
         OBJECT_NURBS_SURFACE
             if info.degree_u > 0
@@ -2030,6 +2036,7 @@ mod ffi {
         pub index_count: usize,
         pub geometry_data_count: usize,
         pub group_index_count: usize,
+        pub rational_curve: u8,
     }
 
     #[repr(C)]
@@ -2170,6 +2177,7 @@ mod ffi {
         pub user_text_count: usize,
         pub geometry_user_text: *const ViboUserText,
         pub geometry_user_text_count: usize,
+        pub rational_curve: u8,
     }
 
     unsafe extern "C" {

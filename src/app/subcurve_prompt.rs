@@ -13,6 +13,7 @@ pub(super) struct SubcurvePrompt {
     pub(super) start: Option<f64>,
     pub(super) length: Option<f64>,
     pub(super) copy: bool,
+    pub(super) delete: bool,
     pub(super) mode: viboceros_command::subcurve_input::SubcurveMode,
     pub(super) from_midpoint: bool,
     pub(super) hover_parameter: Option<f64>,
@@ -35,6 +36,19 @@ impl SubcurvePrompt {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.delete {
+            return match (self.source, self.start, self.length) {
+                (None, _, _) => "DeleteSubCrv: select one curve; Esc cancels",
+                (Some(_), None, _) => {
+                    "DeleteSubCrv: pick the start of the portion to delete; Esc cancels"
+                }
+                (Some(_), Some(_), None) => {
+                    "DeleteSubCrv: pick the end or enter a length; Esc cancels"
+                }
+                _ => "DeleteSubCrv: confirm the length direction; a new number replaces the length",
+            };
+        }
+
         if self.from_midpoint && self.source.is_some() {
             return if self.start.is_none() {
                 "SubCrv: pick the midpoint on the curve (Esc cancels)"
@@ -76,14 +90,19 @@ impl VibocerosApp {
         p.locked_forward = None;
         p.preview = Default::default();
         self.active_command = None;
-        self.push_log("Surface edge changed; select the source again".into());
+        let message = if p.delete {
+            "Source curve changed; select the source again"
+        } else {
+            "Surface edge changed; select the source again"
+        };
+        self.push_log(message.into());
         false
     }
 
     pub(super) fn picking_subcurve_edge(&self) -> bool {
         self.subcurve_prompt
             .as_ref()
-            .is_some_and(|p| p.source.is_none())
+            .is_some_and(|p| !p.delete && p.source.is_none())
     }
 
     pub(super) fn pick_subcurve_edge(&mut self, pick: crate::viewport::EdgePick) -> bool {
@@ -117,6 +136,7 @@ impl VibocerosApp {
         self.active_command = Some(InteractiveCommand::SubCrv {
             start: None,
             copy: p.copy,
+            delete: p.delete,
         });
         self.document.clear_selection();
         self.component_selection.clear();
@@ -128,6 +148,7 @@ impl VibocerosApp {
         copy: bool,
         mode: viboceros_command::subcurve_input::SubcurveMode,
         from_midpoint: bool,
+        delete: bool,
     ) {
         let sources = self
             .document
@@ -143,17 +164,35 @@ impl VibocerosApp {
         self.subcurve_prompt = Some(SubcurvePrompt {
             source,
             edge: None,
-            edge_source: None,
+            edge_source: if delete {
+                source.map(|id| {
+                    (
+                        self.document
+                            .object(id)
+                            .unwrap()
+                            .geometry_snapshot()
+                            .clone(),
+                        self.document.tolerance(),
+                    )
+                })
+            } else {
+                None
+            },
             start: None,
             length: None,
             copy,
+            delete,
             mode,
             from_midpoint,
             hover_parameter: None,
             locked_forward: None,
             preview: super::subcurve_preview::Cache::default(),
         });
-        self.active_command = source.map(|_| InteractiveCommand::SubCrv { start: None, copy });
+        self.active_command = source.map(|_| InteractiveCommand::SubCrv {
+            start: None,
+            copy,
+            delete,
+        });
         if source.is_none() {
             self.document.clear_selection();
         }
@@ -174,9 +213,20 @@ impl VibocerosApp {
                     .is_some_and(|o| o.geometry().curve_ref().is_some())
         }) {
             prompt.source = Some(id);
+            if prompt.delete {
+                prompt.edge_source = Some((
+                    self.document
+                        .object(id)
+                        .unwrap()
+                        .geometry_snapshot()
+                        .clone(),
+                    self.document.tolerance(),
+                ));
+            }
             self.active_command = Some(InteractiveCommand::SubCrv {
                 start: None,
                 copy: prompt.copy,
+                delete: prompt.delete,
             });
             let _ = self.document.select_command_results([id]);
         }
@@ -197,7 +247,8 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
-        if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
+        if !prompt.delete
+            && let Some((name, value)) = input.trim_start_matches('_').split_once('=')
             && name.eq_ignore_ascii_case("FromMidpoint")
         {
             let flag = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
@@ -217,7 +268,8 @@ impl VibocerosApp {
             }
             return true;
         }
-        if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
+        if !prompt.delete
+            && let Some((name, value)) = input.trim_start_matches('_').split_once('=')
             && name.eq_ignore_ascii_case("Mode")
         {
             if let Some(mode) = viboceros_command::subcurve_input::SubcurveMode::parse(value) {
@@ -230,7 +282,8 @@ impl VibocerosApp {
             }
             return true;
         }
-        if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
+        if !prompt.delete
+            && let Some((name, value)) = input.trim_start_matches('_').split_once('=')
             && name.eq_ignore_ascii_case("Copy")
         {
             let copy = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
@@ -244,7 +297,11 @@ impl VibocerosApp {
                 self.subcurve_prompt.as_mut().unwrap().copy = copy;
                 self.commands.set_subcurve_options(Some(copy), None, None);
                 if let Some(InteractiveCommand::SubCrv { start, .. }) = self.active_command {
-                    self.active_command = Some(InteractiveCommand::SubCrv { start, copy });
+                    self.active_command = Some(InteractiveCommand::SubCrv {
+                        start,
+                        copy,
+                        delete: false,
+                    });
                 }
                 self.command_input.clear();
                 self.push_log(format!("SubCrv Copy={}", if copy { "Yes" } else { "No" }));
@@ -290,7 +347,15 @@ impl VibocerosApp {
                         })
                         .map(|c| c.curve().length(self.document.tolerance()));
                     match total {
-                        Some(Ok(total)) if length.abs() <= total => {
+                        Some(Ok(total))
+                            if length.abs()
+                                <= total
+                                    + if prompt.delete {
+                                        self.document.tolerance().absolute()
+                                    } else {
+                                        0.
+                                    } =>
+                        {
                             self.subcurve_prompt.as_mut().unwrap().length = Some(length.abs());
                             self.command_input.clear();
                             if !prompt.from_midpoint
@@ -390,31 +455,34 @@ impl VibocerosApp {
                 self.active_command = Some(InteractiveCommand::SubCrv {
                     start: Some(point),
                     copy: prompt.copy,
+                    delete: prompt.delete,
                 });
                 self.push_log(prompt.hint().into());
                 return Ok(());
             };
-            let mut input = if let Some(length) = prompt.length {
-                format!(
-                    "SubCrv Numeric={start},{length},{parameter} Copy={}",
-                    if prompt.copy { "Yes" } else { "No" }
-                )
+            let name = if prompt.delete {
+                "DeleteSubCrv"
             } else {
-                // Use point syntax so standalone orientation follows the public
-                // command policy, while Parameter= retains directed math edits.
+                "SubCrv"
+            };
+            let mut input = if let Some(length) = prompt.length {
+                format!("{name} Numeric={start},{length},{parameter}")
+            } else {
                 let start_point = curve.evaluate(start)?;
                 format!(
-                    "SubCrv {} {} Copy={}",
+                    "{name} {} {}",
                     format_model_point(start_point),
-                    format_model_point(point),
-                    if prompt.copy { "Yes" } else { "No" }
+                    format_model_point(point)
                 )
             };
-            input.push_str(&format!(" Mode={}", prompt.mode.option()));
-            input.push_str(&format!(
-                " FromMidpoint={}",
-                if prompt.from_midpoint { "Yes" } else { "No" }
-            ));
+            if !prompt.delete {
+                input.push_str(&format!(
+                    " Copy={} Mode={} FromMidpoint={}",
+                    if prompt.copy { "Yes" } else { "No" },
+                    prompt.mode.option(),
+                    if prompt.from_midpoint { "Yes" } else { "No" }
+                ));
+            }
             if let Some(forward) = prompt.locked_forward {
                 input.push_str(&format!(
                     " Locked={}",

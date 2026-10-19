@@ -50,7 +50,7 @@ pub fn compare(curve: CurveRef<'_>, reference: &Value, name: &str) -> f64 {
         }
         (CurveRef::NurbsCurve(c), "nurbs") => {
             assert_eq!(
-                c.is_rational(),
+                c.has_rational_representation(),
                 reference["rational"].as_bool().unwrap(),
                 "{name}: rational form"
             );

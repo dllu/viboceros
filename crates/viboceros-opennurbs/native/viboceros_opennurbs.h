@@ -48,6 +48,7 @@ typedef struct ViboObjectInfo {
   size_t index_count;
   size_t geometry_data_count;
   size_t group_index_count;
+  uint8_t rational_curve;
 } ViboObjectInfo;
 
 typedef struct ViboWriteLayer {
@@ -149,6 +150,7 @@ typedef struct ViboWriteObject {
   size_t user_text_count;
   const ViboUserText* geometry_user_text;
   size_t geometry_user_text_count;
+  uint8_t rational_curve;
 } ViboWriteObject;
 
 // Return 1 only when native IsValid ran; valid is then 0 or 1.

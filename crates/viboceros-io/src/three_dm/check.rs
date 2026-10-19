@@ -76,6 +76,9 @@ fn check(geometry: &ThreeDmGeometry, definition_uuid: Option<&CStr>) -> Geometry
     }
     let view = ffi::ViboWriteObject {
         object_type: payload.object_type,
+        rational_curve: u8::from(
+            matches!(geometry, ThreeDmGeometry::NurbsCurve(c) if c.has_rational_representation()),
+        ),
         degree_u: payload.degree_u,
         degree_v: payload.degree_v,
         control_point_count_u: payload.control_point_count_u,

@@ -55,7 +55,13 @@ pub(super) fn trim(
 ) -> Result<NurbsCurve, CommandError> {
     #[cfg(feature = "native-smlib")]
     {
-        viboceros_smlib::trim_curve(curve, interval).map_err(knot_refinement::native_geometry_error)
+        let result = viboceros_smlib::trim_curve(curve, interval)
+            .map_err(knot_refinement::native_geometry_error)?;
+        Ok(if curve.has_rational_representation() {
+            result.with_rational_representation()
+        } else {
+            result
+        })
     }
     #[cfg(not(feature = "native-smlib"))]
     {

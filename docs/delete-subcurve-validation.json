@@ -1,0 +1,176 @@
+{
+  "feature": "DeleteSubCrv/Break and explicit top-level NURBS rational representation",
+  "base_commit": "9001a56c47b0a048ff182aab01f3f7185faf1f40",
+  "native_version": "8.32.26160.13001",
+  "native_command_cases": 82,
+  "complete_api_cases": 78,
+  "ui_cases": 82,
+  "native_results": {
+    "Success": 75,
+    "Failure": 3,
+    "Cancel": 4
+  },
+  "comparison_epsilon": 1e-06,
+  "maximum_recorded_error": {
+    "portable-final3": 1.9570266600531444e-07,
+    "native-final2": 1.957026658881907e-07
+  },
+  "coverage": [
+    "exact curve definitions, domains, closure and 33 sampled points",
+    "polyline parameters and nested curve segments",
+    "source replacement identity, inherited attributes, root geometry text and groups",
+    "selection on completion, Undo and Redo",
+    "numeric confirmation, opposite confirmations, closed charts and near-full lengths",
+    "alias, cancellation, stale sources, invalid inputs, locked sides and redo retention",
+    "top-level rational unit-weight flags through import/export and basic edits, including coordinate scales 1e-200 and 1e200"
+  ],
+  "limits": [
+    "retained cases establish the reported input matrix, not arbitrary-curve numeric direction parity",
+    "no continuous approximation certificate or pixel comparison is claimed",
+    "numeric near-full rational remainders are compared at 1e-6, without claiming exact scalar integration parity",
+    "nested geometry codecs continue to infer rational representation from controls",
+    "focused regressions were run; full application/workspace test suites were not rerun",
+    "no kernel performance benchmark is claimed"
+  ],
+  "capture": "tools/rhino_oracle/observations/delete_subcurve.json",
+  "capture_sha256": "74bf9eb246f68805c7444490449107be8924a83afe5625281151f47edaa40606",
+  "source_sha256": {
+    "crates/viboceros-command/src/curve_domain.rs": "bee0a7b1b39fa22c07387684e9aae5c7708b0481f8dff196c2912099e587c214",
+    "crates/viboceros-command/src/curve_segments.rs": "380d7d899cbe5e73b444938d816f723d0216521f67784a6be4d1ea452fe7b143",
+    "crates/viboceros-command/src/delete_subcurve.rs": "24ff5ee1ec30f840685bb2621941b390295291073744c09fdb5866d3a18463b8",
+    "crates/viboceros-command/src/delete_subcurve/tests.rs": "0eab0e9a200e2d8c63ec171caa926e48d2f5efd8c56b41c63567f63a9f122224",
+    "crates/viboceros-command/src/lib.rs": "7c750c2349660bf05f5bf4fce8608d8d3cc339a009c82ddca7acf8658232993b",
+    "crates/viboceros-command/tests/delete_subcurve.rs": "6a96da86307e0c76385ba4a20d72f1fa6a1b607cb4bcec0fa528791731939347",
+    "crates/viboceros-command/tests/support/delete_subcurve.rs": "63ee935e6a5229286976c8d4bccc427ecc319415e7ac5c82e61d86a5a527e0c7",
+    "crates/viboceros-command/tests/support/simplify_curves.rs": "f8ff4a3ebd600ade79462136d3e0e40814f906ea9d07b883b954cfdbcd7c8066",
+    "crates/viboceros-geometry/src/nurbs.rs": "af367d9ea9cf6e68a2f95fd77cf61b83c5d665160773f0b922d5f19783ef387e",
+    "crates/viboceros-io/src/three_dm.rs": "b122c650e8ba10c672d7cd846bc1d68dcc8a45b5f90b6d276da07930c6aefcd6",
+    "crates/viboceros-io/src/three_dm/check.rs": "af9a35a56f2f99da935069f2cb96d84f4f2aba381923d2b03bc567ee133590f2",
+    "crates/viboceros-io/src/three_dm_rational_tests.rs": "7e123f9b48b274f3f5ed809df83c94d7a59cc4eeac8195ff2ed8eadd88990e96",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "eb910b4590809896a03af2e1dd5f682575aaccf4c8e5282ae777690629f3c75e",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "60963b67791f3385ac7df323152caf4c93ddbd5d117beb421b359af0954fcb0e",
+    "src/app.rs": "3d617544b90f1f509d73d9c51ffa9804b4f87daa911f351780c6186fda84a997",
+    "src/app/subcurve_prompt.rs": "5648a36ab92293f77c07e89e4f8b57dba6380809e76234a92683b54f719c9695",
+    "src/app/tests/delete_subcurve.rs": "0fe51af014efbfbc236e53996a24a474a5fb64b99bc9d65818a131c120d0c807",
+    "src/app/uv_subcurve_input.rs": "8f0cd39322368f751f2e9878ba4de6efa669c21a95447f5d7a8356cbcbac1dea",
+    "tools/rhino_oracle/delete_subcurve_probe.py": "7781bb903e5b2ed3a124dcbc76615afd6ff3c96c8d93e90fd5593c6b98bf1661",
+    "tools/rhino_oracle/generate_delete_subcurve.py": "757df607fcbce5b8580d5b1178a153e75259ee5550db31b0d9ad4f8383033e94",
+    "tools/rhino_oracle/rhino_worker.py": "fffb3056a788c9585d4e8c4b6165d77f3cdc21f908d4488923660d0c8e542a67",
+    "tools/rhino_oracle/structural_sdk.py": "1b576f1c9cff8ee5646ca210e5c872f9e354025b8c24d1f3433d34b44286fc40",
+    "tools/rhino_oracle/test_delete_subcurve_probe.py": "17c86c7d4ba6e996b187421a0e8c2dab0b6e7fb074524a9799794bbdb1912157"
+  },
+  "runs": [
+    {
+      "command": "PYTHONPATH=. tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_delete_subcurve",
+      "status": "passed",
+      "log": "docs/delete-subcurve-capture-v4.log.gz",
+      "uncompressed_sha256": "a720ac8c55070094b5ae6dbfa07df71189b86b17337351813f4df72e2419d318",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test delete_subcurve -- --nocapture",
+      "status": "passed",
+      "log": "docs/delete-subcurve-portable-final3.log.gz",
+      "uncompressed_sha256": "a97d637e6534f28dc4541a78c56df09bf376ac693fce9f6c9e44bd97b9d2d074",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test delete_subcurve -- --nocapture",
+      "status": "passed",
+      "log": "docs/delete-subcurve-native-final2.log.gz",
+      "uncompressed_sha256": "0db9cbdb5de0c02e06d14ee56e01bfbb15358b7740afaff34c3a3126f0d81ce0",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::delete_subcurve -- --nocapture",
+      "status": "passed",
+      "log": "docs/delete-subcurve-ui-final3.log.gz",
+      "uncompressed_sha256": "251ace122b23fa0d01a4e0b2149e4cd11638de3dbe1688298e89d9df06e08760",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros subcurve",
+      "status": "passed",
+      "log": "docs/delete-subcurve-ui-regression-final.log.gz",
+      "uncompressed_sha256": "54cfab9e2713cfc5cdb1bc5db37078b69b2048c5791eaa50c41e3bb5e7e686a7",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib subcurve",
+      "status": "passed",
+      "log": "docs/delete-subcurve-command-regression.log.gz",
+      "uncompressed_sha256": "2f5030052c67cff73256760e5ddc7a94dd5fce00f365147088c224249dd2c8df",
+      "source_scope": "final shared geometry/I/O sources; before final DeleteSubCrv getter and assertion edits"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib delete_subcurve",
+      "status": "passed",
+      "log": "docs/delete-subcurve-unit-final.log.gz",
+      "uncompressed_sha256": "0af2f443be1d0f6c85201742fb5f79037c330cd78de54e1b1face5c4bd22c180",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "status": "passed",
+      "log": "docs/delete-subcurve-help-final.log.gz",
+      "uncompressed_sha256": "d7474d9d79ea0e4b6a42b0f788246c11e6d703676c1881097de70f9cf9efbe0f",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-io --lib three_dm",
+      "status": "passed",
+      "log": "docs/delete-subcurve-io-final2.log.gz",
+      "uncompressed_sha256": "d3ecc492da919137f58a7d9be87db748dd140591f5082b17d3a98e2712dcb385",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve_trim",
+      "status": "passed",
+      "log": "docs/delete-subcurve-trim-kernel.log.gz",
+      "uncompressed_sha256": "2ff67424cab75eacad795994b9a9fab21cd42875e1e8c0aa12399f944eaa5e2d",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib curve_simplify",
+      "status": "passed",
+      "log": "docs/delete-subcurve-simplify-kernel.log.gz",
+      "uncompressed_sha256": "9963fdc717c0d52cede92db5067303b86d864d3eede9bab021f7eebe42874d0a",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test simplify_curves",
+      "status": "passed",
+      "log": "docs/delete-subcurve-simplify-regression.log.gz",
+      "uncompressed_sha256": "f93090e90968ba6767b5ec29ef5caaeaa068245ae3a2771a49b8ab7226f2acd5",
+      "source_scope": "final shared geometry/I/O sources; before final DeleteSubCrv getter and assertion edits"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test modify_radius",
+      "status": "passed",
+      "log": "docs/delete-subcurve-radius-regression.log.gz",
+      "uncompressed_sha256": "6ac1358f5c33184e0826b248ae81e7d0c5aed2b7a4f16e7ab6d82f6222d2c600",
+      "source_scope": "final shared geometry/I/O sources; before final DeleteSubCrv getter and assertion edits"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_delete_subcurve_probe tools.rhino_oracle.test_worker tools.rhino_oracle.test_structural_sdk",
+      "status": "passed",
+      "log": "docs/delete-subcurve-python-final2.log.gz",
+      "uncompressed_sha256": "299f3f8c71bd45c394903be6b98c77a19fe33fec19e5bc51b1d43475ee23ead7",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "log": "docs/delete-subcurve-clippy-final2.log.gz",
+      "uncompressed_sha256": "c1e5e3977c65d5ce66e63d629950d5c3771dce7a82c50171b3e2457f80fdf16e",
+      "source_scope": "final source"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "status": "passed",
+      "log": "docs/delete-subcurve-fmt-check.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_scope": "final source"
+    }
+  ]
+}

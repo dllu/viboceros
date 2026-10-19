@@ -212,6 +212,7 @@ impl VibocerosApp {
             self.active_command = Some(InteractiveCommand::SubCrv {
                 start: None,
                 copy: true,
+                delete: false,
             });
             self.intersection_prompt = Some(prompt);
             self.log_intersection_prompt();
@@ -288,6 +289,7 @@ impl VibocerosApp {
                 self.active_command = Some(InteractiveCommand::SubCrv {
                     start: Some(point),
                     copy: true,
+                    delete: false,
                 });
             }
             Ok(())

@@ -719,6 +719,7 @@ enum InteractiveCommand {
     SubCrv {
         start: Option<Point3>,
         copy: bool,
+        delete: bool,
     },
     SplitCurve,
     SplitCurveWithCutters,
@@ -941,6 +942,7 @@ impl InteractiveCommand {
             Self::SrfSeam { .. } => "SrfSeam",
             Self::Extend { .. } => "Extend",
             Self::ExtendSrf { .. } => "ExtendSrf",
+            Self::SubCrv { delete: true, .. } => "DeleteSubCrv",
             Self::SubCrv { .. } => "SubCrv",
             Self::SplitCurve | Self::SplitCurveWithCutters | Self::SplitSurfaceIsocurve { .. } => {
                 "Split"
@@ -1582,6 +1584,16 @@ impl InteractiveCommand {
             Self::ExtendSrf { .. } => {
                 "ExtendSrf: pick a natural edge on the selected surface (Esc to cancel)"
             }
+            Self::SubCrv {
+                delete: true,
+                start: None,
+                ..
+            } => "DeleteSubCrv: pick the deletion start (Esc cancels)",
+            Self::SubCrv {
+                delete: true,
+                start: Some(_),
+                ..
+            } => "DeleteSubCrv: pick the deletion end or enter a length (Esc cancels)",
             Self::SubCrv { start: None, .. } => {
                 "SubCrv: pick the subcurve start on the selected curve (Esc to cancel)"
             }
@@ -5006,6 +5018,12 @@ impl VibocerosApp {
                 });
             }
             InteractiveCommand::SrfSeam { direction }
+        } else if matches!(normalized.as_str(), "deletesubcrv" | "break") && arguments.is_empty() {
+            InteractiveCommand::SubCrv {
+                start: None,
+                copy: false,
+                delete: true,
+            }
         } else if normalized == "subcrv" {
             let mut copy = self.commands.subcurve_defaults().copy;
             let mut copy_seen = false;
@@ -5047,7 +5065,11 @@ impl VibocerosApp {
                 };
                 copy_seen = true;
             }
-            InteractiveCommand::SubCrv { start: None, copy }
+            InteractiveCommand::SubCrv {
+                start: None,
+                copy,
+                delete: false,
+            }
         } else if normalized == "split"
             && matches!(
                 arguments.as_slice(),
@@ -5552,7 +5574,7 @@ impl VibocerosApp {
             }
         };
 
-        let subcurve_edge = if matches!(command, InteractiveCommand::SubCrv { .. }) {
+        let subcurve_edge = if matches!(command, InteractiveCommand::SubCrv { delete: false, .. }) {
             let picks = match self.component_selection.checked_picks(&self.document) {
                 Ok(picks) => picks,
                 Err(error) => {
@@ -5585,7 +5607,17 @@ impl VibocerosApp {
         };
         self.cancel_interactive_command(true);
         self.push_log(format!("> {input}"));
-        if let InteractiveCommand::SubCrv { copy, .. } = command {
+        if let InteractiveCommand::SubCrv { copy, delete, .. } = command {
+            if delete {
+                self.component_selection.clear();
+                self.begin_subcurve_prompt(
+                    false,
+                    viboceros_command::subcurve_input::SubcurveMode::Shorten,
+                    false,
+                    true,
+                );
+                return true;
+            }
             let mode = input
                 .split_whitespace()
                 .skip(1)
@@ -5613,7 +5645,7 @@ impl VibocerosApp {
                 .unwrap_or(self.commands.subcurve_defaults().from_midpoint);
             self.commands
                 .set_subcurve_options(Some(copy), Some(mode), Some(from_midpoint));
-            self.begin_subcurve_prompt(copy, mode, from_midpoint);
+            self.begin_subcurve_prompt(copy, mode, from_midpoint, false);
             if let Some(pick) = subcurve_edge {
                 self.subcurve_prompt.as_mut().unwrap().source = None;
                 self.pick_subcurve_edge(pick);
@@ -7947,10 +7979,15 @@ impl VibocerosApp {
                     if merge { "Yes" } else { "No" },
                 ));
             }
-            InteractiveCommand::SubCrv { start: None, copy } => {
+            InteractiveCommand::SubCrv {
+                start: None,
+                copy,
+                delete,
+            } => {
                 let command = InteractiveCommand::SubCrv {
                     start: Some(point),
                     copy,
+                    delete,
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Start: {}", format_model_point(point)));
@@ -7959,13 +7996,19 @@ impl VibocerosApp {
             InteractiveCommand::SubCrv {
                 start: Some(start),
                 copy,
+                delete,
             } => {
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "SubCrv {} {} Copy={}",
+                    "{} {} {}{}",
+                    if delete { "DeleteSubCrv" } else { "SubCrv" },
                     format_model_point(start),
                     format_model_point(point),
-                    if copy { "Yes" } else { "No" }
+                    if delete {
+                        String::new()
+                    } else {
+                        format!(" Copy={}", if copy { "Yes" } else { "No" })
+                    }
                 ));
             }
             InteractiveCommand::SplitCurve => {
@@ -10953,6 +10996,7 @@ mod tests {
     mod curvature_graph;
     mod curve_deviation;
     mod curve_rebuild_preview;
+    mod delete_subcurve;
     mod distance;
     mod distribute;
     mod divide_creases;
@@ -13798,6 +13842,7 @@ mod tests {
             Some(InteractiveCommand::SubCrv {
                 start: None,
                 copy: true,
+                delete: false,
             })
         );
         assert!(app.command_log.back().unwrap().contains("subcurve start"));
@@ -13807,6 +13852,7 @@ mod tests {
             Some(InteractiveCommand::SubCrv {
                 start: Some(point(8.0, 0.0, 0.0)),
                 copy: true,
+                delete: false,
             })
         );
         assert!(

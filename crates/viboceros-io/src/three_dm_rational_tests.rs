@@ -335,3 +335,81 @@ fn rounding_to_the_smallest_subnormal_is_allowed_only_when_coordinates_recover()
     assert_eq!(actual.control_points()[0].weight(), 0.75);
     assert_eq!(actual.control_points()[0].point().x(), f64::from_bits(1));
 }
+
+#[test]
+fn unit_weight_rational_representation_survives_file_transfer_and_basic_edits() {
+    let template = curve(1., 1.);
+    let polynomial = NurbsCurve::try_new(
+        template.degree(),
+        template
+            .control_points()
+            .iter()
+            .map(|p| p.point())
+            .collect(),
+        template.knots().to_vec(),
+    )
+    .unwrap();
+    assert!(!polynomial.has_rational_representation());
+    let source = polynomial.clone().with_rational_representation();
+    assert!(!source.is_rational());
+    assert!(source.has_rational_representation());
+    let ThreeDmGeometry::NurbsCurve(decoded) =
+        round_trip(ThreeDmGeometry::NurbsCurve(source.clone()))
+    else {
+        panic!()
+    };
+    assert_eq!(decoded, source);
+    let d = source.domain();
+    let a = d.start() + 0.2 * (d.end() - d.start());
+    let b = d.start() + 0.7 * (d.end() - d.start());
+    let trimmed = decoded.try_trimmed(a..=b).unwrap();
+    assert!(trimmed.has_rational_representation());
+    assert!(source.reversed().unwrap().has_rational_representation());
+    assert!(
+        source
+            .try_reparameterized(-3. ..=7.)
+            .unwrap()
+            .has_rational_representation()
+    );
+    let moved = source
+        .transformed(viboceros_geometry::AffineTransform3::from_translation(
+            viboceros_geometry::Vector3::try_new(1., 2., 3.).unwrap(),
+        ))
+        .unwrap();
+    assert!(moved.has_rational_representation());
+    let ThreeDmGeometry::NurbsCurve(decoded) =
+        round_trip(ThreeDmGeometry::NurbsCurve(polynomial.clone()))
+    else {
+        panic!()
+    };
+    assert_eq!(decoded, polynomial);
+    assert!(!decoded.has_rational_representation());
+}
+
+#[test]
+fn unit_weight_storage_round_trips_at_extreme_coordinate_scales() {
+    for scale in [1e-200, 1e200] {
+        let template = curve(scale, 1.);
+        let polynomial = NurbsCurve::try_new(
+            template.degree(),
+            template
+                .control_points()
+                .iter()
+                .map(|p| p.point())
+                .collect(),
+            template.knots().to_vec(),
+        )
+        .unwrap();
+        for source in [
+            polynomial.clone(),
+            polynomial.with_rational_representation(),
+        ] {
+            let ThreeDmGeometry::NurbsCurve(decoded) =
+                round_trip(ThreeDmGeometry::NurbsCurve(source.clone()))
+            else {
+                panic!()
+            };
+            assert_eq!(decoded, source, "coordinate scale {scale}");
+        }
+    }
+}

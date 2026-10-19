@@ -246,6 +246,7 @@ pub struct NurbsCurve {
     control_points: Vec<WeightedPoint3>,
     knots: Vec<Real>,
     rational: bool,
+    rational_representation: bool,
 }
 
 impl NurbsCurve {
@@ -274,11 +275,13 @@ impl NurbsCurve {
         let rational = control_points
             .iter()
             .any(|control_point| control_point.weight != first_weight);
+        let rational_representation = control_points.iter().any(|p| p.weight() != 1.);
         Ok(Self {
             degree,
             control_points,
             knots,
             rational,
+            rational_representation,
         })
     }
 
@@ -810,9 +813,26 @@ impl NurbsCurve {
         &self.knots
     }
 
+    /// Whether the weights vary, independently of an explicit weight coordinate.
+    /// Use `has_rational_representation` to inspect retained NURBS storage.
     #[inline]
     pub const fn is_rational(&self) -> bool {
         self.rational
+    }
+
+    /// Whether the NURBS definition retains a homogeneous weight coordinate,
+    /// including imported unit weights. This is distinct from varying weights.
+    pub const fn has_rational_representation(&self) -> bool {
+        self.rational_representation
+    }
+    /// Retain an explicit rational definition without changing its geometry.
+    pub fn with_rational_representation(mut self) -> Self {
+        self.rational_representation = true;
+        self
+    }
+    fn preserving_representation(mut self, source: &Self) -> Self {
+        self.rational_representation |= source.rational_representation;
+        self
     }
 
     pub fn domain(&self) -> RangeInclusive<Real> {
@@ -872,7 +892,8 @@ impl NurbsCurve {
             .collect::<Result<Vec<_>, _>>()?;
         Ok(
             Self::try_new_rational(self.degree, self.control_points.clone(), knots)?
-                .with_opennurbs_outer_knots(),
+                .with_opennurbs_outer_knots()
+                .preserving_representation(self),
         )
     }
 
@@ -1598,7 +1619,8 @@ impl NurbsCurve {
     pub fn reversed(&self) -> Result<Self, GeometryError> {
         let control_points = self.control_points.iter().rev().copied().collect();
         let knots = self.knots.iter().rev().map(|knot| -*knot).collect();
-        Self::try_new_rational(self.degree, control_points, knots)
+        Ok(Self::try_new_rational(self.degree, control_points, knots)?
+            .preserving_representation(self))
     }
 
     /// Relocates a closed curve's seam to `parameter` without changing its
@@ -2513,7 +2535,10 @@ impl NurbsCurve {
             .clamped_to_active_domain()?;
         let right = Self::try_new_rational(self.degree, right_controls, right_knots)?
             .clamped_to_active_domain()?;
-        Ok((left, right))
+        Ok((
+            left.preserving_representation(self),
+            right.preserving_representation(self),
+        ))
     }
 
     /// Extracts an exact subcurve while retaining the source parameter values.
@@ -2528,7 +2553,7 @@ impl NurbsCurve {
             return Ok(self.clone());
         }
         if let Some(line) = self.try_trim_polynomial_line(&interval)? {
-            return Ok(line);
+            return Ok(line.preserving_representation(self));
         }
 
         let after_start = if start == *domain.start() {
@@ -3705,7 +3730,10 @@ impl NurbsCurve {
                 })
             })
             .collect::<Result<_, GeometryError>>()?;
-        Self::try_new_rational(self.degree, control_points, self.knots.clone())
+        Ok(
+            Self::try_new_rational(self.degree, control_points, self.knots.clone())?
+                .preserving_representation(self),
+        )
     }
 
     fn checked_span(&self, parameter: Real) -> Result<usize, GeometryError> {

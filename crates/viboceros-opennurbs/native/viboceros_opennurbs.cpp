@@ -64,6 +64,7 @@ struct BridgeObject {
   uint8_t color_green = 0;
   uint8_t color_blue = 0;
   int32_t wire_density = 1;
+  uint8_t rational_curve = 0;
   uint32_t degree_u = 0;
   uint32_t degree_v = 0;
   size_t control_point_count_u = 0;
@@ -445,6 +446,7 @@ bool append_nurbs(const ON_Curve& source, BridgeObject& output) {
   }
 
   output.object_type = VIBO_OBJECT_NURBS_CURVE;
+  output.rational_curve = curve.IsRational() ? 1 : 0;
   output.degree_u = static_cast<uint32_t>(curve.Order() - 1);
   output.control_point_count_u = static_cast<size_t>(curve.CVCount());
   output.coordinates.reserve(output.control_point_count_u * 4);
@@ -1585,6 +1587,14 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
           return nullptr;
         }
       }
+      // Only unit-weight polynomial data can discard its weight coordinate.
+      // Nonunit gauges must stay homogeneous for lossless file transfer.
+      bool unit_weights = true;
+      for (size_t i = 0; i < source.control_point_count_u; ++i)
+        unit_weights = unit_weights && source.coordinates[4*i+3] == 1.0;
+      if (!source.rational_curve && unit_weights && !curve->MakeNonRational()) {
+        delete curve; error = "NURBS polynomial representation failed"; return nullptr;
+      }
       if (validate && !curve->IsValid()) {
         delete curve;
         error = "NURBS curve is not valid in OpenNURBS";
@@ -2248,7 +2258,7 @@ extern "C" int32_t vibo_3dm_object(
            object.knots_v.size(),
            object.indices.size(),
            object.geometry_data.size(),
-           object.group_indices.size()};
+           object.group_indices.size(), object.rational_curve};
   *coordinates = object.coordinates.empty() ? nullptr : object.coordinates.data();
   *knots_u = object.knots_u.empty() ? nullptr : object.knots_u.data();
   *knots_v = object.knots_v.empty() ? nullptr : object.knots_v.data();

@@ -30,6 +30,7 @@ Rhino's complete command set is still a work in progress.
 - [Simplify lines, arcs and rational curve structures](simplify-crv.md)
 - [Change arc and circle sizes](modify-radius.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)
+- [Delete portions of curves](delete-subcurve.md)
 - [Analytic curve offsets](offset.md)
 - [Planar surface offsets](offset-srf.md)
 - [Two-curve fillets](fillet.md)

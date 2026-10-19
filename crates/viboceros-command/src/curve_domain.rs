@@ -76,7 +76,7 @@ fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, Co
 pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds] [FromMidpoint=Yes|No] [Locked=Forward|Backward] [Edge=object_id,index]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum SubcurveLocation {
+pub(super) enum SubcurveLocation {
     Parameters([Real; 2]),
     Points([Point3; 2]),
     Numeric([Real; 3]),
@@ -247,19 +247,19 @@ impl Command for SubcurveCommand {
     }
 }
 
-fn parse_subcurve_options(
+pub(super) fn parse_subcurve_location(
     arguments: &[&str],
-    defaults: subcurve_input::SubcurveDefaults,
-) -> Result<SubcurveOptions, CommandError> {
+    usage: &'static str,
+) -> Result<(SubcurveLocation, usize), CommandError> {
     let Some(first) = arguments.first() else {
-        return Err(CommandError::Usage(SUBCURVE_USAGE));
+        return Err(CommandError::Usage(usage));
     };
     let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
-    let (location, mut index) = if option_name_eq(first_name, "Numeric") {
-        let (_, value, consumed) = orient_option(arguments, 0, SUBCURVE_USAGE)?;
+    let (location, index) = if option_name_eq(first_name, "Numeric") {
+        let (_, value, consumed) = orient_option(arguments, 0, usage)?;
         let values = value.split(',').collect::<Vec<_>>();
         let [anchor, length, confirmation] = values.as_slice() else {
-            return Err(CommandError::Usage(SUBCURVE_USAGE));
+            return Err(CommandError::Usage(usage));
         };
         (
             SubcurveLocation::Numeric([
@@ -270,13 +270,13 @@ fn parse_subcurve_options(
             consumed,
         )
     } else if option_name_eq(first_name, "Parameter") {
-        let (name, value, consumed) = orient_option(arguments, 0, SUBCURVE_USAGE)?;
+        let (name, value, consumed) = orient_option(arguments, 0, usage)?;
         if !option_name_eq(name, "Parameter") {
-            return Err(CommandError::Usage(SUBCURVE_USAGE));
+            return Err(CommandError::Usage(usage));
         }
         let values = value.split(',').collect::<Vec<_>>();
         if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
-            return Err(CommandError::Usage(SUBCURVE_USAGE));
+            return Err(CommandError::Usage(usage));
         }
         (
             SubcurveLocation::Parameters([
@@ -287,12 +287,12 @@ fn parse_subcurve_options(
         )
     } else {
         let (start, start_consumed) = parse_point(arguments).map_err(|error| match error {
-            CommandError::Usage(_) => CommandError::Usage(SUBCURVE_USAGE),
+            CommandError::Usage(_) => CommandError::Usage(usage),
             error => error,
         })?;
         let (end, end_consumed) =
             parse_point(&arguments[start_consumed..]).map_err(|error| match error {
-                CommandError::Usage(_) => CommandError::Usage(SUBCURVE_USAGE),
+                CommandError::Usage(_) => CommandError::Usage(usage),
                 error => error,
             })?;
         (
@@ -300,6 +300,15 @@ fn parse_subcurve_options(
             start_consumed + end_consumed,
         )
     };
+
+    Ok((location, index))
+}
+
+fn parse_subcurve_options(
+    arguments: &[&str],
+    defaults: subcurve_input::SubcurveDefaults,
+) -> Result<SubcurveOptions, CommandError> {
+    let (location, mut index) = parse_subcurve_location(arguments, SUBCURVE_USAGE)?;
 
     let mut copy = defaults.copy;
     let mut copy_seen = false;

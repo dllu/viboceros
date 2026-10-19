@@ -1,0 +1,729 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "delete_subcurve_command",
+      "id": "line",
+      "family": "line",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/line.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "line_back",
+      "family": "line",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/line_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "arc",
+      "family": "arc",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/arc.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "arc_back",
+      "family": "arc",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/arc_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle_back",
+      "family": "circle",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs",
+      "family": "nurbs",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_back",
+      "family": "nurbs",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_circle",
+      "family": "nurbs_circle",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_circle.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_circle_back",
+      "family": "nurbs_circle",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_circle_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polyline",
+      "family": "polyline",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polyline.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polyline_back",
+      "family": "polyline",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polyline_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_polyline",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_polyline.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_polyline_back",
+      "family": "closed_polyline",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_polyline_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polycurve",
+      "family": "polycurve",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polycurve.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polycurve_back",
+      "family": "polycurve",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polycurve_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "ellipse",
+      "family": "ellipse",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/ellipse.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "ellipse_back",
+      "family": "ellipse",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/ellipse_back.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "line_start",
+      "family": "line",
+      "start": 0.0,
+      "end": 0.3,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/line_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "line_end",
+      "family": "line",
+      "start": 0.7,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/line_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "line_all",
+      "family": "line",
+      "start": 0.0,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/line_all.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "arc_start",
+      "family": "arc",
+      "start": 0.0,
+      "end": 0.3,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/arc_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "arc_end",
+      "family": "arc",
+      "start": 0.7,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/arc_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "arc_all",
+      "family": "arc",
+      "start": 0.0,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/arc_all.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_start",
+      "family": "nurbs",
+      "start": 0.0,
+      "end": 0.3,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_end",
+      "family": "nurbs",
+      "start": 0.7,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_all",
+      "family": "nurbs",
+      "start": 0.0,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_all.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polyline_start",
+      "family": "polyline",
+      "start": 0.0,
+      "end": 0.3,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polyline_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polyline_end",
+      "family": "polyline",
+      "start": 0.7,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polyline_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polyline_all",
+      "family": "polyline",
+      "start": 0.0,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polyline_all.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polycurve_start",
+      "family": "polycurve",
+      "start": 0.0,
+      "end": 0.3,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polycurve_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polycurve_end",
+      "family": "polycurve",
+      "start": 0.7,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polycurve_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polycurve_all",
+      "family": "polycurve",
+      "start": 0.0,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polycurve_all.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle_seam_start",
+      "family": "circle",
+      "start": 0.0,
+      "end": 0.25,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle_seam_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle_seam_end",
+      "family": "circle",
+      "start": 0.75,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle_seam_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle_full_length",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle_full_length.3dm",
+      "length_fraction": 1.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_circle_seam_start",
+      "family": "nurbs_circle",
+      "start": 0.0,
+      "end": 0.25,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_circle_seam_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_circle_seam_end",
+      "family": "nurbs_circle",
+      "start": 0.75,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_circle_seam_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_circle_full_length",
+      "family": "nurbs_circle",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_circle_full_length.3dm",
+      "length_fraction": 1.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_polyline_seam_start",
+      "family": "closed_polyline",
+      "start": 0.0,
+      "end": 0.25,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_polyline_seam_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_polyline_seam_end",
+      "family": "closed_polyline",
+      "start": 0.75,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_polyline_seam_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_polyline_full_length",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_polyline_full_length.3dm",
+      "length_fraction": 1.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "ellipse_seam_start",
+      "family": "ellipse",
+      "start": 0.0,
+      "end": 0.25,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/ellipse_seam_start.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "ellipse_seam_end",
+      "family": "ellipse",
+      "start": 0.75,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/ellipse_seam_end.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "ellipse_full_length",
+      "family": "ellipse",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/ellipse_full_length.3dm",
+      "length_fraction": 1.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "numeric",
+      "family": "line",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/numeric.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "numeric_backward",
+      "family": "line",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/numeric_backward.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "negative",
+      "family": "line",
+      "start": 0.7,
+      "end": 0.2,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/negative.3dm",
+      "length": -3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "clamp",
+      "family": "line",
+      "start": 0.9,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/clamp.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "zero",
+      "family": "line",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/zero.3dm",
+      "length": 0.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "same_point",
+      "family": "line",
+      "start": 0.5,
+      "end": 0.5,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/same_point.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle_same",
+      "family": "circle",
+      "start": 0.4,
+      "end": 0.4,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle_same.3dm"
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "numeric_circle",
+      "family": "circle",
+      "start": 0.8,
+      "end": 0.1,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/numeric_circle.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "numeric_closed",
+      "family": "closed_polyline",
+      "start": 0.8,
+      "end": 0.1,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/numeric_closed.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "line_domain",
+      "family": "line",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/line_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle_domain",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_domain",
+      "family": "nurbs",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_polyline_domain",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_polyline_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "polycurve_domain",
+      "family": "polycurve",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/polycurve_domain.3dm",
+      "domain": [
+        -3.0,
+        7.0
+      ]
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "line_post",
+      "family": "line",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/line_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_post",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "reversed_circle",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/reversed_circle.3dm",
+      "reverse": true
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "opposite",
+      "family": "line",
+      "start": 0.2,
+      "end": 0.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/opposite.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "negative_opposite",
+      "family": "line",
+      "start": 0.7,
+      "end": 1.0,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/negative_opposite.3dm",
+      "length": -3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "no_confirm",
+      "family": "line",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/no_confirm.3dm",
+      "length": 3.0,
+      "confirmation": false
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "circle_no_confirm",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/circle_no_confirm.3dm",
+      "length": 3.0,
+      "confirmation": false
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "closed_no_confirm",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/closed_no_confirm.3dm",
+      "length": 3.0,
+      "confirmation": false
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "rational_full_no_confirm",
+      "family": "nurbs_circle",
+      "start": 0.2,
+      "end": 0.7,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/rational_full_no_confirm.3dm",
+      "length_fraction": 1.0,
+      "confirmation": false
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "numeric_circle_backward",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/numeric_circle_backward.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "numeric_closed_backward",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/numeric_closed_backward.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "early_repeat",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/early_repeat.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "early_toward",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.4,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/early_toward.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "early_large",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/early_large.3dm",
+      "length": 10.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "near_middle",
+      "family": "circle",
+      "start": 0.4,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/near_middle.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "late",
+      "family": "circle",
+      "start": 0.6,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/late.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "early_domain",
+      "family": "circle",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/early_domain.3dm",
+      "length": 3.0,
+      "domain": [
+        -7.0,
+        13.0
+      ]
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "poly_early_toward",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.4,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/poly_early_toward.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "poly_early_large",
+      "family": "closed_polyline",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/poly_early_large.3dm",
+      "length": 10.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_circle_numeric_early",
+      "family": "nurbs_circle",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_circle_numeric_early.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "nurbs_circle_numeric_late",
+      "family": "nurbs_circle",
+      "start": 0.8,
+      "end": 0.1,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/nurbs_circle_numeric_late.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "ellipse_numeric_early",
+      "family": "ellipse",
+      "start": 0.2,
+      "end": 0.8,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/ellipse_numeric_early.3dm",
+      "length": 3.0
+    },
+    {
+      "op": "delete_subcurve_command",
+      "id": "ellipse_numeric_late",
+      "family": "ellipse",
+      "start": 0.8,
+      "end": 0.1,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/delete_subcurve/ellipse_numeric_late.3dm",
+      "length": 3.0
+    }
+  ]
+}

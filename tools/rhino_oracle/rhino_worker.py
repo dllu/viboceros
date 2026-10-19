@@ -13527,6 +13527,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'surface_fillet':
         from surface_fillet_probe import run
         return run(operation, globals(), iterations, tolerance)
+    if kind == 'delete_subcurve_command':
+        import delete_subcurve_probe
+        return delete_subcurve_probe.run(operation, globals(), iterations, tolerance)
     if kind == 'modify_radius_command':
         import modify_radius_probe
         return modify_radius_probe.run(operation, globals(), iterations, tolerance)
@@ -17538,7 +17541,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op') in ('reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
