@@ -30,7 +30,19 @@ impl Basis {
                 actual: count,
             });
         }
-        let knots = periodic_knots_preserving_active(degree, count, &source.knots)?;
+        Self::with_knots(degree, count, &source.knots)
+    }
+    fn with_knots(
+        degree: usize,
+        count: usize,
+        source_knots: &[Real],
+    ) -> Result<Self, GeometryError> {
+        if count < 2 * degree || degree < 2 {
+            return Err(GeometryError::NoRemovableKnot {
+                parameter: source_knots[degree],
+            });
+        }
+        let knots = periodic_knots_preserving_active(degree, count, source_knots)?;
         let (mut parameters, shift) =
             periodic_greville_parameters(degree, count, count - degree, &knots)?;
         parameters.push(knots[count]);
@@ -94,11 +106,19 @@ pub(crate) fn smooth_curves<E: From<GeometryError>>(
     let source = curves.first().ok_or(GeometryError::InvalidControlNet {
         context: "periodic interpolation requires at least one control curve",
     })?;
-    let basis = Basis::new(source)?;
+    fit_curves(curves, Basis::new(source)?, solve)
+}
+fn fit_curves<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    basis: Basis,
+    solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+) -> Result<Vec<NurbsCurve>, E> {
+    let source = &curves[0];
+
     if curves.iter().any(|curve| {
         curve.degree != source.degree
             || curve.knots != source.knots
-            || curve.control_points.len() != basis.count
+            || curve.control_points.len() != source.control_points.len()
     }) {
         return Err(GeometryError::InvalidControlNet {
             context: "periodic control curves have inconsistent source layouts",
@@ -156,4 +176,51 @@ pub(crate) fn smooth_curves<E: From<GeometryError>>(
         .enumerate()
         .map(|(curve, scale)| Ok(basis.finish(&solution, columns, curve * 4, scale)?))
         .collect()
+}
+
+impl NurbsCurve {
+    /// Remove one interior knot while retaining the cyclic basis and repeated
+    /// controls. Replacement controls interpolate the source at target Greville sites.
+    pub fn try_remove_periodic_knot_with_solver<E: From<GeometryError>>(
+        &self,
+        parameter: Real,
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        self.validate_parameter(parameter)?;
+        if !self.is_periodic() {
+            return Err(GeometryError::InvalidControlNet {
+                context: "periodic removal requires a periodic curve",
+            }
+            .into());
+        }
+        let index = self.closest_active_knot_index_by_curve_point(parameter)?;
+        let knot = removable_knot_at_index(self.degree, &self.knots, index, parameter)?;
+        self.try_remove_periodic_knot_value_with_solver(knot, solve)
+    }
+    /// Fit after removing an explicitly selected cyclic knot value.
+    pub fn try_remove_periodic_knot_value_with_solver<E: From<GeometryError>>(
+        &self,
+        knot: Real,
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        if !self.is_periodic()
+            || !knot.is_finite()
+            || knot <= *self.domain().start()
+            || knot >= *self.domain().end()
+            || !self.knots.contains(&knot)
+        {
+            return Err(GeometryError::NoRemovableKnot { parameter: knot }.into());
+        }
+        let mut knots = self.knots.clone();
+        let index = knots.partition_point(|k| *k <= knot) - 1;
+        knots.remove(index);
+        let basis = Basis::with_knots(self.degree, self.control_points.len() - 1, &knots)?;
+        Ok(fit_curves(std::slice::from_ref(self), basis, solve)?.remove(0))
+    }
+    pub fn try_remove_periodic_knot_value(&self, knot: Real) -> Result<Self, GeometryError> {
+        self.try_remove_periodic_knot_value_with_solver(knot, &mut portable_periodic_interpolation)
+    }
+    pub fn try_remove_periodic_knot(&self, parameter: Real) -> Result<Self, GeometryError> {
+        self.try_remove_periodic_knot_with_solver(parameter, &mut portable_periodic_interpolation)
+    }
 }

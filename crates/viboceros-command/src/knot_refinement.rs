@@ -173,3 +173,51 @@ pub(super) fn periodic_surface(
     let result = source.try_make_periodic(direction, smooth)?;
     Ok(result)
 }
+
+pub(super) fn remove_curve_interactive(
+    source: &NurbsCurve,
+    parameter: Real,
+) -> Result<NurbsCurve, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    let result = viboceros_smlib::remove_curve_knot_at_value(source, parameter)
+        .map_err(native_geometry_error)?;
+    #[cfg(not(feature = "native-smlib"))]
+    let result = if source.is_periodic() {
+        source.try_remove_periodic_knot_value(parameter)?
+    } else {
+        source.try_remove_knot_value(parameter)?
+    };
+    // Constant homogeneous weights remain exactly constant under basis fitting.
+    if !source.has_rational_representation() {
+        Ok(NurbsCurve::try_new(
+            result.degree(),
+            result.control_points().iter().map(|p| p.point()).collect(),
+            result.knots().to_vec(),
+        )?)
+    } else {
+        Ok(result)
+    }
+}
+
+pub(super) fn remove_surface_interactive(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    parameter: Real,
+) -> Result<NurbsSurface, CommandError> {
+    let periodic = match direction {
+        SurfaceKnotDirection::U => source.is_periodic_u(),
+        _ => source.is_periodic_v(),
+    };
+    if !periodic {
+        return remove_surface(source, direction, parameter);
+    }
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::remove_periodic_surface_knot(source, direction, parameter)
+            .map_err(native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(source.try_remove_periodic_knot(direction, parameter)?)
+    }
+}

@@ -3374,11 +3374,19 @@ impl VibocerosApp {
         self.push_log(format!("> {command_input}"));
         let previous_unit_scale = self.document.units().meters_per_unit();
         let result = self.try_run_3dm_command(&command_input).unwrap_or_else(|| {
-            self.commands.execute_in_context(
-                &mut self.document,
-                &command_input,
-                viboceros_command::CommandContext { construction_plane },
-            )
+            let context = viboceros_command::CommandContext { construction_plane };
+            if let Some(projection) = self.viewports[self.active_viewport].pick_projection() {
+                self.commands.execute_with_pick_projection(
+                    &mut self.document,
+                    &command_input,
+                    context,
+                    false,
+                    projection,
+                )
+            } else {
+                self.commands
+                    .execute_in_context(&mut self.document, &command_input, context)
+            }
         });
         match result {
             Ok(message) => {
@@ -10436,7 +10444,10 @@ impl eframe::App for VibocerosApp {
                 .and_then(|p| p.scene())
                 .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.fillet_surface_prompt.as_ref().and_then(|p| p.scene())),
-            self.rebuild_preview.as_ref().and_then(|p| p.scene()),
+            self.rebuild_preview
+                .as_ref()
+                .and_then(|p| p.scene())
+                .or_else(|| self.refinement_prompt.as_ref().and_then(|p| p.scene())),
         );
         let twist_preview = self
             .twist_session
@@ -11145,6 +11156,7 @@ mod tests {
     mod rectangle;
     mod reduce_polyline;
     mod remap_cplane;
+    mod remove_knot;
     mod reparameterize;
     mod rhino_curve_prompt;
     mod scale_by_plane;

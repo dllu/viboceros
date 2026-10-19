@@ -1094,6 +1094,18 @@ fn fit_basis(
     Ok(pointer)
 }
 
+/// Remove an explicitly selected marker, avoiding reselection at self intersections.
+pub fn remove_curve_knot_at_value(source: &NurbsCurve, knot: f64) -> Result<NurbsCurve, Error> {
+    if source.is_periodic() {
+        return source.try_remove_periodic_knot_value_with_solver(knot, &mut |job, shift| {
+            solve_interpolation(job, None, Some(shift))
+        });
+    }
+    let clamped = clamp_curve(source)?;
+    let knots = viboceros_geometry::knot_removal_knots(clamped.degree(), clamped.knots(), knot)?;
+    brep::curve_from_native(fit_basis(NurbsInput::curve(&clamped), 0, &knots)?)
+}
+
 /// Remove the knot chosen by the existing model-space command policy, fitting
 /// the replacement homogeneous controls with the shared native basis editor.
 pub fn remove_curve_knot(source: &NurbsCurve, parameter: f64) -> Result<NurbsCurve, Error> {
@@ -1465,6 +1477,16 @@ pub fn insert_surface_knot(
         parameter,
         target,
     )?)
+}
+
+pub fn remove_periodic_surface_knot(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    parameter: f64,
+) -> Result<NurbsSurface, Error> {
+    source.try_remove_periodic_knot_with_solver(direction, parameter, &mut |job, shift| {
+        solve_interpolation(job, None, Some(shift))
+    })
 }
 
 #[cfg(test)]

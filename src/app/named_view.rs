@@ -152,7 +152,7 @@ impl VibocerosApp {
             })
             .collect()
     }
-    fn restore_file_viewports(&mut self, current_views: Vec<ThreeDmViewport>) {
+    pub(super) fn restore_file_viewports(&mut self, current_views: Vec<ThreeDmViewport>) {
         let current_views = views_in_grid_order(current_views);
         self.viewport_positions = file_viewport_positions(&current_views);
         self.viewports = Viewport::standard_views().into();
@@ -162,8 +162,7 @@ impl VibocerosApp {
                 .resize_with(current_views.len(), || Viewport::new(ViewKind::Perspective));
         }
         for (viewport, source) in self.viewports.iter_mut().zip(current_views.iter()) {
-            if let Ok(snapshot) = Viewport::named_view_from_3dm(&source.camera) {
-                viewport.restore_named_view(snapshot);
+            if viewport.restore_file_camera(&source.camera).is_ok() {
                 viewport.restore_working_view_title(&source.camera.name);
             }
             viewport.display_mode = match source.display_mode {

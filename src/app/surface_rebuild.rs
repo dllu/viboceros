@@ -86,14 +86,14 @@ impl Prepared {
 }
 
 #[derive(Debug)]
-struct Background {
+pub(super) struct Background {
     objects: Vec<Object>,
     layers: Vec<Layer>,
     groups: Vec<Group>,
     grips: Vec<(ControlPointId, Point3, bool)>,
 }
 impl Background {
-    fn capture(doc: &Document) -> Self {
+    pub(super) fn capture(doc: &Document) -> Self {
         Self {
             objects: doc.objects().cloned().collect(),
             layers: doc.layers().cloned().collect(),
@@ -101,7 +101,7 @@ impl Background {
             grips: doc.control_points().collect(),
         }
     }
-    fn is_current(&self, doc: &Document) -> bool {
+    pub(super) fn is_current(&self, doc: &Document) -> bool {
         doc.objects().len() == self.objects.len()
             && doc.objects().zip(&self.objects).all(|(a, b)| {
                 a.geometry_snapshot()

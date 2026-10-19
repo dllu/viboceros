@@ -2178,7 +2178,9 @@ impl NurbsCurve {
         Ok(removals)
     }
 
-    pub(crate) fn try_remove_knot_value(&self, knot: Real) -> Result<Self, GeometryError> {
+    /// Remove this exact interior knot value, clamping open ends before fitting.
+    /// Callers that choose a marker need not repeat a closest-point search.
+    pub fn try_remove_knot_value(&self, knot: Real) -> Result<Self, GeometryError> {
         let source = self.clamped_to_active_domain()?;
         let knots = knot_removal_knots(source.degree, &source.knots, knot)?;
         source.interpolate_homogeneous_in_basis(

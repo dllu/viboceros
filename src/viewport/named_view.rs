@@ -12,6 +12,28 @@ fn vector(direction: NaVector3<Real>) -> Result<Vector3, GeometryError> {
 }
 
 impl Viewport {
+    pub(crate) fn restore_file_camera(
+        &mut self,
+        source: &ThreeDmNamedView,
+    ) -> Result<(), GeometryError> {
+        let saved = Self::named_view_from_3dm(source)?;
+        let [width, height] = saved.port_size;
+        self.restore_named_view(saved);
+        // Preserve the file's pixel context until the first actual viewport layout.
+        if self.last_rect.is_none() {
+            self.last_rect = Some(Rect::from_min_size(
+                Pos2::ZERO,
+                Vec2::new(width as f32, height as f32),
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn pick_projection(&self) -> Option<viboceros_command::picking::Projection> {
+        let view = Self::named_view_to_3dm(self.named_view_snapshot(), String::new()).ok()?;
+        viboceros_command::picking::Projection::from_view(&view).ok()
+    }
+
     pub(super) fn named_view_port_size(&self) -> [i32; 2] {
         self.last_rect.map_or([800, 600], |rect| {
             [rect.width().max(1.0) as i32, rect.height().max(1.0) as i32]

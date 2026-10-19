@@ -78,6 +78,8 @@ In this explicit form, Direction names the parameter axis being refined.
 Linux `native-smlib` builds use usd-brep for curve/tensor knot refinement.
 See [native behavior, qualification and limits](../smlib-knot-refinement.md).
 
+For repeated picking, shape previews, local Undo, temporary curves and periodic
+directions, see [interactive RemoveKnot](remove-knot.md). The legacy numeric form
 `RemoveKnot parameter|u,v Direction=U|V` requires exactly one selected curve
 or untrimmed NURBS surface and removes one knot in place. On curves, the
 parameter identifies a curve point and the knot with the nearest model-space

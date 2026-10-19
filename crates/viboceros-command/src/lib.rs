@@ -159,8 +159,10 @@ pub mod insert_knot;
 mod mark_foci;
 mod match_curve;
 pub mod modify_radius;
+pub mod picking;
 pub mod reduce_polyline;
 pub mod refinement;
+pub mod remove_knot;
 mod simplify_curve;
 use simplify_curve::SimplifyCurveCommand;
 mod match_curve_direction;
@@ -480,6 +482,12 @@ pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
+    fn remove_knot_options(&self) -> Option<remove_knot::Options> {
+        None
+    }
+    fn remember_remove_knot_options(&self, _value: remove_knot::Options) -> bool {
+        false
+    }
     fn insert_knot_options(&self) -> Option<insert_knot::Options> {
         None
     }
@@ -691,6 +699,20 @@ pub trait Command: Send + Sync {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError>;
 
+    fn run_with_pick_projection(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+        postselected: bool,
+        _projection: picking::Projection,
+    ) -> Result<String, CommandError> {
+        if postselected {
+            self.run_postselected(document, arguments, context)
+        } else {
+            self.run_in_context(document, arguments, context)
+        }
+    }
     fn run_in_context(
         &self,
         document: &mut Document,
@@ -897,7 +919,7 @@ impl CommandRegistry {
             .register(InsertKnotCommand::default())
             .expect("unique built-in command");
         registry
-            .register(RemoveKnotCommand)
+            .register(RemoveKnotCommand::default())
             .expect("unique built-in command");
         registry
             .register(RemoveControlPointCommand)
@@ -1874,7 +1896,7 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, false, None)
+        self.execute_invocation(document, input, context, false, None, None)
     }
 
     pub fn execute_postselected(
@@ -1883,7 +1905,7 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, true, None)
+        self.execute_invocation(document, input, context, true, None, None)
     }
 
     /// Accept one atomic step of an already-started interactive command.
@@ -1896,7 +1918,27 @@ impl CommandRegistry {
         context: CommandContext,
         group: &mut viboceros_document::HistoryGroup,
     ) -> Result<String, CommandError> {
-        self.execute_invocation(document, input, context, false, Some(group))
+        self.execute_invocation(document, input, context, false, Some(group), None)
+    }
+
+    /// Execute a point getter with the active camera; other commands retain
+    /// their usual construction-plane context and transaction behavior.
+    pub fn execute_with_pick_projection(
+        &self,
+        document: &mut Document,
+        input: &str,
+        context: CommandContext,
+        postselected: bool,
+        projection: picking::Projection,
+    ) -> Result<String, CommandError> {
+        self.execute_invocation(
+            document,
+            input,
+            context,
+            postselected,
+            None,
+            Some(projection),
+        )
     }
 
     fn execute_invocation(
@@ -1906,6 +1948,7 @@ impl CommandRegistry {
         context: CommandContext,
         postselected: bool,
         group: Option<&mut viboceros_document::HistoryGroup>,
+        projection: Option<picking::Projection>,
     ) -> Result<String, CommandError> {
         let mut tokens = input.trim_start().splitn(2, char::is_whitespace);
         let name = tokens
@@ -1953,7 +1996,15 @@ impl CommandRegistry {
             (arguments, None)
         };
         let run = |document: &mut Document| {
-            if postselected {
+            if let Some(projection) = projection {
+                command.run_with_pick_projection(
+                    document,
+                    &arguments,
+                    context,
+                    postselected,
+                    projection,
+                )
+            } else if postselected {
                 command.run_postselected(document, &arguments, context)
             } else {
                 command.run_in_context(document, &arguments, context)
@@ -2163,6 +2214,17 @@ impl CommandRegistry {
             .get("insertkink")
             .and_then(|i| self.commands[*i].insert_kink_options())
             .unwrap_or_default()
+    }
+    pub fn remove_knot_options(&self) -> remove_knot::Options {
+        self.lookup
+            .get("removeknot")
+            .and_then(|i| self.commands[*i].remove_knot_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_remove_knot_options(&self, value: remove_knot::Options) -> bool {
+        self.lookup
+            .get("removeknot")
+            .is_some_and(|i| self.commands[*i].remember_remove_knot_options(value))
     }
     pub fn insert_knot_options(&self) -> insert_knot::Options {
         self.lookup
@@ -4155,14 +4217,69 @@ fn mirrored_parameter(
 
 const REMOVE_KNOT_USAGE: &str = "RemoveKnot parameter|u,v [Direction=U|V]";
 
-struct RemoveKnotCommand;
+#[derive(Default)]
+struct RemoveKnotCommand(remembered::Remembered<remove_knot::Options>);
 
 impl Command for RemoveKnotCommand {
+    fn run_with_pick_projection(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+        postselected: bool,
+        projection: picking::Projection,
+    ) -> Result<String, CommandError> {
+        if remove_knot::staged_arguments(arguments) {
+            let (message, options) = remove_knot::run_selected_in_view(
+                document,
+                arguments,
+                postselected,
+                self.0.get(),
+                Some(projection),
+            )?;
+            self.0.set(options);
+            Ok(message)
+        } else if postselected {
+            self.run_postselected(document, arguments, context)
+        } else {
+            self.run(document, arguments)
+        }
+    }
+
+    fn remove_knot_options(&self) -> Option<remove_knot::Options> {
+        Some(self.0.get())
+    }
+    fn remember_remove_knot_options(&self, value: remove_knot::Options) -> bool {
+        self.0.set(value);
+        true
+    }
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _: CommandContext,
+    ) -> Result<String, CommandError> {
+        if remove_knot::staged_arguments(arguments) {
+            let (message, options) =
+                remove_knot::run_selected(document, arguments, true, self.0.get())?;
+            self.0.set(options);
+            Ok(message)
+        } else {
+            self.run(document, arguments)
+        }
+    }
+
     fn name(&self) -> &'static str {
         "RemoveKnot"
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if remove_knot::staged_arguments(arguments) {
+            let (message, options) =
+                remove_knot::run_selected(document, arguments, false, self.0.get())?;
+            self.0.set(options);
+            return Ok(message);
+        }
         let options = parse_remove_knot_options(arguments)?;
         let mut candidates = Vec::new();
         for object in document.selected_objects() {

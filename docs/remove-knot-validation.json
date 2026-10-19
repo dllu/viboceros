@@ -1,0 +1,2712 @@
+{
+  "feature": "RemoveKnot repeated point input, local Undo, shape preview, periodic curves/tensors and view-dependent knot-line picking",
+  "base_commit": "34f6a728d4702ce942e63b7bdbd3cc09fd510532",
+  "native_cases": 157,
+  "native_command_results": {
+    "Success": 142,
+    "Cancel": 12,
+    "Failure": 3
+  },
+  "comparison_epsilon": 1e-08,
+  "maximum_definition_or_sample_error": {
+    "api-portable": 1.2434497875801753e-14,
+    "api-native": 8.881784197001252e-15,
+    "ui-portable": 1.2434497875801753e-14,
+    "ui-native": 8.881784197001252e-15
+  },
+  "standalone_surface_cases_per_backend": 40,
+  "captures": [
+    {
+      "matrix": "command",
+      "path": "tools/rhino_oracle/observations/remove_knot_command.json",
+      "sha256": "8b3df1e38333ea0ffe1b17b5a707527bff1f136530ec3b906472a46d20202c8c",
+      "request": "tools/rhino_oracle/observations/remove_knot_command.request.json",
+      "request_sha256": "8f17edbff63867151889208cf605c72e0fa598addf367a2ce3363a57580066bd",
+      "cases": 149,
+      "native_results": {
+        "Success": 136,
+        "Cancel": 12,
+        "Failure": 1
+      },
+      "native_version": "8.32.26160.13001"
+    },
+    {
+      "matrix": "followup",
+      "path": "tools/rhino_oracle/observations/remove_knot_followup.json",
+      "sha256": "4bfdb3c4f70042985c79cc9a4459b71513f3727af55c1617f1abb4b8d8f485fc",
+      "request": "tools/rhino_oracle/observations/remove_knot_followup.request.json",
+      "request_sha256": "465a925f93bc6bd02b31871d083f40699264a4f9693693fcf5824dacbdb26924",
+      "cases": 6,
+      "native_results": {
+        "Success": 4,
+        "Failure": 2
+      },
+      "native_version": "8.32.26160.13001"
+    },
+    {
+      "matrix": "smooth_periodic",
+      "path": "tools/rhino_oracle/observations/remove_knot_smooth_periodic.json",
+      "sha256": "4b31e2adb2aa829dd824b29be8dca965cae4861a9f291df64c1a92305d527aed",
+      "request": "tools/rhino_oracle/observations/remove_knot_smooth_periodic.request.json",
+      "request_sha256": "87aca2bc85169e557a4a0e69d2e3f2cbe7ca3fc1c458d4dc46dbe3d878bb1d17",
+      "cases": 2,
+      "native_results": {
+        "Success": 2
+      },
+      "native_version": "8.32.26160.13001"
+    }
+  ],
+  "implementation": {
+    "controller": "src/app/refinement.rs",
+    "editor": "crates/viboceros-command/src/remove_knot.rs",
+    "view_context": "crates/viboceros-command/src/picking.rs",
+    "math": "Shared homogeneous basis fitting and cyclic Greville interpolation; native-smlib uses usd-brep collocation.",
+    "topology": "Existing single-face surface editor reconstructs boundary images with continuous normalized-parameter certificates at document tolerance/4."
+  },
+  "validation": [
+    {
+      "name": "api-portable",
+      "command": "cargo test -p viboceros-command --config 'profile.test.package.viboceros-geometry.opt-level=2' --test remove_knot_command -- --nocapture --test-threads=1",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 172.50s"
+      ],
+      "proof": "docs/remove-knot-proof/api-portable.log.gz"
+    },
+    {
+      "name": "api-native",
+      "command": "cargo test -p viboceros-command --config 'profile.test.package.viboceros-geometry.opt-level=2' --features native-smlib --test remove_knot_command -- --nocapture --test-threads=1",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 175.58s"
+      ],
+      "proof": "docs/remove-knot-proof/api-native.log.gz"
+    },
+    {
+      "name": "ui-portable",
+      "command": "cargo test -p viboceros --config 'profile.test.package.viboceros-geometry.opt-level=2' app::tests::remove_knot -- --nocapture --test-threads=1",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1442 filtered out; finished in 105.60s"
+      ],
+      "proof": "docs/remove-knot-proof/ui-portable.log.gz"
+    },
+    {
+      "name": "ui-native",
+      "command": "cargo test -p viboceros --config 'profile.test.package.viboceros-geometry.opt-level=2' --features native-smlib app::tests::remove_knot -- --nocapture --test-threads=1",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1457 filtered out; finished in 106.20s"
+      ],
+      "proof": "docs/remove-knot-proof/ui-native.log.gz"
+    },
+    {
+      "name": "insertion-api",
+      "command": "cargo test -p viboceros-command --config 'profile.test.package.viboceros-geometry.opt-level=2' --features native-smlib --test insert_knot_command --test insert_kink",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.86s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.82s"
+      ],
+      "proof": "docs/remove-knot-proof/insertion-api.log.gz"
+    },
+    {
+      "name": "insertion-ui",
+      "command": "cargo test -p viboceros --config 'profile.test.package.viboceros-geometry.opt-level=2' --features native-smlib app::tests::insert_",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 1450 filtered out; finished in 6.73s"
+      ],
+      "proof": "docs/remove-knot-proof/insertion-ui.log.gz"
+    },
+    {
+      "name": "named-views",
+      "command": "cargo test -p viboceros --config 'profile.test.package.viboceros-geometry.opt-level=2' --features native-smlib named_view",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 1434 filtered out; finished in 0.11s"
+      ],
+      "proof": "docs/remove-knot-proof/named-views.log.gz"
+    },
+    {
+      "name": "point-input",
+      "command": "cargo test -p viboceros --config 'profile.test.package.viboceros-geometry.opt-level=2' --features native-smlib app::tests::point_input",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 58 passed; 0 failed; 0 ignored; 0 measured; 1405 filtered out; finished in 0.21s"
+      ],
+      "proof": "docs/remove-knot-proof/point-input.log.gz"
+    },
+    {
+      "name": "subcurves",
+      "command": "cargo test -p viboceros --config 'profile.test.package.viboceros-geometry.opt-level=2' --features native-smlib subcurve",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 54 passed; 0 failed; 0 ignored; 0 measured; 1409 filtered out; finished in 3.52s"
+      ],
+      "proof": "docs/remove-knot-proof/subcurves.log.gz"
+    },
+    {
+      "name": "periodic-kernel",
+      "command": "cargo test -p viboceros-geometry --config 'profile.test.package.viboceros-geometry.opt-level=2' --lib periodic",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 53 passed; 0 failed; 0 ignored; 0 measured; 2354 filtered out; finished in 0.21s"
+      ],
+      "proof": "docs/remove-knot-proof/periodic-kernel.log.gz"
+    },
+    {
+      "name": "legacy-removal",
+      "command": "cargo test -p viboceros-command --config 'profile.test.package.viboceros-geometry.opt-level=2' --lib remove_knot",
+      "exit_code": 0,
+      "summary": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1521 filtered out; finished in 0.03s"
+      ],
+      "proof": "docs/remove-knot-proof/legacy-removal.log.gz"
+    },
+    {
+      "name": "python",
+      "command": "python3 -m unittest tools.rhino_oracle.test_remove_knot_command tools.rhino_oracle.test_insert_knot_command tools.rhino_oracle.test_insert_kink_subcurve tools.rhino_oracle.test_insert_kink_probe tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client tools.rhino_oracle.test_subcurve_direction tools.rhino_oracle.test_subcurve_direction_grid",
+      "exit_code": 0,
+      "summary": [
+        "Ran 50 tests"
+      ],
+      "proof": "docs/remove-knot-proof/python.log.gz"
+    },
+    {
+      "name": "clippy",
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "exit_code": 0,
+      "summary": [],
+      "proof": "docs/remove-knot-proof/clippy.log.gz"
+    },
+    {
+      "name": "format",
+      "command": "cargo fmt --all --check",
+      "exit_code": 0,
+      "summary": [],
+      "proof": "docs/remove-knot-proof/format.log.gz"
+    }
+  ],
+  "comparison_policy": [
+    "Replay uses the actual active camera stored with each source 3dm. Surface picks use perspective projection and integer device coordinates; view-free APIs retain model-space selection.",
+    "B-rep vertex and edge tables are matched bijectively modulo permutation and edge parameter direction. Counts, face orientation, loop/trim counts, coordinates and endpoint errors retain the same epsilon.",
+    "Only the two unused outer knot slots omitted by RhinoCommon are normalized. Active knots, degrees, controls, weights, domains and samples are compared.",
+    "Subcurve outputs normalize fresh identifiers; source identity, metadata, selection and geometry-changing Undo/Redo are checked.",
+    "VIEW_DIAGNOSTIC rows compare alternate camera choices to the Perspective reference and are not native-comparison audit rows.",
+    "The test geometry crate uses opt-level=2 to accelerate bounded boundary certificates; other test dependencies retain their test profile. No fast-math or comparison-tolerance change is used."
+  ],
+  "diagnostics": {
+    "screen": "docs/remove-knot-proof/screen-query.json.gz",
+    "note": "Owned public-API probes confirm that changing Perspective to Top changes the selected knot line. Face and surface closest-point queries recover the same source UV, separating projection choice from inverse evaluation. Diagnostic drivers only instrument staged copies of our own helpers."
+  },
+  "limits": [
+    "This increment does not complete Rhino command coverage or establish a general performance claim.",
+    "Native metadata-only Undo/Redo records are not captured; Rust command results do not expose the full native Cancel/Failure enum.",
+    "Native boundary snapshots retain edge endpoints, not complete spatial edge definitions. Rebuilt nonrectangular edges certify against their surface image at document tolerance/4 (capture absolute tolerance 1e-6). The 1e-8 figure applies to the retained definitions/samples/endpoints.",
+    "Native samples do not establish a continuous whole-model comparison certificate.",
+    "Projected picking currently requires guide control hulls in front of the camera. High-DPI parity, complete display/status-panel parity and all camera configurations remain unqualified.",
+    "Periodic captures use degree-three sources. Repeated composite-joint captures have two leaves; larger repeated composite workflows remain unqualified.",
+    "Numeric temporary shortening inherits shared input tests but has no new RemoveKnot-specific native capture.",
+    "Polysurfaces and block members are excluded. Two sharp transverse deformations automatically become polysurfaces in Rhino; their failure rows are retained alongside successful smooth periodic tensor deformations.",
+    "No new edited-3dm roundtrip matrix is included."
+  ],
+  "proof_sha256": {
+    "docs/remove-knot-proof/api-native.log.gz": "68be4eb4afa18b6b7236bf90e536e81974e1bf7933312e677c285f08132fc70b",
+    "docs/remove-knot-proof/api-portable.log.gz": "c2b400c2169c111df7ca3c5773fa5654ff091445c68e900a0dc3c227c9185ea1",
+    "docs/remove-knot-proof/clippy.log.gz": "0090c9919132927fe40a68c5328e6e28f645351b64cbfabb155928d1b26cbed4",
+    "docs/remove-knot-proof/format.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/remove-knot-proof/insertion-api.log.gz": "84bb13db97d4a9e769c3883e3aacee05594a092db69b8db4b1d1d91a7894a35e",
+    "docs/remove-knot-proof/insertion-ui.log.gz": "e1985a1dc2a751ed3733b70773b35d7b06b59de5606ecf00fc7c29cd520fd82c",
+    "docs/remove-knot-proof/legacy-removal.log.gz": "a5f0ccd1edf2c13998f67dc2417d41dc50c04a7a6459d4364d8bd597a47f0532",
+    "docs/remove-knot-proof/named-views.log.gz": "cb8ad7142fab18abdfc462b4f3baabadd5e7111f32e38dd75acd0fda0ef846cf",
+    "docs/remove-knot-proof/periodic-kernel.log.gz": "86a9c863600fdc91ed9fe045669f4a26ecca3733e0e0999828286d6426b33122",
+    "docs/remove-knot-proof/point-input.log.gz": "2d989649ea76efe410bcee78b1f0db90d0897b306896225be415d1de2de701e6",
+    "docs/remove-knot-proof/python.log.gz": "de08c02091e4d9a7c4a2de4d0a43d644e5f1aa818b71bf457f297ffabfcb93aa",
+    "docs/remove-knot-proof/screen-query-driver.py.gz": "013a3579bc8d35ec46d6bcafec11b617604b72054b79bb7f9a9c7b7f67657c9e",
+    "docs/remove-knot-proof/screen-query.json.gz": "16812bd1b0f26b152a71734a4fee609ef25f7cce57aad2f953f9fdb47b619323",
+    "docs/remove-knot-proof/subcurves.log.gz": "c2bd7aea885b67ab709cda5110d463738ef718261ea22346f5dbe325cde41785",
+    "docs/remove-knot-proof/surface-face-query-driver.py.gz": "cdf84806bbe5c2cfc8ebd780bc26641a49ea80038afedea323e330237ae59064",
+    "docs/remove-knot-proof/surface-face-query.json.gz": "9de4ea2c249c7c1831be54c5a26072442a445f8ccf049f7b69f648d9640bec00",
+    "docs/remove-knot-proof/surface-knot-sdk.json.gz": "f3c73da36282c4adce4def45bf1d43468cc46747855af8812500c5c7515ebe43",
+    "docs/remove-knot-proof/surface-projection.json.gz": "51f1c9976966a4aeaf01735f3747715b236ae27fb62de9650d9ab1f576957e05",
+    "docs/remove-knot-proof/ui-native.log.gz": "51e807b80e1f22a45e721e7f45a284e320b371bbbc91569197b362cf71069795",
+    "docs/remove-knot-proof/ui-portable.log.gz": "60b78c061d0299161f1d8a99ed47ce770168f7c97cd7e36d8866db9204b54f20"
+  },
+  "current_source_sha256": {
+    "README.md": "52b04e5ecb7d1df4d6ca006fd8c7daf7c675676142e9a51c0cc7db6250c70daa",
+    "crates/viboceros-command/src/lib.rs": "2e8c8641e6ca06afd2d78b7bd359e354f7408cc5ab6d1b24740b6203b6cd0fb6",
+    "crates/viboceros-command/src/remove_knot.rs": "a60ca398f4ba888ca7fd97b41f0657e8ceb280de2cdcbb6c1d0d63be48bc8483",
+    "crates/viboceros-command/src/picking.rs": "af63a4448b19d9895e115b9641b4c074ab62bb5bce69106d347f4df280499668",
+    "crates/viboceros-command/src/knot_refinement.rs": "b3918318d281b75f45f988a29a03f38f433063791de6976ae936438f2d879c9e",
+    "crates/viboceros-command/tests/remove_knot_command.rs": "0169481bef91589e926e6f02beff0638cfb013a8c96e2b3481b57923c18d9f2e",
+    "crates/viboceros-command/tests/support/remove_knot.rs": "79964b35a22a641c3a649ea4bec72f79ba676cffb6816ff5be3aa85e23da6637",
+    "crates/viboceros-geometry/src/nurbs.rs": "d78bb07fbb56ac1facf2d86e9c9a77f35e2d64e5f64e753dca9dc95c6e215c98",
+    "crates/viboceros-geometry/src/nurbs/periodic.rs": "17f80eb356608081b89e09d98ddd16bd2f8496f8305966e6299495877bace4f7",
+    "crates/viboceros-geometry/src/nurbs_surface/periodic.rs": "f237f0100e2a46db90429d5315c1e09c2518881f282fcbb1c4f02884cc2b3a00",
+    "crates/viboceros-smlib/src/lib.rs": "58f0c7d308d7c50702926ccf983dd162b0f69891c0a537b643a3e8a1c292e49e",
+    "crates/viboceros-smlib/src/native.rs": "dc9263ba7a4eb9e590ad5370a229ea601852b8977f989e5e0588d74e8c9699e5",
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": "90179927c9d0d607e88fc64d2badfb2616e53b9fb1e88d1f9da19680730beb82",
+    "src/app.rs": "8dd3210e1cf42d16e27c665e3132b7c4121d88e9535568b7c8323a3b6b49d2d7",
+    "src/app/refinement.rs": "2664ad9538852c0e22d51399c348a1ed22868876e44be123755159cf0746a97d",
+    "src/app/named_view.rs": "c760fb8ac081bcee8b117801e547bb4f84aa1d6c17f75cc399497df5e5ee5bf1",
+    "src/app/object_selection.rs": "1de25969cd3f368657fe3274d4f7414ac5c340a0e4c57f8214d9d8e1091cd538",
+    "src/app/surface_rebuild.rs": "4244c1cf28ba26a419c3eff6db302ade9a50fd7314393b2325a6760803c651bf",
+    "src/viewport/named_view.rs": "5ce879ab9621f2de15f001b78c0e1e602ab0db6709d88caa8843780baee59bb7",
+    "src/app/tests/remove_knot.rs": "913d1bcc306023d2a8336d8ff2fd5ee86402eb0b1dfa5dffd56536f41d788096",
+    "tools/rhino_oracle/rhino_worker.py": "1366ef6dfd08a33a3843798ee51555ba1890a1e1afc946361bdf347842ef1d7f",
+    "tools/rhino_oracle/structural_sdk.py": "e8d2501c5ad95d1b240ad93c325aea3e8808ffda70456fd2e194e15ee38543f4",
+    "tools/rhino_oracle/remove_knot_command_probe.py": "84a53185da0f36e8acdfc4aeed1f3d377db928f80d1b2450dfd947a2a324517a",
+    "tools/rhino_oracle/remove_knot_smooth_periodic_probe.py": "d268f98bac27effac943886ce431538e7108ae118e2a3277755ba4bda055511c",
+    "tools/rhino_oracle/generate_remove_knot_command.py": "36b717936bed87ab3de6b5c0107e7e8715ea524cc639dd9e0fbb620ec432c2ee",
+    "tools/rhino_oracle/generate_remove_knot_followup.py": "973056e471c66c73978482d93e21660194f620fd2805ec0caf27927c6a535058",
+    "tools/rhino_oracle/generate_remove_knot_smooth_periodic.py": "1f6ba9a2ee7b83610b37c8d21d5b50076c6b9310b8aa6b08a96e964347329dd9",
+    "tools/rhino_oracle/test_remove_knot_command.py": "54470be0c31dff3df184ca9e5b4006e0a0216a1fc9c980f8f2c3ea4e2ee8eaeb",
+    "tools/rhino_oracle/test_insert_knot_command.py": "b06eadbee8eec06ca3c4227320a106547459e42be77e603ed517dff730be13e7",
+    "docs/commands/remove-knot.md": "0da57f53c7ff54d50f3e104b04d39361b0a46172b49481d99d2c0e1a49bdca10",
+    "docs/commands/nurbs.md": "b7e564a9f0677ff0590dc7fd5711c82f95449196968db941fe97989e3f4d957b"
+  },
+  "cases": [
+    {
+      "matrix": "command",
+      "id": "cubic",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.776573666601473e-15,
+        "api-native": 2.3263411494723065e-15,
+        "ui-portable": 1.776573666601473e-15,
+        "ui-native": 2.3263411494723065e-15
+      },
+      "source_3dm_sha256": "0c08c91e41de2b284f4bd7a1426130f2227d4081d0c3c327a7a233d6bfe4089f"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_deformed",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 1.7772375353462675e-15,
+        "api-native": 2.304381488092735e-15,
+        "ui-portable": 1.7772375353462675e-15,
+        "ui-native": 2.304381488092735e-15
+      },
+      "source_3dm_sha256": "85875074f7eaa35683d90f762053ba73a5cfc5fb5a29f9d6bf1acb7a2660e7df"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_repeat",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.7465400791133423e-15,
+        "api-native": 3.580361673049448e-15,
+        "ui-portable": 2.7465400791133423e-15,
+        "ui-native": 3.580361673049448e-15
+      },
+      "source_3dm_sha256": "135eff264ba00dd2c7daf5dc08d3aff2f5c9da8c3b3b6fef4e4f7fd14fcdcbac"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_ends",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.886119947416683e-16,
+        "api-native": 8.886119947416683e-16,
+        "ui-portable": 8.886119947416683e-16,
+        "ui-native": 8.886119947416683e-16
+      },
+      "source_3dm_sha256": "9997d23863881506d69f2f912a0a04f56203f3643261080b26bda60fb0ee5a4e"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_cancel",
+      "family": "cubic",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.886119947416683e-16,
+        "api-native": 8.886119947416683e-16,
+        "ui-portable": 8.886119947416683e-16,
+        "ui-native": 8.886119947416683e-16
+      },
+      "source_3dm_sha256": "91b48a17f36b6be404ffed82faabeb8d05d94ffe136267db79ffd676c62c4f9b"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_empty",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.886119947416683e-16,
+        "api-native": 8.886119947416683e-16,
+        "ui-portable": 8.886119947416683e-16,
+        "ui-native": 8.886119947416683e-16
+      },
+      "source_3dm_sha256": "f9227f8bdb4f26f50738a8ba9cdfcb12d009b25ac818aa9d40deb477184cf37a"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_post",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.776573666601473e-15,
+        "api-native": 2.3263411494723065e-15,
+        "ui-portable": 1.776573666601473e-15,
+        "ui-native": 2.3263411494723065e-15
+      },
+      "source_3dm_sha256": "0dca9c14bdd3cdb493c0dc5ab6f68ff301834aea70ea52d4f46f0eef5648bb30"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_undo",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 9.122468574731976e-16,
+        "api-native": 1.3325567187647329e-15,
+        "ui-portable": 9.122468574731976e-16,
+        "ui-native": 1.3325567187647329e-15
+      },
+      "source_3dm_sha256": "ec2d3f9b003a82898d1c00905a3ef5f346205d4e8229e7e7ab743058b81d5076"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_undo_all",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.886119947416683e-16,
+        "api-native": 8.886119947416683e-16,
+        "ui-portable": 8.886119947416683e-16,
+        "ui-native": 8.886119947416683e-16
+      },
+      "source_3dm_sha256": "07f7fe1a791c1a9ebe41ca63b7ab81fb2302c6e0432e7b7da4a8286a8adb6ea5"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_numeric",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.886119947416683e-16,
+        "api-native": 8.886119947416683e-16,
+        "ui-portable": 8.886119947416683e-16,
+        "ui-native": 8.886119947416683e-16
+      },
+      "source_3dm_sha256": "cbab32f5b732349c5947e695ff4ac75444ca946341eea8107b897600f75bd61e"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_unseeded",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 0.0,
+        "api-native": 0.0,
+        "ui-portable": 0.0,
+        "ui-native": 0.0
+      },
+      "source_3dm_sha256": "ddb823cb8e63095199a7c563dc07914c353a179d0a2a97a024dcca69b13d1751"
+    },
+    {
+      "matrix": "command",
+      "id": "rational",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.7012892057857038e-15,
+        "api-native": 3.554447978966673e-15,
+        "ui-portable": 2.7012892057857038e-15,
+        "ui-native": 3.554447978966673e-15
+      },
+      "source_3dm_sha256": "16742e8d1d9b59a311862b9c095206cfdcd82b0837e8bf655cbb90b22f697516"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_deformed",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 2.6818622964861813e-15,
+        "api-native": 3.556858334497639e-15,
+        "ui-portable": 2.6818622964861813e-15,
+        "ui-native": 3.556858334497639e-15
+      },
+      "source_3dm_sha256": "c0cf9bf5afd1cd2b03dac7e7e6f56b7bd7d8ba08d3c50d9ca2a7e98fd0894d14"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_repeat",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.1401849173675502e-15,
+        "api-native": 5.583218758733536e-15,
+        "ui-portable": 3.1401849173675502e-15,
+        "ui-native": 5.583218758733536e-15
+      },
+      "source_3dm_sha256": "563f2a8dd3916b3ee40fdcc90049dada6a809e56494697fe36148b2e8733afce"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_ends",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3877787807814457e-15,
+        "api-native": 1.3877787807814457e-15,
+        "ui-portable": 1.3877787807814457e-15,
+        "ui-native": 1.3877787807814457e-15
+      },
+      "source_3dm_sha256": "569689e7b39b0e4d13090d6282b99b3314e88e7da007d0b40beb6d82ad1f5236"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_cancel",
+      "family": "rational",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3877787807814457e-15,
+        "api-native": 1.3877787807814457e-15,
+        "ui-portable": 1.3877787807814457e-15,
+        "ui-native": 1.3877787807814457e-15
+      },
+      "source_3dm_sha256": "9b3e914df6c3adaba1294c60c64065426d4ff87f576ea63392f8f4a419123b7a"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_empty",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3877787807814457e-15,
+        "api-native": 1.3877787807814457e-15,
+        "ui-portable": 1.3877787807814457e-15,
+        "ui-native": 1.3877787807814457e-15
+      },
+      "source_3dm_sha256": "870f4e89644a416c06786c4dc07a70445fbe0c1e0d9ba1e43f2d128fb394c887"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_post",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.7012892057857038e-15,
+        "api-native": 3.554447978966673e-15,
+        "ui-portable": 2.7012892057857038e-15,
+        "ui-native": 3.554447978966673e-15
+      },
+      "source_3dm_sha256": "1693e75127f75af1c0dc55418e99fbb174e5613c4c1a0a306e341f32e1d3cbeb"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_undo",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3877787807814457e-15,
+        "api-native": 1.3877787807814457e-15,
+        "ui-portable": 1.3877787807814457e-15,
+        "ui-native": 1.3877787807814457e-15
+      },
+      "source_3dm_sha256": "cd8e6386d935b4a75a011752798fccb0a6149239633e78148c9566fbdcd258ea"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_undo_all",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3877787807814457e-15,
+        "api-native": 1.3877787807814457e-15,
+        "ui-portable": 1.3877787807814457e-15,
+        "ui-native": 1.3877787807814457e-15
+      },
+      "source_3dm_sha256": "d1d2b300aa7343ba2fcdd78b3525376e95c9a0bf2d3b7f11782f350b729a8a5e"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_numeric",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3877787807814457e-15,
+        "api-native": 1.3877787807814457e-15,
+        "ui-portable": 1.3877787807814457e-15,
+        "ui-native": 1.3877787807814457e-15
+      },
+      "source_3dm_sha256": "1f4b0dec2e898910b4e72476cfdde735a0025a6095eb2e653242997c235eac33"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_unseeded",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "b66f0b9144471c5f3e83dcd83f0b2ca158ee39ef1001233d72c7085aca2ea137"
+    },
+    {
+      "matrix": "command",
+      "id": "line",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "34a51ea34a749c8234097cc64d74098942990b72a8ccfe2cc4993f47848351ce"
+    },
+    {
+      "matrix": "command",
+      "id": "line_deformed",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "0a7e39e9b24429e827c7380e8cd62f60e2ddbd28efd45987fa315c9430a46d35"
+    },
+    {
+      "matrix": "command",
+      "id": "line_repeat",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "9b7a0c14395dd3271c5f3c248bfd08b06abb12035f201f98ef58dbd629c4f67b"
+    },
+    {
+      "matrix": "command",
+      "id": "line_ends",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "06e8eff9f55b48987e3d50463f500f96637b8648df8a8384d2ef8dd28404a3be"
+    },
+    {
+      "matrix": "command",
+      "id": "line_cancel",
+      "family": "line",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "5f6366c0c24c76035f72854721872c6b8d6bf7d415fc652ff494dcff776c96d5"
+    },
+    {
+      "matrix": "command",
+      "id": "line_empty",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "5723245f654022248a9593f835d430dca8b62895da404c3cb01fe1f99d7755c9"
+    },
+    {
+      "matrix": "command",
+      "id": "line_post",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "18f4a31d26ecc8812a05f74af3df7a44a47c4871c35cfb2277b88bfd0a2c0957"
+    },
+    {
+      "matrix": "command",
+      "id": "line_undo",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "bcb3db78f570e2001852ef7164a2b8928a6f5b6e5d959e63561ff53fb252c2e5"
+    },
+    {
+      "matrix": "command",
+      "id": "line_undo_all",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "fc6de982adc212de742ba2ef69f56bd7b185dfaae0f65fde01832220bc321675"
+    },
+    {
+      "matrix": "command",
+      "id": "line_numeric",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "a93fc863113af27db347e2b5b8ac6aa98710f66aff5a4c0abcecf742f8773a0a"
+    },
+    {
+      "matrix": "command",
+      "id": "line_unseeded",
+      "family": "line",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 0.0,
+        "api-native": 0.0,
+        "ui-portable": 0.0,
+        "ui-native": 0.0
+      },
+      "source_3dm_sha256": "2f21f4de3c7bb7a80f15e4cd9d7571734cae8aa980ce3963db6b6e8ed4eab8f5"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "9188ff76de2f2a3701a136b9841ae112e21f712942ee7f5931bb0ba9a47af42e"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_deformed",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "50f66c87ebdddb37f4e492566a16e85ecedaaabdfa4f5d990686a90ca6ccc6cc"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_repeat",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "fd7050b37863dd03c21027b4f80f654583331fc7e82e96d74ce8072ce9d9d309"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_ends",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "bdd6de22a4f7dce9ca47ad2ea4448c3d235632893e317908cee3246a08734e46"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_cancel",
+      "family": "polyline",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "6f331f4c8e75a541b596dbe58dc3880b0fbb655529e57e6eaed05d736c6adb22"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_empty",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "9ce150236cf31647af68bf7a9d091ae2a2b961a814e56b69ebfc6e95483264a7"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_post",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "02edf50f520aeb56ea30beb41b7e192a78650253e355ebec6695604d06b927f0"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_undo",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "5390d0d97e92e36fa16354d3904e0aeece2104ca48ec73aa17ce7809e7b4cda1"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_undo_all",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "ddc67ab10e57574e5615a131c762e21b83a38dbf0507d6c218eaddd906e0d2ea"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_numeric",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 8.881784197001252e-16,
+        "api-native": 8.881784197001252e-16,
+        "ui-portable": 8.881784197001252e-16,
+        "ui-native": 8.881784197001252e-16
+      },
+      "source_3dm_sha256": "1144d6d2d5877e6968aa20401e8216d12cefbc08b37378357996794a9151ee54"
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_unseeded",
+      "family": "polyline",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 0.0,
+        "api-native": 0.0,
+        "ui-portable": 0.0,
+        "ui-native": 0.0
+      },
+      "source_3dm_sha256": "407db68e3d3d8e3cca7f88bbaa1553e0c0414ca4aee9fdf3686a6830e06a68b5"
+    },
+    {
+      "matrix": "command",
+      "id": "circle",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.094764613337708e-15,
+        "api-native": 2.8435583831733384e-15,
+        "ui-portable": 2.094764613337708e-15,
+        "ui-native": 2.8435583831733384e-15
+      },
+      "source_3dm_sha256": "3de1a92f4679a957717d8c92935c37086d4bd7d26ceff7d0a0b0db3951205ce7"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_deformed",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 1.861900614935455e-15,
+        "api-native": 1.861279877923726e-15,
+        "ui-portable": 1.861900614935455e-15,
+        "ui-native": 1.861279877923726e-15
+      },
+      "source_3dm_sha256": "1a67dea167c415ed0ce6706e59afa18051ce7e7da8573a8eaa47b35d379945da"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_repeat",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.220446049250313e-15,
+        "api-native": 1.9502118998139442e-15,
+        "ui-portable": 2.220446049250313e-15,
+        "ui-native": 1.9502118998139442e-15
+      },
+      "source_3dm_sha256": "ce086e12f2b5951f6416784a52567453827afe3c87339eda545dfbdc87f2bda5"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_ends",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 9.155133597044475e-16,
+        "api-native": 9.155133597044475e-16,
+        "ui-portable": 9.155133597044475e-16,
+        "ui-native": 9.155133597044475e-16
+      },
+      "source_3dm_sha256": "87c756669ebf905948e566418c5d0100e7b50fd7762f9425c315579d59bbe0c9"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_cancel",
+      "family": "circle",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 9.155133597044475e-16,
+        "api-native": 9.155133597044475e-16,
+        "ui-portable": 9.155133597044475e-16,
+        "ui-native": 9.155133597044475e-16
+      },
+      "source_3dm_sha256": "b2aeeea90b5ba21bb9ba9ff7ff1ba2a98cab4f8ad7f9f489b359c8ca6044fc8a"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_empty",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 9.155133597044475e-16,
+        "api-native": 9.155133597044475e-16,
+        "ui-portable": 9.155133597044475e-16,
+        "ui-native": 9.155133597044475e-16
+      },
+      "source_3dm_sha256": "30756a23f8c23d3d5775981a2e87d50cca7ef202972d0c84311d54a5817f9b15"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_post",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.094764613337708e-15,
+        "api-native": 2.8435583831733384e-15,
+        "ui-portable": 2.094764613337708e-15,
+        "ui-native": 2.8435583831733384e-15
+      },
+      "source_3dm_sha256": "bf758e6b51c54695f6b4e2f7f25d9fc962cac7ab652a66cc5d196734404e49b8"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_undo",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.6011864169946884e-15,
+        "api-native": 2.589462819655575e-15,
+        "ui-portable": 1.6011864169946884e-15,
+        "ui-native": 2.589462819655575e-15
+      },
+      "source_3dm_sha256": "8d73336d1880287cb7d2ea0873742e3b981b7efa89e918b6afa265347fb0c17c"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_undo_all",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 9.155133597044475e-16,
+        "api-native": 9.155133597044475e-16,
+        "ui-portable": 9.155133597044475e-16,
+        "ui-native": 9.155133597044475e-16
+      },
+      "source_3dm_sha256": "e13fda48b8dfcb4fe9ce3b9632d6888c61258849706eed4208ed0bec525baa12"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_numeric",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 9.155133597044475e-16,
+        "api-native": 9.155133597044475e-16,
+        "ui-portable": 9.155133597044475e-16,
+        "ui-native": 9.155133597044475e-16
+      },
+      "source_3dm_sha256": "fb904a657ded62e91d5713f47b018087811f06cbdc3a93e3fe5353e1625de84d"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_unseeded",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.8435583831733384e-15,
+        "api-native": 2.8435583831733384e-15,
+        "ui-portable": 2.8435583831733384e-15,
+        "ui-native": 2.8435583831733384e-15
+      },
+      "source_3dm_sha256": "f739cc1de4895da17ccd3fd0876dbd1ebc09336c72bad271ca5e046cb51edd07"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.807312143953211e-15,
+        "api-native": 2.2452871135843694e-15,
+        "ui-portable": 1.807312143953211e-15,
+        "ui-native": 2.2452871135843694e-15
+      },
+      "source_3dm_sha256": "d84aebbd4c8bd2a89e9c7319910c497989d64dcc76079fa7cb90abe883dee274"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_deformed",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 1.8077916148247564e-15,
+        "api-native": 1.8077916148247564e-15,
+        "ui-portable": 1.8077916148247564e-15,
+        "ui-native": 1.8077916148247564e-15
+      },
+      "source_3dm_sha256": "907a931f24aaa03de17d3f60b693d87299961c7718a2d9257bbb8803f6efa0cf"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_repeat",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.66205343881779e-15,
+        "api-native": 3.675911382204534e-15,
+        "ui-portable": 3.66205343881779e-15,
+        "ui-native": 3.675911382204534e-15
+      },
+      "source_3dm_sha256": "2a58a49cb6294f6d266649759b26823497ff21773bd184040cb21f81093a7672"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_ends",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.1102230246251565e-15,
+        "api-native": 1.1102230246251565e-15,
+        "ui-portable": 1.1102230246251565e-15,
+        "ui-native": 1.1102230246251565e-15
+      },
+      "source_3dm_sha256": "9793bd9f65d63dc7aae9043bfa5fb9ebfea59e15a4f4e44350ba163ced7a0d9b"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_cancel",
+      "family": "ellipse",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.1102230246251565e-15,
+        "api-native": 1.1102230246251565e-15,
+        "ui-portable": 1.1102230246251565e-15,
+        "ui-native": 1.1102230246251565e-15
+      },
+      "source_3dm_sha256": "de116a3732f00f9182f877742e28f0dac9036a97c156bffbce5242df44ab1bd7"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_empty",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.1102230246251565e-15,
+        "api-native": 1.1102230246251565e-15,
+        "ui-portable": 1.1102230246251565e-15,
+        "ui-native": 1.1102230246251565e-15
+      },
+      "source_3dm_sha256": "b69d589754cdf2e82ac07d7b593a1c6c2f1aa6dca5885896ac0264d218745e27"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_post",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.807312143953211e-15,
+        "api-native": 2.2452871135843694e-15,
+        "ui-portable": 1.807312143953211e-15,
+        "ui-native": 2.2452871135843694e-15
+      },
+      "source_3dm_sha256": "ae7330c65d1ed4f723ba667cc96ed880a7fae4c258089fa3a41c8513c16eb2ae"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_undo",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.7763568394002505e-15,
+        "api-native": 1.1102230246251565e-15,
+        "ui-portable": 1.7763568394002505e-15,
+        "ui-native": 1.1102230246251565e-15
+      },
+      "source_3dm_sha256": "209b99844c016ce00cc44e0ad4c8816fc3f8d7eac333ed871d866b45e0536546"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_undo_all",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.1102230246251565e-15,
+        "api-native": 1.1102230246251565e-15,
+        "ui-portable": 1.1102230246251565e-15,
+        "ui-native": 1.1102230246251565e-15
+      },
+      "source_3dm_sha256": "332aa6de59c06a2583f3993abc12cca7830b78115573cac5f5a6bd779c645992"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_numeric",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.1102230246251565e-15,
+        "api-native": 1.1102230246251565e-15,
+        "ui-portable": 1.1102230246251565e-15,
+        "ui-native": 1.1102230246251565e-15
+      },
+      "source_3dm_sha256": "c55b60ffbbb71214da58a6dbe1007971b722d75233c0c771bff49b7c2d6e7f47"
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_unseeded",
+      "family": "ellipse",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.673771110915334e-15,
+        "api-native": 2.673771110915334e-15,
+        "ui-portable": 2.673771110915334e-15,
+        "ui-native": 2.673771110915334e-15
+      },
+      "source_3dm_sha256": "17523e987ed9e5760a20e498474190d6b3b400176b5b39bba6827ed7ddfd3b78"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.790180836524724e-15,
+        "api-native": 1.831026719408895e-15,
+        "ui-portable": 1.790180836524724e-15,
+        "ui-native": 1.831026719408895e-15
+      },
+      "source_3dm_sha256": "6916cb1a45f0d6b201ceb5c1941f6bffb2ec21d958e5eb0a70e761c934239847"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_deformed",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 1.7768446633946356e-15,
+        "api-native": 1.831026719408895e-15,
+        "ui-portable": 1.7768446633946356e-15,
+        "ui-native": 1.831026719408895e-15
+      },
+      "source_3dm_sha256": "cbc289f67bc09e23dc22bc4cc9bd57525f72e42540ef28e17758519d94af689c"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_repeat",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.453364592678439e-15,
+        "api-native": 2.7012892057857038e-15,
+        "ui-portable": 4.453364592678439e-15,
+        "ui-native": 2.7012892057857038e-15
+      },
+      "source_3dm_sha256": "23b586773387a2b6ce2dbd776a9778a225092a26c104f0c48f468413fd36c619"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_ends",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3322676295501878e-15,
+        "api-native": 1.3322676295501878e-15,
+        "ui-portable": 1.3322676295501878e-15,
+        "ui-native": 1.3322676295501878e-15
+      },
+      "source_3dm_sha256": "6ea7e869feb0ce824939faf50380a5912510f06bab3f8dcfbd21b82b7a976983"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_cancel",
+      "family": "polycurve",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3322676295501878e-15,
+        "api-native": 1.3322676295501878e-15,
+        "ui-portable": 1.3322676295501878e-15,
+        "ui-native": 1.3322676295501878e-15
+      },
+      "source_3dm_sha256": "4140fcc1b8bfd5b110242e8b3739474c09c834c9679817b949b87cff0f486dd8"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_empty",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3322676295501878e-15,
+        "api-native": 1.3322676295501878e-15,
+        "ui-portable": 1.3322676295501878e-15,
+        "ui-native": 1.3322676295501878e-15
+      },
+      "source_3dm_sha256": "bcb66fc47dd7c4e4caaf50789115351644c952bb9461bdd58f13cecf3e9a47c3"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_post",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.790180836524724e-15,
+        "api-native": 1.831026719408895e-15,
+        "ui-portable": 1.790180836524724e-15,
+        "ui-native": 1.831026719408895e-15
+      },
+      "source_3dm_sha256": "0cce2e4aa97d545370e74e661869b45669284960a282270b2dfee637a69a7b85"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_undo",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3322676295501878e-15,
+        "api-native": 1.831026719408895e-15,
+        "ui-portable": 1.3322676295501878e-15,
+        "ui-native": 1.831026719408895e-15
+      },
+      "source_3dm_sha256": "11add55045c0a122ec5230ecc8d571b58e97451124cbf6c82ee7a20d2d034ac7"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_undo_all",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3322676295501878e-15,
+        "api-native": 1.3322676295501878e-15,
+        "ui-portable": 1.3322676295501878e-15,
+        "ui-native": 1.3322676295501878e-15
+      },
+      "source_3dm_sha256": "00013ac7cc5f1c4221ebd69cd639e746a27a8c81d230ca0db137d0239832a1b8"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_numeric",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3322676295501878e-15,
+        "api-native": 1.3322676295501878e-15,
+        "ui-portable": 1.3322676295501878e-15,
+        "ui-native": 1.3322676295501878e-15
+      },
+      "source_3dm_sha256": "85b1f760485823daec4b0ae9109ba46355e8c79278b4963dc5623fe859c4a947"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_unseeded",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.831026719408895e-15,
+        "api-native": 2.7012892057857038e-15,
+        "ui-portable": 1.831026719408895e-15,
+        "ui-native": 2.7012892057857038e-15
+      },
+      "source_3dm_sha256": "1081c227604f3e07e536e67280bb09cff0d66d4a42cfe35e3905f4aec3fb9f2f"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.7807424444409652e-15,
+        "api-native": 1.3334236103572998e-15,
+        "ui-portable": 1.7807424444409652e-15,
+        "ui-native": 1.3334236103572998e-15
+      },
+      "source_3dm_sha256": "46ae7e3fcea2860b3c9b36a31bb62a849ad83c4c244e0614dab6040fcfcd3fb9"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_deformed",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 1.7903959895615594e-15,
+        "api-native": 1.3394761424494089e-15,
+        "ui-portable": 1.7903959895615594e-15,
+        "ui-native": 1.3394761424494089e-15
+      },
+      "source_3dm_sha256": "84533af813cb0baca7dce0c1f4acabf245cea203cf029e6a844e1af0deb13d5a"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_repeat",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3732700395566711e-15,
+        "api-native": 1.4043333874306805e-15,
+        "ui-portable": 1.3732700395566711e-15,
+        "ui-native": 1.4043333874306805e-15
+      },
+      "source_3dm_sha256": "d9672fb3c906286e0f267cac351493125af49bc6007960b7caee14ae7d872607"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_ends",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 6.753223014464259e-16,
+        "api-native": 6.753223014464259e-16,
+        "ui-portable": 6.753223014464259e-16,
+        "ui-native": 6.753223014464259e-16
+      },
+      "source_3dm_sha256": "d9a4c43c1c278a39ad096eb9b9a4cc3d6ad7c144d09a32edc2af3bd69590da65"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_cancel",
+      "family": "periodic",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 6.753223014464259e-16,
+        "api-native": 6.753223014464259e-16,
+        "ui-portable": 6.753223014464259e-16,
+        "ui-native": 6.753223014464259e-16
+      },
+      "source_3dm_sha256": "44bcebadc37a5c7cd964a9027bd60a3bddaaf4918ea1f1dffc635a4f39dda7a2"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_empty",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 6.753223014464259e-16,
+        "api-native": 6.753223014464259e-16,
+        "ui-portable": 6.753223014464259e-16,
+        "ui-native": 6.753223014464259e-16
+      },
+      "source_3dm_sha256": "cee0f477e51a75d90186ca0ffc5162448c34316567f6aea61dba310fd7f9f614"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_post",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.7807424444409652e-15,
+        "api-native": 1.3334236103572998e-15,
+        "ui-portable": 1.7807424444409652e-15,
+        "ui-native": 1.3334236103572998e-15
+      },
+      "source_3dm_sha256": "ba606408601ba153f3d5c992f9d8156d1010928cb0b91af2a24e4d2c2c561303"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_undo",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 9.930136612989092e-16,
+        "api-native": 1.1157603309187458e-15,
+        "ui-portable": 9.930136612989092e-16,
+        "ui-native": 1.1157603309187458e-15
+      },
+      "source_3dm_sha256": "8b6bfb365bfc1a1244cd2b3665822ede1c1e7a9d040ef1fb4a61160cdf573649"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_undo_all",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 6.753223014464259e-16,
+        "api-native": 6.753223014464259e-16,
+        "ui-portable": 6.753223014464259e-16,
+        "ui-native": 6.753223014464259e-16
+      },
+      "source_3dm_sha256": "709ce1a3595f8edd04e9196872a08111b63bd72dc88307c62cf0e7ef447bdbdd"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_numeric",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 6.753223014464259e-16,
+        "api-native": 6.753223014464259e-16,
+        "ui-portable": 6.753223014464259e-16,
+        "ui-native": 6.753223014464259e-16
+      },
+      "source_3dm_sha256": "51e198e21d238cd4bc417b4632a85e577489ab960d94ca2ccc86be446f6c7fea"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_unseeded",
+      "family": "periodic",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.616509124176106e-15,
+        "api-native": 1.3426356273935429e-15,
+        "ui-portable": 1.616509124176106e-15,
+        "ui-native": 1.3426356273935429e-15
+      },
+      "source_3dm_sha256": "a8febbcf7a3f366cb84bdb83d94dd7aca6eb99cd369124e5f1920e986f0edf12"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "e47dce02226e098025c0e678303e68bb3b01427d0b694c20d6b26d870a7518a3"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_deformed",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 5.197930934883577e-15,
+        "api-native": 3.8007914079648956e-15,
+        "ui-portable": 5.197930934883577e-15,
+        "ui-native": 3.8007914079648956e-15
+      },
+      "source_3dm_sha256": "7e1835646b85a319e9f9735c912d1b6d71ac30b4ba50ff9fac4f420bf0baad92"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_repeat",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 7.705459692291254e-15,
+        "api-native": 7.401949409306179e-15,
+        "ui-portable": 7.705459692291254e-15,
+        "ui-native": 7.401949409306179e-15
+      },
+      "source_3dm_sha256": "657f9e1c25c07126c995d4feecfce634bf517f4ddcb40b19203f9da19bb244c4"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_undo",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "b536b8327a047ae39deea30f0704d18d65b2aa2f6a442c4e23c248c6b589f315"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_V",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 5.254534392573277e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 5.254534392573277e-15
+      },
+      "source_3dm_sha256": "01d56e3860b40416e30036e448597a323ec3c5c48dd8f0fca7d7d89429ca6841"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_V_deformed",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 5.254534392573277e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 5.254534392573277e-15
+      },
+      "source_3dm_sha256": "205f17db3b8d7331faba3e5f27f57b03934611d49128a96d9f392a8993140998"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_V_repeat",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 5.183683495748049e-15,
+        "api-native": 5.687116766346677e-15,
+        "ui-portable": 5.183683495748049e-15,
+        "ui-native": 5.687116766346677e-15
+      },
+      "source_3dm_sha256": "5285be4debba809fe1741dcef98e561b6fa8f0e70d379c683cf524848e6d3dfb"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_V_undo",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "a3f6d251900bd51830f269b46313bc670f68feeee34dec8c8cbb5705adb6b933"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_to_V",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 5.254534392573277e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 5.254534392573277e-15
+      },
+      "source_3dm_sha256": "005ca309868cf093e90253d1698759fccd155ada0b9e550c5a9ad3c31533ea04"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_to_V_deformed",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 5.254534392573277e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 5.254534392573277e-15
+      },
+      "source_3dm_sha256": "10975cea978e955be3dacbce4c0944be4eafd17abf0196230894ec807a2e5c63"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_to_V_repeat",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 5.183683495748049e-15,
+        "api-native": 5.687116766346677e-15,
+        "ui-portable": 5.183683495748049e-15,
+        "ui-native": 5.687116766346677e-15
+      },
+      "source_3dm_sha256": "dd5e11a970e2083cd35a821c95bce9cd0816cb64afb208135148285c1bac5ade"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_to_V_undo",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "c79698ff4580c5aa9a93cd1c144c399393bff4e59d492b93713e65f18cd2afdb"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_ends",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 6.474608987538192e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 6.474608987538192e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "93b2465938500c1a73d5d36c36c939ebaa5a7ba5afca718ae6114a3a4325bac6"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_cancel",
+      "family": "surface",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "44e20e058d84c7d5ab555f72f1a7d7be5865dbfee3a44bbc09b909916b5dd8a2"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_empty",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "cae4ba314b6644cb5ddb2e5c56885495d148f6cd09a29518d6c2ced4b804f1f4"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_post",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "a744b7a16c236468a7b290fcebe206e6b991af7422288221dbda99f0128b7bf1"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_toggle",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 5.254534392573277e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 5.254534392573277e-15
+      },
+      "source_3dm_sha256": "709df423149dd352dc56571549e2d59f0b155649842bb55321e4d3b99b1976be"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_numeric",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "7f638bd777488be92847d05f2ebdd5d4879be739ecf307a31cca3d888ef1e2d6"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.58724037616909e-15,
+        "api-native": 2.987304636342383e-15,
+        "ui-portable": 3.58724037616909e-15,
+        "ui-native": 2.987304636342383e-15
+      },
+      "source_3dm_sha256": "dd3dffce94dbe6dc7d32bfbc56066943b450f3e1884292bb567c6535e764f529"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_deformed",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 3.233018248352212e-15,
+        "api-native": 2.8174301870297396e-15,
+        "ui-portable": 3.233018248352212e-15,
+        "ui-native": 2.8174301870297396e-15
+      },
+      "source_3dm_sha256": "03c86a66bab7aa86a9fb653d6d2a52fe6f825a453bc27d5ac6006aa12147037a"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_repeat",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 6.3155981126285585e-15,
+        "api-native": 3.6687789788066426e-15,
+        "ui-portable": 6.3155981126285585e-15,
+        "ui-native": 3.6687789788066426e-15
+      },
+      "source_3dm_sha256": "af588e28ed259d12b892700ef204a4c734a6ebffde4b8b29a9f0b9cf4429a40e"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_undo",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.58724037616909e-15,
+        "api-native": 2.987304636342383e-15,
+        "ui-portable": 3.58724037616909e-15,
+        "ui-native": 2.987304636342383e-15
+      },
+      "source_3dm_sha256": "5e7935af031f81d44fa60853fbbaa4c9e3fb9cbf8021c07c33e1cfba9c36fe36"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_V",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.552713678800501e-15,
+        "api-native": 3.688882027804963e-15,
+        "ui-portable": 3.552713678800501e-15,
+        "ui-native": 3.688882027804963e-15
+      },
+      "source_3dm_sha256": "7f7ab0ce9556b5ad74eb6e5f71d56790460c0ea96f2974a0c403a2da5c5d4005"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_V_deformed",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 3.552713678800501e-15,
+        "api-native": 3.615583229649513e-15,
+        "ui-portable": 3.552713678800501e-15,
+        "ui-native": 3.615583229649513e-15
+      },
+      "source_3dm_sha256": "acab076daa53c2e953a2bada6a3a50e67a416b4b4d8f2c5a8841eb8e7776cc29"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_V_repeat",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.189529226675416e-15,
+        "api-native": 4.440892098500626e-15,
+        "ui-portable": 4.189529226675416e-15,
+        "ui-native": 4.440892098500626e-15
+      },
+      "source_3dm_sha256": "4eb8595af02f2687b11d6832ec6d853c7eb544bc4967f1618d6ae94b371716ae"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_V_undo",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.774758283725532e-15,
+        "api-native": 3.688882027804963e-15,
+        "ui-portable": 3.774758283725532e-15,
+        "ui-native": 3.688882027804963e-15
+      },
+      "source_3dm_sha256": "6fa28fbb8c59e0983527d772e7caaf115863f035355f3317d0219c7391a2b7d7"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_to_V",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.552713678800501e-15,
+        "api-native": 3.688882027804963e-15,
+        "ui-portable": 3.552713678800501e-15,
+        "ui-native": 3.688882027804963e-15
+      },
+      "source_3dm_sha256": "376f3aff8f56af5ead4577eff4587d650c1860ede3378f5009a23624f62e1cd0"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_to_V_deformed",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 3.552713678800501e-15,
+        "api-native": 3.615583229649513e-15,
+        "ui-portable": 3.552713678800501e-15,
+        "ui-native": 3.615583229649513e-15
+      },
+      "source_3dm_sha256": "ac86c427b980cd489328240561ab701a062c5bd10380b8a33442ed521917d72a"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_to_V_repeat",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.189529226675416e-15,
+        "api-native": 4.440892098500626e-15,
+        "ui-portable": 4.189529226675416e-15,
+        "ui-native": 4.440892098500626e-15
+      },
+      "source_3dm_sha256": "be5608164fe0160e331503a3e79952dfec01613cc540329469fcbdcb51319b2b"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_to_V_undo",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.774758283725532e-15,
+        "api-native": 3.688882027804963e-15,
+        "ui-portable": 3.774758283725532e-15,
+        "ui-native": 3.688882027804963e-15
+      },
+      "source_3dm_sha256": "7333b1c9fef31b63fe38a7796c1814dfcff28d981effbf2a529acd1b68c9cb1f"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_ends",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.607797795906346e-15,
+        "api-native": 3.688882027804963e-15,
+        "ui-portable": 3.607797795906346e-15,
+        "ui-native": 3.688882027804963e-15
+      },
+      "source_3dm_sha256": "1e3d01162274802aecf82850a44470ec510eb515b2b8bbe3648c1c371a4531c2"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_cancel",
+      "family": "surface_rational",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.035072419451041e-15,
+        "api-native": 2.035072419451041e-15,
+        "ui-portable": 2.035072419451041e-15,
+        "ui-native": 2.035072419451041e-15
+      },
+      "source_3dm_sha256": "87a97553e09fe805f0ad0b80272a17072650c2f5a18e4e3b47cc6cb9451fe2a9"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_empty",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.035072419451041e-15,
+        "api-native": 2.035072419451041e-15,
+        "ui-portable": 2.035072419451041e-15,
+        "ui-native": 2.035072419451041e-15
+      },
+      "source_3dm_sha256": "a275ae74d90414798b29cef6bd5c3394b7325efc3144b3f284d46757ad727176"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_post",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.58724037616909e-15,
+        "api-native": 2.987304636342383e-15,
+        "ui-portable": 3.58724037616909e-15,
+        "ui-native": 2.987304636342383e-15
+      },
+      "source_3dm_sha256": "281a1b84db019d72759a6827004e2b10c986ad5d71b57dc872d87c20faa6d38f"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_toggle",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.552713678800501e-15,
+        "api-native": 3.688882027804963e-15,
+        "ui-portable": 3.552713678800501e-15,
+        "ui-native": 3.688882027804963e-15
+      },
+      "source_3dm_sha256": "f5279c3f338821f313d41dfe404ebf55316f4f6ae48b77145c5704f32222dc4d"
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_numeric",
+      "family": "surface_rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.035072419451041e-15,
+        "api-native": 2.035072419451041e-15,
+        "ui-portable": 2.035072419451041e-15,
+        "ui-native": 2.035072419451041e-15
+      },
+      "source_3dm_sha256": "5ef51cd7f51732880d6eca5a6505c38836ad3d11ee77c71bc3a7b5253915ffbd"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle",
+      "family": "trimmed_rectangle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "9ef2ea386e18b9d7009c1475f8c8a131f336c9938fde280ce81bd6b7ac8ae8af"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle_deformed",
+      "family": "trimmed_rectangle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 5.197930934883577e-15,
+        "api-native": 3.9968028886505635e-15,
+        "ui-portable": 5.197930934883577e-15,
+        "ui-native": 3.9968028886505635e-15
+      },
+      "source_3dm_sha256": "890672541fa0770846b9dabbe606205a7a8473d86de61e420ef5bbb789118544"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle_cancel",
+      "family": "trimmed_rectangle",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "e88a93d66652e2f57a13b14339fb952a8f30ef7417bfe7954ef7a3fe8b48803f"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle_center",
+      "family": "trimmed_rectangle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "8bdca0dd578454ce3e49bfa4ac0d0b63613cfc49fa007718b51dca8532c3e2d9"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle_deformed_center",
+      "family": "trimmed_rectangle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 5.197930934883577e-15,
+        "api-native": 3.9968028886505635e-15,
+        "ui-portable": 5.197930934883577e-15,
+        "ui-native": 3.9968028886505635e-15
+      },
+      "source_3dm_sha256": "5c46cb1e5f1d5104e2ae9a3d89db12b88fa7f1cb93b580c4ba5d4ac88210f74a"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole",
+      "family": "trimmed_hole",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "e7afb28688979c4bc82b8198f4d279761ca4b62690b47deafc579e4a460ae2db"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole_deformed",
+      "family": "trimmed_hole",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 5.197930934883577e-15,
+        "api-native": 3.8007914079648956e-15,
+        "ui-portable": 5.197930934883577e-15,
+        "ui-native": 3.8007914079648956e-15
+      },
+      "source_3dm_sha256": "6a9315424588467dd75c2a78b4a41e92bc41e81870ff05d8fd7da6ecc90a27e1"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole_cancel",
+      "family": "trimmed_hole",
+      "native_result": "Cancel",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "a001fe00b0ec97aad2d536450395634181e1cf354340822dae020913b3d9f76a"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole_center",
+      "family": "trimmed_hole",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.534279142523386e-15,
+        "api-native": 4.534279142523386e-15,
+        "ui-portable": 4.534279142523386e-15,
+        "ui-native": 4.534279142523386e-15
+      },
+      "source_3dm_sha256": "bb17efc1c45b515bbdc66bf30b37c2df132c6f0136b4d84d2088366ed7d11e9f"
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole_deformed_center",
+      "family": "trimmed_hole",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 5.197930934883577e-15,
+        "api-native": 3.8007914079648956e-15,
+        "ui-portable": 5.197930934883577e-15,
+        "ui-native": 3.8007914079648956e-15
+      },
+      "source_3dm_sha256": "43793738098cf480cc41543102f9826fdd7cf2594196a20d221f96ea060c6c55"
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_subcurve",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.3422097105303526e-15,
+        "api-native": 1.7783073324607987e-15,
+        "ui-portable": 1.3422097105303526e-15,
+        "ui-native": 1.7783073324607987e-15
+      },
+      "source_3dm_sha256": "ffc73e557d37ef01af9ad32bdf1f1cc33dbeea7b44c7bf9f839ba422172e45eb"
+    },
+    {
+      "matrix": "command",
+      "id": "rational_subcurve",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 2.1065000811460206e-15,
+        "api-native": 2.6645352591003757e-15,
+        "ui-portable": 2.1065000811460206e-15,
+        "ui-native": 2.6645352591003757e-15
+      },
+      "source_3dm_sha256": "b53a8a29c7cc563cd50987571cea7d86cb4a4b041b1e827d46770d80a27a8e4b"
+    },
+    {
+      "matrix": "command",
+      "id": "circle_subcurve",
+      "family": "circle",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.88411095042053e-15,
+        "api-native": 2.8435583831733384e-15,
+        "ui-portable": 1.88411095042053e-15,
+        "ui-native": 2.8435583831733384e-15
+      },
+      "source_3dm_sha256": "129d278af0c8d092baf7cfdf7826c5ad647d3ae29f456f96ea4049354be8f77d"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_surface_U_U",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.2563805882055718e-15,
+        "api-native": 1.2563805882055718e-15,
+        "ui-portable": 1.2563805882055718e-15,
+        "ui-native": 1.2563805882055718e-15
+      },
+      "source_3dm_sha256": "12e95507fead5e38801fb33a78a6088a0b48c265d26df0559917c9dbff93ba75"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_surface_U_V",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.5288390936029406e-15,
+        "api-native": 4.468561475845092e-15,
+        "ui-portable": 4.5288390936029406e-15,
+        "ui-native": 4.468561475845092e-15
+      },
+      "source_3dm_sha256": "64290354c35aed132d1e27ad10648d063d329c9521d1e8ac71e548650327c3e0"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_surface_U_U_to_V",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 4.5288390936029406e-15,
+        "api-native": 4.468561475845092e-15,
+        "ui-portable": 4.5288390936029406e-15,
+        "ui-native": 4.468561475845092e-15
+      },
+      "source_3dm_sha256": "e8f51cfc621a7f0a5f9b2bbedfa4f4cf535c3ddccb60fb3f2cbf4b5b759f8ef5"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_surface_V_U",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 3.553147333202946e-15,
+        "api-native": 2.737549743767154e-15,
+        "ui-portable": 3.553147333202946e-15,
+        "ui-native": 2.737549743767154e-15
+      },
+      "source_3dm_sha256": "8f9f1ce3bd43d2f4c41159f53fbee6ae7f4688578cd204600c7c5cd6dbb1e391"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_surface_V_V",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.2609709600486848e-15,
+        "api-native": 1.2609709600486848e-15,
+        "ui-portable": 1.2609709600486848e-15,
+        "ui-native": 1.2609709600486848e-15
+      },
+      "source_3dm_sha256": "5dc95c481dd7a0042be1d43a33d6fc3981e50a7e78700fcc2f627e28364b0482"
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_surface_V_U_to_V",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.2609709600486848e-15,
+        "api-native": 1.2609709600486848e-15,
+        "ui-portable": 1.2609709600486848e-15,
+        "ui-native": 1.2609709600486848e-15
+      },
+      "source_3dm_sha256": "1fb684b8d6c2f837e3e75afe5d4551f06a3e9df0381817e84b4fb8159691c4d0"
+    },
+    {
+      "matrix": "command",
+      "id": "elevated",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 3.4759910959477104e-15,
+        "api-native": 5.2289618696713315e-15,
+        "ui-portable": 3.4759910959477104e-15,
+        "ui-native": 5.2289618696713315e-15
+      },
+      "source_3dm_sha256": "22e70fa66696d3ec54983c956a50efe0c7aaddb12f007c8a299f1d246941d9ed"
+    },
+    {
+      "matrix": "command",
+      "id": "negative_gauge",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 1.2434497875801753e-14,
+        "api-native": 8.881784197001252e-15,
+        "ui-portable": 1.2434497875801753e-14,
+        "ui-native": 8.881784197001252e-15
+      },
+      "source_3dm_sha256": "9642947254ff28bb5c8a7c9ce00d5e0e2587ba35812f1c4872d66001b9af812e"
+    },
+    {
+      "matrix": "command",
+      "id": "domain",
+      "family": "rational",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 8.990621767482618e-16,
+        "api-native": 8.990621767482618e-16,
+        "ui-portable": 8.990621767482618e-16,
+        "ui-native": 8.990621767482618e-16
+      },
+      "source_3dm_sha256": "cd24a711545cb4ce9e218dc9cff6bc6d7afc0943a78c7c59bcf5e6f51a05df7d"
+    },
+    {
+      "matrix": "command",
+      "id": "tilted",
+      "family": "cubic",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 2.1868857395626282e-15,
+        "api-native": 3.3893637946200144e-15,
+        "ui-portable": 2.1868857395626282e-15,
+        "ui-native": 3.3893637946200144e-15
+      },
+      "source_3dm_sha256": "c5e3e2e7573b611925df2dc71ac4509f863d8c9c48b57400bd27f9608e4d36ad"
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_joint",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.2560739669470201e-15,
+        "api-native": 1.2560739669470201e-15,
+        "ui-portable": 1.2560739669470201e-15,
+        "ui-native": 1.2560739669470201e-15
+      },
+      "source_3dm_sha256": "e44866a9b9bc022544602626dcf6f9187748bedbb7fc1427a9506c47b793336e"
+    },
+    {
+      "matrix": "command",
+      "id": "polysurface",
+      "family": "box",
+      "native_result": "Failure",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 0.0,
+        "api-native": 0.0,
+        "ui-portable": 0.0,
+        "ui-native": 0.0
+      },
+      "source_3dm_sha256": "83ed9064a2e9d59c182a72f068b1a7e8308f89a934038659e0c9448b3a7dca56"
+    },
+    {
+      "matrix": "followup",
+      "id": "joint_twice",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.831026719408895e-15,
+        "api-native": 2.2315206618374916e-15,
+        "ui-portable": 1.831026719408895e-15,
+        "ui-native": 2.2315206618374916e-15
+      },
+      "source_3dm_sha256": "62bb11ecf0dbf749193c55e8ad00dafffb2e89ae678b8289920f657c93b9d3b6"
+    },
+    {
+      "matrix": "followup",
+      "id": "joint_thrice",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.831026719408895e-15,
+        "api-native": 2.2315206618374916e-15,
+        "ui-portable": 1.831026719408895e-15,
+        "ui-native": 2.2315206618374916e-15
+      },
+      "source_3dm_sha256": "6709fb97fbac209e9b578c477dbdcda1c89155e0b9c758d5efdf82ee7531c927"
+    },
+    {
+      "matrix": "followup",
+      "id": "joint_undo",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.2560739669470201e-15,
+        "api-native": 1.2560739669470201e-15,
+        "ui-portable": 1.2560739669470201e-15,
+        "ui-native": 1.2560739669470201e-15
+      },
+      "source_3dm_sha256": "80f73419b91c80de9d94fbab68311fd9c2d79de00315c8e5c770b767447f5b00"
+    },
+    {
+      "matrix": "followup",
+      "id": "joint_undo_all",
+      "family": "polycurve",
+      "native_result": "Success",
+      "seeded": false,
+      "deformed": false,
+      "errors": {
+        "api-portable": 1.2560739669470201e-15,
+        "api-native": 1.2560739669470201e-15,
+        "ui-portable": 1.2560739669470201e-15,
+        "ui-native": 1.2560739669470201e-15
+      },
+      "source_3dm_sha256": "cb0c0e43a012fbfc1b5c35f5960a8db1cc5dd3dedb0cca81eb4fc45840869100"
+    },
+    {
+      "matrix": "followup",
+      "id": "cyclic_tensor_repeat",
+      "family": "surface",
+      "native_result": "Failure",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 9.992007221626409e-16,
+        "api-native": 9.992007221626409e-16,
+        "ui-portable": 9.992007221626409e-16,
+        "ui-native": 9.992007221626409e-16
+      },
+      "source_3dm_sha256": "19cc960b8318b32d2873374df3ec31312dcac3b6ee0fd1567a141ca020833d5b"
+    },
+    {
+      "matrix": "followup",
+      "id": "cyclic_tensor_undo",
+      "family": "surface",
+      "native_result": "Failure",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 1.0068810866857322e-15,
+        "api-native": 1.0068810866857322e-15,
+        "ui-portable": 1.0068810866857322e-15,
+        "ui-native": 1.0068810866857322e-15
+      },
+      "source_3dm_sha256": "0a5a454de97454dbb7fe302ab5a4305c20e785efaf1f32c18f7af155231bcfb5"
+    },
+    {
+      "matrix": "smooth_periodic",
+      "id": "cyclic_tensor_repeat",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 5.4930801582266845e-15,
+        "api-native": 8.568160128763375e-15,
+        "ui-portable": 5.4930801582266845e-15,
+        "ui-native": 8.568160128763375e-15
+      },
+      "source_3dm_sha256": "c9272d08467e908d58732e4149b6a7f8002a1f7cbecbeaf10f5b39cd8b08ce77"
+    },
+    {
+      "matrix": "smooth_periodic",
+      "id": "cyclic_tensor_undo",
+      "family": "surface",
+      "native_result": "Success",
+      "seeded": true,
+      "deformed": true,
+      "errors": {
+        "api-portable": 3.662070056922203e-15,
+        "api-native": 2.8161486522267106e-15,
+        "ui-portable": 3.662070056922203e-15,
+        "ui-native": 2.8161486522267106e-15
+      },
+      "source_3dm_sha256": "cde47b8c89832d25446ce159e45b94538ac905dce3360c7f16757b4940f3e7df"
+    }
+  ],
+  "standalone_surface_errors": {
+    "api-portable": {
+      "surface_U": 4.213000162292041e-15,
+      "surface_U_deformed": 4.213000162292041e-15,
+      "surface_U_repeat": 7.705459692291254e-15,
+      "surface_U_undo": 4.213000162292041e-15,
+      "surface_V": 4.534279142523386e-15,
+      "surface_V_deformed": 4.534279142523386e-15,
+      "surface_V_repeat": 5.183683495748049e-15,
+      "surface_V_undo": 4.463041323674983e-15,
+      "surface_U_to_V": 4.534279142523386e-15,
+      "surface_U_to_V_deformed": 4.534279142523386e-15,
+      "surface_U_to_V_repeat": 5.183683495748049e-15,
+      "surface_U_to_V_undo": 4.463041323674983e-15,
+      "surface_ends": 6.474608987538192e-15,
+      "surface_empty": 0.0,
+      "surface_post": 4.213000162292041e-15,
+      "surface_toggle": 4.534279142523386e-15,
+      "surface_numeric": 0.0,
+      "surface_rational_U": 3.58724037616909e-15,
+      "surface_rational_U_deformed": 3.233018248352212e-15,
+      "surface_rational_U_repeat": 6.3155981126285585e-15,
+      "surface_rational_U_undo": 3.58724037616909e-15,
+      "surface_rational_V": 2.9790409838967277e-15,
+      "surface_rational_V_deformed": 3.2023728339893768e-15,
+      "surface_rational_V_repeat": 4.189529226675416e-15,
+      "surface_rational_V_undo": 3.774758283725532e-15,
+      "surface_rational_U_to_V": 2.9790409838967277e-15,
+      "surface_rational_U_to_V_deformed": 3.2023728339893768e-15,
+      "surface_rational_U_to_V_repeat": 4.189529226675416e-15,
+      "surface_rational_U_to_V_undo": 3.774758283725532e-15,
+      "surface_rational_ends": 3.607797795906346e-15,
+      "surface_rational_empty": 8.95090418262362e-16,
+      "surface_rational_post": 3.58724037616909e-15,
+      "surface_rational_toggle": 2.9790409838967277e-15,
+      "surface_rational_numeric": 8.95090418262362e-16,
+      "periodic_surface_U_U": 0.0,
+      "periodic_surface_U_V": 4.5288390936029406e-15,
+      "periodic_surface_U_U_to_V": 4.5288390936029406e-15,
+      "periodic_surface_V_U": 3.553147333202946e-15,
+      "periodic_surface_V_V": 0.0,
+      "periodic_surface_V_U_to_V": 0.0
+    },
+    "api-native": {
+      "surface_U": 3.6771686055379495e-15,
+      "surface_U_deformed": 3.6771686055379495e-15,
+      "surface_U_repeat": 7.401949409306179e-15,
+      "surface_U_undo": 3.6771686055379495e-15,
+      "surface_V": 4.829151116976581e-15,
+      "surface_V_deformed": 4.829151116976581e-15,
+      "surface_V_repeat": 5.687116766346677e-15,
+      "surface_V_undo": 4.496060575246782e-15,
+      "surface_U_to_V": 4.829151116976581e-15,
+      "surface_U_to_V_deformed": 4.829151116976581e-15,
+      "surface_U_to_V_repeat": 5.687116766346677e-15,
+      "surface_U_to_V_undo": 4.496060575246782e-15,
+      "surface_ends": 4.070144838902081e-15,
+      "surface_empty": 0.0,
+      "surface_post": 3.6771686055379495e-15,
+      "surface_toggle": 4.829151116976581e-15,
+      "surface_numeric": 0.0,
+      "surface_rational_U": 2.8174301870297396e-15,
+      "surface_rational_U_deformed": 2.8174301870297396e-15,
+      "surface_rational_U_repeat": 3.6687789788066426e-15,
+      "surface_rational_U_undo": 2.8174301870297396e-15,
+      "surface_rational_V": 3.688882027804963e-15,
+      "surface_rational_V_deformed": 3.615583229649513e-15,
+      "surface_rational_V_repeat": 4.440892098500626e-15,
+      "surface_rational_V_undo": 3.688882027804963e-15,
+      "surface_rational_U_to_V": 3.688882027804963e-15,
+      "surface_rational_U_to_V_deformed": 3.615583229649513e-15,
+      "surface_rational_U_to_V_repeat": 4.440892098500626e-15,
+      "surface_rational_U_to_V_undo": 3.688882027804963e-15,
+      "surface_rational_ends": 3.688882027804963e-15,
+      "surface_rational_empty": 8.95090418262362e-16,
+      "surface_rational_post": 2.8174301870297396e-15,
+      "surface_rational_toggle": 3.688882027804963e-15,
+      "surface_rational_numeric": 8.95090418262362e-16,
+      "periodic_surface_U_U": 0.0,
+      "periodic_surface_U_V": 4.468561475845092e-15,
+      "periodic_surface_U_U_to_V": 4.468561475845092e-15,
+      "periodic_surface_V_U": 2.673771110915334e-15,
+      "periodic_surface_V_V": 0.0,
+      "periodic_surface_V_U_to_V": 0.0
+    }
+  }
+}

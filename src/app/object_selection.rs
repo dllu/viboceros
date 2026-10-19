@@ -1097,13 +1097,22 @@ impl VibocerosApp {
             let context = viboceros_command::CommandContext {
                 construction_plane: self.viewports[self.active_viewport].construction_plane(),
             };
-            let result = if pending.postselected {
-                self.commands
-                    .execute_postselected(&mut self.document, &command, context)
-            } else {
-                self.commands
-                    .execute_in_context(&mut self.document, &command, context)
-            };
+            let result =
+                if let Some(projection) = self.viewports[self.active_viewport].pick_projection() {
+                    self.commands.execute_with_pick_projection(
+                        &mut self.document,
+                        &command,
+                        context,
+                        pending.postselected,
+                        projection,
+                    )
+                } else if pending.postselected {
+                    self.commands
+                        .execute_postselected(&mut self.document, &command, context)
+                } else {
+                    self.commands
+                        .execute_in_context(&mut self.document, &command, context)
+                };
             match result {
                 Ok(message) => {
                     self.object_prompt = None;
@@ -1340,10 +1349,20 @@ impl VibocerosApp {
                 construction_plane: self.viewports[self.active_viewport].construction_plane(),
             };
             self.push_log(format!("> {command}"));
-            match self
-                .commands
-                .execute_in_context(&mut self.document, &command, context)
-            {
+            let result =
+                if let Some(projection) = self.viewports[self.active_viewport].pick_projection() {
+                    self.commands.execute_with_pick_projection(
+                        &mut self.document,
+                        &command,
+                        context,
+                        false,
+                        projection,
+                    )
+                } else {
+                    self.commands
+                        .execute_in_context(&mut self.document, &command, context)
+                };
+            match result {
                 Ok(message) => {
                     self.object_prompt = None;
                     self.push_log(message);

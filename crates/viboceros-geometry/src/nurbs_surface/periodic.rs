@@ -79,6 +79,53 @@ impl NurbsSurface {
     }
 }
 
+impl NurbsSurface {
+    /// Cyclic removal in one periodic tensor direction, sharing the curve basis fitter.
+    pub fn try_remove_periodic_knot_with_solver<E: From<GeometryError>>(
+        &self,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        let (degree, knots, periodic) = match direction {
+            SurfaceKnotDirection::U => (self.degree_u, &self.knots_u, self.is_periodic_u()),
+            SurfaceKnotDirection::V => (self.degree_v, &self.knots_v, self.is_periodic_v()),
+            _ => {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "cyclic knot removal requires one axis",
+                }
+                .into());
+            }
+        };
+        if !periodic {
+            return Err(GeometryError::InvalidControlNet {
+                context: "cyclic removal requires a periodic surface direction",
+            }
+            .into());
+        }
+        let knot = crate::nurbs::knot_removal_candidate_by_parameter(degree, knots, parameter)?;
+        match direction {
+            SurfaceKnotDirection::U => self.map_u_control_curves(|c| {
+                c.try_remove_periodic_knot_value_with_solver(knot, solve)
+            }),
+            _ => self.map_v_control_curves(|c| {
+                c.try_remove_periodic_knot_value_with_solver(knot, solve)
+            }),
+        }
+    }
+    pub fn try_remove_periodic_knot(
+        &self,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+    ) -> Result<Self, GeometryError> {
+        self.try_remove_periodic_knot_with_solver(
+            direction,
+            parameter,
+            &mut crate::nurbs::portable_periodic_interpolation,
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
