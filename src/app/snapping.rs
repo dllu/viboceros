@@ -77,9 +77,9 @@ fn parse_one_shot(input: &str) -> Option<ObjectSnapModes> {
 
 impl VibocerosApp {
     fn model_requests_point(&self) -> bool {
-        self.insert_kink_prompt
+        self.refinement_prompt
             .as_ref()
-            .is_some_and(insert_kink::Prompt::wants_point)
+            .is_some_and(refinement::Prompt::wants_point)
             || self
                 .edge_prompt
                 .as_ref()

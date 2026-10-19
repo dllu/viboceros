@@ -106,7 +106,7 @@ fn case(v: &Value, root: &std::path::Path) -> Value {
         owned.iter().map(|x| x["token"].as_str().unwrap()).collect()
     };
     for token in tokens {
-        if app.insert_kink_prompt.is_none() {
+        if app.refinement_prompt.is_none() {
             break;
         }
         if token == "!" || token == "Escape" {
@@ -114,7 +114,7 @@ fn case(v: &Value, root: &std::path::Path) -> Value {
         } else {
             enter(&mut app, if token == "_Enter" { "" } else { token });
         }
-        if app.insert_kink_prompt.is_some() {
+        if app.refinement_prompt.is_some() {
             assert_eq!(
                 app.document.objects().cloned().collect::<Vec<_>>(),
                 before,
@@ -123,10 +123,10 @@ fn case(v: &Value, root: &std::path::Path) -> Value {
             assert!(!app.document.can_undo());
         }
     }
-    if app.insert_kink_prompt.is_some() && !v["success"].as_bool().unwrap() {
+    if app.refinement_prompt.is_some() && !v["success"].as_bool().unwrap() {
         app.cancel_current_prompt_or_selection();
     }
-    assert!(app.insert_kink_prompt.is_none(), "{name}: completed input");
+    assert!(app.refinement_prompt.is_none(), "{name}: completed input");
     let native_output = v["after"]
         .as_array()
         .unwrap()
@@ -343,7 +343,7 @@ fn insert_kink_subcurve_previews_are_cached_read_only_and_return_to_parent() {
     );
     enter(&mut app, "D");
     assert!(
-        app.insert_kink_prompt
+        app.refinement_prompt
             .as_ref()
             .unwrap()
             .hint()
@@ -366,7 +366,7 @@ fn insert_kink_subcurve_previews_are_cached_read_only_and_return_to_parent() {
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
     assert!(!app.document.can_undo());
     enter(&mut app, "");
-    assert!(app.insert_kink_prompt.as_ref().unwrap().selecting());
+    assert!(app.refinement_prompt.as_ref().unwrap().selecting());
     assert!(app.subcurve_draft_preview().is_none());
     enter(&mut app, "SubCrv");
     app.apply_selection_click(SelectionClick {
@@ -375,9 +375,9 @@ fn insert_kink_subcurve_previews_are_cached_read_only_and_return_to_parent() {
     });
     enter(&mut app, "1,0,0");
     enter(&mut app, "2ft");
-    assert!(app.insert_kink_prompt.is_some());
+    assert!(app.refinement_prompt.is_some());
     app.cancel_current_prompt_or_selection();
-    assert!(app.insert_kink_prompt.as_ref().unwrap().selecting());
+    assert!(app.refinement_prompt.as_ref().unwrap().selecting());
     assert!(app.command_log.back().unwrap().contains("Select one curve"));
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
@@ -427,7 +427,7 @@ fn insert_kink_subcurve_closed_locked_preview_matches_the_accepted_chart() {
     }
     enter(&mut app, &format!("w{}", format_model_point(at(0.2))));
     let accepted = app
-        .insert_kink_prompt
+        .refinement_prompt
         .as_ref()
         .unwrap()
         .cursor_curve()
@@ -440,7 +440,7 @@ fn insert_kink_subcurve_closed_locked_preview_matches_the_accepted_chart() {
             .unwrap()
             < 1e-10
     );
-    app.cancel_insert_kink();
+    app.cancel_refinement();
     enter(&mut app, "InsertKink SubCrv");
     app.apply_selection_click(SelectionClick {
         object_id: Some(id),
@@ -456,8 +456,8 @@ fn insert_kink_subcurve_closed_locked_preview_matches_the_accepted_chart() {
     enter(&mut app, &whole);
     assert!(app.subcurve_draft_preview().is_none());
     enter(&mut app, &format!("w{}", format_model_point(at(0.8))));
-    assert!(app.insert_kink_prompt.as_ref().unwrap().selecting());
-    app.cancel_insert_kink();
+    assert!(app.refinement_prompt.as_ref().unwrap().selecting());
+    app.cancel_refinement();
     assert!(!app.document.can_undo());
 }
 
@@ -484,7 +484,7 @@ fn insert_kink_subcurve_length_uses_model_units_and_keeps_redo_until_commit() {
     enter(&mut app, "1ft");
     enter(&mut app, "w500,0,0");
     let curve = app
-        .insert_kink_prompt
+        .refinement_prompt
         .as_ref()
         .unwrap()
         .cursor_curve()

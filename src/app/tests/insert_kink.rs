@@ -50,7 +50,7 @@ fn insert_kink_native_point_getters_cancel_subcurves_and_history() {
                 "InsertKink"
             },
         );
-        assert!(app.insert_kink_prompt.is_some(), "{name}: prompt");
+        assert!(app.refinement_prompt.is_some(), "{name}: prompt");
         if r["preselect"] == false || temporary.is_some() {
             app.apply_selection_click(SelectionClick {
                 object_id: Some(id),
@@ -62,9 +62,9 @@ fn insert_kink_native_point_getters_cancel_subcurves_and_history() {
                 object_id: Some(id),
                 mode: SelectionMode::Replace,
             });
-            assert!(app.insert_kink_prompt.as_ref().unwrap().selecting());
+            assert!(app.refinement_prompt.as_ref().unwrap().selecting());
             enter(&mut app, "");
-            assert!(app.insert_kink_prompt.is_none());
+            assert!(app.refinement_prompt.is_none());
             let maximum = comparison::check(&app.document, &v["after"], id, name);
             assert!(maximum <= 1e-8);
             eprintln!(
@@ -74,7 +74,7 @@ fn insert_kink_native_point_getters_cancel_subcurves_and_history() {
             continue;
         }
         assert!(
-            app.insert_kink_prompt.as_ref().unwrap().wants_point(),
+            app.refinement_prompt.as_ref().unwrap().wants_point(),
             "{name}: source"
         );
         if let Some(range) = temporary {
@@ -124,7 +124,7 @@ fn insert_kink_native_point_getters_cancel_subcurves_and_history() {
                 enter(&mut app, "");
             }
         }
-        assert!(app.insert_kink_prompt.is_none(), "{name}: ended");
+        assert!(app.refinement_prompt.is_none(), "{name}: ended");
         let mut maximum = comparison::check(&app.document, &v["after"], id, name);
         if !v["undo"].is_null() {
             assert_eq!(app.document.undo_label(), Some("InsertKink"), "{name}");
@@ -164,8 +164,8 @@ fn insert_kink_source_changes_options_cancel_and_redo() {
     app.document
         .replace_object_geometries([(id, Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))])
         .unwrap();
-    app.validate_insert_kink();
-    assert!(app.insert_kink_prompt.is_none());
+    app.validate_refinement();
+    assert!(app.refinement_prompt.is_none());
 }
 
 #[test]

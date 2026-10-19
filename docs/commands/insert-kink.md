@@ -60,8 +60,10 @@ roundtrip checks; the trimmed edits are checked in memory against native
 source files and recorded topology. These cases do not establish arbitrary command
 equivalence, continuous error bounds, or general performance. The two unused
 outer NURBS knots are compared in the importer convention; all active knots are
-checked. Surface B-reps use the portable exact kernel refinement in both builds;
-standalone NURBS surfaces and curve trims also support the native backend.
+checked. Surface B-reps retain topology while delegating exact refinement to the
+selected backend, as standalone NURBS surfaces and curve trims do. The later
+[InsertKnot work](insert-knot.md) added usd-brep delegation for B-reps; the
+original receipt records the earlier portable B-rep implementation.
 Twenty-four additional replays compare standalone NURBS surfaces with the
 captured native surface definitions.
 

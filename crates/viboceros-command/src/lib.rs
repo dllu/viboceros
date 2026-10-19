@@ -155,10 +155,12 @@ mod extrude_mesh;
 use extrude_curve::ExtrudeCurveCommand;
 mod geometric_continuity;
 pub mod insert_kink;
+pub mod insert_knot;
 mod mark_foci;
 mod match_curve;
 pub mod modify_radius;
 pub mod reduce_polyline;
+pub mod refinement;
 mod simplify_curve;
 use simplify_curve::SimplifyCurveCommand;
 mod match_curve_direction;
@@ -478,6 +480,12 @@ pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
+    fn insert_knot_options(&self) -> Option<insert_knot::Options> {
+        None
+    }
+    fn remember_insert_knot_options(&self, _value: insert_knot::Options) -> bool {
+        false
+    }
     fn insert_kink_options(&self) -> Option<insert_kink::Options> {
         None
     }
@@ -886,7 +894,7 @@ impl CommandRegistry {
             .register(InsertControlPointCommand)
             .expect("unique built-in command");
         registry
-            .register(InsertKnotCommand)
+            .register(InsertKnotCommand::default())
             .expect("unique built-in command");
         registry
             .register(RemoveKnotCommand)
@@ -2155,6 +2163,17 @@ impl CommandRegistry {
             .get("insertkink")
             .and_then(|i| self.commands[*i].insert_kink_options())
             .unwrap_or_default()
+    }
+    pub fn insert_knot_options(&self) -> insert_knot::Options {
+        self.lookup
+            .get("insertknot")
+            .and_then(|i| self.commands[*i].insert_knot_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_insert_knot_options(&self, value: insert_knot::Options) -> bool {
+        self.lookup
+            .get("insertknot")
+            .is_some_and(|i| self.commands[*i].remember_insert_knot_options(value))
     }
     pub fn remember_insert_kink_options(&self, value: insert_kink::Options) -> bool {
         self.lookup
@@ -3797,14 +3816,28 @@ fn parse_insert_control_point_options(
 const INSERT_KNOT_USAGE: &str =
     "InsertKnot parameter|u,v [Multiplicity=1..degree] [Direction=U|V|Both] [Symmetrical=Yes|No]";
 
-struct InsertKnotCommand;
+#[derive(Default)]
+struct InsertKnotCommand(remembered::Remembered<insert_knot::Options>);
 
 impl Command for InsertKnotCommand {
+    fn insert_knot_options(&self) -> Option<insert_knot::Options> {
+        Some(self.0.get())
+    }
+    fn remember_insert_knot_options(&self, value: insert_knot::Options) -> bool {
+        self.0.set(value);
+        true
+    }
     fn name(&self) -> &'static str {
         "InsertKnot"
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if insert_knot::staged_arguments(arguments) {
+            let (message, options) =
+                insert_knot::run_selected(document, arguments, false, self.0.get())?;
+            self.0.set(options);
+            return Ok(message);
+        }
         let options = parse_insert_knot_options(arguments)?;
         let mut candidates = Vec::new();
         for object in document.selected_objects() {
@@ -3854,6 +3887,21 @@ impl Command for InsertKnotCommand {
         Ok(format!(
             "Inserted {inserted} knot value(s) into selected NURBS {kind}"
         ))
+    }
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _: CommandContext,
+    ) -> Result<String, CommandError> {
+        if insert_knot::staged_arguments(arguments) {
+            let (message, options) =
+                insert_knot::run_selected(document, arguments, true, self.0.get())?;
+            self.0.set(options);
+            Ok(message)
+        } else {
+            self.run(document, arguments)
+        }
     }
 }
 

@@ -1,10 +1,67 @@
 //! Repeated point getter: geometry remains immutable until Enter.
 use super::*;
-use viboceros_command::insert_kink::{self, Draft, Options};
+use viboceros_command::refinement::{self as edits, Options};
 use viboceros_geometry::NurbsCurve;
 mod subcurve;
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Kind {
+    Kink,
+    Knot,
+}
+impl Kind {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Kink => "InsertKink",
+            Self::Knot => "InsertKnot",
+        }
+    }
+    fn noun(self) -> &'static str {
+        match self {
+            Self::Kink => "a kink",
+            Self::Knot => "a knot",
+        }
+    }
+}
+#[derive(Debug)]
+enum Draft {
+    Kink(viboceros_command::insert_kink::Draft),
+    Knot(viboceros_command::insert_knot::Draft),
+}
+impl std::ops::Deref for Draft {
+    type Target = viboceros_command::refinement::Draft;
+    fn deref(&self) -> &Self::Target {
+        match self {
+            Self::Kink(d) => d,
+            Self::Knot(d) => d,
+        }
+    }
+}
+impl Draft {
+    fn new(
+        doc: &Document,
+        id: ObjectId,
+        range: Option<[f64; 2]>,
+        kind: Kind,
+    ) -> Result<Self, viboceros_command::CommandError> {
+        Ok(match kind {
+            Kind::Kink => Self::Kink(viboceros_command::insert_kink::Draft::new(doc, id, range)?),
+            Kind::Knot => Self::Knot(viboceros_command::insert_knot::Draft::new(doc, id, range)?),
+        })
+    }
+    fn point(
+        &mut self,
+        point: Point3,
+        options: Options,
+    ) -> Result<(), viboceros_command::CommandError> {
+        match self {
+            Self::Kink(d) => d.point(point, options),
+            Self::Knot(d) => d.point(point, options),
+        }
+    }
+}
 #[derive(Debug)]
 pub(super) struct Prompt {
+    kind: Kind,
     draft: Option<Draft>,
     options: Options,
     postselected: bool,
@@ -16,8 +73,12 @@ pub(super) struct Prompt {
     cursor: Option<NurbsCurve>,
     hint: String,
     guides: Vec<NurbsCurve>,
+    guide_points: Vec<Point3>,
 }
 impl Prompt {
+    pub(super) fn command_name(&self) -> &'static str {
+        self.kind.name()
+    }
     pub(super) fn selecting(&self) -> bool {
         self.draft.is_none()
     }
@@ -33,11 +94,41 @@ impl Prompt {
     pub(super) fn guides(&self) -> &[NurbsCurve] {
         &self.guides
     }
+    pub(super) fn markers(&self) -> Option<&[Point3]> {
+        (!self.shortening && !self.guide_points.is_empty()).then_some(self.guide_points.as_slice())
+    }
     fn update_guides(&mut self) {
         self.guides.clear();
+        self.guide_points.clear();
         let Some(draft) = &self.draft else {
             return;
         };
+        if self.kind == Kind::Knot
+            && let Some(c) = draft.geometry().curve_ref().and_then(|c| c.to_nurbs().ok())
+        {
+            let domain = c.domain();
+            let mut knots = c
+                .knots()
+                .iter()
+                .copied()
+                .filter(|x| domain.contains(x))
+                .collect::<Vec<_>>();
+            knots.dedup();
+            let values = if self.options.midpoints {
+                knots.windows(2).map(|x| x[0].midpoint(x[1])).collect()
+            } else {
+                knots
+                    .into_iter()
+                    .filter(|x| *x > *domain.start() && *x < *domain.end())
+                    .collect::<Vec<_>>()
+            };
+            self.guide_points = values
+                .into_iter()
+                .take(4096)
+                .filter_map(|t| c.evaluate(t).ok())
+                .collect();
+            return;
+        }
         let Some((surface, _, _)) =
             viboceros_command::surface_reference::surface(draft.geometry(), None)
         else {
@@ -119,56 +210,110 @@ impl Prompt {
             }
         } else if self.cursor.is_some() {
             format!(
-                "Point on curve to add a kink; {} accepted; Enter finishes; Esc discards all picks",
-                self.draft.as_ref().unwrap().picks()
+                "Point on curve to add {}; {} accepted; {}Enter finishes; Esc discards all picks",
+                self.kind.noun(),
+                self.draft.as_ref().unwrap().picks(),
+                if self.kind == Kind::Knot {
+                    "type a parameter, Automatic or Undo; "
+                } else {
+                    ""
+                }
             )
         } else {
             format!(
-                "Point on surface to add a kink ({} Toggle); Enter finishes; Esc discards all picks",
-                self.options.arguments()
+                "Point on surface to add {} ({} Toggle); {}Enter finishes; Esc discards all picks",
+                self.kind.noun(),
+                self.options.arguments(),
+                if self.kind == Kind::Knot {
+                    "Automatic or Undo; "
+                } else {
+                    ""
+                }
             )
         };
     }
 }
 impl VibocerosApp {
-    pub(super) fn cancel_insert_kink_input(&mut self) {
+    fn continue_knot_action(&mut self, text: &str) -> bool {
+        let Some(p) = self
+            .refinement_prompt
+            .as_mut()
+            .filter(|p| p.kind == Kind::Knot && !p.shortening)
+        else {
+            return false;
+        };
+        let Some(Draft::Knot(d)) = p.draft.as_mut() else {
+            return false;
+        };
+        let key = text.trim_start_matches(['_', '-']);
+        let result = if key.eq_ignore_ascii_case("Automatic") {
+            d.automatic(p.options)
+        } else if key.eq_ignore_ascii_case("Undo") {
+            if !d.undo() {
+                self.push_log("No staged knot edits to undo".into());
+            } else {
+                self.log_refinement();
+            }
+            return true;
+        } else if !text.contains(',')
+            && let Ok(parameter) = text.parse::<f64>()
+        {
+            d.parameter(parameter, p.options)
+        } else {
+            return false;
+        };
+        match result {
+            Ok(()) => self.log_refinement(),
+            Err(e) => self.push_log(format!("Error: {e}")),
+        }
+        self.command_input.clear();
+        true
+    }
+    pub(super) fn cancel_refinement_input(&mut self) {
         if self
-            .insert_kink_prompt
+            .refinement_prompt
             .as_ref()
             .is_some_and(|p| p.shortening)
         {
-            self.discard_insert_kink_subcurve();
+            self.discard_refinement_subcurve();
         } else {
-            self.cancel_insert_kink();
+            self.cancel_refinement();
         }
     }
-    pub(super) fn cancel_insert_kink(&mut self) {
-        self.insert_kink_prompt = None;
+    pub(super) fn cancel_refinement(&mut self) {
+        self.refinement_prompt = None;
         self.point_filter = None;
         self.point_constraint = None;
         self.snaps.model_override = None;
         self.command_input.clear();
     }
-    pub(super) fn validate_insert_kink(&mut self) {
+    pub(super) fn validate_refinement(&mut self) {
         if self
-            .insert_kink_prompt
+            .refinement_prompt
             .as_ref()
             .and_then(|p| p.draft.as_ref())
             .is_some_and(|d| !d.current(&self.document))
         {
-            self.cancel_insert_kink();
-            self.push_log("InsertKink source changed; start again".into());
+            self.cancel_refinement();
+            self.push_log("Refinement source changed; start again".into());
         }
     }
-    pub(super) fn start_insert_kink(&mut self, input: &str) -> bool {
+    pub(super) fn start_refinement(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
-        if !words.next().is_some_and(|w| {
-            w.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("InsertKink")
-        }) {
+        let Some(command) = words.next().map(|w| w.trim_start_matches(['_', '-'])) else {
             return false;
-        }
-        let mut options = self.commands.insert_kink_options();
+        };
+        let kind = if command.eq_ignore_ascii_case("InsertKink") {
+            Kind::Kink
+        } else if command.eq_ignore_ascii_case("InsertKnot") {
+            Kind::Knot
+        } else {
+            return false;
+        };
+        let mut options = match kind {
+            Kind::Kink => self.commands.insert_kink_options(),
+            Kind::Knot => self.commands.insert_knot_options(),
+        };
         let mut subcurve = false;
         for w in words {
             if w.trim_start_matches('_').eq_ignore_ascii_case("SubCrv") {
@@ -183,13 +328,12 @@ impl VibocerosApp {
         let ids = self
             .document
             .selected_objects()
-            .filter(|o| {
-                self.document.is_object_selectable(o.id()) && insert_kink::accepts(o.geometry())
-            })
+            .filter(|o| self.document.is_object_selectable(o.id()) && edits::accepts(o.geometry()))
             .map(|o| o.id())
             .collect::<Vec<_>>();
         self.cancel_interactive_command(false);
         let mut prompt = Prompt {
+            kind,
             draft: None,
             options,
             postselected: ids.len() != 1 || subcurve,
@@ -201,28 +345,39 @@ impl VibocerosApp {
             cursor: None,
             hint: String::new(),
             guides: Vec::new(),
+            guide_points: Vec::new(),
         };
         prompt.update_hint();
-        self.insert_kink_prompt = Some(prompt);
-        self.commands.remember_insert_kink_options(options);
+        self.refinement_prompt = Some(prompt);
+        self.remember_refinement_options(kind, options);
         self.push_log(format!("> {input}"));
         if ids.len() == 1 && !subcurve {
-            self.pick_insert_kink_object(Some(ids[0]));
+            self.pick_refinement_object(Some(ids[0]));
         } else {
-            self.log_insert_kink();
+            self.log_refinement();
         }
         true
     }
-    fn log_insert_kink(&mut self) {
-        if let Some(p) = &mut self.insert_kink_prompt {
+    fn remember_refinement_options(&self, kind: Kind, options: Options) {
+        match kind {
+            Kind::Kink => {
+                self.commands.remember_insert_kink_options(options);
+            }
+            Kind::Knot => {
+                self.commands.remember_insert_knot_options(options);
+            }
+        }
+    }
+    fn log_refinement(&mut self) {
+        if let Some(p) = &mut self.refinement_prompt {
             p.update_hint();
             p.update_guides();
             let h = p.hint.clone();
             self.push_log(h);
         }
     }
-    pub(super) fn pick_insert_kink_object(&mut self, object: Option<ObjectId>) -> bool {
-        let Some(p) = &self.insert_kink_prompt else {
+    pub(super) fn pick_refinement_object(&mut self, object: Option<ObjectId>) -> bool {
+        let Some(p) = &self.refinement_prompt else {
             return false;
         };
         if !p.selecting() {
@@ -239,7 +394,7 @@ impl VibocerosApp {
         {
             return true;
         }
-        match Draft::new(&self.document, id, None) {
+        match Draft::new(&self.document, id, None, p.kind) {
             Ok(draft) => {
                 let cursor = draft
                     .geometry()
@@ -248,11 +403,11 @@ impl VibocerosApp {
                     .transpose();
                 match cursor {
                     Ok(cursor) => {
-                        let p = self.insert_kink_prompt.as_mut().unwrap();
+                        let p = self.refinement_prompt.as_mut().unwrap();
                         p.cursor = cursor;
                         p.input.object = Some(draft.object());
                         p.draft = Some(draft);
-                        self.log_insert_kink();
+                        self.log_refinement();
                     }
                     Err(e) => self.push_log(format!("Error: {e}")),
                 }
@@ -261,20 +416,20 @@ impl VibocerosApp {
         }
         true
     }
-    fn insert_kink_point(&mut self, point: Point3) -> bool {
-        self.validate_insert_kink();
-        let Some(p) = &mut self.insert_kink_prompt else {
+    fn refinement_point(&mut self, point: Point3) -> bool {
+        self.validate_refinement();
+        let Some(p) = &mut self.refinement_prompt else {
             return false;
         };
         let Some(d) = &mut p.draft else {
             return false;
         };
         if p.shortening {
-            return self.insert_kink_subcurve_point(point);
+            return self.refinement_subcurve_point(point);
         }
         match d.point(point, p.options) {
             Ok(()) => {
-                self.log_insert_kink();
+                self.log_refinement();
                 true
             }
             Err(e) => {
@@ -283,65 +438,68 @@ impl VibocerosApp {
             }
         }
     }
-    pub(super) fn accept_insert_kink_drafting_point(&mut self, point: Point3) -> Option<bool> {
+    pub(super) fn accept_refinement_drafting_point(&mut self, point: Point3) -> Option<bool> {
         if !self
-            .insert_kink_prompt
+            .refinement_prompt
             .as_ref()
             .is_some_and(Prompt::wants_point)
         {
             return None;
         }
-        Some(self.insert_kink_point(point))
+        Some(self.refinement_point(point))
     }
-    pub(super) fn continue_insert_kink(&mut self, input: &str) -> bool {
-        if self.insert_kink_prompt.is_none() {
+    pub(super) fn continue_refinement(&mut self, input: &str) -> bool {
+        if self.refinement_prompt.is_none() {
             return false;
         }
         let text = input.trim();
         let key = text.trim_start_matches(['_', '-']);
         if key.eq_ignore_ascii_case("Cancel") || text == "!" {
-            self.cancel_insert_kink();
+            self.cancel_refinement();
             return true;
         }
-        self.validate_insert_kink();
-        if self.continue_insert_kink_subcurve(text) {
+        self.validate_refinement();
+        if self.continue_refinement_subcurve(text) {
             return true;
         }
         if key.eq_ignore_ascii_case("SubCrv")
             && self
-                .insert_kink_prompt
+                .refinement_prompt
                 .as_ref()
                 .is_some_and(|p| p.selecting() && !p.shortening)
         {
-            let p = self.insert_kink_prompt.as_mut().unwrap();
+            let p = self.refinement_prompt.as_mut().unwrap();
             p.subcurve = true;
             p.shortening = true;
             p.input = Default::default();
-            self.log_insert_kink();
+            self.log_refinement();
+            return true;
+        }
+        if self.continue_knot_action(text) {
             return true;
         }
         if self
             .commands
             .recognizes(text.split_whitespace().next().unwrap_or(""))
         {
-            self.cancel_insert_kink();
+            self.cancel_refinement();
             return false;
         }
-        self.validate_insert_kink();
+        self.validate_refinement();
         self.command_input.clear();
-        let Some(p) = &mut self.insert_kink_prompt else {
+        let Some(p) = &mut self.refinement_prompt else {
             return true;
         };
         if text.is_empty() {
             if p.selecting() {
-                self.cancel_insert_kink();
+                self.cancel_refinement();
                 return true;
             }
-            let p = self.insert_kink_prompt.take().unwrap();
+            let p = self.refinement_prompt.take().unwrap();
             let d = p.draft.as_ref().unwrap();
-            if let Err(e) = self.document.begin_transaction("InsertKink") {
+            if let Err(e) = self.document.begin_transaction(p.kind.name()) {
                 self.push_log(format!("Error: {e}"));
-                self.insert_kink_prompt = Some(p);
+                self.refinement_prompt = Some(p);
                 return true;
             }
             match d.commit(&mut self.document, p.postselected) {
@@ -352,15 +510,16 @@ impl VibocerosApp {
                 Err(e) => {
                     let _ = self.document.rollback_transaction();
                     self.push_log(format!("Error: {e}"));
-                    self.insert_kink_prompt = Some(p);
+                    self.refinement_prompt = Some(p);
                 }
             }
             return true;
         }
         match p.options.accept(text) {
             Ok(true) => {
-                self.commands.remember_insert_kink_options(p.options);
-                self.log_insert_kink();
+                let (kind, options) = (p.kind, p.options);
+                self.remember_refinement_options(kind, options);
+                self.log_refinement();
                 return true;
             }
             Err(e) => {
@@ -378,12 +537,12 @@ impl VibocerosApp {
         self.push_log("Expected a point or surface option; Enter finishes, Esc cancels".into());
         true
     }
-    pub(super) fn insert_kink_viewport_hit(&mut self, output: &ViewportOutput) -> bool {
-        let Some(p) = &self.insert_kink_prompt else {
+    pub(super) fn refinement_viewport_hit(&mut self, output: &ViewportOutput) -> bool {
+        let Some(p) = &self.refinement_prompt else {
             return false;
         };
         if output.enter_pressed {
-            self.continue_insert_kink("");
+            self.continue_refinement("");
             return true;
         }
         if p.selecting() {
@@ -395,11 +554,11 @@ impl VibocerosApp {
                     .filter(|id| {
                         self.document
                             .object(*id)
-                            .is_some_and(|o| insert_kink::accepts(o.geometry()))
+                            .is_some_and(|o| edits::accepts(o.geometry()))
                     })
                     .collect::<std::collections::BTreeSet<_>>();
                 if ids.len() == 1 {
-                    self.pick_insert_kink_object(ids.into_iter().next());
+                    self.pick_refinement_object(ids.into_iter().next());
                 } else if ids.len() > 1 {
                     self.selection_menu = Some(SelectionMenu {
                         choice: SelectionChoice {

@@ -63,6 +63,11 @@ exclude its custom tensor builder from command and oracle construction.
 [InsertKnot](smlib-knot-refinement.md) also delegates curve and tensor refinement
 to NLib, preserving full unclamped input definitions and sharing periodic-padding
 and outer-knot conventions with the portable backend.
+Its [repeated point getter](commands/insert-knot.md) shares immutable source
+ownership, temporary portions, point input and commit policy with InsertKink.
+Automatic insertion and local Undo operate on private geometry. Single-face
+B-reps delegate exact tensor refinement to the selected backend while retaining
+their existing trim topology.
 [MakeNonPeriodic](smlib-nonperiodic.md) shares that native endpoint-split path,
 clamping periodic curves and requested tensor directions without the Rust
 endpoint control solver in native command or oracle construction.

@@ -44,8 +44,8 @@ impl Prompt {
     }
 }
 impl VibocerosApp {
-    pub(super) fn discard_insert_kink_subcurve(&mut self) {
-        let p = self.insert_kink_prompt.as_mut().unwrap();
+    pub(super) fn discard_refinement_subcurve(&mut self) {
+        let p = self.refinement_prompt.as_mut().unwrap();
         p.draft = None;
         p.cursor = None;
         p.shortening = false;
@@ -57,11 +57,11 @@ impl VibocerosApp {
         self.point_constraint = None;
         self.snaps.model_override = None;
         self.command_input.clear();
-        self.log_insert_kink();
+        self.log_refinement();
     }
-    pub(in crate::app) fn update_insert_kink_subcurve_hover(&mut self, point: Point3) -> bool {
+    pub(in crate::app) fn update_refinement_subcurve_hover(&mut self, point: Point3) -> bool {
         let Some(p) = self
-            .insert_kink_prompt
+            .refinement_prompt
             .as_mut()
             .filter(|p| p.shortening && p.input.start.is_some())
         else {
@@ -83,12 +83,12 @@ impl VibocerosApp {
                 .parameter(source, None, point, self.document.tolerance());
         true
     }
-    pub(super) fn continue_insert_kink_subcurve(&mut self, text: &str) -> bool {
-        let Some(p) = self.insert_kink_prompt.as_mut().filter(|p| p.shortening) else {
+    pub(super) fn continue_refinement_subcurve(&mut self, text: &str) -> bool {
+        let Some(p) = self.refinement_prompt.as_mut().filter(|p| p.shortening) else {
             return false;
         };
         if text.is_empty() {
-            self.discard_insert_kink_subcurve();
+            self.discard_refinement_subcurve();
             return true;
         }
         let Some(start) = p.input.start else {
@@ -151,7 +151,7 @@ impl VibocerosApp {
                     return true;
                 }
             }
-            self.log_insert_kink();
+            self.log_refinement();
             return true;
         }
         let Some(quantity) =
@@ -176,7 +176,7 @@ impl VibocerosApp {
             }
         });
         match length {
-            Ok((0., _)) => self.discard_insert_kink_subcurve(),
+            Ok((0., _)) => self.discard_refinement_subcurve(),
             Ok((length, full_closed)) => {
                 p.input.length = Some(length);
                 p.full_closed_length = full_closed;
@@ -191,18 +191,18 @@ impl VibocerosApp {
                         Ok(true) => {
                             p.input.locked_forward = None;
                             p.locked_side = None;
-                            self.log_insert_kink();
+                            self.log_refinement();
                         }
                         Ok(false) => match curve.evaluate(start) {
                             Ok(point) => {
-                                self.insert_kink_subcurve_point(point);
+                                self.refinement_subcurve_point(point);
                             }
                             Err(e) => self.push_log(format!("Error: {e}")),
                         },
                         Err(e) => self.push_log(format!("Error: {e}")),
                     }
                 } else {
-                    self.log_insert_kink();
+                    self.log_refinement();
                 }
             }
             Err(e) => self.push_log(format!("Error: {e}")),
@@ -210,17 +210,12 @@ impl VibocerosApp {
         self.command_input.clear();
         true
     }
-    pub(super) fn insert_kink_subcurve_point(&mut self, point: Point3) -> bool {
-        if self
-            .insert_kink_prompt
-            .as_ref()
-            .unwrap()
-            .empty_locked_side()
-        {
-            self.discard_insert_kink_subcurve();
+    pub(super) fn refinement_subcurve_point(&mut self, point: Point3) -> bool {
+        if self.refinement_prompt.as_ref().unwrap().empty_locked_side() {
+            self.discard_refinement_subcurve();
             return true;
         }
-        let p = self.insert_kink_prompt.as_mut().unwrap();
+        let p = self.refinement_prompt.as_mut().unwrap();
         let d = p.draft.as_ref().unwrap();
         let curve = d.geometry().curve_ref().unwrap();
         // A closed locked getter projects onto the captured side of the
@@ -239,7 +234,7 @@ impl VibocerosApp {
         };
         let Some(start) = p.input.start else {
             p.input.start = Some(parameter);
-            self.log_insert_kink();
+            self.log_refinement();
             return true;
         };
         let interval = if let Some(length) = p.input.length {
@@ -261,7 +256,7 @@ impl VibocerosApp {
         let range = match interval {
             Ok(Some(range)) => range,
             Ok(None) => {
-                self.discard_insert_kink_subcurve();
+                self.discard_refinement_subcurve();
                 return true;
             }
             Err(e) => {
@@ -269,18 +264,18 @@ impl VibocerosApp {
                 return false;
             }
         };
-        match Draft::new(&self.document, d.object(), Some(range))
+        match Draft::new(&self.document, d.object(), Some(range), p.kind)
             .and_then(|draft| Ok((draft.geometry().curve_ref().unwrap().to_nurbs()?, draft)))
         {
             Ok((cursor, draft)) => {
-                let p = self.insert_kink_prompt.as_mut().unwrap();
+                let p = self.refinement_prompt.as_mut().unwrap();
                 p.cursor = Some(cursor);
                 p.draft = Some(draft);
                 p.shortening = false;
                 p.input = Default::default();
                 p.locked_side = None;
                 p.full_closed_length = false;
-                self.log_insert_kink();
+                self.log_refinement();
                 true
             }
             Err(e) => {

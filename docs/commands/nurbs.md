@@ -59,14 +59,21 @@ surfaces, Direction names the row orientation as it does in Rhino (a U row adds
 a V-axis control); U is the default. Rational and periodic inputs, object identity, attributes,
 selection, and undo are preserved.
 
-`InsertKnot` requires exactly one selected curve or untrimmed NURBS surface and
-refines it in place without changing its parameterization or shape. Curves take
+Interactive [InsertKnot](insert-knot.md) supports repeated point and curve-parameter
+input, Automatic, local Undo and temporary portions on curves and single surfaces.
+Its surface Direction names the displayed isocurve.
+
+The explicit `InsertKnot parameter|u,v` form requires one selected curve or
+untrimmed NURBS surface and refines it in place without changing its
+parameterization or shape. Curves take
 one parameter; surfaces take `u,v`, with a scalar accepted when `Direction=U`
 or `V`. `Multiplicity` is the target knot multiplicity and may range from one
 through the relevant degree. `Symmetrical=Yes` also inserts the parameter
 mirrored across the active domain. Rational refinement and periodic repair
 follow Rhino/OpenNURBS behavior; identity, attributes, selection, and undo are
 preserved.
+
+In this explicit form, Direction names the parameter axis being refined.
 
 Linux `native-smlib` builds use usd-brep for curve/tensor knot refinement.
 See [native behavior, qualification and limits](../smlib-knot-refinement.md).

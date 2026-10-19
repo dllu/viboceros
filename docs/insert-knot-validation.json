@@ -1,0 +1,2001 @@
+{
+  "feature": "InsertKnot repeated point/parameter input, Automatic, staged Undo and guides",
+  "base_commit": "b809e4bc41c45faa19a1bcab5e46f140f83fc4d0",
+  "native_version": "8.32.26160.13001",
+  "native_cases": 224,
+  "native_command_results": {
+    "Success": 183,
+    "Cancel": 40,
+    "Failure": 1
+  },
+  "comparison_epsilon": 1e-08,
+  "maximum_definition_or_sample_error": {
+    "api-portable": 2.9878322038712213e-12,
+    "api-native": 2.9878322038712213e-12,
+    "ui-portable": 2.9878322038712213e-12,
+    "ui-native": 2.9878322038712213e-12
+  },
+  "captures": [
+    {
+      "matrix": "command",
+      "path": "tools/rhino_oracle/observations/insert_knot_command.json",
+      "sha256": "79996dc42e498805a48e63ad3c461171212b99b95af47d0f6a48ae1c44f4167f",
+      "request": "tools/rhino_oracle/observations/insert_knot_command.request.json",
+      "request_sha256": "da0619352d6ddb139f46c4938d4c9b8668324cc8ae59e692bf09f62dfabe939f",
+      "cases": 156,
+      "native_results": {
+        "Success": 127,
+        "Cancel": 28,
+        "Failure": 1
+      },
+      "provenance": "Producer and source-3dm hashes are in the capture and checked by Python tests."
+    },
+    {
+      "matrix": "followup",
+      "path": "tools/rhino_oracle/observations/insert_knot_followup.json",
+      "sha256": "0d5e0287b04a8c387e063b78ca41d71c2257b604413c5ccb69c07620b899d11b",
+      "request": "tools/rhino_oracle/observations/insert_knot_followup.request.json",
+      "request_sha256": "cf8715bc9222184ceb677d4d2b9cee22cbd211f344da67b4385c6f4e15165e61",
+      "cases": 49,
+      "native_results": {
+        "Success": 37,
+        "Cancel": 12
+      },
+      "provenance": "Producer and source-3dm hashes are in the capture and checked by Python tests."
+    },
+    {
+      "matrix": "symmetry",
+      "path": "tools/rhino_oracle/observations/insert_knot_symmetry.json",
+      "sha256": "8f82f5d217a40af9c05c71b813e8e095a05b1d93a6ffbe87b02c745542fa286a",
+      "request": "tools/rhino_oracle/observations/insert_knot_symmetry.request.json",
+      "request_sha256": "b3a6ba6318ab0bbf049b83ce825b79c317c52b5db6458918165b55963cfcccb7",
+      "cases": 19,
+      "native_results": {
+        "Success": 19
+      },
+      "provenance": "Producer and source-3dm hashes are in the capture and checked by Python tests."
+    }
+  ],
+  "implementation": [
+    "Share immutable source ownership, options, source/point picking, temporary portions and commit policy with InsertKink.",
+    "One local checkpoint per manual/Automatic action; document geometry and existing Undo/Redo stay unchanged until Enter.",
+    "Retain polycurve segments with NURBS leaves and global parameter charts.",
+    "Automatic bisects unique active spans. Surface Direction follows the isocurve; explicit parameter-axis scripting remains separate.",
+    "Use selected-backend exact curve/tensor refinement for standalone surfaces and single-face B-reps. Retain B-rep topology, degrees and UV domains without boundary refitting.",
+    "Reuse a geometrically coincident station for implicit mirror insertion, preventing duplicate knots at a rational midpoint."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros-command --test insert_knot_command",
+      "tests": 4,
+      "coverage": "224 command cases and 30 standalone surfaces"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test insert_knot_command",
+      "tests": 4,
+      "coverage": "Same native-backend matrix"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::insert_",
+      "tests": 13,
+      "coverage": "224 new cases, original 101 InsertKink cases, 128 prior getter outcomes, two literal-key cases and independent UI regressions"
+    },
+    {
+      "command": "cargo test -p viboceros --features native-smlib app::tests::insert_",
+      "tests": 13,
+      "coverage": "Same matrix with native curve, surface and B-rep refinement"
+    },
+    {
+      "command": "cargo test -p viboceros --features native-smlib app::tests::insert_knot::insert_knot_native_symmetric_complement_and_center_picks -- --nocapture --test-threads=1",
+      "tests": 1,
+      "coverage": "Serial audit for all 19 symmetry cases"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test insert_kink",
+      "tests": 2,
+      "coverage": "101 cases, 24 standalone surfaces, 73 eligible 3dm roundtrips"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib insert_knot",
+      "tests": 4,
+      "coverage": "Explicit parameter/multiplicity API and atomic errors"
+    },
+    {
+      "command": "cargo test -p viboceros subcurve",
+      "tests": 54,
+      "coverage": "Shared controllers"
+    },
+    {
+      "command": "cargo test -p viboceros app::tests::point_input::",
+      "tests": 58,
+      "coverage": "Shared point input"
+    },
+    {
+      "command": "cargo test -p viboceros app::snapping::tests::",
+      "tests": 10,
+      "coverage": "Snapping and one-shot overrides"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib surface_refinement",
+      "tests": 2,
+      "coverage": "Topology, backend delegation and failure propagation"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_insert_knot_command tools.rhino_oracle.test_insert_kink_subcurve tools.rhino_oracle.test_insert_kink_probe tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client tools.rhino_oracle.test_subcurve_direction tools.rhino_oracle.test_subcurve_direction_grid",
+      "tests": 45,
+      "coverage": "Bounds, native captures and source/fixture provenance"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "result": "passed"
+    }
+  ],
+  "audit_log_note": "A parallel native UI test progress message interrupted one symmetry JSON line. The raw full log is retained; per-case native UI symmetry errors use the additional complete serial 19-case run. No reference data was changed.",
+  "regression": {
+    "case": "symmetry/rational_symmetric_center",
+    "before": "Six controls instead of the native five because reflection straddled the projected midpoint by an ulp.",
+    "before_log": "docs/insert-knot-proof/symmetric-center-before.log.gz",
+    "before_source_snapshot_retained": false,
+    "after": "One knot and five controls; all 19 symmetry records pass through both API/UI backends."
+  },
+  "limits": [
+    "No arbitrary command equivalence, continuous error certificate, complete workspace test run or general performance benchmark is claimed.",
+    "The two unused outer NURBS knots use the importer convention; active knots, controls, weights, domains and recorded samples are compared.",
+    "Native event statuses are retained. Rust Result<String> does not expose the full Rhino Cancel/Failure enum; comparisons cover physical output, geometry metadata, selection and history.",
+    "Native metadata-only Undo/Redo was not captured; local metadata edits remain normal document history.",
+    "Temporary-portion captures use endpoints. Numeric shortening inherits the shared getter and has no new InsertKnot-specific native capture.",
+    "No new edited-3dm roundtrip matrix, complete preference workflow, status-panel/pixel parity, block-member or polysurface qualification.",
+    "Guide display is bounded to 4096 curve markers and 1024 isocurves per direction.",
+    "Prior InsertKink getter precision/circle differences and the invalid-native-curve guard remain explicit in the earlier receipt."
+  ],
+  "proof_sha256": {
+    "docs/insert-knot-proof/api-native.log.gz": "0852e074dc993889e3e70a0617d20cc662c612893646707be2b76802eb3c0b70",
+    "docs/insert-knot-proof/api-portable.log.gz": "bb2bc9038d0580fa4cdbf98c298618526f1ce5e8dac82b411b022441b8da976d",
+    "docs/insert-knot-proof/capture-followup.log.gz": "7edaf2fa8484b3f0e0941efab4e31adbf5520948596aa70e6d03918dc826722a",
+    "docs/insert-knot-proof/capture-main.log.gz": "459958f15486cb7e7653c53a9ed15847eb66106f0b5467cae30e2c61c1e02589",
+    "docs/insert-knot-proof/capture-symmetry.log.gz": "86b6d1c9e722856718b9b1185a98e127fc819dc872f68196eef666151c3f4ab3",
+    "docs/insert-knot-proof/clippy.log.gz": "7c099f1f72264769ba74fc6570300de3eac73714519e9dbbba182d0cef7a0bdc",
+    "docs/insert-knot-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/insert-knot-proof/kernel-delegation.log.gz": "f239f1a459235698a7bf234346b25df50e42ea23121840aaeb8a52b52c58613d",
+    "docs/insert-knot-proof/kink-api-native.log.gz": "81735d4066bae49a1b4d3c49b58a87ca550951fdf9ab6259a65f4a40f72d0552",
+    "docs/insert-knot-proof/legacy-parameters.log.gz": "d34aadeffd5878a5ffbe3e54a64fcfb2872ca75b08c9d5d24cd8d550b3bec230",
+    "docs/insert-knot-proof/point-input.log.gz": "e1a9e7c5d080a85f26f7f041d10ca0d5b3be911fb2dc5622bbd2f0cd029d2582",
+    "docs/insert-knot-proof/python.log.gz": "5ae673f1cd61879819f370539d498e0977c952b4a38506b9feca5ef1504b5d1c",
+    "docs/insert-knot-proof/shared-subcurve.log.gz": "8a5d90892c1478db3d089454c795972defd3cc76ff2eca5b9d2cf1a5dcd28fb3",
+    "docs/insert-knot-proof/snapping.log.gz": "dfc1d5abb3472e42835fe157702bf808fa99c997e383976692962b8bc1c6cb04",
+    "docs/insert-knot-proof/symmetric-center-before.log.gz": "c1eeaaaf2ec7089a317c6c807ba54136f5bb3ce722744d7d34ac2d5ace5dc8ca",
+    "docs/insert-knot-proof/symmetry-ui-native-serial.log.gz": "c33a61c14fecb12a553404f86f6a4b61286b6d5a78bc4a8b283ce5c3f2f1dbd3",
+    "docs/insert-knot-proof/ui-native.log.gz": "30b56b0159a3e33b92389f160953bedae28345ab270fb7e9b2673f87bc22ce90",
+    "docs/insert-knot-proof/ui-portable.log.gz": "661245364f446ad70d40dd3782abd74de60387c7b2bdcc7761756791ab50c1bd"
+  },
+  "current_source_sha256": {
+    "README.md": "306cb9adee87c6aa1aeb8e330bd01fa5a264daa57855743b56229b809a4a8bad",
+    "crates/viboceros-command/src/insert_knot.rs": "5faf28d9cc56b03e6592ee22e5b5837865bc7966147bd441f6c763fa4a21a806",
+    "crates/viboceros-command/src/insert_kink.rs": "d5ca8aa10990baaf7d95b2cab1209b5bcce0d1b0f2c57a4455f8ff41bf558e40",
+    "crates/viboceros-command/src/refinement.rs": "93a22d0ce217b24c48c39e5d4f5c506b24acd06935c1ae724d61e5a2d30c241d",
+    "crates/viboceros-command/src/lib.rs": "8a7d43fa888af307293ff6fa8f25efac77c7346b05f7a587846a6e6176dcc291",
+    "crates/viboceros-command/tests/insert_knot_command.rs": "3d07429af651eaed2be8191d4fe764e1689ed2fea810050170699011a6b3844a",
+    "crates/viboceros-geometry/src/brep/surface_refine.rs": "55bd9450b2715b06da5a4ccc62f206d7e11b8f66839aef10506bdc4bba0dac69",
+    "src/app.rs": "b2e0b36c6d1d0ffb9ddcd195ad874ea5e43f1cf7a77347f0a03bfdd7396a769a",
+    "src/app/refinement.rs": "9670fe4e07f62ae3657fea3f892affae61ca153c978171e32c029316d92f33bd",
+    "src/app/refinement/subcurve.rs": "cd16c5962bdb11c2cef87cbbba8951fc3b5fd7350672c380cffce0ae911ab1b0",
+    "src/app/command_line.rs": "5522edfbf12483f44a000e7bdbc6b8a8a33ab63ddff42e37c211e058a9bbea08",
+    "src/app/object_selection.rs": "da374692d74cbb0b131dca3bfc7bf9e4489d92a441b93f6fb8f1cbd1c5c6cc3d",
+    "src/app/point_input.rs": "fe0589ccb39ce5ca927da9b45cdbf80ef4945693dc4d7a55d9048689eda86326",
+    "src/app/snapping.rs": "122384fd04556a892a5e2a05ead77663d69ab74cbdcf6061f1898b7e3483755c",
+    "src/app/subcurve_direction.rs": "cef9617174057c97179ea76f90695619a1a800be37b0ebce417a5723adcc48a5",
+    "src/app/subcurve_preview.rs": "655e5166754190e76d9a2bc8c741ee7511987919a64e12741464b0f4e5d2bfdf",
+    "src/app/tests/insert_knot.rs": "1cca3fdb4201a25931d43837aef80be422eb396f416865db42919d684d90d9c5",
+    "src/app/tests/insert_kink.rs": "44ec5bc5797d7146eeea11019ded627d069d194558158fe39b612879074d78d8",
+    "src/app/tests/insert_kink_subcurve.rs": "6ef8c392d4bbfcd13b409cc95759bf7f59b92bc6352a20df9b0e48cc10fd20ab",
+    "tools/rhino_oracle/test_insert_knot_command.py": "e09474a888495e4ff9a0d1548a3fb3db9c06a138fdde4e2e3134161109283f0a",
+    "tools/rhino_oracle/test_insert_kink_subcurve.py": "5c54fba0b8b93210306b6ff8fa1b92b303f4266814d0f6cbc1d3d51cb1cf06df",
+    "tools/rhino_oracle/generate_insert_knot_command.py": "d833373c564f0ca560b214ba4f7f7147493dde2f1f9390491c13f461d11fb427",
+    "tools/rhino_oracle/generate_insert_knot_followup.py": "0f7eb734eb70217fe27066d98b80044aafdda0f79f978912fe75640eb4f45e31",
+    "tools/rhino_oracle/generate_insert_knot_symmetry.py": "122a740abcbe9086ac005f59ba6d76f962e3229991b08799a6bd5bbddb278b44",
+    "tools/rhino_oracle/insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+    "tools/rhino_oracle/insert_knot_command_probe.py": "187e2912c870756dfbe0bb35c1e1750e33830f93e85d7d619e808ebac65314e1",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/rhino_worker.py": "fc77352eaad128a80cdc26636bfbc420c37bfc479436535b22736953070b8799",
+    "tools/rhino_oracle/structural_sdk.py": "b867f01a95c4a8ada9c846d448048f1ddcfceff0de1af0ebb3494f819ee571cb"
+  },
+  "cases": [
+    {
+      "matrix": "command",
+      "id": "cubic",
+      "api-portable": 8.899114524108741e-16,
+      "api-native": 8.899114524108741e-16,
+      "ui-portable": 8.899114524108741e-16,
+      "ui-native": 8.899114524108741e-16
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_two",
+      "api-portable": 5.4330821446240967e-14,
+      "api-native": 5.4330821446240967e-14,
+      "ui-portable": 5.4330821446240967e-14,
+      "ui-native": 5.4330821446240967e-14
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_repeat",
+      "api-portable": 8.899114524108741e-16,
+      "api-native": 8.899114524108741e-16,
+      "ui-portable": 8.899114524108741e-16,
+      "ui-native": 8.899114524108741e-16
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_ends",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_empty",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_cancel",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_post",
+      "api-portable": 8.899114524108741e-16,
+      "api-native": 8.899114524108741e-16,
+      "ui-portable": 8.899114524108741e-16,
+      "ui-native": 8.899114524108741e-16
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_auto",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_auto_twice",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_undo",
+      "api-portable": 8.899114524108741e-16,
+      "api-native": 8.899114524108741e-16,
+      "ui-portable": 8.899114524108741e-16,
+      "ui-native": 8.899114524108741e-16
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_undo_all",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_numeric",
+      "api-portable": 9.036560719766055e-16,
+      "api-native": 9.036560719766055e-16,
+      "ui-portable": 9.036560719766055e-16,
+      "ui-native": 9.036560719766055e-16
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_sym",
+      "api-portable": 1.7764110486817194e-15,
+      "api-native": 1.7764110486817194e-15,
+      "ui-portable": 1.7764110486817194e-15,
+      "ui-native": 1.7764110486817194e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational",
+      "api-portable": 1.0090067972277008e-15,
+      "api-native": 1.0090067972277008e-15,
+      "ui-portable": 1.0090067972277008e-15,
+      "ui-native": 1.0090067972277008e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_two",
+      "api-portable": 2.3525204118543076e-15,
+      "api-native": 2.7755575615628914e-15,
+      "ui-portable": 2.3525204118543076e-15,
+      "ui-native": 2.7755575615628914e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_repeat",
+      "api-portable": 1.0090067972277008e-15,
+      "api-native": 1.0090067972277008e-15,
+      "ui-portable": 1.0090067972277008e-15,
+      "ui-native": 1.0090067972277008e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_ends",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "rational_empty",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "rational_cancel",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "rational_post",
+      "api-portable": 1.0090067972277008e-15,
+      "api-native": 1.0090067972277008e-15,
+      "ui-portable": 1.0090067972277008e-15,
+      "ui-native": 1.0090067972277008e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_auto",
+      "api-portable": 9.036560719766055e-16,
+      "api-native": 9.036560719766055e-16,
+      "ui-portable": 9.036560719766055e-16,
+      "ui-native": 9.036560719766055e-16
+    },
+    {
+      "matrix": "command",
+      "id": "rational_auto_twice",
+      "api-portable": 9.155133597044475e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 9.155133597044475e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "rational_undo",
+      "api-portable": 1.0090067972277008e-15,
+      "api-native": 1.0090067972277008e-15,
+      "ui-portable": 1.0090067972277008e-15,
+      "ui-native": 1.0090067972277008e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_undo_all",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "rational_numeric",
+      "api-portable": 1.0090067972277008e-15,
+      "api-native": 1.0090067972277008e-15,
+      "ui-portable": 1.0090067972277008e-15,
+      "ui-native": 1.0090067972277008e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_sym",
+      "api-portable": 9.155133597044475e-16,
+      "api-native": 9.930136612989092e-16,
+      "ui-portable": 9.155133597044475e-16,
+      "ui-native": 9.930136612989092e-16
+    },
+    {
+      "matrix": "command",
+      "id": "circle",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_two",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_repeat",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_ends",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_empty",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_cancel",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_post",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_auto",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_auto_twice",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_undo",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_undo_all",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_numeric",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_sym",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_two",
+      "api-portable": 1.1657341758564144e-14,
+      "api-native": 1.1222042948926371e-14,
+      "ui-portable": 1.1657341758564144e-14,
+      "ui-native": 1.1222042948926371e-14
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_repeat",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_ends",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_empty",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_cancel",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_post",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_auto",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_auto_twice",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_undo",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_undo_all",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_numeric",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "ellipse_sym",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 2.673771110915334e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 2.673771110915334e-15
+    },
+    {
+      "matrix": "command",
+      "id": "line",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "line_two",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "line_repeat",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "line_ends",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "line_empty",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "line_cancel",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "line_post",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "line_auto",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "line_auto_twice",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "line_undo",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "line_undo_all",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "line_numeric",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "command",
+      "id": "line_sym",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "polyline",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 4.440892098500626e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 4.440892098500626e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_two",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 4.440892098500626e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 4.440892098500626e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_repeat",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 4.440892098500626e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 4.440892098500626e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_ends",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_empty",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_cancel",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_post",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 4.440892098500626e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 4.440892098500626e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_auto",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_auto_twice",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_undo",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 4.440892098500626e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 4.440892098500626e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_undo_all",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_numeric",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 4.440892098500626e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 4.440892098500626e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polyline_sym",
+      "api-portable": 4.440892098500626e-16,
+      "api-native": 4.440892098500626e-16,
+      "ui-portable": 4.440892098500626e-16,
+      "ui-native": 4.440892098500626e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_two",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.831026719408895e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.831026719408895e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_repeat",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_ends",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_empty",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_cancel",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_post",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_auto",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_auto_twice",
+      "api-portable": 1.7763568394002505e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.7763568394002505e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_undo",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_undo_all",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_numeric",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "command",
+      "id": "polycurve_sym",
+      "api-portable": 1.3348671786163112e-15,
+      "api-native": 1.3348671786163112e-15,
+      "ui-portable": 1.3348671786163112e-15,
+      "ui-native": 1.3348671786163112e-15
+    },
+    {
+      "matrix": "command",
+      "id": "periodic",
+      "api-portable": 1.2434497875801753e-14,
+      "api-native": 1.2434497875801753e-14,
+      "ui-portable": 1.2434497875801753e-14,
+      "ui-native": 1.2434497875801753e-14
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_two",
+      "api-portable": 4.805045250577678e-13,
+      "api-native": 4.805045250577678e-13,
+      "ui-portable": 4.805045250577678e-13,
+      "ui-native": 4.805045250577678e-13
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_repeat",
+      "api-portable": 1.2434497875801753e-14,
+      "api-native": 1.2434497875801753e-14,
+      "ui-portable": 1.2434497875801753e-14,
+      "ui-native": 1.2434497875801753e-14
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_ends",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_empty",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_cancel",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_post",
+      "api-portable": 1.2434497875801753e-14,
+      "api-native": 1.2434497875801753e-14,
+      "ui-portable": 1.2434497875801753e-14,
+      "ui-native": 1.2434497875801753e-14
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_auto",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_auto_twice",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_undo",
+      "api-portable": 1.2434497875801753e-14,
+      "api-native": 1.2434497875801753e-14,
+      "ui-portable": 1.2434497875801753e-14,
+      "ui-native": 1.2434497875801753e-14
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_undo_all",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_numeric",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.694605782913356e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.694605782913356e-16
+    },
+    {
+      "matrix": "command",
+      "id": "periodic_sym",
+      "api-portable": 1.3766765505351941e-14,
+      "api-native": 1.3766765505351941e-14,
+      "ui-portable": 1.3766765505351941e-14,
+      "ui-native": 1.3766765505351941e-14
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_U_sym",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_auto_U",
+      "api-portable": 2.551098286635258e-15,
+      "api-native": 2.551098286635258e-15,
+      "ui-portable": 2.551098286635258e-15,
+      "ui-native": 2.551098286635258e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_V",
+      "api-portable": 2.8754776337791554e-12,
+      "api-native": 2.8754776337791554e-12,
+      "ui-portable": 2.8754776337791554e-12,
+      "ui-native": 2.8754776337791554e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_V_sym",
+      "api-portable": 2.8759217229890055e-12,
+      "api-native": 2.8759217229890055e-12,
+      "ui-portable": 2.8759217229890055e-12,
+      "ui-native": 2.8759217229890055e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_auto_V",
+      "api-portable": 2.8174301870297396e-15,
+      "api-native": 2.8174301870297396e-15,
+      "ui-portable": 2.8174301870297396e-15,
+      "ui-native": 2.8174301870297396e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_Both",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_Both_sym",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_auto_Both",
+      "api-portable": 2.843558383173339e-15,
+      "api-native": 2.843558383173339e-15,
+      "ui-portable": 2.843558383173339e-15,
+      "ui-native": 2.843558383173339e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_auto_twice",
+      "api-portable": 2.035072419451041e-15,
+      "api-native": 2.035072419451041e-15,
+      "ui-portable": 2.035072419451041e-15,
+      "ui-native": 2.035072419451041e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_undo",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_toggle",
+      "api-portable": 2.8754776337791554e-12,
+      "api-native": 2.8754776337791554e-12,
+      "ui-portable": 2.8754776337791554e-12,
+      "ui-native": 2.8754776337791554e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_cancel",
+      "api-portable": 1.9984014443252818e-15,
+      "api-native": 1.9984014443252818e-15,
+      "ui-portable": 1.9984014443252818e-15,
+      "ui-native": 1.9984014443252818e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_post",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_ends",
+      "api-portable": 2.5341311739065128e-15,
+      "api-native": 2.5341311739065128e-15,
+      "ui-portable": 2.5341311739065128e-15,
+      "ui-native": 2.5341311739065128e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_midpoints",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_U_sym",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_auto_U",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_V",
+      "api-portable": 3.2817561622597536e-14,
+      "api-native": 3.2781485142337945e-14,
+      "ui-portable": 3.2817561622597536e-14,
+      "ui-native": 3.2781485142337945e-14
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_V_sym",
+      "api-portable": 3.2769450822864004e-14,
+      "api-native": 3.2769450822864004e-14,
+      "ui-portable": 3.2769450822864004e-14,
+      "ui-native": 3.2769450822864004e-14
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_auto_V",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_Both",
+      "api-portable": 3.2817561622597536e-14,
+      "api-native": 3.2781485142337945e-14,
+      "ui-portable": 3.2817561622597536e-14,
+      "ui-native": 3.2781485142337945e-14
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_Both_sym",
+      "api-portable": 3.2769450822864004e-14,
+      "api-native": 3.2769450822864004e-14,
+      "ui-portable": 3.2769450822864004e-14,
+      "ui-native": 3.2769450822864004e-14
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_auto_Both",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_auto_twice",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_undo",
+      "api-portable": 3.2817561622597536e-14,
+      "api-native": 3.2781485142337945e-14,
+      "ui-portable": 3.2817561622597536e-14,
+      "ui-native": 3.2781485142337945e-14
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_toggle",
+      "api-portable": 3.2817561622597536e-14,
+      "api-native": 3.2781485142337945e-14,
+      "ui-portable": 3.2817561622597536e-14,
+      "ui-native": 3.2781485142337945e-14
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_cancel",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_post",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_ends",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "surface_rational_midpoints",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle_auto",
+      "api-portable": 2.843558383173339e-15,
+      "api-native": 2.843558383173339e-15,
+      "ui-portable": 2.843558383173339e-15,
+      "ui-native": 2.843558383173339e-15
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_rectangle_cancel",
+      "api-portable": 1.9984014443252818e-15,
+      "api-native": 1.9984014443252818e-15,
+      "ui-portable": 1.9984014443252818e-15,
+      "ui-native": 1.9984014443252818e-15
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole_auto",
+      "api-portable": 2.843558383173339e-15,
+      "api-native": 2.843558383173339e-15,
+      "ui-portable": 2.843558383173339e-15,
+      "ui-native": 2.843558383173339e-15
+    },
+    {
+      "matrix": "command",
+      "id": "trimmed_hole_cancel",
+      "api-portable": 1.9984014443252818e-15,
+      "api-native": 1.9984014443252818e-15,
+      "ui-portable": 1.9984014443252818e-15,
+      "ui-native": 1.9984014443252818e-15
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_subcurve",
+      "api-portable": 1.1430580427744738e-12,
+      "api-native": 1.1430580427744738e-12,
+      "ui-portable": 1.1431573365914423e-12,
+      "ui-native": 1.1430580265995056e-12
+    },
+    {
+      "matrix": "command",
+      "id": "cubic_subcurve_auto",
+      "api-portable": 1.2438340685772452e-12,
+      "api-native": 1.2439029337353153e-12,
+      "ui-portable": 1.2439718049896181e-12,
+      "ui-native": 1.2441095657828722e-12
+    },
+    {
+      "matrix": "command",
+      "id": "circle_subcurve",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "circle_subcurve_auto",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_subcurve",
+      "api-portable": 6.6650378637527805e-15,
+      "api-native": 6.6650378637527805e-15,
+      "ui-portable": 6.661338147750939e-15,
+      "ui-native": 6.676124710113433e-15
+    },
+    {
+      "matrix": "command",
+      "id": "rational_subcurve_auto",
+      "api-portable": 6.6650378637527805e-15,
+      "api-native": 6.796886549149213e-15,
+      "ui-portable": 6.7678088263037544e-15,
+      "ui-native": 6.676124710113433e-15
+    },
+    {
+      "matrix": "command",
+      "id": "elevated",
+      "api-portable": 1.7798229048217483e-15,
+      "api-native": 1.7798229048217483e-15,
+      "ui-portable": 1.7798229048217483e-15,
+      "ui-native": 1.7798229048217483e-15
+    },
+    {
+      "matrix": "command",
+      "id": "elevated_rational",
+      "api-portable": 2.6651134375294657e-15,
+      "api-native": 2.6651134375294657e-15,
+      "ui-portable": 2.6651134375294657e-15,
+      "ui-native": 2.6651134375294657e-15
+    },
+    {
+      "matrix": "command",
+      "id": "domain",
+      "api-portable": 9.036560719766055e-16,
+      "api-native": 9.036560719766055e-16,
+      "ui-portable": 9.036560719766055e-16,
+      "ui-native": 9.036560719766055e-16
+    },
+    {
+      "matrix": "command",
+      "id": "reversed",
+      "api-portable": 1.7763568394002505e-15,
+      "api-native": 1.3334236103572998e-15,
+      "ui-portable": 1.7763568394002505e-15,
+      "ui-native": 1.3334236103572998e-15
+    },
+    {
+      "matrix": "command",
+      "id": "negative_gauge",
+      "api-portable": 3.552713678800501e-15,
+      "api-native": 3.552713678800501e-15,
+      "ui-portable": 3.552713678800501e-15,
+      "ui-native": 3.552713678800501e-15
+    },
+    {
+      "matrix": "command",
+      "id": "tilted",
+      "api-portable": 1.88411095042053e-15,
+      "api-native": 1.88411095042053e-15,
+      "ui-portable": 1.88411095042053e-15,
+      "ui-native": 1.88411095042053e-15
+    },
+    {
+      "matrix": "command",
+      "id": "refined",
+      "api-portable": 4.577566798522237e-16,
+      "api-native": 4.577566798522237e-16,
+      "ui-portable": 4.577566798522237e-16,
+      "ui-native": 4.577566798522237e-16
+    },
+    {
+      "matrix": "command",
+      "id": "polysurface",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_point_auto",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_auto_undo",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_auto_twice_undo",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_point_auto_undo",
+      "api-portable": 8.899114524108741e-16,
+      "api-native": 8.899114524108741e-16,
+      "ui-portable": 8.899114524108741e-16,
+      "ui-native": 8.899114524108741e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_symmetric_auto",
+      "api-portable": 1.776573666601473e-15,
+      "api-native": 8.95090418262362e-16,
+      "ui-portable": 1.776573666601473e-15,
+      "ui-native": 8.95090418262362e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_midpoint_guide",
+      "api-portable": 8.899114524108741e-16,
+      "api-native": 8.899114524108741e-16,
+      "ui-portable": 8.899114524108741e-16,
+      "ui-native": 8.899114524108741e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_undo_all",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "followup",
+      "id": "cubic_symmetric_undo",
+      "api-portable": 1.7764110486817194e-15,
+      "api-native": 1.7764110486817194e-15,
+      "ui-portable": 1.7764110486817194e-15,
+      "ui-native": 1.7764110486817194e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_point_auto",
+      "api-portable": 9.036560719766055e-16,
+      "api-native": 1.3767017317747076e-15,
+      "ui-portable": 9.036560719766055e-16,
+      "ui-native": 1.3767017317747076e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_auto_undo",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_auto_twice_undo",
+      "api-portable": 9.036560719766055e-16,
+      "api-native": 9.036560719766055e-16,
+      "ui-portable": 9.036560719766055e-16,
+      "ui-native": 9.036560719766055e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_point_auto_undo",
+      "api-portable": 1.0090067972277008e-15,
+      "api-native": 1.0090067972277008e-15,
+      "ui-portable": 1.0090067972277008e-15,
+      "ui-native": 1.0090067972277008e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_symmetric_auto",
+      "api-portable": 8.886119947416683e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 8.886119947416683e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_midpoint_guide",
+      "api-portable": 1.0090067972277008e-15,
+      "api-native": 1.0090067972277008e-15,
+      "ui-portable": 1.0090067972277008e-15,
+      "ui-native": 1.0090067972277008e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_undo_all",
+      "api-portable": 8.881784197001252e-16,
+      "api-native": 8.881784197001252e-16,
+      "ui-portable": 8.881784197001252e-16,
+      "ui-native": 8.881784197001252e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "rational_symmetric_undo",
+      "api-portable": 9.155133597044475e-16,
+      "api-native": 9.930136612989092e-16,
+      "ui-portable": 9.155133597044475e-16,
+      "ui-native": 9.930136612989092e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_point_auto",
+      "api-portable": 8.659739592076221e-15,
+      "api-native": 8.638541123428256e-15,
+      "ui-portable": 8.659739592076221e-15,
+      "ui-native": 8.638541123428256e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_auto_undo",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_auto_twice_undo",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_point_auto_undo",
+      "api-portable": 1.2434497875801753e-14,
+      "api-native": 1.2434497875801753e-14,
+      "ui-portable": 1.2434497875801753e-14,
+      "ui-native": 1.2434497875801753e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_symmetric_auto",
+      "api-portable": 2.063103880499749e-14,
+      "api-native": 2.0629101678953936e-14,
+      "ui-portable": 2.063103880499749e-14,
+      "ui-native": 2.0629101678953936e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_midpoint_guide",
+      "api-portable": 1.2434497875801753e-14,
+      "api-native": 1.2434497875801753e-14,
+      "ui-portable": 1.2434497875801753e-14,
+      "ui-native": 1.2434497875801753e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_undo_all",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "followup",
+      "id": "periodic_symmetric_undo",
+      "api-portable": 1.3766765505351941e-14,
+      "api-native": 1.3766765505351941e-14,
+      "ui-portable": 1.3766765505351941e-14,
+      "ui-native": 1.3766765505351941e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_point_auto",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.790180836524724e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.790180836524724e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_auto_undo",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_auto_twice_undo",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_point_auto_undo",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_symmetric_auto",
+      "api-portable": 2.673771110915334e-15,
+      "api-native": 1.831026719408895e-15,
+      "ui-portable": 2.673771110915334e-15,
+      "ui-native": 1.831026719408895e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_midpoint_guide",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_undo_all",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "polycurve_symmetric_undo",
+      "api-portable": 1.3348671786163112e-15,
+      "api-native": 1.3348671786163112e-15,
+      "ui-portable": 1.3348671786163112e-15,
+      "ui-native": 1.3348671786163112e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_point_auto",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_auto_undo",
+      "api-portable": 1.9984014443252818e-15,
+      "api-native": 1.9984014443252818e-15,
+      "ui-portable": 1.9984014443252818e-15,
+      "ui-native": 1.9984014443252818e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_auto_twice_undo",
+      "api-portable": 2.843558383173339e-15,
+      "api-native": 2.843558383173339e-15,
+      "ui-portable": 2.843558383173339e-15,
+      "ui-native": 2.843558383173339e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_point_auto_undo",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_symmetric_auto",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_midpoint_guide",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_undo_all",
+      "api-portable": 1.9984014443252818e-15,
+      "api-native": 1.9984014443252818e-15,
+      "ui-portable": 1.9984014443252818e-15,
+      "ui-native": 1.9984014443252818e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_symmetric_undo",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_point_auto",
+      "api-portable": 4.965068306494546e-14,
+      "api-native": 4.965068306494546e-14,
+      "ui-portable": 4.965068306494546e-14,
+      "ui-native": 4.965068306494546e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_auto_undo",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_auto_twice_undo",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_point_auto_undo",
+      "api-portable": 3.2817561622597536e-14,
+      "api-native": 3.2781485142337945e-14,
+      "ui-portable": 3.2817561622597536e-14,
+      "ui-native": 3.2781485142337945e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_symmetric_auto",
+      "api-portable": 5.015505473359667e-14,
+      "api-native": 5.015505473359667e-14,
+      "ui-portable": 5.015505473359667e-14,
+      "ui-native": 5.015505473359667e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_midpoint_guide",
+      "api-portable": 3.2817561622597536e-14,
+      "api-native": 3.2781485142337945e-14,
+      "ui-portable": 3.2817561622597536e-14,
+      "ui-native": 3.2781485142337945e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_undo_all",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    },
+    {
+      "matrix": "followup",
+      "id": "surface_rational_symmetric_undo",
+      "api-portable": 3.2769450822864004e-14,
+      "api-native": 3.2769450822864004e-14,
+      "ui-portable": 3.2769450822864004e-14,
+      "ui-native": 3.2769450822864004e-14
+    },
+    {
+      "matrix": "followup",
+      "id": "trimmed_hole_center",
+      "api-portable": 2.843558383173339e-15,
+      "api-native": 2.843558383173339e-15,
+      "ui-portable": 2.843558383173339e-15,
+      "ui-native": 2.843558383173339e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "cubic_symmetric_complement",
+      "api-portable": 1.7764110486817194e-15,
+      "api-native": 1.7764110486817194e-15,
+      "ui-portable": 1.7764110486817194e-15,
+      "ui-native": 1.7764110486817194e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "cubic_symmetric_center",
+      "api-portable": 0.0,
+      "api-native": 0.0,
+      "ui-portable": 0.0,
+      "ui-native": 0.0
+    },
+    {
+      "matrix": "symmetry",
+      "id": "cubic_symmetric_parameters",
+      "api-portable": 1.7763568394002505e-15,
+      "api-native": 1.7763568394002505e-15,
+      "ui-portable": 1.7763568394002505e-15,
+      "ui-native": 1.7763568394002505e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "rational_symmetric_complement",
+      "api-portable": 9.155133597044475e-16,
+      "api-native": 9.930136612989092e-16,
+      "ui-portable": 9.155133597044475e-16,
+      "ui-native": 9.930136612989092e-16
+    },
+    {
+      "matrix": "symmetry",
+      "id": "rational_symmetric_center",
+      "api-portable": 8.989550626504553e-16,
+      "api-native": 9.305364597889227e-16,
+      "ui-portable": 8.989550626504553e-16,
+      "ui-native": 9.305364597889227e-16
+    },
+    {
+      "matrix": "symmetry",
+      "id": "rational_symmetric_parameters",
+      "api-portable": 9.155133597044475e-16,
+      "api-native": 9.930136612989092e-16,
+      "ui-portable": 9.155133597044475e-16,
+      "ui-native": 9.930136612989092e-16
+    },
+    {
+      "matrix": "symmetry",
+      "id": "circle_symmetric_complement",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "circle_symmetric_center",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "circle_symmetric_parameters",
+      "api-portable": 2.8435583831733384e-15,
+      "api-native": 2.8435583831733384e-15,
+      "ui-portable": 2.8435583831733384e-15,
+      "ui-native": 2.8435583831733384e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "periodic_symmetric_complement",
+      "api-portable": 1.3766765505351941e-14,
+      "api-native": 1.3766765505351941e-14,
+      "ui-portable": 1.3766765505351941e-14,
+      "ui-native": 1.3766765505351941e-14
+    },
+    {
+      "matrix": "symmetry",
+      "id": "periodic_symmetric_center",
+      "api-portable": 9.485749680535094e-16,
+      "api-native": 9.485749680535094e-16,
+      "ui-portable": 9.485749680535094e-16,
+      "ui-native": 9.485749680535094e-16
+    },
+    {
+      "matrix": "symmetry",
+      "id": "periodic_symmetric_parameters",
+      "api-portable": 1.3322676295501878e-15,
+      "api-native": 1.3322676295501878e-15,
+      "ui-portable": 1.3322676295501878e-15,
+      "ui-native": 1.3322676295501878e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "polycurve_symmetric_complement",
+      "api-portable": 1.2560739669470201e-15,
+      "api-native": 1.2560739669470201e-15,
+      "ui-portable": 1.2560739669470201e-15,
+      "ui-native": 1.2560739669470201e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "polycurve_symmetric_center",
+      "api-portable": 1.3334236103572998e-15,
+      "api-native": 1.790180836524724e-15,
+      "ui-portable": 1.3334236103572998e-15,
+      "ui-native": 1.790180836524724e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "polycurve_symmetric_parameters",
+      "api-portable": 1.6011864169946884e-15,
+      "api-native": 1.6011864169946884e-15,
+      "ui-portable": 1.6011864169946884e-15,
+      "ui-native": 1.6011864169946884e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "surface_symmetric_complement",
+      "api-portable": 2.9878322038712213e-12,
+      "api-native": 2.9878322038712213e-12,
+      "ui-portable": 2.9878322038712213e-12,
+      "ui-native": 2.9878322038712213e-12
+    },
+    {
+      "matrix": "symmetry",
+      "id": "surface_symmetric_center",
+      "api-portable": 2.843558383173339e-15,
+      "api-native": 2.843558383173339e-15,
+      "ui-portable": 2.843558383173339e-15,
+      "ui-native": 2.843558383173339e-15
+    },
+    {
+      "matrix": "symmetry",
+      "id": "surface_rational_symmetric_complement",
+      "api-portable": 3.2769450822864004e-14,
+      "api-native": 3.2769450822864004e-14,
+      "ui-portable": 3.2769450822864004e-14,
+      "ui-native": 3.2769450822864004e-14
+    },
+    {
+      "matrix": "symmetry",
+      "id": "surface_rational_symmetric_center",
+      "api-portable": 3.3232593448441795e-15,
+      "api-native": 3.3232593448441795e-15,
+      "ui-portable": 3.3232593448441795e-15,
+      "ui-native": 3.3232593448441795e-15
+    }
+  ]
+}

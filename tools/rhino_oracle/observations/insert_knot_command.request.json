@@ -1,0 +1,1934 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_knot_command",
+      "id": "cubic",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_two",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_repeat",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_ends",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_empty",
+      "family": "cubic",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_cancel",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_post",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_auto",
+      "family": "cubic",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_auto_twice",
+      "family": "cubic",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_undo",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_undo_all",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_numeric",
+      "family": "cubic",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_sym",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_two",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_repeat",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_ends",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_empty",
+      "family": "rational",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_cancel",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_post",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_auto",
+      "family": "rational",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_auto_twice",
+      "family": "rational",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_undo",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_undo_all",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_numeric",
+      "family": "rational",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_sym",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_two",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_repeat",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_ends",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_empty",
+      "family": "circle",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_cancel",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_post",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_auto",
+      "family": "circle",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_auto_twice",
+      "family": "circle",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_undo",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_undo_all",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_numeric",
+      "family": "circle",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_sym",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_two",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_repeat",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_ends",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_empty",
+      "family": "ellipse",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_cancel",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_post",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_auto",
+      "family": "ellipse",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_auto_twice",
+      "family": "ellipse",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_undo",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_undo_all",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_numeric",
+      "family": "ellipse",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "ellipse_sym",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/ellipse_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_two",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_repeat",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_ends",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_empty",
+      "family": "line",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_cancel",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_post",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_auto",
+      "family": "line",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_auto_twice",
+      "family": "line",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_undo",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_undo_all",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_numeric",
+      "family": "line",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "line_sym",
+      "family": "line",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/line_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_two",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_repeat",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_ends",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_empty",
+      "family": "polyline",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_cancel",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_post",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_auto",
+      "family": "polyline",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_auto_twice",
+      "family": "polyline",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_undo",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_undo_all",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_numeric",
+      "family": "polyline",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polyline_sym",
+      "family": "polyline",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polyline_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_two",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_repeat",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_ends",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_empty",
+      "family": "polycurve",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_cancel",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_post",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_auto",
+      "family": "polycurve",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_auto_twice",
+      "family": "polycurve",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_undo",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_undo_all",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_numeric",
+      "family": "polycurve",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polycurve_sym",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polycurve_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_two",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_two.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_repeat",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_repeat.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_ends",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_empty",
+      "family": "periodic",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_empty.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_cancel",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_post",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_auto",
+      "family": "periodic",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_auto.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_auto_twice",
+      "family": "periodic",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_auto_twice.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_undo",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_undo.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_undo_all",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_undo_all.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_numeric",
+      "family": "periodic",
+      "actions": [
+        {
+          "parameter": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_numeric.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "periodic_sym",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/periodic_sym.3dm",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_U",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_U.3dm",
+      "direction": "U",
+      "symmetrical": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_U_sym",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_U_sym.3dm",
+      "direction": "U",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_auto_U",
+      "family": "surface",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_auto_U.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_V",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_V.3dm",
+      "direction": "V",
+      "symmetrical": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_V_sym",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_V_sym.3dm",
+      "direction": "V",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_auto_V",
+      "family": "surface",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_auto_V.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_Both",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_Both.3dm",
+      "direction": "Both",
+      "symmetrical": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_Both_sym",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_Both_sym.3dm",
+      "direction": "Both",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_auto_Both",
+      "family": "surface",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_auto_Both.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_auto_twice",
+      "family": "surface",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_auto_twice.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_undo",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_undo.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_toggle",
+      "family": "surface",
+      "actions": [
+        "Toggle",
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_toggle.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_cancel",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_post",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_ends",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_midpoints",
+      "family": "surface",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_midpoints.3dm",
+      "midpoints": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_U",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_U.3dm",
+      "direction": "U",
+      "symmetrical": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_U_sym",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_U_sym.3dm",
+      "direction": "U",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_auto_U",
+      "family": "surface_rational",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_auto_U.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_V",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_V.3dm",
+      "direction": "V",
+      "symmetrical": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_V_sym",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_V_sym.3dm",
+      "direction": "V",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_auto_V",
+      "family": "surface_rational",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_auto_V.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_Both",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_Both.3dm",
+      "direction": "Both",
+      "symmetrical": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_Both_sym",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_Both_sym.3dm",
+      "direction": "Both",
+      "symmetrical": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_auto_Both",
+      "family": "surface_rational",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_auto_Both.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_auto_twice",
+      "family": "surface_rational",
+      "actions": [
+        "Automatic",
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_auto_twice.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_undo",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        },
+        {
+          "point": 0.7
+        },
+        "Undo"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_undo.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_toggle",
+      "family": "surface_rational",
+      "actions": [
+        "Toggle",
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_toggle.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_cancel",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_post",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_ends",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.0
+        },
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_ends.3dm"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "surface_rational_midpoints",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/surface_rational_midpoints.3dm",
+      "midpoints": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "trimmed_rectangle",
+      "family": "trimmed_rectangle",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/trimmed_rectangle.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "trimmed_rectangle_auto",
+      "family": "trimmed_rectangle",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/trimmed_rectangle_auto.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "trimmed_rectangle_cancel",
+      "family": "trimmed_rectangle",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/trimmed_rectangle_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "trimmed_hole",
+      "family": "trimmed_hole",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/trimmed_hole.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "trimmed_hole_auto",
+      "family": "trimmed_hole",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/trimmed_hole_auto.3dm",
+      "direction": "Both"
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "trimmed_hole_cancel",
+      "family": "trimmed_hole",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/trimmed_hole_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_subcurve",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_subcurve.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "cubic_subcurve_auto",
+      "family": "cubic",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/cubic_subcurve_auto.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_subcurve",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_subcurve.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "circle_subcurve_auto",
+      "family": "circle",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/circle_subcurve_auto.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_subcurve",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_subcurve.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "rational_subcurve_auto",
+      "family": "rational",
+      "actions": [
+        "Automatic"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/rational_subcurve_auto.3dm",
+      "subcurve": [
+        0.2,
+        0.8
+      ],
+      "preselect": false
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "elevated",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/elevated.3dm",
+      "elevate": 5
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "elevated_rational",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/elevated_rational.3dm",
+      "elevate": 7
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "domain",
+      "family": "rational",
+      "actions": [
+        {
+          "parameter": 7.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/domain.3dm",
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "reversed",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/reversed.3dm",
+      "reverse": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "negative_gauge",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/negative_gauge.3dm",
+      "gauge": -8.0
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "tilted",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "refined",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/refined.3dm",
+      "refine": 0.5
+    },
+    {
+      "op": "insert_knot_command",
+      "id": "polysurface",
+      "family": "box",
+      "actions": [
+        {
+          "point": 0.35
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_knot_command/polysurface.3dm",
+      "face": 2
+    }
+  ]
+}

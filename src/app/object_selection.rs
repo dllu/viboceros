@@ -287,7 +287,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
-        if let Some(prompt) = &self.insert_kink_prompt {
+        if let Some(prompt) = &self.refinement_prompt {
             return prompt
                 .selecting()
                 .then_some(ObjectSelectionFilter::Parametric);

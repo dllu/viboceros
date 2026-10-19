@@ -50,6 +50,8 @@ Rhino's complete command set is still a work in progress.
 - [Create shared blocks and insert instances](blocks.md)
 - [Explode instances one level or recursively](explode-blocks.md)
 - [NURBS structure and parameterization](nurbs.md)
+- [InsertKnot repeated input, Automatic refinement and staged Undo](insert-knot.md)
+- [InsertKink on curves, surfaces and temporary portions](insert-kink.md)
 - [Rebuild surface control nets](rebuild-surfaces.md)
 - [Rebuild curve previews](rebuild-curves.md)
 - [Smooth controls and mesh vertices](smooth.md)

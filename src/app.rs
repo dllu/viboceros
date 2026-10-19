@@ -182,7 +182,6 @@ mod flow;
 mod grid_settings;
 mod group_prompt;
 mod hyperbola;
-mod insert_kink;
 mod interface;
 mod intersect_two_sets;
 mod iplane;
@@ -209,6 +208,7 @@ mod project_plane;
 mod radius;
 mod rail_revolve;
 mod rectangle;
+mod refinement;
 mod remap_cplane;
 mod reparameterize;
 mod replace_block;
@@ -2344,7 +2344,7 @@ pub struct VibocerosApp {
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
-    insert_kink_prompt: Option<insert_kink::Prompt>,
+    refinement_prompt: Option<refinement::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
@@ -2479,7 +2479,7 @@ impl VibocerosApp {
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             reparameterize_prompt: None,
-            insert_kink_prompt: None,
+            refinement_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
@@ -2683,7 +2683,7 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
-        if self.continue_insert_kink(&input) {
+        if self.continue_refinement(&input) {
             return;
         }
         if self.continue_reparameterize(&input) {
@@ -2817,7 +2817,7 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
-            || self.start_insert_kink(&input)
+            || self.start_refinement(&input)
             || self.start_reparameterize(&input)
             || self.start_fillet_surface(&input)
             || self.start_tween_surfaces(&input)
@@ -5845,7 +5845,7 @@ impl VibocerosApp {
         self.block_session = None;
         self.blend_surface_prompt = None;
         self.fillet_surface_prompt = None;
-        self.insert_kink_prompt = None;
+        self.refinement_prompt = None;
         self.reparameterize_prompt = None;
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
@@ -5947,7 +5947,7 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
-        if let Some(accepted) = self.accept_insert_kink_drafting_point(point) {
+        if let Some(accepted) = self.accept_refinement_drafting_point(point) {
             return accepted;
         }
         if !self.prepare_arc_deform_point() {
@@ -8691,7 +8691,7 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
-        if self.pick_insert_kink_object(click.object_id) {
+        if self.pick_refinement_object(click.object_id) {
             return;
         }
         if self.pick_reparameterize_object(click.object_id) {
@@ -8705,7 +8705,7 @@ impl VibocerosApp {
         }
         if self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
-            || self.insert_kink_prompt.is_some()
+            || self.refinement_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             return;
@@ -9012,7 +9012,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
-            || self.insert_kink_prompt.is_some()
+            || self.refinement_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             return;
@@ -9064,7 +9064,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
-            || self.insert_kink_prompt.is_some()
+            || self.refinement_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             self.fence_selection = None;
@@ -9161,7 +9161,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
-            || self.insert_kink_prompt.is_some()
+            || self.refinement_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             self.boundary_selection = None;
@@ -9306,7 +9306,7 @@ impl VibocerosApp {
         if self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
-            || self.insert_kink_prompt.is_some()
+            || self.refinement_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             return;
@@ -9476,7 +9476,7 @@ impl VibocerosApp {
             }
             return true;
         }
-        if self.insert_kink_viewport_hit(&output) {
+        if self.refinement_viewport_hit(&output) {
             return true;
         }
         if self.reparameterize_viewport_hit(&output) {
@@ -9641,7 +9641,7 @@ impl VibocerosApp {
             || self.tween_surfaces_prompt.is_some()
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
-            || self.insert_kink_prompt.is_some()
+            || self.refinement_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             self.cancel_interactive_command(false);
@@ -9741,10 +9741,11 @@ impl VibocerosApp {
             self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
-        } else if self.insert_kink_prompt.is_some() {
-            self.cancel_insert_kink_input();
-            if self.insert_kink_prompt.is_none() {
-                self.push_log("InsertKink canceled".into());
+        } else if self.refinement_prompt.is_some() {
+            let name = self.refinement_prompt.as_ref().unwrap().command_name();
+            self.cancel_refinement_input();
+            if self.refinement_prompt.is_none() {
+                self.push_log(format!("{name} canceled"));
             }
         } else if self.reparameterize_prompt.take().is_some() {
             self.push_log("Reparameterize canceled".into());
@@ -9851,7 +9852,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
-        self.validate_insert_kink();
+        self.validate_refinement();
         self.validate_reparameterize();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
@@ -9878,7 +9879,7 @@ impl eframe::App for VibocerosApp {
             && self.tween_surfaces_prompt.is_none()
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
-            && self.insert_kink_prompt.is_none()
+            && self.refinement_prompt.is_none()
             && self.reparameterize_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
@@ -9941,9 +9942,9 @@ impl eframe::App for VibocerosApp {
                     || {
                         (self.active_command.is_some()
                             || self
-                                .insert_kink_prompt
+                                .refinement_prompt
                                 .as_ref()
-                                .is_some_and(insert_kink::Prompt::wants_point))
+                                .is_some_and(refinement::Prompt::wants_point))
                             && !self.picking_alignment_curve()
                             && !matches!(
                                 self.active_command,
@@ -10018,9 +10019,9 @@ impl eframe::App for VibocerosApp {
             .unwrap_or_default();
         selection_preview_ids.extend(self.block_edit_picked_sources());
         selection_preview_ids.extend(
-            self.insert_kink_prompt
+            self.refinement_prompt
                 .as_ref()
-                .and_then(insert_kink::Prompt::object),
+                .and_then(refinement::Prompt::object),
         );
         selection_preview_ids.extend(
             self.reparameterize_prompt
@@ -10230,9 +10231,9 @@ impl eframe::App for VibocerosApp {
             .map(viboceros_command::SplitEdgeSelection::curve)
             .or(normal_curve)
             .or_else(|| {
-                self.insert_kink_prompt
+                self.refinement_prompt
                     .as_ref()
-                    .and_then(insert_kink::Prompt::cursor_curve)
+                    .and_then(refinement::Prompt::cursor_curve)
             })
             .or_else(|| {
                 self.conic_session
@@ -10318,9 +10319,9 @@ impl eframe::App for VibocerosApp {
         let parametric_pick = model_input_active
             && (self.picking_reparameterize()
                 || self
-                    .insert_kink_prompt
+                    .refinement_prompt
                     .as_ref()
-                    .is_some_and(insert_kink::Prompt::selecting));
+                    .is_some_and(refinement::Prompt::selecting));
         let parametric_highlights = self
             .reparameterize_prompt
             .as_ref()
@@ -10409,9 +10410,9 @@ impl eframe::App for VibocerosApp {
                 self.orient_surface_location()
                     .or_else(|| self.move_normal_surface())
                     .or_else(|| {
-                        self.insert_kink_prompt
+                        self.refinement_prompt
                             .as_ref()
-                            .and_then(insert_kink::Prompt::surface)
+                            .and_then(refinement::Prompt::surface)
                     })
             })
             .flatten();
@@ -10554,13 +10555,13 @@ impl eframe::App for VibocerosApp {
                     .map(|id| [id].into_iter().collect())
             })
             .or_else(|| {
-                self.insert_kink_prompt
+                self.refinement_prompt
                     .as_ref()
                     .filter(|p| p.selecting())
                     .map(|_| {
                         self.document
                             .selectable_objects()
-                            .filter(|o| viboceros_command::insert_kink::accepts(o.geometry()))
+                            .filter(|o| viboceros_command::refinement::accepts(o.geometry()))
                             .map(|o| o.id())
                             .collect()
                     })
@@ -10769,9 +10770,9 @@ impl eframe::App for VibocerosApp {
                             point_cloud_remove_target,
                             point_cloud_highlights: &point_cloud_highlights,
                             isocurve_guides: self
-                                .insert_kink_prompt
+                                .refinement_prompt
                                 .as_ref()
-                                .map_or(&[], insert_kink::Prompt::guides),
+                                .map_or(&[], refinement::Prompt::guides),
                             preview_curve: preview_curve.as_deref().or_else(|| {
                                 subcurve_preview
                                     .as_ref()
@@ -10781,6 +10782,11 @@ impl eframe::App for VibocerosApp {
                             preview_points: orient_markers
                                 .as_deref()
                                 .or(division_preview.as_deref())
+                                .or_else(|| {
+                                    self.refinement_prompt
+                                        .as_ref()
+                                        .and_then(refinement::Prompt::markers)
+                                })
                                 .unwrap_or_else(|| {
                                     subcurve_preview
                                         .as_ref()
@@ -11095,6 +11101,7 @@ mod tests {
     mod hyperbola;
     mod insert_kink;
     mod insert_kink_subcurve;
+    mod insert_knot;
     mod interface;
     mod intersect_two_sets;
     mod length;
@@ -11252,7 +11259,7 @@ mod tests {
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             reparameterize_prompt: None,
-            insert_kink_prompt: None,
+            refinement_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,

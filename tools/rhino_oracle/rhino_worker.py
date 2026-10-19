@@ -13530,6 +13530,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'insert_kink_subcurve':
         import insert_kink_subcurve_probe
         return insert_kink_subcurve_probe.run(operation, globals(), iterations, tolerance)
+    if kind == 'insert_knot_command':
+        import insert_knot_command_probe
+        return insert_knot_command_probe.run(operation, globals(), iterations, tolerance)
     if kind == 'insert_kink_command':
         import insert_kink_probe
         return insert_kink_probe.run(operation, globals(), iterations, tolerance)
@@ -17559,7 +17562,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op') in ('insert_kink_subcurve', 'insert_kink_command','polyline_closure','mark_foci_command','reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('insert_knot_command','insert_kink_subcurve', 'insert_kink_command','polyline_closure','mark_foci_command','reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
