@@ -15,6 +15,79 @@ HERE = Path(__file__).parent
 
 
 class RemoveControlPointCommands(TestCase):
+    def check_capture(self, name, q):
+        capture = json.loads((HERE / ('observations/' + name + '.json')).read_text())
+        self.assertEqual([r['id'] for r in capture['results']], [o['id'] for o in q['operations']])
+        for row, op in zip(capture['results'], q['operations']):
+            a,b = dict(row['value']['recipe']),dict(op)
+            self.assertEqual(Path(a.pop('artifact_path')).name,Path(b.pop('artifact_path')).name)
+            self.assertEqual(a,b)
+            p=Path(op['artifact_path'])
+            self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(),capture['provenance']['fixtures'][p.name])
+        for name,digest in capture['provenance']['sources'].items():
+            data=(HERE/name).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=digest and name in ('rhino_worker.py','structural_sdk.py'):
+                data=gzip.decompress((HERE/'observations/source_snapshots'/(digest+'.gz')).read_bytes())
+            self.assertEqual(hashlib.sha256(data).hexdigest(),digest,name)
+        return capture
+
+    def test_neighborhoods_reproduce_exact_input_discontinuities(self):
+        from .generate_remove_control_point_neighbors import request as neighbors
+        q=neighbors();self.assertEqual(len(q['operations']),120)
+        c=self.check_capture('remove_control_point_neighbors',q)
+        rows={r['id']:r['value']for r in c['results']}
+        changed=lambda v:v['before'][0]['geometry']!=v['after'][0]['geometry']
+        for group in range(6):
+            prefix='center_'+str(group)+'_'
+            a,b=rows[prefix+'exact_a'],rows[prefix+'exact_b']
+            self.assertEqual(a['after'][0]['geometry'],b['after'][0]['geometry'])
+            self.assertEqual(changed(a),group>=3)
+            for scale in range(3):
+                for axis in range(3):
+                    for sign in ('minus','plus'):
+                        v=rows[prefix+'s%d_a%d_%s'%(scale,axis,sign)]
+                        self.assertTrue(v['success'])
+                        expected=(sign=='plus' if axis==0 else sign=='minus')if group==3 else True
+                        self.assertEqual(changed(v),expected,v['recipe']['id'])
+
+    def test_public_parameter_queries_and_helpers(self):
+        from .generate_remove_control_point_parameters import request as parameters
+        q=parameters();self.assertEqual(len(q['operations']),10)
+        c=self.check_capture('remove_control_point_parameters',q)
+        for r in c['results']:
+            q=r['value']['parameter_queries']
+            self.assertTrue(q['surface_closest']['found'])
+            self.assertTrue(q['face_closest']['found'])
+            self.assertTrue(q['unit_surface']['found'])
+            self.assertEqual(len(q['curves']),10)
+            self.assertEqual(len(q['unit_curves']),2)
+        with tempfile.TemporaryDirectory() as d:
+            stage_helpers(parameters(),HERE,Path(d))
+            self.assertEqual(len(list(Path(d).iterdir())),6)
+
+    def test_composites_parent_charts_and_parameter_traces(self):
+        from .generate_remove_control_point_composites import request as composites
+        from .generate_remove_control_point_composite_parameters import request as traces
+        q=composites();self.assertEqual(len(q['operations']),22)
+        c=self.check_capture('remove_control_point_composites',q)
+        expected={r['id']:r['value']for r in c['results']}
+        tq=traces();self.assertEqual(len(tq['operations']),19)
+        t=self.check_capture('remove_control_point_composite_parameters',tq)
+        for r in t['results']:
+            v=r['value'];old=expected[r['id']]
+            for key in ('before','after'):
+                self.assertEqual(v[key][0]['geometry'],old[key][0]['geometry'],(r['id'],key))
+            self.assertEqual(v['success'],old['success'])
+            self.assertEqual(len(v['parameter_queries']['segments']),2)
+        for r in c['results']:
+            v=r['value'];old=v['before'][0];new=v['after'][0]
+            self.assertEqual(old['geometry_text'],new['geometry_text'],r['id'])
+            for key in ('name','layer','groups','user_text'):
+                self.assertEqual(old[key],new[key],(r['id'],key))
+        with tempfile.TemporaryDirectory() as d:
+            stage_helpers(tq,HERE,Path(d))
+            self.assertEqual(len(list(Path(d).iterdir())),6)
+
     def test_bounded_actions_and_exact_staged_helpers(self):
         q = request()
         self.assertEqual(len(q['operations']), 133)

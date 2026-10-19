@@ -36,6 +36,68 @@ fn example() -> PolyCurve3 {
     .unwrap()
 }
 
+#[test]
+fn control_removal_preserves_parent_charts_and_shares_junction_ownership() {
+    let source = example();
+    let original = source.clone();
+    assert_eq!(source.control_point_owners(1).unwrap(), [(0, 1), (1, 0)]);
+    assert_eq!(source.control_point_owners(3).unwrap(), [(1, 2), (2, 0)]);
+    assert!(source.control_point_owners(5).is_err());
+
+    let head = source.try_remove_segment_control_point(0, 0).unwrap();
+    assert_eq!(head.parameters(), &source.parameters()[1..]);
+    assert_eq!(head.segments(), &source.segments()[1..]);
+    let tail = source.try_remove_segment_control_point(2, 1).unwrap();
+    assert_eq!(tail.parameters(), &source.parameters()[..3]);
+    assert_eq!(tail.segments(), &source.segments()[..2]);
+
+    // Removing the junction retains the far end of the collapsed leaf,
+    // whereas removing its outside control leaves the neighbor unchanged.
+    let head_joint = source.try_remove_control_point(1).unwrap();
+    assert_eq!(head_joint.parameters(), head.parameters());
+    near(
+        head_joint.evaluate(*head_joint.domain().start()).unwrap(),
+        point(-2.0, 0.0),
+    );
+    assert_eq!(
+        head_joint.segments()[0].domain(),
+        source.segments()[1].domain()
+    );
+    assert_eq!(head_joint.segments()[1], source.segments()[2]);
+    let tail_joint = source.try_remove_control_point(3).unwrap();
+    assert_eq!(tail_joint.parameters(), tail.parameters());
+    near(
+        tail_joint.evaluate(*tail_joint.domain().end()).unwrap(),
+        point(1.0, 2.0),
+    );
+    assert_eq!(tail_joint.segments()[0], source.segments()[0]);
+    assert_eq!(source, original);
+}
+
+#[test]
+fn control_removal_rejects_disconnected_junctions_invalid_indices_and_closed_seams() {
+    let source = example();
+    assert!(source.try_remove_segment_control_point(1, 0).is_err());
+    assert!(source.try_remove_segment_control_point(1, 2).is_err());
+    assert!(source.try_remove_segment_control_point(8, 0).is_err());
+    assert!(source.try_remove_segment_control_point(0, 2).is_err());
+    let chain = PolyCurve3::try_new(vec![
+        line([0., 0.], [1., 0.], 0.0..=1.0),
+        line([1., 0.], [2., 0.], 0.0..=1.0),
+        line([2., 0.], [3., 0.], 0.0..=1.0),
+    ])
+    .unwrap();
+    assert!(chain.try_remove_segment_control_point(1, 0).is_err());
+    let closed = PolyCurve3::try_new(vec![
+        line([0., 0.], [1., 0.], 0.0..=1.0),
+        line([1., 0.], [0., 1.], 0.0..=1.0),
+        line([0., 1.], [0., 0.], 0.0..=1.0),
+    ])
+    .unwrap();
+    assert_eq!(closed.control_point_owners(0).unwrap(), [(0, 0), (2, 1)]);
+    assert!(closed.try_remove_control_point(0).is_err());
+}
+
 fn near(a: Point3, b: Point3) {
     assert!(a.distance_to(b).unwrap() < 2e-12, "{a:?} != {b:?}");
 }

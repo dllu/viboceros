@@ -64,6 +64,12 @@ pub struct Draft {
     grips: Vec<Point3>,
     picked: bool,
 }
+
+struct CompositePick {
+    owner: usize,
+    local: usize,
+    shared: Option<usize>,
+}
 impl std::ops::Deref for Draft {
     type Target = refinement::Draft;
     fn deref(&self) -> &Self::Target {
@@ -73,11 +79,6 @@ impl std::ops::Deref for Draft {
 impl Draft {
     pub fn new(doc: &Document, object: ObjectId) -> Result<Self, CommandError> {
         let state = refinement::Draft::new(doc, object, None, "RemoveControlPoint")?;
-        if matches!(state.result, Geometry::PolyCurve(_)) {
-            return Err(CommandError::Usage(
-                "Interactive RemoveControlPoint on polycurves is not supported yet",
-            ));
-        }
         let grips = if let Some((s, _, _)) = surface_reference::surface(&state.result, None) {
             let [u, v] = surface_counts(s);
             (0..u)
@@ -120,6 +121,12 @@ impl Draft {
         options: Options,
         projection: Option<picking::Projection>,
     ) -> Result<Vec<Point3>, CommandError> {
+        if let Geometry::PolyCurve(c) = self.geometry() {
+            let CompositePick { owner, local, .. } = self.composite_pick(c, point, projection)?;
+            return Ok(vec![
+                c.segments()[owner].to_nurbs()?.control_points()[local].point(),
+            ]);
+        }
         if let Some((s, _, _)) = surface_reference::surface(self.geometry(), None) {
             let [u, v] = surface_counts(s);
             let index = nearest_surface_row(
@@ -157,6 +164,15 @@ impl Draft {
             return Err(CommandError::Usage("RemoveControlPoint accepts one pick"));
         }
         let result = match self.geometry() {
+            Geometry::PolyCurve(c) => {
+                let pick = self.composite_pick(c, point, projection)?;
+                if let Some(index) = pick.shared {
+                    c.try_remove_control_point(index)
+                } else {
+                    c.try_remove_segment_control_point(pick.owner, pick.local)
+                }
+                .map(Geometry::PolyCurve)
+            }
             g if g.curve_ref().is_some() => {
                 let index = self.nearest_grip(point, projection)?;
                 if let Geometry::Polyline(c) = g {
@@ -231,13 +247,82 @@ impl Draft {
         }
         doc.release_command_selection_on_history_replay([self.object()])?;
         doc.clear_selection();
+        let container_text = matches!(&*self.state.source, Geometry::PolyCurve(_)).then(|| {
+            doc.object(self.object())
+                .unwrap()
+                .geometry_user_text()
+                .clone()
+        });
         let mut state = self.state.clone();
         if state.picks > 0 || matches!(state.result, Geometry::Brep(_) | Geometry::NurbsSurface(_))
         {
             state.picks = 1;
             state.commit(doc, false)?;
         }
+        if let Some(text) = container_text {
+            for (key, value) in text {
+                doc.set_object_geometry_user_text([self.object()], &key, Some(&value))?;
+            }
+        }
         Ok(format!("RemoveControlPoint: {} edit(s)", self.picks()))
+    }
+    fn composite_pick(
+        &self,
+        c: &viboceros_geometry::PolyCurve3,
+        point: Point3,
+        projection: Option<picking::Projection>,
+    ) -> Result<CompositePick, CommandError> {
+        let index = self.nearest_grip(point, projection)?;
+        let owners = c.control_point_owners(index)?;
+        if owners.len() > 1 {
+            let t = viboceros_geometry::CurveRef::PolyCurve(c)
+                .closest_parameter(point, self.state.tolerance)?;
+            if let Some(joint) = c.parameters()[1..c.parameters().len() - 1]
+                .iter()
+                .position(|k| *k == t)
+            {
+                // Native exact-junction input samples the preceding leaf in
+                // its local chart using the parent parameter. An out-of-chart
+                // lookup falls back to the first control.
+                let owner = joint;
+                let leaf = &c.segments()[owner];
+                let n = leaf.to_nurbs()?;
+                let local = if leaf.domain().contains(&t) {
+                    let p = leaf.evaluate(t)?;
+                    let mut best: Option<(f64, usize)> = None;
+                    for (i, control) in n.control_points().iter().enumerate() {
+                        let distance = p.distance_to(control.point())?;
+                        if best.is_none_or(|(old, _)| distance < old) {
+                            best = Some((distance, i));
+                        }
+                    }
+                    best.expect("a NURBS leaf has controls").1
+                } else {
+                    0
+                };
+                return Ok(CompositePick {
+                    owner,
+                    local,
+                    shared: None,
+                });
+            }
+            // Away from an exact junction, its two-control incident segment
+            // owns the shared grip: removing it collapses that end segment.
+            for &(owner, local) in &owners {
+                if c.segments()[owner].to_nurbs()?.control_points().len() == 2 {
+                    return Ok(CompositePick {
+                        owner,
+                        local,
+                        shared: Some(index),
+                    });
+                }
+            }
+        }
+        Ok(CompositePick {
+            owner: owners[0].0,
+            local: owners[0].1,
+            shared: None,
+        })
     }
 }
 

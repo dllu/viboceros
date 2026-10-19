@@ -21,13 +21,9 @@ fn remove_control_point_native_getters_preview_metadata_and_history() {
     for row in capture["results"].as_array().unwrap() {
         let name = row["id"].as_str().unwrap();
         match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            replay(&root, &row["value"])
+            replay(&root, &row["value"], "remove_control_point_command")
         })) {
-            Ok(_)
-                if matches!(
-                    row["value"]["recipe"]["family"].as_str(),
-                    Some("polycurve" | "box")
-                ) => {}
+            Ok(_) if matches!(row["value"]["recipe"]["family"].as_str(), Some("box")) => {}
             Ok(Ok(gap)) => eprintln!(
                 "REMOVE_CONTROL_POINT_UI_AUDIT {}",
                 serde_json::json!({"id":name,"maximum_error":gap})
@@ -46,11 +42,11 @@ fn remove_control_point_native_getters_preview_metadata_and_history() {
         "native UI getter differences changed"
     );
 }
-fn replay(root: &std::path::Path, v: &Value) -> Result<f64, ()> {
+fn replay(root: &std::path::Path, v: &Value, fixture: &str) -> Result<f64, ()> {
     let name = v["recipe"]["id"].as_str().unwrap();
     let mut app = test_app();
     let (doc, _, _, views) = viboceros_command::open_3dm_with_views(
-        root.join(format!("fixtures/remove_control_point_command/{name}.3dm"))
+        root.join(format!("fixtures/{fixture}/{name}.3dm"))
             .to_str()
             .unwrap(),
     )
@@ -77,7 +73,7 @@ fn replay(root: &std::path::Path, v: &Value) -> Result<f64, ()> {
             mode: SelectionMode::Replace,
         });
     }
-    if matches!(v["recipe"]["family"].as_str(), Some("polycurve" | "box")) {
+    if matches!(v["recipe"]["family"].as_str(), Some("box")) {
         assert!(app.refinement_prompt.as_ref().unwrap().selecting());
         app.cancel_current_prompt_or_selection();
         assert_eq!(app.document.object(id), Some(&before));
@@ -198,4 +194,32 @@ fn remove_control_point_click_finishes_and_escape_retains_redo() {
     assert_eq!(app.document.object(id), Some(&before));
     assert!(app.document.can_redo());
     assert!(!app.document.can_undo());
+}
+
+#[test]
+fn composite_control_removal_charts_shared_junctions_metadata_and_history() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/rhino_oracle");
+    let capture: Value = serde_json::from_str(
+        &std::fs::read_to_string(root.join("observations/remove_control_point_composites.json"))
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(capture["results"].as_array().unwrap().len(), 22);
+    let mut failures = Vec::new();
+    for row in capture["results"].as_array().unwrap() {
+        let name = row["id"].as_str().unwrap();
+        match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            replay(&root, &row["value"], "remove_control_point_composites")
+        })) {
+            Ok(Ok(gap)) => eprintln!(
+                "COMPOSITE_CONTROL_UI_AUDIT {}",
+                serde_json::json!({"id":name,"maximum_error":gap})
+            ),
+            _ => failures.push(name),
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "Composite command differences: {failures:?}"
+    );
 }

@@ -1,0 +1,372 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_tail_line",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_tail_line.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_shared_joint",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_shared_joint.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_arc_inner_low",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            5.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_arc_inner_low.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_arc_inner_high",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            5.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_arc_inner_high.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "forward_arc_end",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/forward_arc_end.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_arc_start",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            4.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_arc_start.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "forward_line_joint",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/forward_line_joint.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "forward_empty",
+      "family": "polycurve",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/forward_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_empty",
+      "family": "polycurve",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_empty.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_cancel",
+      "family": "polycurve",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_cancel.3dm",
+      "reverse": true,
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "domain_tail",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/domain_tail.3dm",
+      "reverse": true,
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "domain_inner",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            5.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/domain_inner.3dm",
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "tilted_inner",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 3
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/tilted_inner.3dm",
+      "tilted": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "tilted_tail",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 6
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/tilted_tail.3dm",
+      "tilted": true,
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "reverse_post",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/reverse_post.3dm",
+      "reverse": true,
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "domain_shared",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/domain_shared.3dm",
+      "reverse": true,
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "domain_negative_shared",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/domain_negative_shared.3dm",
+      "reverse": true,
+      "domain": [
+        -17.0,
+        3.0
+      ]
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "domain_small_shared",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/domain_small_shared.3dm",
+      "reverse": true,
+      "domain": [
+        -5.0,
+        1.0
+      ]
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "near_arc_joint",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.001,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/near_arc_joint.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "near_line_joint",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            2.999,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/near_line_joint.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "near_joint_above",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            0.001,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/near_joint_above.3dm",
+      "reverse": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "near_joint_below",
+      "family": "polycurve",
+      "actions": [
+        {
+          "point": [
+            3.0,
+            -0.001,
+            0.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_composites/near_joint_below.3dm",
+      "reverse": true
+    }
+  ]
+}

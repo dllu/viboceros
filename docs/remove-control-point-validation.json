@@ -60,6 +60,16 @@
       "periodic_surface_U_V",
       "periodic_surface_V_U",
       "periodic_surface_V_V",
+      "polycurve",
+      "polycurve_cancel",
+      "polycurve_empty",
+      "polycurve_grip_2",
+      "polycurve_grip_3",
+      "polycurve_grip_4",
+      "polycurve_grip_5",
+      "polycurve_grip_6",
+      "polycurve_post",
+      "polycurve_start",
       "polyline",
       "polyline_cancel",
       "polyline_empty",
@@ -139,17 +149,7 @@
       "trimmed_rectangle_post"
     ],
     "unsupported_ids": [
-      "polycurve",
-      "polycurve_start",
-      "polycurve_cancel",
-      "polycurve_empty",
-      "polycurve_post",
-      "polysurface",
-      "polycurve_grip_2",
-      "polycurve_grip_3",
-      "polycurve_grip_4",
-      "polycurve_grip_5",
-      "polycurve_grip_6"
+      "polysurface"
     ],
     "known_getter_differences": [
       "surface_V",
@@ -168,9 +168,10 @@
   },
   "profiles": {
     "api-portable": {
-      "tests_passed": 4,
-      "matched_geometry_cases": 112,
-      "maximum_error": 3.6771686055379495e-15,
+      "tests_passed": 6,
+      "matched_geometry_cases": 122,
+      "composite_geometry_cases": 22,
+      "maximum_error": 3.979805003092567e-15,
       "standalone_cases": [
         {
           "id": "surface_U",
@@ -188,41 +189,48 @@
           "id": "periodic_surface_V_U",
           "maximum_error": 0.0
         }
-      ]
-    },
-    "api-native": {
-      "tests_passed": 4,
-      "matched_geometry_cases": 112,
-      "maximum_error": 3.6771686055379495e-15,
-      "standalone_cases": [
-        {
-          "id": "surface_U",
-          "maximum_error": 0.0
-        },
-        {
-          "id": "surface_rational_V",
-          "maximum_error": 8.881784197001252e-16
-        },
-        {
-          "id": "periodic_surface_U_U",
-          "maximum_error": 0.0
-        },
-        {
-          "id": "periodic_surface_V_U",
-          "maximum_error": 0.0
-        }
-      ]
+      ],
+      "parameter_query_cases": 10,
+      "maximum_parameter_query_error": 2.9041657967354695e-11
     },
     "ui-portable": {
-      "tests_passed": 2,
-      "matched_geometry_cases": 112,
-      "maximum_error": 3.6771686055379495e-15,
+      "tests_passed": 3,
+      "matched_geometry_cases": 122,
+      "composite_geometry_cases": 22,
+      "maximum_error": 3.979805003092567e-15,
       "standalone_cases": []
     },
+    "api-native": {
+      "tests_passed": 6,
+      "matched_geometry_cases": 122,
+      "composite_geometry_cases": 22,
+      "maximum_error": 3.979805003092567e-15,
+      "standalone_cases": [
+        {
+          "id": "surface_U",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "surface_rational_V",
+          "maximum_error": 8.881784197001252e-16
+        },
+        {
+          "id": "periodic_surface_U_U",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "periodic_surface_V_U",
+          "maximum_error": 0.0
+        }
+      ],
+      "parameter_query_cases": 10,
+      "maximum_parameter_query_error": 2.9041657967354695e-11
+    },
     "ui-native": {
-      "tests_passed": 2,
-      "matched_geometry_cases": 112,
-      "maximum_error": 3.6771686055379495e-15,
+      "tests_passed": 3,
+      "matched_geometry_cases": 122,
+      "composite_geometry_cases": 22,
+      "maximum_error": 3.979805003092567e-15,
       "standalone_cases": []
     }
   },
@@ -233,6 +241,9 @@
     "legacy-geometry": {
       "tests_passed": 3
     },
+    "kernel": {
+      "tests_passed": 2
+    },
     "remove-knot-regression": {
       "tests_passed": 1
     },
@@ -240,62 +251,63 @@
       "tests_passed": 1
     },
     "python": {
-      "tests_passed": 36
+      "tests_passed": 39
     },
     "clippy": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
     "format": "cargo fmt --all --check"
   },
   "test_geometry_optimization": "profile.test.package.viboceros-geometry.opt-level=2",
   "production_sources": {
-    "crates/viboceros-command/src/remove_control_point.rs": "c745e963d46c0cd2a0b57211330a7d5cea46c8b5c94e0421ec321782863c80f7",
+    "crates/viboceros-command/src/remove_control_point.rs": "e2ad5e373967987d87be0f954433fcf8fc64bf061e1151d75e4ba19f9791b408",
     "crates/viboceros-command/src/lib.rs": "6198de838ea4b8b96a4b9425928d0a996dc7a48b24c082466f7ad8d856d15194",
     "crates/viboceros-command/src/picking.rs": "6b760bed0702576c6477f3f94cced0b0bdf137bde088222f0da845feb6acd4fc",
     "crates/viboceros-geometry/src/nurbs.rs": "7f8352773beaac8c7c5564d1e0c1da42b43e403e9847007150264bc4920c5ff4",
     "crates/viboceros-geometry/src/nurbs_surface.rs": "9525514b054ae181ecb72df98c6bf39ba6f3a7245c69c3c0798bd90dd6d7df87",
     "src/app.rs": "3b5a302c31845508436dbad7d805aaee3269f4a8c5902016654a1ae1e0180bc9",
     "src/app/refinement.rs": "51e0c9bc169df2a13f101ad858fc861886550122a5684229f14869b94621176c",
-    "src/viewport.rs": "8838738aa2758387e9a89c2046bc2597e8a14f3f8673abb84c60d04f31c91c07"
+    "src/viewport.rs": "8838738aa2758387e9a89c2046bc2597e8a14f3f8673abb84c60d04f31c91c07",
+    "crates/viboceros-geometry/src/polycurve/grips.rs": "b38014f858945ecfca555076ddc905a877efc9a6f6972f97ab2691ae46dc0d2c"
   },
   "proof_files": {
     "docs/remove-control-point-proof/api-portable.gz": {
-      "sha256": "7f9c195684171f33e2a1a4e8d4e9257239ee64bf584e7191559f39d81ef92057",
-      "raw_sha256": "bb2b42b3cf5073728ab5ff5fc5600cb8a53ecc8c0fe6106bbfa84e97264e5158"
+      "sha256": "ff83e9ed61b32a7adb13e0e2845274d14b576b980c894c76d8419c85c47ff8ed",
+      "raw_sha256": "cdc2f899f83ba28ea30760fa5b07c13f7cfabf69bbd879528fff969df16f6ba1"
     },
     "docs/remove-control-point-proof/api-native.gz": {
-      "sha256": "48bd6a470e54b1885c327a583596f35b9068a30b3653ca352fea9cff974b71ac",
-      "raw_sha256": "fa33fc603dbad17f2c132d5a129061681c02c01415cb08221b4a4a8669001f6c"
+      "sha256": "158e339404088938dde32d6b4c87bec6a329b62684495faed1dac7db70330e64",
+      "raw_sha256": "edcead1dd0006fbb929d334440c3484fbb3d884d373ed9c2cb71823f8a30ba50"
     },
     "docs/remove-control-point-proof/ui-portable.gz": {
-      "sha256": "8dd9ff12b97765032bb993d34cfd05bf243a19bd1f7e9e86d7f2a87b8188b52a",
-      "raw_sha256": "6ea150f7adab910435b10873661ce3b8b8e76a102b8663fd795720296c858947"
+      "sha256": "1fac974353bcb3b540a637db38f6fe24945d447aab0f09af49a2c2a8cf199276",
+      "raw_sha256": "3375ea358ea42f1e859115d6e6cb3b568ae6c2e5493fed5e8d335ed0286b4ccc"
     },
     "docs/remove-control-point-proof/ui-native.gz": {
-      "sha256": "41b99e3a10b10c6740baec4b9d6f519484ba1b7977f5cad75e1cc37454d7c1dd",
-      "raw_sha256": "b7abaa6fa33a5f57b5777cc7de695cf9a64b9edb13366767d413bd7da2414f89"
+      "sha256": "f30bbcf89279943d185a08b0384ddacd4ca3aadbaa7e5066f4c7e2bed40a52fa",
+      "raw_sha256": "b48c92f875371fe08788067bbce4aff9b77e179453406e4d46ca71b927984c7b"
     },
     "docs/remove-control-point-proof/legacy-command.gz": {
-      "sha256": "2c242365341efa2a16c03eec36d0d8f30afbc43665e006d61d12069cd359d142",
-      "raw_sha256": "156feff05b28b2460c7096d4d2d6f7b110ee15d27b8db89b40c94f0e4eb79de1"
+      "sha256": "e9f365c10ad9a8c76fce7f1e34f9df52a92f830a85beca83950ebf18bb93b902",
+      "raw_sha256": "475ae5b045a595ec4bfaab70efaec35620a34180f30b2b29f684296f9b069fc2"
     },
     "docs/remove-control-point-proof/legacy-geometry.gz": {
-      "sha256": "9cfe998ab0aeabe2558b73ca7fe06fb0acf0fcee62ccb8ff94f6cb55ae08a7bc",
-      "raw_sha256": "73d13029c23857fa2721e530cf295e604aa120090526de7b10bf9e70d28b2508"
+      "sha256": "24662e4be1690ebd5b502d2912824a574c7facbeea263e523f4ecd0e75da6893",
+      "raw_sha256": "a663fc34e6856bfdfc886a256e328b91a4eb296b3896a1685a0d56f2dffd44b9"
     },
     "docs/remove-control-point-proof/remove-knot-regression.gz": {
-      "sha256": "581dbd947b01eb42f9a86c5dc11cbbc006b786fd33170a4878a844bf9017cd57",
-      "raw_sha256": "86dba8cae797686e48c140f833982643c5c1d44af263c4086968f31baf2483cf"
+      "sha256": "9387d376188dd7ef0c0728800b812648e2ce254fe3f4102b628a43c782d7b344",
+      "raw_sha256": "8141976dafd7927a2cec722a3b8248f1d706ab68b37efe3845de9403dd07e9d5"
     },
     "docs/remove-control-point-proof/insert-knot-regression.gz": {
-      "sha256": "095fc8a5d269854def5e04497ca71974dbb185c92303605a8315c85e8bbf5a87",
-      "raw_sha256": "999240bf137280a24867e0ed8133a77cc4b7df09b8941f1da83cad6ee69d7c47"
+      "sha256": "b21379a2fe988077ebe5a96702f38b9eec35626db07addba47a005c13817d671",
+      "raw_sha256": "2d1bfdf2478543d174109222b5c22ee8d6a38a584bc439940595315a20f1956d"
     },
     "docs/remove-control-point-proof/python.gz": {
-      "sha256": "5d436e50702c0c96a275757a462e28d43423c16f01cbc227439c9e8ffedc0540",
-      "raw_sha256": "9a29a760be98dea1295920adaec71cc46ea06ea807193bb55b32a7d5d4bf304f"
+      "sha256": "a690733293ecd41271a40bb9deadb1571d90ad15ea6226bece37e51e7b7e07a8",
+      "raw_sha256": "86ccfff73f7192a7dad43d3eee18d9a087cbfc43f0de3fee33f34666ab468aa9"
     },
     "docs/remove-control-point-proof/clippy.gz": {
-      "sha256": "4a93ee9dc88f3a94cac2c54c20cc750e2ccb715d5e13bf74f127967bb824deab",
-      "raw_sha256": "5c28b41780c2bc94d0b739f664a1e1247628692bbb20c1fa2562f5c451c1ee30"
+      "sha256": "d552bdc835235e81a5523ecedfc871da04cfe35a2eae3d6e35eb74ed0552dc0c",
+      "raw_sha256": "ecd8ff950c60f09118266090acfbd9f03177acea798d3312a03d8a31a3736092"
     },
     "docs/remove-control-point-proof/format.gz": {
       "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
@@ -312,14 +324,93 @@
     "docs/remove-control-point-proof/inverse-diagnostic.py.gz": {
       "sha256": "217b308486eadbc5e257a50e8e3d53743d79024a8642af8f5f11766b77740288",
       "raw_sha256": "1043c57e5b8e565e34f582e5be5d8165fe479a6718bbc7b1864bd28e788bbf88"
+    },
+    "docs/remove-control-point-proof/kernel.gz": {
+      "sha256": "586a79ea18dd9efbb8b7628dac11e8fff5c2af1ea42b51f5e2633ddeae60178f",
+      "raw_sha256": "eee8326fda12e32b87aced8cc0c86aa743906bbd7de9c07cdb58ef8d308fa754"
+    },
+    "docs/remove-control-point-proof/capture-remove_control_point_neighbors.gz": {
+      "sha256": "7be92b6e9ce84f663e72a1080171c22930ea2d56a16b4fa7ad43be2286664ba8",
+      "raw_sha256": "92e5e0e6fac79a7096a63f2ebb63c4b85c72958177fb5d53ea2ed15b9eac8d7a"
+    },
+    "docs/remove-control-point-proof/capture-remove_control_point_parameters.gz": {
+      "sha256": "26040c7d9061d93e401a67d9c3f397363bf129dbcbd65535baaa88010aa6b210",
+      "raw_sha256": "c07af97739282f56d04f0fe1478a580422375d868bf88cd5f09ca92d7333c6dd"
+    },
+    "docs/remove-control-point-proof/capture-remove_control_point_composite_parameters.gz": {
+      "sha256": "f408123ab947d9eb65be3a3e8dbf167710b12bc35e5f17ee00d21ca073af357d",
+      "raw_sha256": "77302878c696af0833098954bd0bcc9047c7ce8cefc1fc069666780a217a7c2d"
+    },
+    "docs/remove-control-point-proof/capture-composites.gz": {
+      "sha256": "25cf7c1001370b3593931dae39fe3ee220f0c8eb332047db8feb56f02d012227",
+      "raw_sha256": "fd8fae38763a81d48e0ccd7ac86d34817e04fd1e274751c4c1dfe11be601e3a3"
     }
   },
   "limits": [
-    "Interactive polycurves and polysurfaces are rejected.",
+    "Polysurfaces, closed composite seam removal and disconnecting interior junction edits are rejected. General composite configurations beyond the retained matrices remain unqualified.",
     "The ten retained getter differences prevent claiming complete Rhino command parity.",
     "Only recorded definitions/samples/vertices/edge endpoints are compared at 1e-8; full native spatial trim-edge definitions are not captured. Trim images use the existing continuous document-tolerance certificate.",
     "No new edited-file roundtrip, general performance, native mouse event or complete camera/high-DPI matrix.",
     "All periodic degrees/knot layouts and non-quadratic closed seams remain unqualified.",
-    "Row-distance and inverse diagnostics are diagnostic evidence, not additional native agreement passes."
+    "Row-distance, inverse, surface-neighborhood and public parameter diagnostics are diagnostic evidence, separate from command geometry agreement passes."
+  ],
+  "composites": {
+    "path": "tools/rhino_oracle/observations/remove_control_point_composites.json",
+    "sha256": "6846e8ce28a289ca9cc4694eba41b5ab7163952c4ffe13eb2b09ab9361fd0af3",
+    "cases": 22,
+    "matched_ids": [
+      "reverse_tail_line",
+      "reverse_shared_joint",
+      "reverse_arc_inner_low",
+      "reverse_arc_inner_high",
+      "forward_arc_end",
+      "reverse_arc_start",
+      "forward_line_joint",
+      "forward_empty",
+      "reverse_empty",
+      "reverse_cancel",
+      "domain_tail",
+      "domain_inner",
+      "tilted_inner",
+      "tilted_tail",
+      "reverse_post",
+      "domain_shared",
+      "domain_negative_shared",
+      "domain_small_shared",
+      "near_arc_joint",
+      "near_line_joint",
+      "near_joint_above",
+      "near_joint_below"
+    ],
+    "native_events": {
+      "Success": 22
+    },
+    "qualification": "Replayed by command API and application controller with both backends; same 1e-8 comparison and strict metadata/history checks."
+  },
+  "diagnostic_captures": [
+    {
+      "path": "tools/rhino_oracle/observations/remove_control_point_neighbors.json",
+      "sha256": "39b2f315718f405870373ce47d6d3636fdd816f849859f6ab90d9d5b7b1ebedf",
+      "cases": 120,
+      "description": "Surface command sensitivity to exact repeated inputs and signed XYZ offsets at 1e-13, 1e-6 and 0.025; not an agreement matrix."
+    },
+    {
+      "path": "tools/rhino_oracle/observations/remove_control_point_parameters.json",
+      "sha256": "b37a265c848976bce89e3d225e531f099c65d05a86223edf6851fdece55c719e",
+      "cases": 10,
+      "description": "Public surface and isocurve closest-parameter queries; query agreement does not resolve the ten command getter differences."
+    },
+    {
+      "path": "tools/rhino_oracle/observations/remove_control_point_composite_parameters.json",
+      "sha256": "a3ce65710db8cf52aab006e7b3b09623a580804390911c2924b6e203d75d6eb9",
+      "cases": 19,
+      "description": "Public composite and leaf parameter traces; native before/after geometry equals the corresponding uninstrumented composite capture."
+    }
+  ],
+  "validation_commands": [
+    "cargo test -p viboceros-command [--features native-smlib] --test remove_control_point_command --test control_parameters --config profile.test.package.viboceros-geometry.opt-level=2 -- --nocapture",
+    "cargo test -p viboceros [--features native-smlib] --bin viboceros app::tests::remove_control_point --config profile.test.package.viboceros-geometry.opt-level=2 -- --nocapture",
+    "cargo test -p viboceros-geometry --lib polycurve::tests::control_removal --config profile.test.package.viboceros-geometry.opt-level=2 -- --nocapture",
+    "python3 -m unittest tools.rhino_oracle.test_remove_control_point tools.rhino_oracle.test_remove_knot_command tools.rhino_oracle.test_insert_knot_command tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client"
   ]
 }

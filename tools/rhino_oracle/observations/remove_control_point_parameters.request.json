@@ -1,0 +1,181 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_0_exact_a.3dm",
+      "seed": false,
+      "direction": "U",
+      "actions": [
+        {
+          "point": [
+            2.6666666666666665,
+            4.0,
+            0.4444444444444444
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_0_exact_a"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_0_s0_a0_plus.3dm",
+      "seed": false,
+      "direction": "U",
+      "actions": [
+        {
+          "point": [
+            2.6666666666667664,
+            4.0,
+            0.4444444444444444
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_0_s0_a0_plus"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_1_exact_a.3dm",
+      "seed": false,
+      "direction": "V",
+      "actions": [
+        {
+          "point": [
+            2.6666666666666665,
+            2.0,
+            0.2222222222222222
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_1_exact_a"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_1_s0_a0_plus.3dm",
+      "seed": false,
+      "direction": "V",
+      "actions": [
+        {
+          "point": [
+            2.6666666666667664,
+            2.0,
+            0.2222222222222222
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_1_s0_a0_plus"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_2_exact_a.3dm",
+      "seed": false,
+      "direction": "V",
+      "actions": [
+        {
+          "point": [
+            5.333333333333333,
+            2.0,
+            0.4444444444444444
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_2_exact_a"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_2_s0_a0_plus.3dm",
+      "seed": false,
+      "direction": "V",
+      "actions": [
+        {
+          "point": [
+            5.333333333333433,
+            2.0,
+            0.4444444444444444
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_2_s0_a0_plus"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_3_exact_a.3dm",
+      "seed": false,
+      "direction": "U",
+      "actions": [
+        {
+          "point": [
+            5.333333333333333,
+            6.0,
+            1.3333333333333333
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_3_exact_a"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_3_s0_a0_plus.3dm",
+      "seed": false,
+      "direction": "U",
+      "actions": [
+        {
+          "point": [
+            5.333333333333433,
+            6.0,
+            1.3333333333333333
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_3_s0_a0_plus"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_4_exact_a.3dm",
+      "seed": false,
+      "direction": "U",
+      "actions": [
+        {
+          "point": [
+            2.6666666666666665,
+            2.0,
+            0.2222222222222222
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_4_exact_a"
+    },
+    {
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_parameters/center_5_exact_a.3dm",
+      "seed": false,
+      "direction": "V",
+      "actions": [
+        {
+          "point": [
+            2.6666666666666665,
+            4.0,
+            0.4444444444444444
+          ]
+        }
+      ],
+      "op": "remove_control_point_parameters",
+      "family": "surface",
+      "id": "center_5_exact_a"
+    }
+  ]
+}

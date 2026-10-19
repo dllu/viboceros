@@ -24,11 +24,21 @@ and retains object identity, attributes, and group membership.
 
 Command removal keeps rational weights. It differs from deleting selected
 grips, whose endpoint normalization remains available through the existing
-`RemoveControlPoint index Direction=U|V` API. Open curve charts start at zero
+`RemoveControlPoint index Direction=U|V` API. Open standalone curve charts start at zero
 after command removal; surfaces retain their UV charts. Open polylines receive
 new vertex-index parameters. Quadratic closed seams and periodic controls use
 the shared cyclic knot utilities. Trimmed surface boundaries use the existing
 certified surface editor.
+
+Composite curves expose shared junction grips once. Removing a control edits
+its owning leaf while retaining the parent intervals and leaf domains. Removing
+an outside control of a two-control end segment drops that segment. Removing its
+shared junction also moves the adjacent leaf to the remaining endpoint, using
+the existing analytic arc or NURBS endpoint editor. In the captures, picks whose
+closest parameter is exactly a junction select a control in the preceding
+leaf's local chart using the parent parameter, with a first-control fallback
+outside that chart.
+Composite container geometry text is preserved along with object metadata.
 
 The [validation receipt](../remove-control-point-validation.json) records both
 backends, UI/API checks, known differences, and proof hashes.
@@ -37,7 +47,7 @@ Qualification uses actual Rhino 8 commands and source 3dm files in
 polynomial and rational curves, periodic curves and tensors, circle and ellipse
 seams, open polylines, transformed inputs, custom domains, negative weight
 gauges, surface control grids, trims, postselection, no-ops and history replay.
-Of 133 captures, 112 agree, 11 cover unsupported composite inputs, and 10
+Of 133 captures, 122 agree, one covers an unsupported polysurface, and 10
 retain known surface getter differences in
 `crates/viboceros-command/tests/support/remove_control_point.rs`. In nine of these ten cases Rhino
 leaves the surface unchanged after an interior pick; in the remaining case it
@@ -49,9 +59,17 @@ mouse-event matrix. Tests compare retained definitions, sampled geometry and rec
 endpoints at `1e-8`. The shared boundary certificate uses the document tolerance;
 the captures do not contain complete native spatial edge definitions.
 
-Interactive polycurves and polysurfaces are explicitly rejected in this
-increment. Their captured observations remain in the matrix as unsupported
-cases, separate from agreement checks. General nested/composite junctions,
+An additional 22 composite command captures cover reversed and transformed
+curves, custom parent charts, shared junctions and nearby picks, empty input,
+postselection, cancellation and history. All agree in both UI and API replays
+with both backends. Nineteen public parameter traces reproduce the same native
+results. A separate 120-case surface neighborhood capture reproduces sensitivity
+to coordinate changes as small as `1e-13`; it is diagnostic evidence, not 120
+additional agreement passes. Ten surface and isocurve parameter-query checks
+agree within `1e-8`, while the ten command getter differences remain unresolved.
+
+Polysurfaces are explicitly rejected. Closed composite seam removal and edits
+that would disconnect an interior junction are also rejected. General nested/composite junctions,
 non-quadratic closed seams, all periodic degrees and knot layouts, high-DPI and
 all camera configurations, edited-file roundtrips and general performance are
 not qualified by this matrix. Projected control hulls must lie in front of the
