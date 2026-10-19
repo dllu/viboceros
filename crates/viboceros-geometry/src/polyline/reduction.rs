@@ -15,14 +15,8 @@ impl Polyline3 {
         if points.len() < 4 && points.first() == points.last() {
             return Err(GeometryError::CollapsedPolylineReduction);
         }
-        // The SDK's triangle exception uses native point coincidence, including
-        // its distinct-interior-point test; topological closure remains exact.
-        let sdk_closed = points.len() >= 4
-            && crate::nurbs::curve_points_coincident(points[0], points[points.len() - 1])
-            && points[1..points.len() - 1].iter().any(|p| {
-                !crate::nurbs::curve_points_coincident(*p, points[0])
-                    && !crate::nurbs::curve_points_coincident(*p, points[points.len() - 1])
-            });
+        // Keep native-recognized closed triangles, without changing endpoints.
+        let sdk_closed = self.is_closed();
         if points.len() < 5 && sdk_closed {
             return Self::try_new(points.to_vec(), Tolerance::NUMERICAL_VALIDATION);
         }

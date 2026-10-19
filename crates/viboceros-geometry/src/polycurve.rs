@@ -9,6 +9,7 @@ use crate::{
 };
 
 mod fillet;
+mod grips;
 mod integration_frame;
 #[cfg(test)]
 mod tests;
@@ -70,26 +71,7 @@ impl PolyCurve3 {
 
     /// Unique segment grips in traversal order, sharing coincident junctions.
     pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
-        let mut points = Vec::new();
-        for segment in &self.segments {
-            let locations = segment.extract_point_locations()?;
-            let skip = usize::from(
-                points
-                    .last()
-                    .zip(locations.first())
-                    .is_some_and(|(&a, &b)| curve_points_coincident(a, b)),
-            );
-            points.extend_from_slice(&locations[skip..]);
-        }
-        if self.is_closed()?
-            && points
-                .first()
-                .zip(points.last())
-                .is_some_and(|(&a, &b)| curve_points_coincident(a, b))
-        {
-            points.pop();
-        }
-        Ok(points)
+        self.grip_layout().map(|(points, _)| points)
     }
 
     /// Appends segments in the supplied order. The first natural domain starts

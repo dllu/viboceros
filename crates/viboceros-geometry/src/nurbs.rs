@@ -1267,31 +1267,21 @@ impl NurbsCurve {
     }
 
     /// Returns control-point locations in Rhino `ExtractPt` grip order.
-    /// Periodic curves omit their repeated tail controls. Non-periodic closed
-    /// curves omit an exactly duplicated final seam control, while
-    /// near-coincident controls remain distinct.
+    /// Defining points emitted by Rhino's ExtractPt command. Closed seam grips
+    /// are shared using point coincidence; querying this list does not change
+    /// either stored endpoint control. Periodic curves omit repeated tail CVs.
     pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
-        let count = if self.is_periodic() {
-            self.control_points.len() - self.degree
-        } else if self.is_closed()?
-            && self.control_points.first().map(|p| p.point)
-                == self.control_points.last().map(|p| p.point)
-        {
-            self.control_points.len() - 1
-        } else {
-            self.control_points.len()
-        };
         Ok(self
             .control_points
             .iter()
-            .take(count)
-            .map(|control_point| control_point.point)
+            .take(self.grip_count()?)
+            .map(|control| control.point())
             .collect())
     }
 
     /// Number of distinct editable controls, excluding repeated seam controls.
-    /// Closed seam grips use point coincidence; ExtractPt retains distinct
-    /// endpoint controls even when their difference is within that predicate.
+    /// Closed seam grips and ExtractPt share point-coincident endpoint controls;
+    /// the full control net remains available through `control_points`.
     pub fn grip_count(&self) -> Result<usize, GeometryError> {
         let count = self.control_points.len();
         if self.is_periodic() {
@@ -6931,12 +6921,7 @@ mod tests {
         assert!(nearly_closed.is_closed().unwrap());
         assert_eq!(
             nearly_closed.extract_point_locations().unwrap(),
-            vec![
-                point(0.0, 0.0),
-                point(3.0, 0.0),
-                point(3.0, 2.0),
-                point(1.0e-10, 0.0),
-            ]
+            vec![point(0.0, 0.0), point(3.0, 0.0), point(3.0, 2.0),]
         );
 
         let open = NurbsCurve::try_new(

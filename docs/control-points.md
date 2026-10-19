@@ -37,6 +37,9 @@ source, including cancelled and collinear no-output fits. `PointsOff` keeps
 displays closed through replay. Circle's preselected object peers retain their
 selection through Undo/Redo.
 
+[Curve closure and shared seam grips](curve-closure.md) describes near-coincident
+endpoints, point extraction, composite edits and representation-preserving no-ops.
+
 ## Evidence and remaining work
 
 Sixteen Rhino 8.32.26160.13001 workflows, captured in private Xvfb, cover curve,

@@ -21,19 +21,34 @@ impl NurbsCurve {
         if let Some(&index) = indices.last().filter(|&&index| index >= count) {
             return Err(GeometryError::InvalidControlPointIndex { index, count });
         }
+        let mapped = self.control_points[..count]
+            .iter()
+            .enumerate()
+            .map(|(i, c)| {
+                if indices.contains(&i) {
+                    map(c.point())
+                } else {
+                    Ok(c.point())
+                }
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        if mapped
+            .iter()
+            .zip(&self.control_points)
+            .all(|(p, c)| *p == c.point())
+        {
+            return Ok(self.clone());
+        }
+        // A grip edit rebuilds all aliases from the shared displayed grips.
+        // This closes a numerically coincident seam exactly, including when
+        // a different grip moves. A no-op above leaves the source untouched.
         let controls = self
             .control_points
             .iter()
             .enumerate()
-            .map(|(index, control)| {
-                let point = if indices.contains(&(index % count)) {
-                    map(control.point())?
-                } else {
-                    control.point()
-                };
-                WeightedPoint3::try_new(point, control.weight())
-            })
+            .map(|(i, c)| WeightedPoint3::try_new(mapped[i % count], c.weight()))
             .collect::<Result<Vec<_>, _>>()?;
         Self::try_new_rational(self.degree, controls, self.knots.clone())
+            .map(|curve| curve.preserving_representation(self))
     }
 }

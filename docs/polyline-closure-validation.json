@@ -1,0 +1,178 @@
+{
+  "feature": "Native curve closure, point extraction and shared seam grip edits",
+  "base_commit": "485908c5dd1afa929230ad6e4608e84e85f38e61",
+  "native_version": "8.32.26160.13001",
+  "source_recipes": 163,
+  "valid_document_sources": 150,
+  "sdk_only_invalid_polyline_prototypes": 5,
+  "native_composite_construction_rejections": 8,
+  "closure_classifications_compared": 155,
+  "native_extract_pt_commands": 44,
+  "native_grip_moves": 28,
+  "comparison_epsilon": 1e-08,
+  "edited_geometry_comparison": "Exact decoded geometry, control definitions, weights, parameters and representation",
+  "coverage": [
+    "Fixed absolute/relative per-coordinate closure thresholds and a distinct witness from both ends",
+    "Absolute boundary values and adjacent floats, diagonal gaps, nontransitive coincidence, tiny and translated curves",
+    "Polynomial, rational and unit-weight rational degree-one NURBS, degrees two/three, flat/nested composites and parameter domains",
+    "Native SelClosedCrv and SelOpenCrv selections, source coordinates, grip display and ExtractPt counts/locations",
+    "Real seam and nonseam grip edits, exact closure rebuilding, degree-one conversion and parent-interval NURBS composite leaves",
+    "Zero-move representation preservation and Move Undo/Redo through portable and native UI builds",
+    "No-op CloseCrv redo preservation, source metadata and exact stored geometry through 3dm roundtrips",
+    "Independent rational midpoint and nonadjacent duplicate grip identity checks",
+    "Final full document tests and existing affine grip/curve-command regressions"
+  ],
+  "limits": [
+    "The kernel can represent finer segments than native polyline-curve validity permits; invalid SDK prototypes are kept out of the 3dm fixture",
+    "Composite constructor rejections have no native curve closure value and are recorded without synthesizing one",
+    "The native CloseCrv command filters closed preselection; an open witness lets capture finish. Replays compare source preservation and no-op history, not identical CloseCrv prompt/result behavior",
+    "Cross-document layer membership is compared by name because document-local layer IDs are regenerated",
+    "Edited conic/arbitrary composite families and all possible knot/weight degeneracies are not qualified by this matrix",
+    "The initial full kernel run preceded later grip-map changes; final targeted checks cover those edits. Complete application/workspace tests were not run",
+    "No general performance claim or continuous-error certificate is established"
+  ],
+  "capture": "tools/rhino_oracle/observations/polyline_closure.json",
+  "capture_provenance": {
+    "base_commit": "485908c5dd1afa929230ad6e4608e84e85f38e61",
+    "seconds": 90.9424188779667,
+    "sources": {
+      "polyline_closure_probe.py": "9c9a463ee523b0d1fbbd0390e1bc131b4b4398a20e4c2435398a6b3f864d78db",
+      "generate_polyline_closure.py": "1a5ac1c791fabf9378f158cf9a1dc2e3322d073166eb65c4586538b24e26e09a",
+      "rhino_worker.py": "4a9de2d7c9f49739dcc49c582015223ed26b762dd750985d65375247cfd610c2",
+      "structural_sdk.py": "de7da6ff9a720c9e4784674fa0cf839a92887ac3a0e3fbe8edc1d74fa595df09",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1"
+    },
+    "fixture": "df30bb2fee8e358cd0dbe737f4df952dd49e177c08d7fc58777ab93a6f9d4fa9"
+  },
+  "public_reference": {
+    "repository": "https://github.com/mcneel/opennurbs",
+    "revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+    "files": {
+      "opennurbs_polyline.cpp": "f2486e24c294a962ffe65f01dc021c4ba8e5b7bfe7fae8f079efa55c470233a6",
+      "opennurbs_polylinecurve.cpp": "962649a4a399e2a11fee960e7cf54943f9fa0413c63d6f5a0e914277cd320d69",
+      "opennurbs_math.cpp": "e58bab864a1eff26cb71840528eeefebf8ff8699a650e40ebc21905a77855b0f"
+    }
+  },
+  "source_sha256": {
+    "crates/viboceros-document/src/control_points/geometry.rs": "6714c15919d04c0c69e108776bdb27f3695d398eb0b71d12fd50bacc2650574e",
+    "crates/viboceros-geometry/src/nurbs.rs": "866cc8fd629dc8182f75636511dd1276bdb1d21e59c1c4f30f6525bdf2fead62",
+    "crates/viboceros-geometry/src/nurbs/grips.rs": "c9fab399a340919e8ca1777b62931b00ba0765dd76fca1b1b0faaa203847909b",
+    "crates/viboceros-geometry/src/polyline.rs": "20e2fe82681377f1cc39c58b3974fdbb2ed316ab2d66f512a86396a01faf429d",
+    "crates/viboceros-geometry/src/polyline/reduction.rs": "9fcd7bfdc14f9b63ac9e83604591ee7cd68685a32d71fcf2a40561dd1b5800e3",
+    "crates/viboceros-geometry/src/polycurve.rs": "8d8fe79a12b5b8ca682364d603bc30beef9a4ebf8cb08fb34f286728defa6a01",
+    "crates/viboceros-geometry/src/polycurve/grips.rs": "a99ef819dc7072749ed9b3c91401f4c6d177fd549b4c6c334b452b589e4b50bd",
+    "crates/viboceros-geometry/tests/polyline_closure.rs": "6c39d85fff72f791b0b6ceeceb7d5c849121fe96066202d4f02a3c1ce99fcd7e",
+    "crates/viboceros-geometry/tests/polycurve_grips.rs": "5252dc815330e81d5277ad1e51523319b7989876d4a87a683f8b3e79111f3cf3",
+    "crates/viboceros-geometry/tests/support/polyline_closure.rs": "43c664f83cfbba75c4e781e22a80859d333a610d1b96a7dedb3da641415a3e39",
+    "crates/viboceros-command/tests/polyline_closure.rs": "7a8195b0eaa50528bd35867e5919ef48fffabf2e239fb686f81aac6648edcfad",
+    "src/app.rs": "12e1a4316fe3ca778f7f79076762fc53bcab38dd4d5554f525d0b210d289e9f7",
+    "src/app/tests/polyline_closure.rs": "87f5ff673f4612ca239d6c435bf983581b8816ca86991d9ddf568d566e1ffe7c",
+    "tools/rhino_oracle/test_polyline_closure_probe.py": "d9e9a95d6dd076823d5bda0857e3cb30572c68de2d3a86befe528f6b7ed137ba"
+  },
+  "checks": [
+    {
+      "command": "tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_polyline_closure",
+      "status": "passed",
+      "log": "docs/polyline-closure-capture.log.gz",
+      "uncompressed_sha256": "02f485659aa36778926c80259db43d0c4c8fa5213099e0c9cdba781aecec4c88"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib",
+      "status": "passed",
+      "log": "docs/polyline-closure-kernel-initial-full.log.gz",
+      "uncompressed_sha256": "0ade3def438d7a681d665ce85f4d62b6070d9e5fb06d269c534da7d5d1118953",
+      "scope": "Closure predicate and NURBS extraction changes, before the later shared-grip mapping implementation. Final-source integration, extraction, grip, document, command and UI checks follow.",
+      "base_commit": "485908c5dd1afa929230ad6e4608e84e85f38e61",
+      "changed_geometry_sources_sha256": {
+        "crates/viboceros-geometry/src/polyline.rs": "20e2fe82681377f1cc39c58b3974fdbb2ed316ab2d66f512a86396a01faf429d",
+        "crates/viboceros-geometry/src/polyline/reduction.rs": "9fcd7bfdc14f9b63ac9e83604591ee7cd68685a32d71fcf2a40561dd1b5800e3",
+        "crates/viboceros-geometry/src/nurbs.rs": "866cc8fd629dc8182f75636511dd1276bdb1d21e59c1c4f30f6525bdf2fead62"
+      }
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --test polycurve_grips --test polyline_closure --test polyline_reduction",
+      "status": "passed",
+      "log": "docs/polyline-closure-kernel-final.log.gz",
+      "uncompressed_sha256": "197c9d8c1c099d3ba47afe22b21d63a7a1385445ebec9bdb3243b25f3f3cfbb9"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib extract",
+      "status": "passed",
+      "log": "docs/polyline-closure-kernel-extraction.log.gz",
+      "uncompressed_sha256": "e4c0133c166f42c9474cf6760a465d3d58b7b2df16ed09535d4e4f56d96d4d53"
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib grips",
+      "status": "passed",
+      "log": "docs/polyline-closure-kernel-grips.log.gz",
+      "uncompressed_sha256": "6317cf21cc96a87f60413f277ccd79f0b45e1a10572608456cb76ef6a327d342"
+    },
+    {
+      "command": "cargo test -p viboceros-document --lib",
+      "status": "passed",
+      "log": "docs/polyline-closure-document.log.gz",
+      "uncompressed_sha256": "63e9fb4e655fb264bb26b8d0b41ddd6afa4ac6c4b35ebfc6f164e7613b23a00c"
+    },
+    {
+      "command": "cargo test -p viboceros-command --lib extracts_defining_points_in_rhino_order_with_layers_and_undo",
+      "status": "passed",
+      "log": "docs/polyline-closure-extract-command.log.gz",
+      "uncompressed_sha256": "827c8fe2373cd6c833d4ec8b15fba2bbe090edc423cb05d50ccd0fad3d62c982"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test polyline_closure -- --nocapture",
+      "status": "passed",
+      "log": "docs/polyline-closure-command-portable.log.gz",
+      "uncompressed_sha256": "47d300cf2fe3c5550ae4083fe0a802c94b496d522f99ea44a5780800fe1ac7c9"
+    },
+    {
+      "command": "cargo test -p viboceros-command --features native-smlib --test polyline_closure",
+      "status": "passed",
+      "log": "docs/polyline-closure-command-native.log.gz",
+      "uncompressed_sha256": "d017a9737c50b523e3023e25a4367a453271cdd6e7905f4427d6fa7a0f1417b2"
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros app::tests::polyline_closure",
+      "status": "passed",
+      "log": "docs/polyline-closure-ui-portable.log.gz",
+      "uncompressed_sha256": "ab046d0d5df725dd1e84fef8b07d80447275159ccb7878d0ed7930faf11cec7c"
+    },
+    {
+      "command": "cargo test -p viboceros --features native-smlib app::tests::polyline_closure",
+      "status": "passed",
+      "log": "docs/polyline-closure-ui-native.log.gz",
+      "uncompressed_sha256": "2ddcbebe0859a5e385f6b3210242b6004c8d93e341fe0ae015265cbb929ba371"
+    },
+    {
+      "command": "cargo test -p viboceros --bin viboceros app::tests::grip_transform",
+      "status": "passed",
+      "log": "docs/polyline-closure-ui-grip-regression.log.gz",
+      "uncompressed_sha256": "6a65cfe9eb7faa5788a4615895d0dd7c2ddff478c7bc177d1048613284dd601b"
+    },
+    {
+      "command": "cargo test -p viboceros-command --test mark_foci --test reduce_polyline --test modify_radius --test simplify_curves",
+      "status": "passed",
+      "log": "docs/polyline-closure-command-regression.log.gz",
+      "uncompressed_sha256": "fc7569c5fe3f2ef6618ed646e16b480e673fe82e3ba585864f586cde22cbf0e6"
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_polyline_closure_probe tools.rhino_oracle.test_mark_foci_probe tools.rhino_oracle.test_reduce_polyline_probe tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_worker tools.rhino_oracle.test_client",
+      "status": "passed",
+      "log": "docs/polyline-closure-python.log.gz",
+      "uncompressed_sha256": "2fdeaeb418820a38b6f45e66e4dce88c656a7fd1cefb331c15dea00d643cd98f"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "status": "passed",
+      "log": "docs/polyline-closure-clippy.log.gz",
+      "uncompressed_sha256": "6270eb2c420cfdde21be8165707f776f6c6f9ca22c36fc0428e52fb883846c6c"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "status": "passed",
+      "log": "docs/polyline-closure-fmt.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -35,8 +35,9 @@ impl JoinedPolyline3 {
 
 /// A finite piecewise-linear curve with validated, non-degenerate segments.
 ///
-/// Closed polylines repeat their first vertex at the end. Non-adjacent
-/// duplicate vertices and self-intersections are intentionally permitted.
+/// Closure follows OpenNURBS point coincidence and a distinct-interior-vertex
+/// check. Endpoints can differ numerically; querying closure never changes the
+/// stored vertices. Non-adjacent duplicates and self-intersections are permitted.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Polyline3 {
     vertices: Vec<Point3>,
@@ -194,9 +195,20 @@ impl Polyline3 {
         self.vertices.len() - 1
     }
 
-    #[inline]
+    /// OpenNURBS-compatible closure, independent of document tolerance.
+    /// Requires at least three segments and an interior vertex distinct from
+    /// both coincident endpoints. Coincidence uses fixed per-coordinate zero
+    /// and relative thresholds, including for very small or translated curves.
     pub fn is_closed(&self) -> bool {
-        self.segment_count() >= 3 && self.vertices.first() == self.vertices.last()
+        use crate::nurbs::curve_points_coincident;
+        let points = self.vertices();
+        let first = points[0];
+        let last = points[points.len() - 1];
+        points.len() >= 4
+            && curve_points_coincident(first, last)
+            && points[1..points.len() - 1].iter().any(|&point| {
+                !curve_points_coincident(point, first) && !curve_points_coincident(point, last)
+            })
     }
 
     pub fn segments(&self) -> impl ExactSizeIterator<Item = LineSegment> + '_ {

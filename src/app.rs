@@ -11058,6 +11058,7 @@ mod tests {
     mod point_input;
     mod point_selection;
     mod points;
+    mod polyline_closure;
     mod project;
     mod radius;
     mod rail_revolve;

@@ -1,0 +1,4563 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "polyline_closure",
+      "id": "closure_matrix",
+      "cases": [
+        {
+          "id": "polyline_exact",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_near",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "polyline_threshold",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_below",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_above",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_diagonal",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_open",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_negative",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_two",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_two_segments",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_tiny_exact",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_tiny_near",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_tiny_distinct",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_collinear",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_relative_closed",
+          "form": "polyline",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "polyline_relative_open",
+          "form": "polyline",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_no_witness",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_witness_last",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_exact",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_near",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "nurbs_threshold",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_below",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_above",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_diagonal",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_open",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_negative",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_two",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_two_segments",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_tiny_exact",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_tiny_near",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_tiny_distinct",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_collinear",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_relative_closed",
+          "form": "nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "nurbs_relative_open",
+          "form": "nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_no_witness",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nurbs_witness_last",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_exact",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_near",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "weighted_nurbs_threshold",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_below",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_above",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_diagonal",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_open",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_negative",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_two",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_two_segments",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_tiny_exact",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_tiny_near",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_tiny_distinct",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_collinear",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_relative_closed",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "weighted_nurbs_relative_open",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_no_witness",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "weighted_nurbs_witness_last",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_exact",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_near",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "unit_rational_nurbs_threshold",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_below",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_above",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_diagonal",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_open",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_negative",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_two",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_two_segments",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_tiny_exact",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_tiny_near",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_tiny_distinct",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_collinear",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_relative_closed",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "unit_rational_nurbs_relative_open",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_no_witness",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "unit_rational_nurbs_witness_last",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_exact",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_near",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "polycurve_threshold",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_below",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_above",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_diagonal",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_open",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_negative",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_two",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_two_segments",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_tiny_exact",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_tiny_near",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_tiny_distinct",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_collinear",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_relative_closed",
+          "form": "polycurve",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "polycurve_relative_open",
+          "form": "polycurve",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_no_witness",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "polycurve_witness_last",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_exact",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nested_near",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "nested_threshold",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_below",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_above",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_diagonal",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_open",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nested_negative",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_two",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_two_segments",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nested_tiny_exact",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nested_tiny_near",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nested_tiny_distinct",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_collinear",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_relative_closed",
+          "form": "nested",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "nested_relative_open",
+          "form": "nested",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "nested_no_witness",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "nested_witness_last",
+          "form": "nested",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_shifted",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            -3.0,
+            17.0
+          ]
+        },
+        {
+          "id": "polyline_tiny_domain",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            0.0,
+            1e-170
+          ]
+        },
+        {
+          "id": "polyline_large_domain",
+          "form": "polyline",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            0.0,
+            1e+170
+          ]
+        },
+        {
+          "id": "nurbs_shifted",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            -3.0,
+            17.0
+          ]
+        },
+        {
+          "id": "nurbs_tiny_domain",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            0.0,
+            1e-170
+          ]
+        },
+        {
+          "id": "nurbs_large_domain",
+          "form": "nurbs",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            0.0,
+            1e+170
+          ]
+        },
+        {
+          "id": "polycurve_shifted",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            -3.0,
+            17.0
+          ]
+        },
+        {
+          "id": "polycurve_tiny_domain",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            0.0,
+            1e-170
+          ]
+        },
+        {
+          "id": "polycurve_large_domain",
+          "form": "polycurve",
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "domain": [
+            0.0,
+            1e+170
+          ]
+        },
+        {
+          "id": "degree2_exact",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_near",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_threshold",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_below",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_above",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_diagonal",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_open",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_negative",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_tiny_exact",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_tiny_near",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_tiny_distinct",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_collinear",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_relative_closed",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "degree2_relative_open",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_no_witness",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree2_witness_last",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_exact",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_near",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_threshold",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_below",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538696e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_above",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.328306436538697e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_diagonal",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2e-10,
+              2e-10,
+              2e-10
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_open",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              1e-07,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_negative",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              -1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_tiny_exact",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_tiny_near",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ],
+            [
+              1e-11,
+              1e-11,
+              0.0
+            ],
+            [
+              1e-12,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_tiny_distinct",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              0.0,
+              0.0
+            ],
+            [
+              1e-09,
+              1e-09,
+              0.0
+            ],
+            [
+              1e-11,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_collinear",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_relative_closed",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": true,
+          "move_grip": true
+        },
+        {
+          "id": "degree3_relative_open",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.6,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_no_witness",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.7462298274040222e-10,
+              0.0,
+              0.0
+            ],
+            [
+              1.1641532182693481e-10,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "degree3_witness_last",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3283064365386964e-11,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              2.3283064365386963e-10,
+              0.0,
+              0.0
+            ]
+          ],
+          "extract": false,
+          "move_grip": false
+        },
+        {
+          "id": "polyline_grip1",
+          "form": "polyline",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        },
+        {
+          "id": "polyline_zero",
+          "form": "polyline",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "move_vector": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "id": "nurbs_grip1",
+          "form": "nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        },
+        {
+          "id": "nurbs_zero",
+          "form": "nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "move_vector": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "id": "weighted_nurbs_grip1",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        },
+        {
+          "id": "weighted_nurbs_zero",
+          "form": "weighted_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "move_vector": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "id": "unit_rational_nurbs_grip1",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        },
+        {
+          "id": "unit_rational_nurbs_zero",
+          "form": "unit_rational_nurbs",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "move_vector": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "id": "polycurve_grip1",
+          "form": "polycurve",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        },
+        {
+          "id": "polycurve_zero",
+          "form": "polycurve",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "move_vector": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "id": "nested_grip1",
+          "form": "nested",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        },
+        {
+          "id": "nested_zero",
+          "form": "nested",
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "move_vector": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "id": "degree2_grip1",
+          "form": "nurbs",
+          "degree": 2,
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        },
+        {
+          "id": "degree3_grip1",
+          "form": "nurbs",
+          "degree": 3,
+          "points": [
+            [
+              1000000000000.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000000.0,
+              1000000000000.0
+            ],
+            [
+              1000000000004.0,
+              1000000000003.0,
+              1000000000000.0
+            ],
+            [
+              1000000000000.4,
+              1000000000000.0,
+              1000000000000.0
+            ]
+          ],
+          "move_grip": true,
+          "grip_index": 1
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/polyline_closure.3dm"
+    }
+  ]
+}

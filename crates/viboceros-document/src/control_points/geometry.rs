@@ -93,19 +93,28 @@ impl Geometry {
         if let Some(&index) = indices.last().filter(|&&index| index >= count) {
             return Err(GeometryError::InvalidControlPointIndex { index, count });
         }
-        let map = |points: &[Point3], closed: bool| {
+        if indices.is_empty() || identity {
+            return Ok(self.clone());
+        }
+        let map = |points: &[Point3], closed: bool| -> Result<Vec<Point3>, GeometryError> {
             let unique = points.len() - usize::from(closed);
-            points
+            let mapped = points[..unique]
                 .iter()
                 .enumerate()
-                .map(|(index, point)| {
-                    if indices.contains(&(index % unique)) {
-                        map_point(*point)
+                .map(|(i, &p)| {
+                    if indices.contains(&i) {
+                        map_point(p)
                     } else {
-                        Ok(*point)
+                        Ok(p)
                     }
                 })
-                .collect::<Result<Vec<_>, GeometryError>>()
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            if mapped == points[..unique] {
+                return Ok(points.to_vec());
+            }
+            Ok((0..points.len())
+                .map(|i| mapped[i % unique])
+                .collect::<Vec<_>>())
         };
         Ok(match self {
             Self::Line(line) => Self::Polyline(Polyline3::try_with_parameters(
@@ -119,7 +128,25 @@ impl Geometry {
                 tolerance,
             )?),
             Self::NurbsCurve(curve) => {
-                Self::NurbsCurve(curve.with_mapped_grips(indices, &map_point)?)
+                let result = curve.with_mapped_grips(indices, &map_point)?;
+                if result != *curve
+                    && result.degree() == 1
+                    && !result.is_rational()
+                    && result.knots()[1..result.knots().len() - 1]
+                        .windows(2)
+                        .all(|p| p[0] < p[1])
+                {
+                    Self::Polyline(Polyline3::try_with_parameters(
+                        result.control_points().iter().map(|c| c.point()).collect(),
+                        result.knots()[1..result.knots().len() - 1].to_vec(),
+                        tolerance,
+                    )?)
+                } else {
+                    Self::NurbsCurve(result)
+                }
+            }
+            Self::PolyCurve(curve) => {
+                Self::PolyCurve(curve.with_mapped_grips(indices, &map_point)?)
             }
             Self::Circle(_) | Self::Arc(_) | Self::Ellipse(_) => Self::NurbsCurve(
                 self.curve_ref()
