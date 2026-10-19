@@ -15,6 +15,8 @@ mod periodic;
 mod seam;
 mod segments;
 mod smoothing;
+mod soft_edit;
+pub use soft_edit::SurfaceSoftEdit;
 mod wires;
 pub use evaluate::SurfaceJet2;
 

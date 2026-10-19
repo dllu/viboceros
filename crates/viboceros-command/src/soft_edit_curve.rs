@@ -126,14 +126,12 @@ impl SoftEditCurveCommand {
 
 #[derive(Clone, Debug)]
 pub struct Draft {
-    state: crate::refinement::Draft,
+    state: crate::soft_edit_state::SoftEditState,
     options: Options,
     curve: NurbsCurve,
     anchor: Option<Point3>,
     parameter: Option<Real>,
     prepared: Option<CurveSoftEdit>,
-    copies: Vec<Geometry>,
-    replacement: Option<Geometry>,
 }
 impl std::ops::Deref for Draft {
     type Target = crate::refinement::Draft;
@@ -150,14 +148,12 @@ impl Draft {
             .ok_or(CommandError::Usage(USAGE))?
             .to_nurbs()?;
         Ok(Self {
-            state,
+            state: crate::soft_edit_state::SoftEditState::new(state),
             curve,
             options: Options::default(),
             anchor: None,
             parameter: None,
             prepared: None,
-            copies: Vec::new(),
-            replacement: None,
         })
     }
     pub fn options(&self) -> Options {
@@ -207,14 +203,11 @@ impl Draft {
             }
             let delta = anchor.vector_to(point)?;
             let curve = self.prepared.as_ref().unwrap().apply(delta)?;
-            self.state.result = Geometry::NurbsCurve(curve);
-            if self.options.copy {
-                self.copies.push(self.state.result.clone());
-            } else {
-                self.curve = self.state.result.curve_ref().unwrap().to_nurbs()?;
-                self.replacement = Some(self.state.result.clone());
+            if !self.options.copy {
+                self.curve = curve.clone();
             }
-            self.state.picks += 1;
+            self.state
+                .accept(Geometry::NurbsCurve(curve), self.options.copy);
             self.anchor = None;
             self.parameter = None;
             self.prepared = None;
@@ -275,46 +268,10 @@ impl Draft {
         &self.curve
     }
     pub fn scene(&self, doc: &Document, hover: Option<Point3>) -> Result<Document, CommandError> {
-        if !self.state.current(doc) {
-            return Err(CommandError::Usage("Soft edit source changed; start again"));
-        }
-        let mut scene = doc.clone();
-        scene.clear_history()?;
-        if let Some(geometry) = &self.replacement {
-            scene.replace_object_geometries([(self.state.object, geometry.clone())])?;
-        }
-        for copy in &self.copies {
-            scene.add_geometry(copy.clone())?;
-        }
-        if let Some(point) = hover
-            && let Some(geometry) = self.preview(point)?
-        {
-            if self.options.copy {
-                scene.add_geometry(geometry)?;
-            } else {
-                scene.replace_object_geometries([(self.state.object, geometry)])?;
-            }
-        }
-        Ok(scene)
+        let hover = hover.map(|p| self.preview(p)).transpose()?.flatten();
+        self.state.scene(doc, hover, self.options.copy)
     }
     pub fn commit(&self, doc: &mut Document, _post: bool) -> Result<String, CommandError> {
-        if !self.state.current(doc) {
-            return Err(CommandError::Usage("Soft edit source changed; start again"));
-        }
-        if self.state.picks == 0 {
-            return Ok("SoftEditCrv: no edits".into());
-        }
-        doc.release_command_selection_on_history_replay([self.state.object])?;
-        doc.clear_selection();
-        if let Some(geometry) = &self.replacement {
-            doc.replace_object_geometries_with_history(
-                [(self.state.object, geometry.clone())],
-                viboceros_document::ReplacementHistory::EveryReplacement,
-            )?;
-        }
-        for copy in &self.copies {
-            doc.add_geometry(copy.clone())?;
-        }
-        Ok(format!("SoftEditCrv: {} edit(s)", self.state.picks))
+        self.state.commit(doc, true, false)
     }
 }

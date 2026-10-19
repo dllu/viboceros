@@ -9,18 +9,20 @@ impl VibocerosApp {
         if p.soft_distance_input {
             return;
         }
-        let Some(Draft::SoftEdit(d)) = &p.draft else {
-            return;
+        let result = match &p.draft {
+            Some(Draft::SoftEdit(d)) if d.current(&self.document) && d.anchor().is_some() => {
+                d.scene(&self.document, Some(point))
+            }
+            Some(Draft::SoftSurface(d))
+                if p.surface_distance_input.is_none()
+                    && d.current(&self.document)
+                    && d.anchor().is_some() =>
+            {
+                d.scene(&self.document, Some(point))
+            }
+            _ => return,
         };
-        if !d.current(&self.document) {
-            return;
-        }
-        if d.anchor().is_none() {
-            return;
-        }
-        let Ok(scene) = d.scene(&self.document, Some(point)) else {
-            return;
-        };
+        let Ok(scene) = result else { return };
         p.scene = Some(scene);
     }
     pub(super) fn continue_soft_edit_option(&mut self, text: &str) -> bool {

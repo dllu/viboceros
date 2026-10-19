@@ -290,7 +290,9 @@ pub use nurbs::{
     NurbsCurveParameterSampler, NurbsCurveSamplingSpan, WeightedPoint3, degree_change_knots,
     knot_group_removal_knots, knot_removal_knots,
 };
-pub use nurbs_surface::{NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceKnotDirection};
+pub use nurbs_surface::{
+    NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceKnotDirection, SurfaceSoftEdit,
+};
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};
 pub use parameter::ParameterSide;
 pub use plane::{Plane, intersect_three_planes};

@@ -84,6 +84,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [InsertControlPoint repeated picks, shape previews, Midpoint and surface-net extension](docs/commands/insert-control-point.md)
 - [InsertEditPoint shape-preserving refinement, edit markers and temporary portions](docs/commands/insert-edit-point.md)
 - [SoftEditCrv local falloff, repeated copies and live previews](docs/commands/soft-edit-curve.md)
+- [SoftEditSrf local surface edits, direction constraints and previews](docs/commands/soft-edit-surface.md)
 - [Control and edit-point workflows, HidePt and ShowPt](docs/control-points.md), including [curve closure and shared seam grips](docs/curve-closure.md)
 - [Delete selected control points, edit points, surface rows and mesh vertices](docs/commands/delete-grips.md)
 - [Control point weights with live previews and Undo/Redo](docs/commands/weight.md)

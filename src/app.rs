@@ -10580,6 +10580,11 @@ impl eframe::App for VibocerosApp {
         let translation_constraint = model_input_active
             .then(|| {
                 self.translation_constraint()
+                    .or_else(|| {
+                        self.refinement_prompt
+                            .as_ref()
+                            .and_then(refinement::Prompt::destination_constraint)
+                    })
                     .or_else(|| self.conic_session.as_ref()?.input.point_constraint())
             })
             .flatten();
@@ -11256,6 +11261,7 @@ mod tests {
     mod single_span_selection;
     mod smooth;
     mod soft_edit_curve;
+    mod soft_edit_surface;
     mod sphere_fit_points;
     mod spiral;
     mod spiral_rail;

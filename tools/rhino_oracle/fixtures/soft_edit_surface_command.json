@@ -1,0 +1,2103 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_0",
+      "family": "surface",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_0.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_1",
+      "family": "surface",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_1.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_2",
+      "family": "surface",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_2.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_3",
+      "family": "surface",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_3.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_4",
+      "family": "surface",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_4.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_5",
+      "family": "surface",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_5.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_6",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_6.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_7",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_7.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_8",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_8.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_9",
+      "family": "surface",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_9.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_10",
+      "family": "surface",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_10.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_11",
+      "family": "surface",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_11.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_12",
+      "family": "surface",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_12.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_13",
+      "family": "surface",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_13.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_14",
+      "family": "surface",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_14.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_15",
+      "family": "surface",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_15.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_16",
+      "family": "surface",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_16.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_17",
+      "family": "surface",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_17.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_fixed",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_fixed.3dm",
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_copy",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_post",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_cancel",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_cancel_after",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_cancel_after.3dm",
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_normal",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_normal.3dm",
+      "constraint": "SrfNormal"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_u_tangent",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_u_tangent.3dm",
+      "constraint": "UTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_v_tangent",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_v_tangent.3dm",
+      "constraint": "VTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_tilted",
+      "family": "surface",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_27",
+      "family": "surface_rational",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_27.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_28",
+      "family": "surface_rational",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_28.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_29",
+      "family": "surface_rational",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_29.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_30",
+      "family": "surface_rational",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_30.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_31",
+      "family": "surface_rational",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_31.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_32",
+      "family": "surface_rational",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_32.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_33",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_33.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_34",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_34.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_35",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_35.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_36",
+      "family": "surface_rational",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_36.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_37",
+      "family": "surface_rational",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_37.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_38",
+      "family": "surface_rational",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_38.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_39",
+      "family": "surface_rational",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_39.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_40",
+      "family": "surface_rational",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_40.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_41",
+      "family": "surface_rational",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_41.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_42",
+      "family": "surface_rational",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_42.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_43",
+      "family": "surface_rational",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_43.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_44",
+      "family": "surface_rational",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_44.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_fixed",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_fixed.3dm",
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_copy",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_post",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_cancel",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_cancel_after",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_cancel_after.3dm",
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_normal",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_normal.3dm",
+      "constraint": "SrfNormal"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_u_tangent",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_u_tangent.3dm",
+      "constraint": "UTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_v_tangent",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_v_tangent.3dm",
+      "constraint": "VTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "surface_rational_tilted",
+      "family": "surface_rational",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/surface_rational_tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_54",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_54.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_55",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_55.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_56",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_56.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_57",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_57.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_58",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_58.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_59",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_59.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_60",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_60.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_61",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_61.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_62",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_62.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_63",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_63.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_64",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_64.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_65",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_65.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_66",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_66.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_67",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_67.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_68",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_68.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_69",
+      "family": "trimmed_rectangle",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_69.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_70",
+      "family": "trimmed_rectangle",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_70.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_71",
+      "family": "trimmed_rectangle",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_71.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_fixed",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_fixed.3dm",
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_copy",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_post",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_cancel",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_cancel_after",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_cancel_after.3dm",
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_normal",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_normal.3dm",
+      "constraint": "SrfNormal"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_u_tangent",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_u_tangent.3dm",
+      "constraint": "UTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_v_tangent",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_v_tangent.3dm",
+      "constraint": "VTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_rectangle_tilted",
+      "family": "trimmed_rectangle",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_rectangle_tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_81",
+      "family": "trimmed_hole",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_81.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_82",
+      "family": "trimmed_hole",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_82.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_83",
+      "family": "trimmed_hole",
+      "stations": [
+        0.0
+      ],
+      "v_fraction": 0.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_83.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_84",
+      "family": "trimmed_hole",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_84.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_85",
+      "family": "trimmed_hole",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_85.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_86",
+      "family": "trimmed_hole",
+      "stations": [
+        0.2
+      ],
+      "v_fraction": 0.3,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_86.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_87",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_87.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_88",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_88.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_89",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_89.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_90",
+      "family": "trimmed_hole",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_90.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_91",
+      "family": "trimmed_hole",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_91.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_92",
+      "family": "trimmed_hole",
+      "stations": [
+        0.5
+      ],
+      "v_fraction": 0.5,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_92.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_93",
+      "family": "trimmed_hole",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_93.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_94",
+      "family": "trimmed_hole",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_94.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_95",
+      "family": "trimmed_hole",
+      "stations": [
+        0.8
+      ],
+      "v_fraction": 0.7,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_95.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_96",
+      "family": "trimmed_hole",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        1.0,
+        1.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_96.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_97",
+      "family": "trimmed_hole",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_97.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_98",
+      "family": "trimmed_hole",
+      "stations": [
+        1.0
+      ],
+      "v_fraction": 1.0,
+      "distance": [
+        10.0,
+        2.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_98.3dm"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_fixed",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_fixed.3dm",
+      "fix_edges": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_copy",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_copy.3dm",
+      "copy": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_post",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_cancel",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_cancel_after",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_cancel_after.3dm",
+      "cancel": true,
+      "cancel_after": true
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_normal",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_normal.3dm",
+      "constraint": "SrfNormal"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_u_tangent",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_u_tangent.3dm",
+      "constraint": "UTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_v_tangent",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_v_tangent.3dm",
+      "constraint": "VTangent"
+    },
+    {
+      "op": "soft_edit_surface_command",
+      "id": "trimmed_hole_tilted",
+      "family": "trimmed_hole",
+      "stations": [
+        0.3333333333333333
+      ],
+      "v_fraction": 0.6666666666666666,
+      "distance": [
+        4.0,
+        4.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/soft_edit_surface_command/trimmed_hole_tilted.3dm",
+      "tilted": true
+    }
+  ]
+}
