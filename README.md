@@ -77,6 +77,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [IPlane intersections and shared plane picking](docs/commands/iplane.md)
 - [Pull curves and points toward surfaces and meshes](docs/commands/pull.md)
 - [Loose projection and pulling through edit points](docs/commands/projection-loose.md)
+- [InsertKink on curves and surfaces with staged picks and temporary subcurves](docs/commands/insert-kink.md)
 - [Control and edit-point workflows](docs/control-points.md), including [curve closure and shared seam grips](docs/curve-closure.md)
 - [SetPt coordinate alignment for objects and grips](docs/commands/set-point.md)
 - [Mesh curve pulling and qualifications](docs/commands/pull-mesh.md)

@@ -77,9 +77,13 @@ fn parse_one_shot(input: &str) -> Option<ObjectSnapModes> {
 
 impl VibocerosApp {
     fn model_requests_point(&self) -> bool {
-        self.edge_prompt
+        self.insert_kink_prompt
             .as_ref()
-            .is_some_and(|p| p.split_selection().is_some())
+            .is_some_and(insert_kink::Prompt::wants_point)
+            || self
+                .edge_prompt
+                .as_ref()
+                .is_some_and(|p| p.split_selection().is_some())
             || (self.active_command.is_some()
                 && self.active_command != Some(InteractiveCommand::DomainFace)
                 && !self.picking_alignment_curve())

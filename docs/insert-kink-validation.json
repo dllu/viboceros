@@ -1,0 +1,2057 @@
+{
+  "feature": "InsertKink on curves and single surfaces; temporary endpoint-defined subcurves",
+  "base_commit": "811ed4c9781f5e065d8933e29fc627119ff2cefd",
+  "native_version": "8.32.26160.13001",
+  "native_cases": 101,
+  "native_command_results": {
+    "Success": 81,
+    "Failure/cancel": 20
+  },
+  "comparison_epsilon": 1e-08,
+  "maximum_recorded_error": {
+    "command_portable": 5.943981502274893e-12,
+    "command_native": 5.943981502274893e-12,
+    "ui_portable": 5.943981502274893e-12,
+    "ui_native": 5.943981502274893e-12,
+    "standalone_portable": 5.4204033700386564e-12,
+    "standalone_native": 5.420402723088012e-12
+  },
+  "coverage": [
+    "Exact analytic/polyline/NURBS/composite curve splitting, retained parent domains and closed seams",
+    "Periodic clamping, elevated degrees, rational weights and negative gauges, reversal and spatial placement",
+    "Curve endpoints, existing joints, repeated picks, near-end picks and numeric-input rejection",
+    "U/V/Both isocurve directions, symmetry and midpoint options, polynomial/rational surface refinement",
+    "Single-face B-rep topology with rectangular and circular holes; underlying-surface point projection",
+    "101 API and 101 UI cases in each backend; 24 standalone surface cases in each backend",
+    "73 curve/untrimmed-surface 3dm roundtrips in each backend",
+    "Object identity/attributes/groups/user text, fresh temporary outputs, selection, cancellation and Undo/Redo",
+    "Viewport action dispatch, relative and filtered points, one-shot snaps, source invalidation and redo retention",
+    "58 point-input regressions, 10 snap regressions, 12 reference-getter regressions, kernel refinement and sorted command registration"
+  ],
+  "limits": [
+    "Temporary SubCrv numeric-length and locked-direction options are not implemented",
+    "Polysurface and block-member sources are excluded; the native polysurface subface recipe rejects input",
+    "The two unused outer NURBS knots use the importer convention; every active knot is compared",
+    "Trimmed edits are compared in memory with captured source files and topology; their edited 3dm roundtrips are not included",
+    "Exact B-rep knot insertion uses the portable kernel in both builds; standalone NURBS surfaces and curve trims also exercise the native backend",
+    "Native Undo/Redo is retained for geometry/identity-changing cases; metadata-only native replacements were not replayed",
+    "No complete workspace test suite, general performance benchmark or continuous-error certificate is claimed"
+  ],
+  "capture": "tools/rhino_oracle/observations/insert_kink.json",
+  "capture_provenance": {
+    "base_commit": "811ed4c9781f5e065d8933e29fc627119ff2cefd",
+    "seconds": 110.72340453998186,
+    "sources": {
+      "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+      "generate_insert_kink.py": "c7494131cf69bf3dc5f6be32d51d29cb3a53569cb0fd500b090e3efa6207952f",
+      "rhino_worker.py": "14de72cd0e2eac5fdc3541fe1896d01c20793ae2e7ab830dcccf5d8ada514c93",
+      "structural_sdk.py": "f9f0422011c0c3c364108513b466d53a1a199999406f462b7fd25b27ec57d8e0",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1"
+    },
+    "fixtures": {
+      "cubic.3dm": "9573e3ceafb3f10ace2dacf6579bffd10022f3535510f4c99876120c3bf32ef3",
+      "cubic_two.3dm": "3366d4449f9b650435deaa945b641895d90a7b0c3aa0fe0b5a64d89450e8ec67",
+      "cubic_repeat.3dm": "796be2590f8a55c140a72b4a3545362106ed0590c8078081aae62311b1a49cc8",
+      "cubic_ends.3dm": "39e43a49bb29341ffd2a17b2e2bd5500699594e63f4d444c0190cd81c1503efe",
+      "cubic_cancel.3dm": "243059fcabc65cde74285dcc5f4f765a3513446e3a955738fc1ef765ff7d37b0",
+      "cubic_post.3dm": "e09b5f4d5ceeb8ce03916547676078450ec09ee9462299b5c5cf95b1c9d74c20",
+      "circle.3dm": "8a2844daf6b9792d9c9acd99522395d23f8d9698df9f0f12bfc0ffb30f342457",
+      "circle_two.3dm": "aa7cfba7df92db1c94ff461014727aac73b420084060ec6b8149c90bd6696210",
+      "circle_repeat.3dm": "0abead2d53ad0cbbcc18421cbd6ba1feb6d7dd86b7f42674d3963bd677c4277b",
+      "circle_ends.3dm": "33c0956a351c176820cc1cb39b97c5e2c3511d735ec92ddb28f399da9533f418",
+      "circle_cancel.3dm": "f9e017bb18911613c5636675ac641776b1d4bc289dc95e43551eaa364743bc6f",
+      "circle_post.3dm": "74b53f8cba81c927a1596c6d5e52499dda43ff4f9314087a23a2b7c8984a7b5f",
+      "line.3dm": "5731e03d8275418f52971fdda898d2d8e13ad077c3286d586fe97c0e7f277ac1",
+      "line_two.3dm": "31d27a8b8b4499cfa341ad3090ed1dbd62923324d4b89267908c57103b47a9d7",
+      "line_repeat.3dm": "9c8ac19396638d6e2c9302edf2581012a7e7694738ef2ec17c500419fdda3c53",
+      "line_ends.3dm": "2fa4938e815edfd98059b4a86ccada1ddbcc00a34eed36fb619cbe21da39f336",
+      "line_cancel.3dm": "bc8cd4d4bd981539bd7973b9e91d206d7b5bbb98f3b4a305486412844f53f86f",
+      "line_post.3dm": "1f8a6fcc3bcbc11986de7b608eb3abfe1d1f2e527fa4df77dda25308b43a918d",
+      "polyline.3dm": "3efdd43d8d1fb0290a603f08d17e218417360e9a6f026bb93174747d3163b88c",
+      "polyline_two.3dm": "daf79afdf28ef1860153a69f3a48d383394f324335c1684ebe0b565340d416dc",
+      "polyline_repeat.3dm": "6e021a681e4f7b69f848e40f12155ed3851cdf28617dcc97e032b8008b36ee42",
+      "polyline_ends.3dm": "5245be613a0464b3e49416465786f175d6bb085aab65641ef136341345e2f5c3",
+      "polyline_cancel.3dm": "d7a7c7c09e3d6d77bbbca37d85a61e36fee81ee1ec699666708c017b80e21d3c",
+      "polyline_post.3dm": "aa1b2dfbb2d2b4871a3c636c4cb34741f457c52a57f6fb412cf295000d50bdcc",
+      "ellipse.3dm": "92bfe7685caa6d35dfc2874b723858c0bcfd39b62e76ccc40975826f5fef6e73",
+      "ellipse_two.3dm": "cf5c88e43a037c967bca8b9669b2efd2cb2731b1f1280a8241386e07821fdddd",
+      "ellipse_repeat.3dm": "c96840d9419e29fd588346104835ae3e2f304913a7900d4c8863bef9b273e3af",
+      "ellipse_ends.3dm": "3f046c02f749ca2b4e7e4c4a71471e27afe055eefe376709e041de33f51ea3f1",
+      "ellipse_cancel.3dm": "802849a90e3cc55b5dbf516a39bdd21920f234913e00f84afc0c2f89d268de3f",
+      "ellipse_post.3dm": "237e85af6d397239de1a28b733a72695d9f622ae885627435048459e8ea6b91f",
+      "polycurve.3dm": "2e6237c6172deefadb2c1bb8454521035dd93f4249dd4f6b6134a3c9615860b6",
+      "polycurve_two.3dm": "60e64a246c00ae62a0188ce266d7d1752697cf8d35c8b9c5a2256784f1a030f3",
+      "polycurve_repeat.3dm": "08013d6df33526fbfbd3c0d20caaa7dea1835dc34913c745b7532cc29bdab6f7",
+      "polycurve_ends.3dm": "09b74954088dc68eb0342eef9ebff5fe59e0a4582479174ca42b5e7871230f8b",
+      "polycurve_cancel.3dm": "25e526a8d40ce4ad59aac841a71dece84baf314ccb75dc8ecde6772894758771",
+      "polycurve_post.3dm": "00a7e3d883707d1099b17d698c799a4b2a857651a8db94e90dcb8fb86417ba55",
+      "rational.3dm": "195645a67af68ca9d57151f8c15157308bf330596653d946294b621cfcfa5082",
+      "rational_two.3dm": "856ed17b932bb0a5aa8b19eb640bf6e1a9a6cfff73f272be098908d435d01f58",
+      "rational_repeat.3dm": "03f90e6c126a9d8743b36345a2fac8ae8a2ba2bd980a7e81343b2daa9f7863ac",
+      "rational_ends.3dm": "a9ef34ba9493848f195278c7a5dc96bb8359934a36a815eb5e0ca61d53ea48b9",
+      "rational_cancel.3dm": "7a945a94af1bdb7d738cc51828d1f8500b73ec62ba89373b8531fdc38b18cd75",
+      "rational_post.3dm": "7c7ab290abfafbbf9339c422c13ff5c6839b68f1eec1679f6194b8edd6200d8a",
+      "periodic.3dm": "1a951b0b74d1418ca1738440c8c09996d5af9168a7bc550a2025d7f3b1d34df0",
+      "periodic_two.3dm": "aa55fb5561bd92a7b99a0a64d1fa11bc4590f17c560719285199492907e12668",
+      "periodic_repeat.3dm": "bd6b88c428811ca8e2da7f14a411b5b647bd18c4006603d2bc18d1586c9fe334",
+      "periodic_ends.3dm": "d5803373d136f8393ba74445ab406ba30a92f52d9c42ec005aa1e8e9f6b67178",
+      "periodic_cancel.3dm": "d18f7b3547720965b7b3f036e748289a92b38a69a01e14d487eee502b05a1242",
+      "periodic_post.3dm": "627a237ed995c249fcafbda669251019863f1eeffe3ad80ffcce20c30534286c",
+      "polyline_vertex.3dm": "d241bdda7ab53ad08b4ae9cad43e168fc98a921e15923689679f7e8087c90c62",
+      "polycurve_joint.3dm": "c63d3b13f9ba07408c19d50ff1bd714cc77b36318d148ff1259cb73d387552bc",
+      "refined_cubic.3dm": "3b6bf213945cad97f33e7a006134d20b1a60185557655f91f6ede2823bffb073",
+      "elevated.3dm": "eaa6c95f692292df7bf76274324f45f845321288462becead4de2e8f7e5ecc98",
+      "elevated_rational.3dm": "a278ce7afa56345c0012b038edf682296299f9a6cc3d599f3f804dbfc7b30131",
+      "reversed.3dm": "442fae07d3ccfa13e906475bdc279f9991e5b0e1eb4a5c80be514fcc27c27af4",
+      "tilted.3dm": "903b82e5bbacfbd9cdec3734c7d7b32b223082636680c6741d8edf1cfacca806",
+      "domain.3dm": "23b88ce73ebe71393daab6f79f5e28899590a54897d4ec448aa3de03e971c91d",
+      "circle_domain.3dm": "a04d4e82eaa054ddbe785ed2498edcc9ef854216a01a145165ff223f278c4fda",
+      "negative_gauge.3dm": "34317508dbaa56b77f5cd9f9c00a35d39c1435aaad612d7474a2fcc1217f4df9",
+      "near_start.3dm": "655697298f62bcded79000df27bfadc19e1e7e305de756ff779c5c6002c221b7",
+      "near_start_line.3dm": "629634f3072d7cd10d666817e781f93de4a919b18421bc0b111c50a6f92270ab",
+      "numeric_invalid.3dm": "7659a06827facae7e22d030c9db48b8067aeba34971ece532d2ae8fcc374c0f1",
+      "surface_U.3dm": "b4baccfc42dbdabfb62a7c4f5f9bff610f1350505d8f82d5e44750b8e18b8477",
+      "surface_U_sym.3dm": "440bde6f62bbe4f73650e315b5df94e7e5ce2ebe640e1ff3738a8b91b9453609",
+      "surface_V.3dm": "daa85f8a3562f9b64bbd6e49c3fe0047cd3dd34d26c72124de3f7f9e07f6d7f3",
+      "surface_V_sym.3dm": "87f445b3b5725d9c80d2f7b880c98cca97b571a382d2caccdfe10afbb1189b45",
+      "surface_Both.3dm": "30cccf90fac7a594fd2911f465e3288cbe4630287ec89de3da78a87009dbb9a8",
+      "surface_Both_sym.3dm": "73d340334fcf14aaf163cb487d4df850c4619bee8d1a61f7794deb6ee4625cce",
+      "surface_two.3dm": "619cd9a9c09b1fe031c3dbef0535a553ede8b68a7ef6414ad12379758f76c4c3",
+      "surface_repeat.3dm": "c9b2881833105dccf851c333ed663a68f6cc79e09fd708af5427684b867e94a3",
+      "surface_cancel.3dm": "5786272535267a99087da7872f915a2e013de9b4fbce095e4983a6cddfee56c2",
+      "surface_empty.3dm": "7e0a294ad6c0c93fa9730c3f9f744ed39e284511f28cc7e1c8b6e31317563bce",
+      "surface_midpoints.3dm": "e30e1d80b1a2cfbbca54076d0793d7843af8cf6f5c411294bec055f2f8a73c91",
+      "surface_post.3dm": "b5e97faca2663a9fd4ddaef846b404dc7cfb862e7d84ae3230b23ecd3ae87efc",
+      "surface_ends.3dm": "844d791af36fd7206512007042958dc1883f471034c5b51c7b619360608121b6",
+      "surface_rational_U.3dm": "6c9f1864af4f0f40557d818fdcb7233cda26a6090d343468bfd0477357981a73",
+      "surface_rational_U_sym.3dm": "230fe15cde5c19816e51bf79ca941d49f44bc5fa9016c9ccbff0c28c316a7e77",
+      "surface_rational_V.3dm": "0606f2af9e42e9b985d36ffb53349db54a30b123aa36f0e94ac445b53b91b5af",
+      "surface_rational_V_sym.3dm": "b51861d46256068e2a8374cd3e2854fcb0dc20e8a1fcb01f4198375b0951945e",
+      "surface_rational_Both.3dm": "2a020ba867515e59beee32459719e7983840f358faa98ca776265726cd9cbe70",
+      "surface_rational_Both_sym.3dm": "8de9f9fc961b715eed12b0310a0bc4a1dd0b379d0e4ac25e6594ca2232649a85",
+      "surface_rational_two.3dm": "352ee1e85a796ad03e0243c295251d4a2ba98b3fec137341a661072db71e9b32",
+      "surface_rational_repeat.3dm": "5a2c85ea8bb64bcc2d18b4613ba2fb0a754060df5d6f57c6cf9c968e535aca40",
+      "surface_rational_cancel.3dm": "ff7433154edb61790103d177b799a81bfd18321e739aa8e596a688a3b7472bb5",
+      "surface_rational_empty.3dm": "5ced8b38348a3eda1b0f3777487635714914ce40e095fd3095974884bdc60d25",
+      "surface_rational_midpoints.3dm": "8ce2e042394810126561fffdc44a9682bd8f5fb8061fffac989f44ce17a44812",
+      "surface_rational_post.3dm": "35ac42420e16449534bea561afbdcca93159332a01a3ca47d1ee6859aa7a5f00",
+      "surface_rational_ends.3dm": "09d34455cec2b12bcfeeba86465baa54604adbb4f5ef6c1453d6c4f0e2cee92c",
+      "trimmed_rectangle.3dm": "e1364e0f4bbde747686cee3d2f5c65e22cc0599b654a4f15986543053c220140",
+      "trimmed_rectangle_cancel.3dm": "deaf6ca0cb70ed2aed5d6923bd177d3cc68edbc2301611addfefcbba9ca98aed",
+      "trimmed_hole.3dm": "4af4d65f3bb25d56d651e84c7c22a0d208c57b0af9cff3b3ad0c5e75d20899cd",
+      "trimmed_hole_cancel.3dm": "d3d34162606dacebd974be7da48b1334cccf28f74548af37878b5989eeaf4ddf",
+      "cubic_subcurve.3dm": "5d34ef88c61c97263ecc3d302de9f96b891074c60270563cec3c093d65d8c3bd",
+      "cubic_subcurve_empty.3dm": "3fa45fc4b29ebb949c5c0da9e5405ddd31288734ed8457988216d973705f70ca",
+      "cubic_subcurve_cancel.3dm": "e25d38beef1312905d8ac5954f0a479808bb0b26489e430f024b8003d6d090aa",
+      "circle_subcurve.3dm": "8e6f2d07db3f851f772400a312216df3c70afa9b80b13592b72ce96b8a631925",
+      "circle_subcurve_empty.3dm": "68f6749e0ad8183471eced45c00e5162a7b0d0e902a5515676f7cd74b697d174",
+      "circle_subcurve_cancel.3dm": "afc04a4f8759a6e65067b1a3a4bca632bced2c5c7037ecd3f3d0d9374343ab03",
+      "rational_subcurve.3dm": "e64ba00bb32242473fb0e3b0a3ed4a46ee4953f6085ae0ae49596912fe4d691a",
+      "rational_subcurve_empty.3dm": "d84e6093c96e73e4f48007d8de32f73899d64743eed71ee455b15f4e8c9313d5",
+      "rational_subcurve_cancel.3dm": "74dee7376cda200ac2e4bb48c5ecaa10e3e2034710ffffc4b001581a56025426",
+      "polysurface_rejected.3dm": "1e76f87e3e9180e1f9425dd0ebfe243144cf2d3ab0d9ceb8ba1f700462c0b730"
+    }
+  },
+  "proof_logs": {
+    "capture": {
+      "path": "docs/insert-kink-capture.log.gz",
+      "sha256": "9ed1053452bd1b97c16a1f66249196679a8dd0c74e4a6b9b5fbde69fc07fe479"
+    },
+    "command-portable": {
+      "path": "docs/insert-kink-command-portable.log.gz",
+      "sha256": "36f07c7f5054af950c10e47b329e37df328f9518b9196908dfced54103d2aff2"
+    },
+    "standalone-portable": {
+      "path": "docs/insert-kink-standalone-portable.log.gz",
+      "sha256": "5d43cec4376235a4438544df5d8957a32d98003048e44404c4c42e47f9a095b6"
+    },
+    "ui-portable": {
+      "path": "docs/insert-kink-ui-portable.log.gz",
+      "sha256": "191425cf5b0deb3287ab7e3539a120ff221ad7b77903714dad86910cbc191710"
+    },
+    "command-native": {
+      "path": "docs/insert-kink-command-native.log.gz",
+      "sha256": "8cf421c88d87bd09451951ff576285e1a8351721deca604ff4fe21fc8364179c"
+    },
+    "ui-native": {
+      "path": "docs/insert-kink-ui-native.log.gz",
+      "sha256": "6974f0e01f536df0988591267e79c5a99b35cde41f7f96489612e8f03b480187"
+    },
+    "kernel": {
+      "path": "docs/insert-kink-kernel.log.gz",
+      "sha256": "f6ecc83783f5e1bd6435cdf54a25c8f2b50dc0e038e91485ffaa65481db34799"
+    },
+    "point-regression": {
+      "path": "docs/insert-kink-point-regression.log.gz",
+      "sha256": "c5317cfacf1ac83666e280d6520277612193a968ba638248724762d0a45389b2"
+    },
+    "snap-regression": {
+      "path": "docs/insert-kink-snap-regression.log.gz",
+      "sha256": "037740615c96929b34b9c47d9fa0ce02cdf68df2597180876c07503e1ce98d09"
+    },
+    "reference-regression": {
+      "path": "docs/insert-kink-reference-regression.log.gz",
+      "sha256": "9fb8c33a1ac5e9002561afd85f226cca1b59bb26440bbf12e9dd14dd056b3a8a"
+    },
+    "help": {
+      "path": "docs/insert-kink-help.log.gz",
+      "sha256": "9416319b6360786606afe534aecceda2f8af4547a206115dd338cf268da03f51"
+    },
+    "python": {
+      "path": "docs/insert-kink-python.log.gz",
+      "sha256": "8c211501cdf21dfd2c89da557984ad041be2851d4cc17e8f015a07422fed7dad"
+    },
+    "clippy": {
+      "path": "docs/insert-kink-clippy.log.gz",
+      "sha256": "16deae5d8f0635f9f001c770d5a6c751036a13b9aa599f16d68a13d248c31d04"
+    },
+    "fmt": {
+      "path": "docs/insert-kink-fmt.log.gz",
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    }
+  },
+  "source_sha256": {
+    "README.md": "4652ad902e552f4ecb44807bce18d2eed258500ed2363a8bf2161d5bda7ac34b",
+    "crates/viboceros-command/src/insert_kink.rs": "fceba962c8ecf5dea968a1573f0a8154023fd07eed0c7767dfbee105da33e3be",
+    "crates/viboceros-command/src/lib.rs": "a57d098dfc4c4e14d0484da88157ccb67d418317c12f4584c41e89341a829d01",
+    "crates/viboceros-command/tests/insert_kink.rs": "74b1e19cb718304cdf7d7784e719fcefc846f6aa18092965d6d41292fdb6c8f9",
+    "crates/viboceros-command/tests/support/insert_kink.rs": "177b24fb57a6496fc37403ba784c905a4afe03dcb45bd224dc818a0a0fb16080",
+    "crates/viboceros-geometry/src/brep/surface_refine.rs": "33d8248f63d978c4345454b96d6cd88136ca47416b9980a66d14eeb0f7a23e10",
+    "crates/viboceros-geometry/src/brep.rs": "33459883ac26725051b70197f0632d026f9dd64edc77748381a3044db1fcf359",
+    "crates/viboceros-geometry/src/nurbs.rs": "78b5f650c9d5aa06965c948e1c4eb4692f4412158ce6ee7e304641a2764fb68b",
+    "crates/viboceros-geometry/src/lib.rs": "ac7c7c1d4fa4890be9250f04321d5e3781d8bd813971343fa85429b078965518",
+    "src/app/insert_kink.rs": "2bc08bb8e50c2f91d6a99aecaf24c71b0092f5eb9927774cebec7d96e92c7498",
+    "src/app/tests/insert_kink.rs": "9728eb0b5eac1850edf6f6109e1e7adbd615844820149d3618424c8c7ba8d689",
+    "src/app.rs": "efd36ff3d14ad3bf073e77df25d10f59199c3b58a279cdf5e9dc5138a399a51e",
+    "src/app/command_line.rs": "bd856769e9ed3a347eef662c40667535805a3ad2ff037eeb5573a186b17ebca4",
+    "src/app/object_selection.rs": "b7cf5f1612d34b8cf1f59ff2587cf1de5177129a256126f4c6d2d2b40d5eeade",
+    "src/app/point_input.rs": "8ef5295000980ccf927fdc982ae43f7a67bdd1e2f57d0e0ed915146bd0acda98",
+    "src/app/snapping.rs": "ab0e5637a78f001df2682cd9529ff68c04724f52bf37d0a66c9d611ee4579f79",
+    "src/viewport.rs": "77c78ab8aeb27b8581018ee411501188447a1d6c0ba4df917dc03abc60de2aef",
+    "docs/commands/insert-kink.md": "3d8bb8a30a7ea0a90e41e9801d96d45b6462b8a1190d04872a641868b26e8416",
+    "tools/rhino_oracle/test_insert_kink_probe.py": "ad92e11776daca07273a0af46711d50e4d0ddedd7b15ba451327d01e00c2bc7e"
+  },
+  "case_results": {
+    "command_portable": [
+      {
+        "id": "cubic",
+        "maximum_error": 2.6658359842250048e-15
+      },
+      {
+        "id": "cubic_two",
+        "maximum_error": 1.0341214959374994e-14
+      },
+      {
+        "id": "cubic_repeat",
+        "maximum_error": 2.6658359842250048e-15
+      },
+      {
+        "id": "cubic_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_post",
+        "maximum_error": 2.6658359842250048e-15
+      },
+      {
+        "id": "circle",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_two",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_repeat",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_ends",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_post",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "line",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_two",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_repeat",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_post",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polyline",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_two",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "polyline_repeat",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_post",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "ellipse",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_two",
+        "maximum_error": 2.2048481418057992e-14
+      },
+      {
+        "id": "ellipse_repeat",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_ends",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_cancel",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_post",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "polycurve",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_two",
+        "maximum_error": 1.6011864169946884e-15
+      },
+      {
+        "id": "polycurve_repeat",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_ends",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_cancel",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_post",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "rational",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "rational_two",
+        "maximum_error": 5.3656811446125224e-15
+      },
+      {
+        "id": "rational_repeat",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "rational_ends",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_post",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "periodic",
+        "maximum_error": 1.6649287067556814e-14
+      },
+      {
+        "id": "periodic_two",
+        "maximum_error": 8.985305257858362e-13
+      },
+      {
+        "id": "periodic_repeat",
+        "maximum_error": 1.6649287067556814e-14
+      },
+      {
+        "id": "periodic_ends",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_cancel",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_post",
+        "maximum_error": 1.6649287067556814e-14
+      },
+      {
+        "id": "polyline_vertex",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polycurve_joint",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "refined_cubic",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "elevated",
+        "maximum_error": 5.339468714465245e-15
+      },
+      {
+        "id": "elevated_rational",
+        "maximum_error": 2.6697343572326224e-15
+      },
+      {
+        "id": "reversed",
+        "maximum_error": 1.7798229048217483e-15
+      },
+      {
+        "id": "tilted",
+        "maximum_error": 3.531835650735641e-15
+      },
+      {
+        "id": "domain",
+        "maximum_error": 1.807312143953211e-15
+      },
+      {
+        "id": "circle_domain",
+        "maximum_error": 2.808666774861361e-15
+      },
+      {
+        "id": "negative_gauge",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "near_start",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "near_start_line",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "numeric_invalid",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_U",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_U_sym",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_V",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_V_sym",
+        "maximum_error": 2.876542976191374e-12
+      },
+      {
+        "id": "surface_Both",
+        "maximum_error": 3.977821209234497e-12
+      },
+      {
+        "id": "surface_Both_sym",
+        "maximum_error": 4.109306141708399e-12
+      },
+      {
+        "id": "surface_two",
+        "maximum_error": 5.4204033700386564e-12
+      },
+      {
+        "id": "surface_repeat",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_empty",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_midpoints",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_post",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_ends",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_rational_U",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_U_sym",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_V",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_V_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_two",
+        "maximum_error": 2.1449830637119327e-13
+      },
+      {
+        "id": "surface_rational_repeat",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_cancel",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_empty",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_midpoints",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_post",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_ends",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "trimmed_rectangle",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_rectangle_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "trimmed_hole",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_hole_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "cubic_subcurve",
+        "maximum_error": 1.1430580427744738e-12
+      },
+      {
+        "id": "cubic_subcurve_empty",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_subcurve_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "circle_subcurve",
+        "maximum_error": 5.4025784115714076e-15
+      },
+      {
+        "id": "circle_subcurve_empty",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_subcurve_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "rational_subcurve",
+        "maximum_error": 6.6650378637527805e-15
+      },
+      {
+        "id": "rational_subcurve_empty",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_subcurve_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polysurface_rejected",
+        "maximum_error": 0.0
+      }
+    ],
+    "command_native": [
+      {
+        "id": "cubic",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "cubic_two",
+        "maximum_error": 1.0341214959374994e-14
+      },
+      {
+        "id": "cubic_repeat",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "cubic_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_post",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "circle",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_two",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_repeat",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_ends",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_post",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "line",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_two",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_repeat",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_post",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polyline",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_two",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "polyline_repeat",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_post",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "ellipse",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_two",
+        "maximum_error": 2.1628557899130955e-14
+      },
+      {
+        "id": "ellipse_repeat",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_ends",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_cancel",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_post",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "polycurve",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_two",
+        "maximum_error": 1.6011864169946884e-15
+      },
+      {
+        "id": "polycurve_repeat",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_ends",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_cancel",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_post",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "rational",
+        "maximum_error": 1.3334236103572998e-15
+      },
+      {
+        "id": "rational_two",
+        "maximum_error": 4.551427806175063e-15
+      },
+      {
+        "id": "rational_repeat",
+        "maximum_error": 1.3334236103572998e-15
+      },
+      {
+        "id": "rational_ends",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_post",
+        "maximum_error": 1.3334236103572998e-15
+      },
+      {
+        "id": "periodic",
+        "maximum_error": 1.701105610214387e-14
+      },
+      {
+        "id": "periodic_two",
+        "maximum_error": 8.985305257858362e-13
+      },
+      {
+        "id": "periodic_repeat",
+        "maximum_error": 1.701105610214387e-14
+      },
+      {
+        "id": "periodic_ends",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_cancel",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_post",
+        "maximum_error": 1.701105610214387e-14
+      },
+      {
+        "id": "polyline_vertex",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polycurve_joint",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "refined_cubic",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "elevated",
+        "maximum_error": 5.339468714465245e-15
+      },
+      {
+        "id": "elevated_rational",
+        "maximum_error": 2.6651134375294657e-15
+      },
+      {
+        "id": "reversed",
+        "maximum_error": 1.784146017590271e-15
+      },
+      {
+        "id": "tilted",
+        "maximum_error": 3.4684476073050936e-15
+      },
+      {
+        "id": "domain",
+        "maximum_error": 1.807312143953211e-15
+      },
+      {
+        "id": "circle_domain",
+        "maximum_error": 2.808666774861361e-15
+      },
+      {
+        "id": "negative_gauge",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "near_start",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "near_start_line",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "numeric_invalid",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_U",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_U_sym",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_V",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_V_sym",
+        "maximum_error": 2.876542976191374e-12
+      },
+      {
+        "id": "surface_Both",
+        "maximum_error": 3.977821209234497e-12
+      },
+      {
+        "id": "surface_Both_sym",
+        "maximum_error": 4.109306141708399e-12
+      },
+      {
+        "id": "surface_two",
+        "maximum_error": 5.4204033700386564e-12
+      },
+      {
+        "id": "surface_repeat",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_empty",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_midpoints",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_post",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_ends",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_rational_U",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_U_sym",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_V",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_V_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_two",
+        "maximum_error": 2.1449830637119327e-13
+      },
+      {
+        "id": "surface_rational_repeat",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_cancel",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_empty",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_midpoints",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_post",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_ends",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "trimmed_rectangle",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_rectangle_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "trimmed_hole",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_hole_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "cubic_subcurve",
+        "maximum_error": 1.1430580427744738e-12
+      },
+      {
+        "id": "cubic_subcurve_empty",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_subcurve_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "circle_subcurve",
+        "maximum_error": 5.4025784115714076e-15
+      },
+      {
+        "id": "circle_subcurve_empty",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_subcurve_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "rational_subcurve",
+        "maximum_error": 6.6650378637527805e-15
+      },
+      {
+        "id": "rational_subcurve_empty",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_subcurve_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polysurface_rejected",
+        "maximum_error": 0.0
+      }
+    ],
+    "ui_portable": [
+      {
+        "id": "cubic",
+        "maximum_error": 2.6658359842250048e-15
+      },
+      {
+        "id": "cubic_two",
+        "maximum_error": 1.0341214959374994e-14
+      },
+      {
+        "id": "cubic_repeat",
+        "maximum_error": 2.6658359842250048e-15
+      },
+      {
+        "id": "cubic_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_post",
+        "maximum_error": 2.6658359842250048e-15
+      },
+      {
+        "id": "circle",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_two",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_repeat",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_ends",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_post",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "line",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_two",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_repeat",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_post",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polyline",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_two",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "polyline_repeat",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_post",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "ellipse",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_two",
+        "maximum_error": 2.2048481418057992e-14
+      },
+      {
+        "id": "ellipse_repeat",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_ends",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_cancel",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_post",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "polycurve",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_two",
+        "maximum_error": 1.6011864169946884e-15
+      },
+      {
+        "id": "polycurve_repeat",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_ends",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_cancel",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_post",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "rational",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "rational_two",
+        "maximum_error": 5.3656811446125224e-15
+      },
+      {
+        "id": "rational_repeat",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "rational_ends",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_post",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "periodic",
+        "maximum_error": 1.6649287067556814e-14
+      },
+      {
+        "id": "periodic_two",
+        "maximum_error": 8.985305257858362e-13
+      },
+      {
+        "id": "periodic_repeat",
+        "maximum_error": 1.6649287067556814e-14
+      },
+      {
+        "id": "periodic_ends",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_cancel",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_post",
+        "maximum_error": 1.6649287067556814e-14
+      },
+      {
+        "id": "polyline_vertex",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polycurve_joint",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "refined_cubic",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "elevated",
+        "maximum_error": 5.339468714465245e-15
+      },
+      {
+        "id": "elevated_rational",
+        "maximum_error": 2.6697343572326224e-15
+      },
+      {
+        "id": "reversed",
+        "maximum_error": 1.7798229048217483e-15
+      },
+      {
+        "id": "tilted",
+        "maximum_error": 3.531835650735641e-15
+      },
+      {
+        "id": "domain",
+        "maximum_error": 1.807312143953211e-15
+      },
+      {
+        "id": "circle_domain",
+        "maximum_error": 2.808666774861361e-15
+      },
+      {
+        "id": "negative_gauge",
+        "maximum_error": 3.552713678800501e-15
+      },
+      {
+        "id": "near_start",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "near_start_line",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "numeric_invalid",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_U",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_U_sym",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_V",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_V_sym",
+        "maximum_error": 2.876542976191374e-12
+      },
+      {
+        "id": "surface_Both",
+        "maximum_error": 3.977821209234497e-12
+      },
+      {
+        "id": "surface_Both_sym",
+        "maximum_error": 4.109306141708399e-12
+      },
+      {
+        "id": "surface_two",
+        "maximum_error": 5.4204033700386564e-12
+      },
+      {
+        "id": "surface_repeat",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_empty",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_midpoints",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_post",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_ends",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_rational_U",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_U_sym",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_V",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_V_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_two",
+        "maximum_error": 2.1449830637119327e-13
+      },
+      {
+        "id": "surface_rational_repeat",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_cancel",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_empty",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_midpoints",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_post",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_ends",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "trimmed_rectangle",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_rectangle_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "trimmed_hole",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_hole_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "cubic_subcurve",
+        "maximum_error": 1.1431573365914423e-12
+      },
+      {
+        "id": "cubic_subcurve_empty",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_subcurve_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "circle_subcurve",
+        "maximum_error": 5.4025784115714076e-15
+      },
+      {
+        "id": "circle_subcurve_empty",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_subcurve_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "rational_subcurve",
+        "maximum_error": 6.661338147750939e-15
+      },
+      {
+        "id": "rational_subcurve_empty",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_subcurve_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polysurface_rejected",
+        "maximum_error": 0.0
+      }
+    ],
+    "ui_native": [
+      {
+        "id": "cubic",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "cubic_two",
+        "maximum_error": 1.0341214959374994e-14
+      },
+      {
+        "id": "cubic_repeat",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "cubic_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_post",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "circle",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_two",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_repeat",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "circle_ends",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_post",
+        "maximum_error": 3.1401849173675502e-15
+      },
+      {
+        "id": "line",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_two",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_repeat",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "line_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "line_post",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polyline",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_two",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "polyline_repeat",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "polyline_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polyline_post",
+        "maximum_error": 1.3322676295501878e-15
+      },
+      {
+        "id": "ellipse",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_two",
+        "maximum_error": 2.1628557899130955e-14
+      },
+      {
+        "id": "ellipse_repeat",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "ellipse_ends",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_cancel",
+        "maximum_error": 2.673771110915334e-15
+      },
+      {
+        "id": "ellipse_post",
+        "maximum_error": 4.0943002132167226e-15
+      },
+      {
+        "id": "polycurve",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_two",
+        "maximum_error": 1.6011864169946884e-15
+      },
+      {
+        "id": "polycurve_repeat",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "polycurve_ends",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_cancel",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "polycurve_post",
+        "maximum_error": 1.831026719408895e-15
+      },
+      {
+        "id": "rational",
+        "maximum_error": 1.3334236103572998e-15
+      },
+      {
+        "id": "rational_two",
+        "maximum_error": 4.551427806175063e-15
+      },
+      {
+        "id": "rational_repeat",
+        "maximum_error": 1.3334236103572998e-15
+      },
+      {
+        "id": "rational_ends",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_post",
+        "maximum_error": 1.3334236103572998e-15
+      },
+      {
+        "id": "periodic",
+        "maximum_error": 1.701105610214387e-14
+      },
+      {
+        "id": "periodic_two",
+        "maximum_error": 8.985305257858362e-13
+      },
+      {
+        "id": "periodic_repeat",
+        "maximum_error": 1.701105610214387e-14
+      },
+      {
+        "id": "periodic_ends",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_cancel",
+        "maximum_error": 9.485749680535094e-16
+      },
+      {
+        "id": "periodic_post",
+        "maximum_error": 1.701105610214387e-14
+      },
+      {
+        "id": "polyline_vertex",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "polycurve_joint",
+        "maximum_error": 1.2560739669470201e-15
+      },
+      {
+        "id": "refined_cubic",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "elevated",
+        "maximum_error": 5.339468714465245e-15
+      },
+      {
+        "id": "elevated_rational",
+        "maximum_error": 2.6651134375294657e-15
+      },
+      {
+        "id": "reversed",
+        "maximum_error": 1.784146017590271e-15
+      },
+      {
+        "id": "tilted",
+        "maximum_error": 3.4684476073050936e-15
+      },
+      {
+        "id": "domain",
+        "maximum_error": 1.807312143953211e-15
+      },
+      {
+        "id": "circle_domain",
+        "maximum_error": 2.808666774861361e-15
+      },
+      {
+        "id": "negative_gauge",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "near_start",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "near_start_line",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "numeric_invalid",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_U",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_U_sym",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_V",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_V_sym",
+        "maximum_error": 2.876542976191374e-12
+      },
+      {
+        "id": "surface_Both",
+        "maximum_error": 3.977821209234497e-12
+      },
+      {
+        "id": "surface_Both_sym",
+        "maximum_error": 4.109306141708399e-12
+      },
+      {
+        "id": "surface_two",
+        "maximum_error": 5.4204033700386564e-12
+      },
+      {
+        "id": "surface_repeat",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_empty",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_midpoints",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_post",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_ends",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "surface_rational_U",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_U_sym",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_V",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_V_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_two",
+        "maximum_error": 2.1449830637119327e-13
+      },
+      {
+        "id": "surface_rational_repeat",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_cancel",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_empty",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_midpoints",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "surface_rational_post",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_ends",
+        "maximum_error": 3.3232593448441795e-15
+      },
+      {
+        "id": "trimmed_rectangle",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_rectangle_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "trimmed_hole",
+        "maximum_error": 5.943981502274893e-12
+      },
+      {
+        "id": "trimmed_hole_cancel",
+        "maximum_error": 1.9984014443252818e-15
+      },
+      {
+        "id": "cubic_subcurve",
+        "maximum_error": 1.1430580265995056e-12
+      },
+      {
+        "id": "cubic_subcurve_empty",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "cubic_subcurve_cancel",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "circle_subcurve",
+        "maximum_error": 5.4025784115714076e-15
+      },
+      {
+        "id": "circle_subcurve_empty",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "circle_subcurve_cancel",
+        "maximum_error": 2.8435583831733384e-15
+      },
+      {
+        "id": "rational_subcurve",
+        "maximum_error": 6.676124710113433e-15
+      },
+      {
+        "id": "rational_subcurve_empty",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "rational_subcurve_cancel",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "polysurface_rejected",
+        "maximum_error": 0.0
+      }
+    ],
+    "standalone_portable": [
+      {
+        "id": "surface_U",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_U_sym",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_V",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_V_sym",
+        "maximum_error": 2.876542976191374e-12
+      },
+      {
+        "id": "surface_Both",
+        "maximum_error": 3.977821209234497e-12
+      },
+      {
+        "id": "surface_Both_sym",
+        "maximum_error": 4.109306141708399e-12
+      },
+      {
+        "id": "surface_two",
+        "maximum_error": 5.4204033700386564e-12
+      },
+      {
+        "id": "surface_repeat",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_empty",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_midpoints",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_post",
+        "maximum_error": 2.876085219511522e-12
+      },
+      {
+        "id": "surface_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_rational_U",
+        "maximum_error": 1.5543122344752194e-15
+      },
+      {
+        "id": "surface_rational_U_sym",
+        "maximum_error": 1.7763568394002505e-15
+      },
+      {
+        "id": "surface_rational_V",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_V_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_two",
+        "maximum_error": 2.1449830637119327e-13
+      },
+      {
+        "id": "surface_rational_repeat",
+        "maximum_error": 1.5543122344752194e-15
+      },
+      {
+        "id": "surface_rational_empty",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_rational_midpoints",
+        "maximum_error": 1.5543122344752194e-15
+      },
+      {
+        "id": "surface_rational_post",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_ends",
+        "maximum_error": 8.881784197001252e-16
+      }
+    ],
+    "standalone_native": [
+      {
+        "id": "surface_U",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_U_sym",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_V",
+        "maximum_error": 2.8756274628316696e-12
+      },
+      {
+        "id": "surface_V_sym",
+        "maximum_error": 2.876542976191374e-12
+      },
+      {
+        "id": "surface_Both",
+        "maximum_error": 3.977507266031807e-12
+      },
+      {
+        "id": "surface_Both_sym",
+        "maximum_error": 4.1093340386623355e-12
+      },
+      {
+        "id": "surface_two",
+        "maximum_error": 5.420402723088012e-12
+      },
+      {
+        "id": "surface_repeat",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_empty",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_midpoints",
+        "maximum_error": 2.9878322038712213e-12
+      },
+      {
+        "id": "surface_post",
+        "maximum_error": 2.8756274628316696e-12
+      },
+      {
+        "id": "surface_ends",
+        "maximum_error": 0.0
+      },
+      {
+        "id": "surface_rational_U",
+        "maximum_error": 2.0350724194510405e-15
+      },
+      {
+        "id": "surface_rational_U_sym",
+        "maximum_error": 2.220446049250313e-15
+      },
+      {
+        "id": "surface_rational_V",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_V_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_Both_sym",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_two",
+        "maximum_error": 2.1747724659778105e-13
+      },
+      {
+        "id": "surface_rational_repeat",
+        "maximum_error": 2.0350724194510405e-15
+      },
+      {
+        "id": "surface_rational_empty",
+        "maximum_error": 8.881784197001252e-16
+      },
+      {
+        "id": "surface_rational_midpoints",
+        "maximum_error": 2.0350724194510405e-15
+      },
+      {
+        "id": "surface_rational_post",
+        "maximum_error": 6.504845873797301e-14
+      },
+      {
+        "id": "surface_rational_ends",
+        "maximum_error": 8.881784197001252e-16
+      }
+    ]
+  }
+}

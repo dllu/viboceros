@@ -68,6 +68,7 @@ mod reparameterize;
 mod retrim;
 mod surface_cut_pullback;
 mod surface_edit;
+mod surface_refine;
 #[cfg(test)]
 use surface_cut_pullback::parameter_curve_matches_spatial_curve;
 use surface_cut_pullback::surface_split_parameter_curve;

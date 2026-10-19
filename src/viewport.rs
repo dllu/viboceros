@@ -348,6 +348,7 @@ pub struct ViewportInput<'a> {
     pub point_cloud_remove_target: Option<ObjectId>,
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
+    pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
@@ -451,6 +452,7 @@ impl Default for ViewportInput<'_> {
             point_cloud_remove_target: None,
             point_cloud_highlights: &[],
             preview_curve: None,
+            isocurve_guides: &[],
             preview_points: &[],
             mirror_preview: None,
             translation_preview: None,
@@ -2135,6 +2137,13 @@ impl Viewport {
                 && let Some(anchor) = drafting.anchor
             {
                 self.paint_draft_points(&painter, rect, std::slice::from_ref(&anchor));
+            }
+        }
+        for curve in input.isocurve_guides {
+            let mut projected = ProjectedPrimitives::default();
+            self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            for segment in projected.segments {
+                painter.line_segment(segment, Stroke::new(1.5, Color32::from_rgb(245, 160, 20)));
             }
         }
         if drafting.active

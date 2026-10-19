@@ -21,7 +21,13 @@ impl VibocerosApp {
         else {
             return false;
         };
-        if self.active_command.is_none() || self.plane_prompt.is_some() {
+        if (self.active_command.is_none()
+            && !self
+                .insert_kink_prompt
+                .as_ref()
+                .is_some_and(insert_kink::Prompt::wants_point))
+            || self.plane_prompt.is_some()
+        {
             return false;
         }
         let constraint = match parsed {
@@ -41,6 +47,9 @@ impl VibocerosApp {
                 .and_then(|s| s.first)
                 .or_else(|| self.maelstrom_circle_anchor())
                 .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
+                .or(self
+                    .last_point
+                    .filter(|_| self.insert_kink_prompt.is_some()))
         };
         let Some(anchor) = anchor else {
             self.push_log("Error: distance and angle constraints require a previous point".into());
@@ -65,7 +74,11 @@ impl VibocerosApp {
         let Some(filter) = PointFilter::parse(input) else {
             return false;
         };
-        if self.active_command.is_none()
+        if (self.active_command.is_none()
+            && !self
+                .insert_kink_prompt
+                .as_ref()
+                .is_some_and(insert_kink::Prompt::wants_point))
             || self.active_command == Some(InteractiveCommand::DomainFace)
             || self.plane_prompt.is_some()
         {

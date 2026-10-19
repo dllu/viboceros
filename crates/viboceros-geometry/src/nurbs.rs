@@ -4793,7 +4793,7 @@ pub(crate) fn find_span_in_knots(
     middle
 }
 
-pub(crate) fn curve_points_coincident(left: Point3, right: Point3) -> bool {
+pub fn curve_points_coincident(left: Point3, right: Point3) -> bool {
     left.to_array()
         .into_iter()
         .zip(right.to_array())
