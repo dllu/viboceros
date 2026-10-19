@@ -1,0 +1,35 @@
+{
+  "case": {
+    "op": "insert_kink_subcurve",
+    "id": "rational_lock_back_numeric",
+    "family": "rational",
+    "getter": {
+      "start": 0.8,
+      "lock_hover": 0.6,
+      "lengths": [
+        1.0
+      ],
+      "confirm": 0.2
+    },
+    "stations": [
+      0.5
+    ],
+    "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_kink_subcurve/rational_lock_back_numeric.3dm"
+  },
+  "observation": "No command completion observed after the recorded off-curve kink pick; the cause is unresolved.",
+  "process": "    PID ELAPSED %CPU STAT\n3318030     366 72.0 Ssl\n",
+  "seconds_since_progress": 84.63836669921875,
+  "geometry_result": null,
+  "scope": "The entire original 128-case request is retained. This is a diagnostic, not a passing geometry comparison.",
+  "sha256": {
+    "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+    "request.json": "94afeaf540fe54fb2a5de8877af20700e5e6b039fabf6ec5d8cd923052244292",
+    "rational_lock_back_numeric.3dm": "05a047a9f88ce56e9a33ba7cf08a5d84ad4478b6c18e1ab1f35f99e2ca6a0835",
+    "insert_kink_subcurve_probe.py": "e12b132abfceccf6030b013b83b508199014561832322146fde877fa819a2843",
+    "worker-progress.log.gz": "9685b29f208a877445b8a3585554ad31ea1eacd1ad56238bbafd2e1eb7904688"
+  },
+  "additional_observation_input": "One-pixel round-trip pointer motion without a click; no completion was observed.",
+  "decompressed_sha256": {
+    "worker-progress.log": "eafda9fc6ecebfe068856454f96907e23c10364815ebda82790460a7fc25a360"
+  }
+}

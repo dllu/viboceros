@@ -1,0 +1,1161 @@
+{
+  "feature": "InsertKink temporary SubCrv length, direction, cancellation and cached previews",
+  "base_commit": "897e47f0f09feb33e0a4694b676cd3806c5ba2fb",
+  "native_version": "8.32.26160.13001",
+  "native_equivalence": "partial; every retained recipe is replayed and separately classified",
+  "native_cases": 128,
+  "native_command_results": {
+    "Success": 90,
+    "Cancel": 32,
+    "Failure": 6
+  },
+  "literal_keyboard_cases": 2,
+  "outcomes": {
+    "match": 112,
+    "native_inverse_length_precision": 13,
+    "native_circle_length_deviation": 2,
+    "invalid_native_curve_guard": 1
+  },
+  "comparison": {
+    "strict_epsilon": 1e-08,
+    "precision_case_assertion": "Measured definition/sample error <= 1e-8 plus the captured native curve length residual; local accepted numeric lengths remain within 1e-8 of the requested or open-clamped length.",
+    "largest_error_excluding_declared_circle_deviations": 1.559486275294119e-07,
+    "continuous_error_certificate": false
+  },
+  "implementation": [
+    "Reuse shared signed-length extraction and selected backend NURBS trims; keep all document edits staged until Enter.",
+    "Numeric units, negative magnitudes, correction of invalid lengths, D toggle and explicit Direction options.",
+    "Closed locked point picks project onto an immutable cached portion of the original parameter chart.",
+    "Enter/Escape in temporary input returns to the parent source getter; cancellation during kink insertion discards all staged edits.",
+    "Whole closed input produces no portion; cached previews follow that same validity policy.",
+    "Ignore only the unused two artificial outer NURBS knot intervals during integration-frame validation; preserve checks on every short-vector interval. Imported extrapolated periodic source knots now support length measurement and signed queries."
+  ],
+  "validation": [
+    {
+      "command": "cargo test -p viboceros subcurve -- --nocapture",
+      "tests": 54,
+      "includes": "128 new getter cases, two literal-key cases, 101 original InsertKink cases and shared controllers"
+    },
+    {
+      "command": "cargo test -p viboceros --features native-smlib insert_kink -- --nocapture",
+      "tests": 9,
+      "includes": "128 new getter cases, two literal-key cases, 101 original InsertKink cases, independent preview/unit/off-portion invariants"
+    },
+    {
+      "command": "cargo test -p viboceros insert_kink -- --nocapture",
+      "tests": 8,
+      "note": "Portable baseline plus initial five getter tests before the final closed-preview test and Escape log wording check."
+    },
+    {
+      "command": "cargo test -p viboceros insert_kink_subcurve_previews_are_cached_read_only_and_return_to_parent -- --nocapture",
+      "tests": 1,
+      "note": "Final Escape return hint and immutable draft check."
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib arc_length",
+      "tests": 51
+    },
+    {
+      "command": "cargo test -p viboceros-geometry --lib integration",
+      "tests": 20
+    },
+    {
+      "command": "python3 -m unittest tools.rhino_oracle.test_insert_kink_subcurve tools.rhino_oracle.test_insert_kink_probe tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_client tools.rhino_oracle.test_subcurve_direction tools.rhino_oracle.test_subcurve_direction_grid",
+      "tests": 40
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "112 of 128 cases match at 1e-8. Thirteen have numeric endpoint differences above 1e-8; the raw errors are retained, not counted as strict matches.",
+    "Two scripted locked-circle cases produce native length 3.7699111843077517 for requested length 1; Viboceros keeps length 1. General native closed-circle lock equivalence remains unqualified.",
+    "The whole-ellipse native command succeeds with an invalid PolyCurve; local validation asserts no object creation and no history edit instead of reproducing invalid geometry.",
+    "The completed numeric matrix places the kink at the portion anchor. The full earlier request containing outside-portion kink picks remains an unresolved native input diagnostic; an independent Rust invariant test is not native parity evidence.",
+    "Most locked inputs use scripted Direction options and a cursor positioned before RunScript. Two separate line captures exercise real D/D and Escape keys; full interactive cursor timing for all families is not established.",
+    "No new edited-3dm roundtrip matrix, complete workspace test run, continuous error bound or general performance benchmark is claimed."
+  ],
+  "capture": {
+    "path": "tools/rhino_oracle/observations/insert_kink_subcurve.json",
+    "sha256": "d3ba2acc1c0faa362af9454dc7c7518f10b8624ebe096f302843bcad825e360e",
+    "request": "tools/rhino_oracle/observations/insert_kink_subcurve.request.json",
+    "request_sha256": "8ef266b70a4ad16976546f67dd008fd039d191a5ecaa8ef79cecfdd0d771c9f2",
+    "provenance": "Source and all 128 source-3dm hashes are retained inside the capture and checked by Python tests."
+  },
+  "keyboard_capture": {
+    "path": "tools/rhino_oracle/observations/insert_kink_subcurve_keys.json",
+    "sha256": "32a3534ceba77986acce42d852c16e125c44f69818b0679f09fd9ed1f438053f"
+  },
+  "unresolved_diagnostic": {
+    "path": "tools/rhino_oracle/observations/insert_kink_subcurve_off_curve/status.json",
+    "sha256": "fe35b6f17a9399e0b316246ad7013d3a03c993457217facaf9f0895082c50f9d",
+    "geometry_result": null,
+    "cause": "unresolved"
+  },
+  "proof": {
+    "docs/insert-kink-subcurve-proof/clippy.log.gz": "fd658126a0dd9fd1e326e347f67a578751c0c720fb434364005e8a38f5375129",
+    "docs/insert-kink-subcurve-proof/escape-log.log.gz": "778d0ea4a285e2cf80a1eeb7ec174f1fc82aafe7b1522151027a3d1976625741",
+    "docs/insert-kink-subcurve-proof/fmt.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+    "docs/insert-kink-subcurve-proof/kernel-arc.log.gz": "248c7b3ef0864c70a6b18d2292cba4d9e1567fa6dbd20026a05fb24634dd776a",
+    "docs/insert-kink-subcurve-proof/kernel-integration.log.gz": "77e749970fd1d24e0a898e40306708302a09095404fe7b743c825a355f0b5c76",
+    "docs/insert-kink-subcurve-proof/native-capture.log.gz": "cbc4a9b3cd485499b75249bdb416ae4f86b05a324020ed15594d0bd79d6a7e05",
+    "docs/insert-kink-subcurve-proof/python.log.gz": "ff9621badcab8dc0eaea1028c750435339cb7f6982a9ba6e09a16d1f45d4d207",
+    "docs/insert-kink-subcurve-proof/shared-portable.log.gz": "b04e847fe69cd48798e8e571b6c3d43e857a4d2eec396e86cca778bead01ce2c",
+    "docs/insert-kink-subcurve-proof/ui-native.log.gz": "47143d2fd44dae3cff35dfe0a0791e8854a2b728c87b7596932eb54308d8f74d",
+    "docs/insert-kink-subcurve-proof/ui-portable.log.gz": "e1d7c4f1bf6949f307b01f36e115c6d15adf6b0995a9670a1db684bacc0c4ee3"
+  },
+  "current_source_sha256": {
+    "crates/viboceros-geometry/src/nurbs/integration_frame.rs": "4fdc65f39d58d399f5be67fcc9c1d0e666121f35e2c623d79d27d1a744c822ca",
+    "crates/viboceros-geometry/src/nurbs/arc_length.rs": "58455ad579d33ad1069ea3ccd49af29cc4ab141e4140c47d0f7205bab42c1eee",
+    "src/app.rs": "466f4f3bec702bc4e4646c45eeeb0f0e85791444f2c066d331d1b32ba227cb13",
+    "src/app/insert_kink.rs": "b1d17e782283618a8d465045569eb63956640bfbaf999d8316f5ec8662496519",
+    "src/app/insert_kink/subcurve.rs": "3be76905ad438d9f9efada61cd59784174ee7a6a8116e05b56c82fbc44537d80",
+    "src/app/subcurve_direction.rs": "636b5c2e8d8de1e67e6fed109feab99a94c7f115cb9377c060b98d076a2311f6",
+    "src/app/subcurve_preview.rs": "e5fe7649ea187575073ec33c845ab76fb899edd18dcd1d7522149c7706042a53",
+    "src/app/tests/insert_kink.rs": "0cdc7f6c1d5ccbfc771976d65360239d3a0070ae789abeee0309c4d98b8ff43b",
+    "src/app/tests/insert_kink_subcurve.rs": "63753d9aba03b04449e0d55ea5c74743f846e940c1f8ecbdc638115d98c988cd",
+    "tools/rhino_oracle/insert_kink_subcurve_probe.py": "a9b80c43bf9e07101bce66eb5a199aa13c067b03915067a3a1f3218cb4e31032",
+    "tools/rhino_oracle/generate_insert_kink_subcurve.py": "53452647fa838f9319849fbbb79dc82e6e312e11339a039c775aa50cdef02cfd",
+    "tools/rhino_oracle/insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+    "tools/rhino_oracle/rhino_worker.py": "5c2f51cb2ad95a68339ad7b3a73d50b573085faaa5a9d54eaf7d8728062d6e0c",
+    "tools/rhino_oracle/structural_sdk.py": "a79ef105e0b116012dfd9ea4401796cd62527d0d875844d233ff0b31a39b1551",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/shrink_face_input.py": "bb3842f6ba6929f43d770c00e40ad5184e0bb2f88e8c5d9e8f94eb0c33ffa51f",
+    "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
+    "tools/rhino_oracle/insert_kink_subcurve_input.py": "9f36188f8023b90967eae8c3e35d2fa38a841f1fb40dec26f0d86c67a7a83216",
+    "tools/rhino_oracle/subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa",
+    "tools/rhino_oracle/client.py": "785935945ad86a9a488eefbad2821f7ba217eb2c1209521c21e8f14dad948f9a",
+    "tools/rhino_oracle/test_insert_kink_probe.py": "50d81115c64974ece334cb60e3fafc8f94826f9ce08a723fe7ef3cb520d400ae",
+    "tools/rhino_oracle/test_insert_kink_subcurve.py": "5f6321bbc0b1549c8a4f6c5c8365e0e660b4c7a43a8afea5e3459f6587c0124b"
+  },
+  "cases": [
+    {
+      "id": "line_forward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_backward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.440892098500626e-16,
+      "native_backend_definition_or_sample_error": 4.440892098500626e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_negative",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_whole",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_repair",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_lock_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_lock_back_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.440892098500626e-16,
+      "native_backend_definition_or_sample_error": 4.440892098500626e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_lock_cross_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.220446049250313e-16,
+      "native_backend_definition_or_sample_error": 2.220446049250313e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "line_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.220446049250313e-16,
+      "native_backend_definition_or_sample_error": 2.220446049250313e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_forward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.180951917677926e-09,
+      "native_backend_definition_or_sample_error": 3.180951669703263e-09,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_backward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 7.2391591011139565e-09,
+      "native_backend_definition_or_sample_error": 7.2391591011139565e-09,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_negative",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.984317144743673e-09,
+      "native_backend_definition_or_sample_error": 8.984317535587297e-09,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.4420286115991632e-12,
+      "native_backend_definition_or_sample_error": 1.4423422761332643e-12,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_whole",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.8067541234978694e-12,
+      "native_backend_definition_or_sample_error": 1.807062049208876e-12,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_repair",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.180951917677926e-09,
+      "native_backend_definition_or_sample_error": 3.180951669703263e-09,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_lock_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.180951917677926e-09,
+      "native_backend_definition_or_sample_error": 3.180951669703263e-09,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_lock_back_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 7.2391591011139565e-09,
+      "native_backend_definition_or_sample_error": 7.2391591011139565e-09,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_lock_cross_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.391527621219134e-12,
+      "native_backend_definition_or_sample_error": 1.391841047738334e-12,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.1431573365914423e-12,
+      "native_backend_definition_or_sample_error": 1.1430580265995056e-12,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "cubic_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.1431573365914423e-12,
+      "native_backend_definition_or_sample_error": 1.1430580265995056e-12,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_forward",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 2.6860075506685306e-08,
+      "native_backend_definition_or_sample_error": 2.686007465864589e-08,
+      "remeasured_native_length_error": 2.6860069057832447e-08
+    },
+    {
+      "id": "rational_backward",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 1.8411062668849087e-08,
+      "native_backend_definition_or_sample_error": 1.8411062422593736e-08,
+      "remeasured_native_length_error": 1.8411064006684796e-08
+    },
+    {
+      "id": "rational_negative",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 2.2542019880191836e-08,
+      "native_backend_definition_or_sample_error": 2.254201960354725e-08,
+      "remeasured_native_length_error": 2.2542019140203706e-08
+    },
+    {
+      "id": "rational_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.873453617525267e-15,
+      "native_backend_definition_or_sample_error": 8.440616121040728e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_whole",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 9.632744363711804e-15,
+      "native_backend_definition_or_sample_error": 9.235560912961481e-15,
+      "remeasured_native_length_error": 4.440892098500626e-15
+    },
+    {
+      "id": "rational_repair",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 2.6860075506685306e-08,
+      "native_backend_definition_or_sample_error": 2.686007465864589e-08,
+      "remeasured_native_length_error": 2.6860069057832447e-08
+    },
+    {
+      "id": "rational_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_lock_numeric",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 2.6860075506685306e-08,
+      "native_backend_definition_or_sample_error": 2.686007465864589e-08,
+      "remeasured_native_length_error": 2.6860069057832447e-08
+    },
+    {
+      "id": "rational_lock_back_numeric",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 1.8411062668849087e-08,
+      "native_backend_definition_or_sample_error": 1.8411062422593736e-08,
+      "remeasured_native_length_error": 1.8411064006684796e-08
+    },
+    {
+      "id": "rational_lock_cross_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.873453617525267e-15,
+      "native_backend_definition_or_sample_error": 8.379058453350832e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 6.661338147750939e-15,
+      "native_backend_definition_or_sample_error": 6.676124710113433e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "rational_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 6.661338147750939e-15,
+      "native_backend_definition_or_sample_error": 6.676124710113433e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_forward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_backward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_negative",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.41517667818359e-15,
+      "native_backend_definition_or_sample_error": 3.41517667818359e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_whole",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_repair",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.8435583831733384e-15,
+      "native_backend_definition_or_sample_error": 2.8435583831733384e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_lock_numeric",
+      "status": "native_circle_length_deviation",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 3.7699111843077517,
+      "native_backend_definition_or_sample_error": 3.7699111843077517,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_lock_back_numeric",
+      "status": "native_circle_length_deviation",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 3.7699111843077517,
+      "native_backend_definition_or_sample_error": 3.7699111843077517,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_lock_cross_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 5.617333549722722e-15,
+      "native_backend_definition_or_sample_error": 5.617333549722722e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 5.3854400208818836e-15,
+      "native_backend_definition_or_sample_error": 5.3854400208818836e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 5.3854400208818836e-15,
+      "native_backend_definition_or_sample_error": 5.3854400208818836e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "circle_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 5.3854400208818836e-15,
+      "native_backend_definition_or_sample_error": 5.3854400208818836e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_forward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 6.812768361473876e-09,
+      "native_backend_definition_or_sample_error": 6.812768361473876e-09,
+      "remeasured_native_length_error": 6.812746589091034e-09
+    },
+    {
+      "id": "ellipse_backward",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 5.1088152112627194e-08,
+      "native_backend_definition_or_sample_error": 5.1088152112627194e-08,
+      "remeasured_native_length_error": 5.108812972665078e-08
+    },
+    {
+      "id": "ellipse_negative",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.37399048180206e-09,
+      "native_backend_definition_or_sample_error": 2.373990048282503e-09,
+      "remeasured_native_length_error": 2.3739898935559722e-09
+    },
+    {
+      "id": "ellipse_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.1541760083527534e-14,
+      "native_backend_definition_or_sample_error": 2.1556631856153974e-14,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.673771110915334e-15,
+      "native_backend_definition_or_sample_error": 2.673771110915334e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_whole",
+      "status": "invalid_native_curve_guard",
+      "native_equivalent_at_1e_8": false
+    },
+    {
+      "id": "ellipse_repair",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 6.812768361473876e-09,
+      "native_backend_definition_or_sample_error": 6.812768361473876e-09,
+      "remeasured_native_length_error": 6.812746589091034e-09
+    },
+    {
+      "id": "ellipse_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.673771110915334e-15,
+      "native_backend_definition_or_sample_error": 2.673771110915334e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.673771110915334e-15,
+      "native_backend_definition_or_sample_error": 2.673771110915334e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.673771110915334e-15,
+      "native_backend_definition_or_sample_error": 2.673771110915334e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_lock_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.5096194934423338e-09,
+      "native_backend_definition_or_sample_error": 3.5096193271832757e-09,
+      "remeasured_native_length_error": 3.5102096784811465e-09
+    },
+    {
+      "id": "ellipse_lock_back_numeric",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 8.868724049272906e-08,
+      "native_backend_definition_or_sample_error": 8.868724046279198e-08,
+      "remeasured_native_length_error": 8.868662981775799e-08
+    },
+    {
+      "id": "ellipse_lock_cross_numeric",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 1.559486275294119e-07,
+      "native_backend_definition_or_sample_error": 1.559486275294119e-07,
+      "remeasured_native_length_error": 1.5594522118078658e-07
+    },
+    {
+      "id": "ellipse_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.3737714791252564e-15,
+      "native_backend_definition_or_sample_error": 4.3737714791252564e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.133939918411081e-14,
+      "native_backend_definition_or_sample_error": 2.090523717857419e-14,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "ellipse_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.133939918411081e-14,
+      "native_backend_definition_or_sample_error": 2.090523717857419e-14,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_forward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.440892098500626e-16,
+      "native_backend_definition_or_sample_error": 4.440892098500626e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_backward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.1086244689504383e-15,
+      "native_backend_definition_or_sample_error": 3.1086244689504383e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_negative",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.3322676295501878e-15,
+      "native_backend_definition_or_sample_error": 1.3322676295501878e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_whole",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 8.881784197001252e-16,
+      "native_backend_definition_or_sample_error": 8.881784197001252e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_repair",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.440892098500626e-16,
+      "native_backend_definition_or_sample_error": 4.440892098500626e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_lock_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.440892098500626e-16,
+      "native_backend_definition_or_sample_error": 4.440892098500626e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_lock_back_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.1086244689504383e-15,
+      "native_backend_definition_or_sample_error": 3.1086244689504383e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_lock_cross_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.7763568394002505e-15,
+      "native_backend_definition_or_sample_error": 1.7763568394002505e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 0.0,
+      "native_backend_definition_or_sample_error": 0.0,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.440892098500626e-16,
+      "native_backend_definition_or_sample_error": 4.440892098500626e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polyline_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 4.440892098500626e-16,
+      "native_backend_definition_or_sample_error": 4.440892098500626e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_forward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_backward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.3322676295501878e-15,
+      "native_backend_definition_or_sample_error": 1.3322676295501878e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_negative",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.3322676295501878e-15,
+      "native_backend_definition_or_sample_error": 1.3322676295501878e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_whole",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_repair",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_lock_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_lock_back_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.3322676295501878e-15,
+      "native_backend_definition_or_sample_error": 1.3322676295501878e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_lock_cross_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.9860273225978185e-15,
+      "native_backend_definition_or_sample_error": 1.9860273225978185e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "polycurve_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.2560739669470201e-15,
+      "native_backend_definition_or_sample_error": 1.2560739669470201e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_forward",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 4.015853016011476e-08,
+      "native_backend_definition_or_sample_error": 4.015853029362085e-08,
+      "remeasured_native_length_error": 4.015852606009673e-08
+    },
+    {
+      "id": "periodic_backward",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 7.282481367666426e-09,
+      "native_backend_definition_or_sample_error": 7.282481595773591e-09,
+      "remeasured_native_length_error": 7.28087745649475e-09
+    },
+    {
+      "id": "periodic_negative",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 3.2396733467708615e-09,
+      "native_backend_definition_or_sample_error": 3.239673346551103e-09,
+      "remeasured_native_length_error": 3.2396167970460965e-09
+    },
+    {
+      "id": "periodic_back_points",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 1.6039826068378846e-12,
+      "native_backend_definition_or_sample_error": 1.6039350884604008e-12,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_zero",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 9.485749680535094e-16,
+      "native_backend_definition_or_sample_error": 9.485749680535094e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_whole",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 2.629741322859565e-08,
+      "native_backend_definition_or_sample_error": 2.6297413130062365e-08,
+      "remeasured_native_length_error": 2.5795470648404262e-08
+    },
+    {
+      "id": "periodic_repair",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 4.015853016011476e-08,
+      "native_backend_definition_or_sample_error": 4.015853029362085e-08,
+      "remeasured_native_length_error": 4.015852606009673e-08
+    },
+    {
+      "id": "periodic_no_confirm",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 9.485749680535094e-16,
+      "native_backend_definition_or_sample_error": 9.485749680535094e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_cancel_getter",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 9.485749680535094e-16,
+      "native_backend_definition_or_sample_error": 9.485749680535094e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_cancel_kink",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 9.485749680535094e-16,
+      "native_backend_definition_or_sample_error": 9.485749680535094e-16,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_lock_numeric",
+      "status": "native_inverse_length_precision",
+      "native_equivalent_at_1e_8": false,
+      "portable_definition_or_sample_error": 1.4882339005235687e-08,
+      "native_backend_definition_or_sample_error": 1.4882338162402864e-08,
+      "remeasured_native_length_error": 1.4882338250643556e-08
+    },
+    {
+      "id": "periodic_lock_back_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 7.282481367666426e-09,
+      "native_backend_definition_or_sample_error": 7.282481595773591e-09,
+      "remeasured_native_length_error": 7.28087745649475e-09
+    },
+    {
+      "id": "periodic_lock_cross_numeric",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 9.99603226688289e-09,
+      "native_backend_definition_or_sample_error": 9.996032267390121e-09,
+      "remeasured_native_length_error": 9.99603244622449e-09
+    },
+    {
+      "id": "periodic_lock_wrong_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 5.269646480117172e-13,
+      "native_backend_definition_or_sample_error": 5.274043925216746e-13,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_unlock_point",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.220446049250313e-15,
+      "native_backend_definition_or_sample_error": 2.220446049250313e-15,
+      "remeasured_native_length_error": 0.0
+    },
+    {
+      "id": "periodic_toggle_unlock",
+      "status": "match",
+      "native_equivalent_at_1e_8": true,
+      "portable_definition_or_sample_error": 2.220446049250313e-15,
+      "native_backend_definition_or_sample_error": 2.220446049250313e-15,
+      "remeasured_native_length_error": 0.0
+    }
+  ]
+}

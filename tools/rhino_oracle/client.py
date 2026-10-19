@@ -884,6 +884,11 @@ class OracleClient:
             validate_request(request)
             from .subcurve_direction_input import SubcurveDirectionPicker
             interaction=SubcurveDirectionPicker(request)
+        if any(op.get('op') == 'insert_kink_subcurve' and op.get('getter', {}).get('cancel_getter') for op in request.get('operations', [])):
+            if self.settings_scheme is None:
+                raise OracleProtocolError('temporary kink direction input requires a private settings scheme')
+            from .insert_kink_subcurve_input import InsertKinkSubcurvePicker
+            interaction=InsertKinkSubcurvePicker(request)
         if any(op.get('op') == 'subcurve_direction_grid' for op in request.get('operations', [])):
             from .subcurve_direction_grid_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('direction matrix requires a private settings scheme')

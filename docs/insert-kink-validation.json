@@ -29,7 +29,7 @@
     "58 point-input regressions, 10 snap regressions, 12 reference-getter regressions, kernel refinement and sorted command registration"
   ],
   "limits": [
-    "Temporary SubCrv numeric-length and locked-direction options are not implemented",
+    "This receipt covers endpoint-defined temporary SubCrv inputs; the later numeric-length/direction audit is in insert-kink-subcurve-validation.json",
     "Polysurface and block-member sources are excluded; the native polysurface subface recipe rejects input",
     "The two unused outer NURBS knots use the importer convention; every active knot is compared",
     "Trimmed edits are compared in memory with captured source files and topology; their edited 3dm roundtrips are not included",

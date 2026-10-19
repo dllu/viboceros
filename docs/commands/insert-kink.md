@@ -27,12 +27,22 @@ underlying-surface refinement. Picks resolve on that underlying surface even
 inside trimmed holes. Polysurfaces and block members are excluded.
 
 At the initial source prompt, `SubCrv` accepts a curve and two endpoint picks
-without modifying it. Enter then finishes kink insertion on the shortened copy.
+or a start, numeric length and confirmation point without modifying it.
+Lengths support model units and negative magnitudes. Move along the curve and
+type `D` to lock direction; `D` again or `Direction=Free` unlocks it.
+Locked open lengths finish immediately and clamp at the chosen endpoint.
+Some closed lengths require a confirmation point. Locked closed point picks
+project onto the captured side of the original parameter chart. The pending
+portion and its endpoints have cached, read-only previews.
+
+Enter then finishes kink insertion on the shortened copy.
 The scripted `SubCrv=id,start,end` form uses source parameters. The resulting
 object has fresh attributes on the current layer; the original is retained.
-An empty or cancelled temporary getter creates no object. This temporary getter
-currently accepts endpoint points; its nested numeric-length/direction options
-are not implemented.
+Enter or Esc within the temporary getter returns to InsertKink's source prompt
+without creating an object. Esc during kink insertion discards every staged
+pick. Zero lengths and complete closed traversals create no temporary portion.
+Overlong lengths are rejected; a whole-length value slightly above the measured
+total is clamped within Rhino's default `1e-8` fractional reporting precision.
 
 Replacements retain object identity, attributes and groups. Curves and untrimmed
 surface edits clear geometry user text; trimmed B-reps retain it. Preselection
@@ -57,11 +67,32 @@ captured native surface definitions.
 
 [Validation receipts](../insert-kink-validation.json)
 
+An additional [128-case temporary-getter audit](../insert-kink-subcurve-validation.json)
+retains all outcomes: 112 match at `1e-8`; 13 have larger numeric endpoint
+differences within `1e-8` plus the independently remeasured native inverse-length
+residual. Those 13 are not claimed as `1e-8` matches or continuous error bounds.
+Two locked-circle scripts return 3.7699-unit pieces for a requested length of 1;
+Viboceros keeps the exact requested length. Rhino's whole-ellipse script returns
+an invalid curve; Viboceros preserves the source and creates no object.
+The audit also retains two real-keyboard captures, history/metadata checks,
+cached-preview and unit-input regressions, and the unresolved off-curve native
+input diagnostic. The latter is not a native geometry comparison. General
+closed-circle lock equivalence and arbitrary off-curve input remain unqualified.
+The length matrix inserts its kink at the portion's anchor. The earlier request
+with kink picks outside the shortened portion did not complete; its full request,
+source, producer and progress log remain retained, with the cause unresolved.
+An independent Rust test checks those picks against source-locus and exact-length
+invariants. Most locked recipes use a scripted Direction option and positioned
+cursor; literal `D` toggling is separately captured on a line.
+Rhino's documented default length accuracy is available in the public
+[Curve.GetLength reference](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/getlength?overload=1).
+
 ```sh
 cargo test -p viboceros-command --test insert_kink
 cargo test -p viboceros insert_kink
 cargo test -p viboceros-geometry --lib surface_refinement_keeps_topology
 python3 -m unittest tools.rhino_oracle.test_insert_kink_probe
+python3 -m unittest tools.rhino_oracle.test_insert_kink_subcurve
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_insert_kink
 ```
 

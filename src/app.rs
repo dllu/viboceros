@@ -9742,8 +9742,10 @@ impl VibocerosApp {
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
         } else if self.insert_kink_prompt.is_some() {
-            self.cancel_insert_kink();
-            self.push_log("InsertKink canceled".into());
+            self.cancel_insert_kink_input();
+            if self.insert_kink_prompt.is_none() {
+                self.push_log("InsertKink canceled".into());
+            }
         } else if self.reparameterize_prompt.take().is_some() {
             self.push_log("Reparameterize canceled".into());
         } else if self.fillet_surface_prompt.is_some() {
@@ -11092,6 +11094,7 @@ mod tests {
     mod group_prompt;
     mod hyperbola;
     mod insert_kink;
+    mod insert_kink_subcurve;
     mod interface;
     mod intersect_two_sets;
     mod length;

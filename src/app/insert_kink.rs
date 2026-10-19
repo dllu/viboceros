@@ -2,13 +2,16 @@
 use super::*;
 use viboceros_command::insert_kink::{self, Draft, Options};
 use viboceros_geometry::NurbsCurve;
+mod subcurve;
 #[derive(Debug)]
 pub(super) struct Prompt {
     draft: Option<Draft>,
     options: Options,
     postselected: bool,
     subcurve: bool,
-    start: Option<f64>,
+    input: super::uv_subcurve_input::PendingSubcurve,
+    locked_side: Option<viboceros_document::GeometrySnapshot>,
+    full_closed_length: bool,
     shortening: bool,
     cursor: Option<NurbsCurve>,
     hint: String,
@@ -90,12 +93,29 @@ impl Prompt {
     }
     fn update_hint(&mut self) {
         self.hint = if self.selecting() {
-            "Select one curve or surface (SubCrv temporarily shortens a curve); Esc cancels".into()
-        } else if self.shortening {
-            if self.start.is_none() {
-                "Pick temporary subcurve start; Esc cancels".into()
+            if self.subcurve {
+                "Select curve to temporarily shorten; Enter or Esc returns".into()
             } else {
-                "Pick temporary subcurve end; Esc cancels".into()
+                "Select one curve or surface (SubCrv temporarily shortens a curve); Esc cancels"
+                    .into()
+            }
+        } else if self.shortening {
+            if self.input.start.is_none() {
+                "Pick temporary subcurve start; Enter or Esc returns".into()
+            } else {
+                format!(
+                    "{}; Direction={}; Esc returns",
+                    if self.input.length.is_some() {
+                        "Confirm length direction or enter another length"
+                    } else {
+                        "Pick temporary subcurve end or enter a length"
+                    },
+                    if self.input.locked_forward.is_some() {
+                        "Locked"
+                    } else {
+                        "Free"
+                    }
+                )
             }
         } else if self.cursor.is_some() {
             format!(
@@ -111,6 +131,17 @@ impl Prompt {
     }
 }
 impl VibocerosApp {
+    pub(super) fn cancel_insert_kink_input(&mut self) {
+        if self
+            .insert_kink_prompt
+            .as_ref()
+            .is_some_and(|p| p.shortening)
+        {
+            self.discard_insert_kink_subcurve();
+        } else {
+            self.cancel_insert_kink();
+        }
+    }
     pub(super) fn cancel_insert_kink(&mut self) {
         self.insert_kink_prompt = None;
         self.point_filter = None;
@@ -163,7 +194,9 @@ impl VibocerosApp {
             options,
             postselected: ids.len() != 1 || subcurve,
             subcurve,
-            start: None,
+            input: Default::default(),
+            locked_side: None,
+            full_closed_length: false,
             shortening: subcurve,
             cursor: None,
             hint: String::new(),
@@ -217,6 +250,7 @@ impl VibocerosApp {
                     Ok(cursor) => {
                         let p = self.insert_kink_prompt.as_mut().unwrap();
                         p.cursor = cursor;
+                        p.input.object = Some(draft.object());
                         p.draft = Some(draft);
                         self.log_insert_kink();
                     }
@@ -227,40 +261,27 @@ impl VibocerosApp {
         }
         true
     }
-    fn insert_kink_point(&mut self, point: Point3) {
+    fn insert_kink_point(&mut self, point: Point3) -> bool {
         self.validate_insert_kink();
         let Some(p) = &mut self.insert_kink_prompt else {
-            return;
+            return false;
         };
         let Some(d) = &mut p.draft else {
-            return;
+            return false;
         };
         if p.shortening {
-            let curve = d.geometry().curve_ref().unwrap();
-            match curve.closest_parameter(point, self.document.tolerance()) {
-                Ok(t) => {
-                    if let Some(a) = p.start {
-                        match Draft::new(&self.document, d.object(), Some([a, t])) {
-                            Ok(draft) => match draft.geometry().curve_ref().unwrap().to_nurbs() {
-                                Ok(cursor) => {
-                                    p.cursor = Some(cursor);
-                                    p.draft = Some(draft);
-                                    p.shortening = false;
-                                }
-                                Err(e) => self.push_log(format!("Error: {e}")),
-                            },
-                            Err(e) => self.push_log(format!("Error: {e}")),
-                        }
-                    } else {
-                        p.start = Some(t);
-                    }
-                }
-                Err(e) => self.push_log(format!("Error: {e}")),
-            }
-        } else if let Err(e) = d.point(point, p.options) {
-            self.push_log(format!("Error: {e}"));
+            return self.insert_kink_subcurve_point(point);
         }
-        self.log_insert_kink();
+        match d.point(point, p.options) {
+            Ok(()) => {
+                self.log_insert_kink();
+                true
+            }
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                false
+            }
+        }
     }
     pub(super) fn accept_insert_kink_drafting_point(&mut self, point: Point3) -> Option<bool> {
         if !self
@@ -270,8 +291,7 @@ impl VibocerosApp {
         {
             return None;
         }
-        self.insert_kink_point(point);
-        Some(true)
+        Some(self.insert_kink_point(point))
     }
     pub(super) fn continue_insert_kink(&mut self, input: &str) -> bool {
         if self.insert_kink_prompt.is_none() {
@@ -281,6 +301,23 @@ impl VibocerosApp {
         let key = text.trim_start_matches(['_', '-']);
         if key.eq_ignore_ascii_case("Cancel") || text == "!" {
             self.cancel_insert_kink();
+            return true;
+        }
+        self.validate_insert_kink();
+        if self.continue_insert_kink_subcurve(text) {
+            return true;
+        }
+        if key.eq_ignore_ascii_case("SubCrv")
+            && self
+                .insert_kink_prompt
+                .as_ref()
+                .is_some_and(|p| p.selecting() && !p.shortening)
+        {
+            let p = self.insert_kink_prompt.as_mut().unwrap();
+            p.subcurve = true;
+            p.shortening = true;
+            p.input = Default::default();
+            self.log_insert_kink();
             return true;
         }
         if self
@@ -296,7 +333,7 @@ impl VibocerosApp {
             return true;
         };
         if text.is_empty() {
-            if p.shortening || p.selecting() {
+            if p.selecting() {
                 self.cancel_insert_kink();
                 return true;
             }
@@ -318,12 +355,6 @@ impl VibocerosApp {
                     self.insert_kink_prompt = Some(p);
                 }
             }
-            return true;
-        }
-        if p.selecting() && key.eq_ignore_ascii_case("SubCrv") {
-            p.subcurve = true;
-            p.shortening = true;
-            self.log_insert_kink();
             return true;
         }
         match p.options.accept(text) {

@@ -15,11 +15,12 @@ impl NurbsCurve {
         }
         let normalized = self.try_reparameterized(0.0..=1.0)?;
         // Never silently remove an interval whose relative width cannot be
-        // represented in the normalized frame, including exterior knots.
-        if self
-            .knots()
+        // represented in the normalized frame. Reparameterization deliberately
+        // reconstructs the two unused full-vector outer knots from the short
+        // OpenNURBS vector, so those artificial intervals do not participate.
+        if self.knots()[1..self.knots().len() - 1]
             .windows(2)
-            .zip(normalized.knots().windows(2))
+            .zip(normalized.knots()[1..normalized.knots().len() - 1].windows(2))
             .any(|(before, after)| before[0] < before[1] && after[0] >= after[1])
         {
             return Err(GeometryError::NumericalIntegrationDidNotConverge);

@@ -243,6 +243,9 @@ fn resolve(
 
 impl VibocerosApp {
     pub(super) fn subcurve_preview_hover(&self) -> Option<f64> {
+        if let Some(p) = &self.insert_kink_prompt {
+            return p.subcurve_hover();
+        }
         if let Some(s) = &self.conic_session {
             return s
                 .reference
@@ -267,6 +270,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn subcurve_draft_preview(&mut self) -> Option<Preview> {
+        if let Some(p) = &mut self.insert_kink_prompt {
+            return p.subcurve_preview(&self.document);
+        }
         if let Some(s) = &mut self.conic_session {
             let r = s.reference.as_ref().filter(|r| {
                 r.stage() == viboceros_command::conic::ReferenceStage::TrimEnd

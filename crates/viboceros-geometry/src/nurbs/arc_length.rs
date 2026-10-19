@@ -55,6 +55,62 @@ mod tests {
     use std::borrow::Cow;
 
     #[test]
+    fn periodic_cubic_length_and_signed_endpoints_use_the_original_chart() {
+        let points = [
+            [0., 0.],
+            [1., 3.],
+            [3., -1.],
+            [5., 0.],
+            [0., 0.],
+            [1., 3.],
+            [3., -1.],
+        ];
+        let curve = NurbsCurve::try_new(
+            3,
+            points
+                .into_iter()
+                .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap())
+                .collect(),
+            vec![-2., -2., -1., 0., 1., 2., 3., 4., 5., 6., 6.],
+        )
+        .unwrap();
+        let extrapolated = NurbsCurve::try_new(
+            3,
+            curve.control_points().iter().map(|p| p.point()).collect(),
+            vec![-3., -2., -1., 0., 1., 2., 3., 4., 5., 6., 7.],
+        )
+        .unwrap();
+        for curve in [curve, extrapolated] {
+            for tolerance in [
+                Tolerance::try_new(1e-6, 1e-12, 1e-6).unwrap(),
+                Tolerance::DEFAULT,
+            ] {
+                let length = curve.length(tolerance).unwrap();
+                assert!((length - 8.81623690546946).abs() < 1e-8);
+                let source = crate::Curve3::NurbsCurve(curve.clone());
+                for (anchor, signed) in [(0.8, 1.), (0.8, -1.), (3.2, 1.), (3.2, -1.), (0.8, 8.)] {
+                    let (piece, end) = source
+                        .try_subcurve_at_arc_length_with_endpoint(anchor, signed, tolerance)
+                        .unwrap()
+                        .unwrap();
+                    assert!(
+                        (piece.as_ref().length(tolerance).unwrap() - signed.abs()).abs() < 1e-9
+                    );
+                    assert!(
+                        piece
+                            .as_ref()
+                            .end_point()
+                            .unwrap()
+                            .distance_to(curve.evaluate(end).unwrap())
+                            .unwrap()
+                            < 1e-10
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
     fn degree_one_rational_length_and_stations_do_not_miss_extreme_weight_motion() {
         let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
         let tolerance = Tolerance::try_new(1e-12, 1e-12, 1e-10).unwrap();
