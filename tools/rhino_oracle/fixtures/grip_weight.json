@@ -1,0 +1,5267 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_weight",
+      "id": "curve_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_first.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_middle.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_ends.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_all.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_empty.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "rational_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/rational_first.3dm",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "rational_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/rational_middle.3dm",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "rational_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/rational_ends.3dm",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "rational_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/rational_all.3dm",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "rational_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/rational_empty.3dm",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "rational_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/rational_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_first.3dm",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_middle.3dm",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_ends.3dm",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_all.3dm",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_empty.3dm",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_first.3dm",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_middle.3dm",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_ends.3dm",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_all.3dm",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_empty.3dm",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "line_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/line_first.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "line_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/line_middle.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "line_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/line_ends.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "line_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/line_all.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "line_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/line_empty.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "line_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/line_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polyline_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polyline_first.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polyline_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polyline_middle.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polyline_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polyline_ends.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polyline_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polyline_all.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polyline_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polyline_empty.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polyline_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polyline_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/circle_first.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/circle_middle.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/circle_ends.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/circle_all.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/circle_empty.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/circle_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/arc_first.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/arc_middle.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/arc_ends.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/arc_all.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/arc_empty.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/arc_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_first.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_middle.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_ends.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_all.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_empty.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_row_u",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_row_u.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_closed_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_closed_first.3dm",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_closed_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_closed_middle.3dm",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_closed_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_closed_ends.3dm",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_closed_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_closed_all.3dm",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_closed_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_closed_empty.3dm",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_closed_row_u",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_closed_row_u.3dm",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_first.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_middle.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_ends.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_all.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_empty.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_first.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_middle.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_ends.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_all.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_empty.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_u_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_u_first.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_u_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_u_middle.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_u_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_u_ends.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_u_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_u_all.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_u_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_u_empty.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_u_row_u",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_u_row_u.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_v_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_v_first.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_v_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_v_middle.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_v_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_v_ends.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_v_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_v_all.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_v_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_v_empty.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_v_row_u",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_v_row_u.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cubic_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cubic_first.3dm",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cubic_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cubic_middle.3dm",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cubic_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cubic_ends.3dm",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cubic_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cubic_all.3dm",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cubic_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cubic_empty.3dm",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cubic_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cubic_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "quartic_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/quartic_first.3dm",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "quartic_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/quartic_middle.3dm",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "quartic_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/quartic_ends.3dm",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "quartic_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/quartic_all.3dm",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "quartic_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/quartic_empty.3dm",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "quartic_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/quartic_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "nonuniform_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/nonuniform_first.3dm",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "nonuniform_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/nonuniform_middle.3dm",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "nonuniform_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/nonuniform_ends.3dm",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "nonuniform_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/nonuniform_all.3dm",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "nonuniform_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/nonuniform_empty.3dm",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "nonuniform_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/nonuniform_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_first.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_middle.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_ends.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_all.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_empty.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_cubic_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_cubic_first.3dm",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_cubic_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_cubic_middle.3dm",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_cubic_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_cubic_ends.3dm",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_cubic_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_cubic_all.3dm",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_cubic_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_cubic_empty.3dm",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_cubic_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_cubic_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_weighted_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_weighted_first.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_weighted_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_weighted_middle.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_weighted_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_weighted_ends.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_weighted_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_weighted_all.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_weighted_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_weighted_empty.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_weighted_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_weighted_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_wide_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_wide_first.3dm",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_wide_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_wide_middle.3dm",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_wide_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_wide_ends.3dm",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_wide_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_wide_all.3dm",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_wide_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_wide_empty.3dm",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_wide_row_u",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_wide_row_u.3dm",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_bicubic_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_bicubic_first.3dm",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_bicubic_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_bicubic_middle.3dm",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_bicubic_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_bicubic_ends.3dm",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_bicubic_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_bicubic_all.3dm",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_bicubic_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_bicubic_empty.3dm",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_bicubic_row_u",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_bicubic_row_u.3dm",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "row_u",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_fan_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_fan_first.3dm",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_fan_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_fan_middle.3dm",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_fan_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_fan_ends.3dm",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_fan_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_fan_all.3dm",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_fan_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_fan_empty.3dm",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_grid_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_grid_first.3dm",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_grid_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_grid_middle.3dm",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_grid_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_grid_ends.3dm",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_grid_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_grid_all.3dm",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_grid_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_grid_empty.3dm",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_box_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_box_first.3dm",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_box_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_box_middle.3dm",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_box_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_box_ends.3dm",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_box_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_box_all.3dm",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_box_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_box_empty.3dm",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_curved_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_curved_first.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_curved_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_curved_middle.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_curved_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_curved_ends.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_curved_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_curved_all.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_curved_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_curved_empty.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_curved_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_curved_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_colored_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_colored_first.3dm",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_colored_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_colored_middle.3dm",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_colored_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_colored_ends.3dm",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_colored_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_colored_all.3dm",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_colored_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_colored_empty.3dm",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_ngon_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_ngon_first.3dm",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_ngon_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_ngon_middle.3dm",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_ngon_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_ngon_ends.3dm",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_ngon_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_ngon_all.3dm",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_ngon_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_ngon_empty.3dm",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_min_first",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_min_first.3dm",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_min_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_min_middle.3dm",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_min_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_min_ends.3dm",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_min_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_min_all.3dm",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_min_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_min_empty.3dm",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_min_edit_middle",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_min_edit_middle.3dm",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_default.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "rational_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/rational_default.3dm",
+      "sources": [
+        {
+          "kind": "rational",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_default.3dm",
+      "sources": [
+        {
+          "kind": "closed",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_default.3dm",
+      "sources": [
+        {
+          "kind": "periodic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "line_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/line_default.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polyline_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polyline_default.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/circle_default.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/arc_default.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_default.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_closed_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_closed_default.3dm",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_default.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_default.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_u_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_u_default.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_periodic_v_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_periodic_v_default.3dm",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cubic_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cubic_default.3dm",
+      "sources": [
+        {
+          "kind": "cubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "quartic_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/quartic_default.3dm",
+      "sources": [
+        {
+          "kind": "quartic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "nonuniform_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/nonuniform_default.3dm",
+      "sources": [
+        {
+          "kind": "nonuniform",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_default.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_cubic_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_cubic_default.3dm",
+      "sources": [
+        {
+          "kind": "periodic_cubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "closed_weighted_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/closed_weighted_default.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_wide_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_wide_default.3dm",
+      "sources": [
+        {
+          "kind": "surface_wide",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "surface_bicubic_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/surface_bicubic_default.3dm",
+      "sources": [
+        {
+          "kind": "surface_bicubic",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_fan_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_fan_default.3dm",
+      "sources": [
+        {
+          "kind": "mesh_fan",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_grid_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_grid_default.3dm",
+      "sources": [
+        {
+          "kind": "mesh_grid",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_box_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_box_default.3dm",
+      "sources": [
+        {
+          "kind": "mesh_box",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "polycurve_curved_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/polycurve_curved_default.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_colored_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_colored_default.3dm",
+      "sources": [
+        {
+          "kind": "mesh_colored",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_ngon_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_ngon_default.3dm",
+      "sources": [
+        {
+          "kind": "mesh_ngon",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "periodic_min_default",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/periodic_min_default.3dm",
+      "sources": [
+        {
+          "kind": "periodic_min",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_middle_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_middle_all.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_middle_next_hidden",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_middle_next_hidden.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "next_hidden",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "curve_all_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/curve_all_empty.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "all"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_middle_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_middle_all.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "weighted_all_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/weighted_all_empty.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "all"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_middle_all",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_middle_all.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "middle"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mesh_all_empty",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mesh_all_empty.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "all"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "pick_curve",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/pick_curve.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": true,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "pick_weighted",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/pick_weighted.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": true,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "pick_surface",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/pick_surface.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": true,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "pick_mesh",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/pick_mesh.3dm",
+      "sources": [
+        {
+          "kind": "mesh",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": true,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "off_control",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/off_control.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": true,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "off_edit",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/off_edit.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": true,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cancel_control",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cancel_control.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Cancel"
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "cancel_edit",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/cancel_edit.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "edit",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Cancel"
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "default_curve",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/default_curve.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "same_curve",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/same_curve.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        1.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "default_weighted",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/default_weighted.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "same_weighted",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/same_weighted.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        0.7
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "default_polycurve_curved",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/default_polycurve_curved.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "all",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Enter"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "same_polycurve_curved",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/same_polycurve_curved.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "first",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        1.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "number_218",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/number_218.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        0.001
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "number_219",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/number_219.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        100.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "number_220",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/number_220.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        -1.0,
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "number_221",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/number_221.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        0.0,
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "number_222",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/number_222.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        -1.0,
+        "Cancel"
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "dialog_weighted",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/dialog_weighted.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": false,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "dialog_cancel_weighted",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/dialog_cancel_weighted.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0,
+        "Cancel"
+      ],
+      "dash": false,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "dialog_polycurve_curved",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/dialog_polycurve_curved.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": false,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "dialog_cancel_polycurve_curved",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/dialog_cancel_polycurve_curved.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0,
+        "Cancel"
+      ],
+      "dash": false,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_weighted",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_weighted.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_curve",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_curve.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_line",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_line.3dm",
+      "sources": [
+        {
+          "kind": "line",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_polyline",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_polyline.3dm",
+      "sources": [
+        {
+          "kind": "polyline",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_polycurve",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_polycurve.3dm",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_polycurve_curved",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_polycurve_curved.3dm",
+      "sources": [
+        {
+          "kind": "polycurve_curved",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_surface",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_surface.3dm",
+      "sources": [
+        {
+          "kind": "surface",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "repeat_closed_weighted",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/repeat_closed_weighted.3dm",
+      "sources": [
+        {
+          "kind": "closed_weighted",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": true
+    },
+    {
+      "op": "grip_weight",
+      "id": "mixed_equal",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mixed_equal.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "curve",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "surface",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        1.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mixed",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight/mixed.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "surface",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "mesh",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "polycurve_curved",
+          "selected": "middle",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    }
+  ]
+}

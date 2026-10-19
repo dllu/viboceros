@@ -1,0 +1,124 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_weight",
+      "id": "logical_mixed",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_selection/logical_mixed.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "neighbor_hidden",
+          "mode": "control",
+          "parent": true,
+          "hidden": "middle"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "picked_cancel",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_selection/picked_cancel.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Cancel"
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": true,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "picked_invalid",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_selection/picked_invalid.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        -1.0,
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": true,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "picker_cancel",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_selection/picker_cancel.3dm",
+      "sources": [
+        {
+          "kind": "curve",
+          "selected": "empty",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        "Cancel"
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "mixed_edit",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_selection/mixed_edit.3dm",
+      "sources": [
+        {
+          "kind": "weighted",
+          "selected": "first",
+          "mode": "control",
+          "parent": true,
+          "hidden": "empty"
+        },
+        {
+          "kind": "curve",
+          "selected": "first",
+          "mode": "edit",
+          "parent": true,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": true,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    }
+  ]
+}

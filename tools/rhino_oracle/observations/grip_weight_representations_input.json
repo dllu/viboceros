@@ -1,0 +1,402 @@
+{
+  "circle_analytic_last": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 725.516,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_analytic_second": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 120.4393,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_analytic_adjacent": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": null,
+        "busy": false,
+        "last_send": 101.2906,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_analytic_before_last": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <1>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 1.0,
+        "busy": false,
+        "last_send": 163.2612,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_analytic_ends": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": null,
+        "busy": false,
+        "last_send": 110.1868,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_nurbs_last": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 105.6972,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_nurbs_second": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 111.1028,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_nurbs_adjacent": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": null,
+        "busy": false,
+        "last_send": 102.2171,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_nurbs_before_last": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <1>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 1.0,
+        "busy": false,
+        "last_send": 111.4389,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "circle_nurbs_ends": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": null,
+        "busy": false,
+        "last_send": 107.9501,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_analytic_last": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <1>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 1.0,
+        "busy": false,
+        "last_send": 94.5208,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_analytic_second": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 92.8902,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_analytic_adjacent": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": null,
+        "busy": false,
+        "last_send": 127.0402,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_analytic_before_last": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 126.8217,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_analytic_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <1>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 1.0,
+        "busy": false,
+        "last_send": 130.9567,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_nurbs_last": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <1>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 1.0,
+        "busy": false,
+        "last_send": 105.2002,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_nurbs_second": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 98.6979,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_nurbs_adjacent": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": null,
+        "busy": false,
+        "last_send": 112.0488,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_nurbs_before_last": [
+    {
+      "history": "Control point weight is 0.707107.\nNew control point weight <0.707107>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <0.707107>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 0.707107,
+        "busy": false,
+        "last_send": 102.7493,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ],
+  "arc_nurbs_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "prompts": [
+          "New control point weight <1>"
+        ],
+        "consumed": [
+          2.0
+        ],
+        "dialogs": [],
+        "selection_opened": false,
+        "default": 1.0,
+        "busy": false,
+        "last_send": 101.1747,
+        "applied": true,
+        "errors": []
+      }
+    }
+  ]
+}

@@ -4,6 +4,9 @@ use std::sync::Arc;
 use viboceros_geometry::Point3;
 mod deletion;
 mod geometry;
+mod weight;
+#[cfg(test)]
+mod weight_tests;
 pub use deletion::GripDeletionReport;
 #[cfg(test)]
 mod morph_tests;

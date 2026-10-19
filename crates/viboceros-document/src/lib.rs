@@ -1861,6 +1861,7 @@ impl Document {
             | Edit::SelectionReleasedOnReplay { .. }
             | Edit::ControlPointsChanged { .. }
             | Edit::ControlPointsDeleted { .. }
+            | Edit::ControlPointWeightsChanged { .. }
             | Edit::TransformSelectionReleasedOnReplay { .. }
             | Edit::ObjectInserted { .. }
             | Edit::ObjectRemoved { .. }

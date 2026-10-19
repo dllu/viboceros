@@ -59,6 +59,12 @@ fn picks(seed: &str, n: usize, dimensions: Option<[usize; 2]>) -> Result<Vec<usi
     })
 }
 impl Fixture {
+    pub(super) fn points_off(&self) -> bool {
+        self.off
+    }
+    pub(super) fn rebase(&mut self, folder: &Path) {
+        self.artifact_path = folder.join(self.artifact_path.file_name().unwrap());
+    }
     fn validate(&self) -> Result<(), ProbeError> {
         const KINDS: &[&str] = &[
             "curve",

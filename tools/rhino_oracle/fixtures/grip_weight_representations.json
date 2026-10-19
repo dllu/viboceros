@@ -1,0 +1,446 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_weight",
+      "id": "circle_analytic_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_analytic_last.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_analytic_second",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_analytic_second.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "second",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_analytic_adjacent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_analytic_adjacent.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_analytic_before_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_analytic_before_last.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "before_last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "circle_analytic_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_analytic_ends.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "circle_nurbs_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_nurbs_last.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "circle_nurbs_second",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_nurbs_second.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "second",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "circle_nurbs_adjacent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_nurbs_adjacent.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "circle_nurbs_before_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_nurbs_before_last.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "before_last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "circle_nurbs_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/circle_nurbs_ends.3dm",
+      "sources": [
+        {
+          "kind": "circle",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_analytic_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_analytic_last.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_analytic_second",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_analytic_second.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "second",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_analytic_adjacent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_analytic_adjacent.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_analytic_before_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_analytic_before_last.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "before_last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight",
+      "id": "arc_analytic_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_analytic_ends.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "arc_nurbs_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_nurbs_last.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "arc_nurbs_second",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_nurbs_second.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "second",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "arc_nurbs_adjacent",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_nurbs_adjacent.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "adjacent",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "arc_nurbs_before_last",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_nurbs_before_last.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "before_last",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    },
+    {
+      "op": "grip_weight_nurbs",
+      "id": "arc_nurbs_ends",
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_weight_representations/arc_nurbs_ends.3dm",
+      "sources": [
+        {
+          "kind": "arc",
+          "selected": "ends",
+          "mode": "control",
+          "parent": false,
+          "hidden": "empty"
+        }
+      ],
+      "inputs": [
+        2.0
+      ],
+      "dash": true,
+      "peer": false,
+      "off": false,
+      "pick": false,
+      "repeat": false
+    }
+  ]
+}

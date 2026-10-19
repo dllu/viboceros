@@ -72,6 +72,10 @@ pub(super) enum Edit {
         id: ObjectId,
         stored: Option<super::control_points::ControlPoints>,
     },
+    ControlPointWeightsChanged {
+        id: ObjectId,
+        stored: Option<super::control_points::ControlPoints>,
+    },
     ControlPointsDeleted {
         id: ObjectId,
         stored: Option<super::control_points::ControlPoints>,
@@ -187,6 +191,12 @@ impl Edit {
             }
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
+            }
+            Self::ControlPointWeightsChanged { id, stored } => {
+                exchange_control_points(document, *id, stored);
+                if let Some(state) = document.control_points.get_mut(id) {
+                    state.reveal_hidden_selection();
+                }
             }
             Self::ControlPointsDeleted { id, stored, mesh } => {
                 exchange_deleted_control_points(document, *id, stored, true, *mesh)
@@ -326,6 +336,12 @@ impl Edit {
             }
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
+            }
+            Self::ControlPointWeightsChanged { id, stored } => {
+                exchange_control_points(document, *id, stored);
+                if let Some(state) = document.control_points.get_mut(id) {
+                    state.reset_visibility();
+                }
             }
             Self::ControlPointsDeleted { id, stored, mesh } => {
                 exchange_deleted_control_points(document, *id, stored, false, *mesh)

@@ -1,0 +1,104 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "line_first",
+      "kind": "line",
+      "seed": "first",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "line_middle",
+      "kind": "line",
+      "seed": "middle",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "line_ends",
+      "kind": "line",
+      "seed": "ends",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "weighted_first",
+      "kind": "weighted",
+      "seed": "first",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "weighted_middle",
+      "kind": "weighted",
+      "seed": "middle",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "weighted_ends",
+      "kind": "weighted",
+      "seed": "ends",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "polycurve_first",
+      "kind": "polycurve",
+      "seed": "first",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "polycurve_middle",
+      "kind": "polycurve",
+      "seed": "middle",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "polycurve_ends",
+      "kind": "polycurve",
+      "seed": "ends",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "polycurve_curved_first",
+      "kind": "polycurve_curved",
+      "seed": "first",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "polycurve_curved_middle",
+      "kind": "polycurve_curved",
+      "seed": "middle",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "polycurve_curved_ends",
+      "kind": "polycurve_curved",
+      "seed": "ends",
+      "preset": false
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "preset_first",
+      "kind": "polycurve",
+      "seed": "first",
+      "preset": true
+    },
+    {
+      "op": "grip_weight_lifecycle",
+      "id": "preset_ends",
+      "kind": "polycurve",
+      "seed": "ends",
+      "preset": true
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "logical_mixed": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "consumed": [
+          2.0
+        ],
+        "applied": true,
+        "dialogs": [],
+        "errors": [],
+        "selection_opened": false,
+        "default": 1.0,
+        "last_send": 731.6326,
+        "prompts": [
+          "New control point weight <1>"
+        ],
+        "busy": false
+      }
+    }
+  ],
+  "picked_cancel": [
+    {
+      "history": "Select control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n4 curve points added to selection.\nSelect control points for weight editing. Press Enter when done\nAll control point weights are 1.\nNew control point weight <1>: _Cancel\nNew control point weight <1>\n",
+      "input": {
+        "consumed": [
+          "Cancel"
+        ],
+        "applied": true,
+        "dialogs": [],
+        "errors": [],
+        "selection_opened": true,
+        "default": 1.0,
+        "last_send": 364.5127,
+        "prompts": [
+          "Select control points for weight editing",
+          "New control point weight <1>"
+        ],
+        "busy": false
+      }
+    }
+  ],
+  "picked_invalid": [
+    {
+      "history": "Select control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n4 curve points added to selection.\nSelect control points for weight editing. Press Enter when done\nAll control point weights are 1.\nNew control point weight <1>: -1.0\n",
+      "input": {
+        "consumed": [
+          -1.0
+        ],
+        "applied": true,
+        "dialogs": [],
+        "errors": [],
+        "selection_opened": true,
+        "default": 1.0,
+        "last_send": 573.6649,
+        "prompts": [
+          "Select control points for weight editing",
+          "New control point weight <1>"
+        ],
+        "busy": false
+      }
+    }
+  ],
+  "picker_cancel": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "consumed": [],
+        "applied": false,
+        "dialogs": [],
+        "errors": [],
+        "selection_opened": true,
+        "default": null,
+        "last_send": null,
+        "prompts": [
+          "Select control points for weight editing"
+        ],
+        "busy": false
+      }
+    }
+  ],
+  "mixed_edit": [
+    {
+      "history": "Error - Some existing weights are <= 0.0\nControl point weights vary from -1.23432e+308 to 0.7.\nNew control point weight: 2.0\n",
+      "input": {
+        "consumed": [
+          2.0
+        ],
+        "applied": true,
+        "dialogs": [],
+        "errors": [],
+        "selection_opened": false,
+        "default": null,
+        "last_send": 119.5425,
+        "prompts": [
+          "New control point weight"
+        ],
+        "busy": false
+      }
+    }
+  ]
+}

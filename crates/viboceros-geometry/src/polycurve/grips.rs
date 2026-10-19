@@ -3,6 +3,84 @@ use super::*;
 use crate::{NurbsCurve, WeightedPoint3};
 use std::collections::BTreeSet;
 impl PolyCurve3 {
+    /// Displayed leaf weights in logical grip order. At a shared junction,
+    /// the preceding leaf supplies the controller. Two-control line leaves
+    /// expose unit grip weights independently of their rational parameterization.
+    pub fn grip_weights(&self) -> Result<Vec<Real>, GeometryError> {
+        let (points, mappings) = self.grip_layout()?;
+        let mut weights = vec![None; points.len()];
+        for (segment, mapping) in self.segments.iter().zip(mappings) {
+            let c = segment.to_nurbs()?;
+            let line = c.degree() == 1 && c.control_points().len() == 2;
+            for (local, index) in mapping.into_iter().enumerate() {
+                if weights[index].is_none() {
+                    weights[index] = Some(if line {
+                        1.
+                    } else {
+                        c.control_points()[local].weight()
+                    });
+                }
+            }
+        }
+        Ok(weights.into_iter().map(Option::unwrap).collect())
+    }
+
+    /// Rebuild the compound grip net in each leaf basis. Shared junction
+    /// controllers supply both adjoining controls, including unselected aliases.
+    pub fn with_grip_weight(
+        &self,
+        indices: &BTreeSet<usize>,
+        weight: Real,
+    ) -> Result<Self, GeometryError> {
+        let (points, mappings) = self.grip_layout()?;
+        WeightedPoint3::try_new(points[0], weight)?;
+        if let Some(&index) = indices.last().filter(|&&i| i >= points.len()) {
+            return Err(GeometryError::InvalidControlPointIndex {
+                index,
+                count: points.len(),
+            });
+        }
+        let mut weights = self.grip_weights()?;
+        if indices.iter().all(|&i| weights[i] == weight) {
+            return Ok(self.clone());
+        }
+        for &index in indices {
+            weights[index] = weight;
+        }
+        let segments = self
+            .segments
+            .iter()
+            .enumerate()
+            .map(|(i, segment)| {
+                let source = segment
+                    .to_nurbs()?
+                    .try_reparameterized(self.parameters[i]..=self.parameters[i + 1])?;
+                let mapping = &mappings[i];
+                let controls = source
+                    .control_points()
+                    .iter()
+                    .enumerate()
+                    .map(|(j, _)| {
+                        let index = mapping[j % mapping.len()];
+                        WeightedPoint3::try_new(points[index], weights[index])
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                let mut controls = controls;
+                if controls.iter().all(|c| c.weight() == controls[0].weight()) {
+                    for c in &mut controls {
+                        *c = WeightedPoint3::try_new(c.point(), 1.)?;
+                    }
+                }
+                Ok(CurveSegment3::NurbsCurve(NurbsCurve::try_new_rational(
+                    source.degree(),
+                    controls,
+                    source.knots().to_vec(),
+                )?))
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        Self::try_with_segment_domains(segments, self.parameters.clone())
+    }
+
     /// Greville stations belong to each native leaf, with one shared station
     /// at a junction. Elevating a joined curve to one NURBS adds extra stations.
     pub fn edit_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {

@@ -1,6 +1,6 @@
 use super::*;
 use serde_json::Value;
-fn close(a: &Value, b: &Value, path: &str) {
+pub(super) fn close(a: &Value, b: &Value, path: &str) {
     match (a, b) {
         (Value::Number(a), Value::Number(b)) if a.is_f64() || b.is_f64() => {
             let (a, b) = (a.as_f64().unwrap(), b.as_f64().unwrap());

@@ -1,0 +1,227 @@
+{
+  "validated_at": "2026-10-19T21:06:38.115986+00:00",
+  "base_commit": "4f86f0feed920b700ff79be296b54c31b59d7610",
+  "feature": "Weight for rational curve and surface control points, composite controllers, live previews, selection and history",
+  "captures": [
+    {
+      "request": "tools/rhino_oracle/fixtures/grip_weight.json",
+      "request_sha256": "48b2ae148f45a88f724e5998966bd703fb426b7cc02bc1fd44079cdf001372f7",
+      "observation": "tools/rhino_oracle/observations/grip_weight.json",
+      "observation_sha256": "1e22bdcac2cbd7aedf0483791326febab57da0f7ade319bfb0ff8f711d532f6a",
+      "cases": 237,
+      "command_steps": 721,
+      "engine_version": "8.32.26160.13001",
+      "result_counts": {
+        "Success": 597,
+        "Cancel": 36,
+        "Failure": 88
+      },
+      "capture_sources": {
+        "generate_grip_weight.py": "87239b1030e5942f6f17be7b607b3a6b27674e86a3fa87f16f83a0287ae836a0",
+        "grip_weight_probe.py": "fde1af46591922b6d518722a949c1412c552b92072b623e6f45d19d92f55d5bb",
+        "weight_dialog.py": "a80ad4d8708acb16ba073f844007c28e814130a4f7ecfee24f3f4d7227a47ab0",
+        "delete_grips_probe.py": "53fe388d359a5833c02aa4bda2f6ba8e9438d9e3c2a454dcf897ee302fe0dd68",
+        "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+        "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "70142bd0298768b5fe60fd05978ae5ca7673abed2237f6a9e5ab9b4041c1b98f",
+        "structural_sdk.py": "7cf96583df3302df613123c687a42e3580e54b390f6748251f548cd021033e1d"
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/grip_weight_selection.json",
+      "request_sha256": "e4d67320074307e998a539075b9138b3c995601ae6436c713a0d0118663734cf",
+      "observation": "tools/rhino_oracle/observations/grip_weight_selection.json",
+      "observation_sha256": "dfdc16948e865cc1584d66b6634e6852a6d276de857115474e54e2dc62354e8d",
+      "cases": 5,
+      "command_steps": 15,
+      "engine_version": "8.32.26160.13001",
+      "result_counts": {
+        "Success": 11,
+        "Cancel": 2,
+        "Failure": 2
+      },
+      "capture_sources": {
+        "generate_weight_selection.py": "a225fd4adae73367b9bb8f2c83e5fde4d30c5beebbdb55b3dda08b7f9c8b0531",
+        "generate_grip_weight.py": "87239b1030e5942f6f17be7b607b3a6b27674e86a3fa87f16f83a0287ae836a0",
+        "grip_weight_probe.py": "fde1af46591922b6d518722a949c1412c552b92072b623e6f45d19d92f55d5bb",
+        "weight_dialog.py": "a80ad4d8708acb16ba073f844007c28e814130a4f7ecfee24f3f4d7227a47ab0",
+        "delete_grips_probe.py": "53fe388d359a5833c02aa4bda2f6ba8e9438d9e3c2a454dcf897ee302fe0dd68",
+        "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+        "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "cac34abe1014ade0dc303a975a9f6edbe20333ecf1d5a8dcc699ee19a83079cc",
+        "structural_sdk.py": "7f324dd96e1e729f475b5d3e02854ea680079661d6b97170bed66430a04b3983"
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/grip_weight_representations.json",
+      "request_sha256": "8169a6aec61e35c5a1511b10411a9e8e095d02e224ee7f78166b31acac0ce7d1",
+      "observation": "tools/rhino_oracle/observations/grip_weight_representations.json",
+      "observation_sha256": "dd8f3f58205429439c9f8149c6b6f4bd232746e1c26ebb8165246fca4234832f",
+      "cases": 20,
+      "command_steps": 60,
+      "engine_version": "8.32.26160.13001",
+      "result_counts": {
+        "Success": 60
+      },
+      "capture_sources": {
+        "generate_weight_representations.py": "04d9f0fdeb1037782c149b7bdf2def2164ba12ef23ffae5bf0545f4f5592063a",
+        "generate_grip_weight.py": "87239b1030e5942f6f17be7b607b3a6b27674e86a3fa87f16f83a0287ae836a0",
+        "weight_nurbs_probe.py": "3a0d75d968174487deeb1027428f69cdccc9030a5a4ad6fac9e341fd0f677463",
+        "grip_weight_probe.py": "78dc2ed43aba3b3b6ec3cc5058d62fcd024e0142b0f28d4567edca1be0dbe369",
+        "weight_dialog.py": "a80ad4d8708acb16ba073f844007c28e814130a4f7ecfee24f3f4d7227a47ab0",
+        "delete_grips_probe.py": "53fe388d359a5833c02aa4bda2f6ba8e9438d9e3c2a454dcf897ee302fe0dd68",
+        "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+        "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "5a128b4c7bc1d12c83ad5d40fccd60e9339c2ed5b7ea60e285aac037ee22aeae",
+        "structural_sdk.py": "402805100bb4687ca834bb84db1d51e257807abfd3b5987bf51d74f7886bc62f"
+      }
+    },
+    {
+      "request": "tools/rhino_oracle/fixtures/grip_weight_lifecycle.json",
+      "request_sha256": "aefb1bd41c261008b84f1893d720a34e4e0a19b066d37bcd7d0366b9a8b722fb",
+      "observation": "tools/rhino_oracle/observations/grip_weight_lifecycle.json",
+      "observation_sha256": "040489a403dce9b4eee4feeb7175405b2f15fe5f8ae3831dfce803958699b88d",
+      "cases": 14,
+      "command_steps": 84,
+      "engine_version": "8.32.26160.13001",
+      "result_counts": {
+        "Success": 78,
+        "Failure": 6
+      },
+      "capture_sources": {
+        "weight_lifecycle_probe.py": "d07733e8b6328f7575869b35cfc707d680949329c62f5ec82602e632049410b4",
+        "weight_dialog.py": "a80ad4d8708acb16ba073f844007c28e814130a4f7ecfee24f3f4d7227a47ab0",
+        "delete_grips_probe.py": "53fe388d359a5833c02aa4bda2f6ba8e9438d9e3c2a454dcf897ee302fe0dd68",
+        "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+        "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "cac34abe1014ade0dc303a975a9f6edbe20333ecf1d5a8dcc699ee19a83079cc",
+        "structural_sdk.py": "7f324dd96e1e729f475b5d3e02854ea680079661d6b97170bed66430a04b3983"
+      }
+    }
+  ],
+  "kernel_definition_checks": {
+    "curves": 140,
+    "surfaces": 47
+  },
+  "checks": {
+    "kernel": {
+      "command": "cargo test -p viboceros-geometry --lib grip_weight_tests",
+      "passed": true,
+      "log": "docs/weight-proof/kernel.log.gz",
+      "sha256": "ebc00530841338dcb01682e9bece6362d61608cb1f60ea79c3a00bde5c63a7de",
+      "passed_tests": 2
+    },
+    "document": {
+      "command": "cargo test -p viboceros-document --lib control_points",
+      "passed": true,
+      "log": "docs/weight-proof/document.log.gz",
+      "sha256": "3c0d8ae4d726d507a4240a5da9da63fc9c71b298fe366381a59693aaf9f45ac6",
+      "passed_tests": 21
+    },
+    "oracle": {
+      "command": "cargo test -p viboceros-oracle --lib grip_weight -- --nocapture",
+      "passed": true,
+      "log": "docs/weight-proof/oracle.log.gz",
+      "sha256": "a775e969785267923378296dc72720529e598a005c10ac93b66f1bcfc76f5e61",
+      "passed_tests": 2
+    },
+    "application": {
+      "command": "cargo test -p viboceros --bin viboceros grip_",
+      "passed": true,
+      "log": "docs/weight-proof/application.log.gz",
+      "sha256": "6f05d7ebbb21ce7222948cd86daef50aedaa27c94c36988d653412a459397531",
+      "passed_tests": 27
+    },
+    "delete_regression": {
+      "command": "cargo test -p viboceros --bin viboceros complete_native_delete_grips_application_and_history",
+      "passed": true,
+      "log": "docs/weight-proof/delete_regression.log.gz",
+      "sha256": "92c4b44d85cdae6f2e36842d013e51a3c1fd313695a386d31caf471a5487c915",
+      "passed_tests": 1
+    },
+    "help": {
+      "command": "cargo test -p viboceros-command --lib reports_sorted_help",
+      "passed": true,
+      "log": "docs/weight-proof/help.log.gz",
+      "sha256": "0d70afea2ae1f2dfeffb4f5ce847482dee532fc9f0f6a93e891dd135cf79112e",
+      "passed_tests": 1
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_grip_weight tools.rhino_oracle.test_delete_grips tools.rhino_oracle.test_structural_sdk",
+      "passed": true,
+      "log": "docs/weight-proof/python.log.gz",
+      "sha256": "0c1bc5b7ee3de54fc059cc5a2d049c14143a6f7cbd4ca3b233fba22b3ae9d62c",
+      "passed_tests": 9
+    },
+    "clippy": {
+      "command": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+      "passed": true,
+      "log": "docs/weight-proof/clippy.log.gz",
+      "sha256": "cea9da3ed1bb9f3a76f95cfe8900923b99ba997f5a255de7a3aa8371c3160bcf"
+    },
+    "format": {
+      "command": "cargo fmt --all --check",
+      "passed": true,
+      "log": "docs/weight-proof/format.log.gz",
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    "portable_build": {
+      "command": "cargo build --release -p viboceros-oracle",
+      "passed": true,
+      "log": "docs/weight-proof/portable_build.log.gz",
+      "sha256": "9e2f76b21bfb39eeaaa41642d62e31ce749c13ab0b631079dbd9fb40c2dd1e8f"
+    },
+    "native_build": {
+      "command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo build --release -p viboceros-oracle --features native-smlib",
+      "passed": true,
+      "log": "docs/weight-proof/native_build.log.gz",
+      "sha256": "d9e1e4e7e44199f5c759fb3cdce6848cf423fd8bb60aab734e3f7586269b3eb1"
+    }
+  },
+  "release_replays": {
+    "portable": {
+      "report": "docs/weight-proof/portable-replay.json",
+      "sha256": "6b175e1272fc88e14c97a51838c39dc60c980480f12021831ef17e3447c12cf7",
+      "cases": 262,
+      "matched": 262,
+      "max_absolute_error": 7.105427357601002e-15,
+      "command": "python3 -m tools.rhino_oracle.replay_grip_weight --output docs/weight-proof/portable-replay.json"
+    },
+    "native": {
+      "report": "docs/weight-proof/native-replay.json",
+      "sha256": "f2322b889d54e617f73710c658fbaa48d067a81633e33f484a65d90fe2e7eae4",
+      "cases": 262,
+      "matched": 262,
+      "max_absolute_error": 7.105427357601002e-15,
+      "command": "python3 -m tools.rhino_oracle.replay_grip_weight --native-smlib --output docs/weight-proof/native-replay.json"
+    }
+  },
+  "comparison": "Every captured workflow field: full geometry definitions and composite leaves; weights, knots and domains; object order, identity, selection, names, colors and groups; grip index/location/weight/selection/visibility/selectability; EndCommand and post-script states, native result and displayed getter inputs/default. Application replay checks every post-script state through the real input flow. Fourteen additional lifecycle workflows compare full states across PointsOff/PointsOn and repeated Weight/Undo/Redo.",
+  "protocol_representation": "The two omitted OpenNURBS outer knot slots repeat adjacent represented values. Mesh alpha converts kernel transparency to SDK opacity. Unsupported grip weights use the public SDK unset sentinel. Native displayed defaults use six significant digits while calculation retains the full controller value. No active knots, controls, weights or topology are projected or fitted.",
+  "public_source": {
+    "path": "third_party/opennurbs/opennurbs_polycurve.cpp",
+    "commit": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+    "sha256": "e3bf4cf305d149fa1f21bb34125107d36a5eb2590d25db85618d4cb2b534b08c",
+    "use": "ON_NurbsCurve::GetNextDiscontinuity relative first-derivative component continuity criterion"
+  },
+  "interrupted_extra_check": {
+    "command": "cargo test -p viboceros-geometry -p viboceros-document -p viboceros-command -p viboceros-oracle -p viboceros weight -- --nocapture",
+    "passed": false,
+    "reason": "The broad name filter included an unrelated exhaustive surface-grid evaluation test. The owned sweep was interrupted with SIGINT; the precise Weight kernel, model, application and oracle checks above completed independently.",
+    "log": "docs/weight-proof/interrupted_broad_filter.log.gz",
+    "sha256": "d9de8b9c8ffa1d425c0e16d122ab7389692b70dc37f5481f6491123e302e1a9a"
+  },
+  "limits": [
+    "Arbitrary trimmed-surface behavior and exhaustive knot layouts remain unqualified.",
+    "Large-net performance has not been benchmarked against Rhino.",
+    "Replay timings measure the harness and do not establish kernel speedups."
+  ]
+}

@@ -73,3 +73,6 @@ further implementation or verification. Oriented Circle frames remain a
 [separate compatibility gap](circle-fit-input.md).
 
 [Provenance](circle-fit-grips-provenance.json) · [Command reference](commands/README.md)
+
+`Weight` edits rational curve and surface control weights with a live preview,
+command-line input, and Undo/Redo. See [Weight](commands/weight.md).

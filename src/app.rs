@@ -239,6 +239,7 @@ mod unjoin_edge;
 mod untrim_holes;
 mod uv_subcurve_input;
 mod viewport_layout;
+mod weight;
 mod zoom_target;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
 
@@ -2348,6 +2349,7 @@ pub struct VibocerosApp {
     refinement_prompt: Option<refinement::Prompt>,
     select_uv_prompt: Option<select_uv_rows::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
+    weight_prompt: Option<weight::Session>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
@@ -2484,6 +2486,7 @@ impl VibocerosApp {
             refinement_prompt: None,
             select_uv_prompt: None,
             rebuild_preview: None,
+            weight_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
@@ -9457,6 +9460,7 @@ impl VibocerosApp {
                         | "Sphere FitPoints"
                         | "Smooth"
                         | "HidePt"
+                        | "Weight"
                 ) || (prompt.description.workflow
                     == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                     && transform_sources::allows_grips(prompt.description.command))
@@ -9650,6 +9654,7 @@ impl VibocerosApp {
                             | "Sphere FitPoints"
                             | "Smooth"
                             | "HidePt"
+                            | "Weight"
                     ) || (prompt.description.workflow
                         == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                         && transform_sources::allows_grips(prompt.description.command)))
@@ -9897,6 +9902,7 @@ impl eframe::App for VibocerosApp {
         self.validate_tween_surfaces();
         self.validate_boolean_two();
         self.validate_rebuild_preview();
+        self.validate_weight_preview();
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             self.cancel_current_prompt_or_selection();
@@ -9946,6 +9952,7 @@ impl eframe::App for VibocerosApp {
         self.capture_global_command_typing(ui);
         self.show_toolbar(ui);
         self.show_grid_settings(ui);
+        self.show_weight_dialog(ui.ctx());
         self.show_layers(ui);
         self.show_block_manager(ui.ctx());
         self.show_block_edit(ui.ctx());
@@ -10492,7 +10499,8 @@ impl eframe::App for VibocerosApp {
             self.rebuild_preview
                 .as_ref()
                 .and_then(|p| p.scene())
-                .or_else(|| self.refinement_prompt.as_ref().and_then(|p| p.scene())),
+                .or_else(|| self.refinement_prompt.as_ref().and_then(|p| p.scene()))
+                .or_else(|| self.weight_prompt.as_ref().and_then(|p| p.scene())),
         );
         let twist_preview = self
             .twist_session
@@ -11176,6 +11184,7 @@ mod tests {
     mod grip_navigation;
     mod grip_transform;
     mod grip_visibility;
+    mod grip_weight;
     mod group_prompt;
     mod hyperbola;
     mod insert_control_point;
@@ -11345,6 +11354,7 @@ mod tests {
             refinement_prompt: None,
             select_uv_prompt: None,
             rebuild_preview: None,
+            weight_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,

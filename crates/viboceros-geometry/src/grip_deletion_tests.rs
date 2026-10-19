@@ -26,7 +26,7 @@ fn controls(v: &Value) -> Vec<WeightedPoint3> {
 fn knots(v: &Value) -> Vec<f64> {
     v.as_array().unwrap().iter().map(scalar).collect()
 }
-fn curve(v: &Value) -> NurbsCurve {
+pub(super) fn curve(v: &Value) -> NurbsCurve {
     NurbsCurve::try_new_rational(
         usize_value(&v["degree"]),
         controls(&v["control_points"]),
@@ -34,10 +34,10 @@ fn curve(v: &Value) -> NurbsCurve {
     )
     .unwrap()
 }
-fn curve_value(c: &NurbsCurve) -> Value {
+pub(super) fn curve_value(c: &NurbsCurve) -> Value {
     json!({"degree":c.degree(),"control_points":c.control_points().iter().map(|p|json!({"point":p.point().to_array(),"weight":p.weight()})).collect::<Vec<_>>(),"knots":c.knots(),"domain":[*c.domain().start(),*c.domain().end()]})
 }
-fn surface(v: &Value) -> NurbsSurface {
+pub(super) fn surface(v: &Value) -> NurbsSurface {
     NurbsSurface::try_new_rational(
         usize_value(&v["degree"][0]),
         usize_value(&v["degree"][1]),
@@ -49,7 +49,7 @@ fn surface(v: &Value) -> NurbsSurface {
     )
     .unwrap()
 }
-fn surface_value(s: &NurbsSurface) -> Value {
+pub(super) fn surface_value(s: &NurbsSurface) -> Value {
     json!({"degree":[s.degree_u(),s.degree_v()],"control_count":[s.control_point_count_u(),s.control_point_count_v()],
         "control_points":(0..s.control_point_count_v()).flat_map(|v|(0..s.control_point_count_u()).map(move|u|s.control_point(u,v).unwrap())).map(|p|json!({"point":p.point().to_array(),"weight":p.weight()})).collect::<Vec<_>>(),
         "knots_u":s.knots_u(),"knots_v":s.knots_v(),"domain_u":[*s.domain_u().start(),*s.domain_u().end()],"domain_v":[*s.domain_v().start(),*s.domain_v().end()]})
@@ -109,7 +109,7 @@ fn mesh(v: &Value) -> TriangleMesh {
 fn mesh_value(m: &TriangleMesh) -> Value {
     json!({"vertices":m.vertices().iter().map(|p|p.to_array()).collect::<Vec<_>>(),"faces":m.faces().iter().map(|f|f.indices()).collect::<Vec<_>>(),"colors":m.vertex_colors().map(|v|v.iter().map(|c|[c[0],c[1],c[2],255-c[3]]).collect::<Vec<_>>()),"ngons":m.ngons().iter().map(|g|json!({"vertices":g.vertices(),"faces":g.faces()})).collect::<Vec<_>>()})
 }
-fn difference(a: &Value, b: &Value, path: &str) -> Option<String> {
+pub(super) fn difference(a: &Value, b: &Value, path: &str) -> Option<String> {
     match (a, b) {
         (Value::Number(a), Value::Number(b)) if a.is_f64() || b.is_f64() => {
             let (a, b) = (a.as_f64().unwrap(), b.as_f64().unwrap());

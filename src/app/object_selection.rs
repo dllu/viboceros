@@ -133,6 +133,13 @@ impl PendingObjectCommand {
         if self.description.command == "LineThroughPt" {
             return "Select at least two points, cloud points, meshes or grips; Enter fits a line, Esc cancels";
         }
+        if self.description.command == "Weight" {
+            return if self.phase == ObjectPromptPhase::Selecting {
+                "Select curve or surface control points; Enter continues, Esc cancels"
+            } else {
+                "Enter a positive control point weight; Enter uses the default, Esc cancels"
+            };
+        }
         if self.description.command == "HidePt" {
             return "Select control or edit points to hide; Enter hides, Esc cancels";
         }
@@ -241,6 +248,7 @@ impl VibocerosApp {
                         | "Sphere FitPoints"
                         | "Smooth"
                         | "HidePt"
+                        | "Weight"
                 ) || (p.description.workflow
                     == ObjectSelectionWorkflow::PointInputAfterSelection
                     && super::transform_sources::allows_grips(p.description.command)))
@@ -421,6 +429,18 @@ impl VibocerosApp {
             // Native command-first inline base options are consumed during
             // source selection; the user chooses Normal again after Enter.
             return self.try_start_object_prompt("Move");
+        }
+        if input.split_whitespace().next().is_some_and(|n| {
+            n.trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Weight")
+        }) && self.document.selected_control_points().next().is_some()
+            && self
+                .document
+                .selected_weight_control_points()
+                .next()
+                .is_none()
+        {
+            return false;
         }
         let description = match self.commands.object_selection_prompt(input) {
             Ok(Some(prompt)) => prompt,
@@ -619,12 +639,15 @@ impl VibocerosApp {
                 | "Sphere FitPoints"
                 | "Smooth"
                 | "HidePt"
+                | "Weight"
         ) {
             self.document
                 .selected_control_points()
                 .filter(|(p, _)| {
                     (description.command != "HidePt"
                         || self.document.is_control_point_selectable(*p))
+                        && (description.command != "Weight"
+                            || self.document.control_point_weight(*p).is_some())
                         && (description.command != "Smooth"
                             || self
                                 .document
@@ -777,6 +800,7 @@ impl VibocerosApp {
         self.initialize_divide_prompt();
         self.initialize_modify_radius(input);
         self.initialize_reduce_polyline(input);
+        self.initialize_weight_prompt(input);
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
         true
@@ -826,6 +850,9 @@ impl VibocerosApp {
             let command = format!("{} AllBlocks", pending.description.command_line());
             self.command_input.clear();
             self.execute_command(&command);
+            return true;
+        }
+        if self.continue_weight(input) {
             return true;
         }
         if self.continue_modify_radius(input) {
@@ -974,6 +1001,7 @@ impl VibocerosApp {
                             | "Sphere FitPoints"
                             | "Smooth"
                             | "HidePt"
+                            | "Weight"
                     ) && self.document.selected_control_points().any(|(g, _)| {
                         pending.description.command != "HidePt"
                             || self.document.is_control_point_selectable(g)
@@ -1217,6 +1245,7 @@ impl VibocerosApp {
                         | "LineThroughPt"
                         | "Sphere FitPoints"
                         | "HidePt"
+                        | "Weight"
                 ) {
                     self.document.select_all_control_points();
                 }
@@ -1470,6 +1499,7 @@ impl VibocerosApp {
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {
         self.rebuild_preview = None;
+        self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {
             if matches!(
                 pending.description.command,

@@ -1,0 +1,4759 @@
+{
+  "curve_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 717.5598,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "curve_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 106.2935,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "curve_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 131.784,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "curve_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 105.7632,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "curve_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "curve_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "rational_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 136.1502,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "rational_middle": [
+    {
+      "history": "Control point weight is 0.5.\nNew control point weight <0.5>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 111.8814,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.5,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.5>"
+        ]
+      }
+    }
+  ],
+  "rational_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.5519,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "rational_all": [
+    {
+      "history": "Control point weights vary from 0.5 to 2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 109.4471,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "rational_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "rational_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "closed_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 130.6092,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "closed_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 136.3271,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "closed_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 122.6003,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "closed_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 120.4626,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "closed_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "closed_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "periodic_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 117.3262,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 102.3769,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 127.0968,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 122.9509,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "periodic_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "line_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 98.3051,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "line_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 114.1572,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "line_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 116.3355,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "line_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 119.9531,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "line_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "line_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "polyline_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 133.4266,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polyline_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 101.9997,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polyline_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 124.0182,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polyline_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 99.8091,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polyline_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "polyline_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "circle_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.0307,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "circle_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.2263,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "circle_ends": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 110.2243,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "circle_all": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 106.665,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "circle_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "circle_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "arc_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.0484,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "arc_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 104.9111,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "arc_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 109.7996,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "arc_all": [
+    {
+      "history": "Control point weights vary from 0.707107 to 1.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 112.4048,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "arc_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "arc_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "surface_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 104.3882,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>",
+          "Command"
+        ]
+      }
+    }
+  ],
+  "surface_middle": [
+    {
+      "history": "Control point weight is 1.125.\nNew control point weight <1.125>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 95.4496,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.125,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1.125>"
+        ]
+      }
+    }
+  ],
+  "surface_ends": [
+    {
+      "history": "Control point weights vary from 1 to 1.5.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 99.3545,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_all": [
+    {
+      "history": "Control point weights vary from 1 to 1.5.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.1461,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "surface_row_u": [
+    {
+      "history": "Control point weights vary from 1 to 1.25.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 115.8724,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_closed_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 96.4803,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_closed_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.6469,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_closed_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.7886,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_closed_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.458,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_closed_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "surface_closed_row_u": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 88.2701,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "mesh_first": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_ends": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_all": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "polycurve_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.2253,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polycurve_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.7857,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polycurve_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.8777,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polycurve_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 91.6942,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polycurve_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "polycurve_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "surface_periodic_u_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 88.6944,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_u_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.9697,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_u_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.4782,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_u_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 100.936,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_u_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_u_row_u": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.7307,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_v_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 105.8342,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_v_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.3994,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_v_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 88.7865,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_v_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 91.0858,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_v_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_v_row_u": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 102.6506,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "cubic_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 98.2625,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "cubic_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 100.4857,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "cubic_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 96.7948,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "cubic_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.2313,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "cubic_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "cubic_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "quartic_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 95.9143,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "quartic_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 95.4191,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "quartic_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.7152,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "quartic_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 104.6586,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "quartic_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "quartic_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "nonuniform_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 98.1656,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "nonuniform_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 101.3271,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "nonuniform_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.5457,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "nonuniform_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 102.9598,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "nonuniform_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "nonuniform_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "weighted_first": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.9441,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "weighted_middle": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.7915,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "weighted_ends": [
+    {
+      "history": "Control point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.493,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "weighted_all": [
+    {
+      "history": "Control point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.2752,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "weighted_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "weighted_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "periodic_cubic_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 267.9262,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>",
+          "Command"
+        ]
+      }
+    }
+  ],
+  "periodic_cubic_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 99.6034,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_cubic_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 96.2915,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_cubic_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.7153,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_cubic_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "periodic_cubic_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "closed_weighted_first": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.1183,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "closed_weighted_middle": [
+    {
+      "history": "Control point weight is 2.2.\nNew control point weight <2.2>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 102.67,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 2.2,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <2.2>"
+        ]
+      }
+    }
+  ],
+  "closed_weighted_ends": [
+    {
+      "history": "Control point weights vary from 0.7 to 0.9.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 104.4325,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "closed_weighted_all": [
+    {
+      "history": "Control point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 163.1853,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "closed_weighted_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "closed_weighted_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "surface_wide_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.9088,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_wide_middle": [
+    {
+      "history": "Control point weight is 1.3.\nNew control point weight <1.3>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.9774,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.3,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1.3>"
+        ]
+      }
+    }
+  ],
+  "surface_wide_ends": [
+    {
+      "history": "Control point weights vary from 1 to 1.7.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 88.4256,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_wide_all": [
+    {
+      "history": "Control point weights vary from 1 to 1.7.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 95.3576,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_wide_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "surface_wide_row_u": [
+    {
+      "history": "Control point weights vary from 1.1 to 1.6.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 89.9718,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_bicubic_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 99.4373,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_bicubic_middle": [
+    {
+      "history": "Control point weight is 1.35.\nNew control point weight <1.35>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.5332,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.35,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1.35>"
+        ]
+      }
+    }
+  ],
+  "surface_bicubic_ends": [
+    {
+      "history": "Control point weights vary from 1 to 1.65.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.4495,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_bicubic_all": [
+    {
+      "history": "Control point weights vary from 1 to 1.65.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.0373,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "surface_bicubic_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "surface_bicubic_row_u": [
+    {
+      "history": "Control point weights vary from 1.15 to 1.55.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 90.6379,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "mesh_fan_first": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_fan_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_fan_ends": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_fan_all": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_fan_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "mesh_grid_first": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_grid_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_grid_ends": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_grid_all": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_grid_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "mesh_box_first": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_box_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_box_ends": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_box_all": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_box_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "polycurve_curved_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 99.7124,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polycurve_curved_middle": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.9082,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "polycurve_curved_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 90.3537,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polycurve_curved_all": [
+    {
+      "history": "Control point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 95.6008,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "polycurve_curved_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "polycurve_curved_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_colored_first": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_colored_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_colored_ends": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_colored_all": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_colored_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "mesh_ngon_first": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_ngon_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_ngon_ends": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_ngon_all": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_ngon_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "periodic_min_first": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 89.8527,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_min_middle": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.2079,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_min_ends": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.0965,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_min_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.8687,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_min_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "periodic_min_edit_middle": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "curve_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.8533,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "rational_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 91.1728,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "closed_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 99.8493,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "periodic_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.0129,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "line_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 89.2826,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "polyline_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.306,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "circle_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.5217,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "arc_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 101.6702,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.1022,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_closed_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 89.0059,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "mesh_default": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "polycurve_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 89.7893,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_u_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 95.5123,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_periodic_v_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 91.5959,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "cubic_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.076,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "quartic_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.6055,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "nonuniform_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 88.8343,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "weighted_default": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: _Enter\nNew control point weight <0.7>\n",
+      "input": {
+        "busy": false,
+        "last_send": 96.2029,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "periodic_cubic_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.967,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "closed_weighted_default": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: _Enter\nNew control point weight <0.7>\n",
+      "input": {
+        "busy": false,
+        "last_send": 88.448,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "surface_wide_default": [
+    {
+      "history": " <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 0.7.\nNew control point weight <0.7>: _Enter\nNew control point weight <0.7>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 0.7.\nNew control point weight <0.7>: _Enter\nNew control point weight <0.7>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.5094,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "surface_bicubic_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.9068,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "mesh_fan_default": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_grid_default": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_box_default": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "polycurve_curved_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 90.36,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "mesh_colored_default": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_ngon_default": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "periodic_min_default": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 98.5954,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "curve_middle_all": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 91.8211,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "curve_middle_next_hidden": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "curve_all_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "weighted_middle_all": [
+    {
+      "history": "t Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 0.7.\nNew control point weight <0.7>: _Enter\nNew control point weight <0.7>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 0.7.\nNew control point weight <0.7>: _Enter\nNew control point weight <0.7>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nAll control point weights are 1.\nNew control point weight <1>: 2.0\nUndoing Weight\nRedoing Weight\nUndoing Weight Redo witness\nSelect control points for weight editing: _Cancel\nSelect control points for weight editing\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nSelect control points for weight editing: _Cancel\nSelect control points for weight editing\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.9861,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "weighted_all_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "mesh_middle_all": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "mesh_all_empty": [
+    {
+      "history": "Select control points for weight editing: _Cancel\nSelect control points for weight editing\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "pick_curve": [
+    {
+      "history": "Select control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n4 curve points added to selection.\nSelect control points for weight editing. Press Enter when done\nAll control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 205.8645,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing",
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "pick_weighted": [
+    {
+      "history": "Select control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n8 curve points added to selection.\nSelect control points for weight editing. Press Enter when done\nControl point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 170.4925,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing",
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "pick_surface": [
+    {
+      "history": "Select control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n9 surface points added to selection.\nSelect control points for weight editing. Press Enter when done\nControl point weights vary from 1 to 1.5.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 164.8984,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing",
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "pick_mesh": [
+    {
+      "history": "ess\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weight is 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nAll control point weights are 1.\nNew control point weight <1>: 2.0\nUndoing Weight\nRedoing Weight\nUndoing Weight Redo witness\nSelect control points for weight editing: _Cancel\nSelect control points for weight editing\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nSelect control points for weight editing: _Cancel\nSelect control points for weight editing\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nControl point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\nUndoing Weight\nRedoing Weight\nUndoing Weight Redo witness\nSelect control points for weight editing: _Cancel\nSelect control points for weight editing\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nUnable to set weight - no control points selected.\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nSelect control points for weight editing: _Cancel\nSelect control points for weight editing\nNothing to undo.\nRedoing Weight Redo witness\nUndoing Weight Redo witness\nSelect control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n4 curve points added to selection.\nSelect control points for weight editing. Press Enter when done\nAll control point weights are 1.\nNew control point weight <1>: 2.0\nUndoing Weight\nRedoing Weight\nUndoing Weight Redo witness\nSelect control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n8 curve points added to selection.\nSelect control points for weight editing. Press Enter when done\nControl point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\nUndoing Weight\nRedoing Weight\nUndoing Weight Redo witness\nSelect control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n9 surface points added to selection.\nSelect control points for weight editing. Press Enter when done\nControl point weights vary from 1 to 1.5.\nNew control point weight: 2.0\nUndoing Weight\nRedoing Weight\nUndoing Weight Redo witness\nSelect control points for weight editing: _SelPt\nSelect control points for weight editing: _Enter\n5 mesh points added to selection.\nSelect control points for weight editing. Press Enter when done\nUnable to set weight - no control points selected.\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": true,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": [
+          "Select control points for weight editing"
+        ]
+      }
+    }
+  ],
+  "off_control": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.2878,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "off_edit": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "cancel_control": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: _Cancel\nNew control point weight <0.7>\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.0588,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Cancel"
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "cancel_edit": [
+    {
+      "history": "Unable to set weight - no control points selected.\n",
+      "input": {
+        "last_send": null,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [],
+        "default": null,
+        "applied": false,
+        "errors": [],
+        "prompts": []
+      }
+    }
+  ],
+  "default_curve": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: _Enter\nNew control point weight <1>\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.0423,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "same_curve": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 1.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 85.8554,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          1.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "default_weighted": [
+    {
+      "history": "Control point weights vary from 0.7 to 2.2.\nNew control point weight: _Enter\nNew control point weight\n",
+      "input": {
+        "busy": false,
+        "last_send": 88.7994,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "same_weighted": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 0.69999999999999996\n",
+      "input": {
+        "busy": false,
+        "last_send": 90.3878,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          0.7
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "default_polycurve_curved": [
+    {
+      "history": "Control point weights vary from 0.7 to 2.2.\nNew control point weight: _Enter\nNew control point weight\n",
+      "input": {
+        "busy": false,
+        "last_send": 98.3243,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          "Enter"
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "same_polycurve_curved": [
+    {
+      "history": "Control point weight is 1.\nNew control point weight <1>: 1.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 96.0622,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          1.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "number_218": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 0.001\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.5644,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          0.001
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "number_219": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 100.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 104.052,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          100.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "number_220": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: -1.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 102.1404,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          -1.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "number_221": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: 0.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 86.8637,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          0.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "number_222": [
+    {
+      "history": "Control point weight is 0.7.\nNew control point weight <0.7>: -1.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 89.5755,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          -1.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <0.7>"
+        ]
+      }
+    }
+  ],
+  "dialog_weighted": [
+    {
+      "history": "Control point weight is 0.7.\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [
+          {
+            "title": "Set Control Point Weight",
+            "controls": [
+              {
+                "text": "0.7",
+                "handle": 27461664,
+                "kind": "Edit"
+              },
+              {
+                "text": "OK",
+                "handle": 49021112,
+                "kind": "Button"
+              },
+              {
+                "text": "Cancel",
+                "handle": 14418062,
+                "kind": "Button"
+              },
+              {
+                "text": "&Help",
+                "handle": 19792012,
+                "kind": "Button"
+              },
+              {
+                "text": "0.1",
+                "handle": 16449648,
+                "kind": "Edit"
+              },
+              {
+                "text": "Slider1",
+                "handle": 26738798,
+                "kind": "msctls_trackbar32"
+              },
+              {
+                "text": "10.0",
+                "handle": 16449644,
+                "kind": "Edit"
+              },
+              {
+                "text": "Weight:",
+                "handle": 18350186,
+                "kind": "Static"
+              }
+            ]
+          }
+        ],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "Command"
+        ]
+      }
+    }
+  ],
+  "dialog_cancel_weighted": [
+    {
+      "history": "Control point weight is 0.7.\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [
+          {
+            "title": "Set Control Point Weight",
+            "controls": [
+              {
+                "text": "0.7",
+                "handle": 18415722,
+                "kind": "Edit"
+              },
+              {
+                "text": "OK",
+                "handle": 16515180,
+                "kind": "Button"
+              },
+              {
+                "text": "Cancel",
+                "handle": 26804334,
+                "kind": "Button"
+              },
+              {
+                "text": "&Help",
+                "handle": 16515184,
+                "kind": "Button"
+              },
+              {
+                "text": "0.1",
+                "handle": 19857548,
+                "kind": "Edit"
+              },
+              {
+                "text": "Slider1",
+                "handle": 14483598,
+                "kind": "msctls_trackbar32"
+              },
+              {
+                "text": "10.0",
+                "handle": 49086648,
+                "kind": "Edit"
+              },
+              {
+                "text": "Weight:",
+                "handle": 27527200,
+                "kind": "Static"
+              }
+            ]
+          }
+        ],
+        "selection_opened": false,
+        "consumed": [
+          2.0,
+          "Cancel"
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "Command"
+        ]
+      }
+    }
+  ],
+  "dialog_polycurve_curved": [
+    {
+      "history": "Control point weight is 0.7.\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [
+          {
+            "title": "Set Control Point Weight",
+            "controls": [
+              {
+                "text": "0.7",
+                "handle": 27592736,
+                "kind": "Edit"
+              },
+              {
+                "text": "OK",
+                "handle": 49152184,
+                "kind": "Button"
+              },
+              {
+                "text": "Cancel",
+                "handle": 14549134,
+                "kind": "Button"
+              },
+              {
+                "text": "&Help",
+                "handle": 19923084,
+                "kind": "Button"
+              },
+              {
+                "text": "0.1",
+                "handle": 16580720,
+                "kind": "Edit"
+              },
+              {
+                "text": "Slider1",
+                "handle": 26869870,
+                "kind": "msctls_trackbar32"
+              },
+              {
+                "text": "10.0",
+                "handle": 16580716,
+                "kind": "Edit"
+              },
+              {
+                "text": "Weight:",
+                "handle": 18481258,
+                "kind": "Static"
+              }
+            ]
+          }
+        ],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "Command"
+        ]
+      }
+    }
+  ],
+  "dialog_cancel_polycurve_curved": [
+    {
+      "history": "Control point weight is 0.7.\n",
+      "input": {
+        "busy": false,
+        "last_send": null,
+        "dialogs": [
+          {
+            "title": "Set Control Point Weight",
+            "controls": [
+              {
+                "text": "0.7",
+                "handle": 18546794,
+                "kind": "Edit"
+              },
+              {
+                "text": "OK",
+                "handle": 16646252,
+                "kind": "Button"
+              },
+              {
+                "text": "Cancel",
+                "handle": 26935406,
+                "kind": "Button"
+              },
+              {
+                "text": "&Help",
+                "handle": 16646256,
+                "kind": "Button"
+              },
+              {
+                "text": "0.1",
+                "handle": 19988620,
+                "kind": "Edit"
+              },
+              {
+                "text": "Slider1",
+                "handle": 14614670,
+                "kind": "msctls_trackbar32"
+              },
+              {
+                "text": "10.0",
+                "handle": 49217720,
+                "kind": "Edit"
+              },
+              {
+                "text": "Weight:",
+                "handle": 27658272,
+                "kind": "Static"
+              }
+            ]
+          }
+        ],
+        "selection_opened": false,
+        "consumed": [
+          2.0,
+          "Cancel"
+        ],
+        "default": 0.7,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "Command"
+        ]
+      }
+    }
+  ],
+  "repeat_weighted": [
+    {
+      "history": "Control point weights vary from 0.7 to 2.2.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 90.147,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 2.\nNew control point weight <2>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 97.7888,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 2.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <2>"
+        ]
+      }
+    }
+  ],
+  "repeat_curve": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 98.1457,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 2.\nNew control point weight <2>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.5538,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 2.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <2>"
+        ]
+      }
+    }
+  ],
+  "repeat_line": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 92.3989,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.5264,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "repeat_polyline": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 85.81,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 2.\nNew control point weight <2>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.1603,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 2.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <2>"
+        ]
+      }
+    }
+  ],
+  "repeat_polycurve": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 94.2011,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.1776,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "repeat_polycurve_curved": [
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 93.2634,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 1.\nNew control point weight <1>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 98.3547,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 1.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <1>"
+        ]
+      }
+    }
+  ],
+  "repeat_surface": [
+    {
+      "history": "Control point weights vary from 1 to 1.5.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 99.9705,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 2.\nNew control point weight <2>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 96.755,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 2.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <2>"
+        ]
+      }
+    }
+  ],
+  "repeat_closed_weighted": [
+    {
+      "history": "Control point weights vary from 0.7 to 0.9.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 87.5686,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    },
+    {
+      "history": "All control point weights are 2.\nNew control point weight <2>: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 89.1205,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": 2.0,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight <2>"
+        ]
+      }
+    }
+  ],
+  "mixed_equal": [
+    {
+      "history": "Control point weights vary from 0.7 to 1.125.\nNew control point weight: 1.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 100.8944,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          1.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ],
+  "mixed": [
+    {
+      "history": "Error - Some existing weights are <= 0.0\nControl point weights vary from -1.23432e+308 to 1.125.\nNew control point weight: 2.0\n",
+      "input": {
+        "busy": false,
+        "last_send": 85.3408,
+        "dialogs": [],
+        "selection_opened": false,
+        "consumed": [
+          2.0
+        ],
+        "default": null,
+        "applied": true,
+        "errors": [],
+        "prompts": [
+          "New control point weight"
+        ]
+      }
+    }
+  ]
+}
