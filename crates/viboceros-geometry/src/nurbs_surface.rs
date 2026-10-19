@@ -2265,6 +2265,62 @@ impl NurbsSurface {
         }
     }
 
+    /// Command insertion uses uniform knots in the edited directions while
+    /// retaining the surface's original UV domains.
+    pub fn try_insert_command_control_row(
+        &self,
+        direction: SurfaceKnotDirection,
+        u_parameter: Real,
+        v_parameter: Real,
+        midpoint: bool,
+    ) -> Result<Self, GeometryError> {
+        let insert = |curve: &crate::NurbsCurve, parameter| {
+            curve
+                .try_insert_command_control_point(parameter, midpoint)?
+                .try_reparameterized(curve.domain())
+        };
+        match direction {
+            SurfaceKnotDirection::U => self.map_u_control_curves(|c| insert(c, u_parameter)),
+            SurfaceKnotDirection::V => self.map_v_control_curves(|c| insert(c, v_parameter)),
+            SurfaceKnotDirection::Both => self
+                .map_u_control_curves(|c| insert(c, u_parameter))?
+                .map_v_control_curves(|c| insert(c, v_parameter)),
+        }
+    }
+
+    /// Extend one control-net side, rebuilding both directions as clamped and
+    /// non-rational while retaining the surface UV chart.
+    pub fn try_extend_control_point_net(
+        &self,
+        direction: SurfaceKnotDirection,
+        at_end: bool,
+    ) -> Result<Self, GeometryError> {
+        let extend = |curve: &crate::NurbsCurve| {
+            curve
+                .try_extend_control_point_net(at_end)?
+                .try_reparameterized(curve.domain())
+        };
+        let edited = match direction {
+            SurfaceKnotDirection::U => self.map_u_control_curves(extend)?,
+            SurfaceKnotDirection::V => self.map_v_control_curves(extend)?,
+            SurfaceKnotDirection::Both => {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "control-net extension requires one direction",
+                });
+            }
+        };
+        Self::try_new(
+            self.degree_u,
+            self.degree_v,
+            edited.control_point_count_u,
+            edited.control_point_count_v,
+            edited.control_points.iter().map(|c| c.point()).collect(),
+            clamped_uniform_knots(self.degree_u, edited.control_point_count_u)?,
+            clamped_uniform_knots(self.degree_v, edited.control_point_count_v)?,
+        )?
+        .try_reparameterized(self.domain_u(), self.domain_v())
+    }
+
     /// Removes a complete control row in one parameter direction.
     ///
     /// Every orthogonal control curve uses [`NurbsCurve::try_remove_control_point`],

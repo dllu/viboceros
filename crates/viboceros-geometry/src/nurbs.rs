@@ -1889,7 +1889,7 @@ impl NurbsCurve {
         removable_knot_at_index(self.degree, &self.knots, knot_index, parameter)
     }
 
-    /// Inserts one Rhino-style control point at a curve parameter.
+    /// Inserts one control point while retaining the source knot chart.
     ///
     /// The parameter is bracketed by the source control points' Greville
     /// abscissae. The new unit-weight control is their Euclidean interpolation,
@@ -1935,6 +1935,82 @@ impl NurbsCurve {
         let knot_index = knots.partition_point(|knot| *knot <= insertion_parameter);
         knots.insert(knot_index, insertion_parameter);
         Self::try_new_rational(self.degree, controls, knots)
+    }
+
+    /// InsertControlPoint rebuilds uniform charts using their source spacing.
+    /// Uniform endpoint picks may duplicate an end control; midpoint picks use the
+    /// neighboring Greville interval. The parameter-preserving API above is
+    /// retained for callers that explicitly manage their knot vector.
+    pub fn try_insert_command_control_point(
+        &self,
+        parameter: Real,
+        midpoint: bool,
+    ) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        if !midpoint
+            && self.command_uniform_step().is_none()
+            && self.knots.iter().filter(|&&k| k == parameter).count() >= self.degree
+        {
+            return Err(GeometryError::NoControlPointInsertionInterval { parameter });
+        }
+        let endpoint = !self.is_periodic()
+            && (parameter == *self.domain().start() || parameter == *self.domain().end());
+        let mut result = self.try_insert_control_point(parameter, midpoint || endpoint)?;
+        if endpoint && !midpoint {
+            let (_, upper, _) = self.control_point_insertion_interval(parameter, true)?;
+            result.control_points[upper] = WeightedPoint3::try_new(self.evaluate(parameter)?, 1.0)?;
+        }
+        if !result.is_periodic()
+            && let Some(step) = self.command_uniform_step()
+        {
+            let end = (result.control_points.len() - result.degree) as Real * step;
+            result = result.try_make_uniform()?.try_reparameterized(0.0..=end)?;
+        }
+        Ok(result)
+    }
+
+    /// Add an outside control half an end-polygon interval beyond the end.
+    /// The command rebuilds the full net as clamped and non-rational, including
+    /// repeated controls from a previously periodic curve.
+    pub fn try_extend_control_point_net(&self, at_end: bool) -> Result<Self, GeometryError> {
+        let n = self.control_points.len();
+        let (end, neighbor) = if at_end { (n - 1, n - 2) } else { (0, 1) };
+        let end_point = self.control_points[end].point();
+        let delta = self.control_points[neighbor]
+            .point()
+            .vector_to(end_point)?
+            .scaled(0.5)?;
+        let mut controls = self
+            .control_points
+            .iter()
+            .map(|c| c.point())
+            .collect::<Vec<_>>();
+        controls.insert(if at_end { n } else { 0 }, end_point.translated(delta)?);
+        Self::try_clamped_uniform(self.degree, controls)?.try_reparameterized(self.domain())
+    }
+
+    fn command_uniform_step(&self) -> Option<Real> {
+        // Match OpenNURBS ON_IsKnotVectorUniform: the spacing-relative
+        // tolerance is independent of the parameter origin. Include usable
+        // padding at any unclamped end (the full outer slots are artificial).
+        let count = self.control_points.len();
+        let first = if self.knots[1] == self.knots[self.degree] {
+            self.degree
+        } else {
+            1
+        };
+        let last = if self.knots[count] == self.knots[self.knots.len() - 2] {
+            count
+        } else {
+            self.knots.len() - 2
+        };
+        let step = self.knots[self.degree + 1] - self.knots[self.degree];
+        (step > 0.0
+            && self.knots[first..=last].windows(2).all(|p| {
+                let delta = p[1] - p[0];
+                delta > 0.0 && (delta - step).abs() <= Real::EPSILON.sqrt() * step
+            }))
+        .then_some(step)
     }
 
     fn control_point_insertion_interval(
@@ -8057,6 +8133,92 @@ mod tests {
             midpoint.control_points()[3].point(),
             Point3::try_new(6.5, 1.0, 0.5).unwrap(),
         );
+    }
+
+    #[test]
+    fn command_control_insertion_retains_spacing_and_nonuniform_charts() {
+        let controls = [[0., 0., 0.], [1., 3., 0.], [3., -1., 0.], [5., 0., 0.]]
+            .into_iter()
+            .map(|p| Point3::try_from(p).unwrap())
+            .collect();
+        let source = NurbsCurve::try_clamped_uniform(3, controls)
+            .unwrap()
+            .try_reparameterized(-3.0..=17.0)
+            .unwrap();
+        let inserted = source.try_insert_command_control_point(5., false).unwrap();
+        assert_eq!(inserted.domain(), 0.0..=40.0);
+        assert_eq!(inserted.knots(), &[0., 0., 0., 0., 20., 40., 40., 40., 40.]);
+        assert_point_near(
+            inserted.control_points()[2].point(),
+            Point3::try_new(1.4, 2.2, 0.).unwrap(),
+        );
+        let end = source.try_insert_command_control_point(-3., false).unwrap();
+        assert_eq!(
+            end.control_points()[0].point(),
+            end.control_points()[1].point()
+        );
+        let nonuniform = source.try_insert_knot(1., 1).unwrap();
+        let expected = nonuniform.try_insert_control_point(9., false).unwrap();
+        assert_eq!(
+            nonuniform
+                .try_insert_command_control_point(9., false)
+                .unwrap(),
+            expected
+        );
+        let origin = 1e15;
+        let translated = NurbsCurve::try_new(
+            3,
+            (0..6)
+                .map(|i| Point3::try_new(i as Real, (i % 2) as Real, 0.).unwrap())
+                .collect(),
+            vec![
+                origin,
+                origin,
+                origin,
+                origin,
+                origin + 1.,
+                origin + 3.,
+                origin + 4.,
+                origin + 4.,
+                origin + 4.,
+                origin + 4.,
+            ],
+        )
+        .unwrap();
+        assert!(translated.command_uniform_step().is_none());
+        assert_eq!(
+            translated
+                .try_insert_command_control_point(origin + 2., false)
+                .unwrap(),
+            translated
+                .try_insert_control_point(origin + 2., false)
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn command_control_extension_opens_periodic_nets_and_resets_weights() {
+        let unique = [[0., 0., 0.], [1., 3., 0.], [3., -1., 0.], [5., 0., 0.]]
+            .into_iter()
+            .map(|p| WeightedPoint3::try_new(Point3::try_from(p).unwrap(), 2.).unwrap())
+            .collect();
+        let source = NurbsCurve::try_unit_periodic_from_unique_controls(3, unique).unwrap();
+        assert!(source.is_periodic());
+        let extended = source.try_extend_control_point_net(false).unwrap();
+        assert!(!extended.is_periodic());
+        assert!(!extended.is_rational());
+        assert_eq!(extended.domain(), source.domain());
+        assert_point_near(
+            extended.control_points()[0].point(),
+            Point3::try_new(-0.5, -1.5, 0.).unwrap(),
+        );
+        assert!(extended.control_points().iter().all(|c| c.weight() == 1.));
+        for (a, b) in extended.control_points()[1..]
+            .iter()
+            .zip(source.control_points())
+        {
+            assert_eq!(a.point(), b.point());
+        }
     }
 
     #[test]

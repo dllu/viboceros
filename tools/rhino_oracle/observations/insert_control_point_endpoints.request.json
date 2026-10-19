@@ -1,0 +1,190 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_control_point_command",
+      "id": "cubic_0",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/cubic_0.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "cubic_1",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/cubic_1.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "rational_0",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 0.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/rational_0.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "rational_1",
+      "family": "rational",
+      "actions": [
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/rational_1.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "circle_0",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/circle_0.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "circle_1",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/circle_1.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "ellipse_0",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 0.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/ellipse_0.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "ellipse_1",
+      "family": "ellipse",
+      "actions": [
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/ellipse_1.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "periodic_0",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 0.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/periodic_0.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "periodic_1",
+      "family": "periodic",
+      "actions": [
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/periodic_1.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "seeded_0",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 0.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/seeded_0.3dm",
+      "seed": true
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "seeded_1",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": 1.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/seeded_1.3dm",
+      "seed": true
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "seeded_midpoint",
+      "family": "cubic",
+      "actions": [
+        "Midpoint=Yes",
+        {
+          "point": 0.0
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/seeded_midpoint.3dm",
+      "seed": true
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "joint_0",
+      "family": "polycurve",
+      "actions": [
+        {
+          "world": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/joint_0.3dm",
+      "reverse": false
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "joint_1",
+      "family": "polycurve",
+      "actions": [
+        {
+          "world": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_endpoints/joint_1.3dm",
+      "reverse": true
+    }
+  ]
+}

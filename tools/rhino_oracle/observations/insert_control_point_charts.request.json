@@ -1,0 +1,60 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "insert_control_point_command",
+      "id": "circle_domain",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.4
+        }
+      ],
+      "reverse": false,
+      "domain": [
+        -3.0,
+        17.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_charts/circle_domain.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "circle_reverse_domain",
+      "family": "circle",
+      "actions": [
+        {
+          "point": 0.4
+        }
+      ],
+      "reverse": true,
+      "domain": [
+        -3.0,
+        17.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_charts/circle_reverse_domain.3dm"
+    },
+    {
+      "op": "insert_control_point_command",
+      "id": "circle_midpoint_domain",
+      "family": "circle",
+      "actions": [
+        "Midpoint=Yes",
+        {
+          "point": 0.4
+        }
+      ],
+      "reverse": false,
+      "domain": [
+        -3.0,
+        17.0
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/insert_control_point_charts/circle_midpoint_domain.3dm"
+    }
+  ]
+}

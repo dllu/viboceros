@@ -1,0 +1,406 @@
+{
+  "command": "InsertControlPoint",
+  "rhino_version": "8.32.26160.13001",
+  "source_base_commit": "dbafb7685048b7cf9814cadc36b46fae12c0a615",
+  "captures": [
+    {
+      "matrix": "command",
+      "path": "tools/rhino_oracle/observations/insert_control_point_command.json",
+      "sha256": "c81253f3466492e3cf117e3166f03041d8c81ead56453a2b62203c062cb7d95b",
+      "request": "tools/rhino_oracle/observations/insert_control_point_command.request.json",
+      "request_sha256": "2c3177092b6674b029ee06d86ce366e0f7d68a10e87bed31f99f93778e4e8409",
+      "cases": 82,
+      "native_events": {
+        "Success": 65,
+        "Cancel": 17
+      },
+      "producer_sources": {
+        "generate_insert_control_point.py": "49a3eb3d8f7e06af5b4ec37f995ef29f628004d6a29f40e590dd0e4d58622706",
+        "insert_control_point_probe.py": "284adc947cf54746b05557c9143b106e0e7d4d92103e8a6f4938e6cb3287e660",
+        "remove_knot_command_probe.py": "84a53185da0f36e8acdfc4aeed1f3d377db928f80d1b2450dfd947a2a324517a",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "995f4a46d617624cf154a5317bb93a1cde6214a0e04425475616254269783a9a",
+        "structural_sdk.py": "ffbf9e3824bb10de94e43a09c76e72c0ee1aa33c47f1c2ce8566b6bf155e69f3"
+      }
+    },
+    {
+      "matrix": "extensions",
+      "path": "tools/rhino_oracle/observations/insert_control_point_extensions.json",
+      "sha256": "97914fe69640f7927d0bc94a541394488de9b446166590f9cf0eea291072fe52",
+      "request": "tools/rhino_oracle/observations/insert_control_point_extensions.request.json",
+      "request_sha256": "78cc4a011ec3a0a54ebf9fce45fdaa894c3d11da59c02b524e047cad2171cf67",
+      "cases": 24,
+      "native_events": {
+        "Success": 23,
+        "Cancel": 1
+      },
+      "producer_sources": {
+        "generate_insert_control_point_extensions.py": "f418811b3626360db8252fa293b70996805206cf12cdab38f9bb78aed424f237",
+        "insert_control_point_probe.py": "284adc947cf54746b05557c9143b106e0e7d4d92103e8a6f4938e6cb3287e660",
+        "remove_knot_command_probe.py": "84a53185da0f36e8acdfc4aeed1f3d377db928f80d1b2450dfd947a2a324517a",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "995f4a46d617624cf154a5317bb93a1cde6214a0e04425475616254269783a9a",
+        "structural_sdk.py": "ffbf9e3824bb10de94e43a09c76e72c0ee1aa33c47f1c2ce8566b6bf155e69f3"
+      }
+    },
+    {
+      "matrix": "endpoints",
+      "path": "tools/rhino_oracle/observations/insert_control_point_endpoints.json",
+      "sha256": "9cc2e7894aa70bdf6dbec8c20ab9029e90742f8163fd7a16bea7504ace8e64d0",
+      "request": "tools/rhino_oracle/observations/insert_control_point_endpoints.request.json",
+      "request_sha256": "7b51778873159baad89085457eb4fcf7fedbc64ded606b6098d7cdbfd14d7447",
+      "cases": 15,
+      "native_events": {
+        "Success": 9,
+        "Cancel": 6
+      },
+      "producer_sources": {
+        "generate_insert_control_point_endpoints.py": "6e37e319dd2fb775a1b0a4dc9b8fe69303845223a736cfe0a8227608803cc47c",
+        "insert_control_point_probe.py": "284adc947cf54746b05557c9143b106e0e7d4d92103e8a6f4938e6cb3287e660",
+        "remove_knot_command_probe.py": "84a53185da0f36e8acdfc4aeed1f3d377db928f80d1b2450dfd947a2a324517a",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "995f4a46d617624cf154a5317bb93a1cde6214a0e04425475616254269783a9a",
+        "structural_sdk.py": "ffbf9e3824bb10de94e43a09c76e72c0ee1aa33c47f1c2ce8566b6bf155e69f3"
+      }
+    },
+    {
+      "matrix": "charts",
+      "path": "tools/rhino_oracle/observations/insert_control_point_charts.json",
+      "sha256": "27403926569dda388200ef2fe3d605df4f1f2d9163d76bcbf94e6a943b2ef0e3",
+      "request": "tools/rhino_oracle/observations/insert_control_point_charts.request.json",
+      "request_sha256": "add911f2dccba10ff42587960d0e9a49fdbd6d0a9bef4f78d26467a4e6ef3ac6",
+      "cases": 3,
+      "native_events": {
+        "Success": 3
+      },
+      "producer_sources": {
+        "generate_insert_control_point_charts.py": "666952d3987db51043a7dfedf30774d2105da4331a54986562feea09ca077162",
+        "insert_control_point_probe.py": "284adc947cf54746b05557c9143b106e0e7d4d92103e8a6f4938e6cb3287e660",
+        "remove_knot_command_probe.py": "84a53185da0f36e8acdfc4aeed1f3d377db928f80d1b2450dfd947a2a324517a",
+        "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "995f4a46d617624cf154a5317bb93a1cde6214a0e04425475616254269783a9a",
+        "structural_sdk.py": "ffbf9e3824bb10de94e43a09c76e72c0ee1aa33c47f1c2ce8566b6bf155e69f3"
+      }
+    }
+  ],
+  "diagnostic_capture": {
+    "path": "tools/rhino_oracle/observations/insert_control_point_options.json",
+    "sha256": "9421f540e3a6382e8651ec5abd41558d2540bdf6fbc41535284d0a233aa94957",
+    "cases": 1,
+    "description": "Native rejection of Both followed by an explicit U pick; not an additional geometry agreement case."
+  },
+  "qualification": {
+    "geometry_epsilon": 1e-08,
+    "matched_cases": 124,
+    "known_differences": [],
+    "matched_ids": [
+      "charts/circle_domain",
+      "charts/circle_midpoint_domain",
+      "charts/circle_reverse_domain",
+      "command/circle",
+      "command/circle_midpoint",
+      "command/circle_twice",
+      "command/cubic",
+      "command/cubic_cancel",
+      "command/cubic_cancel_after",
+      "command/cubic_empty",
+      "command/cubic_end",
+      "command/cubic_midpoint",
+      "command/cubic_post",
+      "command/cubic_start",
+      "command/cubic_start_midpoint",
+      "command/cubic_twice",
+      "command/domain",
+      "command/domain_polycurve",
+      "command/elevated",
+      "command/ellipse",
+      "command/ellipse_midpoint",
+      "command/ellipse_twice",
+      "command/line",
+      "command/line_midpoint",
+      "command/line_twice",
+      "command/negative_gauge",
+      "command/off_curve",
+      "command/periodic",
+      "command/periodic_midpoint",
+      "command/periodic_surface_U_U",
+      "command/periodic_surface_U_V",
+      "command/periodic_surface_V_U",
+      "command/periodic_surface_V_V",
+      "command/periodic_twice",
+      "command/polycurve",
+      "command/polycurve_midpoint",
+      "command/polycurve_twice",
+      "command/polyline",
+      "command/polyline_midpoint",
+      "command/polyline_twice",
+      "command/rational",
+      "command/rational_midpoint",
+      "command/rational_twice",
+      "command/reverse_polycurve",
+      "command/reversed",
+      "command/seeded",
+      "command/surface_U",
+      "command/surface_V",
+      "command/surface_boundary_U",
+      "command/surface_boundary_V",
+      "command/surface_cancel_after",
+      "command/surface_extend_U_0",
+      "command/surface_extend_U_1",
+      "command/surface_extend_V_0",
+      "command/surface_extend_V_1",
+      "command/surface_extend_cancel",
+      "command/surface_extend_empty",
+      "command/surface_extend_interior",
+      "command/surface_midpoint_U",
+      "command/surface_midpoint_V",
+      "command/surface_post",
+      "command/surface_rational_U",
+      "command/surface_rational_V",
+      "command/surface_rational_cancel_after",
+      "command/surface_rational_midpoint_U",
+      "command/surface_rational_midpoint_V",
+      "command/surface_rational_post",
+      "command/surface_rational_twice",
+      "command/surface_toggle",
+      "command/surface_twice",
+      "command/tilted",
+      "command/trimmed_hole_U",
+      "command/trimmed_hole_V",
+      "command/trimmed_hole_cancel_after",
+      "command/trimmed_hole_midpoint_U",
+      "command/trimmed_hole_midpoint_V",
+      "command/trimmed_hole_post",
+      "command/trimmed_hole_twice",
+      "command/trimmed_rectangle_U",
+      "command/trimmed_rectangle_V",
+      "command/trimmed_rectangle_cancel_after",
+      "command/trimmed_rectangle_midpoint_U",
+      "command/trimmed_rectangle_midpoint_V",
+      "command/trimmed_rectangle_post",
+      "command/trimmed_rectangle_twice",
+      "endpoints/circle_0",
+      "endpoints/circle_1",
+      "endpoints/cubic_0",
+      "endpoints/cubic_1",
+      "endpoints/ellipse_0",
+      "endpoints/ellipse_1",
+      "endpoints/joint_0",
+      "endpoints/joint_1",
+      "endpoints/periodic_0",
+      "endpoints/periodic_1",
+      "endpoints/rational_0",
+      "endpoints/rational_1",
+      "endpoints/seeded_0",
+      "endpoints/seeded_1",
+      "endpoints/seeded_midpoint",
+      "extensions/cancel_after",
+      "extensions/midpoint",
+      "extensions/periodic_U_U",
+      "extensions/periodic_U_V",
+      "extensions/periodic_V_U",
+      "extensions/periodic_V_V",
+      "extensions/repeat",
+      "extensions/surface_U_2",
+      "extensions/surface_U_8",
+      "extensions/surface_V_2",
+      "extensions/surface_V_8",
+      "extensions/surface_rational_U_2",
+      "extensions/surface_rational_U_8",
+      "extensions/surface_rational_V_2",
+      "extensions/surface_rational_V_8",
+      "extensions/toggle",
+      "extensions/trimmed_hole_U_2",
+      "extensions/trimmed_hole_U_8",
+      "extensions/trimmed_hole_V_2",
+      "extensions/trimmed_hole_V_8",
+      "extensions/trimmed_rectangle_U_2",
+      "extensions/trimmed_rectangle_U_8",
+      "extensions/trimmed_rectangle_V_2",
+      "extensions/trimmed_rectangle_V_8"
+    ],
+    "input_method": "Actual Rhino command macros with explicit world points; no new native mouse-event matrix.",
+    "workflow": "Immutable staging, source identity/attributes/groups, container text, selection, atomic commit or cancellation, and undo/redo. Additional checks cover one-line script modifiers, startup Extend, redo retention, independent preferences, malformed input and stale sources."
+  },
+  "profiles": {
+    "api-portable": {
+      "tests_passed": 6,
+      "matched_cases": 124,
+      "matrix_counts": {
+        "endpoints": 15,
+        "charts": 3,
+        "extensions": 24,
+        "command": 82
+      },
+      "maximum_error": 9.973633987600435e-09,
+      "additional_script_or_startup_case": [
+        {
+          "id": "rational_midpoint",
+          "maximum_error": 8.95090418262362e-16
+        }
+      ]
+    },
+    "ui-portable": {
+      "tests_passed": 6,
+      "matched_cases": 124,
+      "matrix_counts": {
+        "charts": 3,
+        "endpoints": 15,
+        "extensions": 24,
+        "command": 82
+      },
+      "maximum_error": 9.973633987600435e-09,
+      "additional_script_or_startup_case": [
+        {
+          "id": "surface_U_8",
+          "maximum_error": 2.551098286635258e-15
+        }
+      ]
+    },
+    "api-native": {
+      "tests_passed": 6,
+      "matched_cases": 124,
+      "matrix_counts": {
+        "charts": 3,
+        "endpoints": 15,
+        "extensions": 24,
+        "command": 82
+      },
+      "maximum_error": 9.973633987600435e-09,
+      "additional_script_or_startup_case": [
+        {
+          "id": "rational_midpoint",
+          "maximum_error": 8.95090418262362e-16
+        }
+      ]
+    },
+    "ui-native": {
+      "tests_passed": 6,
+      "matched_cases": 124,
+      "matrix_counts": {
+        "endpoints": 15,
+        "charts": 3,
+        "extensions": 24,
+        "command": 82
+      },
+      "maximum_error": 9.973633987600435e-09,
+      "additional_script_or_startup_case": [
+        {
+          "id": "surface_U_8",
+          "maximum_error": 2.551098286635258e-15
+        }
+      ]
+    }
+  },
+  "checks": {
+    "kernel": {
+      "tests_passed": 2
+    },
+    "legacy-insertion": {
+      "tests_passed": 3
+    },
+    "legacy-command": {
+      "tests_passed": 8
+    },
+    "remove-knot-regression": {
+      "tests_passed": 1
+    },
+    "insert-knot-regression": {
+      "tests_passed": 1
+    },
+    "remove-control-regression": {
+      "tests_passed": 3
+    },
+    "python": {
+      "tests_passed": 44
+    },
+    "clippy": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+    "format": "cargo fmt --all --check"
+  },
+  "test_geometry_optimization": "profile.test.package.viboceros-geometry.opt-level=2",
+  "production_sources": {
+    "crates/viboceros-command/src/insert_control_point.rs": "d18b3aeeaa0ea0f6b568a93bac64760079f163c2323625ecc63e493c0263375c",
+    "crates/viboceros-command/src/lib.rs": "da56870f09831b511a5039c3a15d5083b465427c8e29fd643621c3d7102e9d5f",
+    "crates/viboceros-geometry/src/nurbs.rs": "6b7c8dd98da7494243ef475fd2505ff53577918bf0b9daeae3ab8f548f97129d",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "5d13d2fc3fb5cb384bb39428c07de2010c4852f534c31a3403a4d9f263968bd1",
+    "src/app.rs": "f350479967915138e42a5378441f866738ed33f610b7ed531ed625e699b1cd0e",
+    "src/app/refinement.rs": "624bb5c4a6989ea47c8bed3973315bb30f4d6177ce3f8db4321547de8e168a34"
+  },
+  "test_sources": {
+    "crates/viboceros-command/tests/insert_control_point_command.rs": "cbe5366d327646bae2a984c01aa7071aa157de756408920fe3ade5d2896b67a1",
+    "src/app/tests/insert_control_point.rs": "04ec4d00271f1430877dae3f17400849ced8d8d75f6684885d49db10af96bb3d",
+    "tools/rhino_oracle/test_insert_control_point.py": "1940dae74d331fab1329a37a7b320cf24cf4da778235f55790067da056a4249d"
+  },
+  "reference_sources": {
+    "third_party/opennurbs/opennurbs_knot.cpp": "e72b740565bee6fa08dc31f0d530f6ba06b7c667d1089e10cad592b4d66a2111"
+  },
+  "proof_files": {
+    "docs/insert-control-point-proof/api-portable.gz": {
+      "sha256": "e6c71f5576cb9024bf75fac2160afc4c62dd902e42e51e0a5fc238d6bd9ec5b9",
+      "raw_sha256": "b696760094cf47bb78507416ae39f6d25ef9392d35726ca0132ab14953943136"
+    },
+    "docs/insert-control-point-proof/ui-portable.gz": {
+      "sha256": "5c00e4d73188ae5a98e70197b5ba22331765d697deadb4236be501a2b745683d",
+      "raw_sha256": "189f8c9d8e9ca925484e927c11ad811bbceae9ba2777da6ff17b1f7b95be391c"
+    },
+    "docs/insert-control-point-proof/api-native.gz": {
+      "sha256": "aab8f504f23bb8c35deb77692c40ff13092c158fc614e5ae7b67ed13147f77a9",
+      "raw_sha256": "fdc7d44f641bd151358c1075a3cea42524ba9306dc7acfe22fff08988a45accb"
+    },
+    "docs/insert-control-point-proof/ui-native.gz": {
+      "sha256": "2f1712a4e6b6fe6234978739d8dbe7d01a1abe53b50a42cf91fdc01c5560cdb1",
+      "raw_sha256": "2e1599d00c0a6850dfdf64006d137cb09ecc28e4ba7a1eb07a7ff7a094f93441"
+    },
+    "docs/insert-control-point-proof/kernel.gz": {
+      "sha256": "acf15524b3187ae02f40e4e7b92942bf2f0d604f0be846d4ea252a665f828b30",
+      "raw_sha256": "7a91741f98a1cb5a2d012026a2bb131053835d02f1714fc66885bad0a5b26e81"
+    },
+    "docs/insert-control-point-proof/legacy-insertion.gz": {
+      "sha256": "b88a4ced02b7c671340c9c18e6c272128d13dbdd47d44c65dc52351bfa65a91b",
+      "raw_sha256": "2311093a4e68ce91aee7f33c2f4e0002835fa68f030c1174a10b93a231a3d452"
+    },
+    "docs/insert-control-point-proof/legacy-command.gz": {
+      "sha256": "aca9dc11300c7bcf262e17ecb36f25271a49de8f3b78951ee1903a800a95e65c",
+      "raw_sha256": "ff82517c41699edb852f5f5e0792173af78e51ed8dcec0aa156b1cd2c77fcefc"
+    },
+    "docs/insert-control-point-proof/remove-knot-regression.gz": {
+      "sha256": "3913d6fd411eb1f2c15a9b43d06ab4f99e1cc5e4114fb2a694fdac0b0866b052",
+      "raw_sha256": "500da7699e989a646d03ab2b12b509e4457192f85ca91a2c178519988054fbc7"
+    },
+    "docs/insert-control-point-proof/insert-knot-regression.gz": {
+      "sha256": "2e6c492876aeb007243ef445dfff61895ddb9dc5a01ac8287aaf3453cc812959",
+      "raw_sha256": "8fdfe4072f7ceacd46f8cc53e18b750e22001cfdfafc8e8fa15c548bbae3249e"
+    },
+    "docs/insert-control-point-proof/remove-control-regression.gz": {
+      "sha256": "f6fc072488df7e5bda44d0774e4301172588f211550ad6e0176dd8fc26e7a724",
+      "raw_sha256": "f8b16cf9d0ac7c059dc45859d6f1d3e85a4e29c1680c0cd743935af8d417aaac"
+    },
+    "docs/insert-control-point-proof/python.gz": {
+      "sha256": "43e129808333f1e77464e4b73d303c4256dce5c8a1c7b9816c302fadb8274303",
+      "raw_sha256": "efc8b6c235d4e7b5118fb9d676b16772b7205838cab5ac9c1aeb5975b23b8df5"
+    },
+    "docs/insert-control-point-proof/clippy.gz": {
+      "sha256": "c52f80277facdc5d0c782009d487a0761227328f02a978ed2f4d2012e05b1fc9",
+      "raw_sha256": "4d199ce66f6c1a42efb34afd91be7f0c0be5fbd460a7cb9bb82a4e5dfe2cb399"
+    },
+    "docs/insert-control-point-proof/format.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "limits": [
+    "Polysurfaces, Direction=Both, SubCrv and command-local Undo are rejected.",
+    "General non-clamped inputs, all composite configurations, all periodic degrees/knot layouts, native mouse input and every camera/high-DPI configuration remain unqualified.",
+    "Recorded definitions, sampled points, trim topology and boundary endpoints are compared at 1e-8. Complete native spatial trim-edge definitions are not captured; trim images use the existing document-tolerance certificate.",
+    "No new edited-file roundtrip or general performance qualification.",
+    "The existing ten RemoveControlPoint surface-input differences remain in their separate regression matrix."
+  ]
+}

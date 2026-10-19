@@ -11114,6 +11114,7 @@ mod tests {
     mod grip_transform;
     mod group_prompt;
     mod hyperbola;
+    mod insert_control_point;
     mod insert_kink;
     mod insert_kink_subcurve;
     mod insert_knot;
