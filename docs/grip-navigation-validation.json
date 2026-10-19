@@ -201,7 +201,7 @@
     "Layouts are computed once per affected owner. Row unions scan each affected net once."
   ],
   "limits": [
-    "SelUV is a separate interactive surface-row picker and remains unimplemented.",
+    "SelUV uses a separate interactive surface-row picker; see select-uv-rows-validation.json for its subsequent implementation.",
     "This native corpus uses public API grip setup and completed direct command macros. Arbitrary native mouse input and nested getter parity are not qualified.",
     "SubD/solid grips, per-grip hiding, all composite arrangements and extreme/non-clamped layouts remain unqualified.",
     "Closed edit-seam transforms have independent equation regressions; native edited-geometry parity is not added by this selection corpus.",

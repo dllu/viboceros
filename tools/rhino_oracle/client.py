@@ -1995,6 +1995,10 @@ def compare_responses(
         local_value=result['value']
         native_value=rhino_result['value']
         operation = operations.get(operation_id)
+        if operation is not None and operation.get('op') == 'select_uv_rows':
+            from .sel_uv_comparison import canonical
+            local_value = canonical(operation, local_value, native=False)
+            native_value = canonical(operation, native_value, native=True)
         if operation is not None and operation.get('op') == 'remap_cplane':
             from .remap_cplane_comparison import canonical
             local_value = canonical(operation, local_value, native=False)

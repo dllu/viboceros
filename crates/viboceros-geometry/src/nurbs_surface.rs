@@ -4,6 +4,7 @@ mod analytic_cone;
 mod analytic_cylinder;
 mod analytic_sphere;
 mod analytic_torus;
+mod basis;
 mod closest_point;
 mod evaluate;
 mod grips;

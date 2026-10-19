@@ -30,8 +30,53 @@ and periodic surfaces, meshes, mixed owners, boundaries, empty/all selections,
 and chained operations. API and application tests compare every grip identity,
 selection state and position, and retain a real Redo witness. Positions use
 `1e-8`; indices, flags and command results compare exactly. General native
-mouse/getter parity and performance remain unqualified. `SelUV` uses a separate
-interactive surface-row picker and remains to be implemented.
+mouse/getter parity and performance remain unqualified.
+
+## Interactive surface rows
+
+`SelUV` selects a surface, enables its control points, and accepts repeated row
+picks. Choose `Direction=U`, `Direction=V` or `Direction=Both`; `Toggle` exchanges
+U and V, and leaves Both unchanged. Each pick adds its rows. Enter and Escape
+both keep accepted picks and leave the grips enabled. Options survive either
+exit. The source selection is released when the getter ends; unrelated ordinary
+preselection survives. Postselection clears the previous selection.
+
+Row selection uses the largest non-rational B-spline basis factor at the surface
+parameter closest to the supplied point. Periodic and closed seam aliases share
+one logical control. This matters on rational surfaces and nonuniform knot
+vectors: closest control-polygon distance can select a different row. Mouse
+input resolves a point on the selected surface; typed world coordinates use the
+same surface query. A source or grip-display change ends the getter safely.
+
+For scripting, select one surface and execute:
+
+```text
+SelUV Points Direction=Both 1,1,0.25 Direction=U 0,0,0
+```
+
+The registry remembers options, also accepts `Toggle` and `HideOthers=Yes|No`,
+and preserves geometry, attributes, groups, Undo and Redo. Malformed batch input
+is rejected before changing selection or display. UI point input supports the
+existing coordinate systems, units, point filters and constraints.
+
+The [SelUV validation receipt](../select-uv-rows-validation.json) records 125
+completed Rhino workflows on rational quadratic, cubic, nonuniform, closed and
+periodic surfaces. Native, registry, session and application replays compare
+complete grip selections and locations, owner/peer selection and visibility,
+initial/enabled grip display, repeated commands, cancellation and Redo. Native
+EndCommand and post-script states are retained separately. Positions use `1e-8`;
+discrete fields compare exactly.
+
+`HideOthers` is parsed and remembered. The captured getters and completed states
+retain object and grip visibility, which this implementation follows. General
+native mouse display effects of this option remain unqualified. Trimmed-face
+picking, ambiguous surface intersections, SubD, hidden individual grips and
+performance comparisons need further validation.
+
+```sh
+cargo test -p viboceros-command -p viboceros-oracle -p viboceros select_uv_rows
+python3 -m unittest tools.rhino_oracle.test_sel_uv
+```
 
 ## SelPt and InvertPt
 
@@ -79,7 +124,7 @@ regressions cover both grip modes, grouped point objects, hidden/locked displays
 coincident mesh controls, history preservation, filtered getters, Circle fitting
 and keyboard SetPt input. Fresh native SelPt/InvertPt getter parity and
 performance remain unqualified. Solid grips, SubD grips, per-grip hiding,
-interactive row picking and control-point range selection need further work.
+control-point range selection need further work.
 
 The [six pending Rhino recipes](../../tools/rhino_oracle/fixtures/point_selection.json)
 use the public command/SDK probe and have no captured native results. The

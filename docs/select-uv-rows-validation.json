@@ -1,0 +1,308 @@
+{
+  "command": "SelUV",
+  "source_base_commit": "332a8d5d43209db4451302117e93216ff377d067",
+  "rhino_version": "8.32.26160.13001",
+  "cases": 125,
+  "command_invocations": 127,
+  "native_results": {
+    "Success": 120,
+    "Cancel": 7
+  },
+  "request": {
+    "path": "tools/rhino_oracle/fixtures/select_uv_rows.json",
+    "sha256": "f78dc29c70de7b79ed10af631b52ac0e331b8c66780d790ec756e606fe2849c7"
+  },
+  "observation": {
+    "path": "tools/rhino_oracle/observations/select_uv_rows.json",
+    "sha256": "0b7d5d7095096b71bddd6b66589c8d29825d2c721d3c2581db0593beec58aab1",
+    "provenance": {
+      "base_commit": "332a8d5d43209db4451302117e93216ff377d067",
+      "request_sha256": "f78dc29c70de7b79ed10af631b52ac0e331b8c66780d790ec756e606fe2849c7",
+      "sources": {
+        "generate_sel_uv.py": "e642ba433d8bd2d709427bee0e15e395b188a5f098dfeac26f44cba28daf7a92",
+        "sel_uv_probe.py": "a36569734a5b1327483bbf15904845a81739f251d16f9d14650b43be806b53a1",
+        "sel_uv_input.py": "1f5b5c21526e07d3631bc3914e9e22156a0e046b52c178b28e94ca3dbce514ea",
+        "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+        "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "4a4ef727ca0eeb9e18b4570a48cf07515d5a56563a7fef1f80841625f1853c55",
+        "structural_sdk.py": "40744016a565fa56545908bfdebb1d6bdd97c1afd3f6fa953f4cb2d9bd05c182"
+      },
+      "fixtures": {
+        "surface_U.3dm": "ffd8bd6944953d4d8ece45b07ed5dcae8069fd942decd82060f9f5255701718e",
+        "surface_hide_U.3dm": "5c2c3d6a79f2ccbc069c6e9e36dbb95dce20737249acb33a807041c58e7c33e5",
+        "surface_V.3dm": "4de4010deba20703490162ce49e0368c408100292fc40c6c6f35b22c10bb977e",
+        "surface_hide_V.3dm": "8f2a1f22bd988aa9e93a27fcdabc07c36c745efc6b7556f69d7cfe9d7def1798",
+        "surface_Both.3dm": "21d8dbde0e04e4a40244b0e8983406071d30869d403a75378ab7bdc48b0d4fb3",
+        "surface_hide_Both.3dm": "2ea216ff9827fec9e019b582542f28f98648070c028a370689a8bffc079c0625",
+        "surface_repeat.3dm": "580b15e726fe80d4b13c83648d71a6b67b9877204a5b1bc8fda860c34149f70e",
+        "surface_switch.3dm": "2ba9eba44d0bff193a517bf738d18d7bdbee834422a1377f47d909072701184f",
+        "surface_closed_U.3dm": "850c2763f3cee27cda2725ba277f3718c0815ab518e2a1a90197b336072aed3d",
+        "surface_closed_hide_U.3dm": "f39c9303ca0816f9423821889e28e696d3050239c128f61abc6ce29f9d9419d1",
+        "surface_closed_V.3dm": "86cf37b725bbcbbbc7a8afb5e24a3e3e1e1ebf38940f8fdaff067d4a4aa5da16",
+        "surface_closed_hide_V.3dm": "c4b7ce78c2a0e044fafd155d2c61ce2f74db53adfcad5f5975e2313be8a56484",
+        "surface_closed_Both.3dm": "ef8692d891fb1a59ba7513cedb4773343a640405554e15e21d3921e187ec8a5e",
+        "surface_closed_hide_Both.3dm": "d0df6edb89d548ab13a34cd2d4cb256e3d5872e684a5d522f8ee0ed1fcc0d520",
+        "surface_closed_repeat.3dm": "a1e7d9d97c7a4bf3b1a9470e759e6e7689b44fe7c02df601e750db31cea8d449",
+        "surface_closed_switch.3dm": "5a26926708bc9bf2db8549a6beece43d1cad5a74f04b463d8a73ec7a51e87cc0",
+        "surface_periodic_u_U.3dm": "acc04d4d4e46e2d3c570754f09e095bbe33d1f7fe1d575b74874f1c9af810a51",
+        "surface_periodic_u_hide_U.3dm": "a809c382dd0dbeda3e2aef2df5ab328a74833460d2abc628c6b0c3585b494177",
+        "surface_periodic_u_V.3dm": "75d78ab34d2e4ab9f15056e5b98c8259ea086a7a023bcf9051e6f07ab874b01b",
+        "surface_periodic_u_hide_V.3dm": "d1f57b36f84ac11551f43046c6538980bef3a034edd1749d7e9d266b5e2d19a2",
+        "surface_periodic_u_Both.3dm": "195e46a5256f3a3f6748eda5a85fd7962fdf561f77f7f635b39d8938e704328a",
+        "surface_periodic_u_hide_Both.3dm": "7acc424c956ffcf9c3f0ceafea04b19bd9ddf1ecd7a2dfb20e4641544da004c4",
+        "surface_periodic_u_repeat.3dm": "250fb3c841ae74454b7744c1f2005221058acb48b37429f2d6453994cd76c023",
+        "surface_periodic_u_switch.3dm": "201099833f4ccf19b02d93b5c4d90970e3aac965d915a3867974a687c4891903",
+        "surface_periodic_v_U.3dm": "889a4b24e523681996d0efdc34248ad6737b288f2b60f8bdba65864af0a16a5a",
+        "surface_periodic_v_hide_U.3dm": "7ee164092590d4586cb6e558c403538d4945b0d63f908429f0910326e823bb05",
+        "surface_periodic_v_V.3dm": "62c915b129cc9a41ee39927ba2f485d21d9e074a7261e8387ae409445af65da9",
+        "surface_periodic_v_hide_V.3dm": "40593e3bdfc20597b9856433197b51a33838b43c42dc65766c2386dd9c4d9c2b",
+        "surface_periodic_v_Both.3dm": "ceffd6f02b9cbfd3078b39354184341ff540be0cf3195f719c5f2b29cd63672c",
+        "surface_periodic_v_hide_Both.3dm": "2e950795ca9ee3de492581125941619b4ec50ff7439be5e4babf365facd6f4b5",
+        "surface_periodic_v_repeat.3dm": "a9328006ef2db99e738ff04be7959eb2ded50b81aada3eb7179638ba27655005",
+        "surface_periodic_v_switch.3dm": "f96f654e102e3dedcbdacbbd5d10a90954b28f9a4c5feacae296a38f93bf0576",
+        "toggle_U.3dm": "77dc8e152196c5d14652751fd62c00069b6dd28bfb098ea145550ea2c07ee557",
+        "toggle_V.3dm": "89c96df9c18a6650d5a645003a3a9a5036d209d79e7c842eead892f42ba031c2",
+        "toggle_Both.3dm": "5a60b44d5448ccb9252fc3c44e410ecca579089e56f26fd3f207265ec8160138",
+        "empty_0.3dm": "985c14b8d494000e5018770d523fe09705c821b0f6471819367e21a8407da535",
+        "cancel_0.3dm": "8e33bd6470a74657429149c452d187c546d4f6f48126ab970fa89a985ae30497",
+        "cancel_surface_0.3dm": "a5efe78779138c8249d73e37ada204780a542ae31a6db5ff2fa26191973ac81f",
+        "preselected_0.3dm": "c4c0651dc8e117cdc1732ac9f086f5af7367cd6e63478c7d821c08c4ae1e6451",
+        "empty_1.3dm": "081e374e676d321c8cec92c09e4b5deaac9ef98d102f3e59fba63c28572dba00",
+        "cancel_1.3dm": "1ff06a75b37c81eaf406f282993c454e3c6f5d18532857615757ad4efeb0ab6c",
+        "cancel_surface_1.3dm": "81c984dacb9824d0cbd79962cfed46e07819e97fc3063135364078128e8cf1fd",
+        "preselected_1.3dm": "9e29e2d358e131b1b6b330f49f4e4d3c2439c2a66d62e9fc2d0ba36adee3fe5c",
+        "hide_empty.3dm": "4ecf54f5a80680ff7e261fcd28f5d75829a7941c875a2c5a337beb8544260dd5",
+        "hide_cancel.3dm": "69974b36975e44be1373bbdc09053d353d20d393a5a601d743a6fb0404907222",
+        "hide_restore.3dm": "75b706b87a71f87f2834e985d40bfe88d786aba05076c1190afcd6c68e1e318c",
+        "direction_memory.3dm": "59f18dbd01d40832a554c63683acc5548fc682de7dc1139bae5df1c3d801a639",
+        "cancel_memory.3dm": "db8909d8f784650458b0290dd73ce8d1a47f95b682aae4653dc3c0fd47cb3411",
+        "world_0.3dm": "a506056631de01d03876525d0032c9b095754828fed4d76ea78c7ad1678d49eb",
+        "world_1.3dm": "944056b2e532e1374233f109ca0e3c86ce7813040045dde41aade1ab0309f9a1",
+        "world_2.3dm": "27fa03de8ef9f1c837284294f8b9e9cf5f9b87860580a35eb6bde177576d9113",
+        "world_3.3dm": "8d77faaf5efa9b4430a69f7d26b1d2491d12d0cc2264ccab2c3ced6ad6c1c0d7",
+        "world_4.3dm": "7d4a4afdf439a6703900e708b36f6a8cc67b6a771fdf065bc48166ae5593b1de",
+        "grid_0.3dm": "23c7e0c5c03f63fc3e1eea8987fd601931fb6db5badde1b3cb9399d7b67a2ef4",
+        "grid_1.3dm": "52f0afac483c67a65430537b479884510edb2bd5df40b4d983481c8a78fc0691",
+        "grid_2.3dm": "ba492a79e6abf293ae201fcaae4744137d9b168cfc839bd119a88d5768ef14a3",
+        "grid_3.3dm": "33799e805c8f5810e89959cd0afad7c1ed66f9df2c7dea5e31c7c52b1aa5a10e",
+        "grid_4.3dm": "bfc18c7aad2c646fa4e9df779fde2834df3862b1dfd4acf92d4f27e762731b13",
+        "grid_5.3dm": "9b7459d787738bce6f67cc79be2845753d482c68c1fe6a371d6a63baf9d80c74",
+        "grid_6.3dm": "31e4b8e14d2e82e4b388744545fc7a4a26b48038a1b24160e687cd3fcd7b9619",
+        "grid_7.3dm": "dd0edf132d07490d78c4a1df907dfba145f07b368ea11d612513940f5bc425e9",
+        "grid_8.3dm": "df21011cb06202579753b29106b0662cd0bc582149c34cc97181510ed944d8fd",
+        "grid_9.3dm": "cd11250be08e058e8b5fd7723bad0327bb137b02f7a5fd4e85fc87a80ebd39b5",
+        "grid_10.3dm": "d1556217e6c58cd26223692db796e2592f9fc0a73ea94167df79c51a23180aed",
+        "grid_11.3dm": "c32f3c8ddeedf5003675dedcb04d227d53a5663cd279b2747457e19478f0cd5d",
+        "grid_12.3dm": "a5736096386a3fb596f863a9e9d1a044768a5c15b917f5eb807a90c62ac34d88",
+        "grid_13.3dm": "cc7dd703f3d97304ad4f67a956ee4fcd061a18b6c5369483d03de2d1e12da5dc",
+        "grid_14.3dm": "83542afbe1383a91c7fe1dad29ec8d4f4587a970cdadc1324235982a729e1b14",
+        "grid_15.3dm": "4ea501109bd31067fa6f53d2d9ceed6b6aeca732abc1ca60499d7731d990571f",
+        "grid_16.3dm": "1b86b19bda06d591090354d2147a04f045416c788b64aa6014bae3c9db8d1b99",
+        "grid_17.3dm": "256cf07dbe3e9e742b36d01dc2a46a00cf0a36227de819c11f2ce504a4e80023",
+        "grid_18.3dm": "359434c38cc197ad3b81b3e400c4b888f95d95831ac07f4dfea00cee39e97a5d",
+        "grid_19.3dm": "098b2dd31442ad9c4d82c7e965bb83de5c1992add78a167e97d1a8150ecbe76e",
+        "grid_20.3dm": "b98e2ad436770cce1b1c4fafbf354d96b5494d304ad9977d13da3c928bd8957c",
+        "grid_21.3dm": "c56b8c9400e88ca02c6809b2ba81236213942c5f0f8b4317f13f6d709e82d806",
+        "grid_22.3dm": "197668cfc0d1c92b97fe37a436ea295951edb94f3e3fc6baa8a357665663d5f1",
+        "grid_23.3dm": "e4b2de6fd730a3fd769e22232a85fa29267846eb77202d05dd23b87e1c1bbdbc",
+        "grid_24.3dm": "0ee672772ceae8fc09b773b8101c7f955c2be993c524bcfd33285add188af96c",
+        "grid_25.3dm": "35a989393f452f70cb5a7a8e157e2ef313ad7c81f687bf53764c8fdedad71105",
+        "grid_26.3dm": "47df263671b51f40d1ad032f6061ebb29480e71f310b782587279a9c5f74ab6b",
+        "grid_27.3dm": "a3103f86cb8443a14bb7d873d01124c59637590bbf5740907f695f4929b696ab",
+        "grid_28.3dm": "5b4d9a166226d36b10fc100ca056e8b930284a4205c92dce325bc7ea4b33bc87",
+        "grid_29.3dm": "30fe253d8df50f476846ca2bfc34e9266e44bea3575a483ddaca524605ddf98e",
+        "grid_30.3dm": "27c174584d3cb0053702bce1e870936b1fb8fbd4133c663784e817ed4e01e7c2",
+        "grid_31.3dm": "1a4bef2e42e33ed47f00855ac002978bd296c5f6b087a50f267e82bb79fe16e2",
+        "surface_nonuniform_0_U.3dm": "f0f29c0b7d7ee278fa9a52b984dd0d27b512f77f9d1a0ace4ebfed94a8794b50",
+        "surface_nonuniform_0_V.3dm": "9baa93e8dd76a1eeca21327bc82bacb8861eb130abf53921dae67128ab97597b",
+        "surface_nonuniform_0_Both.3dm": "8c4c0162a990cb1456d68bfa8be6e87c6416e5d464d4a46157ae05e2ea15c436",
+        "surface_nonuniform_1_U.3dm": "6a585fab12c0bcc0f392cf36ca1f4a562ede124e8d0aa2411182e12ef4d26a9b",
+        "surface_nonuniform_1_V.3dm": "863533acfd9426932814e786f34833dc252211e231cd43c2e94453bdcf785b11",
+        "surface_nonuniform_1_Both.3dm": "a29ae8a1d37690f55448d894cfb55a7984238baff68e44843c299964565f6cce",
+        "surface_nonuniform_2_U.3dm": "0cda77d790ba7a1d8f18edd18146a8d4b97aada63a85b5fa56a5d45ff0f36f72",
+        "surface_nonuniform_2_V.3dm": "97df5bf829d91ea8dd42f9251a977f725262916dc392daa04b4ac32855ebee1b",
+        "surface_nonuniform_2_Both.3dm": "afe0c098597ec27fa257e6b701d2ee116aa01296464cd6a717b0eece769dcb93",
+        "surface_nonuniform_3_U.3dm": "3bdd0cc48319e4fe8ce86aa76f33391d0a552b4b78ca0e1ab116a81ef4b44d1d",
+        "surface_nonuniform_3_V.3dm": "46210c83d55295f774469592e7305b0ef51c23a4962adb8fa7057117e513fb29",
+        "surface_nonuniform_3_Both.3dm": "ae0b2366cbf5c668c57556f3f15c372a4874f198240640d0fdfe9aa38369871a",
+        "surface_nonuniform_4_U.3dm": "7a7d472c871b5dfaf2855f15e47121641f2912d958e2e6197d3821558e0fed55",
+        "surface_nonuniform_4_V.3dm": "0cee823bea11cf9b612a0e206a1112e292ee5e89cee98b84b8f97898c4a1cb66",
+        "surface_nonuniform_4_Both.3dm": "e075a6edf335a8829c7ca4a16351871c83091f08967b7d86fd933c0e60c6f0d9",
+        "surface_nonuniform_5_U.3dm": "3828dfc2e519f31045ce6e9a2467ef95b071427c16236c9fba4158c16e672634",
+        "surface_nonuniform_5_V.3dm": "f8855116e8d73fb6276ebe05b87581489604ecc7617e3f671bf59f90fd35c245",
+        "surface_nonuniform_5_Both.3dm": "dc24ca3aad19f4fd1060a90b2b316df02206cad0721f37652450128bd0eedc7e",
+        "surface_cubic_0_U.3dm": "bb9687d87682686b74e75546a3029c035e0d25a89a8d05d83e5b0697c833c7aa",
+        "surface_cubic_0_V.3dm": "47b5e7a8977dd62b23964dfcbd0c89d81322b65bd31596ea7b5af80fd666fdb1",
+        "surface_cubic_0_Both.3dm": "c054fa37fff8fb5b23c779ac06092e4eda490480acd4decfa313a55c0ad664de",
+        "surface_cubic_1_U.3dm": "5b3b4bf7ec0dba08acf605cf254b72eb7437538dd5906b075366148c1286a848",
+        "surface_cubic_1_V.3dm": "0f01612e2102ec176a1d1316acf5ce336a3167fd994796f50b10f96cd606df22",
+        "surface_cubic_1_Both.3dm": "363923cfb435bc5bf9eebd6d8cad571c5ea71dc09dd8aceb69eaf31f90bce48f",
+        "surface_cubic_2_U.3dm": "364aac46455d928483fa60b558ef3fa11a00fe977573262eb7f8ec88f7bba8c8",
+        "surface_cubic_2_V.3dm": "3929c48960a7cc7d54a706313b7132922a167f41002d7c69343493765f9a15a9",
+        "surface_cubic_2_Both.3dm": "ef618f00330ddc048c2bfa03051b05a5661d52aa35dda82d8ce17e022a236fb2",
+        "surface_cubic_3_U.3dm": "4421c5e7afe023332bd1829084e24973d7392fb539cb9c6f2d97b4fcccdc51c8",
+        "surface_cubic_3_V.3dm": "838928ee5c080fddb7c214b087392dd4a1e17db02d09fbeae38809dcade3fc42",
+        "surface_cubic_3_Both.3dm": "9768f543caec571047db68c2f71d7b45350e667279b2d2a2805c7bb7e5983dbc",
+        "surface_cubic_4_U.3dm": "07e5634844c4a587bc739a64715a32a0ec8c3c12a9ea50199d2ff5a41ff9fc04",
+        "surface_cubic_4_V.3dm": "e604d3d83b323d29340556e99a36cf2b74a835f6732386f2dc2fd0901ebb729f",
+        "surface_cubic_4_Both.3dm": "ff79c086d722dd27b480549ad0f04b1ed11ab72a94c4fca6af973446611af733",
+        "surface_cubic_5_U.3dm": "3b166b1d2a780a2228e3dff8aed16fdf873024b704afa3087d02385f69d54860",
+        "surface_cubic_5_V.3dm": "74a42179f6eb78ae325bbfdc738f9fded7b604e32896d5c4a39287704a85d7cc",
+        "surface_cubic_5_Both.3dm": "5b26fca55ef53a6b09c4eda4cf9546bde8610d131681f9424b9f80766f60c3ae",
+        "preselected_seed.3dm": "da7286253f650f44dc80e40e8f2af4ff53db1216fb5fa941ea21d343752f919c",
+        "managed_hide.3dm": "0ef793f2f7a42ade205f2a2ea80ff82fffc87e1918edd034512ec4bac6f26dfb",
+        "managed_cancel.3dm": "eaa9fe487c7a2211c50259f08a1c52169d1385a8fbc8b912bbf1c2a68fff2622",
+        "managed_both.3dm": "a3448e066baca428e60324a28875e55d7b89cc7db2f2ad752d1a86dca6c55b47"
+      }
+    }
+  },
+  "qualification": {
+    "absolute_epsilon": 1e-08,
+    "relative_epsilon": 1e-12,
+    "profiles": {
+      "portable": {
+        "matched": 125,
+        "cases": 125,
+        "maximum_absolute_error": 4.440892098500626e-16
+      },
+      "native": {
+        "matched": 125,
+        "cases": 125,
+        "maximum_absolute_error": 4.440892098500626e-16
+      }
+    },
+    "discrete_fields": "Complete grip identities and selections, owner/peer selection and visibility, display state, Redo witnesses; native completed command results validated separately.",
+    "geometry": "Native probe checks unchanged source identity and GeometryEquals. Registry/session/UI replay checks unchanged source Object, including attributes and groups.",
+    "comparison": "Canonical complete before/EndCommand/after-script states and repeated command states. Raw native macros, history, events and managed traces remain in the observation; they are not fabricated for Rust."
+  },
+  "checks": {
+    "core": {
+      "tests_passed": 3
+    },
+    "ui": {
+      "tests_passed": 2
+    },
+    "native": {
+      "tests_passed": 3
+    },
+    "basis": {
+      "tests_passed": 1
+    },
+    "help": {
+      "tests_passed": 1
+    },
+    "point-selection": {
+      "tests_passed": 7
+    },
+    "navigation": {
+      "tests_passed": 1
+    },
+    "navigation-ui": {
+      "tests_passed": 2
+    },
+    "python": {
+      "tests_passed": 41
+    }
+  },
+  "check_commands": {
+    "clippy": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+    "format": "cargo fmt --all --check"
+  },
+  "sources": {
+    "README.md": "fe67c70fe17348b813327fd5bd0753cd0decc05a2af533ea2e7e864b74ae1de5",
+    "docs/commands/point-selection.md": "d9df5217ef7239a8e02d37bd4229827b0710df2b7ac773c44af02cb0e4f30c1c",
+    "crates/viboceros-command/src/select_uv_rows.rs": "eb925f8c24c9b2cc8bee08db80bdf5987547aa36bddc4922c84016c8378efe95",
+    "crates/viboceros-command/src/select_uv_rows/tests.rs": "b53ee6a1141f56ce3c2e65d793529a40f83eb77c2e941976afaa66af4280748f",
+    "crates/viboceros-command/src/lib.rs": "1079080f6317a849161754d15532182b8b1690ab7b3f9a345e2576788b92aea4",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "ed2425e4b7cbb0fea545c9d95f2feb69525e675c7814e9c481c58727c301022e",
+    "crates/viboceros-geometry/src/nurbs_surface/basis.rs": "b4bb2f3c93834383033bdbaf585f6a6aee126eaecd906f5bd05076170ddc532a",
+    "crates/viboceros-oracle/src/lib.rs": "778ac2d3d2bee57070a42b072a02c44c7cb9db6886d0d89deaedc2baf914619b",
+    "crates/viboceros-oracle/src/select_uv_rows.rs": "2ed860b9d21f7fbd24398332b7582af442ad2ce24c0b2ba1b744b43bd9e2b67e",
+    "src/app.rs": "aeb8c645376ce2067defea44bc124e5a461eac4e6a45b039a03607b0bab49a12",
+    "src/app/select_uv_rows.rs": "94553f2381c2341d0cb41c0dbbcdc85778402c0912635896071bddc88a440054",
+    "src/app/tests/select_uv_rows.rs": "e25a7c58cd798f1b70a173be98018ea830f17415051d58aaeef458da4835c59d",
+    "src/app/point_input.rs": "656fdeeb86665aae2e7970a02935c8a0e7284ef89ab994dd0c7c8a9bb6f52e86",
+    "src/app/command_line.rs": "efd588633050009c51dfa899f59543d1203e4cb3cac26149d43cb741e6e8b631",
+    "src/viewport.rs": "06ccaf1a647522cb587f3062cdb7f057ce529d84927ad5403b0796121396e53f",
+    "tools/rhino_oracle/client.py": "186369d81726ef7ef3879690328d8ac38d4424bee35befe92936abca82d0795a",
+    "tools/rhino_oracle/sel_uv_comparison.py": "0649c7097428b1db3059e8400246b42f54a9c5484d6c52440888424d02a9f04b",
+    "tools/rhino_oracle/replay_sel_uv.py": "b710e6fd85b0206fb4726590f428e033a1e0c067fd364c720271e27dbf1d8040",
+    "tools/rhino_oracle/test_sel_uv.py": "6ce88e1770d1971db43d065010e592deb8901ceaeeb369f15ba3d8745cc8d018"
+  },
+  "proof_files": {
+    "docs/select-uv-rows-proof/core.log.gz": {
+      "sha256": "b7777276b064d86bc60ca7e4f1202d9c15b72ae1552b5d0467f63075d1eae478",
+      "raw_sha256": "ae2e690a3f7f3694e46a01d72886bf9be05830324220116e466a8856a9236b45"
+    },
+    "docs/select-uv-rows-proof/ui.log.gz": {
+      "sha256": "5cb8ea5a3bb33e81b830cc29d3c5b813776a80e2882f5e49d2dd9706e50f08d9",
+      "raw_sha256": "591106e9470cf5387f2038f6471ff17f6d696c81b05529c0f8650783b0922bc3"
+    },
+    "docs/select-uv-rows-proof/native.log.gz": {
+      "sha256": "0cd8892900f8ceefac8b53711d9990a95aa9a33844790a884f16ca147e6c438a",
+      "raw_sha256": "273d2b9d3163b3c7e52ea23666162c214c8037d13a61e394ead00e524dd6de66"
+    },
+    "docs/select-uv-rows-proof/basis.log.gz": {
+      "sha256": "a080eb4f15eba79188310e1199f8daa1190d3ae7ee3578cb326aa670081384f9",
+      "raw_sha256": "75d692f6f45977f5d98cda19319fa46bc06e473cd49751e174f1ed065d05ab42"
+    },
+    "docs/select-uv-rows-proof/help.log.gz": {
+      "sha256": "9cb2dae36b40aca906ce205c93478dd4cd0956dd284cbaffbe20a68fc0c5b317",
+      "raw_sha256": "a808bc303c4f483681bf7b2038df3079583657fb59eaf94d41b1a5d159f660f8"
+    },
+    "docs/select-uv-rows-proof/point-selection.log.gz": {
+      "sha256": "5d9343c699d785213c8ada06db4837b4309e7da550d57117f8e46b9910f8f915",
+      "raw_sha256": "48d73e6581cd10a841853e1e5683faaa5c4e32dab44361c23b8bac0b85ca1c01"
+    },
+    "docs/select-uv-rows-proof/navigation.log.gz": {
+      "sha256": "0b9f370aa3054fa8ba909d27b80f32ed5bacd1e36a32264be0a3f372d7c81e08",
+      "raw_sha256": "a9f1feb849dec81c8c5e05a12182b812521931c2225f44a155b9e6a1e7542e57"
+    },
+    "docs/select-uv-rows-proof/navigation-ui.log.gz": {
+      "sha256": "716a9a14628baf0306a1ec90993163cae117fa76a083f7d56c7ca7dbad264d02",
+      "raw_sha256": "48ae8f493d097ea4e0815788240a3ab11ef88f57f53e397037270290dbce6482"
+    },
+    "docs/select-uv-rows-proof/python.log.gz": {
+      "sha256": "344282e6a89b20cb3bfec1710bd7a37fc19127c50893bee7e0a71391ea9c76bc",
+      "raw_sha256": "3a48e8a627b26a0dab1b5267fabe73f0373446867363d542ecd75df715fad833"
+    },
+    "docs/select-uv-rows-proof/clippy.log.gz": {
+      "sha256": "a36c9c32225bc2f6337e426dbb4c6c5287025b65e287c8aefb4accea46eb686f",
+      "raw_sha256": "25aa62bc546d174a70213e0217a137421e4be145ecc2a293e0c97232fa4207f5"
+    },
+    "docs/select-uv-rows-proof/format.log.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/select-uv-rows-proof/release-portable-build.log.gz": {
+      "sha256": "69ec9fdf90601abb7c9a1dba518a0f2eb5bb96599b63ede492c0162d30a8e7af",
+      "raw_sha256": "6ffe527aaa3354b61780ace5559c42f54b2de467682dc8acc0f632cefef15531"
+    },
+    "docs/select-uv-rows-proof/release-native-build.log.gz": {
+      "sha256": "c3399120faffdf6bb4a53318654efa641faf524665c9ab0e052e75b900fe31d0",
+      "raw_sha256": "94d1a6a057fdab68b4f8492cabf0f7c4b73ff2991282dd74711d31560691a61a"
+    },
+    "docs/select-uv-rows-proof/portable-replay.json.gz": {
+      "sha256": "39d385140415f43ccf8e7a927b72761e42189cc9687233bd1c1105ce5237f890",
+      "raw_sha256": "f37a7c0346cca5c6a85b990b67e948db57e18d9f95b018cfce02e132bf690a25"
+    },
+    "docs/select-uv-rows-proof/native-replay.json.gz": {
+      "sha256": "4c512629c31680fc39ca6344f796cb8a7c940e68c8cdd9a1b512a94e4e6c9949",
+      "raw_sha256": "3016d42036dcb23e70a444460d66d36e55629f3382317ccfd0e3778547d8fb1a"
+    }
+  },
+  "behavior": [
+    "Repeated picks add complete rows. Both selects their union. Toggle exchanges U/V and leaves Both unchanged.",
+    "Source closest UV parameters choose the largest non-rational tensor-product basis factor. Periodic and closed aliases share a logical control.",
+    "Cancellation retains accepted picks and preferences. Source selection is released after command completion; unrelated ordinary preselection survives.",
+    "Selection and grip display preserve geometry, attributes, Undo and Redo. Batch input is validated before display/selection changes."
+  ],
+  "limits": [
+    "HideOthers is parsed and remembered; captured states keep all object/grip visibility. General native mouse display effects remain unqualified.",
+    "Native mouse picking through trimmed/overlapping faces, exact basis-boundary ties, extreme or non-clamped layouts, SubD and individual hidden grips require further validation.",
+    "No performance parity claim; native elapsed fields are driver placeholders."
+  ],
+  "validation_note": "Both release replays and final portable UI/core checks use final source. The native UI check preceded an equivalent point-input boolean simplification, also checked by final all-feature Clippy."
+}

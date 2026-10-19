@@ -350,6 +350,10 @@ pub struct ViewportInput<'a> {
     pub preview_curve: Option<&'a NurbsCurve>,
     pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
+    pub select_uv_rows: Option<(
+        &'a viboceros_command::select_uv_rows::Session,
+        viboceros_command::select_uv_rows::Options,
+    )>,
     pub control_removal: Option<(
         &'a viboceros_command::remove_control_point::Draft,
         viboceros_command::remove_control_point::Options,
@@ -459,6 +463,7 @@ impl Default for ViewportInput<'_> {
             isocurve_guides: &[],
             preview_points: &[],
             control_removal: None,
+            select_uv_rows: None,
             mirror_preview: None,
             translation_preview: None,
             affine_preview: None,
@@ -2164,6 +2169,21 @@ impl Viewport {
             for &point in input.preview_points {
                 if let Some(position) = self.project_selection_point(point, rect) {
                     painter.circle_filled(position, 3.5, Color32::from_rgb(20, 115, 190));
+                }
+            }
+        }
+        if response.hovered()
+            && let Some((session, options)) = input.select_uv_rows
+            && let Some(cursor) = drafting_cursor
+            && let Ok(row) = session.row(document, cursor.source_point, options)
+        {
+            for grip in row {
+                if let Some(point) = document
+                    .control_point_locations(grip.object)
+                    .and_then(|p| p.get(grip.index))
+                    && let Some(position) = self.project_selection_point(*point, rect)
+                {
+                    painter.circle_filled(position, 5., SELECTED_COLOR);
                 }
             }
         }

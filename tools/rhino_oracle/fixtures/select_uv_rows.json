@@ -1,0 +1,2047 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "select_uv_rows",
+      "id": "surface_U",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_hide_U",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_hide_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_V",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_hide_V",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_hide_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_Both",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_hide_Both",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_hide_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_repeat",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        },
+        {
+          "grip": 0
+        },
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_repeat.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_switch",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 0
+        },
+        "Toggle",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_switch.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_U",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_hide_U",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_hide_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_V",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_hide_V",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_hide_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_Both",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_hide_Both",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_hide_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_repeat",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        },
+        {
+          "grip": 0
+        },
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_repeat.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_closed_switch",
+      "family": "surface_closed",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 0
+        },
+        "Toggle",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_closed_switch.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_U",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_hide_U",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_hide_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_V",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_hide_V",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_hide_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_Both",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_hide_Both",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_hide_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_repeat",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        },
+        {
+          "grip": 0
+        },
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_repeat.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_u_switch",
+      "family": "surface_periodic_u",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 0
+        },
+        "Toggle",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_u_switch.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_U",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_hide_U",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_hide_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_V",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_hide_V",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_hide_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_Both",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_hide_Both",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_hide_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_repeat",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        },
+        {
+          "grip": 0
+        },
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_repeat.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_periodic_v_switch",
+      "family": "surface_periodic_v",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 0
+        },
+        "Toggle",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_periodic_v_switch.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "toggle_U",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        "Toggle",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/toggle_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "toggle_V",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        "Toggle",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/toggle_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "toggle_Both",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        "Toggle",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/toggle_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "empty_0",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/empty_0.3dm",
+      "grips_on": false,
+      "selected": []
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "cancel_0",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/cancel_0.3dm",
+      "grips_on": false,
+      "selected": [],
+      "cancel": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "cancel_surface_0",
+      "family": "surface",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/cancel_surface_0.3dm",
+      "grips_on": false,
+      "selected": [],
+      "cancel_surface": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "preselected_0",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/preselected_0.3dm",
+      "grips_on": false,
+      "preselected": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "empty_1",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/empty_1.3dm",
+      "grips_on": true,
+      "selected": [
+        0
+      ]
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "cancel_1",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/cancel_1.3dm",
+      "grips_on": true,
+      "selected": [
+        0
+      ],
+      "cancel": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "cancel_surface_1",
+      "family": "surface",
+      "actions": [],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/cancel_surface_1.3dm",
+      "grips_on": true,
+      "selected": [
+        0
+      ],
+      "cancel_surface": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "preselected_1",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/preselected_1.3dm",
+      "grips_on": true,
+      "preselected": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "hide_empty",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "HideOthers=Yes"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/hide_empty.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "hide_cancel",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/hide_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "hide_restore",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        },
+        "HideOthers=No"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/hide_restore.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "direction_memory",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/direction_memory.3dm",
+      "next_actions": [
+        {
+          "grip": 4
+        }
+      ]
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "cancel_memory",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/cancel_memory.3dm",
+      "cancel": true,
+      "next_actions": [
+        {
+          "grip": 0
+        }
+      ]
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "world_0",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            0.49,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/world_0.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "world_1",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.5,
+            1.49,
+            0.2
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/world_1.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "world_2",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.5,
+            1.51,
+            0.2
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/world_2.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "world_3",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.49,
+            1.51,
+            5.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/world_3.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "world_4",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            0.6,
+            0.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/world_4.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_0",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            0.35,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_0.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_1",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            0.45,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_1.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_2",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            0.55,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_2.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_3",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            0.65,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_3.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_4",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            0.75,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_4.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_5",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            1.2,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_5.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_6",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            1.4,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_6.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_7",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.1,
+            1.6,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_7.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_8",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            0.35,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_8.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_9",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            0.45,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_9.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_10",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            0.55,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_10.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_11",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            0.65,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_11.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_12",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            0.75,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_12.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_13",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            1.2,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_13.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_14",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            1.4,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_14.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_15",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.4,
+            1.6,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_15.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_16",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            0.35,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_16.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_17",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            0.45,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_17.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_18",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            0.55,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_18.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_19",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            0.65,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_19.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_20",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            0.75,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_20.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_21",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            1.2,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_21.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_22",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            1.4,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_22.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_23",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            0.8,
+            1.6,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_23.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_24",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            0.35,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_24.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_25",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            0.45,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_25.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_26",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            0.55,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_26.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_27",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            0.65,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_27.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_28",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            0.75,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_28.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_29",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            1.2,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_29.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_30",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            1.4,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_30.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "grid_31",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "world": [
+            1.2,
+            1.6,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/grid_31.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_0_U",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.05,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_0_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_0_V",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.05,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_0_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_0_Both",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.05,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_0_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_1_U",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.2,
+            0.3
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_1_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_1_V",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.2,
+            0.3
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_1_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_1_Both",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.2,
+            0.3
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_1_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_2_U",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.35,
+            0.45
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_2_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_2_V",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.35,
+            0.45
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_2_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_2_Both",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.35,
+            0.45
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_2_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_3_U",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.55,
+            0.65
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_3_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_3_V",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.55,
+            0.65
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_3_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_3_Both",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.55,
+            0.65
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_3_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_4_U",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.8,
+            0.9
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_4_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_4_V",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.8,
+            0.9
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_4_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_4_Both",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.8,
+            0.9
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_4_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_5_U",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_5_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_5_V",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_5_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_nonuniform_5_Both",
+      "family": "surface_nonuniform",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_nonuniform_5_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_0_U",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.05,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_0_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_0_V",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.05,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_0_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_0_Both",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.05,
+            0.1
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_0_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_1_U",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.2,
+            0.3
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_1_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_1_V",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.2,
+            0.3
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_1_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_1_Both",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.2,
+            0.3
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_1_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_2_U",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.35,
+            0.45
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_2_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_2_V",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.35,
+            0.45
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_2_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_2_Both",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.35,
+            0.45
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_2_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_3_U",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.55,
+            0.65
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_3_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_3_V",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.55,
+            0.65
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_3_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_3_Both",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.55,
+            0.65
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_3_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_4_U",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            0.8,
+            0.9
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_4_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_4_V",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            0.8,
+            0.9
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_4_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_4_Both",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            0.8,
+            0.9
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_4_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_5_U",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=U",
+        {
+          "parameter": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_5_U.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_5_V",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=V",
+        {
+          "parameter": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_5_V.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "surface_cubic_5_Both",
+      "family": "surface_cubic",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        {
+          "parameter": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/surface_cubic_5_Both.3dm"
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "preselected_seed",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/preselected_seed.3dm",
+      "grips_on": true,
+      "selected": [
+        0
+      ],
+      "preselected": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "managed_hide",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        },
+        "Direction=V",
+        {
+          "grip": 0
+        },
+        "HideOthers=No"
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/managed_hide.3dm",
+      "managed": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "managed_cancel",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/managed_cancel.3dm",
+      "managed": true,
+      "cancel": true
+    },
+    {
+      "op": "select_uv_rows",
+      "id": "managed_both",
+      "family": "surface",
+      "actions": [
+        "Direction=U",
+        "HideOthers=No",
+        "Direction=Both",
+        "HideOthers=Yes",
+        {
+          "grip": 4
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/select_uv_rows/managed_both.3dm",
+      "managed": true
+    }
+  ]
+}

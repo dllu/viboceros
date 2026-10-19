@@ -67,6 +67,7 @@ mod interface;
 mod isocurves;
 mod mass_properties;
 mod parameter_bounds;
+pub mod select_uv_rows;
 mod self_intersect;
 mod surface_closest;
 mod surface_face_uv;
@@ -325,6 +326,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    SelectUvRows {
+        id: String,
+        #[serde(flatten)]
+        fixture: select_uv_rows::Fixture,
+    },
     GripNavigation {
         id: String,
         #[serde(flatten)]
@@ -2717,6 +2723,7 @@ impl Operation {
             | Self::ExtractSrfCommand { id, .. }
             | Self::CopyOptionsCommand { id, .. }
             | Self::GripNavigation { id, .. }
+            | Self::SelectUvRows { id, .. }
             | Self::ShrinkTrimmedSrfToEdgeCommand { id, .. }
             | Self::UntrimCommand { id, .. }
             | Self::UntrimHolesCommand { id, .. }
@@ -3232,6 +3239,7 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::SelectUvRows { fixture, .. } => select_uv_rows::run(fixture, iterations)?,
         Operation::GripNavigation { fixture, .. } => grip_navigation::run(fixture, iterations)?,
         Operation::BrepRemoveHoles { fixture, .. } => remove_holes::run(fixture, tolerance)?,
         Operation::ExtractSrfCommand { fixture, .. } => extract_surface::run(fixture, tolerance)?,

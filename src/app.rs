@@ -216,6 +216,7 @@ mod scale_by_plane;
 mod scale_nu;
 mod scale_positions;
 mod section;
+mod select_uv_rows;
 mod set_point;
 mod set_view;
 mod silhouette;
@@ -2345,6 +2346,7 @@ pub struct VibocerosApp {
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
     refinement_prompt: Option<refinement::Prompt>,
+    select_uv_prompt: Option<select_uv_rows::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
@@ -2480,6 +2482,7 @@ impl VibocerosApp {
             fillet_surface_prompt: None,
             reparameterize_prompt: None,
             refinement_prompt: None,
+            select_uv_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
@@ -2683,6 +2686,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_select_uv(&input) {
+            return;
+        }
         if self.continue_refinement(&input) {
             return;
         }
@@ -2817,6 +2823,7 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
+            || self.start_select_uv(&input)
             || self.start_refinement(&input)
             || self.start_reparameterize(&input)
             || self.start_fillet_surface(&input)
@@ -5853,6 +5860,7 @@ impl VibocerosApp {
         self.block_session = None;
         self.blend_surface_prompt = None;
         self.fillet_surface_prompt = None;
+        self.finish_select_uv();
         self.refinement_prompt = None;
         self.reparameterize_prompt = None;
         self.cancel_tween_surfaces();
@@ -5955,6 +5963,13 @@ impl VibocerosApp {
         point: Point3,
         snap: Option<viboceros_drafting::ObjectSnap>,
     ) -> bool {
+        if self
+            .select_uv_prompt
+            .as_ref()
+            .is_some_and(|p| !p.selecting())
+        {
+            return self.select_uv_point(point);
+        }
         if let Some(accepted) = self.accept_refinement_drafting_point(point) {
             return accepted;
         }
@@ -8699,6 +8714,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_select_uv_object(click.object_id) {
+            return;
+        }
         if self.pick_refinement_object(click.object_id) {
             return;
         }
@@ -8714,6 +8732,7 @@ impl VibocerosApp {
         if self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
             || self.refinement_prompt.is_some()
+            || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             return;
@@ -9021,6 +9040,7 @@ impl VibocerosApp {
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
             || self.refinement_prompt.is_some()
+            || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             return;
@@ -9073,6 +9093,7 @@ impl VibocerosApp {
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
             || self.refinement_prompt.is_some()
+            || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             self.fence_selection = None;
@@ -9170,6 +9191,7 @@ impl VibocerosApp {
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
             || self.refinement_prompt.is_some()
+            || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             self.boundary_selection = None;
@@ -9315,6 +9337,7 @@ impl VibocerosApp {
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
             || self.refinement_prompt.is_some()
+            || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             return;
@@ -9419,6 +9442,9 @@ impl VibocerosApp {
             if output.source_viewport_click {
                 self.accept_scale_by_plane_view(self.active_viewport);
             }
+            return true;
+        }
+        if self.select_uv_viewport_hit(&output) {
             return true;
         }
         if let Some(selection) = output.control_point_selection.take() {
@@ -9650,6 +9676,7 @@ impl VibocerosApp {
             || self.blend_surface_prompt.is_some()
             || self.fillet_surface_prompt.is_some()
             || self.refinement_prompt.is_some()
+            || self.select_uv_prompt.is_some()
             || self.reparameterize_prompt.is_some()
         {
             self.cancel_interactive_command(false);
@@ -9749,6 +9776,8 @@ impl VibocerosApp {
             self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.select_uv_prompt.is_some() {
+            self.finish_select_uv();
         } else if self.refinement_prompt.is_some() {
             let name = self.refinement_prompt.as_ref().unwrap().command_name();
             self.cancel_refinement_input();
@@ -9860,6 +9889,7 @@ impl eframe::App for VibocerosApp {
         self.validate_circle_around_curve();
         self.validate_blend_surface();
         self.validate_fillet_surface();
+        self.validate_select_uv();
         self.validate_refinement();
         self.validate_reparameterize();
         self.validate_tween_surfaces();
@@ -9888,6 +9918,7 @@ impl eframe::App for VibocerosApp {
             && self.blend_surface_prompt.is_none()
             && self.fillet_surface_prompt.is_none()
             && self.refinement_prompt.is_none()
+            && self.select_uv_prompt.is_none()
             && self.reparameterize_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
@@ -9952,7 +9983,11 @@ impl eframe::App for VibocerosApp {
                             || self
                                 .refinement_prompt
                                 .as_ref()
-                                .is_some_and(refinement::Prompt::wants_point))
+                                .is_some_and(refinement::Prompt::wants_point)
+                            || self
+                                .select_uv_prompt
+                                .as_ref()
+                                .is_some_and(|p| !p.selecting()))
                             && !self.picking_alignment_curve()
                             && !matches!(
                                 self.active_command,
@@ -10329,7 +10364,11 @@ impl eframe::App for VibocerosApp {
                 || self
                     .refinement_prompt
                     .as_ref()
-                    .is_some_and(refinement::Prompt::selecting));
+                    .is_some_and(refinement::Prompt::selecting)
+                || self
+                    .select_uv_prompt
+                    .as_ref()
+                    .is_some_and(|p| p.selecting()));
         let parametric_highlights = self
             .reparameterize_prompt
             .as_ref()
@@ -10416,6 +10455,7 @@ impl eframe::App for VibocerosApp {
         let normal_surface = model_input_active
             .then(|| {
                 self.orient_surface_location()
+                    .or_else(|| self.select_uv_prompt.as_ref().and_then(|p| p.surface()))
                     .or_else(|| self.move_normal_surface())
                     .or_else(|| {
                         self.refinement_prompt
@@ -10577,6 +10617,21 @@ impl eframe::App for VibocerosApp {
                             .collect()
                     })
             });
+        let selection_allowed_objects = if self
+            .select_uv_prompt
+            .as_ref()
+            .is_some_and(|p| p.selecting())
+        {
+            Some(
+                self.document
+                    .selectable_objects()
+                    .filter(|o| viboceros_command::select_uv_rows::accepts(o.geometry()))
+                    .map(|o| o.id())
+                    .collect(),
+            )
+        } else {
+            selection_allowed_objects
+        };
         let viewport_positions = &self.viewport_positions;
         let catenary_input = self
             .catenary_session
@@ -10784,6 +10839,7 @@ impl eframe::App for VibocerosApp {
                                 .refinement_prompt
                                 .as_ref()
                                 .map_or(&[], refinement::Prompt::guides),
+                            select_uv_rows: self.select_uv_prompt.as_ref().and_then(|p| p.picker()),
                             control_removal: self
                                 .refinement_prompt
                                 .as_ref()
@@ -11171,6 +11227,7 @@ mod tests {
     mod scale_nu;
     mod scale_positions;
     mod section;
+    mod select_uv_rows;
     mod set_point;
     mod set_point_preview;
     mod set_view;
@@ -11279,6 +11336,7 @@ mod tests {
             fillet_surface_prompt: None,
             reparameterize_prompt: None,
             refinement_prompt: None,
+            select_uv_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,

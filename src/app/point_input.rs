@@ -25,7 +25,8 @@ impl VibocerosApp {
             && !self
                 .refinement_prompt
                 .as_ref()
-                .is_some_and(refinement::Prompt::wants_point))
+                .is_some_and(refinement::Prompt::wants_point)
+            && self.select_uv_prompt.as_ref().is_none_or(|p| p.selecting()))
             || self.plane_prompt.is_some()
         {
             return false;
@@ -47,7 +48,9 @@ impl VibocerosApp {
                 .and_then(|s| s.first)
                 .or_else(|| self.maelstrom_circle_anchor())
                 .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
-                .or(self.last_point.filter(|_| self.refinement_prompt.is_some()))
+                .or(self.last_point.filter(|_| {
+                    self.refinement_prompt.is_some() || self.select_uv_prompt.is_some()
+                }))
         };
         let Some(anchor) = anchor else {
             self.push_log("Error: distance and angle constraints require a previous point".into());
@@ -76,7 +79,8 @@ impl VibocerosApp {
             && !self
                 .refinement_prompt
                 .as_ref()
-                .is_some_and(refinement::Prompt::wants_point))
+                .is_some_and(refinement::Prompt::wants_point)
+            && self.select_uv_prompt.as_ref().is_none_or(|p| p.selecting()))
             || self.active_command == Some(InteractiveCommand::DomainFace)
             || self.plane_prompt.is_some()
         {
