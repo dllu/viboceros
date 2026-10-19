@@ -26,11 +26,29 @@ pub(super) struct ControlPoints {
     geometry: GeometrySnapshot,
     points: Arc<[Point3]>,
     selected: Arc<BTreeSet<usize>>,
+    hidden: Arc<BTreeSet<usize>>,
     display_override: bool,
 }
 
 impl ControlPoints {
+    /// Point visibility is a live display setting, independent of geometry Undo.
+    /// Restoring a selected hidden grip makes this owner's entire display visible.
+    pub(super) fn retain_live_visibility(&mut self, current: &Self) {
+        if self.mode == current.mode && self.points.len() == current.points.len() {
+            self.hidden = if self.selected.iter().any(|i| current.hidden.contains(i)) {
+                Arc::default()
+            } else {
+                current.hidden.clone()
+            };
+        }
+    }
+
     pub(super) fn retain_selection_if_count_unchanged(&mut self, original: &Self) {
+        self.hidden = if self.points.len() == original.points.len() {
+            original.hidden.clone()
+        } else {
+            Arc::default()
+        };
         self.selected = if self.points.len() == original.points.len() {
             original.selected.clone()
         } else {
@@ -177,6 +195,7 @@ impl Document {
                         geometry: object.geometry.clone(),
                         points: object.geometry.grip_locations(mode)?.into(),
                         selected: Arc::default(),
+                        hidden: Arc::default(),
                         display_override: false,
                     },
                 ));
@@ -256,9 +275,76 @@ impl Document {
         Ok(count)
     }
 
-    /// Returns exact source identities and Euclidean locations; rational
-    /// weights do not weight a grip's contribution to a Circle fit.
+    /// Enabled grips on selectable owners, including hidden grips. Indices and
+    /// locations keep their original basis when other grips are hidden.
+    pub fn all_control_points(&self) -> impl Iterator<Item = (ControlPointId, Point3, bool)> + '_ {
+        self.iter_control_points(true)
+    }
+    /// Visible, pickable grips in stable owner/index order.
     pub fn control_points(&self) -> impl Iterator<Item = (ControlPointId, Point3, bool)> + '_ {
+        self.iter_control_points(false)
+    }
+    pub fn is_control_point_hidden(&self, grip: ControlPointId) -> Option<bool> {
+        self.control_point_locations(grip.object)
+            .filter(|p| grip.index < p.len())?;
+        Some(
+            self.control_points[&grip.object]
+                .hidden
+                .contains(&grip.index),
+        )
+    }
+    pub fn is_control_point_selectable(&self, grip: ControlPointId) -> bool {
+        self.is_control_point_hidden(grip) == Some(false)
+    }
+    /// Validate the complete identity batch before changing display or picks.
+    /// Visibility is transient and never records a model edit or clears Redo.
+    pub fn set_control_points_hidden(
+        &mut self,
+        grips: impl IntoIterator<Item = ControlPointId>,
+        hidden: bool,
+    ) -> Result<usize, DocumentError> {
+        let grips = grips.into_iter().collect::<BTreeSet<_>>();
+        for grip in &grips {
+            if self.is_control_point_hidden(*grip).is_none() {
+                return Err(DocumentError::InvalidControlPointSelection {
+                    object: grip.object,
+                    index: grip.index,
+                });
+            }
+        }
+        let mut changed = 0;
+        for grip in grips {
+            let state = self.control_points.get_mut(&grip.object).unwrap();
+            if hidden {
+                changed += usize::from(Arc::make_mut(&mut state.hidden).insert(grip.index));
+                Arc::make_mut(&mut state.selected).remove(&grip.index);
+            } else {
+                changed += usize::from(Arc::make_mut(&mut state.hidden).remove(&grip.index));
+            }
+        }
+        Ok(changed)
+    }
+    pub fn hide_selected_control_points(&mut self) -> usize {
+        let grips = self
+            .selected_control_points()
+            .map(|(g, _)| g)
+            .collect::<Vec<_>>();
+        self.set_control_points_hidden(grips, true)
+            .expect("selected grips have valid current identities")
+    }
+    pub fn show_control_points(&mut self) -> usize {
+        let grips = self
+            .all_control_points()
+            .map(|(g, _, _)| g)
+            .filter(|g| self.is_control_point_hidden(*g) == Some(true))
+            .collect::<Vec<_>>();
+        self.set_control_points_hidden(grips, false)
+            .expect("hidden grips have valid current identities")
+    }
+    fn iter_control_points(
+        &self,
+        include_hidden: bool,
+    ) -> impl Iterator<Item = (ControlPointId, Point3, bool)> + '_ {
         self.objects
             .iter()
             .take(if self.control_points.is_empty() {
@@ -266,27 +352,41 @@ impl Document {
             } else {
                 self.objects.len()
             })
-            .flat_map(|object| {
+            .flat_map(move |object| {
                 let state = self.control_points.get(&object.id).filter(|state| {
                     self.object_is_selectable(object)
                         && state.geometry.shares_storage_with(&object.geometry)
                 });
                 state.into_iter().flat_map(move |state| {
-                    state.points.iter().enumerate().map(move |(index, point)| {
-                        (
-                            ControlPointId {
-                                object: object.id,
-                                index,
-                            },
-                            *point,
-                            state.selected.contains(&index),
-                        )
-                    })
+                    state
+                        .points
+                        .iter()
+                        .enumerate()
+                        .filter(move |(index, _)| include_hidden || !state.hidden.contains(index))
+                        .map(move |(index, point)| {
+                            (
+                                ControlPointId {
+                                    object: object.id,
+                                    index,
+                                },
+                                *point,
+                                state.selected.contains(&index),
+                            )
+                        })
                 })
             })
     }
 
+    /// Selected visible grips accepted by point and geometry getters. Locations
+    /// are Euclidean; rational weights do not weight a grip's Circle fit input.
     pub fn selected_control_points(&self) -> impl Iterator<Item = (ControlPointId, Point3)> + '_ {
+        self.selected_logical_control_points()
+            .filter(|(g, _)| !self.control_points[&g.object].hidden.contains(&g.index))
+    }
+    /// Logical selections also include hidden grips selected by U/V navigation.
+    pub fn selected_logical_control_points(
+        &self,
+    ) -> impl Iterator<Item = (ControlPointId, Point3)> + '_ {
         self.objects
             .iter()
             .take(if self.control_points.is_empty() {
@@ -328,6 +428,9 @@ impl Document {
     }
 
     /// A complete batch is checked before changing either grip or owner picks.
+    /// Select logical identities, including hidden navigation targets. Physical
+    /// mouse/getter inputs must first check `is_control_point_selectable`.
+    /// Returns the total logical grip selection count.
     pub fn select_control_points(
         &mut self,
         picks: impl IntoIterator<Item = ControlPointId>,
@@ -335,10 +438,7 @@ impl Document {
     ) -> Result<usize, DocumentError> {
         let picks = picks.into_iter().collect::<BTreeSet<_>>();
         for pick in &picks {
-            if self
-                .control_point_locations(pick.object)
-                .is_none_or(|points| pick.index >= points.len())
-            {
+            if self.is_control_point_hidden(*pick).is_none() {
                 return Err(DocumentError::InvalidControlPointSelection {
                     object: pick.object,
                     index: pick.index,
@@ -365,7 +465,7 @@ impl Document {
                 }
             }
         }
-        Ok(self.selected_control_points().count())
+        Ok(self.selected_logical_control_points().count())
     }
 
     pub fn select_all_control_points(&mut self) -> usize {
@@ -389,6 +489,9 @@ impl Document {
                 && !state.geometry.shares_storage_with(&object.geometry)
             {
                 if let Ok(points) = object.geometry.grip_locations(state.mode) {
+                    if state.points.len() != points.len() {
+                        state.hidden = Arc::default();
+                    }
                     state.points = points.into();
                     state.geometry = object.geometry.clone();
                     state.display_override = false;
@@ -431,3 +534,6 @@ impl Document {
 mod edit_tests;
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod visibility_tests;

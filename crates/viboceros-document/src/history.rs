@@ -456,7 +456,10 @@ fn exchange_control_points(
     stored: &mut Option<super::control_points::ControlPoints>,
 ) {
     let current = document.control_points.remove(&id);
-    if let Some(state) = stored.take() {
+    if let Some(mut state) = stored.take() {
+        if let Some(current) = &current {
+            state.retain_live_visibility(current);
+        }
         document.control_points.insert(id, state);
     }
     *stored = current;

@@ -1,5 +1,49 @@
 # Point selection
 
+## HidePt and ShowPt
+
+`HidePt` hides selected visible control or curve edit points and deselects those
+points. Without a visible grip selection, it opens a grip picker: select points
+or use `SelPt`, then Enter to hide them. Escape cancels and clears the getter's
+selection. Ordinary point objects are excluded from this picker. Preselected
+ordinary objects survive the immediate command. `ShowPt` reveals hidden grips
+on enabled displays without selecting them or changing other picks. It also
+succeeds when nothing is hidden.
+
+Hiding preserves logical indices, geometry, attributes, groups and Redo. Hidden
+grips do not draw or participate in mouse/window picking, `SelPt`, `InvertPt` or
+ordinary transform input. Directional commands and `SelUV` can logically select
+hidden grips while they remain hidden. `HidePt` acts on visible selections and
+leaves already hidden logical selections alone. `ShowPt` makes those selections
+visible again.
+
+Running `PointsOn` in the same mode retains hidden points. Switching between
+control and edit points, or closing and reopening a display with `PointsOff`,
+resets per-point visibility. Visibility itself is transient and does not record
+a model edit. Move affects visible selected grips and releases hidden logical
+picks. In the captured curve Move workflows, Undo/Redo retain the current
+visibility when the mode and point count match; if a restored selection includes
+a currently hidden grip, that owner's whole grip display becomes visible.
+
+The [visibility validation receipt](../grip-visibility-validation.json) covers
+39 Rhino workflows and 1,219 completed commands, including actual HidePt getter
+accept/cancel input, repeated hide/show, selection, mode changes, logical
+navigation, surface rows and curve Move/Undo/Redo. API and application replays
+compare complete before, EndCommand and post-script states, grip identities,
+hidden/selectable/selected flags, positions, command results and Redo witnesses.
+Edited curve cases also compare complete NURBS definitions. Positions use `1e-8`;
+discrete fields compare exactly.
+
+General native mouse/getter parity, hidden or locked owners, solid/SubD grips,
+count-changing history, other transforms, smoothing and performance
+remain unqualified. Grip visibility does not change snapping to owner geometry.
+
+```sh
+cargo test -p viboceros-oracle -p viboceros grip_visibility
+python3 -m unittest tools.rhino_oracle.test_grip_visibility
+python3 -m tools.rhino_oracle.replay_grip_visibility --output /tmp/grip-visibility.json
+```
+
 ## Directional selection
 
 `NextU`, `PrevU`, `NextV` and `PrevV` shift the selected curve or surface
@@ -70,8 +114,9 @@ discrete fields compare exactly.
 `HideOthers` is parsed and remembered. The captured getters and completed states
 retain object and grip visibility, which this implementation follows. General
 native mouse display effects of this option remain unqualified. Trimmed-face
-picking, ambiguous surface intersections, SubD, hidden individual grips and
-performance comparisons need further validation.
+picking, ambiguous surface intersections, SubD and performance comparisons need
+further validation. Individual hidden-grip rows are covered by the visibility
+corpus above.
 
 ```sh
 cargo test -p viboceros-command -p viboceros-oracle -p viboceros select_uv_rows
@@ -80,7 +125,7 @@ python3 -m unittest tools.rhino_oracle.test_sel_uv
 
 ## SelPt and InvertPt
 
-`SelPt` adds selectable point objects and every displayed control or curve edit
+`SelPt` adds selectable point objects and every visible control or curve edit
 grip to the selection. Existing object picks remain selected. Grip owners and
 group peers are selected only if they were already selected; point cloud samples
 remain part of their point-cloud object.
@@ -122,8 +167,9 @@ describes SelPt as point-object selection and describes InvertPt's visible-grip
 behavior. This implementation follows the broader SelPt reference. Independent
 regressions cover both grip modes, grouped point objects, hidden/locked displays,
 coincident mesh controls, history preservation, filtered getters, Circle fitting
-and keyboard SetPt input. Fresh native SelPt/InvertPt getter parity and
-performance remain unqualified. Solid grips, SubD grips, per-grip hiding,
+and keyboard SetPt input. The visibility corpus above captures native
+SelPt/InvertPt with hidden grips and SelPt inside HidePt's getter. General source
+getter parity and performance remain unqualified. Solid grips, SubD grips and
 control-point range selection need further work.
 
 The [six pending Rhino recipes](../../tools/rhino_oracle/fixtures/point_selection.json)

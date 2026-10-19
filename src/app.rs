@@ -9456,6 +9456,7 @@ impl VibocerosApp {
                         | "LineThroughPt"
                         | "Sphere FitPoints"
                         | "Smooth"
+                        | "HidePt"
                 ) || (prompt.description.workflow
                     == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                     && transform_sources::allows_grips(prompt.description.command))
@@ -9466,11 +9467,11 @@ impl VibocerosApp {
                 selection.mode
             };
             // Validate grip identities before clearing or selecting either set.
-            if let Some(pick) = selection.picks.iter().find(|pick| {
-                self.document
-                    .control_point_locations(pick.object)
-                    .is_none_or(|points| pick.index >= points.len())
-            }) {
+            if let Some(pick) = selection
+                .picks
+                .iter()
+                .find(|pick| !self.document.is_control_point_selectable(**pick))
+            {
                 self.push_log(format!(
                     "Error: control point {} on object {} is unavailable",
                     pick.index, pick.object
@@ -9648,6 +9649,7 @@ impl VibocerosApp {
                             | "LineThroughPt"
                             | "Sphere FitPoints"
                             | "Smooth"
+                            | "HidePt"
                     ) || (prompt.description.workflow
                         == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
                         && transform_sources::allows_grips(prompt.description.command)))
@@ -11169,6 +11171,7 @@ mod tests {
     mod geometry_check;
     mod grip_navigation;
     mod grip_transform;
+    mod grip_visibility;
     mod group_prompt;
     mod hyperbola;
     mod insert_control_point;

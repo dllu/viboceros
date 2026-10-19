@@ -7092,6 +7092,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'select_uv_rows':
         from sel_uv_probe import run
         return run(operation, globals())
+    if kind == 'grip_visibility':
+        from grip_visibility_probe import run
+        return run(operation, globals())
     if kind == 'grip_navigation':
         from grip_navigation_probe import run
         return run(operation, globals())
@@ -17445,7 +17448,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get('op') in ('select_uv_rows','grip_navigation','curve_insert_control_point_geometry','surface_insert_control_point_geometry','insert_control_point_command','remove_control_point_composite_parameters','remove_control_point_parameters','remove_control_point_command','remove_knot_smooth_periodic','remove_knot_command','insert_knot_command','insert_kink_subcurve', 'insert_kink_command','polyline_closure','mark_foci_command','reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('grip_visibility','select_uv_rows','grip_navigation','curve_insert_control_point_geometry','surface_insert_control_point_geometry','insert_control_point_command','remove_control_point_composite_parameters','remove_control_point_parameters','remove_control_point_command','remove_knot_smooth_periodic','remove_knot_command','insert_knot_command','insert_kink_subcurve', 'insert_kink_command','polyline_closure','mark_foci_command','reduce_polyline_command','reparameterize_face_command','reparameterize_block_command','simplify_curve_command','modify_radius_command','delete_subcurve_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

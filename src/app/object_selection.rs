@@ -133,6 +133,9 @@ impl PendingObjectCommand {
         if self.description.command == "LineThroughPt" {
             return "Select at least two points, cloud points, meshes or grips; Enter fits a line, Esc cancels";
         }
+        if self.description.command == "HidePt" {
+            return "Select control or edit points to hide; Enter hides, Esc cancels";
+        }
         if self.description.command == "PlaneThroughPt" {
             return "Select at least three points, cloud points or control points; Enter fits a plane, Esc cancels";
         }
@@ -237,6 +240,7 @@ impl VibocerosApp {
                         | "LineThroughPt"
                         | "Sphere FitPoints"
                         | "Smooth"
+                        | "HidePt"
                 ) || (p.description.workflow
                     == ObjectSelectionWorkflow::PointInputAfterSelection
                     && super::transform_sources::allows_grips(p.description.command)))
@@ -609,16 +613,23 @@ impl VibocerosApp {
             .count();
         let selected_grips = if matches!(
             description.command,
-            "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Sphere FitPoints" | "Smooth"
+            "Circle FitPoints"
+                | "PlaneThroughPt"
+                | "LineThroughPt"
+                | "Sphere FitPoints"
+                | "Smooth"
+                | "HidePt"
         ) {
             self.document
                 .selected_control_points()
                 .filter(|(p, _)| {
-                    description.command != "Smooth"
-                        || self
-                            .document
-                            .object(p.object)
-                            .is_some_and(|o| o.geometry().supports_smoothing())
+                    (description.command != "HidePt"
+                        || self.document.is_control_point_selectable(*p))
+                        && (description.command != "Smooth"
+                            || self
+                                .document
+                                .object(p.object)
+                                .is_some_and(|o| o.geometry().supports_smoothing()))
                 })
                 .take(required)
                 .count()
@@ -962,7 +973,11 @@ impl VibocerosApp {
                             | "LineThroughPt"
                             | "Sphere FitPoints"
                             | "Smooth"
-                    ) && self.document.selected_control_points().next().is_some());
+                            | "HidePt"
+                    ) && self.document.selected_control_points().any(|(g, _)| {
+                        pending.description.command != "HidePt"
+                            || self.document.is_control_point_selectable(g)
+                    }));
                 if !has_eligible_picks {
                     if self
                         .commands
@@ -1197,7 +1212,11 @@ impl VibocerosApp {
                 self.select_prompt_objects(ids, SelectionMode::Add);
                 if matches!(
                     pending.description.command,
-                    "Circle FitPoints" | "PlaneThroughPt" | "LineThroughPt" | "Sphere FitPoints"
+                    "Circle FitPoints"
+                        | "PlaneThroughPt"
+                        | "LineThroughPt"
+                        | "Sphere FitPoints"
+                        | "HidePt"
                 ) {
                     self.document.select_all_control_points();
                 }

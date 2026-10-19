@@ -247,6 +247,16 @@ impl Document {
                     } else {
                         before.selected.clone()
                     };
+                    // GetObject accepts visible picks; a logical hidden pick
+                    // outside this explicit transform is released on update.
+                    if current
+                        .selected
+                        .iter()
+                        .any(|i| current.hidden.contains(i) && !picks[&id].contains(i))
+                    {
+                        Arc::make_mut(&mut current.selected)
+                            .retain(|i| !current.hidden.contains(i) || picks[&id].contains(i));
+                    }
                     self.record_edit(
                         "Transform grips",
                         Edit::ControlPointsChanged {

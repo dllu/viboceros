@@ -7,13 +7,17 @@ pub use navigation::Navigation;
 pub enum PointSelectionAction {
     Select,
     Invert,
+    Hide,
+    Show,
     Navigate(Navigation),
 }
 
 impl PointSelectionAction {
-    pub const ALL: [Self; 12] = [
+    pub const ALL: [Self; 14] = [
         Self::Select,
         Self::Invert,
+        Self::Hide,
+        Self::Show,
         Self::Navigate(Navigation::NextU),
         Self::Navigate(Navigation::PrevU),
         Self::Navigate(Navigation::NextV),
@@ -44,6 +48,8 @@ impl PointSelectionAction {
         match self {
             Self::Select => "SelPt",
             Self::Invert => "InvertPt",
+            Self::Hide => "HidePt",
+            Self::Show => "ShowPt",
             Self::Navigate(action) => action.name(),
         }
     }
@@ -56,6 +62,20 @@ impl PointSelectionAction {
         document: &mut Document,
         mut accepts_object: impl FnMut(&viboceros_document::Object) -> bool,
     ) -> Result<String, CommandError> {
+        if self == Self::Hide {
+            if document.selected_control_points().next().is_none() {
+                return Err(CommandError::Usage(
+                    "HidePt requires selected control or edit points",
+                ));
+            }
+            return Ok(format!(
+                "Hid {} grip(s)",
+                document.hide_selected_control_points()
+            ));
+        }
+        if self == Self::Show {
+            return Ok(format!("Showed {} grip(s)", document.show_control_points()));
+        }
         if let Self::Navigate(action) = self {
             return action.apply(document);
         }
@@ -82,7 +102,9 @@ impl PointSelectionAction {
             match self {
                 Self::Select => SelectionMode::Add,
                 Self::Invert => SelectionMode::Toggle,
-                Self::Navigate(_) => unreachable!("navigation has a separate selection policy"),
+                Self::Navigate(_) | Self::Hide | Self::Show => {
+                    unreachable!("separate grip selection policy")
+                }
             },
         )?;
         if count == 0 && self == Self::Select {
@@ -106,6 +128,23 @@ impl Command for PointSelectionCommand {
     }
     fn records_history(&self) -> bool {
         false
+    }
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(
+            (self.0 == PointSelectionAction::Hide && arguments.is_empty()).then_some(
+                ObjectSelectionPrompt {
+                    command: "HidePt",
+                    filter: ObjectSelectionFilter::Grips,
+                    options: Vec::new(),
+                    menus: Vec::new(),
+                    choices: Vec::new(),
+                    workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+                },
+            ),
+        )
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, self.name())?;

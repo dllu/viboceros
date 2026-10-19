@@ -5,6 +5,13 @@ purple squares; selected points appear orange. `PointsOff` hides all control
 points and clears grip selection while retaining object selection. These display
 commands preserve model geometry, Undo and Redo.
 
+`HidePt` hides selected visible grips, or opens a grip picker when none are
+selected. `ShowPt` reveals hidden grips on enabled displays. Hidden grips keep
+their original indices and locations; they do not draw or participate in mouse,
+window, SelPt or ordinary transform input. Logical U/V navigation can still
+select them. See [point visibility](commands/point-selection.md#hidept-and-showpt)
+for the command, mode-switch and Undo rules.
+
 [`EditPtOn`](commands/edit-points.md) displays curve Greville edit points through
 the same picking and transform workflow. `PointsOn` switches back to control
 points; switching modes clears the owner's selected indices. `PointsOff` hides

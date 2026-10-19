@@ -1,0 +1,5032 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_visibility",
+      "id": "curve_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/curve_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "curve_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/curve_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "rational_control",
+      "sources": [
+        {
+          "kind": "rational",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/rational_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "rational_edit",
+      "sources": [
+        {
+          "kind": "rational",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/rational_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "closed_control",
+      "sources": [
+        {
+          "kind": "closed",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/closed_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "closed_edit",
+      "sources": [
+        {
+          "kind": "closed",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/closed_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "periodic_control",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/periodic_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "periodic_edit",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/periodic_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "line_control",
+      "sources": [
+        {
+          "kind": "line",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/line_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "line_edit",
+      "sources": [
+        {
+          "kind": "line",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/line_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "polyline_control",
+      "sources": [
+        {
+          "kind": "polyline",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/polyline_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "polyline_edit",
+      "sources": [
+        {
+          "kind": "polyline",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/polyline_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "circle_control",
+      "sources": [
+        {
+          "kind": "circle",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/circle_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "circle_edit",
+      "sources": [
+        {
+          "kind": "circle",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/circle_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "arc_control",
+      "sources": [
+        {
+          "kind": "arc",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/arc_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "arc_edit",
+      "sources": [
+        {
+          "kind": "arc",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/arc_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "surface_control",
+      "sources": [
+        {
+          "kind": "surface",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelUV"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/surface_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "surface_closed_control",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelUV"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/surface_closed_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "mesh_control",
+      "sources": [
+        {
+          "kind": "mesh",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/mesh_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "polycurve_control",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/polycurve_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "polycurve_edit",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "EditPtOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/polycurve_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "surface_periodic_u_control",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelUV"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/surface_periodic_u_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "surface_periodic_v_control",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelUV"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/surface_periodic_v_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "mixed_0",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "control",
+          "parent": false
+        },
+        {
+          "kind": "surface_closed",
+          "mode": "control",
+          "parent": false
+        },
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        },
+        {
+          "kind": "mesh",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/mixed_0.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "mixed_1",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "control",
+          "parent": true
+        },
+        {
+          "kind": "surface_closed",
+          "mode": "control",
+          "parent": true
+        },
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": true
+        },
+        {
+          "kind": "mesh",
+          "mode": "control",
+          "parent": true
+        }
+      ],
+      "actions": [
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all",
+          "cancel": true
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty",
+          "pick": "all"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "first"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "before_middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "all"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelPt"
+        },
+        {
+          "command": "InvertPt"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "ends"
+        },
+        {
+          "command": "HidePt",
+          "seed": "empty"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "PointsOff"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "PointsOn",
+          "parents": true
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/mixed_1.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "hidden_selected_hide_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": true
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "HidePt"
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/hidden_selected_hide_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "mixed_hidden_hide_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": true
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "HidePt"
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/mixed_hidden_hide_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "hidden_selected_hide_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": true
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "HidePt"
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/hidden_selected_hide_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "mixed_hidden_hide_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": true
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "HidePt"
+        },
+        {
+          "command": "ShowPt"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/mixed_hidden_hide_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_mixed_move_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "Move"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_mixed_move_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_hidden_move_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "Move"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_hidden_move_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_visible_move_history_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "Move",
+          "seed": "first"
+        },
+        {
+          "command": "Undo"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "Redo"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_visible_move_history_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_mixed_move_history_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "Move"
+        },
+        {
+          "command": "Undo"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "Redo"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_mixed_move_history_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_visible_move_hide_history_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "Move",
+          "seed": "first"
+        },
+        {
+          "command": "Undo"
+        },
+        {
+          "command": "HidePt"
+        },
+        {
+          "command": "Redo"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_visible_move_hide_history_control.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_mixed_move_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "Move"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_mixed_move_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_hidden_move_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "Move"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_hidden_move_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_visible_move_history_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "Move",
+          "seed": "first"
+        },
+        {
+          "command": "Undo"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "Redo"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_visible_move_history_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_mixed_move_history_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "before_middle"
+        },
+        {
+          "command": "Move"
+        },
+        {
+          "command": "Undo"
+        },
+        {
+          "command": "ShowPt"
+        },
+        {
+          "command": "Redo"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_mixed_move_history_edit.3dm"
+    },
+    {
+      "op": "grip_visibility",
+      "id": "edited_visible_move_hide_history_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "HidePt",
+          "seed": "middle"
+        },
+        {
+          "command": "SelNone"
+        },
+        {
+          "command": "Move",
+          "seed": "first"
+        },
+        {
+          "command": "Undo"
+        },
+        {
+          "command": "HidePt"
+        },
+        {
+          "command": "Redo"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_visibility/edited_visible_move_hide_history_edit.3dm"
+    }
+  ]
+}

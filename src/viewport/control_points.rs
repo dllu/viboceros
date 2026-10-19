@@ -140,6 +140,19 @@ mod tests {
                 .len(),
             2
         );
+        document.set_control_points_hidden([pick], true).unwrap();
+        assert_eq!(view.pick_control_point(screen, rect, &document), None);
+        assert!(
+            view.control_points_in_window(rect, window, false, &document)
+                .is_empty()
+        );
+        assert_eq!(
+            view.control_points_in_window(rect, window, true, &document)
+                .len(),
+            2
+        );
+        document.show_control_points();
+        assert_eq!(view.pick_control_point(screen, rect, &document), Some(pick));
         document.set_objects_visibility([source], false).unwrap();
         assert_eq!(view.pick_control_point(screen, rect, &document), None);
     }

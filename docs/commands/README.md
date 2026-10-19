@@ -56,7 +56,7 @@ Rhino's complete command set is still a work in progress.
 - [Rebuild curve previews](rebuild-curves.md)
 - [Smooth controls and mesh vertices](smooth.md)
 - [EditPtOn and curve edit-point transforms](edit-points.md)
-- [Directional grip selection, SelPt and InvertPt](point-selection.md)
+- [Grip visibility and selection: HidePt, ShowPt, directional rows, SelPt and InvertPt](point-selection.md)
 - [SetPt coordinate alignment for objects and grips](set-point.md)
 - [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)

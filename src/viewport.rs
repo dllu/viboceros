@@ -2177,7 +2177,10 @@ impl Viewport {
             && let Some(cursor) = drafting_cursor
             && let Ok(row) = session.row(document, cursor.source_point, options)
         {
-            for grip in row {
+            for grip in row
+                .into_iter()
+                .filter(|g| document.is_control_point_selectable(*g))
+            {
                 if let Some(point) = document
                     .control_point_locations(grip.object)
                     .and_then(|p| p.get(grip.index))

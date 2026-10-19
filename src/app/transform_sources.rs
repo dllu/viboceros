@@ -52,6 +52,7 @@ pub(super) fn grip_argument(
 
 impl VibocerosApp {
     pub(super) fn start_transform_source_prompt(&mut self, command: &'static str) {
+        self.document.clear_selection();
         self.object_prompt = Some(PendingObjectCommand {
             description: ObjectSelectionPrompt {
                 command,

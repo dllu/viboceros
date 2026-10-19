@@ -43,7 +43,7 @@ impl Navigation {
         let mut old = Vec::new();
         let mut next = BTreeSet::new();
         let mut owners = std::collections::BTreeMap::<ObjectId, Vec<usize>>::new();
-        for (grip, _) in document.selected_control_points() {
+        for (grip, _) in document.selected_logical_control_points() {
             owners.entry(grip.object).or_default().push(grip.index);
         }
         for (object_id, seeds) in owners {

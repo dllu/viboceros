@@ -149,3 +149,49 @@ fn coincident_mesh_grips_invert_by_identity_instead_of_location() {
     assert_eq!(selected(&doc).len(), 4);
     assert!(!doc.is_selected(id));
 }
+
+#[test]
+fn hide_show_validate_before_mutating_and_preserve_ordinary_selection_geometry_and_redo() {
+    let registry = CommandRegistry::with_builtins();
+    let (mut doc, [control, edit, point]) = setup();
+    let marker = doc.add_geometry(Geometry::Point(p(30., 0.))).unwrap();
+    doc.undo().unwrap();
+    doc.select_objects_direct([control, point], SelectionMode::Add)
+        .unwrap();
+    for id in [control, edit] {
+        doc.select_control_points(
+            [ControlPointId {
+                object: id,
+                index: 1,
+            }],
+            SelectionMode::Add,
+        )
+        .unwrap();
+    }
+    let objects = doc.objects().cloned().collect::<Vec<_>>();
+    let before = format!("{doc:?}");
+    for input in ["HidePt extra", "ShowPt extra"] {
+        assert!(registry.execute(&mut doc, input).is_err());
+        assert_eq!(format!("{doc:?}"), before);
+    }
+    assert_eq!(
+        registry.execute(&mut doc, "_-hIdEpT").unwrap(),
+        "Hid 2 grip(s)"
+    );
+    assert_eq!(doc.control_points().count(), 4);
+    assert!(selected(&doc).is_empty());
+    assert!(registry.execute(&mut doc, "HidePt").is_err());
+    assert!(doc.is_selected(control) && doc.is_selected(point));
+    assert_eq!(
+        registry.execute(&mut doc, "ShowPt").unwrap(),
+        "Showed 2 grip(s)"
+    );
+    assert_eq!(
+        registry.execute(&mut doc, "ShowPt").unwrap(),
+        "Showed 0 grip(s)"
+    );
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), objects);
+    assert!(doc.can_redo());
+    doc.redo().unwrap();
+    assert!(doc.object(marker).is_some());
+}
