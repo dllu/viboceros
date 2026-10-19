@@ -2316,6 +2316,26 @@ impl NurbsSurface {
         }
     }
 
+    /// Command removal keeps weights and the surface's original UV chart.
+    pub fn try_remove_control_row(
+        &self,
+        direction: SurfaceKnotDirection,
+        index: usize,
+    ) -> Result<Self, GeometryError> {
+        let remove = |curve: &NurbsCurve| {
+            curve
+                .try_remove_control_point_preserving_weights(index)?
+                .try_reparameterized(curve.domain())
+        };
+        match direction {
+            SurfaceKnotDirection::U => self.map_u_control_curves(remove),
+            SurfaceKnotDirection::V => self.map_v_control_curves(remove),
+            SurfaceKnotDirection::Both => Err(GeometryError::InvalidControlNet {
+                context: "control-point removal requires one surface direction",
+            }),
+        }
+    }
+
     /// Collapses qualifying multiple knots in the selected parameter
     /// direction(s), using the same descending-knot interpolation order as
     /// [`NurbsCurve::try_remove_multiple_knots`].

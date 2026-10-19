@@ -350,6 +350,10 @@ pub struct ViewportInput<'a> {
     pub preview_curve: Option<&'a NurbsCurve>,
     pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
+    pub control_removal: Option<(
+        &'a viboceros_command::remove_control_point::Draft,
+        viboceros_command::remove_control_point::Options,
+    )>,
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
@@ -454,6 +458,7 @@ impl Default for ViewportInput<'_> {
             preview_curve: None,
             isocurve_guides: &[],
             preview_points: &[],
+            control_removal: None,
             mirror_preview: None,
             translation_preview: None,
             affine_preview: None,
@@ -2159,6 +2164,26 @@ impl Viewport {
             for &point in input.preview_points {
                 if let Some(position) = self.project_selection_point(point, rect) {
                     painter.circle_filled(position, 3.5, Color32::from_rgb(20, 115, 190));
+                }
+            }
+        }
+        if response.hovered()
+            && let Some((draft, options)) = input.control_removal
+            && let Some(cursor) = drafting_cursor
+            && let Ok(points) =
+                draft.highlighted_points(cursor.source_point, options, self.pick_projection())
+        {
+            for pair in points.windows(2) {
+                if let (Some(a), Some(b)) = (
+                    self.project_selection_point(pair[0], rect),
+                    self.project_selection_point(pair[1], rect),
+                ) {
+                    painter.line_segment([a, b], Stroke::new(1.5, Color32::from_rgb(245, 160, 20)));
+                }
+            }
+            for point in points {
+                if let Some(position) = self.project_selection_point(point, rect) {
+                    painter.circle_filled(position, 5., Color32::from_rgb(245, 160, 20));
                 }
             }
         }

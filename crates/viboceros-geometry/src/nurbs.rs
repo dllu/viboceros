@@ -1993,6 +1993,67 @@ impl NurbsCurve {
     /// control layout is retained because no valid periodic result can be
     /// formed.
     pub fn try_remove_control_point(&self, index: usize) -> Result<Self, GeometryError> {
+        self.remove_control_point(index, true)
+    }
+
+    /// RemoveControlPoint retains homogeneous weights, unlike deleting grips.
+    /// Closed quadratic seams receive periodic control layouts.
+    pub fn try_remove_control_point_preserving_weights(
+        &self,
+        index: usize,
+    ) -> Result<Self, GeometryError> {
+        if self.is_periodic() && self.control_points.len() - self.degree > self.degree + 1 {
+            let mut controls =
+                self.control_points[..self.control_points.len() - self.degree].to_vec();
+            if index >= controls.len() {
+                return Err(GeometryError::InvalidControlPointIndex {
+                    index,
+                    count: controls.len(),
+                });
+            }
+            controls.remove(index);
+            controls.extend_from_within(..self.degree);
+            let target = (index + self.degree.div_ceil(2))
+                .clamp(self.degree + 1, self.control_points.len() - 1);
+            let mut knots = self.knots.clone();
+            if self.degree.is_multiple_of(2)
+                && target > self.degree + 1
+                && target < self.control_points.len() - 1
+            {
+                knots[target - 1] = stable_knot_mean(&[knots[target - 1], knots[target]])?;
+            }
+            knots.remove(target);
+            let knots = periodic_knots_preserving_active(self.degree, controls.len(), &knots)?;
+            return Self::try_new_rational(self.degree, controls, knots);
+        }
+        if !self.is_periodic() && self.is_closed()? && index == 0 && self.degree == 2 {
+            let n = self.control_points.len();
+            if n < 4 {
+                return Err(GeometryError::InsufficientControlPoints {
+                    degree: self.degree,
+                    required: 4,
+                    actual: n,
+                });
+            }
+            let mut controls = self.control_points[1..n - 1].to_vec();
+            controls.rotate_right(1);
+            controls.extend_from_within(..self.degree);
+            let knots = periodic_knots_preserving_active(self.degree, controls.len(), &self.knots)?;
+            return Self::try_new_rational(self.degree, controls, knots);
+        }
+        let result = self.remove_control_point(index, false)?;
+        if self.is_periodic() {
+            Ok(result)
+        } else {
+            result.try_reparameterized(0.0..=(*result.domain().end() - *result.domain().start()))
+        }
+    }
+
+    fn remove_control_point(
+        &self,
+        index: usize,
+        normalize_weights: bool,
+    ) -> Result<Self, GeometryError> {
         if self.is_periodic() {
             return self.try_remove_periodic_control_point(index);
         }
@@ -2022,12 +2083,14 @@ impl NurbsCurve {
         if !clamped_start || !clamped_end {
             return self
                 .clamped_to_active_domain()?
-                .try_remove_control_point(index);
+                .remove_control_point(index, normalize_weights);
         }
 
         let mut controls = self.control_points.clone();
         controls.remove(index);
-        normalize_control_point_removal_end_weights(&mut controls)?;
+        if normalize_weights {
+            normalize_control_point_removal_end_weights(&mut controls)?;
+        }
 
         if controls.len() == self.degree {
             let degree = self.degree - 1;

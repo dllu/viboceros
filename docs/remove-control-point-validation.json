@@ -1,0 +1,325 @@
+{
+  "command": "RemoveControlPoint",
+  "rhino_version": "8.32.26160.13001",
+  "capture": {
+    "path": "tools/rhino_oracle/observations/remove_control_point_command.json",
+    "sha256": "a825d43e43b91b3daf97217dfb68a32bde60dc174919848856e3cc248e5c7eab",
+    "cases": 133,
+    "producer_sources": {
+      "remove_control_point_probe.py": "50fee82edf6a68c4cbe05e9647158449841d990e2969ce72d908f674b1395778",
+      "generate_remove_control_point.py": "09388868ab1fdf6888c4a46844d44576cb0db634101e030504607ebd9f071384",
+      "remove_knot_command_probe.py": "84a53185da0f36e8acdfc4aeed1f3d377db928f80d1b2450dfd947a2a324517a",
+      "generate_remove_knot_command.py": "36b717936bed87ab3de6b5c0107e7e8715ea524cc639dd9e0fbb620ec432c2ee",
+      "insert_kink_probe.py": "9b3f1775bf0830a4878f885ef4e67ccea7b75fae2e9bc3fcdc079f4c06522649",
+      "rhino_worker.py": "380720b7ba21f4a5d94be1d35abb199cd1dc16a9bb93ac18128856c295fde25d",
+      "structural_sdk.py": "fcfee4711ff860442a32e7ac04eca888ee594bc392858cda998057616852f144",
+      "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+      "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1"
+    },
+    "native_events": {
+      "Success": 132,
+      "Cancel": 1
+    },
+    "input_method": "Actual Rhino command macros with explicit world points; no new native mouse-event matrix."
+  },
+  "qualification": {
+    "geometry_epsilon": 1e-08,
+    "matched_ids": [
+      "circle",
+      "circle_cancel",
+      "circle_empty",
+      "circle_post",
+      "circle_start",
+      "cubic",
+      "cubic_cancel",
+      "cubic_empty",
+      "cubic_post",
+      "cubic_seeded",
+      "cubic_start",
+      "domain",
+      "elevated",
+      "ellipse",
+      "ellipse_cancel",
+      "ellipse_empty",
+      "ellipse_post",
+      "ellipse_start",
+      "line",
+      "line_cancel",
+      "line_empty",
+      "line_post",
+      "line_start",
+      "negative_gauge",
+      "off_curve",
+      "periodic",
+      "periodic_cancel",
+      "periodic_empty",
+      "periodic_post",
+      "periodic_seeded",
+      "periodic_start",
+      "periodic_surface_U_U",
+      "periodic_surface_U_V",
+      "periodic_surface_V_U",
+      "periodic_surface_V_V",
+      "polyline",
+      "polyline_cancel",
+      "polyline_empty",
+      "polyline_post",
+      "polyline_seeded",
+      "polyline_start",
+      "rational",
+      "rational_cancel",
+      "rational_empty",
+      "rational_post",
+      "rational_seeded",
+      "rational_start",
+      "surface_U",
+      "surface_cancel",
+      "surface_empty",
+      "surface_grid_U_0_0",
+      "surface_grid_U_0_1",
+      "surface_grid_U_0_2",
+      "surface_grid_U_0_3",
+      "surface_grid_U_1_0",
+      "surface_grid_U_1_1",
+      "surface_grid_U_1_3",
+      "surface_grid_U_2_0",
+      "surface_grid_U_2_1",
+      "surface_grid_U_2_2",
+      "surface_grid_U_3_0",
+      "surface_grid_U_3_1",
+      "surface_grid_U_3_2",
+      "surface_grid_U_3_3",
+      "surface_grid_V_0_0",
+      "surface_grid_V_0_1",
+      "surface_grid_V_0_2",
+      "surface_grid_V_0_3",
+      "surface_grid_V_1_0",
+      "surface_grid_V_1_2",
+      "surface_grid_V_1_3",
+      "surface_grid_V_2_0",
+      "surface_grid_V_2_2",
+      "surface_grid_V_2_3",
+      "surface_grid_V_3_0",
+      "surface_grid_V_3_1",
+      "surface_grid_V_3_2",
+      "surface_grid_V_3_3",
+      "surface_post",
+      "surface_rational_U",
+      "surface_rational_V",
+      "surface_rational_cancel",
+      "surface_rational_empty",
+      "surface_rational_grid_U_0_0",
+      "surface_rational_grid_U_0_1",
+      "surface_rational_grid_U_0_2",
+      "surface_rational_grid_U_1_0",
+      "surface_rational_grid_U_1_1",
+      "surface_rational_grid_U_1_2",
+      "surface_rational_grid_U_2_0",
+      "surface_rational_grid_U_2_1",
+      "surface_rational_grid_U_2_2",
+      "surface_rational_grid_V_0_0",
+      "surface_rational_grid_V_0_1",
+      "surface_rational_grid_V_0_2",
+      "surface_rational_grid_V_1_0",
+      "surface_rational_grid_V_1_1",
+      "surface_rational_grid_V_1_2",
+      "surface_rational_grid_V_2_0",
+      "surface_rational_grid_V_2_1",
+      "surface_rational_grid_V_2_2",
+      "surface_rational_post",
+      "surface_rational_toggle",
+      "tilted",
+      "trimmed_hole_U",
+      "trimmed_hole_cancel",
+      "trimmed_hole_empty",
+      "trimmed_hole_post",
+      "trimmed_rectangle_U",
+      "trimmed_rectangle_cancel",
+      "trimmed_rectangle_empty",
+      "trimmed_rectangle_post"
+    ],
+    "unsupported_ids": [
+      "polycurve",
+      "polycurve_start",
+      "polycurve_cancel",
+      "polycurve_empty",
+      "polycurve_post",
+      "polysurface",
+      "polycurve_grip_2",
+      "polycurve_grip_3",
+      "polycurve_grip_4",
+      "polycurve_grip_5",
+      "polycurve_grip_6"
+    ],
+    "known_getter_differences": [
+      "surface_V",
+      "surface_toggle",
+      "trimmed_rectangle_V",
+      "trimmed_rectangle_toggle",
+      "trimmed_hole_V",
+      "trimmed_hole_toggle",
+      "surface_grid_U_1_2",
+      "surface_grid_U_2_3",
+      "surface_grid_V_1_1",
+      "surface_grid_V_2_1"
+    ],
+    "known_difference_details": "Nine native no-ops after interior picks; surface_grid_U_2_3 removes an end row in Rhino while Viboceros retains it. These ten are not geometry agreement passes.",
+    "workflow": "All supported source cases check immutable staging, source attributes/groups, atomic commit or no-op, and undo/redo of actual Viboceros edits. Native history snapshots are compared where present. Unsupported cases check explicit rejection and unchanged source/history."
+  },
+  "profiles": {
+    "api-portable": {
+      "tests_passed": 4,
+      "matched_geometry_cases": 112,
+      "maximum_error": 3.6771686055379495e-15,
+      "standalone_cases": [
+        {
+          "id": "surface_U",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "surface_rational_V",
+          "maximum_error": 8.881784197001252e-16
+        },
+        {
+          "id": "periodic_surface_U_U",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "periodic_surface_V_U",
+          "maximum_error": 0.0
+        }
+      ]
+    },
+    "api-native": {
+      "tests_passed": 4,
+      "matched_geometry_cases": 112,
+      "maximum_error": 3.6771686055379495e-15,
+      "standalone_cases": [
+        {
+          "id": "surface_U",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "surface_rational_V",
+          "maximum_error": 8.881784197001252e-16
+        },
+        {
+          "id": "periodic_surface_U_U",
+          "maximum_error": 0.0
+        },
+        {
+          "id": "periodic_surface_V_U",
+          "maximum_error": 0.0
+        }
+      ]
+    },
+    "ui-portable": {
+      "tests_passed": 2,
+      "matched_geometry_cases": 112,
+      "maximum_error": 3.6771686055379495e-15,
+      "standalone_cases": []
+    },
+    "ui-native": {
+      "tests_passed": 2,
+      "matched_geometry_cases": 112,
+      "maximum_error": 3.6771686055379495e-15,
+      "standalone_cases": []
+    }
+  },
+  "checks": {
+    "legacy-command": {
+      "tests_passed": 8
+    },
+    "legacy-geometry": {
+      "tests_passed": 3
+    },
+    "remove-knot-regression": {
+      "tests_passed": 1
+    },
+    "insert-knot-regression": {
+      "tests_passed": 1
+    },
+    "python": {
+      "tests_passed": 36
+    },
+    "clippy": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+    "format": "cargo fmt --all --check"
+  },
+  "test_geometry_optimization": "profile.test.package.viboceros-geometry.opt-level=2",
+  "production_sources": {
+    "crates/viboceros-command/src/remove_control_point.rs": "c745e963d46c0cd2a0b57211330a7d5cea46c8b5c94e0421ec321782863c80f7",
+    "crates/viboceros-command/src/lib.rs": "6198de838ea4b8b96a4b9425928d0a996dc7a48b24c082466f7ad8d856d15194",
+    "crates/viboceros-command/src/picking.rs": "6b760bed0702576c6477f3f94cced0b0bdf137bde088222f0da845feb6acd4fc",
+    "crates/viboceros-geometry/src/nurbs.rs": "7f8352773beaac8c7c5564d1e0c1da42b43e403e9847007150264bc4920c5ff4",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "9525514b054ae181ecb72df98c6bf39ba6f3a7245c69c3c0798bd90dd6d7df87",
+    "src/app.rs": "3b5a302c31845508436dbad7d805aaee3269f4a8c5902016654a1ae1e0180bc9",
+    "src/app/refinement.rs": "51e0c9bc169df2a13f101ad858fc861886550122a5684229f14869b94621176c",
+    "src/viewport.rs": "8838738aa2758387e9a89c2046bc2597e8a14f3f8673abb84c60d04f31c91c07"
+  },
+  "proof_files": {
+    "docs/remove-control-point-proof/api-portable.gz": {
+      "sha256": "7f9c195684171f33e2a1a4e8d4e9257239ee64bf584e7191559f39d81ef92057",
+      "raw_sha256": "bb2b42b3cf5073728ab5ff5fc5600cb8a53ecc8c0fe6106bbfa84e97264e5158"
+    },
+    "docs/remove-control-point-proof/api-native.gz": {
+      "sha256": "48bd6a470e54b1885c327a583596f35b9068a30b3653ca352fea9cff974b71ac",
+      "raw_sha256": "fa33fc603dbad17f2c132d5a129061681c02c01415cb08221b4a4a8669001f6c"
+    },
+    "docs/remove-control-point-proof/ui-portable.gz": {
+      "sha256": "8dd9ff12b97765032bb993d34cfd05bf243a19bd1f7e9e86d7f2a87b8188b52a",
+      "raw_sha256": "6ea150f7adab910435b10873661ce3b8b8e76a102b8663fd795720296c858947"
+    },
+    "docs/remove-control-point-proof/ui-native.gz": {
+      "sha256": "41b99e3a10b10c6740baec4b9d6f519484ba1b7977f5cad75e1cc37454d7c1dd",
+      "raw_sha256": "b7abaa6fa33a5f57b5777cc7de695cf9a64b9edb13366767d413bd7da2414f89"
+    },
+    "docs/remove-control-point-proof/legacy-command.gz": {
+      "sha256": "2c242365341efa2a16c03eec36d0d8f30afbc43665e006d61d12069cd359d142",
+      "raw_sha256": "156feff05b28b2460c7096d4d2d6f7b110ee15d27b8db89b40c94f0e4eb79de1"
+    },
+    "docs/remove-control-point-proof/legacy-geometry.gz": {
+      "sha256": "9cfe998ab0aeabe2558b73ca7fe06fb0acf0fcee62ccb8ff94f6cb55ae08a7bc",
+      "raw_sha256": "73d13029c23857fa2721e530cf295e604aa120090526de7b10bf9e70d28b2508"
+    },
+    "docs/remove-control-point-proof/remove-knot-regression.gz": {
+      "sha256": "581dbd947b01eb42f9a86c5dc11cbbc006b786fd33170a4878a844bf9017cd57",
+      "raw_sha256": "86dba8cae797686e48c140f833982643c5c1d44af263c4086968f31baf2483cf"
+    },
+    "docs/remove-control-point-proof/insert-knot-regression.gz": {
+      "sha256": "095fc8a5d269854def5e04497ca71974dbb185c92303605a8315c85e8bbf5a87",
+      "raw_sha256": "999240bf137280a24867e0ed8133a77cc4b7df09b8941f1da83cad6ee69d7c47"
+    },
+    "docs/remove-control-point-proof/python.gz": {
+      "sha256": "5d436e50702c0c96a275757a462e28d43423c16f01cbc227439c9e8ffedc0540",
+      "raw_sha256": "9a29a760be98dea1295920adaec71cc46ea06ea807193bb55b32a7d5d4bf304f"
+    },
+    "docs/remove-control-point-proof/clippy.gz": {
+      "sha256": "4a93ee9dc88f3a94cac2c54c20cc750e2ccb715d5e13bf74f127967bb824deab",
+      "raw_sha256": "5c28b41780c2bc94d0b739f664a1e1247628692bbb20c1fa2562f5c451c1ee30"
+    },
+    "docs/remove-control-point-proof/format.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/remove-control-point-proof/row-distance-diagnostic.gz": {
+      "sha256": "2a90609d430c2b1a32a86a23ffbe71a479b5e66e7335fad6dee4bba623377575",
+      "raw_sha256": "c5960cddbdc6e5c18e8296c86506d4f4ce06e94b75904870646fae8674aff656"
+    },
+    "docs/remove-control-point-proof/inverse-diagnostic.json.gz": {
+      "sha256": "0ba678b86701a1777a71ebc48b5d9cb394445403329219d2dca83084bd9963d6",
+      "raw_sha256": "4b898d82468a7980ca982086e6608ab441c0529f2eb283df51487f6e374bf7fe"
+    },
+    "docs/remove-control-point-proof/inverse-diagnostic.py.gz": {
+      "sha256": "217b308486eadbc5e257a50e8e3d53743d79024a8642af8f5f11766b77740288",
+      "raw_sha256": "1043c57e5b8e565e34f582e5be5d8165fe479a6718bbc7b1864bd28e788bbf88"
+    }
+  },
+  "limits": [
+    "Interactive polycurves and polysurfaces are rejected.",
+    "The ten retained getter differences prevent claiming complete Rhino command parity.",
+    "Only recorded definitions/samples/vertices/edge endpoints are compared at 1e-8; full native spatial trim-edge definitions are not captured. Trim images use the existing continuous document-tolerance certificate.",
+    "No new edited-file roundtrip, general performance, native mouse event or complete camera/high-DPI matrix.",
+    "All periodic degrees/knot layouts and non-quadratic closed seams remain unqualified.",
+    "Row-distance and inverse diagnostics are diagnostic evidence, not additional native agreement passes."
+  ]
+}

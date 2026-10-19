@@ -162,6 +162,7 @@ pub mod modify_radius;
 pub mod picking;
 pub mod reduce_polyline;
 pub mod refinement;
+pub mod remove_control_point;
 pub mod remove_knot;
 mod simplify_curve;
 use simplify_curve::SimplifyCurveCommand;
@@ -482,6 +483,12 @@ pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
+    fn remove_control_point_options(&self) -> Option<remove_control_point::Options> {
+        None
+    }
+    fn remember_remove_control_point_options(&self, _value: remove_control_point::Options) -> bool {
+        false
+    }
     fn remove_knot_options(&self) -> Option<remove_knot::Options> {
         None
     }
@@ -922,7 +929,7 @@ impl CommandRegistry {
             .register(RemoveKnotCommand::default())
             .expect("unique built-in command");
         registry
-            .register(RemoveControlPointCommand)
+            .register(RemoveControlPointCommand::default())
             .expect("unique built-in command");
         registry
             .register(control_points::PointsOnCommand)
@@ -2220,6 +2227,20 @@ impl CommandRegistry {
             .get("removeknot")
             .and_then(|i| self.commands[*i].remove_knot_options())
             .unwrap_or_default()
+    }
+    pub fn remove_control_point_options(&self) -> remove_control_point::Options {
+        self.lookup
+            .get("removecontrolpoint")
+            .and_then(|i| self.commands[*i].remove_control_point_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_remove_control_point_options(
+        &self,
+        value: remove_control_point::Options,
+    ) -> bool {
+        self.lookup
+            .get("removecontrolpoint")
+            .is_some_and(|i| self.commands[*i].remember_remove_control_point_options(value))
     }
     pub fn remember_remove_knot_options(&self, value: remove_knot::Options) -> bool {
         self.lookup
@@ -4398,14 +4419,67 @@ struct RemoveControlPointOptions {
     direction: SurfaceKnotDirection,
 }
 
-struct RemoveControlPointCommand;
+#[derive(Default)]
+struct RemoveControlPointCommand(remembered::Remembered<remove_control_point::Options>);
 
 impl Command for RemoveControlPointCommand {
+    fn remove_control_point_options(&self) -> Option<remove_control_point::Options> {
+        Some(self.0.get())
+    }
+    fn remember_remove_control_point_options(&self, value: remove_control_point::Options) -> bool {
+        self.0.set(value);
+        true
+    }
+    fn run_with_pick_projection(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        context: CommandContext,
+        post: bool,
+        projection: picking::Projection,
+    ) -> Result<String, CommandError> {
+        if remove_control_point::staged_arguments(args) {
+            let (message, options) = remove_control_point::run_selected(
+                doc,
+                args,
+                post,
+                self.0.get(),
+                Some(projection),
+            )?;
+            self.0.set(options);
+            Ok(message)
+        } else if post {
+            self.run_postselected(doc, args, context)
+        } else {
+            self.run(doc, args)
+        }
+    }
+    fn run_postselected(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        _: CommandContext,
+    ) -> Result<String, CommandError> {
+        if remove_control_point::staged_arguments(args) {
+            let (message, options) =
+                remove_control_point::run_selected(doc, args, true, self.0.get(), None)?;
+            self.0.set(options);
+            Ok(message)
+        } else {
+            self.run(doc, args)
+        }
+    }
     fn name(&self) -> &'static str {
         "RemoveControlPoint"
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if remove_control_point::staged_arguments(arguments) {
+            let (message, options) =
+                remove_control_point::run_selected(document, arguments, false, self.0.get(), None)?;
+            self.0.set(options);
+            return Ok(message);
+        }
         let options = parse_remove_control_point_options(arguments)?;
         let mut candidates = Vec::new();
         for object in document.selected_objects() {

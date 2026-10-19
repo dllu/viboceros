@@ -80,6 +80,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [InsertKink on curves and surfaces with staged picks, temporary lengths, direction locks and previews](docs/commands/insert-kink.md)
 - [InsertKnot repeated point/parameter input, Automatic refinement and staged Undo](docs/commands/insert-knot.md)
 - [RemoveKnot picking, shape previews, cyclic removal and staged Undo](docs/commands/remove-knot.md)
+- [RemoveControlPoint viewport grips and surface rows](docs/commands/remove-control-point.md)
 - [Control and edit-point workflows](docs/control-points.md), including [curve closure and shared seam grips](docs/curve-closure.md)
 - [SetPt coordinate alignment for objects and grips](docs/commands/set-point.md)
 - [Mesh curve pulling and qualifications](docs/commands/pull-mesh.md)

@@ -59,13 +59,18 @@ impl Projection {
     }
     /// Point getters use integer device coordinates, with device Y increasing upwards.
     pub fn point(self, point: Point3) -> Result<Point3, CommandError> {
+        let p = self.continuous_point(point)?;
+        Ok(Point3::try_new(p.x().trunc(), p.y().trunc(), 0.)?)
+    }
+    /// Continuous device coordinates for control locations and projected guides.
+    pub fn continuous_point(self, point: Point3) -> Result<Point3, CommandError> {
         let [x, y, w] = self.homogeneous(point)?;
         if w <= 0. {
             return Err(CommandError::Usage(
                 "Knot guides could not be projected in this view",
             ));
         }
-        Ok(Point3::try_new((x / w).trunc(), (y / w).trunc(), 0.)?)
+        Ok(Point3::try_new(x / w, y / w, 0.)?)
     }
     /// A perspective image remains rational. The current bounded picker admits
     /// guides whose complete control hull lies in front of the camera.

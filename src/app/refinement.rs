@@ -8,6 +8,7 @@ enum Kind {
     Kink,
     Knot,
     Remove,
+    Control,
 }
 impl Kind {
     fn name(self) -> &'static str {
@@ -15,12 +16,14 @@ impl Kind {
             Self::Kink => "InsertKink",
             Self::Knot => "InsertKnot",
             Self::Remove => "RemoveKnot",
+            Self::Control => "RemoveControlPoint",
         }
     }
     fn noun(self) -> &'static str {
         match self {
             Self::Kink => "a kink",
             Self::Knot | Self::Remove => "a knot",
+            Self::Control => "a control point",
         }
     }
     fn accept(
@@ -28,14 +31,16 @@ impl Kind {
         options: &mut Options,
         word: &str,
     ) -> Result<bool, viboceros_command::CommandError> {
-        if self == Self::Remove {
+        if self == Self::Control {
+            viboceros_command::remove_control_point::accept_option(options, word)
+        } else if self == Self::Remove {
             viboceros_command::remove_knot::accept_option(options, word)
         } else {
             options.accept(word)
         }
     }
     fn options(self, options: Options) -> String {
-        if self == Self::Remove {
+        if self.removes() {
             options
                 .arguments()
                 .split_whitespace()
@@ -46,12 +51,16 @@ impl Kind {
             options.arguments()
         }
     }
+    fn removes(self) -> bool {
+        matches!(self, Self::Remove | Self::Control)
+    }
 }
 #[derive(Debug)]
 enum Draft {
     Kink(viboceros_command::insert_kink::Draft),
     Knot(viboceros_command::insert_knot::Draft),
     Remove(viboceros_command::remove_knot::Draft),
+    Control(viboceros_command::remove_control_point::Draft),
 }
 impl std::ops::Deref for Draft {
     type Target = viboceros_command::refinement::Draft;
@@ -60,6 +69,7 @@ impl std::ops::Deref for Draft {
             Self::Kink(d) => d,
             Self::Knot(d) => d,
             Self::Remove(d) => d,
+            Self::Control(d) => d,
         }
     }
 }
@@ -76,6 +86,16 @@ impl Draft {
             Kind::Remove => {
                 Self::Remove(viboceros_command::remove_knot::Draft::new(doc, id, range)?)
             }
+            Kind::Control => {
+                if range.is_some() {
+                    return Err(viboceros_command::CommandError::Usage(
+                        "RemoveControlPoint does not support SubCrv",
+                    ));
+                }
+                Self::Control(viboceros_command::remove_control_point::Draft::new(
+                    doc, id,
+                )?)
+            }
         })
     }
     fn commit(
@@ -85,6 +105,7 @@ impl Draft {
     ) -> Result<String, viboceros_command::CommandError> {
         match self {
             Self::Remove(d) => d.commit(doc, post),
+            Self::Control(d) => d.commit(doc, post),
             _ => std::ops::Deref::deref(self).commit(doc, post),
         }
     }
@@ -98,6 +119,7 @@ impl Draft {
             Self::Kink(d) => d.point(point, options),
             Self::Knot(d) => d.point(point, options),
             Self::Remove(d) => d.point_in_view(point, options, projection),
+            Self::Control(d) => d.point_in_view(point, options, projection),
         }
     }
 }
@@ -163,13 +185,21 @@ impl Prompt {
         self.draft.is_some()
     }
     pub(super) fn cursor_curve(&self) -> Option<&NurbsCurve> {
-        self.cursor.as_ref()
+        self.cursor.as_ref().filter(|_| self.kind != Kind::Control)
     }
     pub(super) fn hint(&self) -> &str {
         &self.hint
     }
     pub(super) fn guides(&self) -> &[NurbsCurve] {
         &self.guides
+    }
+    pub(super) fn control_removal(
+        &self,
+    ) -> Option<(&viboceros_command::remove_control_point::Draft, Options)> {
+        match self.draft.as_ref()? {
+            Draft::Control(d) => Some((d, self.options)),
+            _ => None,
+        }
     }
     pub(super) fn markers(&self) -> Option<&[Point3]> {
         (!self.shortening && !self.guide_points.is_empty()).then_some(self.guide_points.as_slice())
@@ -180,6 +210,10 @@ impl Prompt {
         let Some(draft) = &self.draft else {
             return;
         };
+        if let Draft::Control(d) = draft {
+            self.guide_points = d.marker_points().to_vec();
+            return;
+        }
         if let Draft::Remove(d) = draft
             && let Ok(Some(points)) = d.marker_points()
         {
@@ -256,6 +290,9 @@ impl Prompt {
         }
     }
     pub(super) fn surface(&self) -> Option<(ObjectId, Option<usize>, bool)> {
+        if self.kind == Kind::Control {
+            return None;
+        }
         let d = self.draft.as_ref()?;
         d.geometry()
             .curve_ref()
@@ -267,7 +304,9 @@ impl Prompt {
     }
     fn update_hint(&mut self) {
         self.hint = if self.selecting() {
-            if self.subcurve {
+            if self.kind == Kind::Control {
+                "Select one curve or surface; Esc cancels".into()
+            } else if self.subcurve {
                 "Select curve to temporarily shorten; Enter or Esc returns".into()
             } else {
                 "Select one curve or surface (SubCrv temporarily shortens a curve); Esc cancels"
@@ -291,6 +330,12 @@ impl Prompt {
                     }
                 )
             }
+        } else if self.kind == Kind::Control {
+            format!(
+                "Pick one control point to remove ({} Toggle for surfaces); {} accepted; Enter finishes; Esc cancels",
+                self.kind.options(self.options),
+                self.draft.as_ref().unwrap().picks()
+            )
         } else if self.cursor.is_some() {
             format!(
                 "Point on curve to {} {}; {} accepted; {}Enter finishes; Esc discards all picks",
@@ -335,7 +380,7 @@ impl VibocerosApp {
         let Some(p) = self
             .refinement_prompt
             .as_mut()
-            .filter(|p| p.kind != Kind::Kink && !p.shortening)
+            .filter(|p| matches!(p.kind, Kind::Knot | Kind::Remove) && !p.shortening)
         else {
             return false;
         };
@@ -350,7 +395,7 @@ impl VibocerosApp {
                 _ => unreachable!(),
             };
             if !changed {
-                self.push_log("No staged knot edits to undo".into());
+                self.push_log("No staged edits to undo".into());
             }
             self.log_refinement();
             self.command_input.clear();
@@ -366,6 +411,7 @@ impl VibocerosApp {
             match d {
                 Draft::Knot(d) => d.parameter(parameter, p.options),
                 Draft::Remove(d) => d.parameter(parameter),
+                Draft::Control(_) => return false,
                 _ => unreachable!(),
             }
         } else {
@@ -393,7 +439,7 @@ impl VibocerosApp {
         if self
             .refinement_prompt
             .as_ref()
-            .is_some_and(|p| p.kind == Kind::Remove)
+            .is_some_and(|p| p.kind.removes())
         {
             self.document.clear_selection();
         }
@@ -433,6 +479,8 @@ impl VibocerosApp {
             Kind::Knot
         } else if command.eq_ignore_ascii_case("RemoveKnot") {
             Kind::Remove
+        } else if command.eq_ignore_ascii_case("RemoveControlPoint") {
+            Kind::Control
         } else {
             return false;
         };
@@ -440,10 +488,14 @@ impl VibocerosApp {
             Kind::Kink => self.commands.insert_kink_options(),
             Kind::Knot => self.commands.insert_knot_options(),
             Kind::Remove => self.commands.remove_knot_options(),
+            Kind::Control => self.commands.remove_control_point_options(),
         };
         let mut subcurve = false;
         for w in words {
             if w.trim_start_matches('_').eq_ignore_ascii_case("SubCrv") {
+                if kind == Kind::Control {
+                    return false;
+                }
                 subcurve = true;
             } else {
                 match kind.accept(&mut options, w) {
@@ -497,6 +549,9 @@ impl VibocerosApp {
             }
             Kind::Remove => {
                 self.commands.remember_remove_knot_options(options);
+            }
+            Kind::Control => {
+                self.commands.remember_remove_control_point_options(options);
             }
         }
     }
@@ -566,7 +621,11 @@ impl VibocerosApp {
         }
         match d.point(point, p.options, projection) {
             Ok(()) => {
-                self.log_refinement();
+                if p.kind == Kind::Control {
+                    self.continue_refinement("");
+                } else {
+                    self.log_refinement();
+                }
                 true
             }
             Err(e) => {
@@ -603,7 +662,7 @@ impl VibocerosApp {
             && self
                 .refinement_prompt
                 .as_ref()
-                .is_some_and(|p| p.selecting() && !p.shortening)
+                .is_some_and(|p| p.kind != Kind::Control && p.selecting() && !p.shortening)
         {
             let p = self.refinement_prompt.as_mut().unwrap();
             p.subcurve = true;

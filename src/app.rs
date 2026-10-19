@@ -10784,6 +10784,10 @@ impl eframe::App for VibocerosApp {
                                 .refinement_prompt
                                 .as_ref()
                                 .map_or(&[], refinement::Prompt::guides),
+                            control_removal: self
+                                .refinement_prompt
+                                .as_ref()
+                                .and_then(refinement::Prompt::control_removal),
                             preview_curve: preview_curve.as_deref().or_else(|| {
                                 subcurve_preview
                                     .as_ref()
@@ -11156,6 +11160,7 @@ mod tests {
     mod rectangle;
     mod reduce_polyline;
     mod remap_cplane;
+    mod remove_control_point;
     mod remove_knot;
     mod reparameterize;
     mod rhino_curve_prompt;

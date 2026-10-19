@@ -29,7 +29,7 @@ fn audit_matrix(root: &std::path::Path, matrix: &str, count: usize) {
 }
 use super::insert_kink::comparison;
 #[path = "../../../crates/viboceros-command/tests/support/remove_knot.rs"]
-mod topology;
+pub(super) mod topology;
 use super::*;
 use serde_json::Value;
 fn enter(app: &mut VibocerosApp, text: &str) {

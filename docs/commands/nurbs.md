@@ -93,7 +93,9 @@ are first clamped without changing their active domain.
 Linux `native-smlib` builds use the shared native homogeneous fitting adapter;
 see [qualification and limits](../smlib-knot-removal.md).
 
-`RemoveControlPoint index Direction=U|V` requires exactly one selected curve
+For viewport control and row picking, see [RemoveControlPoint](remove-control-point.md).
+Its single-pick command keeps rational weights and supports ordinary undo.
+The legacy grip-deletion API `RemoveControlPoint index Direction=U|V` requires exactly one selected curve
 or untrimmed NURBS surface and removes a zero-based control-point grip in
 place. On a surface, the complete row at that index is removed in the chosen
 direction, which defaults to U. Remaining controls are retained, with

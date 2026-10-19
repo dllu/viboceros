@@ -1,0 +1,1830 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "remove_control_point_command",
+      "id": "cubic",
+      "family": "cubic",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/cubic.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "cubic_start",
+      "family": "cubic",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/cubic_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "cubic_cancel",
+      "family": "cubic",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/cubic_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "cubic_empty",
+      "family": "cubic",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/cubic_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "cubic_post",
+      "family": "cubic",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/cubic_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "rational",
+      "family": "rational",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/rational.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "rational_start",
+      "family": "rational",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/rational_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "rational_cancel",
+      "family": "rational",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/rational_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "rational_empty",
+      "family": "rational",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/rational_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "rational_post",
+      "family": "rational",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/rational_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic",
+      "family": "periodic",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_start",
+      "family": "periodic",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_cancel",
+      "family": "periodic",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_empty",
+      "family": "periodic",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_post",
+      "family": "periodic",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "circle",
+      "family": "circle",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/circle.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "circle_start",
+      "family": "circle",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/circle_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "circle_cancel",
+      "family": "circle",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/circle_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "circle_empty",
+      "family": "circle",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/circle_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "circle_post",
+      "family": "circle",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/circle_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "ellipse",
+      "family": "ellipse",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/ellipse.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "ellipse_start",
+      "family": "ellipse",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/ellipse_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "ellipse_cancel",
+      "family": "ellipse",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/ellipse_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "ellipse_empty",
+      "family": "ellipse",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/ellipse_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "ellipse_post",
+      "family": "ellipse",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/ellipse_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "line",
+      "family": "line",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/line.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "line_start",
+      "family": "line",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/line_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "line_cancel",
+      "family": "line",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/line_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "line_empty",
+      "family": "line",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/line_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "line_post",
+      "family": "line",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/line_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polyline",
+      "family": "polyline",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polyline.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polyline_start",
+      "family": "polyline",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polyline_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polyline_cancel",
+      "family": "polyline",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polyline_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polyline_empty",
+      "family": "polyline",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polyline_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polyline_post",
+      "family": "polyline",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polyline_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_start",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 0
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_start.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_cancel",
+      "family": "polycurve",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_empty",
+      "family": "polycurve",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_post",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_U",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_U.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_V",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_V.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_toggle",
+      "family": "surface",
+      "actions": [
+        "Toggle",
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_toggle.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_cancel",
+      "family": "surface",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_empty",
+      "family": "surface",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_post",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_U",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_U.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_V",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_V.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_toggle",
+      "family": "surface_rational",
+      "actions": [
+        "Toggle",
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_toggle.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_cancel",
+      "family": "surface_rational",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_empty",
+      "family": "surface_rational",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_post",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_rectangle_U",
+      "family": "trimmed_rectangle",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_rectangle_U.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_rectangle_V",
+      "family": "trimmed_rectangle",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_rectangle_V.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_rectangle_toggle",
+      "family": "trimmed_rectangle",
+      "actions": [
+        "Toggle",
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_rectangle_toggle.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_rectangle_cancel",
+      "family": "trimmed_rectangle",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_rectangle_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_rectangle_empty",
+      "family": "trimmed_rectangle",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_rectangle_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_rectangle_post",
+      "family": "trimmed_rectangle",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_rectangle_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_hole_U",
+      "family": "trimmed_hole",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_hole_U.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_hole_V",
+      "family": "trimmed_hole",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_hole_V.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_hole_toggle",
+      "family": "trimmed_hole",
+      "actions": [
+        "Toggle",
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_hole_toggle.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_hole_cancel",
+      "family": "trimmed_hole",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_hole_cancel.3dm",
+      "cancel": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_hole_empty",
+      "family": "trimmed_hole",
+      "actions": [],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_hole_empty.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "trimmed_hole_post",
+      "family": "trimmed_hole",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/trimmed_hole_post.3dm",
+      "preselect": false
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polysurface",
+      "family": "box",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polysurface.3dm",
+      "face": 2
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "elevated",
+      "family": "cubic",
+      "actions": [
+        {
+          "grip": 2
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/elevated.3dm",
+      "elevate": 5
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "domain",
+      "family": "rational",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/domain.3dm",
+      "domain": [
+        -3.0,
+        17.0
+      ]
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "negative_gauge",
+      "family": "rational",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/negative_gauge.3dm",
+      "gauge": -8.0
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "tilted",
+      "family": "cubic",
+      "actions": [
+        {
+          "grip": 1
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/tilted.3dm",
+      "tilted": true
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "off_curve",
+      "family": "cubic",
+      "actions": [
+        {
+          "point": [
+            2.0,
+            2.0,
+            1.0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/off_curve.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "cubic_seeded",
+      "family": "cubic",
+      "actions": [
+        {
+          "grip": 3
+        }
+      ],
+      "seed": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/cubic_seeded.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "rational_seeded",
+      "family": "rational",
+      "actions": [
+        {
+          "grip": 3
+        }
+      ],
+      "seed": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/rational_seeded.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_seeded",
+      "family": "periodic",
+      "actions": [
+        {
+          "grip": 3
+        }
+      ],
+      "seed": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_seeded.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polyline_seeded",
+      "family": "polyline",
+      "actions": [
+        {
+          "grip": 3
+        }
+      ],
+      "seed": true,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polyline_seeded.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_surface_U_U",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_surface_U_U.3dm",
+      "periodic_surface_axis": "U",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_surface_U_V",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_surface_U_V.3dm",
+      "periodic_surface_axis": "U",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_surface_V_U",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_surface_V_U.3dm",
+      "periodic_surface_axis": "V",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "periodic_surface_V_V",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/periodic_surface_V_V.3dm",
+      "periodic_surface_axis": "V",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_0_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_0_0.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_0_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_0_1.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_0_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_0_2.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_0_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_0_3.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_1_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_1_0.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_1_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_1_1.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_1_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_1_2.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_1_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_1_3.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_2_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_2_0.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_2_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_2_1.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_2_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_2_2.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_2_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_2_3.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_3_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_3_0.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_3_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_3_1.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_3_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_3_2.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_U_3_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_U_3_3.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_0_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_0_0.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_0_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_0_1.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_0_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_0_2.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_0_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            0,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_0_3.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_1_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_1_0.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_1_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_1_1.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_1_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_1_2.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_1_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            1,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_1_3.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_2_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_2_0.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_2_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_2_1.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_2_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_2_2.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_2_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            2,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_2_3.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_3_0",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_3_0.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_3_1",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_3_1.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_3_2",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_3_2.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_grid_V_3_3",
+      "family": "surface",
+      "actions": [
+        {
+          "grip": [
+            3,
+            3
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_grid_V_3_3.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_0_0",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            0,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_0_0.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_0_1",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_0_1.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_0_2",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            0,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_0_2.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_1_0",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_1_0.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_1_1",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_1_1.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_1_2",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_1_2.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_2_0",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            2,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_2_0.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_2_1",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            2,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_2_1.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_U_2_2",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            2,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_U_2_2.3dm",
+      "direction": "U"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_0_0",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            0,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_0_0.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_0_1",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            0,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_0_1.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_0_2",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            0,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_0_2.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_1_0",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_1_0.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_1_1",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_1_1.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_1_2",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            1,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_1_2.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_2_0",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            2,
+            0
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_2_0.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_2_1",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            2,
+            1
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_2_1.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "surface_rational_grid_V_2_2",
+      "family": "surface_rational",
+      "actions": [
+        {
+          "grip": [
+            2,
+            2
+          ]
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/surface_rational_grid_V_2_2.3dm",
+      "direction": "V"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_grip_2",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 2
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_grip_2.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_grip_3",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 3
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_grip_3.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_grip_4",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 4
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_grip_4.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_grip_5",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 5
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_grip_5.3dm"
+    },
+    {
+      "op": "remove_control_point_command",
+      "id": "polycurve_grip_6",
+      "family": "polycurve",
+      "actions": [
+        {
+          "grip": 6
+        }
+      ],
+      "seed": false,
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/remove_control_point_command/polycurve_grip_6.3dm"
+    }
+  ]
+}
