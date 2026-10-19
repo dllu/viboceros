@@ -50,14 +50,18 @@ impl Geometry {
     /// Source grip coordinates in the selected control/edit basis, independent of display overrides.
     pub fn grip_locations(&self, mode: GripMode) -> Result<Vec<Point3>, GeometryError> {
         if mode == GripMode::Edit {
-            return self
+            let curve = self
                 .curve_ref()
                 .ok_or(GeometryError::UnsupportedControlPointEdit {
                     context: "edit points require a curve",
                 })?
-                .to_nurbs()?
-                .edit_points()
-                .map(|points| points.into_iter().map(|p| p.point).collect());
+                .to_nurbs()?;
+            return Ok(curve
+                .edit_points()?
+                .into_iter()
+                .take(curve.grip_count()?)
+                .map(|p| p.point)
+                .collect());
         }
         match self {
             Self::NurbsCurve(curve) => Ok(curve

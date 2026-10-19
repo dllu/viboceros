@@ -48,16 +48,9 @@ are clamped in every periodic direction.
 Linux `native-smlib` builds share the native endpoint-split adapter for this
 conversion; see [qualification and limits](../smlib-nonperiodic.md).
 
-`InsertControlPoint point Direction=U|V|Both Midpoint=Yes|No` requires exactly
-one selected curve or untrimmed NURBS surface. The model-space point is
-projected to the object, then a unit-weight control is inserted between the
-bracketing control-point Greville parameters, matching Rhino and generally
-changing shape. `Midpoint=Yes` snaps the new control and knot to the middle of
-that interval; omit the point to pick it in a viewport. A selected surface uses
-the rendered surface hit point, independent of the construction plane. On
-surfaces, Direction names the row orientation as it does in Rhino (a U row adds
-a V-axis control); U is the default. Rational and periodic inputs, object identity, attributes,
-selection, and undo are preserved.
+[InsertControlPoint](insert-control-point.md) provides repeated shape-changing
+picks, Midpoint placement, surface-net extension and transactional previews.
+Its surface Direction names the row orientation and accepts U or V.
 
 Interactive [InsertKnot](insert-knot.md) supports repeated point and curve-parameter
 input, Automatic, local Undo and temporary portions on curves and single surfaces.

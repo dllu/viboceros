@@ -1,0 +1,210 @@
+{
+  "commands": [
+    "NextU",
+    "PrevU",
+    "NextV",
+    "PrevV",
+    "AddNextU",
+    "AddPrevU",
+    "AddNextV",
+    "AddPrevV",
+    "SelU",
+    "SelV"
+  ],
+  "source_base_commit": "9004b6b1a05713fecf8a3fa4d4b2fb3d76bbe2d7",
+  "rhino_version": "8.32.26160.13001",
+  "cases": 25,
+  "command_invocations": 1650,
+  "native_results": {
+    "Success": 1295,
+    "Nothing": 355
+  },
+  "request": {
+    "path": "tools/rhino_oracle/fixtures/grip_navigation.json",
+    "sha256": "a2839214f1d46877308f45dccd2437549bdeb8eaf63cfbaf410c6bd6d6b6f40f"
+  },
+  "observation": {
+    "path": "tools/rhino_oracle/observations/grip_navigation.json",
+    "sha256": "cd2b78e4654220fc052819108a98470b2207c7182fa5d8098c478df41090f183",
+    "provenance": {
+      "base_commit": "9004b6b1a05713fecf8a3fa4d4b2fb3d76bbe2d7",
+      "sources": {
+        "generate_grip_navigation.py": "8b7f4f4832d38681db2852216b539e3c72dbba7988b9a48f9d123431056ff557",
+        "grip_navigation_probe.py": "1fa8bb6b1a38faefd96135e0b35041703ba801b270b4191eade441ed74bafa1a",
+        "grip_transform_probe.py": "5c26044b60527d834ef2507fae4c549a66caa8fda3fb432681a36c6e50bc54d5",
+        "join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+        "merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+        "rhino_worker.py": "bad7d7ed48c8788b7aa6d6c59fb49a148ac17ac69e1e47f273ccbcfcf5e988b9",
+        "structural_sdk.py": "22be12ee7db66ad3df10582fea067ff0551ce8144e4e4784a3bc87bdc1ab9d51"
+      },
+      "request_sha256": "a2839214f1d46877308f45dccd2437549bdeb8eaf63cfbaf410c6bd6d6b6f40f",
+      "fixtures": {
+        "curve_control.3dm": "aa4990d45112a92c340ca3951d7fcfd5210f9fb9e2b9bf313cb1233895fe917c",
+        "curve_edit.3dm": "28e28434b70cd55ee55ebca96e085dc8dba44d348cb95cea2e70b97c31ed4e8c",
+        "rational_control.3dm": "cc8dac580a770a935f472ab84b34ba9ad7b01c794e04b3f698f528d8ffec49db",
+        "rational_edit.3dm": "b632ed0b87c4220839c2e02f541bb579b7fd6e399271d64618323caf97042a39",
+        "closed_control.3dm": "d8c03e44fe6f331953c901efdb7cbafa7eea32c7f8c0495bf09e44ebcc3fed66",
+        "closed_edit.3dm": "e85b26cc66c58799fc3150674cdf26dbea563061d9f62bb6b12ff822994d17e8",
+        "periodic_control.3dm": "215a96ab964adb8a4a4b22b9a89cd84207230a36013023c5e600871011d38344",
+        "periodic_edit.3dm": "713a761392c435533f2850f9ab7428a525026e0a1489bbffecf6c4c5b552d329",
+        "line_control.3dm": "f0dda158cb022957ff7193aba9a3925b268de074fa108148c0f15dc50827640e",
+        "line_edit.3dm": "045d5a367cf1f8c5d67a0cf54742ab9daf159216d44e1aca5f5a210044022365",
+        "polyline_control.3dm": "0f8c8abb052ad65b3cadbc7cc8aa626f7a871f6eb2871a51dca6bbd56b05c337",
+        "polyline_edit.3dm": "d2abc3a8bbe04f6700df0eabd200e862a3348a101b71b12956a41bddc8a0dced",
+        "circle_control.3dm": "96e9c3d409bec94b60e2e038f40bc8fc337c722742f0d19a271e178e697a3bf4",
+        "circle_edit.3dm": "dd9887bc80f73d148eae53ef97aedf4ba83c783ec5fb9fd65195dc0a33f49796",
+        "arc_control.3dm": "c8230ef8bbfa81fee53c131ccea3224c54ce4ae10913a5e4490731744f6a43d1",
+        "arc_edit.3dm": "c8f7f6a7de88cd6d537006c79f4cb9e47f35a506660298e0a2e1a823b70ea554",
+        "surface_control.3dm": "8c43320b70abe5976b54541baf8e9890a626f0e688854bc5e1e8cacd9f09e116",
+        "surface_closed_control.3dm": "758cfb7a796580d2e75a73155e14c5c85502f2d616c778036dc98e4387a473b7",
+        "mesh_control.3dm": "02489e45282a122e06abb25aafdcf9148ff82ea208b2efd752576254653a9c6a",
+        "polycurve_control.3dm": "f09e523a7926a5faacfe5a5801c2ef89486d06cf334687b5fa40fc48cf2c16e3",
+        "polycurve_edit.3dm": "315f175b125fd0bb1d189ead4f23649f18f488f22f108cf83c7c24b0dfe8179f",
+        "surface_periodic_u_control.3dm": "8ca6099ba1d7980188151a5dc4826a602338e3d0a3a187c66c2c0c94e38c318d",
+        "surface_periodic_v_control.3dm": "4dc69a1026016073acc1bb8d85da46c91bc5eecde4bdc6e562c5294c995ff948",
+        "mixed_0.3dm": "4c9acea6705be12c8bb84c68df5f9a20f72fa5ffa36ba64a903ea29ecbded1dd",
+        "mixed_1.3dm": "357ac10f523e6720383bbf4d6d9a171a085bdbfffef6708b9606878001f91b33"
+      }
+    }
+  },
+  "qualification": {
+    "absolute_epsilon": 1e-08,
+    "relative_epsilon": 1e-12,
+    "discrete_fields": "Exact identities, counts, selection flags, object picks, command results and redo witnesses.",
+    "geometry": "Native capture checks source GeometryEquals throughout; Rust replay checks immutable objects. Grip locations compare at the stated epsilon.",
+    "profiles": {
+      "portable": {
+        "matched": 25,
+        "cases": 25,
+        "maximum_absolute_error": 8.881784197001252e-16
+      },
+      "native": {
+        "matched": 25,
+        "cases": 25,
+        "maximum_absolute_error": 8.881784197001252e-16
+      }
+    }
+  },
+  "reference_sources": {
+    "third_party/opennurbs/opennurbs_arccurve.cpp": "9c0e0bf2514b6f68fa04ea6e91beb6be60709ab0824fc90f97237377477361a2",
+    "third_party/opennurbs/opennurbs_polylinecurve.cpp": "962649a4a399e2a11fee960e7cf54943f9fa0413c63d6f5a0e914277cd320d69",
+    "third_party/opennurbs/opennurbs_polycurve.cpp": "e3bf4cf305d149fa1f21bb34125107d36a5eb2590d25db85618d4cb2b534b08c"
+  },
+  "release_validation_note": "After release replay, only the sorted Help test expectation changed; the focused Help check ran on the final source.",
+  "test_geometry_optimization": "profile.test.package.viboceros-geometry.opt-level=2",
+  "checks": {
+    "document": {
+      "tests_passed": 15
+    },
+    "command": {
+      "tests_passed": 7
+    },
+    "help": {
+      "tests_passed": 1
+    },
+    "oracle-portable": {
+      "tests_passed": 1
+    },
+    "ui-portable": {
+      "tests_passed": 40
+    },
+    "ui-edit": {
+      "tests_passed": 2
+    },
+    "ui-selection": {
+      "tests_passed": 4
+    },
+    "native": {
+      "tests_passed": 3
+    },
+    "python": {
+      "tests_passed": 63
+    },
+    "clippy": "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+    "format": "cargo fmt --all --check"
+  },
+  "sources": {
+    "crates/viboceros-command/src/point_selection.rs": "ba0ac4ed165463dd4b25e622b2b8703c62e1e85818535532ba3558a7eb979408",
+    "crates/viboceros-command/src/point_selection/navigation.rs": "185546a0c2e020dae3864e3a3d404e098cb21d121463736da7961c342035654b",
+    "crates/viboceros-command/src/point_selection/navigation/tests.rs": "6fe868fe4e0247d726e3f9bc1d3709b9a21d8cb3f3e1a67b51fa2dca42b6b62a",
+    "crates/viboceros-command/src/control_points.rs": "3833d87b9561b614ac7eb9741c61a6806c99dc25a6a934a69aa2e8ebd88de7e4",
+    "crates/viboceros-command/src/lib.rs": "da0b23fd6801011758bb9c06925ea33be496068d5d412b73c480087eaa20ff11",
+    "crates/viboceros-document/src/control_points.rs": "33e8ea33f836b4d0089acbc42c15bbcc7ca0b0264fc90f7d68dbbb34448f6933",
+    "crates/viboceros-document/src/control_points/geometry.rs": "940c01eb82a69dbe20b226d4b690cb8fbe531e4632e19c21e9daed2a5ed2d8ea",
+    "crates/viboceros-document/src/control_points/edit_tests.rs": "4192437bfb2378e4df7ebf01776be5af6bdbd60885e385440a7f770b8089c49f",
+    "crates/viboceros-oracle/src/grip_navigation.rs": "aa7d7674ff4eec55ff0dc15969460c86768f1015f6bef8812d8cef48f2e92f43",
+    "crates/viboceros-oracle/src/lib.rs": "533ca7a10167e1043cc43ec8a33a4d793122b8e153273d58dd1b106ef0a39d05",
+    "src/app.rs": "6ab5b51022400e21b3a4f6c18dd5a94e5eb6eeaee71ef1f67d36539c8507f57b",
+    "src/app/object_selection.rs": "1de25969cd3f368657fe3274d4f7414ac5c340a0e4c57f8214d9d8e1091cd538",
+    "src/app/tests/grip_navigation.rs": "18d1f51e225ed5f8ce4f439ac0acfcb25167871cd696952296947fca036c2d83",
+    "tools/rhino_oracle/test_grip_navigation.py": "d711b40506247704b7d8ef99936145251ca6c1f607e87bd6f64bde9023807a50"
+  },
+  "proof_files": {
+    "docs/grip-navigation-proof/document.log.gz": {
+      "sha256": "a38dbf6a79667a64029652d0bb28cbb715e439d9d633d0605f6b014e21d7dc23",
+      "raw_sha256": "2c4b88744941e879f94d4ada7a72306e582b7fb495b8b17df493f143f720fed7"
+    },
+    "docs/grip-navigation-proof/command.log.gz": {
+      "sha256": "afda208d2b32bba3e67f2ab65ca666634862af6c262dfa14a6169efc857e3359",
+      "raw_sha256": "b54c79a4f431a606efc25e8bf06b102e2a836f670ffab4a84605b0f7bdf4d0e7"
+    },
+    "docs/grip-navigation-proof/help.log.gz": {
+      "sha256": "11a22c5e5ba4a51550f6644398f42e55805180cf883c03a6a24033bf489ec9f2",
+      "raw_sha256": "083744111e8b8a4990a88bfc36f27fe6cc7d2838f878174d5843295c04095d1c"
+    },
+    "docs/grip-navigation-proof/oracle-portable.log.gz": {
+      "sha256": "e95f269c49ef90f04e4fdbccb4963032696e3329760dda8a41183ea35e84821a",
+      "raw_sha256": "59e1e053bfbb474bbd36470ba2f0c678c5cbe0213f20cc348a02f3381197ddfe"
+    },
+    "docs/grip-navigation-proof/ui-portable.log.gz": {
+      "sha256": "88a3bb7d1059973406f1f1889b5db4ff64f0f50365eeddfdb0fcc44e9075a747",
+      "raw_sha256": "7d270c724f31bae1b878d0fbc00c32909bd11796662fdc3721deb85d1d57a761"
+    },
+    "docs/grip-navigation-proof/ui-edit.log.gz": {
+      "sha256": "a2a75a023883008720c922a7c36bdd26a6c679396bdb5f7c6471635e8ab96f6e",
+      "raw_sha256": "937de58e25346700b79650d1c4ec436031134ca55eeb1c07c76dfbd446e45abd"
+    },
+    "docs/grip-navigation-proof/ui-selection.log.gz": {
+      "sha256": "7b1b893424df4955c1cc19734eeedaa6b7bd65e07fbbd0b10505e288fdef6c39",
+      "raw_sha256": "f348fade653bd841441aedccf464e8db96847f2f91e52aec0c0de8d42cb93a48"
+    },
+    "docs/grip-navigation-proof/native.log.gz": {
+      "sha256": "892d1f66478aab00653fc18a521a38829a5d89a42716abbc960a779f9f33798a",
+      "raw_sha256": "46129c47df7ec6f1329b8fdfdd5a50fd7aea2b0c431a68eeafa2e3706e0c786d"
+    },
+    "docs/grip-navigation-proof/python.log.gz": {
+      "sha256": "34712ed86c14bfeda88ea764a063a3c9992c6462360d28ebefac849e934b058f",
+      "raw_sha256": "5171176982f86c784b903a7c37969c47848f7c62c9d3b5d8cf5241806356404b"
+    },
+    "docs/grip-navigation-proof/portable-replay.json.gz": {
+      "sha256": "9c6cb7ec59d80365d76c441a44ca43330f66e5c626695f7195fa4ef2dec39b12",
+      "raw_sha256": "cd98ed143f1bdcca761f5c42cf6fe84c35184e86f9bd70096ff46fb6fe48bc20"
+    },
+    "docs/grip-navigation-proof/native-replay.json.gz": {
+      "sha256": "bb5c734440cd0b5792b3a6953d909d2e2877b9176a1bf183762a354972893a88",
+      "raw_sha256": "5edd1baaf2cadc269972613cc5164fe6a889be5ccd1630fd629d49b3358a2368"
+    },
+    "docs/grip-navigation-proof/clippy.log.gz": {
+      "sha256": "13a615d792231427a14d3eb0ff876eb9d33ea42aa527f396e136c426a6c41a84",
+      "raw_sha256": "a0f6aa68984d831ac2b37ff414685b603dc6de646c748661dbc5a5b38320f972"
+    },
+    "docs/grip-navigation-proof/format.log.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "behavior": [
+    "Neighbors use the original selected set. Additive steps retain seeds without cascading.",
+    "Periodic controls and analytic circle controls wrap; closed clamped NURBS controls stop at their boundaries.",
+    "Edit grips have no logical neighbors: shifts clear their picks, additive and row commands retain them. Mesh grips are excluded and retained.",
+    "Preselected EditPtOn owners stay selected. Closed edit-point seams use one displayed grip and retain both interpolation endpoint constraints.",
+    "Layouts are computed once per affected owner. Row unions scan each affected net once."
+  ],
+  "limits": [
+    "SelUV is a separate interactive surface-row picker and remains unimplemented.",
+    "This native corpus uses public API grip setup and completed direct command macros. Arbitrary native mouse input and nested getter parity are not qualified.",
+    "SubD/solid grips, per-grip hiding, all composite arrangements and extreme/non-clamped layouts remain unqualified.",
+    "Closed edit-seam transforms have independent equation regressions; native edited-geometry parity is not added by this selection corpus.",
+    "No new edited-file roundtrip or performance parity claim. Oracle timings include harness and document overhead."
+  ]
+}

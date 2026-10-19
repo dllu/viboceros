@@ -1,0 +1,6861 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_navigation",
+      "id": "curve_control",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/curve_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "curve_edit",
+      "sources": [
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/curve_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "rational_control",
+      "sources": [
+        {
+          "kind": "rational",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/rational_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "rational_edit",
+      "sources": [
+        {
+          "kind": "rational",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/rational_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "closed_control",
+      "sources": [
+        {
+          "kind": "closed",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/closed_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "closed_edit",
+      "sources": [
+        {
+          "kind": "closed",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/closed_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "periodic_control",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/periodic_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "periodic_edit",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/periodic_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "line_control",
+      "sources": [
+        {
+          "kind": "line",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/line_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "line_edit",
+      "sources": [
+        {
+          "kind": "line",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/line_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "polyline_control",
+      "sources": [
+        {
+          "kind": "polyline",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/polyline_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "polyline_edit",
+      "sources": [
+        {
+          "kind": "polyline",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/polyline_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "circle_control",
+      "sources": [
+        {
+          "kind": "circle",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/circle_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "circle_edit",
+      "sources": [
+        {
+          "kind": "circle",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/circle_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "arc_control",
+      "sources": [
+        {
+          "kind": "arc",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/arc_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "arc_edit",
+      "sources": [
+        {
+          "kind": "arc",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/arc_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "surface_control",
+      "sources": [
+        {
+          "kind": "surface",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/surface_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "surface_closed_control",
+      "sources": [
+        {
+          "kind": "surface_closed",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/surface_closed_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "mesh_control",
+      "sources": [
+        {
+          "kind": "mesh",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/mesh_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "polycurve_control",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/polycurve_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "polycurve_edit",
+      "sources": [
+        {
+          "kind": "polycurve",
+          "mode": "edit",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/polycurve_edit.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "surface_periodic_u_control",
+      "sources": [
+        {
+          "kind": "surface_periodic_u",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/surface_periodic_u_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "surface_periodic_v_control",
+      "sources": [
+        {
+          "kind": "surface_periodic_v",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/surface_periodic_v_control.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "mixed_0",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "control",
+          "parent": false
+        },
+        {
+          "kind": "surface_closed",
+          "mode": "control",
+          "parent": false
+        },
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": false
+        },
+        {
+          "kind": "mesh",
+          "mode": "control",
+          "parent": false
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/mixed_0.3dm"
+    },
+    {
+      "op": "grip_navigation",
+      "id": "mixed_1",
+      "sources": [
+        {
+          "kind": "periodic",
+          "mode": "control",
+          "parent": true
+        },
+        {
+          "kind": "surface_closed",
+          "mode": "control",
+          "parent": true
+        },
+        {
+          "kind": "curve",
+          "mode": "edit",
+          "parent": true
+        },
+        {
+          "kind": "mesh",
+          "mode": "control",
+          "parent": true
+        }
+      ],
+      "actions": [
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "PrevU",
+          "seed": "first"
+        },
+        {
+          "command": "NextV",
+          "seed": "first"
+        },
+        {
+          "command": "PrevV",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "first"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "first"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "first"
+        },
+        {
+          "command": "SelU",
+          "seed": "first"
+        },
+        {
+          "command": "SelV",
+          "seed": "first"
+        },
+        {
+          "command": "NextU",
+          "seed": "last"
+        },
+        {
+          "command": "PrevU",
+          "seed": "last"
+        },
+        {
+          "command": "NextV",
+          "seed": "last"
+        },
+        {
+          "command": "PrevV",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "last"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "last"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "last"
+        },
+        {
+          "command": "SelU",
+          "seed": "last"
+        },
+        {
+          "command": "SelV",
+          "seed": "last"
+        },
+        {
+          "command": "NextU",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "NextV",
+          "seed": "middle"
+        },
+        {
+          "command": "PrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "middle"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "middle"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "middle"
+        },
+        {
+          "command": "SelU",
+          "seed": "middle"
+        },
+        {
+          "command": "SelV",
+          "seed": "middle"
+        },
+        {
+          "command": "NextU",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "NextV",
+          "seed": "ends"
+        },
+        {
+          "command": "PrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "ends"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "ends"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "ends"
+        },
+        {
+          "command": "SelU",
+          "seed": "ends"
+        },
+        {
+          "command": "SelV",
+          "seed": "ends"
+        },
+        {
+          "command": "NextU",
+          "seed": "all"
+        },
+        {
+          "command": "PrevU",
+          "seed": "all"
+        },
+        {
+          "command": "NextV",
+          "seed": "all"
+        },
+        {
+          "command": "PrevV",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "all"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "all"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "all"
+        },
+        {
+          "command": "SelU",
+          "seed": "all"
+        },
+        {
+          "command": "SelV",
+          "seed": "all"
+        },
+        {
+          "command": "NextU",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "NextV",
+          "seed": "empty"
+        },
+        {
+          "command": "PrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevU",
+          "seed": "empty"
+        },
+        {
+          "command": "AddNextV",
+          "seed": "empty"
+        },
+        {
+          "command": "AddPrevV",
+          "seed": "empty"
+        },
+        {
+          "command": "SelU",
+          "seed": "empty"
+        },
+        {
+          "command": "SelV",
+          "seed": "empty"
+        },
+        {
+          "command": "NextU",
+          "seed": "first"
+        },
+        {
+          "command": "NextU"
+        },
+        {
+          "command": "PrevU"
+        },
+        {
+          "command": "AddNextV"
+        },
+        {
+          "command": "AddPrevU"
+        },
+        {
+          "command": "SelV"
+        }
+      ],
+      "artifact_path": "/home/dllu/proj/viboceros/tools/rhino_oracle/fixtures/grip_navigation/mixed_1.3dm"
+    }
+  ]
+}

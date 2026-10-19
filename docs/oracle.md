@@ -2663,6 +2663,36 @@ See [control provenance](block-edit-controls-provenance.json). This invocation
 uses a private Xvfb display and settings scheme; it does not change the launcher
 or the user's Wine configuration.
 
+## Directional grip selection
+
+`grip_navigation` replays Next/Prev U/V, their additive forms and SelU/SelV
+against shared source models. The capture contains 25 workflows and 1,650
+completed commands, including `Nothing` results for empty or mesh-only inputs.
+Every step retains its before/after grip identities, locations and selection,
+ordinary object selection and native result. Geometry equality is checked during
+capture; a prepared Redo item must survive the complete command sequence.
+
+```sh
+python3 -m tools.rhino_oracle replay \
+  tools/rhino_oracle/fixtures/grip_navigation.json \
+  --observations tools/rhino_oracle/observations/grip_navigation.json \
+  --absolute-epsilon 1e-8 --relative-epsilon 1e-12
+```
+
+Add `--native-smlib` to replay with the optional backend. To regenerate the
+owned Rhino capture and its 3DM inputs:
+
+```sh
+tools/rhino_oracle/run_headless.sh exec \
+  python3 -m tools.rhino_oracle.generate_grip_navigation
+```
+
+In another checkout, `generate_grip_navigation.request()` produces the same
+recipes with that checkout's source paths. Supply it to `OracleClient.replay`
+with the saved observation. The [validation receipt](grip-navigation-validation.json)
+records source and artifact hashes, comparison bounds and qualification limits.
+`SelUV` has a separate interactive surface-row picker and is outside this corpus.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness

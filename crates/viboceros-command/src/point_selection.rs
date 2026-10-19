@@ -1,26 +1,40 @@
 //! Point selectors also operate inside a grip-capable GetObject prompt.
 use super::*;
+mod navigation;
+pub use navigation::Navigation;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PointSelectionAction {
     Select,
     Invert,
+    Navigate(Navigation),
 }
 
 impl PointSelectionAction {
+    pub const ALL: [Self; 12] = [
+        Self::Select,
+        Self::Invert,
+        Self::Navigate(Navigation::NextU),
+        Self::Navigate(Navigation::PrevU),
+        Self::Navigate(Navigation::NextV),
+        Self::Navigate(Navigation::PrevV),
+        Self::Navigate(Navigation::AddNextU),
+        Self::Navigate(Navigation::AddPrevU),
+        Self::Navigate(Navigation::AddNextV),
+        Self::Navigate(Navigation::AddPrevV),
+        Self::Navigate(Navigation::SelU),
+        Self::Navigate(Navigation::SelV),
+    ];
     pub fn from_input(input: &str) -> Result<Option<Self>, CommandError> {
         let mut words = input.split_whitespace();
         let Some(name) = words.next() else {
             return Ok(None);
         };
-        let action = match name
-            .trim_start_matches(['_', '-'])
-            .to_ascii_lowercase()
-            .as_str()
-        {
-            "selpt" => Self::Select,
-            "invertpt" => Self::Invert,
-            _ => return Ok(None),
+        let Some(action) = Self::ALL
+            .into_iter()
+            .find(|a| option_name_eq(name.trim_start_matches(['_', '-']), a.name()))
+        else {
+            return Ok(None);
         };
         require_consumed(&words.collect::<Vec<_>>(), 0, action.name())?;
         Ok(Some(action))
@@ -30,6 +44,7 @@ impl PointSelectionAction {
         match self {
             Self::Select => "SelPt",
             Self::Invert => "InvertPt",
+            Self::Navigate(action) => action.name(),
         }
     }
 
@@ -41,6 +56,9 @@ impl PointSelectionAction {
         document: &mut Document,
         mut accepts_object: impl FnMut(&viboceros_document::Object) -> bool,
     ) -> Result<String, CommandError> {
+        if let Self::Navigate(action) = self {
+            return action.apply(document);
+        }
         let objects = if self == Self::Select {
             document
                 .selectable_objects()
@@ -64,6 +82,7 @@ impl PointSelectionAction {
             match self {
                 Self::Select => SelectionMode::Add,
                 Self::Invert => SelectionMode::Toggle,
+                Self::Navigate(_) => unreachable!("navigation has a separate selection policy"),
             },
         )?;
         if count == 0 && self == Self::Select {

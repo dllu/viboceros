@@ -10,7 +10,7 @@ fn curve(x: f64) -> Geometry {
         NurbsCurve::try_clamped_uniform(2, vec![p(x, 0.), p(x + 1., 2.), p(x + 2., 0.)]).unwrap(),
     )
 }
-fn setup() -> (Document, [ObjectId; 3]) {
+pub(super) fn setup() -> (Document, [ObjectId; 3]) {
     let mut doc = Document::default();
     let control = doc.add_geometry(curve(0.)).unwrap();
     let edit = doc.add_geometry(curve(10.)).unwrap();

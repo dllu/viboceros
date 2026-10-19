@@ -7,6 +7,8 @@ Rotate3D, Mirror or Shear through the existing
 [grip transform workflow](../grip-transforms.md). `PointsOff` hides both control
 and edit points. `PointsOn` switches an owner back to its control points;
 switching modes clears that owner's grip selection.
+Preselected curve owners remain selected after `EditPtOn`. Closed end stations
+share one displayed seam grip; transforming it updates both endpoint equations.
 
 For example, create `ControlPointCurve 2 0,0,0 1,3,0 3,-2,0 4,0,0`, select it,
 run `EditPtOn`, select an interior edit point and run `Move 0,0,0 0,2,0`.
@@ -34,12 +36,14 @@ layouts decline without a partial edit. Smooth with selected edit grips also
 declines; switch to `PointsOn` to smooth controls.
 [`SetPt`](set-point.md) can align selected edit grips to World or CPlane coordinates.
 
-This is a curve implementation. SubD edit points, closed-curve seam aliases,
-native grip ordering and exact Rhino editing behavior need qualification.
+This is a curve implementation. The
+[directional-selection corpus](../grip-navigation-validation.json) checks native
+display indices and locations on nine curve families, including closed seams,
+periodic curves and composites. SubD edit points and exact Rhino geometry
+editing behavior still need qualification.
 McNeel's [EditPtOn reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/pointson.htm#EditPtOn)
-describes curve and SubD display. No new live Rhino comparison or performance
-qualification is claimed. Live checks were deferred because of the recorded
-[Wine SSPI startup issue](../oracle-sspi.md).
+describes curve and SubD display. Geometry editing and performance retain the
+limits of the earlier qualification.
 
 Implementation regressions cover rational and periodic partial edits, preserved
 structure, atomic failure and transaction rollback, mode switching, Copy,

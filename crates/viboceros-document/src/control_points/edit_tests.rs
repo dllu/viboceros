@@ -19,6 +19,74 @@ fn curve() -> NurbsCurve {
 fn translation() -> AffineTransform3 {
     AffineTransform3::from_translation(Vector3::try_new(0., 2., 0.).unwrap())
 }
+
+#[test]
+fn closed_edit_seam_has_one_grip_and_moves_both_endpoint_constraints() {
+    let source = NurbsCurve::try_new_rational(
+        2,
+        [p(0., 0.), p(3., 0.), p(3., 2.), p(0., 3.), p(0., 0.)]
+            .into_iter()
+            .zip([1., 2., 0.5, 1.5, 1.])
+            .map(|(p, w)| WeightedPoint3::try_new(p, w).unwrap())
+            .collect(),
+        vec![0., 0., 0., 1., 2., 3., 3., 3.],
+    )
+    .unwrap();
+    let geometry = Geometry::NurbsCurve(source.clone());
+    assert_eq!(source.edit_points().unwrap().len(), 5);
+    assert_eq!(geometry.grip_locations(GripMode::Edit).unwrap().len(), 4);
+    let moved = geometry
+        .with_transformed_grips_in_mode(
+            &BTreeSet::from([0]),
+            translation(),
+            Tolerance::DEFAULT,
+            GripMode::Edit,
+        )
+        .unwrap();
+    let Geometry::NurbsCurve(moved) = moved else {
+        panic!()
+    };
+    assert_eq!(source.knots(), moved.knots());
+    assert_eq!(
+        source
+            .control_points()
+            .iter()
+            .map(|p| p.weight())
+            .collect::<Vec<_>>(),
+        moved
+            .control_points()
+            .iter()
+            .map(|p| p.weight())
+            .collect::<Vec<_>>()
+    );
+    for (i, station) in source.edit_points().unwrap().iter().enumerate() {
+        let expected = if i == 0 || i == 4 {
+            translation().transform_point(station.point).unwrap()
+        } else {
+            station.point
+        };
+        assert!(
+            moved
+                .evaluate_on_side(station.parameter, station.side)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                < 1e-8,
+            "station {i}"
+        );
+    }
+    assert!(moved.is_closed().unwrap());
+    assert!(
+        geometry
+            .with_transformed_grips_in_mode(
+                &BTreeSet::from([4]),
+                translation(),
+                Tolerance::DEFAULT,
+                GripMode::Edit
+            )
+            .is_err()
+    );
+}
 fn check_edit(source: &NurbsCurve, output: &NurbsCurve, index: usize) {
     assert_eq!(source.degree(), output.degree());
     assert_eq!(source.knots(), output.knots());

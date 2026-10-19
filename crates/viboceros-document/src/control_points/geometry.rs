@@ -68,17 +68,20 @@ impl Geometry {
                 .into_iter()
                 .map(|p| p.point)
                 .collect::<Vec<_>>();
-            if let Some(&index) = indices.last().filter(|&&index| index >= points.len()) {
-                return Err(GeometryError::InvalidControlPointIndex {
-                    index,
-                    count: points.len(),
-                });
+            let count = curve.grip_count()?.min(points.len());
+            if let Some(&index) = indices.last().filter(|&&index| index >= count) {
+                return Err(GeometryError::InvalidControlPointIndex { index, count });
             }
             if indices.is_empty() || identity {
                 return Ok(self.clone());
             }
             for &index in indices {
                 points[index] = map_point(points[index])?;
+            }
+            // The closed end station shares the first displayed grip. The
+            // interpolation system still needs both endpoint equations.
+            for index in count..points.len() {
+                points[index] = points[index % count];
             }
             return Ok(Self::NurbsCurve(
                 curve.try_with_edit_points(&points, tolerance)?,

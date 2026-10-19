@@ -69,7 +69,9 @@ impl Command for EditPointsOnCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "EditPtOn (select curves)")?;
         let ids = document.selected_object_ids().collect::<Vec<_>>();
-        let count = document.enable_edit_points(ids)?;
+        let count = document.enable_edit_points(ids.iter().copied())?;
+        // Unlike PointsOn, native EditPtOn retains the preselected owners.
+        document.select_objects_direct(ids, SelectionMode::Add)?;
         Ok(format!("Edit points on for {count} object(s)"))
     }
 }

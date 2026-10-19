@@ -11111,6 +11111,7 @@ mod tests {
     mod fillet_surface;
     mod flow;
     mod geometry_check;
+    mod grip_navigation;
     mod grip_transform;
     mod group_prompt;
     mod hyperbola;
